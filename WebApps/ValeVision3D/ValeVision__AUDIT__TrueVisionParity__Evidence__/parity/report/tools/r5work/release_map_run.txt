@@ -1,0 +1,177 @@
+v2.172.0 (L5)          NOT-CONSIDERED | W4-12,W4-05,W4-06,W4-14 | last W4-14 | src 3 mapped 3 | unm: 
+v2.171.0 (L64)         NOT-CONSIDERED | W4-06,W4-12,W4-05,W4-14 | last W4-14 | src 3 mapped 3 | unm: 
+v2.170.0 (L126)        NOT-CONSIDERED | W4-12,W1-25,W4-05 | last W4-12 | src 4 mapped 3 | unm: Na__CoreUi__Styles__BaseLayout__.css
+v2.169.0 (L205)        NOT-CONSIDERED | W4-06,W4-12 | last W4-12 | src 3 mapped 3 | unm: 
+v2.168.0 (L275)        NOT-CONSIDERED | W4-12,W4-14,W4-16 | last W4-14 | src 1 mapped 1 | unm: 
+v2.167.0 (L360)        NOT-CONSIDERED | W4-12,W4-16,W4-18,W4-04,W4-14 | last W4-14 | src 3 mapped 3 | unm: 
+v2.166.0 (L466)        NOT-CONSIDERED | W4-08,W4-07,W4-01,W1-15 | last W4-08 | src 6 mapped 6 | unm: 
+v2.165.0 (L556)        NOT-CONSIDERED | W4-12,W4-04 | last W4-12 | src 4 mapped 4 | unm: 
+v2.164.0 (L620)        NOT-CONSIDERED | W2-39,W2-16,W1-17,W1-23,W1-26,W2-38 | last W3-17 | src 6 mapped 6 | unm: 
+v2.163.0 (L704)        NOT-CONSIDERED | W2-30,W2-31,W2-35 | last W2-35 | src 5 mapped 5 | unm: 
+v2.162.0 (L797)        NOT-CONSIDERED | W1-15,W4-05,W4-12,W4-14 | last W4-14 | src 2 mapped 2 | unm: 
+v2.161.0 (L873)        VV-ORIGIN      | W0-12,W0-13,W1-23,W2-07,W2-15,W2-16 | last W2-16 | src 10 mapped 5 | unm: Na__Scene__DefaultSceneLighting.js;Na__Scene__PerSceneLighting__.js;Na__PresentationMode__DevMenu__SceneLightingRows__.js;Na__PresentationMode__ProjectJson__SceneData.js
+v2.160.0 (L967)        NOT-CONSIDERED | W1-13,W1-24,W1-28,W3-16,W4-03,W2-16 | last W4-03 | src 4 mapped 4 | unm: 
+v2.159.0 (L1017)       PENDING-SIGNOF | W2-43,W0-08 | last W2-43 | src 2 mapped 2 | unm: 
+v2.158.0 (L1077)       NOT-CONSIDERED | W1-34,W4-13,W1-31,W1-32,W1-33,W1-36 | last W5-03 | src 3 mapped 3 | unm: 
+v2.157.0 (L1161)       NOT-CONSIDERED | W4-06,W2-30,W4-15,W4-12,W4-04 | last W4-12 | src 5 mapped 5 | unm: 
+v2.156.0 (L1214)       NOT-CONSIDERED | W4-02,W4-17,W4-01 | last W4-02 | src 2 mapped 2 | unm: 
+v2.155.0 (L1266)       NOT-CONSIDERED | W1-15,W4-17,W4-02,W4-03,W4-01,W2-14 | last W4-09 | src 36 mapped 30 | unm: Na__LayoutEditor__Styles__WebViewer__.css;Na__LayoutEditor__WebViewer__Drawings__.js;Na__LayoutEditor__WebViewer__Spec__.js;Na__LayoutEditor__WebViewer__TouchControls__.js
+v2.154.0 (L1366)       NOT-CONSIDERED | W2-36,W3-13,W1-28,W2-21 | last W3-13 | src 1 mapped 1 | unm: 
+v2.153.0 (L1391)       NOT-CONSIDERED | W2-21,W3-03,W3-04 | last W3-04 | src 2 mapped 2 | unm: 
+v2.152.0 (L1428)       NOT-CONSIDERED | W1-18,W1-19,W1-20,W1-26,W1-28,W2-21 | last W3-12 | src 9 mapped 9 | unm: 
+v2.151.0 (L1481)       NOT-CONSIDERED | W2-41,W3-03,W1-36,W3-07,W0-15 | last W3-07 | src 3 mapped 3 | unm: 
+v2.150.0 (L1552)       NOT-CONSIDERED | W3-03,W2-28,W2-41,W1-26,W3-04,W1-13 | last W3-10 | src 21 mapped 21 | unm: 
+v2.149.0 (L1669)       NOT-CONSIDERED | W3-03,W3-04,W2-19,W2-25,W3-01,W0-15 | last W3-04 | src 10 mapped 10 | unm: 
+v2.148.0 (L1757)       NOT-CONSIDERED | W3-17,W3-10,W1-27 | last W3-17 | src 2 mapped 2 | unm: 
+v2.147.0 (L1795)       NOT-CONSIDERED | W2-32,W1-21,W1-13,W1-19,W3-11 | last W3-11 | src 8 mapped 8 | unm: 
+v2.146.0 (L1901)       NOT-CONSIDERED | W1-07,W0-12,W1-05,W1-06,W0-09 | last W1-07 | src 4 mapped 4 | unm: 
+v2.145.0 (L2006)       NOT-CONSIDERED | W1-07,W1-05,W1-21 | last W1-07 | src 3 mapped 3 | unm: 
+v2.144.0 (L2084)       NOT-CONSIDERED | W2-30,W3-03,W2-35,W2-34,W1-14,W1-26 | last W5-02 | src 20 mapped 18 | unm: README__SpellCheck__.md;Na__UiFeature__Styles__AppHeader__.css
+v2.143.0 (L2253)       NOT-CONSIDERED | W2-32,W3-03,W3-11,W1-21,W3-04,W1-13 | last W5-03 | src 23 mapped 23 | unm: 
+v2.142.0 (L2384)       NOT-CONSIDERED | W1-20,W2-21,W1-28,W3-03,W1-14,W1-19 | last W5-02 | src 15 mapped 15 | unm: 
+v2.141.0 (L2506)       NOT-CONSIDERED | W2-21,W3-03,W1-28,W1-14,W1-19,W1-20 | last W3-03 | src 10 mapped 10 | unm: 
+v2.140.0 (L2594)       NOT-CONSIDERED | W2-16,W1-23,W1-08,W1-13,W1-14,W1-19 | last W3-15 | src 15 mapped 15 | unm: 
+v2.139.1 (L2700)       NOT-DRAWING    | W0-11 | last W0-11 | src 1 mapped 1 | unm: 
+v2.139.0 (L2720)       NOT-CONSIDERED | W1-13,W1-19,W1-20,W1-28,W2-21,W2-26 | last W3-12 | src 9 mapped 9 | unm: 
+v2.138.0 (L2800)       NOT-CONSIDERED | W3-03,W1-28,W3-04,W3-06,W2-19,W2-16 | last W3-16 | src 24 mapped 24 | unm: 
+v2.137.0 (L2909)       NOT-CONSIDERED | W3-05,W1-28,W2-24,W2-42,W2-25,W2-19 | last W3-05 | src 4 mapped 4 | unm: 
+v2.136.0 (L3013)       NOT-CONSIDERED | W1-21,W1-28,W1-14,W1-19,W1-20,W2-23 | last W5-01 | src 12 mapped 11 | unm: TrueVision__NOTES__LayoutEditorPerformance__.md
+v2.135.0 (L3158)       NOT-CONSIDERED | W1-36,W0-15 | last W1-36 | src 3 mapped 2 | unm: Na__AppUtils__DevGate__.js
+v2.134.0 (L3216)       NOT-CONSIDERED | W2-19,W2-37,W2-38 | last W2-38 | src 2 mapped 2 | unm: 
+v2.133.0 (L3302)       NOT-CONSIDERED | W1-37,W1-38 | last W1-38 | src 1 mapped 1 | unm: 
+v2.132.0 (L3375)       NOT-CONSIDERED | W2-14 | last W2-14 | src 2 mapped 1 | unm: TrueVision__PLAN__SitePlanComposites__.md
+v2.131.0 (L3436)       NOT-CONSIDERED | W2-18,W2-42,W3-05,W0-04,W5-02 | last W5-02 | src 4 mapped 4 | unm: 
+v2.130.0 (L3544)       NOT-CONSIDERED | W1-20,W3-03,W3-07,W1-14,W1-19,W1-21 | last W5-01 | src 13 mapped 12 | unm: TrueVision__PLAN__VectorTools__.md
+v2.129.0 (L3651)       NOT-CONSIDERED | W2-19,W2-42,W3-03,W3-05,W1-14,W2-24 | last W5-01 | src 13 mapped 13 | unm: 
+v2.128.0 (L3801)       NOT-CONSIDERED | W2-37,W2-38,W1-24,W1-28,W3-13,W3-16 | last W3-14 | src 5 mapped 5 | unm: 
+v2.127.0 (L3906)       NOT-CONSIDERED | W2-21,W1-20,W1-21,W3-03,W0-08 | last W3-03 | src 4 mapped 4 | unm: 
+v2.126.0 (L3982)       NOT-CONSIDERED | W1-37,W1-38,W2-14,W3-12 | last W3-12 | src 6 mapped 5 | unm: Na__PlanAnnotations__Toolbar__.js
+v2.125.0 (L4125)       NOT-CONSIDERED | W1-27,W3-10 | last W3-10 | src 3 mapped 3 | unm: 
+v2.124.0 (L4193)       NOT-CONSIDERED | W1-21,W1-28,W1-36,W2-21,W1-35,W5-01 | last W5-01 | src 6 mapped 6 | unm: 
+v2.123.0 (L4231)       NOT-CONSIDERED | W2-21,W3-03,W1-28,W1-20,W2-20,W1-19 | last W5-02 | src 20 mapped 20 | unm: 
+v2.122.0 (L4366)       NOT-CONSIDERED | W2-37,W1-26,W3-13,W0-08 | last W3-13 | src 5 mapped 5 | unm: 
+v2.121.0 (L4436)       NOT-CONSIDERED | W1-16,W3-18,W3-09 | last W3-09 | src 3 mapped 3 | unm: 
+v2.120.0 (L4504)       NOT-CONSIDERED | W1-15,W1-26,W2-38 | last W2-38 | src 4 mapped 4 | unm: 
+v2.119.0 (L4561)       NOT-CONSIDERED | W3-03,W1-13,W2-23,W3-04,W0-08 | last W3-04 | src 6 mapped 6 | unm: 
+v2.118.0 (L4661)       NOT-CONSIDERED | W3-03,W3-01,W3-04,W2-23 | last W3-04 | src 6 mapped 6 | unm: 
+v2.117.0 (L4766)       NOT-CONSIDERED | W3-03,W3-04,W2-21,W2-25,W0-15,W0-08 | last W3-04 | src 10 mapped 10 | unm: 
+v2.116.0 (L4851)       NOT-CONSIDERED | W0-12,W1-05,W1-16,W1-19,W0-18,W3-09 | last W3-09 | src 4 mapped 4 | unm: 
+v2.115.0 (L4979)       NOT-CONSIDERED | W1-36,W1-29,W1-30,W3-03,W0-15,W1-31 | last W5-03 | src 8 mapped 7 | unm: Na__AppConfig__Loader.js
+v2.114.0 (L5072)       NOT-CONSIDERED | W3-03,W2-18,W2-26,W3-04,W1-14,W1-20 | last W3-05 | src 18 mapped 18 | unm: 
+v2.113.0 (L5206)       NOT-CONSIDERED | W3-03,W1-14,W2-23,W2-18,W2-25,W2-26 | last W5-01 | src 11 mapped 11 | unm: 
+v2.112.0 (L5324)       NOT-CONSIDERED | W1-36,W1-04,W4-10,W1-32,W0-15 | last W4-10 | src 6 mapped 4 | unm: Na__UiFeature__NavigationToolbar__Controls.js;Na__UiFeature__WalkModeControls.js
+v2.111.0 (L5404)       PENDING-SIGNOF | W1-21,W1-28,W1-36,W2-32,W0-08,W1-35 | last W5-01 | src 8 mapped 7 | unm: TrueVision__PLAN__DraftMode__.md
+v2.110.0 (L5496)       NOT-CONSIDERED | W1-29,W1-32,W4-12,W1-31,W1-36,W2-29 | last W5-03 | src 4 mapped 4 | unm: 
+v2.109.0 (L5575)       NOT-CONSIDERED | W1-26,W1-22,W2-38 | last W2-38 | src 3 mapped 3 | unm: 
+v2.108.0 (L5635)       NOT-CONSIDERED | W1-26,W2-38 | last W2-38 | src 3 mapped 3 | unm: 
+v2.107.0 (L5662)       PENDING-SIGNOF | W2-18,W2-16,W1-14,W1-23,W3-03,W0-04 | last W5-02 | src 9 mapped 8 | unm: TrueVision__PLAN__DraftMode__.md
+v2.106.0 (L5787)       NOT-CONSIDERED | W2-37,W1-28,W2-38,W1-13,W1-24,W3-13 | last W5-03 | src 9 mapped 8 | unm: TrueVision__PLAN__FloorAreas__.md
+v2.105.0 (L5925)       PENDING-SIGNOF | W2-06,W1-23,W2-43,W2-15 | last W2-15 | src 7 mapped 7 | unm: 
+v2.104.0 (L6030)       NOT-CONSIDERED | W3-10,W3-17,W1-20,W1-21,W2-36,W1-27 | last W5-03 | src 9 mapped 8 | unm: TrueVision__PLAN__FloorAreas__.md
+v2.103.0 (L6147)       NOT-CONSIDERED | W1-03,W1-09 | last W1-09 | src 2 mapped 2 | unm: 
+v2.102.0 (L6201)       NOT-CONSIDERED | W2-38 | last W2-38 | src 1 mapped 1 | unm: 
+v2.101.0 (L6251)       NOT-CONSIDERED | W2-16,W1-17,W2-14 | last W2-16 | src 4 mapped 3 | unm: TrueVision__PLAN__SitePlanComposites__.md
+v2.100.0 (L6345)       NOT-CONSIDERED | W2-37,W1-15,W2-38,W1-19,W1-20,W1-24 | last W3-14 | src 15 mapped 13 | unm: Na__PresentationMode__ProjectJson__SceneData.js;TrueVision__PLAN__ScrapbookSystem__.md
+v2.99.0 (L6431)        NOT-CONSIDERED | W4-15,W4-12,W4-14 | last W4-14 | src 2 mapped 2 | unm: 
+v2.98.0 (L6509)        NOT-CONSIDERED | W3-03,W2-25,W3-04 | last W3-04 | src 4 mapped 4 | unm: 
+v2.97.0 (L6573)        NOT-CONSIDERED | W4-14,W4-15,W4-11,W4-12,W0-08 | last W4-14 | src 4 mapped 4 | unm: 
+v2.96.0 (L6666)        NOT-CONSIDERED | W2-37,W2-19 | last W2-37 | src 1 mapped 1 | unm: 
+v2.95.0 (L6771)        NOT-CONSIDERED | W4-14,W1-24,W1-28,W3-16,W4-15,W4-04 | last W4-14 | src 2 mapped 2 | unm: 
+v2.94.0 (L6950)        NOT-CONSIDERED | W1-09,W2-16,W1-23,W2-03,W0-02,W1-05 | last W5-03 | src 20 mapped 16 | unm: Na__DrawView__ProfileLines__.js;Na__SectionCut__CapMeshes__.js;Na__SectionCut__Engine__.js;TrueVision__PLAN__ElevationDepthFog__.md
+v2.93.0 (L7119)        PENDING-SIGNOF | W2-09,W2-16,W1-23,W1-38,W2-36,W2-15 | last W2-16 | src 7 mapped 7 | unm: 
+v2.92.0 (L7224)        NOT-DRAWING    | W0-14,W1-06 | last W1-06 | src 14 mapped 2 | unm: Na__PresentationMode__Camera__SceneTransition.js;Na__PresentationMode__DevMenu__BatchOps__.js;Na__PresentationMode__DevMenu__GroupEditor__.js;Na__PresentationMode__DevMenu__SceneEditor.js
+v2.91.0 (L7326)        NOT-CONSIDERED | W2-35,W1-32,W1-38,W2-30,W2-37,W1-31 | last W5-03 | src 7 mapped 7 | unm: 
+v2.90.0 (L7464)        NOT-CONSIDERED | W1-26,W2-14,W1-17 | last W2-14 | src 3 mapped 3 | unm: 
+v2.89.0 (L7530)        NOT-CONSIDERED | W2-16,W2-14,W1-17,W1-23 | last W2-16 | src 4 mapped 4 | unm: 
+v2.88.0 (L7624)        DELIBERATE     | W1-12,W0-12 | last W1-12 | src 2 mapped 2 | unm: 
+v2.87.0 (L7678)        PENDING-SIGNOF | W1-08,W2-37,W2-10,W2-16,W3-13,W3-14 | last W3-14 | src 8 mapped 8 | unm: 
+v2.86.0 (L7788)        PENDING-SIGNOF | W1-06,W1-10,W1-05,W2-16 | last W2-16 | src 14 mapped 10 | unm: Na__Elevation__FacePick__.js;Na__Elevation__GizmoGrip__.js;Na__Elevation__PlaneGizmo__.js;TrueVision__PLAN__DrawingMenus__.md
+v2.85.0 (L7925)        PORTED         | W2-37 | last W2-37 | src 1 mapped 1 | unm: 
+v2.84.0 (L7979)        PARTIAL        | W1-11,W1-01,W2-01 | last W2-01 | src 6 mapped 4 | unm: Na__North__ConfigState__.js;TrueVision__PLAN__DrawingPlanes__.md
+v2.83.0 (L8066)        PORTED         | W1-33,W1-23,W2-15,W1-31,W1-32,W1-36 | last W5-03 | src 6 mapped 4 | unm: Na__UiFeature__Styles__AppHeader__.css;Na__UiFeature__Styles__DevToolsMenu__.css
+v2.82.0 (L8181)        PENDING-SIGNOF | W1-01,W2-04,W2-05,W2-01 | last W2-05 | src 7 mapped 3 | unm: Na__Elevation__FacePick__.js;Na__Elevation__GizmoGrip__.js;Na__Elevation__PlaneGizmo__.js;TrueVision__PLAN__DrawingPlanes__.md
+v2.81.0 (L8314)        NOT-CONSIDERED | W1-15,W1-22,W1-26,W0-15 | last W1-26 | src 8 mapped 8 | unm: 
+v2.80.0 (L8447)        PORTED         | W2-16,W1-20,W1-21,W2-10,W2-37,W3-13 | last W5-03 | src 6 mapped 6 | unm: 
+v2.79.1 (L8549)        PORTED         | W1-22,W4-18,W4-10,W0-15 | last W4-10 | src 7 mapped 6 | unm: Na__Pwa__ServiceWorker__.js
+v2.79.0 (L8604)        PORTED         | W1-22,W4-18,W4-10,W1-19,W1-21,W0-15 | last W4-10 | src 10 mapped 10 | unm: 
+v2.78.1 (L8721)        PORTED         | W1-22,W4-10 | last W4-10 | src 2 mapped 2 | unm: 
+v2.78.0 (L8777)        NOT-CONSIDERED | W3-03,W3-04,W3-01,W2-32,W0-15,W1-35 | last W5-01 | src 9 mapped 9 | unm: 
+v2.77.0 (L8878)        PORTED         | W2-37,W1-38,W1-22,W3-13 | last W3-13 | src 7 mapped 6 | unm: TrueVision__PLAN__ScrapbookSystem__.md
+v2.76.1 (L8962)        DELIBERATE     |  | last  | src 0 mapped 0 | unm: 
+v2.76.0 (L8989)        PORTED         | W2-37,W1-20,W1-32,W1-21,W3-13,W1-31 | last W5-03 | src 8 mapped 7 | unm: TrueVision__PLAN__ScrapbookSystem__.md
+v2.75.0 (L9118)        NOT-DRAWING    | W0-08 | last W0-08 | src 8 mapped 2 | unm: README__PwaInstallability__.md;TrueVision__Pwa__Handler__InstalledStandalone__.js;TrueVision__Pwa__Handler__IosSafari__.js;TrueVision__Pwa__Manifest__Builder__.js
+v2.74.0 (L9208)        PORTED         | W1-21,W1-12 | last W1-21 | src 3 mapped 3 | unm: 
+v2.73.0 (L9306)        PORTED         | W1-31,W1-32,W1-35,W1-36,W2-29,W2-31 | last W5-03 | src 2 mapped 2 | unm: 
+v2.72.0 (L9364)        PORTED         | W1-22,W1-33,W1-34,W5-02 | last W5-02 | src 2 mapped 2 | unm: 
+v2.71.0 (L9445)        DELIBERATE     | W1-13,W1-19,W1-21,W0-15 | last W1-21 | src 5 mapped 4 | unm: TrueVision__NOTES__DrawingNumberingSchema__.md
+v2.70.0 (L9545)        PORTED         | W1-21,W1-19 | last W1-21 | src 3 mapped 3 | unm: 
+v2.69.0 (L9676)        DELIBERATE     | W1-21,W1-19,W1-25,W4-18,W0-15 | last W4-18 | src 8 mapped 7 | unm: Na__LayoutEditor__SpecPdf__.js
+v2.68.2 (L9778)        N/A            | W0-06,W1-06 | last W1-06 | src 3 mapped 2 | unm: Na__PresentationMode__DevMenu__SceneEditor.js
+v2.68.1 (L9856)        NOT-DRAWING    |  | last  | src 1 mapped 0 | unm: Na__RenderEffect__AmbientOcclusion__Shader.js
+v2.68.0 (L9936)        PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.67.0 (L10127)       PORTED         | W2-30,W1-07,W0-08 | last W2-30 | src 4 mapped 4 | unm: 
+v2.66.0 (L10197)       NOT-DRAWING    | W2-07,W0-13 | last W2-07 | src 4 mapped 2 | unm: Na__RenderPipeline__PostProcessing__Setup.js;Na__RenderEffect__AmbientOcclusion__.js
+v2.65.2 (L10296)       PORTED         | W4-09 | last W4-09 | src 5 mapped 1 | unm: Na__LayoutEditor__Styles__WebViewer__.css;Na__LayoutEditor__WebViewer__Drawings__.js;Na__LayoutEditor__WebViewer__Spec__.js;Na__LayoutEditor__WebViewer__TouchControls__.js
+v2.65.1 (L10352)       PORTED         | W1-34,W4-09,W4-13,W1-31,W1-32,W1-33 | last W5-03 | src 8 mapped 4 | unm: Na__LayoutEditor__Styles__WebViewer__.css;Na__PresentationMode__Styles__SceneCarousel__.css;Na__UiFeature__Styles__ControlsHelpPanel__.css;Na__UiFeature__Styles__DropdownAndToast__.css
+v2.65.1 (L10433)       NOT-DRAWING    |  | last  | src 1 mapped 0 | unm: Na__Navmode__WalkMode__SystemLogic.js
+v2.65.0 (L10456)       PORTED         | W4-09,W4-13,W1-34,W0-04,W0-08,W0-15 | last W5-03 | src 11 mapped 6 | unm: Na__AppUtils__DevGate__.js;Na__LayoutEditor__Styles__WebViewer__.css;Na__LayoutEditor__WebViewer__Drawings__.js;Na__LayoutEditor__WebViewer__Spec__.js
+v2.64.1 (L10549)       PORTED         | W2-06 | last W2-06 | src 3 mapped 2 | unm: Na__ModelLoader__ContentStamp__.js
+v2.64.0 (L10612)       PORTED         | W2-16,W1-23,W1-28,W2-15 | last W2-16 | src 5 mapped 5 | unm: 
+v2.63.2 (L10686)       PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.63.1 (L10733)       PORTED         | W2-06 | last W2-06 | src 1 mapped 1 | unm: 
+v2.63.0 (L10805)       PORTED         | W1-22,W2-32 | last W2-32 | src 3 mapped 2 | unm: Na__LayoutEditor__SpecPdf__.js
+v2.62.0 (L10873)       PORTED         | W1-21 | last W1-21 | src 2 mapped 2 | unm: 
+v2.61.1 (L10925)       PORTED         | W1-25,W1-26 | last W1-26 | src 1 mapped 1 | unm: 
+v2.61.0 (L10982)       PORTED         | W1-13,W1-22,W1-26 | last W1-26 | src 2 mapped 2 | unm: 
+v2.60.0 (L11048)       PORTED         | W3-03,W3-04,W2-21,W2-23,W2-24,W3-01 | last W3-06 | src 8 mapped 8 | unm: 
+v2.59.0 (L11151)       PORTED         | W3-01,W3-03,W3-04 | last W3-04 | src 2 mapped 2 | unm: 
+v2.58.2 (L11297)       PARTIAL        | W2-07,W0-13,W1-19,W2-16 | last W2-16 | src 4 mapped 4 | unm: 
+v2.58.0 (L11399)       PORTED         | W3-03,W3-01,W2-23,W3-04 | last W3-04 | src 6 mapped 6 | unm: 
+v2.57.0 (L11474)       PORTED         | W2-36,W3-12,W1-38,W2-21,W3-03,W0-15 | last W5-03 | src 9 mapped 9 | unm: 
+v2.56.2 (L11547)       NOT-DRAWING    |  | last  | src 0 mapped 0 | unm: 
+v2.56.1 (L11568)       NOT-DRAWING    |  | last  | src 2 mapped 0 | unm: Na__UiFeature__Styles__DropdownAndToast__.css;Na__UiFeature__Styles__NavigationToolbar__.css
+v2.56.0 (L11588)       VV-ORIGIN      | W2-07,W0-13,W1-03,W0-08 | last W2-07 | src 10 mapped 4 | unm: Na__RenderPipeline__PostProcessing__Setup.js;Na__UiFeature__VisualEffects__Controls.js;Na__DrawView__ProfileLines__.js;Na__UiFeature__PurgeAppCache__Button.js
+v2.55.0 (L11691)       VV-ORIGIN      | W0-06,W1-06,W0-04,W5-02 | last W5-02 | src 3 mapped 3 | unm: 
+v2.54.0 (L11779)       PORTED         | W0-06,W2-32,W0-15 | last W2-32 | src 3 mapped 3 | unm: 
+v2.53.0 (L11832)       DELIBERATE     | W1-32,W0-06,W1-28,W2-21,W1-31,W1-36 | last W5-03 | src 7 mapped 5 | unm: Na__LayoutEditor__Scrapbook__.js;TrueVision__PLAN__SitePlanDrawings__.md
+v2.52.0 (L11894)       PORTED         | W1-21,W1-26,W1-28,W2-21,W2-26,W2-36 | last W3-03 | src 8 mapped 8 | unm: 
+v2.51.0 (L11980)       PORTED         |  | last  | src 2 mapped 0 | unm: Na__LayoutEditor__SpecDocument__.js;Na__LayoutEditor__SpecEditor__.js
+v2.50.0 (L12020)       PORTED         | W3-06,W1-19,W1-23,W1-24,W1-21,W1-28 | last W3-16 | src 12 mapped 11 | unm: Na__ImageExport__StaticExport__TiledRenderer.js
+v2.49.1 (L12116)       PENDING-SIGNOF | W1-34,W4-13 | last W4-13 | src 1 mapped 1 | unm: 
+v2.49.0 (L12130)       PENDING-SIGNOF | W2-16,W1-13,W1-19,W1-23,W1-24,W1-21 | last W3-16 | src 12 mapped 11 | unm: TrueVision__PLAN__SitePlanDrawings__.md
+v2.48.1 (L12193)       PENDING-SIGNOF | W2-06,W1-23,W2-11,W2-15,W2-16,W0-15 | last W2-16 | src 7 mapped 7 | unm: 
+v2.48.0 (L12259)       PENDING-SIGNOF | W2-14,W1-19,W1-34,W1-21,W4-10,W4-13 | last W4-13 | src 7 mapped 6 | unm: TrueVision__PLAN__SitePlanDrawings__.md
+v2.47.0 (L12306)       PORTED         | W2-23,W3-03 | last W3-03 | src 2 mapped 2 | unm: 
+v2.46.0 (L12330)       PORTED         | W2-23,W3-03 | last W3-03 | src 2 mapped 2 | unm: 
+v2.45.0 (L12355)       PORTED         | W1-26,W3-03 | last W3-03 | src 2 mapped 2 | unm: 
+v2.44.0 (L12382)       PORTED         | W1-20,W1-21,W3-03,W3-06,W3-07 | last W3-07 | src 5 mapped 5 | unm: 
+v2.43.0 (L12417)       PORTED         | W2-21,W1-19,W1-21,W1-28,W2-26,W3-03 | last W3-12 | src 9 mapped 9 | unm: 
+v2.42.0 (L12452)       PENDING-SIGNOF | W2-06,W1-23,W1-19,W1-21,W2-11,W2-15 | last W3-15 | src 13 mapped 13 | unm: 
+v2.41.0 (L12545)       PENDING-SIGNOF | W1-19,W1-21,W1-26,W1-28,W1-38,W2-21 | last W3-12 | src 10 mapped 10 | unm: 
+v2.40.0 (L12632)       PARTIAL        | W2-26,W3-12,W3-07,W1-13,W1-19,W1-21 | last W5-03 | src 14 mapped 14 | unm: 
+v2.39.0 (L12719)       PARTIAL        | W0-12,W1-05,W1-21,W1-35,W5-01 | last W5-01 | src 4 mapped 4 | unm: 
+v2.38.1 (L12796)       PENDING-SIGNOF | W1-03,W1-23,W2-15,W0-08 | last W2-15 | src 3 mapped 3 | unm: 
+v2.38.0 (L12845)       PENDING-SIGNOF | W1-19,W1-21,W1-26,W3-15 | last W3-15 | src 4 mapped 4 | unm: 
+v2.37.0 (L12893)       PENDING-SIGNOF | W2-06,W2-43,W2-17,W0-08 | last W2-17 | src 11 mapped 11 | unm: 
+(unnumbered, 14-Sep)   PORTED         |  | last  | src 0 mapped 0 | unm: 
+(unnumbered, 14-Sep)   PORTED         |  | last  | src 0 mapped 0 | unm: 
+(unnumbered, 14-Sep)   PARTIAL        |  | last  | src 0 mapped 0 | unm: 
+(unnumbered, 14-Sep)   PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.36.0 (L12978)       PORTED         | W1-21,W1-28,W2-30,W2-32,W2-31,W3-11 | last W5-03 | src 23 mapped 22 | unm: Na__LayoutEditor__SpecEditor__.js
+v2.35.0 (L13141)       PORTED         | W1-26,W2-26,W1-21,W2-36,W3-07,W1-19 | last W5-03 | src 20 mapped 20 | unm: 
+v2.34.0 (L13270)       PORTED         | W1-21,W1-28,W2-21,W2-36,W3-12,W3-03 | last W5-02 | src 13 mapped 13 | unm: 
+v2.33.0 (no TV devlog  PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.32.1 (L13399)       PORTED         | W0-14,W2-16 | last W2-16 | src 3 mapped 3 | unm: 
+v2.32.0 (L13479)       DELIBERATE     | W2-16,W1-01,W1-23,W0-13,W0-14,W1-19 | last W5-03 | src 20 mapped 19 | unm: Na__UiFeature__ModelGroupSelector.js
+v2.31.0 (L13611)       PORTED         | W1-19,W1-21,W1-26,W1-28,W2-25,W2-26 | last W5-01 | src 8 mapped 8 | unm: 
+v2.30.2 (L13693)       N/A            | W1-31,W1-32,W1-36,W2-29,W2-31,W2-35 | last W5-03 | src 2 mapped 1 | unm: Na__DrawView__ConfigState__.js
+v2.30.1 (L13787)       PORTED         | W1-21 | last W1-21 | src 1 mapped 1 | unm: 
+v2.30.0 (L13843)       PORTED         | W1-28 | last W1-28 | src 1 mapped 1 | unm: 
+v2.29.0 (L13905)       PORTED         | W1-18,W2-26 | last W2-26 | src 2 mapped 2 | unm: 
+v2.28.0 (L14009)       PARTIAL        | W2-25,W3-06 | last W3-06 | src 2 mapped 2 | unm: 
+v2.27.0 (L14096)       PORTED         | W2-24,W2-26 | last W2-26 | src 2 mapped 2 | unm: 
+v2.27.0 (L14263)       PORTED         | W2-09,W2-16 | last W2-16 | src 4 mapped 2 | unm: Na__DrawView__ConfigState__.js;Na__ProjectedLinework__Owners__.js
+v2.26.1 (L14180)       PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.26.0 (L14462)       PORTED         | W2-21 | last W2-21 | src 1 mapped 1 | unm: 
+v2.25.0 (L14530)       PORTED         |  | last  | src 0 mapped 0 | unm: 
+v2.24.0 (L14644)       VV-ORIGIN      | W0-06 | last W0-06 | src 2 mapped 1 | unm: Na__AppUtils__DevGate__.js

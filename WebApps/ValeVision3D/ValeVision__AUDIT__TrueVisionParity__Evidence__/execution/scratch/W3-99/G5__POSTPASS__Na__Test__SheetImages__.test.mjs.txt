@@ -1,0 +1,129 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - sheet images
+
+  Geometry
+  PASS  the box of four corners
+  PASS  a crop of the whole picture is no crop
+  PASS  a crop is held inside the picture
+  PASS  a crop turned inside out is put the right way round
+  PASS  a crop thinner than the smallest span is widened about its middle
+  PASS  the kept part of a 3840 x 2160 picture, cropped to its middle half across
+  PASS  a crop cuts the kept part out of the same place
+  PASS  and taking it off puts the whole picture back where it was
+  PASS  the whole picture behind a crop
+  PASS  bottom right dragged out: top left stays
+  PASS  and the picture doubles on its diagonal, unstretched
+  PASS  a pointer off the diagonal still keeps the proportions
+  PASS  top left dragged in: bottom right stays
+  PASS  and it halves
+  PASS  dragged past the fixed corner, it stops at the smallest size, never turns over
+  PASS  a snap point lines up the edge that leaves the corner nearest the pointer (the side here)
+  PASS  or the bottom edge, when that one does
+  PASS  a snapped corner still keeps the proportions
+  PASS  a sound picture is left exactly as it is
+  PASS  a stretched picture keeps its top left and width and gets its height back
+  PASS  a composed document id is the folder
+  PASS  a typed id is made safe
+  PASS  the archive name is never handed out
+  PASS  nothing left takes the sheet id
+  PASS  a stored name: the dropped name, then the hash
+  PASS  and it is recognised as ours
+  PASS  somebody's own file is not
+  PASS  a name with nothing readable is still a name
+  PASS  100 mm wide at 300 dpi
+  PASS  never above the pixels it has
+  PASS  3840 px across 162.56 mm prints at 600 dpi
+  PASS  196.4 mm at 300 dpi: 2320 x 1305, whole steps of 16:9
+  PASS  the larger of two places decides
+  PASS  never above the original
+  PASS  never above the storage edge, capped as the drop caps it
+  PASS  a crop keeps the whole picture, at the density the kept half needs
+  PASS  a thumbnail is not stored below 256 px
+  PASS  awkward proportions round to the nearest pixel
+  PASS  no drawing shows it: nothing to size
+  PASS  headroom 1.25: a quarter more
+  PASS  within 5% of the stored size: not cut again
+  PASS  further than 5% either way: cut again
+
+  Painter
+  PASS  the kept part is the viewBox, in the stored file's pixels
+  PASS  a soft shadow: a Gaussian drop shadow of the picture's box
+  PASS  cast by a box that carries the filter
+  PASS  shadow first, then the picture, then the frame over its edge
+  PASS  the lighter frame rule is centred on the picture's own box
+  PASS  frame off: no rule and no shadow
+  PASS  frame off: an empty box is left for Draft mode to outline
+  PASS  a missing picture is a placeholder with its name, escaped
+
+  The record
+  PASS  a stretched picture is held to its proportions
+  PASS  and is a picture and nothing else
+  PASS  a whole-picture crop is not stored; the frame switch is kept
+  PASS  a block that names no file is dropped, and the shape is a plain vector
+  PASS  the Images layer is a layer type
+  PASS  with no Images layer a picture lands on Vectors, never on the top layer
+
+  The save step
+  PASS  first save: the picture is filed in the project folder under its drawing's id, and the drawings point at it
+  PASS  and there is nothing to say: it was already where its drawing wants it
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D01/FrontCgi__aaaaaaaaaa.webp
+  PASS  renumber: the drawings written point at the new folder
+  PASS  renumber: the toast says it was filed under the new id
+  PASS  renumber: the disk has it in the new folder, the old copy archived
+  PASS  renumber: the live record follows
+[ValeVision3D LayoutEditor] Archived 2 picture(s) no drawing uses: 3047_D03/FrontCgi__aaaaaaaaaa.webp, 3047_D07/RearCgi__bbbbbbbbbb.webp
+  PASS  swap: each picture is filed under its own drawing's new id
+  PASS  swap: the copies they left are archived, never deleted
+  PASS  swap: so does the disk
+  PASS  a failed filing leaves the written pointer where the project folder still has the picture
+  PASS  and that copy is not archived
+  PASS  and the toast says it failed
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D07/FrontCgi__aaaaaaaaaa.webp
+  PASS  the next save finishes the job
+  PASS  a failed drawings write leaves every live record as it was
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D03/RearCgi__bbbbbbbbbb.webp
+  PASS  one picture on two drawings is filed under both
+[ValeVision3D LayoutEditor] Archived 3 picture(s) no drawing uses: 3047_D09/FrontCgi__aaaaaaaaaa.webp, 3047_D11/RearCgi__bbbbbbbbbb.webp, 3047_D11/FrontCgi__aaaaaaaaaa.webp
+  PASS  every picture deleted: all three copies go to the archive
+  PASS  and the disk has archived them rather than deleting them
+  PASS  an undone delete comes back out of the archive, copied, never uploaded again
+  PASS  a picture dropped this session will be cut by the save
+  PASS  and nothing is written at the drop
+  PASS  the save cuts it to 300 dpi at 196.4 mm: 2320 x 1305, the render's own 16:9
+  PASS  the drawings point at the cut, not the drop
+  PASS  only the cut reaches the project folder; the drop never does
+  PASS  the sheet draws the cut from memory at once
+  PASS  the toast says what was stored
+  PASS  the original still stands behind the cut this session
+  PASS  saved again unchanged: no new cut, nothing to say
+  PASS  nudged 2%: still no new cut
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D20/Cgi__0009100519.webp
+  PASS  enlarged to 280 mm: cut again from the original, 3312 x 1863
+  PASS  the smaller cut leaves the project folder for the archive
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D20/Cgi__000cf00747.webp
+  PASS  wanted larger than the render: the drop's own file, never enlarged
+[ValeVision3D LayoutEditor] Archived 1 picture(s) no drawing uses: 3047_D20/Cgi__1111111111.webp
+  PASS  one file shown twice is cut for the larger: 150 mm, 1776 x 999
+  PASS  a picture from an earlier session is never re-encoded, whatever it prints at
+  PASS  a cut that fails: the drop is filed instead, and nothing is lost
+  PASS  a new project forgets the originals
+  PASS  an upload the project folder refuses is not pointed at
+  PASS  and the toast names the project folder
+  PASS  the next save files it and points at it
+  PASS  a picture found nowhere is named in the toast
+  PASS  and its pointer is left as it was
+  PASS  no toast of any save speaks of R2
+
+Every check passed
+
+--- stderr ---
+[ValeVision3D LayoutEditor] Sheet pictures were not filed on disk: offline
+[ValeVision3D LayoutEditor] A picture could not be cut to its print size; it is filed as dropped: Rear__3333333333.webp Error: decode failed
+    at Na__LeImgEnc__Recut (file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SheetImages__Publish__.mjs?v=9c2vgnc7yzr:10:41)
+    at Na__LeImgPub__Normalise (file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SheetImages__Publish__.mjs?v=9c2vgnc7yzr:301:31)
+    at Object.Na__LeImgPub__Before [as before] (file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SheetImages__Publish__.mjs?v=9c2vgnc7yzr:331:15)
+    at save (file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs:340:24)
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs:476:21

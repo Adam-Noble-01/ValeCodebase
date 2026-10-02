@@ -1,0 +1,183 @@
+﻿====================================================================================================
+W1-01 headings: 1. What was run, in order | 2. Acceptance items | 3. Gates (from the VV app root, on the final state; outputs in `scratch/W1-01/final_*.txt`) | 4. Files changed, one line each (what and why) | 5. Behaviour as landed (for W1-11, W2-01, W2-07, W2-15, W2-16 and the smoke test) | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test (acceptance 2 and 3, browser half)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: the app starts with no console error; 3D looks and moves exactly as before (nothing is registered yet). In DevTools, `(await import('/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js')).Na__RenderLoop__IsPaused()` answers false in the 3D view and true with a drawing sheet open (Layout Editor), false again after leaving it. Toggle a model layer in Tools: the projected linework and the sheet pictures refresh as before. Spot check: a carousel thumbnail, a sheet 3D viewport and an image export look identical to before.
+2. **Legacy 2D Elevations view (91):** it renders through the 3D path with an ortho camera, so a wanted overlay (the North compass once W1-11 registers it, the drawing planes once W2-01 lands) would show in it - as VV's compass does today. If that is unwanted, the fix is one more condition on the BeginFrame guard (`&& !Na__RenderLoop__ElevationActive`), a VV seam this package was not given; or retire 91 (W6-03, held).
+3. **A hold before the loop's listeners exist:** a sheet opened while the models are still loading pauses the engine before the render loop registers its pause listener (`:1709` runs after ShowScene), so the loop's own set misses it while IsPaused reports it - pre-existing VV behaviour, not introduced here. W2-07's port of TV's engine-hold stand-down (RenderFrame asks `Na__RenderLoop__IsPaused()`) closes it. W2-07 should keep `Na__InteractiveOverlays__EndFrame()` first in the tick's finally (TV's shape: `finally { EndFrame(); ArmNextFrame(keepRendering); }`).
+4. **ModelToggle log renumbering:** the 01-Sep-2026 entry is now "Version 1.1.1 (written as 1.2.0; renumbered 01-Oct-2026)" - it was a second 1.2.0. The earlier entry was renumbered, not the later one as W0-06 did, because the later chain (10-Sep 1.2.0 -> 1.2.1 -> 1.2.2) builds on its number and only this keeps every other number. Relabel before you commit if you prefer.
+5. **Two G4 WARNs with a reason:** TV's Invalidation and ModelToggle have no module version, so those two PORT NOTEs carry `- Legacy :` and their Source version lines name releases and commits. They clear if TrueVision ever versions those files (TrueVision lane, DR-36).
+6. **For the next ports:** W1-11 (North 1.1.0 whole) and W2-01 (Drawing Planes) now find the registry and IsPaused. W2-15 (SnapshotRenderer): VV's `Na__ModelToggle__SetCategoryVisibility` is an exact-key setter with a silent flag, TV's export under that name is a token matcher (a TV caller passing "Landscape" hides nothing here), and VV's ApplySceneLayerVisibility dispatches `na-model-visibility-changed` per category it applies (pre-existing). W2-16 (ModelSource): reach the library through `Na__LeSource__WaitFor`; never call `Na__PhaseLib__Ensure()` with no id (it waits for a live model nobody reports).
+7. **Scribe placeholders `{{VVREL:W1-01}}`** (8): LoadingSequence `:57` (PORT NOTE Ported on) and `:88` (log 1.7.2); InteractiveOverlays `:45`; Invalidation `:40` and `:58` (log 1.1.1); PhaseLibrary `:46`; ModelToggle `:37` and `:59` (log 1.2.3). Module version steps are patch steps, as the W0 packages used; the two whole-file ports take TV's 1.0.0.
+8. **TrueVision releases named** (DR-01 (c)): v2.82.0 (TV: "Not yet signed off by Adam"), v2.32.0, v2.25.0 and v2.24.0 (no confirmation line either way).
+9. **Back-port offer (DR-42 default: none happen):** the `na-model-visibility-changed` dispatch, which TV's pipeline and snapshot renderer listen for and nothing in TV dispatches (already WP-S09-14 / S02b-V01 item 4) - TrueVision lane (DR-36).
+====================================================================================================
+W1-02 headings: 1. What was run, in order | 2. Acceptance items | 3. Gates (from the VV app root, on the final tree) | 4. The seams, file by file (everything else is TrueVision's text at b2aa9151) | 5. Files changed, one line each (what and why) | 6. TrueVision releases ported, and whether Adam confirmed them in TV (DR-01 (c)) | 7. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 6. TrueVision releases ported, and whether Adam confirmed them in TV (DR-01 (c))
+
+
+Read from TV's devlog at b2aa9151. **None is recorded as confirmed by Adam.**
+- **v2.42.0** (14-Sep-2026) "Doors Stand Open on Plans - Click One to Close It": the door module's 1.9.0 part only (DescribeDoors, ComputePanelLocalPose, exported ApplyPanelTransform, GetLiveProgress, the MOD type constants, ScanGroupsInto). TV: "ValeVision - Not yet ported: waits for Adam's sign-off"; ledger Release Watermark row PENDING-SIGNOFF (owners W2-06, W2-11, W1-02, W2-16, W3-15). The plan-door feature itself lands with W2-06 / W2-11 / W3-15.
+- **v2.10.0** (30-Aug-2026) "Right-Click Context Menu System": the door module's 1.8.0 part only (left-button-only clicks; FindAdrAncestor, ResolveHitPanel, IsDoorOpen exported). The devlog's "Verified against West Farm (RB05)" is the build's check of the menu's pan guard, not a test by Adam. The 3D context menu itself is excluded in VV (DR-44).
+- **v2.3.6** (06-Jun-2026) "Door Animation - Six-Bug Fix": FindDoorGroups 1.1.0 (its "Bug 4" rewrite); 1.0.0 came with v2.0.3 (27-Feb-2026). No test by Adam recorded.
+- What reaches a Vale user now: only the left-button rule (see follow-up 2). Everything 1.9.0 adds is called by nobody in VV until W2-06.
+------------------------------------------------------------
+## 7. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous` (Doous ships ProposedDoors mesh and linework GLBs): in Orbit a left click on a door opens it and a second closes it; a stationary right click on a door leaves it as it was and right-drag still pans; Walk (or Fly) opens and closes doors as you pass; a Video Studio preview played from the top starts with every door shut. Then run `execution/scratch/W1-02/smoke_check__DescribeDoors.js` in the console (read-only; it imports the live module instance): expected `{ registered: n > 0, described: n, allRegistryOwn: true, exportsOk: true }`.
+2. **Behaviour change for Vale users (name it in the W1 devlog entry):** a stationary right or middle click on a door no longer toggles it - the right button is the orbit pan, and TV 1.8.0 made door clicks left-button only (DR-16 (a) with 1.8.0). Touch taps and pen presses (button 0) still toggle. A right press during a left press now cancels that click.
+3. **Scribe:** `{{VVREL:W1-02}}` x2 - `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js:51` and `.../Na__DoorAnimation__FindDoorGroups.js:28` (both in the PORT NOTE `Ported on` line). The ledger's Module Register rows for both files and the v2.42.0 / v2.10.0 watermark rows can now name W1-02's release (v2.42.0 stays PENDING-SIGNOFF for its plan-door feature).
+4. **Unblocked:** W2-06 (folder 50: DoorPose's seven door imports now resolve - S02b-F26, the "critical" link failure) and W2-11 (PlanDoors through DoorPose).
+5. **Service worker (W6-02):** add `Na__DoorAnimation__FindDoorGroups.js` to the shared precache list beside the door module (WCP logic :348) when DoorPose lands (W2-06); no bump is needed for W1-02 alone (see the SHARED SERVICE WORKER line).
+6. **Line endings:** the two existing files went from CRLF working copies to LF (TV's text as `git show` gives it, a whole-file port); `.gitattributes` `text=auto` normalises them at commit - git's "LF will be replaced by CRLF" warning is expected.
+7. **Back-port notes for TrueVision (DR-36 (a): not done; for the WT lane if Adam wants them):** TV's README "Main App Integration" shows an index.html sample though TV initialises doors in its loading sequence; its "Recent Changes" has no V1.8.0 (left-button) entry; the OnPointerDown comment says "LEFT BUTTON ONLY (v1.5.0)" where the log has 1.8.0. Cosmetic; ported verbatim.
+====================================================================================================
+W1-03 headings: 1. What changed, file by file | 2. TrueVision source and the pin | 3. Seams re-applied | 4. Acceptance | 5. Tests and gates | 6. TV releases ported (DR-01 (c): ported and named) | 7. Hand-over for Adam and follow-ups | 8. Files written by this package
+------------------------------------------------------------
+## 6. TV releases ported (DR-01 (c): ported and named)
+
+
+- **v2.38.1** (14-Sep-2026) - MultiModel 1.3.0 and `RenderConfig__Linework__OrthoDepthBiasMm`. Adam-confirmed in TV: **no** (row X "Tested by Adam" blank; built from his fascia report).
+- **v2.103.0** (21-Sep-2026) - the Supersampler present clamp (and, not ported here, the fog shader's half, which lands with the fog core). Adam-confirmed in TV: **no**.
+- Not a port, recorded for the scribe: TV v2.56.0 took VV's present(target, scale) (VV Supersampler 1.1.0, VV-authored), so that VV -> TV back-port is closed in code; TV never logged it.
+------------------------------------------------------------
+## 7. Hand-over for Adam and follow-ups
+
+
+1. **What you will see:** plans, elevations and their Layout Editor base images (and PDFs made from them) stop showing SketchUp lines through faces at setbacks under 75 mm - fascia undersides, parapet copings, 30 mm reveals. Lines lying on a face still draw. The 3D view is unchanged. Existing sheets re-render their 2D base images on the next load, so Vale sheets change visibly; PDFs exported earlier keep the old bleed. Worth a look before the next publish (S02b b.10 already warns that VV drawings change after the drawing-system port).
+2. **To check in the app:** open an elevation with a fascia or parapet (e.g. 2026/3047__Doous), compare the on-screen elevation and a sheet viewport using it with how they looked; the lines behind the fascia front should be gone and nothing else should move. Re-run the proof any time at `http://localhost:8000/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-03/harness/Na__W1_03__Harness__.html` (read-only; title reads "W1-03 harness PASS").
+3. **The bias is configurable:** `models.RenderConfig__Linework.RenderConfig__Linework__OrthoDepthBiasMm` (2 mm, TV's value). A line within that distance behind a face still draws, by design.
+4. **VV-only, not in this package:** `71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__ExportLineMaterial__.js:146-157` mirrors the loader's old fixed bias for its export line material. It renders through the 3D view's perspective camera, where nothing changed; if Export Render Layers is ever driven through a drawing (orthographic) camera it needs the same camera-aware bias.
+5. **For the TrueVision lane (records only, DR-36: TV not edited):** TV's Supersampler header logs neither v2.56.0's present(target, scale) nor v2.103.0's clamp (already listed in WP-S02b-10R item 3); TV realign plan row X's "ValeVision port: Pending" can be closed once you are happy with VV.
+6. **For W2-12 (fog on sheets):** the clamp is live on the TARGET ROUTE only (`encodeSrgb`); the fog layer must take that route, as TV's does, to be valid premultiplied output.
+====================================================================================================
+W1-04 headings: 1. Deviation from the package text: the SetOrbitMode seam is not applied (needs the orchestrator's eye) | 2. What changed, exactly | 3. Acceptance items | 4. Gates and tests (VV app root, final state; logs in `execution/scratch/W1-04/`) | 5. Records notes for the W1-99 scribe | 6. Follow-ups
+------------------------------------------------------------
+## 1. Deviation from the package text: the SetOrbitMode seam is not applied (needs the orchestrator's eye)
+
+
+The package lists two things that cannot both hold:
+
+- vv_adaptations: "Na__NavToolbar__SetOrbitMode is the exit" (goal: "VV orbit setter"; R2 B.3.4 row: "W1-04 uses
+  SetOrbitMode as the walk exit"), and
+- acceptance item 3: "Transitions sections of Na__Test__SheetPagingWalkExit__ pass (suite ported whole in W1-36)",
+  with W1-36's own adaptation "Na__Test__SheetPagingWalkExit__ reads 40__System__DrawingViewCore (no seam after W0-02)".
+
+TV's test strips the module's imports and stubs exactly TV's names (SetActiveMode, ToggleWalkMode, ToggleFlyMode). A
+ReturnToOrbit that calls Na__NavToolbar__SetOrbitMode throws `ReferenceError: Na__NavToolbar__SetOrbitMode is not
+defined` there. This was measured, not assumed: the same scratch copy run against VV's pre-port 1.0.0 file (which
+calls SetOrbitMode) crashes on its first Transitions check with exactly that error
+(`scratch/W1-04/test__walkexit_transitions__before.log`, produced by `run_before_check.py` against
+`backup__Na__DrawView__Transitions__.js.before`).
+
+Resolution taken: TV's ReturnToOrbit body is kept verbatim, because in ValeVision it IS the Orbit button's exit:
+VV's SetOrbitMode -> HandleOrbitClick -> index.html's wrappers `Na__UiFeature__WalkMode__ToggleFn('return-to-orbit')`
+/ `Na__UiFeature__FlyMode__ToggleFn('return-to-orbit')` (index.html:2055-2091) -> `Na__UiFeature__ToggleWalkMode(null,
+() => Na__NavToolbar__SetActiveMode('orbit'))` and the fly twin - the same two calls, in the same order, that TV's
+body makes. Proven on ValeVision's own code by `scratch/W1-04/equivalence_check.mjs` (VV's REAL toolbar module wired
+to index.html's REAL wrappers, cut out of index.html, against the REAL ported Transitions): for Walk, Fly and Orbit the
+recorded calls, final modes, toolbar mode and dispatched `na-navigation-mode-changed` events are identical (5/5 PASS,
+`test__equivalence_SetOrbitMode_vs_ReturnToOrbit.log`). It is also marginally more robust (it does not depend on the
+toolbar having been initialised). Result: the file is TV's byte for byte apart from banner, console prefix and PORT
+NOTE; all three acceptance items are satisfiable; W1-36 can port the suite with no seam, as it plans.
+
+If the orchestrator or Adam prefers the planned seam: replace ReturnToOrbit's body with
+`const left = Na__WalkMode__IsActive() || Na__FlyMode__IsActive(); if (left) Na__NavToolbar__SetOrbitMode(); return left;`
+and its three imports with VV's SetOrbitMode import, and W1-36 must then add a SetOrbitMode stub to the test (a seam
+it does not list). Not recommended.
+
+The other two listed adaptations needed no code: "MaxEngine culling" - W0-02 already moved DistanceCulling to TV's path
+(`05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js`, DR-04 / K2 ruling 10), so TV's import line is used
+verbatim; "Initialize kept" - the function is identical in both apps and index.html:2248 still calls it (not edited);
+the PORT NOTE records that VV initialises it (controls disabled during a drawing, FlyTo flies), unlike TV.
+------------------------------------------------------------
+## 5. Records notes for the W1-99 scribe
+
+
+- Release: Transitions 1.1.0 shipped in TV **v2.112.0** (TV devlog v2.112.0, "Opening a drawing really leaves Walk and
+  Fly"). The ledger Module Register row for this file reads "21-Sep 1.1.0 [2.110.0]" because the watermark takes the
+  first release named inside TV's 1.1.0 log text ("...confirmed the v2.110.0 key scopes") - the row should say v2.112.0.
+- Devlog wording: "ported from TrueVision3D v2.112.0 (its Transitions third; NOT confirmed by Adam in TV)".
+- Placeholders to resolve: 3 x {{VVREL:W1-04}} (Transitions PORT NOTE :41; FloorPlan log :64; Elevation log :68).
+------------------------------------------------------------
+## 6. Follow-ups
+
+
+- **F1 (orchestrator, this wave):** W1-32 must land in W1 (it depends on W1-04). If it stops, either add
+  `{ returnToOrbit : true }` to VV LE ModeController :524 in whatever lands instead, or restore W1-04 (below) - otherwise
+  the wave ships "opening a sheet while walking leaves Walk running under the editor" (VV v2.71.1 leaves it).
+- **F2 (orchestrator / plan gap):** TV v2.112.0 also gave the Fly controls 1.0.1: leaving Fly calls
+  `Na__RenderLoop__StopActiveRender('fly-mode')`. VV's `10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js`
+  lacks it (VV's Walk controls have the walk twin), so after one flight VV's render loop keeps drawing every frame,
+  and W1-36's acceptance ("Na__Test__SheetPagingWalkExit__ ... pass on VV") will fail on "Fly the same". No package
+  in wp_canonical.json owns that file. Suggest folding the one-line hunk (import + call in the deactivate branch)
+  into W1-36 or a small follow-up package.
+- **F3 (Adam, decision):** keep the seam-free ReturnToOrbit (recommended, section 1) or restore the planned
+  SetOrbitMode seam.
+- **F4 (Adam, in-app checklist, after W1-32):** (a) walk in 3D, save a scene that restamps sheet viewports - stays in
+  Walk, toolbar on Walk; (b) walk, open a sheet - Walk left, toolbar Orbit, and back on the 3D Model tab B and T
+  behave; (c) walk, open a floor plan from the carousel, then an elevation - Orbit lit each time, and the return
+  flight lands normally; (d) the same three while flying; (e) a project with no drawings, and Layout Mode off.
+
+Restore (if ever needed): copy `scratch/W1-04/backup__Na__DrawView__Transitions__.js.before`,
+`backup__Na__FloorPlan__ModeController__.js.before` and `backup__Na__Elevation__ModeController__.js.before` back over
+the three files (their hashes are in `sha256__before.txt`). Scripts: `port_transitions.py`,
+`patch_mode_controllers.py` (both hash-guarded), `make_test_copies.py`, `run_before_check.py`, `equivalence_check.mjs`,
+`walk_imports.py`.
+TV copies used during the work were deleted from scratch afterwards (they carry TrueVision / NA text); the scripts
+re-read them from the pin.
+====================================================================================================
+W1-05 headings: 1. What was run, in order | 2. Acceptance items | 3. Gates (from the VV app root, on the final state; outputs in `scratch/W1-05/final_*.txt`) | 4. Files changed, one line each (what and why) | 5. Behaviour as landed (for W1-06, W1-07, W1-12, W1-21 and every later save path) | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test (acceptance 1 and 4, browser half)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: the app opens with no console link error and logs "Drawings data loaded". A real Save writes R2 and the repository copy of that project, so it is **Adam's call, not the orchestrator's**: Dev Tools > North Direction > Save -> one green "North direction saved with the drawings."; Floor Plans / Elevations Save -> one line each; `project.json` then carries `LayoutEditor__DrawingsData__SavedIso` and a copy of the previous file appears under `%LOCALAPPDATA%\ValeGardenHouses\ValeVision\ProjectDataBackups`. Two windows: save in A, then save in B -> B is refused with the "Not saved: ..." toast before anything is written.
+2. **Interim, until W1-21 lands (same wave)**: Save Sheets (toolbar, Ctrl+S, Dev menu) and the Layout Mode switch save without a success toast - the save lands, the Save button's attention mark clears, and errors still show. TV's SheetModel Save (W1-21) passes a report and toasts "Sheets saved to R2 and locally." / "... but the local copy was not written: ...". If W1-21 does not land in this wave, this is the one visible regression to know about.
+3. **R2 judging is off (DR-30)**: switch it on after deploying Worker 1.6.0 by setting `Na__DrawData__R2_JUDGING = true` in `40__System__DrawingViewCore/Na__DrawView__ProjectData__.js` (or ask for a config key for it).
+4. **One-time effects on existing projects**: the first save of each project stamps `SavedIso` (expected); the block description already written into a project keeps its old text (with the sentence about the cloud sync) - new blocks get the corrected one.
+5. **SHARED SERVICE WORKER**: bump needed at deploy (the W0/W1 deploy bump already required). W6-02 should add `02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js` to the precache list - W0-12's follow-up 4 already asks for it; since this package it is loaded on every project, not only with the editor.
+6. **Scribe placeholders `{{VVREL:W1-05}}`** (3): ProjectData `:47` (PORT NOTE), 41 SceneData `:47` (log 1.2.0), North `:49` (PORT NOTE).
+7. **TrueVision releases named, not confirmed by you in TV** (DR-01 (c)): v2.39.0, v2.86.0, v2.145.0, v2.146.0; v2.116.0 confirmed only in part (per the W0-99 devlog). All ported in dependency order; nothing held (no gesture change).
+8. **Left as found, for the owner of the sync fix (W0-07)**: 41 SceneData's DESCRIPTION still says the cloud sync never writes `CrossSection__SceneData` (S12 b.9 item 6) - true only once the W0-07 sync fix is applied.
+9. **Back-port offers (DR-42 default: none happen)**: R2 judging (TV's v2.146.0 log lists R2 as not judged); the corrected block description wording is VV's own and needs no back-port.
+====================================================================================================
+W1-06 headings: 1. What was run, in order | 2. Acceptance items | 3. Gates (from the VV app root, final state; outputs in `scratch/W1-06/final*_*.txt`) | 4. Files changed, one line each (what and why) | 5. Behaviour as landed (for W1-07, W1-10, W2-04, W2-05 and the scribe) | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 5. Behaviour as landed (for W1-07, W1-10, W2-04, W2-05 and the scribe)
+
+
+- **Nothing changes on screen yet** except dialogs' new abilities, which no current caller uses: the Floor Plans and Elevations editors are still 1.2.0 and import only Wrap / SetOpenId / CloseIfOpen and RenameFloorPlan / RenameElevation. The draft guard, the shell, DrawingUsage and DraftMaths land inert (not in the module graph) until W2-04 / W2-05 take TV's 2.x editors, which import them.
+- **DraftGuard registers at import time** (W1-05 is in, so `Na__DrawData__RegisterPayloadGuard` exists). Proved with the real ProjectData save: while a draft is changed, Save Sheets / north / the register write the drawing as last updated to R2 AND the local copy; `SaveActive` writes it as it stands; a project load ends the draft and folds the rows. W2-04 / W2-05 must import it from the editors (TV's design) - and VV's ThumbnailBake save adapter should call `Na__DrawDraft__SaveBlock` (S02a b2).
+- **Modal 1.2.0** is ready for W1-07 (AutoSave 1.5.0's three-answer question). Existing callers get the same DOM and answers as 1.0.0.
+- **RenameDrawing**: rename from a panel or a card behaves as before (the loader prepares the stamper before anything is written). The new `StageFloorPlan` / `StageElevation` stage the card, binding key and fingerprints with an undo, for the 2.x Update flow.
+- **For W1-10**: once `Na__Elevation__AutoNameText__.js` lands, `node 80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs` should print ALL CHECKS PASSED (50); W1-10's agent can run it as its own regression.
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Orchestrator: re-run the ported test after W1-10 lands** - `node 80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs` from the VV root; expected 50/50, exit 0 (proved in a temporary tree with TV's AutoNameText; W2-04 re-runs it too). Until then it is the one red node test, by plan ordering (S02a's verifier asked for AutoNameText in this package; K3 left it in W1-10 without a dependency edge).
+2. **Smoke test** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: Dev Tools > Floor Plans and Elevations - rows fold and open exactly as before (one open across both panels, a second click folds); rename a drawing from its panel and from its card - same toast as before; Presentation Scenes dialogs (overwrite camera, Clear All Scenes, Re-render All) look and answer as before.
+3. **Manual test page** (Adam's eyes): `http://localhost:8000/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-06/modal_manual_check.html` - the green Update dialog (details list, amber footnote, green Update), the red one, Delete, the three-button dialog, and the row shell parts.
+4. **TrueVision releases named, not confirmed by you in TV** (DR-01 (c)): v2.86.0 (pending sign-off) and v2.146.0 (not tried in the app). All ported in dependency order; nothing held (no gesture change).
+5. **SHARED SERVICE WORKER**: bump needed at deploy (the W0/W1 bump already required); W6-02 to precache the 4 new 40 modules.
+6. **Scribe placeholders `{{VVREL:W1-06}}`** (9): DraftMaths `:43`, DrawingUsage `:38`, DevRowShell `:40`, DraftGuard `:57`, RowAccordion `:48`, RenameDrawing `:57`, DrawView Dev sheet `:22`, Modal `:47`, the test `:36` (all in PORT NOTEs).
+7. **TV-side record notes for WT-08 (DR-36 default: not done)**: TV's DrawView Dev sheet's Folded Drawing Row comment names `42__System__DrawingViewCore` (TV's own folder is 40; the same name in TV's RowAccordion PORT NOTE is provenance and stays, K2 section 13); TV's RowAccordion "TrueVision only" comments are stale now both apps carry the code; TV's Modal INTEGRATION lists only SceneEditor and BatchOps (DevRowShell, DraftGuard and AutoSave consume it too). Back-port offer (DR-42 default: none): RenameDrawing's "prepare the stamper before anything is written" order.
+====================================================================================================
+W1-08 headings: 1. What was run, in order | 2. Acceptance items | 3. Gates (from the VV app root, on the final state; outputs in `scratch/W1-08/final*_*.txt`) | 4. Files changed, one line each (what and why) | 5. Behaviour as landed (for W2-04, W2-10, W2-11/W2-16, W3-15 and every later floor plan caller) | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test (orchestrator):** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous` the app opens with no console link error; Dev Tools > Floor Plans opens, a plan previews from the carousel and its style toggles still work. Adding and deleting a plan and Save Floor Plans write project data (R2 and the repository copy), so those are **Adam's call**: a saved plan sits in `LayoutEditor__DrawingsData__FloorPlans` (never `PresentationMode__SavedCameraScenes__FloorPlans`). No Storey dropdown appears yet (W2-04).
+2. **SHARED SERVICE WORKER:** bump needed at deploy (the W0/W1 deploy bump already required). W6-02 should add `42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js` (loaded on every project from now on) and `Na__FloorPlan__DevMenu__StoreyRow__.js` to the precache list.
+3. **For W2-04 (Floor Plans Dev menu rebuild):** (a) TV's convention is in force - see section 5; (b) VV's D33 style rows build from GetStyles, which writes the style defaults into a record that lacks them; under TV 1.1.0 the normaliser no longer writes them on every read, so a plan created from now on gains `FloorPlan__Styles` the first time its style row is built or its styles are applied - take the draft guard's snapshot after the rows are built, or have the draft maths ignore default-valued Styles, or the first open of a new plan's row may read as an edit; (c) the AppConfig and the stylesheet are hot (W1-08 -> W2-04): W2-04 adds TV 2.0.0's labels and keeps the six storey labels and VV's own.
+4. **Left as found (not this package's seam):** `FloorPlanViews__Description` in the AppConfig still says the drawings block is one "which the SketchUp cloud sync never writes" - true only once the W0-07 sync fix is applied (the S12 (c) finding W1-05 corrected in ProjectData's block description). For the W0-07 owner or a records pass.
+5. **TrueVision release named, not confirmed by you in TV** (DR-01 (c)): v2.87.0 (storey level). Ported in dependency order; nothing held.
+6. **Scribe placeholders `{{VVREL:W1-08}}`** (6, all in PORT NOTEs): ConfigState `:33`, StoreyRow `:47`, ProjectJson__Data__ `:46`, StoreyLevel `:56`, Styles__DevMenu `:22`, the test `:33`.
+7. **Foreign gate note (not this package):** `80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs` (W1-06) fails until W1-10 lands `45__System__ElevationViews/Na__Elevation__AutoNameText__.js`.
+8. **Back-port offers (DR-42 default: none happen):** the trimmed exclusion tokens (TV stores the list as given; its StyleRows has no caller, so it matters only once TV takes the style rows, WP-S11-09).

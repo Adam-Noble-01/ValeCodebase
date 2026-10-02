@@ -1,0 +1,76 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - PROJECTOR
++// VALEVISION3D - PROJECTED LINEWORK - PROJECTOR
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__Projector__.js
+@@ -38,12 +38,16 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim, bar 1.2.0 to 1.4.0
+-// - Divergences   : Console prefix, header and folder numbers; the 3D-matching
+-//                   rules (1.2.0) and the door pose read (1.3.0 and 1.4.0), authored here first.
+-// - Back-port     : 1.2.0 to 1.4.0 PENDING to ValeVision3D, on Adam's sign-off.
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
++//                   Designer's VghLantern__ProjectedEdges__Projector__.mjs of 07-Aug-2026;
++//                   ValeVision's own 1.1.0 and 1.1.1 followed, 1.1.1 being TrueVision's 1.4.1);
++//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
++// - Source version: 1.5.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+@@ -187,7 +191,7 @@
+     function Na__PlProjector__NoteTaggedCpu(requested) {
+         if (Na__PlProjector__TaggedCpuNoted) return;
+         Na__PlProjector__TaggedCpuNoted = true;
+-        console.info('[TrueVision3D ProjectedLinework] Kept linework renders on the CPU backend (configured: ' + requested + '). '
++        console.info('[ValeVision3D ProjectedLinework] Kept linework renders on the CPU backend (configured: ' + requested + '). '
+             + 'Only the CPU backend tags each line with its model category, which the Layout Editor edge styles need. '
+             + 'WebGPU and legacy remain available to the Dev menu Run Diff.');
+     }
+@@ -251,14 +255,14 @@
+         // EXPLICIT WEBGPU | Honoured on the views it can actually draw.
+         if (requested === Na__PlProjector__BACKEND_WEBGPU) {
+             if (hasCut) {
+-                console.info('[TrueVision3D ProjectedLinework] WebGPU was asked for, but this view has a drawing cut '
++                console.info('[ValeVision3D ProjectedLinework] WebGPU was asked for, but this view has a drawing cut '
+                     + 'and the GPU backend cannot apply one. Using the CPU backend so the drawing is right.');
+                 return Na__PlProjector__BACKEND_CPU;
+             }
+             if (capable) return Na__PlProjector__BACKEND_WEBGPU;
+ 
+             const probe = Na__ProjectedLinework__WebGpuBackend__GetProbe();
+-            console.info('[TrueVision3D ProjectedLinework] WebGPU was asked for but is not usable here ('
++            console.info('[ValeVision3D ProjectedLinework] WebGPU was asked for but is not usable here ('
+                 + (probe ? probe.Reason : 'the hardware probe has not finished yet') + '); using the CPU backend.');
+             return Na__PlProjector__BACKEND_CPU;
+         }
+@@ -436,7 +440,7 @@
+         if (collected.Instances.length > options.IntersectionMaxInstances) {
+             // A house-scale model: the pairwise search would run for minutes.
+             // The junction lines come from the authored linework instead.
+-            console.info('[TrueVision3D ProjectedLinework] Intersection edges skipped: ' + collected.Instances.length +
++            console.info('[ValeVision3D ProjectedLinework] Intersection edges skipped: ' + collected.Instances.length +
+                          ' instances, over the ' + options.IntersectionMaxInstances + ' ceiling (ProjectedLinework__Projection__IntersectionMaxInstances).');
+             collected.Report.IntersectionSkipped = 'instances';
+             collected.HasIntersections = true;
+@@ -469,7 +473,7 @@
+                 return Na__PlProjector__VisibleOnly(result);
+             } catch (gpuError) {
+                 if (gpuError && gpuError.name === 'AbortError') throw gpuError;
+-                console.warn('[TrueVision3D ProjectedLinework] WebGPU projection failed, falling back to the CPU backend:', gpuError);
++                console.warn('[ValeVision3D ProjectedLinework] WebGPU projection failed, falling back to the CPU backend:', gpuError);
+             }
+         }
+ 

@@ -1,0 +1,35 @@
+﻿diff --git a/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-17/tv/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-17/stage/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+index 5c1c0441..6ede0301 100644
+--- a/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-17/tv/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
++++ b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-17/stage/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - HATCH PATTERNS
++// VALEVISION3D - LAYOUT EDITOR - HATCH PATTERNS
+@@ -35,0 +36,12 @@
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
++// - Source version: 1.5.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at HEAD b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-17}}
++// - Parity        : verbatim (the code is TrueVision 1.5.0's; the banner, the five console prefixes and this note
++//                   are the only differences)
++// - Divergences   :
++//   - Banner and console prefixes read ValeVision3D.
++// - Back-port     : none.
++//
++// -----------------------------------------------------------------------------
++//
+@@ -269 +281 @@
+-                console.warn('[TrueVision3D] Hatch pattern library not found; the Patterns panel will be empty.');
++                console.warn('[ValeVision3D] Hatch pattern library not found; the Patterns panel will be empty.');
+@@ -289 +301 @@
+-                            console.warn(`[TrueVision3D] Hatch pattern ${row.Pattern__File} could not be read; skipped.`);
++                            console.warn(`[ValeVision3D] Hatch pattern ${row.Pattern__File} could not be read; skipped.`);
+@@ -301 +313 @@
+-            console.log(`[TrueVision3D] Hatch patterns: ${total} pattern(s) in ${Na__LeHatch__Packs.length} pack(s).`);
++            console.log(`[ValeVision3D] Hatch patterns: ${total} pattern(s) in ${Na__LeHatch__Packs.length} pack(s).`);
+@@ -700 +712 @@
+-                    console.warn('[TrueVision3D LayoutEditor] Hatch glyph uses an unsupported path command (' + command + ') - it will not print.');
++                    console.warn('[ValeVision3D LayoutEditor] Hatch glyph uses an unsupported path command (' + command + ') - it will not print.');
+@@ -906 +918 @@
+-                console.warn('[TrueVision3D LayoutEditor] A hatched area needs ' + (cols * rows) + ' tiles, over the ' + Na__LeHatch__TILE_CAP + ' cap - it is left unhatched in the PDF.');
++                console.warn('[ValeVision3D LayoutEditor] A hatched area needs ' + (cols * rows) + ' tiles, over the ' + Na__LeHatch__TILE_CAP + ' cap - it is left unhatched in the PDF.');

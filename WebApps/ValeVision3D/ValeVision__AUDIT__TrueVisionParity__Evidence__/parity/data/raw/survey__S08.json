@@ -1,0 +1,1609 @@
+{
+ "slice_id": "S08",
+ "report_path": "C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S08__Publishing_Sharing_WebViewer_Pdf.md",
+ "summary": "S08 (PDF export, publishing, sharing, web viewer, published documents and schema). VV is a full generation behind. TV v2.155-v2.172 split drawing output in two. A publisher (LE/65, 7 files) bakes each drawing once on the authoring machine into tiered WebP rasters, linework SVGs, element JSON and a baked PDF. A reader (top-level 52, 11 files) only shows those files, and a shared contract (top-level 53, 4 files, schema 1) links the two. Share links (LE/66, 7 files) build on top. None of this exists in VV. VV's web viewer (1.1.0) still calls SetSheet and renders every viewport on the reader's phone (ModeController:539/779/785), and its dock PDF button runs the full exporter there: the exact iPhone/iPad crash TV v2.155 fixed. PdfExporter is TV 1.12.0 vs VV 1.2.0. Only the 1.11.0 'FAST' packing (the Chrome/Android garbling fix) and the publish options are independent; the rest depends on TV-only systems from other slices (PaintOrder, ShapeRings, SheetImages, rotation, fog, site plans, ModelSource). VV prints non-embedded Helvetica (no PdfFonts), contrary to its own D14 (Open Sans) and to its screen face. jsPDF sits in the legacy 35 folder (byte-identical to TV's vendored 4.1.0). Transport (DIV-4): VV must publish into VaApps/Projects/{folderId}/06__Layout__PublishedDocuments through new key-authenticated routes on whitecardopedia-editor-api: raw file, list and document-scoped delete, with no global build-manifest bump. It also needs a Flask blueprint mirroring ProjectVision__TrueVisionPublished__Api__.py and a 03__AppUtils client. Critical blocker found: the Whitecardopedia sync's image purge lists the project prefix with no delimiter. It would delete every published picture (and likely thumbnails and snapshots) on the next sync. Other VV seams: reader URLs on localhost (VV's ResolveAssetUrl falls back to GitHub Pages, and Flask returns index.html with 200 for missing files); ProjectLoader facades; DocumentId; the loader's first-drawing wait; Share__Open started lazily by the loader; the na-app-scene-ready event. Twelve decisions are listed, the main ones fonts, DocumentId, publish entry point (no Drawing Register in VV), link form (no s/ resolver needed: ?project=<code> resolves through VV's master index), and storage location.",
+ "findings": [
+  {
+   "id": "S08-F01",
+   "category": "missing_module",
+   "title": "VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent",
+   "detail": "TV v2.155 split the authoring renderer from a reader that computes nothing (52 reader, 53 schema, 65 publisher) to stop iPhone, iPad and Pixel crashes. VV's viewer (v2.58.0, ported from TV v2.65) still calls SetSheet on Enter and on loaded/active sheet changes. Every viewport is therefore rendered on the reader's device, through VV's composer (DIV-1). The dock PDF button runs the whole exporter on the phone. None of 52, 53 or 65 exists in VV.",
+   "recommendation": "Port the published system as one programme (WP-S08-05..10): schema, reader, VV transport, publisher, then switch the viewer to published drawings. This is the highest-value alignment in the slice: a parity gap and a reliability fix at once.",
+   "action": "port_adapted",
+   "severity": "critical",
+   "evidence": "VVM/LE/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:539,779,785; VVM/LE/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:83,289-296; TV ModeController:747-754,1124-1137; TV DEVLOG v2.155 lines 1266-1363",
+   "tv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/",
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "v2.155.0-v2.166.0",
+   "vv_version": "v2.58.0 viewer",
+   "depends_on": [
+    "S08-F02",
+    "S08-F03",
+    "S08-F04",
+    "S08-F05",
+    "S08-F08",
+    "S08-F09"
+   ],
+   "est_lines": 11000,
+   "vv_adaptation": "Transport, URL resolution, DocumentId, identity strings and loader seams as itemised in the other findings"
+  },
+  {
+   "id": "S08-F02",
+   "category": "transport",
+   "title": "Whitecardopedia project sync would delete every published picture (and likely thumbnails/snapshots) from R2",
+   "detail": "na_purge_stale_r2_images lists VaApps/Projects/{folderId}/ with no Delimiter. That makes it recursive, and it is also unpaginated (first 1,000 keys). It deletes every .png/.jpg/.jpeg/.webp whose bare name is not a top-level local image (iterdir), and it runs on every sync. Published tiers, print PNGs and fog masks would vanish, leaving manifests that name missing files. By the same reading it threatens PresentationMode/Thumbnails and LayoutEditor/Snapshots. Read, not run; the bucket was not listed.",
+   "recommendation": "Before VV's first R2 publish: purge top-level keys only (Delimiter='/') and paginate. Optionally also skip 06__Layout__PublishedDocuments/, LayoutEditor/, PresentationMode/ and 00__*. This is a shared Vale pipeline, so Adam approves (D-S08-09).",
+   "action": "build_vv_transport",
+   "severity": "critical",
+   "evidence": "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:645-656 (keep-set from iterdir), :659-680 (purge; list_objects_v2 Prefix only at :667), called :926 and :959; R2_BASE_PREFIX :101",
+   "tv_paths": [],
+   "vv_paths": [
+    "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py"
+   ],
+   "depends_on": [],
+   "est_lines": 30,
+   "vv_adaptation": "VV-only pipeline; TV avoids this by skipping 00__ folders and never sweeping published roots"
+  },
+  {
+   "id": "S08-F03",
+   "category": "missing_module",
+   "title": "53__Data__Layout__PublishedSchema (the shared publish/read contract) is absent",
+   "detail": "4 files: JSON (189 lines), Paths 1.1.0 (678), Version 1.0.0 (172) and README (99). They hold every folder and file name, the element kinds, the tier table (Fit 2, Read 6, Detail 12, Print 20 px/mm), the version gate (schema 1; refuses newer and older with a human reason), the Stamp and ShareLinksPath (v2.166, additive). The readable schema is TV's AA00 example folder in the project portal. Top-level number 53 is free in VV.",
+   "recommendation": "Port at top level 53. Keep keys, names, tiers and Version__Schema=1 verbatim, so both apps' publishers and readers stay compatible and one test shape serves both. Change only SchemaRef, MinReader, ByApp and the reason strings, plus the comments that name 30__TrueVision__AppContent.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json (Version__Schema 1, MinReader v2.142.0); Paths__.js:262 'relative to a project's 30__TrueVision__AppContent'; Version__.js Stamp Publish__ByApp 'TrueVision3D Layout Editor'",
+   "tv_paths": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/"
+   ],
+   "tv_version": "Paths 1.1.0, Version 1.0.0, schema 1",
+   "depends_on": [
+    "S08-F29"
+   ],
+   "est_lines": 1140,
+   "vv_adaptation": "Meta__SchemaRef -> VV example folder; Version__MinReader -> the VV release that ships it (informational only); Publish__ByApp and reasons say ValeVision3D; comments name the VV project folder as the root"
+  },
+  {
+   "id": "S08-F04",
+   "category": "missing_module",
+   "title": "52__System__Layout__PublishedDocuments (the reader) is absent",
+   "detail": "11 files, 3,998 lines: Document (loads the index, then the manifest, sheet and element files, and builds one SVG string with progress events), Urls (R2 first on the live site, repository first on localhost, a 404 never retried), Viewports (tier ladder, 128 MB decoded budget, no decode retry), Sheet/Paint/Elements/Unpublished (mark emitter, grey mask), LoadingScreen (v2.156), Config, CSS and README. It imports only 53 and ProjectLoader, and its test proves no renderer is reachable.",
+   "recommendation": "Port at top level 52. Verbatim except Na__PubDoc__Urls__ (VV project resolution; on localhost the Flask copy first) and Na__PubDoc__Config__.json (Sheet__FontFamily = the VV authoring face; prefixes). Leave Na__PubDoc__Styles__Main__.css unlinked, as TV does.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/52__.../README__PublishedDocuments__.md; Na__PubDoc__Urls__.js:142-207; Na__PubDoc__Config__.json PubDoc__Sheet__Config.Sheet__FontFamily (must match the authoring side)",
+   "tv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/"
+   ],
+   "tv_version": "1.0.0 (v2.155.0; LoadingScreen v2.156.0)",
+   "depends_on": [
+    "S08-F03",
+    "S08-F23",
+    "S08-F24",
+    "S08-F13"
+   ],
+   "est_lines": 4000,
+   "vv_adaptation": "Urls.FromPage/For seams; Config Sheet__FontFamily per D-S08-03; console prefixes; README paths"
+  },
+  {
+   "id": "S08-F05",
+   "category": "missing_module",
+   "title": "Publisher orchestration (Publish__ 1.1.0 + Publish__Config) is absent",
+   "detail": "Publish__.js (707 lines) does the whole publish: per-sheet status; a new revision archived to a zip (never overwritten); sheet and element files; per-viewport bake; the baked PDF (strict:false, FAST); the manifest last; a document-scoped prune. With R2 ticked it uploads, lists back and checks sizes, uploads the manifest, then prunes. Orphans are retired only on a full publish. The unpublished file and share record go just before the index, and the index goes last. Config: PushToR2Default false, BakePdf, RetireOrphans, SpecLoadTimeoutMs, labels.",
+   "recommendation": "Port into LE/65__Feature__DocumentPublishing (the number is free in VV) with the VV seams listed. Treat it as authoring-only, never built for a reader.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/LE/65__.../Na__LayoutEditor__Publish__.js:249-431 (PublishOne), 572-681 (PublishSheets), 635-670 (index last), 99 (appVersion floor), 257 (register wording)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/"
+   ],
+   "tv_version": "1.1.0 (v2.155.0, share record v2.166.0)",
+   "depends_on": [
+    "S08-F03",
+    "S08-F07",
+    "S08-F11",
+    "S08-F12",
+    "S08-F19",
+    "S08-F33"
+   ],
+   "est_lines": 780,
+   "vv_adaptation": "appVersion floor and Behaviour__AppVersion = VV release; console prefix; Project__Folder = VV folderId; Project__ContentFolder = 06__Layout__PublishedDocuments; failure text names the Sheet panel's Drawing No."
+  },
+  {
+   "id": "S08-F06",
+   "category": "missing_module",
+   "title": "Bakers Publish__Raster, Publish__Sheet and Publish__Viewports are absent and import TV-only exports",
+   "detail": "Raster 1.0.0 cuts one render into four tiers by halvings, makes the fog mask and SHA-256 names, and refuses a browser that writes PNG for WebP. Sheet 1.0.0 writes element files with resolved keys and per-layer editor SVG, plus portable images. Viewports 1.1.0 writes the picture, linework SVG, fog masks and holed site faces (v2.160). Sheet and Viewports import PaintOrder, BuildLayerPrimitives, BuildViewportFrame, ShapeRings, FloorAreas, RenderFogForExport, SitePlanDrawing and IsSitePlanViewport. VV has none of these, so a verbatim copy fails to link.",
+   "recommendation": "Port verbatim after the owning slices deliver those exports (preferred). Otherwise stub only fog and site plans (D-S08-11). Publishing must run in Chrome or Edge.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TVM/LE/65__.../Publish__Sheet__.js:58-71 imports; Publish__Viewports__.js:65-86 imports; Publish__Raster__.js:151-167 (WebP check)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/"
+   ],
+   "tv_version": "Raster 1.0.0, Sheet 1.0.0, Viewports 1.1.0",
+   "depends_on": [
+    "S08-F33",
+    "S08-F03"
+   ],
+   "est_lines": 1280,
+   "vv_adaptation": "Header only once dependencies exist"
+  },
+  {
+   "id": "S08-F07",
+   "category": "transport",
+   "title": "Publish__Transport must be re-pointed at VV's Flask blueprint and VV's worker",
+   "detail": "TV Transport 1.0.0 posts to /api/truevision/published/* on the 8090 server and reaches R2 through Na__CfApi__UploadPublished, ListPublished and DeletePublished (the generic /r2/*). VV has neither. TV's R2Ready() is synchronous and is called without await (Publish__.js:585 and the share manifest), whereas VV's worker config arrives asynchronously from Flask GET /api/editor-config.",
+   "recommendation": "Port with identical exports: API constant /api/valevision/published, R2 calls through the new VV client util. Prefetch the worker config in LocalReady so R2Ready answers synchronously from the cache. The restart hint names WCP/server.py.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/LE/65__.../Publish__Transport__.js:43-46,55,98-108,202-206; TV Publish__.js:585; VVM/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js:96,233",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S08-F08",
+    "S08-F09",
+    "S08-F21",
+    "S08-F24"
+   ],
+   "est_lines": 290,
+   "vv_adaptation": "Local API base and R2 client swapped; sync R2Ready from a cached config"
+  },
+  {
+   "id": "S08-F08",
+   "category": "transport",
+   "title": "VV worker needs published-document routes (file, list, scoped delete) in VV's own storage",
+   "detail": "whitecardopedia-editor-api has only semantic routes. Its asset route takes JSON base64 (25 MB cap), is guarded to Thumbnails/Linework/Snapshots, sets no-cache and bumps the global build manifest. Publishing needs raw files up to tens of MB, a list with sizes, a scoped delete and per-class Cache-Control. Key: VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/<rel>. Routes: POST .../published/file?path= (raw, about 95 MB), POST .../published/list {document,cursor} and POST .../published/delete {document,paths}.",
+   "recommendation": "New handler CloudflareHandler__PublishedDocuments__.js, with routes in index.js before the greedy save route, using the existing X-Editor-Api-Key and CORS helper (POST avoids a CORS change). Enforce the document scope server-side. Adam deploys with wrangler.",
+   "action": "build_vv_transport",
+   "severity": "high",
+   "evidence": "WCP/CloudflareWorker/src/index.js:112-116,148,160-214; handlers/CloudflareHandler__ProjectAsset__.js:51-52,140-148; CloudflareHelper__Cors__.js:72 (GET, POST, OPTIONS)",
+   "tv_paths": [
+    "80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js",
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js"
+   ],
+   "vv_paths": [
+    "WCP/CloudflareWorker/src/index.js",
+    "WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js"
+   ],
+   "tv_version": "worker 1.1.0 (/r2/upload, /r2/list, /r2/delete)",
+   "vv_version": "worker 1.5.0",
+   "depends_on": [
+    "S08-F29",
+    "S08-F10"
+   ],
+   "est_lines": 260,
+   "vv_adaptation": "Semantic, authenticated routes instead of TV's generic open /r2/*; content type from the extension; immutable for __<10 hex> names, else max-age=60 must-revalidate"
+  },
+  {
+   "id": "S08-F09",
+   "category": "transport",
+   "title": "VV Flask mirror for local filing (list, read, write, archive, prune)",
+   "detail": "TV's local filing is ProjectVision__TrueVisionPublished__Api__.py (448 lines): segment, project and extension guards, byte sniffing, atomic temp-then-rename writes, archive zips that are never overwritten, document-scoped prune, 2-digit year, 256 MB cap. VV's Flask registers only the scrapbook blueprint. server.py get_project_path joins ids containing '/' with no inside-the-tree check.",
+   "recommendation": "New WCP/Server__ValeVisionPublished__Api__.py, a port of TV's: /api/valevision/published/{list,file,archive,prune} with the same query shape, YEAR ^\\d{4}$, root Projects/{year}/{folder}/06__Layout__PublishedDocuments and its own guarded resolver. Register it in server.py and restart.",
+   "action": "build_vv_transport",
+   "severity": "high",
+   "evidence": "NAAPPS/ProjectVision__TrueVisionPublished__Api__.py:39-45 routes, 86-93 patterns, 350-446 archive/prune; WCP/server.py:91-97 (blueprint), 128-160 (get_project_path)",
+   "tv_paths": [
+    "NAAPPS/ProjectVision__TrueVisionPublished__Api__.py"
+   ],
+   "vv_paths": [
+    "WCP/Server__ValeVisionPublished__Api__.py",
+    "WCP/server.py"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S08-F29"
+   ],
+   "est_lines": 460,
+   "vv_adaptation": "Route prefix /api/valevision/published; 4-digit year; no content sub-folder; VV project folder pattern"
+  },
+  {
+   "id": "S08-F10",
+   "category": "transport",
+   "title": "A published write must never bump VV's global build manifest",
+   "detail": "The ProjectAsset and DrawingNotes handlers call na_write_build_manifest, which rewrites the global VaApps/Index/Na__BuildVersion__Manifest__.json. ProjectLoader appends ?v=<buildVersion> to every project.json and GLB URL. Each bump therefore makes every Vale client re-download its models, across all projects. Published files are content-hashed or short-lived JSON and need no bump.",
+   "recommendation": "The published handler must not call na_write_build_manifest. Set Cache-Control per file class instead: immutable for hashed names, 60 s must-revalidate for the index, manifests and element files.",
+   "action": "build_vv_transport",
+   "severity": "high",
+   "evidence": "WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectEditor__.js:59,160-171; CloudflareHandler__ProjectAsset__.js:148; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:251-254,407-408,497-519",
+   "tv_paths": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js"
+   ],
+   "vv_paths": [
+    "WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 10,
+   "vv_adaptation": "TV policy: ApiClient 1001-1007 (immutable vs max-age=60)"
+  },
+  {
+   "id": "S08-F11",
+   "category": "data_schema",
+   "title": "VV has no document id, yet it names every published folder, archive and share fallback",
+   "detail": "TV's Na__LeModel__GetDocumentId returns the stored Sheet__Fields__DocumentId, else project code + phase + number (SheetRecords 1604-1608). Published folders, archive zips, manifests, index rows, the WebViewer and the Share fallback all use it. VV has only the Drawing No. (stored, else '<code>-<order>'), no phase and no register. The PDF exporter already diverges here (VV fields.DrawingNumber vs TV fields.DocumentId).",
+   "recommendation": "Decide before the first publish (D-S08-06). Interim: a VV Na__LeModel__GetDocumentId that returns the sanitised stored Drawing No., with the existing default. Move to TV's composition only together with the register/phase port.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "TVM/LE/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:1604-1608; VVM/LE/07__.../SheetRecords__.js:730-738; VVM/LE/60__.../PdfExporter__.js:248 vs TV :477",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 25,
+   "vv_adaptation": "Adapter returning the drawing number; must pass the schema segment regex"
+  },
+  {
+   "id": "S08-F12",
+   "category": "drift",
+   "title": "PdfExporter TV 1.12.0 vs VV 1.2.0",
+   "detail": "VV lacks: 1.0.3 design phase (v2.32), 1.2/1.12 site plans (v2.49, v2.160), 1.4 Open Sans, 1.6 fog (v2.94), 1.7 Layers-list paint order with per-viewport frames (v2.106), 1.8 sheet pictures (v2.116), 1.9 turned viewports (v2.138), 1.10 overspill regions (v2.143), 1.11 FAST packing and options (v2.155), the LoadLibrary export and returnPromise save. VV's header log stops at 1.2.0, though it carries TV 1.1.0, 1.3.0 and 1.5.0 behaviour.",
+   "recommendation": "Two steps. Now: the independent 1.11.0 parts (WP-S08-02). Later: port_whole_reapply_vv once PaintOrder, MarkupBridge 1.20, SheetChrome 1.14, ShapeRings, Hatch, SheetImages, ViewportRotation, fog, site plans and ModelSource land (WP-S08-14).",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "drift_all: 585 vs 339 lines, 364 diff; TV PdfExporter__.js:44-130 DEVELOPMENT LOG, :386-399 AddPicture, :495-541 BuildDocument; VV :38-58, :266-297",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "tv_version": "1.12.0",
+   "vv_version": "1.2.0",
+   "depends_on": [
+    "S08-F13",
+    "S08-F33",
+    "S08-F19"
+   ],
+   "est_lines": 360,
+   "vv_adaptation": "Console prefix; subject 'ValeVision3D sheet'; 42__System__DrawingViewCore path; filename code = fields.DrawingNumber until D-S08-06"
+  },
+  {
+   "id": "S08-F13",
+   "category": "missing_module",
+   "title": "PdfFonts absent: VV prints non-embedded Helvetica (deliberate divergence to revisit)",
+   "detail": "Ledger row 1169 calls this deliberate. But VV D14 says Open Sans 300/400/600; VV's UI and annotation face is Open Sans; title block cells were re-measured in Helvetica; and a non-embedded face is substituted by each reader (TV v2.69: 'Same file, three faces'). The published reader's Sheet__FontFamily must equal the authoring face. No Vale typeface files exist in the repositories searched.",
+   "recommendation": "D-S08-03 option (a): port PdfFonts and embed Open Sans from a VV-owned copy. Make the sheet face Open Sans-first, re-measure the title block cells, and wire SheetChrome measuring, SpecPdf and the exporter (WP-S08-03). A Vale face needs font files and a licence first.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "VV ledger:121,1169; VV PLAN:62 (D14); VVM/LE/10__.../SheetChrome__.js:19,130,151-185; VV AppConfig Style FontFamily 'Helvetica, Arial, ...'; TV DEVLOG v2.69 9676-9775",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js"
+   ],
+   "tv_version": "PdfFonts 1.0.0 (14-Sep-2026)",
+   "depends_on": [
+    "S08-F20"
+   ],
+   "est_lines": 420,
+   "vv_adaptation": "Font paths to a VV-owned TTF location (not NA's na-apps CommonFonts); console prefix; VV title block fixture re-measured"
+  },
+  {
+   "id": "S08-F14",
+   "category": "drift",
+   "title": "WebViewer 1.1.0 vs 1.2.0, plus the unlogged v2.155/v2.156 published-reader integration",
+   "detail": "VV lacks: ShowPublished, EnsureIndex, WatchZoom (tier swap), Release and the late-show token guard; the PDF button opening the baked PDF ('This drawing has no published PDF yet.'); the PubLoad cover calls; Share in the dock (1.2.0); the register document. TV's header logs only 1.0.0-1.2.0 (the published changes went in unversioned), and TV imports IsSitePlanSheet without using it.",
+   "recommendation": "port_whole_reapply_vv from TV 1.2.0, keeping VV's Documents() (no site-plan split; no register until ported) and dropping the dead import. Bump VV to 1.2.0 with a full log.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "drift_all 706 vs 496, 254 diff; TV WebViewer__.js:84-111 imports, 323-359 Pdf/Share, 492-605 published path; VV :83,:289-296,:397-403",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S08-F04",
+    "S08-F15",
+    "S08-F25",
+    "S08-F16"
+   ],
+   "est_lines": 260,
+   "vv_adaptation": "VV Documents(); no register; no IsSitePlanSheet; console prefix"
+  },
+  {
+   "id": "S08-F15",
+   "category": "wiring",
+   "title": "ModeController must never render a sheet in the viewer",
+   "detail": "VV's Enter (:539) and OnSheetsChanged (:779 loaded, :785 active) call SetSheet in viewer mode. TV 1.30.0 guards both. On the second path 'a phone was still rendering every viewport of the sheet it had just been told to show published'. TV also keeps its first-open veil editor-only.",
+   "recommendation": "Carry these seams into VV's ModeController with WP-S08-10: viewer -> ShowDrawing only, no SetSheet, no Fit; OnSheetsChanged viewer branch from TV :1124-1137. The ModeController itself belongs to the mode-controller slice.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "VVM/LE/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:539-542,772-786; TV same file :733,:747-754,:1124-1137 (v2.155)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "1.30.0+",
+   "vv_version": "1.18.0",
+   "depends_on": [
+    "S08-F14"
+   ],
+   "est_lines": 30,
+   "vv_adaptation": "VV has no first-open veil in Enter; see S08-F26 for the loader wait"
+  },
+  {
+   "id": "S08-F16",
+   "category": "missing_module",
+   "title": "66__Feature__DocumentSharing (share links and the share-link record) is absent",
+   "detail": "7 files (Links 418, Manifest 487, Button 454, Open 364, Config 61, CSS 220, README 112), v2.166. Keys are permanent rules in code: sheet id, Statement_<id>, Specification, Register; parsing is liberal. The record PublishedDocuments__ShareLinks__.json is written at publish just before the index. The buttons copy before any await (Safari). Open shows a reader the document before the 3D model loads.",
+   "recommendation": "Port Links and CSS verbatim. Adapt Manifest, Button, Open, Config and README: no statements or register; VV link base; Open started by the loader. Keep the reserved key constants so later features add no new key forms.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/LE/66__Feature__DocumentSharing/README__DocumentSharing__.md; Share__Links__.js:76-110 key constants; Share__Manifest__.js:79-109 imports; TV DEVLOG v2.166 466-553",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/"
+   ],
+   "tv_version": "1.0.0 (v2.166.0)",
+   "depends_on": [
+    "S08-F04",
+    "S08-F05",
+    "S08-F28",
+    "S08-F31",
+    "S08-F11"
+   ],
+   "est_lines": 2100,
+   "vv_adaptation": "Statement imports and listener removed; register kind omitted; Link__BaseUrl/QueryPattern VV; missing-drawing fallback opens the first sheet or the specification"
+  },
+  {
+   "id": "S08-F17",
+   "category": "permanent_divergence",
+   "title": "Keep VV's authenticated, semantic worker; do not copy TV's open generic /r2/* model",
+   "detail": "TV v2.169 found na-truevision-api has no authorisation. Every /r2/* route runs for any caller; writes and deletes are checked only for the NaProjectPortal/ prefix; deploy.bat deploys without --env production, so CORS echoes every origin. VV's worker requires X-Editor-Api-Key on everything but health, and the key reaches a browser only from the local Flask /api/editor-config.",
+   "recommendation": "Record DIV-4 as permanent: VV publishes through semantic, key-authenticated, path-guarded routes with server-side document scoping. Offer TV the VV pattern as a hardening back-port (Adam's call).",
+   "action": "keep_vv_divergence",
+   "severity": "high",
+   "evidence": "TV DEVLOG v2.169 262-271; TV worker CloudflareWorker__Main__.js getAllowedOrigin (development allows all); WCP/CloudflareWorker/src/index.js:112-116,148; WCP/server.py:334-361",
+   "tv_paths": [
+    "80__CloudflareIntegration/CloudflareWorker/src/CloudflareWorker__Main__.js",
+    "80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js"
+   ],
+   "vv_paths": [
+    "WCP/CloudflareWorker/src/index.js"
+   ],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "n/a"
+  },
+  {
+   "id": "S08-F18",
+   "category": "wiring",
+   "title": "Publish entry point: TV opens Publish Drawings from the Drawing Register, which VV lacks",
+   "detail": "Publish__Panel 1.1.0 (285 lines, styles injected inline) is imported only by Register__Editor__.js (import :90, button :539). VV has no 51__Feature__DrawingRegister. VV's Layout Editor Dev section already hosts the localhost-only 'Bake Snapshots and Linework' (:342) and 'Export PDF' (:345).",
+   "recommendation": "Port the Panel verbatim. Interim entry: a 'Publish drawings...' button in the VV LE Dev section via dynamic import (authoring only). Move it to the register bar if and when the register is ported (D-S08-04).",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "TVM/LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js:90,539; VVM/LE/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:342,345",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js"
+   ],
+   "tv_version": "Panel 1.1.0",
+   "depends_on": [
+    "S08-F05"
+   ],
+   "est_lines": 300,
+   "vv_adaptation": "Entry point only; Panel verbatim"
+  },
+  {
+   "id": "S08-F19",
+   "category": "drift",
+   "title": "FAST picture packing (PdfExporter 1.11.0): independent and needed now for Chrome/Android",
+   "detail": "Given compress:true, jsPDF uses the Paeth predictor. Chrome's and Android's PDF engine then paints black blocks and streaks over a picture past about 60 MB decoded (PS01 D01, 70.3 MB). TV packs every viewport picture 'FAST' (the Sub predictor), overridable by options.pictureCompression, and the publisher relies on these options. VV calls doc.addImage(..., 'PNG', ...) with the default.",
+   "recommendation": "Port AddPicture, the options plumbing (strict, pictureCompression), the LoadLibrary/EnsureJsPdf split and export, and the awaited save now (WP-S08-02).",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TV PdfExporter__.js:375-399 (AddPicture), :548-556; TV DEVLOG v2.155 1341-1346; VV PdfExporter__.js:211,224,310",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "tv_version": "1.11.0",
+   "vv_version": "1.2.0",
+   "depends_on": [],
+   "est_lines": 60,
+   "vv_adaptation": "Keep VV's paint path until WP-S08-14"
+  },
+  {
+   "id": "S08-F20",
+   "category": "folder",
+   "title": "jsPDF is vendored inside the legacy 35__System__PageLayoutSystem; TV moved it to the version-locked vendor folder",
+   "detail": "VV injects jsPDF from 02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js (AppConfig :402, SheetSetup fallback :396, two test harnesses). TV moved its copy to 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0 in v2.155 Phase 0. Both are jsPDF 4.1.0 and identical after CRLF normalisation (1,201,529 vs 1,234,402 bytes).",
+   "recommendation": "Copy the file to VV/04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/ and update the four strings and the version-lock README (05 is not in the coordinated 3D set). Leave the 35 copy until 35 is retired.",
+   "action": "rename_move",
+   "severity": "medium",
+   "evidence": "VVM/LE/03__Core__Config/Na__LayoutEditor__AppConfig__.json:402; ConfigState__SheetSetup__.js:396; VV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html:70, Na__Test__SpecificationPdf__.html:31; TV PLAN__PublishingSystem 2.5",
+   "tv_paths": [
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js",
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js"
+   ],
+   "tv_version": "jsPDF 4.1.0",
+   "vv_version": "jsPDF 4.1.0",
+   "depends_on": [],
+   "est_lines": 10,
+   "vv_adaptation": "Vale__Dependencies__VersionLock__README__.md note"
+  },
+  {
+   "id": "S08-F21",
+   "category": "transport",
+   "title": "VV client utility for published files (03__AppUtils), not a VV 80__CloudflareIntegration folder",
+   "detail": "TV's Published client is a region of its CfApi client (ApiClient 977-1175: PublishedLocation, ListPublished, UploadPublished raw with a base64 fallback, DeletePublished). By design (DIV-4) VV keeps its R2 clients in 03__AppUtils: R2SaveProjectJson, R2AssetUpload and R2DrawingNotes, all using the X-Editor-Api-Key worker with the config from Flask.",
+   "recommendation": "New VVM/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js with IsConfigured, Upload (raw POST, type from the extension), List (paginated) and Delete (document-scoped), reusing Na__AppUtils__R2FetchWorkerConfig.",
+   "action": "build_vv_transport",
+   "severity": "medium",
+   "evidence": "TVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js:977-1175; VVM/03__AppUtils/Na__AppUtils__R2AssetUpload__.js:13-17,131-151; R2SaveProjectJson__.js:233",
+   "tv_paths": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js"
+   ],
+   "tv_version": "1.5.0",
+   "depends_on": [
+    "S08-F08"
+   ],
+   "est_lines": 200,
+   "vv_adaptation": "VV worker routes W1-W3"
+  },
+  {
+   "id": "S08-F22",
+   "category": "transport",
+   "title": "VV Flask returns index.html with HTTP 200 for any missing file",
+   "detail": "serve_static falls back to index.html for every missing path. The reader's rule 'a 404 is an answer' cannot work on VV localhost: a missing published JSON is misread (then falls through), and a missing tier picture becomes a broken <image>, because Urls.Direct hands out only the first URL.",
+   "recommendation": "In WP-S08-05, return a real 404 for missing files under /Projects/, or serve published files through the new blueprint.",
+   "action": "build_vv_transport",
+   "severity": "medium",
+   "evidence": "WCP/server.py:956-977 (else: send_from_directory(base_dir, 'index.html')); TVM/52__.../Na__PubDoc__Urls__.js:229-310",
+   "tv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js"
+   ],
+   "vv_paths": [
+    "WCP/server.py"
+   ],
+   "depends_on": [],
+   "est_lines": 10,
+   "vv_adaptation": "VV server only"
+  },
+  {
+   "id": "S08-F23",
+   "category": "wiring",
+   "title": "Reader URL order on VV localhost must start with the Flask-served copy",
+   "detail": "TV's Urls.For puts ResolveAssetUrl's fallback first on localhost. In TV that fallback is the same-origin repository copy; in VV it is the GitHub Pages URL. Ported verbatim, VV's reader would ask GitHub Pages first and then show the previously pushed R2 copy after a local publish.",
+   "recommendation": "VV seam in Na__PubDoc__Urls__.For: on localhost try ${origin}/Projects/{folderId}/{path} (Flask static) first, then R2, then GitHub Pages. The live order is unchanged (R2, then GH).",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:303-307,464-475; TVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:223-236; TV Na__PubDoc__Urls__.js:189-207",
+   "tv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js"
+   ],
+   "depends_on": [
+    "S08-F04",
+    "S08-F22"
+   ],
+   "est_lines": 20,
+   "vv_adaptation": "Localhost-only URL; live order verbatim"
+  },
+  {
+   "id": "S08-F24",
+   "category": "wiring",
+   "title": "VV ProjectLoader lacks GetProjectFolderFromUrl/GetYearFromUrl, which 52, 65 and 66 import",
+   "detail": "TV reads ?project-folder= and ?year= (2-digit, default '26'). VV reads ?project=<code|folder|folderId> and resolves it through the R2 master index to '2026/3047__Doous'. Five TV files import the two TV helpers: Publish__, Transport, Urls, Share__Links and Share__Manifest.",
+   "recommendation": "Add VV-meaning facades to VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js returning the folder part and 4-digit year of NormalizeProjectFolderId(GetProjectCodeFromUrl()). The ported files then keep their imports. Document this as a DIV-4 seam.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:92-104; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:319-351,535-548 (exports)",
+   "tv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "depends_on": [],
+   "est_lines": 30,
+   "vv_adaptation": "Same names, VV meaning (4-digit year from the master index)"
+  },
+  {
+   "id": "S08-F25",
+   "category": "wiring",
+   "title": "VV SheetSurface lacks ShowPublished and ZOOM_SETTLED_EVENT",
+   "detail": "TV SheetSurface 1.13.0 exports ShowPublished (:476-503: the same paper with a published host, the editor sheet parked, Refresh inert) and ZOOM_SETTLED_EVENT (1.10.0, v2.111). VV 1.6.0 has neither. It also has no single layer Stack: Frames, ChromeSvg, MarkupSvg, FocusSvg and Handles are separate elements.",
+   "recommendation": "Add an adapted ShowPublished to VV's SheetSurface (hide VV's own layers), or take it with the SheetSurface slice. Until ZOOM_SETTLED_EVENT exists, swap tiers on ZOOM_EVENT debounced by Tiers__SwapDebounceMs (220 ms).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TVM/LE/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:235,458-503,1040-1062 exports; VV same file :155-174, exports (no ShowPublished/ZOOM_SETTLED)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "tv_version": "1.13.0",
+   "vv_version": "1.6.0",
+   "depends_on": [],
+   "est_lines": 50,
+   "vv_adaptation": "Hide VV's separate layer elements instead of TV's Stack"
+  },
+  {
+   "id": "S08-F26",
+   "category": "wiring",
+   "title": "VV loader would hold its screen 2.5 s for renders that never come in the published viewer",
+   "detail": "The VV loader keeps its screen up through Na__LeMode__WaitForFirstDrawing, which waits on Na__LeVeil__DrawingSettled(viewportCount). A published viewer renders nothing, so the wait ends only at GIVEUP_MS (2,500 ms), stacked on top of the published loading cover. TV has no loader, so there is no TV counterpart.",
+   "recommendation": "In viewer mode WaitForFirstDrawing resolves at once and the PubLoad cover owns the wait. This is a VV seam, recorded in the VV ledger.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "VVM/LE/05__.../ModeController__.js:595-600; VVM/LE/05__.../LoadingVeil__.js:95-97,206-234; VVM/LE/01__Core__Loader/Na__LayoutEditor__Loader__.js:373-384",
+   "tv_paths": [],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "depends_on": [
+    "S08-F14"
+   ],
+   "est_lines": 10,
+   "vv_adaptation": "VV-only"
+  },
+  {
+   "id": "S08-F27",
+   "category": "wiring",
+   "title": "Share entry points and start-up wiring in VV",
+   "detail": "TV places Share in: the dock (WebViewer 1.2.0); the toolbar after Download PDF (Toolbar 1.24.0 :576-582); after Print in the specification's Read view (SpecEditor Bar 1.4.0 :204-210). Share__Open starts from Index.html :1733-1738, and the CSS is imported by the CSS index. VV loads the editor lazily, links its CSS via the loader, and has neither the na-app-scene-ready event nor Na__DrawData__IsLoaded.",
+   "recommendation": "Buttons in the VV Toolbar (:355) and SpecEditor Bar (:184-187). CSS in Na__LeLoad__STYLESHEETS before the WebViewer sheet. The loader starts Share__Open only when ?open= is present. Dispatch na-app-scene-ready in VV's LoadingSequence; add IsLoaded to VV 42/ProjectData.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TV Index.html:904,1733-1738; TVM/01__AppCore/Na__AppFlow__LoadingSequence.js:443; VVM/LE/01__Core__Loader/Na__LayoutEditor__Loader__.js:125-134; VVM/01__AppCore/Na__AppFlow__LoadingSequence.js:476-488",
+   "tv_paths": [
+    "Index.html",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "tv_version": "Toolbar 1.24.0, SpecEditor Bar 1.4.0",
+   "vv_version": "Toolbar 1.9.0, SpecEditor Bar 1.2.0",
+   "depends_on": [
+    "S08-F16"
+   ],
+   "est_lines": 80,
+   "vv_adaptation": "Loader-started Open; CSS via the loader list"
+  },
+  {
+   "id": "S08-F28",
+   "category": "decision",
+   "title": "VV share link form: no s/ or q/ resolver exists, and none is needed",
+   "detail": "TV hands out https://www.noble-architecture.com/s/?<code>&open=<key>, which the website's s/index.html resolves through q/index.json (written by the ProjectVision build script). VV has no such website folders. But VV's ?project= already accepts a bare code and resolves it through the R2 master index, which a project rename updates.",
+   "recommendation": "D-S08-05 option (a): Link__BaseUrl = the VV live app (GitHub Pages ValeVision3D index.html), pattern ?project={projectCode}&open={documentKey}, with the same keys and open parameter. Build a short resolver only if Vale moves to its own domain.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "NaWeb/s/index.html header; TVM/LE/66__.../Na__LayoutEditor__Share__Config__.json Link__BaseUrl; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:260-279,335-351",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json"
+   ],
+   "depends_on": [],
+   "est_lines": 5,
+   "vv_adaptation": "Config values only"
+  },
+  {
+   "id": "S08-F29",
+   "category": "data_schema",
+   "title": "Where VV's published documents live",
+   "detail": "TV root: NaProjectPortal/<yy>-Projects/<folder>/30__TrueVision__AppContent/06__Layout__PublishedDocuments/. VV keeps project assets directly in VaApps/Projects/{folderId}/ (PresentationMode/Thumbnails, LayoutEditor/Linework, LayoutEditor/Snapshots). VV's ResolveAssetUrl is relative to that folder, so 53's relative paths would land at VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/ with no code change.",
+   "recommendation": "D-S08-01 option (a): use VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/ on R2 and WCP/Projects/{folderId}/06__... locally. Schema names stay verbatim; do not rename to LayoutEditor/PublishedDocuments.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "TVM/53__.../Na__PublishedSchema__.json Folders__Root; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:464-475; VV PLAN 5.6 R2 asset keys",
+   "tv_paths": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json"
+   ],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "None if (a)"
+  },
+  {
+   "id": "S08-F30",
+   "category": "decision",
+   "title": "Publish write order: TV is local-first with R2 optional; VV's convention is R2-first",
+   "detail": "TV publishes locally first and goes to R2 only on a deliberate tick: verify sizes, then the manifest, then the index last. Archives stay local. VV's rule is 'R2 = SSOT, Flask mirror second'. The publish pipeline's guarantees (archive before replace, verify before manifest, document-scoped prune, index last) depend on TV's order.",
+   "recommendation": "D-S08-02 option (a): keep TV's order for publishing only, recorded as a deliberate exception. A published document is a deliverable built and reviewed locally before a client can see it.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "TVM/LE/65__.../Publish__Transport__.js:20-26; Publish__.js:384-410; VVM/03__AppUtils/Na__AppUtils__R2AssetUpload__.js:13-17; VV/.cursor/rules/08-R2IndexArchitecture--ValeVision3D-SSOT-.mdc",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "Document in the VV ledger and the R2 rule file"
+  },
+  {
+   "id": "S08-F31",
+   "category": "wiring",
+   "title": "Statements and the register: share and viewer document kinds that depend on TV-only features",
+   "detail": "Share__Manifest, Button and Open import 52__Feature__StatementWriter's Statement__Data (TV-only). Open calls ModeController OpenRegister and OpenStatements, which VV lacks. The viewer lists a 'register' document. TV's missing-drawing fallback opens the Document Register.",
+   "recommendation": "D-S08-07 option (a): omit both kinds in VV now, keeping the Statement_ and Register key constants reserved in Links. The missing-drawing fallback opens the first sheet or the specification. Re-add when those features are ported.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/LE/66__.../Share__Manifest__.js:96-98; Share__Open__.js:67-78; TV WebViewer__.js:207,621",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/"
+   ],
+   "depends_on": [
+    "S08-F16"
+   ],
+   "est_lines": 40,
+   "vv_adaptation": "Kinds omitted; keys reserved"
+  },
+  {
+   "id": "S08-F32",
+   "category": "transport",
+   "title": "The shared Vale service worker has no published cache class",
+   "detail": "TV added tv-published-<token>: hashed assets cache-first with an LRU of 240, JSON network-first, PDFs not cached; it bumps the token per release. VV runs under WebApps/Na__Pwa__ServiceWorker__.js, with logic in WCP 62 (token 2026-09-18-1). Published .json/.webp/.pdf would pass through it; .png/.svg would be SWR-cached as shell. Ledger row 1189 wrongly says VV has no service worker.",
+   "recommendation": "Add a wpwa-published- class: patterns, owned prefix and activate keep-list. Bump the token with the release; that is Adam's call, because a bump evicts every Vale app's caches (D-S08-10).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TVM/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js:688-707,851-860,1128-1136; WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:229-254,391-399",
+   "tv_paths": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "vv_paths": [
+    "WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "depends_on": [
+    "S08-F04"
+   ],
+   "est_lines": 40,
+   "vv_adaptation": "Pattern rooted at 06__Layout__PublishedDocuments on cdn.noble-architecture.com/VaApps"
+  },
+  {
+   "id": "S08-F33",
+   "category": "wiring",
+   "title": "Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices",
+   "detail": "These are static imports VV cannot resolve: Na__LePaint__Plan (15/PaintOrder), BuildLayerPrimitives (MarkupBridge 1.20), BuildViewportFrame and includeFrames (SheetChrome 1.14), FacesFromRings (ShapeRings), Hatch DrawPdf, RenderFogForExport and SitePlanDrawing (Viewport2d 1.16), IsSitePlanViewport/Sheet, ImgPdf Prepare (SheetImages), VpRot (ViewportRotation), FloorAreas Na__LeArea__*, and ModelSource. Each makes the importing module fail to link.",
+   "recommendation": "Sequence 65 and WP-S08-14 after the owning slices (preferred). Stubs are possible for fog and site plans only (null/false). PaintOrder, BuildLayerPrimitives, BuildViewportFrame and FloorAreas cannot be stubbed without changing the published sheet (D-S08-11).",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "TV PdfExporter__.js:150-173 imports; Publish__Sheet__.js:58-71; Publish__Viewports__.js:65-86; VV Viewport2d export list (no RenderFogForExport/SitePlanDrawing)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "Owned by other slices"
+  },
+  {
+   "id": "S08-F34",
+   "category": "drift",
+   "title": "SpecPdf: embedded font and awaited save",
+   "detail": "VV SpecPdf (1.0.0, 28 diff lines) omits Na__LePdfFonts__EnsureLoaded/Install and uses a non-awaited doc.save. Its header records the Helvetica divergence and says 'this module needs no change beyond installing the cuts'.",
+   "recommendation": "Bring SpecPdf to TV's form with PdfFonts (WP-S08-03): await EnsureLoaded before measuring, Install on the document, and await save with returnPromise.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "git diff -w TV vs VV SpecPdf__.js (PdfFonts import, EnsureLoaded at TV :383, Install :393, returnPromise); VV DEVLOG v2.56.0 1611-1615",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "S08-F13"
+   ],
+   "est_lines": 10,
+   "vv_adaptation": "42__ drawing-core path kept"
+  },
+  {
+   "id": "S08-F35",
+   "category": "test",
+   "title": "Port Na__Test__PublishedSchema__ (59 checks) with a VV fixture",
+   "detail": "The test walks the readable example folder. It checks that every built path exists, that the tier sizes reproduce the manifests and the version gate refuses newer and older, that no file is unaccounted for, and (region 6A) the share record. VV has no example folder. TV's AA00 example is hand-made and not yet at the final file shape.",
+   "recommendation": "Seed a VV fixture from TV's AA00 example (schema data only), then replace it with a real VV publish of 2026/3047__Doous after WP-S08-09. Point CONTENT/EXAMPLE at the VV fixture and region 6A at the VV share config.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs:50-60 (CONTENT path), DEVLOG 1.1.0 region 6A; PORTAL AA00 example 39 files",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs"
+   ],
+   "tv_version": "1.1.0",
+   "depends_on": [
+    "S08-F03"
+   ],
+   "est_lines": 650,
+   "vv_adaptation": "Fixture path; VV share config"
+  },
+  {
+   "id": "S08-F36",
+   "category": "test",
+   "title": "Port Na__Test__PublishedReader__ (63 checks) and its harness",
+   "detail": "It builds every fixture document with the real reader and fetch stubbed; it proves an unpublished drawing fetches nothing; and it statically walks the import graph to prove no renderer, projection, model loader or image exporter is reachable. It includes live-site URL checks against the NaProjectPortal CDN layout.",
+   "recommendation": "Port with the VV fixture. Rewrite the live-URL checks to VaApps/Projects/{folderId}/06__... Allow VV's Na__AppUtils__ResilientLoad__ leaf in the import walk, and add VV's 40/41/42/31 folders to the forbidden list.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs:1-60 (CONTENT, READER, SCHEMA, UTILS), __Harness__.html",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S08-F04",
+    "S08-F35"
+   ],
+   "est_lines": 725,
+   "vv_adaptation": "VV paths, URLs and import allowlist"
+  },
+  {
+   "id": "S08-F37",
+   "category": "test",
+   "title": "Port Na__Test__ShareLinks__ (68 checks) without the s/ resolver region",
+   "detail": "The test checks the builder and parser, and the record's write order (local before R2, nothing to R2 if local fails, queueing, aliases) with the sheet model, statements and transport stood in. It also runs s/index.html's script in a sandbox against the real q/index.json. VV has no s/ or q/.",
+   "recommendation": "Port the builder, parser and record regions. Drop the s/ + q/ region, or replace it with a check of the ?project=<code>&open=<key> form against VV's master-index copy. Remove the statement stand-ins.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "TV/80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs:1-60 description; TV DEVLOG v2.166 523-532",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S08-F16"
+   ],
+   "est_lines": 420,
+   "vv_adaptation": "No s/ region; no statements"
+  },
+  {
+   "id": "S08-F38",
+   "category": "test",
+   "title": "New tests for VV's published Flask routes and worker handler (TV has none)",
+   "detail": "TV has no automated test of ProjectVision__TrueVisionPublished__Api__.py or of the worker's /r2/* guards. VV's new routes carry the security boundary: path guards, the archive refusal, document-scoped delete, no manifest bump.",
+   "recommendation": "Add Na__Test__PublishedApi__.test.py using the Flask test client, following VV's Na__Test__ScrapbookApi__/ScrapbookServer__ pattern with sys.dont_write_bytecode. Add a node script driving the worker handler against an in-memory R2 double.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py, Na__Test__ScrapbookServer__.py; VV ledger 89-92 (sys.dont_write_bytecode)",
+   "tv_paths": [],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py"
+   ],
+   "depends_on": [
+    "S08-F08",
+    "S08-F09"
+   ],
+   "est_lines": 350,
+   "vv_adaptation": "VV-only"
+  },
+  {
+   "id": "S08-F39",
+   "category": "ledger",
+   "title": "VV ledger does not track TV v2.155-v2.172 publishing and sharing; row 1189 is wrong",
+   "detail": "The latest VV return trip is dated 20-Sep (about TV v2.85). There are no rows for 52, 53, 65, 66, PdfFonts, PdfExporter 1.4-1.12 or WebViewer 1.2.0. Row 1189 says VV has no service worker, contradicting the same ledger's lines 137-160 (the shared Whitecardopedia worker). Row 1169's framing predates TV's publishing, whose reader font must match the editor's.",
+   "recommendation": "Add a return-trip section for TV v2.155/v2.156/v2.166 with per-row parity states, plus the DIV-4 transport rows (W1-W3, Flask blueprint, client util). Correct row 1189, and revisit row 1169 after D-S08-03.",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "evidence": "VV/ValeVision__PARITY__TrueVisionLedger__.md:57 (latest return trip), 137-160, 1169, 1189",
+   "tv_paths": [],
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "depends_on": [],
+   "est_lines": 80,
+   "vv_adaptation": "n/a"
+  },
+  {
+   "id": "S08-F40",
+   "category": "tooling",
+   "title": "No git policy for published output in the ValeCodebase repository",
+   "detail": "VV's .gitignore has no rule for published folders or archive zips. Local output would live under WCP/Projects/, which is GitHub Pages content. TV's '**/00__Archive/' rule does not match '00__Archive__Revisions' either (a TV-side note). TV states that published files are pushed to R2 and not committed.",
+   "recommendation": "D-S08-08: ignore Projects/**/06__Layout__PublishedDocuments/ (or at least 00__Archive__Revisions/) in D:/10_CoreLib__ValeCodebase/.gitignore. Tell TV about the same gap.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "D:/10_CoreLib__ValeCodebase/.gitignore (no rule); NaWeb/.gitignore:111-113,151; TV Na__PubDoc__Urls__.js:28-33 (not committed)",
+   "tv_paths": [],
+   "vv_paths": [
+    "D:/10_CoreLib__ValeCodebase/.gitignore"
+   ],
+   "depends_on": [
+    "S08-F29"
+   ],
+   "est_lines": 5,
+   "vv_adaptation": "Repository root rule"
+  },
+  {
+   "id": "S08-F41",
+   "category": "ledger",
+   "title": "TV-side stale notes to correct (back-port, headers only)",
+   "detail": "The port notes in 80__Feature__WebViewer (4 files) and Share__Links say VV has no web viewer. PdfExporter's PORT NOTE still says 'Parity: verbatim'. The realign plan's DIV-4 says 'TrueVision: no Flask at all', but the 8090 server has six API modules. The WebViewer and SheetSurface header logs miss the v2.155/v2.156 changes. WebViewer imports IsSitePlanSheet unused. Na__PubDoc__Styles__Main__.css is linked only by the harness.",
+   "recommendation": "Comment and header corrections in TV (WP-S08-13); no behaviour change.",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "evidence": "tv_portnote_markers: WebViewer__*.js:50-53, Share__Links__.js:63; TV PdfExporter__.js:33-39; TV PLAN__ValeVisionRealign 141-148; TV WebViewer__.js:84",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "vv_paths": [],
+   "depends_on": [],
+   "est_lines": 30,
+   "vv_adaptation": "n/a"
+  },
+  {
+   "id": "S08-F42",
+   "category": "drift",
+   "title": "WebViewer Drawings/Spec/TouchControls and the WebViewer CSS are header-only",
+   "detail": "Confirmed with git diff -w: only header and port-note lines differ (Drawings 1.1.0/1.1.0, Spec 1.0.0/1.0.0, TouchControls 1.1.0/1.1.0, CSS). VV's port notes say 'for ValeVision3D v2.65.0', but the port shipped in VV v2.58.0.",
+   "recommendation": "No code change. Correct the port-note version text in WP-S08-13.",
+   "action": "fix_ledger",
+   "severity": "low",
+   "evidence": "drift_all header-only rows; VV DEVLOG v2.58.0 1321-1438",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css"
+   ],
+   "tv_version": "1.1.0/1.0.0/1.1.0",
+   "vv_version": "1.1.0/1.0.0/1.1.0",
+   "depends_on": [],
+   "est_lines": 8,
+   "vv_adaptation": "n/a"
+  },
+  {
+   "id": "S08-F43",
+   "category": "drift",
+   "title": "PdfFilename is header-only; VV's file-name code is the Drawing No.",
+   "detail": "PdfFilename is verbatim below the header (VV v2.55.0). The exporter passes fields.DrawingNumber (VV :248) where TV passes fields.DocumentId (TV :477), because VV has no composed id.",
+   "recommendation": "No change now; revisit together with D-S08-06.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "drift_all PdfFilename header-only 181/184; VV PdfExporter__.js:245-249; TV :474-478",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "S08-F11"
+   ],
+   "est_lines": 0,
+   "vv_adaptation": "Kept"
+  },
+  {
+   "id": "S08-F44",
+   "category": "vv_only",
+   "title": "61__Feature__ShareProjectLink: live builders kept, UI apparently dead, links taken from window.location",
+   "detail": "62 EmailWorkers drives the Tools menu 'Share Project Link' (naSendEmailMenuButton) and reuses 61's GetShareContext and email builders. 61's own Initialize targets naShareProjectLinkMenuButton, which is gone from index.html, and nothing calls it. Its URL comes from window.location, so a localhost session hands out a localhost link. Read, not run.",
+   "recommendation": "Keep it: a VV-only Vale client workflow, complementary to per-document Share. Optionally take the base URL from the new Share config. Ask Adam before retiring the apparently dead UI files.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "VVM/61__.../UrlGeneratorLogic__.js:31-40; VVM/62__.../Na__Feature__EmailWorkers__UiInteractionLogic__.js:24,60; VV/index.html:606-619",
+   "tv_paths": [],
+   "vv_paths": [
+    "02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UrlGeneratorLogic__.js",
+    "02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UiInteractionLogic__.js",
+    "02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__.js"
+   ],
+   "depends_on": [
+    "S08-F28"
+   ],
+   "est_lines": 10,
+   "vv_adaptation": "VV-only"
+  },
+  {
+   "id": "S08-F45",
+   "category": "ui",
+   "title": "Identity strings to adapt in 52, 53, 65 and 66 (layout and wording otherwise identical)",
+   "detail": "To adapt: [TrueVision3D ...] console prefixes, Publish__ByApp, the appVersion 'v2.166.0' floor, MinReader 'v2.142.0', Debug__PrefixNote, 'give it a drawing number in the register', 'here is its current document register', and the NA s/ Link__BaseUrl. The grey-panel and loading wording is practice-neutral. The publish dialog's ink #172b3a and Open Sans match VV, and every share CSS token exists in VV.",
+   "recommendation": "Adapt only these strings. Keep layout, colours and wording identical so the experience matches.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "TV Publish__.js:99,257; Version__.js REASON/Stamp; Share__Config__.json Labels__OpenMissingDrawing; VV Styles__Surfaces__.css tokens; both AppConfigs InkColour #172b3a",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/",
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/"
+   ],
+   "depends_on": [],
+   "est_lines": 30,
+   "vv_adaptation": "Strings only"
+  },
+  {
+   "id": "S08-F46",
+   "category": "tooling",
+   "title": "TV's example fixture is not yet at the final file shape",
+   "detail": "v2.155 lists as NOT YET that the example folder is 'the approved version and must be brought up to the final file shape'. Its index rows still carry Document__Marks, whereas the publisher now writes PublishedDocuments__Unpublished__.json. Its share record was hand-made (v2.166).",
+   "recommendation": "Do not treat the AA00 example as ground truth for VV. Use it only to seed VV's schema tests, then regenerate VV's fixture from a real VV publish. Ask TV to bring its example up to date.",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "evidence": "TV DEVLOG v2.155 1362-1363; PORTAL/26-Projects/AA00__ExampleProjectStructure/30__TrueVision__AppContent/06__Layout__PublishedDocuments/PublishedDocuments__Index__.json (Publish__MarksNote)",
+   "tv_paths": [
+    "PORTAL/26-Projects/AA00__ExampleProjectStructure/30__TrueVision__AppContent/06__Layout__PublishedDocuments/"
+   ],
+   "vv_paths": [],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "n/a"
+  },
+  {
+   "id": "S08-F47",
+   "category": "tooling",
+   "title": "Publishing needs Chrome or Edge on the authoring machine",
+   "detail": "Publish__Raster refuses a browser that writes PNG when WebP was asked for ('publish from Chrome or Edge'), which rules out Safari. Hashing uses crypto.subtle (secure context: 127.0.0.1 qualifies). TV's raster tiers are rendered at print size on the authoring machine.",
+   "recommendation": "State this in VV's README and in the Publish dialog intro or Dev-section note; no code change.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "TVM/LE/65__.../Na__LayoutEditor__Publish__Raster__.js:151-167",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js"
+   ],
+   "vv_paths": [
+    "ValeVision__README__.md"
+   ],
+   "depends_on": [],
+   "est_lines": 5,
+   "vv_adaptation": "Documentation"
+  },
+  {
+   "id": "S08-F48",
+   "category": "transport",
+   "title": "A project rename or delete carries the published folder correctly",
+   "detail": "CloudflareHandler__ProjectRename__ moves every key under the old prefix with httpMetadata preserved, so a published folder follows a renamed project and keeps its cache headers. Delete removes it. The index's informational Project__Folder goes stale until the next publish. Share links built on the project code survive, because the master index resolves the new folder.",
+   "recommendation": "No change. Mention it in the VV publishing README; republish after a rename to refresh Project__Folder.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js na_copy_object (httpMetadata, customMetadata), na_list_all_keys; CloudflareHandler__ProjectDelete__.js:126-130",
+   "tv_paths": [],
+   "vv_paths": [
+    "WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 0,
+   "vv_adaptation": "n/a"
+  }
+ ],
+ "work_packages": [
+  {
+   "id": "WP-S08-01",
+   "title": "Move jsPDF into the version-locked vendor folder",
+   "scope": "Copy the jsPDF 4.1.0 UMD from the legacy 35 folder to 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/ and repoint every reference. Note in the version-lock README that 05 is not part of the coordinated 3D set. The 35 copy stays until 35 is retired.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Every jsPDF path string in VV resolves to a real file",
+    "Download PDF and the specification Download produce PDFs",
+    "Na__Test__TitleBlockCells__.html and Na__Test__SpecificationPdf__.html load jsPDF from the new path",
+    "Na__Verify__Exports__ and Na__Verify__ModuleGraph__ pass"
+   ],
+   "files_tv": [
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+    "04__Lib__ThirdParty__VersionLocked/TrueVision__Dependencies__VersionLock__README__.md"
+   ],
+   "files_vv": [
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+    "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html",
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html"
+   ],
+   "risk": "Low. A wrong path makes the PDF button silently do nothing (TV v2.155 note), so check that each string resolves on disk.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-02",
+   "title": "PdfExporter interim parity: FAST picture packing and publish options",
+   "scope": "Port TV 1.11.0 Na__LePdf__AddPicture ('FAST' unless options.pictureCompression); options {strict, pictureCompression} through BuildDocument, DrawViewport and ExportSheet; the LoadLibrary/EnsureJsPdf split and the LoadLibrary export; await doc.save(name,{returnPromise:true}). Keep VV's own paint path. Catch the header DEVELOPMENT LOG up (VV 1.3.0), listing what is present and what is deliberately absent.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "A sheet with a plan underlay over 60 MB decoded opens in Chrome's PDF viewer with no black blocks or streaks",
+    "Viewport picture streams use the Sub predictor",
+    "options.strict throws on a missing drawing source or 3D render; the default path still exports",
+    "Exports: EnsureJsPdf, LoadLibrary, BuildDocument, ExportSheet; Na__Verify__Exports__ passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "risk": "Low. Larger PDFs (PS01 D01 744 KB -> 972 KB in TV); the same pixels.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-03",
+   "title": "Embedded PDF fonts (after D-S08-03)",
+   "scope": "Port Na__LayoutEditor__PdfFonts__.js. Vendor the Open Sans 300/400/600 TTFs to a VV-owned location. Extend the LayoutEditor__Pdf__Config block and GetPdfSetup/PdfCuts/fallbacks. Switch LayoutEditor__Style__FontFamily to Open Sans-first. Install cuts in SheetChrome's measuring document and add ApplyPdfFont (coordinate with the SheetChrome slice). Wire SpecPdf and the exporter (EnsureLoaded, Install, putOnlyUsedFonts). Re-measure the title block rows; update the TitleBlockCells fixture and, once 52 exists, Na__PubDoc__Config__ Sheet__FontFamily.",
+   "depends_on": [
+    "WP-S08-01"
+   ],
+   "size": "L",
+   "acceptance": [
+    "A sheet PDF, the specification PDF and a published PDF each declare OpenSans as an embedded Type0 Identity-H subset (checked with PyMuPDF or pdf.js)",
+    "Text still extracts as Unicode",
+    "No title block cell overflows on A4/A3/A2/A1 in either style; Na__Test__TitleBlockCells__ passes with the re-measured fixture",
+    "Screen caption truncation and PDF glyph widths agree"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html"
+   ],
+   "risk": "Medium. It changes the printed face of every Vale drawing and re-flows the title block cells; it needs Adam's sign-off (D-S08-03).",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html"
+   ]
+  },
+  {
+   "id": "WP-S08-04",
+   "title": "Stop the Whitecardopedia sync deleting sub-folder pictures on R2",
+   "scope": "Scope na_purge_stale_r2_images to top-level keys (Delimiter='/'), paginate the listing, and apply the same scoping to the GLB purge. This is a precondition for any VV R2 publish.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "With a fake S3 client listing keys under 06__Layout__PublishedDocuments/, LayoutEditor/Snapshots/ and PresentationMode/Thumbnails/, a sync deletes none of them",
+    "A stale top-level image is still deleted",
+    "The listing follows continuation tokens past 1,000 keys"
+   ],
+   "files_tv": [],
+   "files_vv": [
+    "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py"
+   ],
+   "hot_files": [
+    "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py"
+   ],
+   "risk": "Shared Vale pipeline (Whitecardopedia and ValeVision); Adam approves (D-S08-09).",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-05",
+   "title": "VV server side: published-document worker routes and the Flask mirror",
+   "scope": "New worker handler CloudflareHandler__PublishedDocuments__.js: W1 raw file write (about 95 MB, type from the extension, immutable or max-age=60, no build-manifest bump), W2 paginated list, W3 document-scoped delete. Register the routes before the greedy save route. New Flask blueprint Server__ValeVisionPublished__Api__.py porting TV's API (/api/valevision/published/{list,file,archive,prune}, 4-digit year, Projects/{year}/{folder}/06__Layout__PublishedDocuments, guarded resolver), registered in server.py. Real 404s for missing files under /Projects/. Add the .gitignore rule (D-S08-08).",
+   "depends_on": [
+    "WP-S08-04"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Calls without X-Editor-Api-Key return 401",
+    "A path with '..', an archive segment, a bad extension or a seventh segment returns 400",
+    "W1 stores contentType and the right cacheControl and leaves VaApps/Index/Na__BuildVersion__Manifest__.json untouched",
+    "W2 pages by cursor and returns paths relative to the published root",
+    "W3 refuses any path outside <document>/",
+    "Flask writes are atomic and sniffed; an archive is never overwritten; prune touches one document only",
+    "A missing file under /Projects/ returns 404, not index.html",
+    "The worker is deployed by Adam (wrangler) and Flask restarted"
+   ],
+   "files_tv": [
+    "80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js",
+    "NAAPPS/ProjectVision__TrueVisionPublished__Api__.py"
+   ],
+   "files_vv": [
+    "WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js",
+    "WCP/Server__ValeVisionPublished__Api__.py",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py"
+   ],
+   "hot_files": [
+    "WCP/CloudflareWorker/src/index.js",
+    "WCP/CloudflareWorker/src/CloudflareHelper__Cors__.js",
+    "WCP/server.py",
+    "D:/10_CoreLib__ValeCodebase/.gitignore"
+   ],
+   "risk": "Security boundary (key, guards, scope). Needs a wrangler deploy and a Flask restart, and Flask does not reload routes.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py (new, VV pattern from Na__Test__ScrapbookApi__)"
+   ]
+  },
+  {
+   "id": "WP-S08-06",
+   "title": "VV client transport utility and ProjectLoader facades",
+   "scope": "New VVM/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js (IsConfigured, Upload, List, Delete through the editor worker, reusing Na__AppUtils__R2FetchWorkerConfig). Add the Na__AppUtils__GetProjectFolderFromUrl and Na__AppUtils__GetYearFromUrl facades (VV meaning) to Na__AppUtils__ProjectLoader.js.",
+   "depends_on": [
+    "WP-S08-05"
+   ],
+   "size": "M",
+   "acceptance": [
+    "An upload, list and delete round trip against wrangler dev succeeds",
+    "The facades return the folder name and 4-digit year for ?project=3047, ?project=3047__Doous and ?project=2026/3047__Doous",
+    "Na__Verify__Exports__ passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "risk": "The facades share names with TV's but carry VV's meaning; document them in the PORT NOTE.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-07",
+   "title": "Published schema (53) and the VV fixture",
+   "scope": "Create VVM/53__Data__Layout__PublishedSchema/ (4 files): keys verbatim; SchemaRef, MinReader, ByApp, reasons and comments adapted. Seed a VV example folder from TV's AA00 example (schema data only) and link it both ways from the README. Port Na__Test__PublishedSchema__.",
+   "depends_on": [],
+   "size": "M",
+   "acceptance": [
+    "Na__Test__PublishedSchema__ passes against the VV fixture",
+    "Version__Schema is 1 in both apps and every folder and file name is identical",
+    "The README and the example ReadMe point at each other"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js",
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs"
+   ],
+   "hot_files": [],
+   "risk": "Low. The TV example is not yet at its final shape (S08-F46); treat the seed as provisional.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S08-08",
+   "title": "Published reader (52)",
+   "scope": "Create VVM/52__System__Layout__PublishedDocuments/ (11 files). Seams: Na__PubDoc__Urls__ (FromPage from ?project=; on localhost the Flask copy first) and Na__PubDoc__Config__ (Sheet__FontFamily = the VV authoring face; prefixes); console prefixes elsewhere. Port the reader test and its harness.",
+   "depends_on": [
+    "WP-S08-07",
+    "WP-S08-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Every fixture document builds",
+    "An unpublished drawing fetches nothing beyond the shared unpublished file",
+    "The import walk reaches no renderer, projection, model loader or image exporter",
+    "The tier ladder steps up, holds one tier, respects the byte budget and never retries a failed tier",
+    "On localhost the first URL is http://127.0.0.1:8000/Projects/{folderId}/06__...; on the live origin it is the VaApps CDN"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html"
+   ],
+   "hot_files": [],
+   "risk": "Dimension arrangement is implemented independently of Na__LeDim__ and must be checked against an editor screenshot (Elements header).",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html"
+   ]
+  },
+  {
+   "id": "WP-S08-09",
+   "title": "Publisher (65) and its interim entry point",
+   "scope": "Create VVM/LE/65__Feature__DocumentPublishing/ (7 files): Transport, Publish__ and Config adapted, the rest verbatim. Add VV Na__LeModel__GetDocumentId (D-S08-06). Add 'Publish drawings...' to the Layout Editor Dev section via dynamic import (D-S08-04). After this lands, replace the VV fixture with a real publish of 2026/3047__Doous.",
+   "depends_on": [
+    "WP-S08-02",
+    "WP-S08-06",
+    "WP-S08-07"
+   ],
+   "size": "L",
+   "acceptance": [
+    "2026/3047__Doous publishes locally with no failures and every manifest file exists at its stated size",
+    "Re-publishing the same revision overwrites and prunes; a new revision writes 00__Archive__Revisions/<id>__Revision__<old>.zip and never overwrites it",
+    "With the R2 tick: list-back sizes match before the manifest goes up; the index goes up last; the build manifest is untouched; only that document's stale keys are removed",
+    "The baked PDF opens in Chrome without garbling",
+    "Reader harness pictures of the published sheets match the editor"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "risk": "High. It is blocked by the other slices' exports (PaintOrder, MarkupBridge 1.20, SheetChrome 1.14, ShapeRings, FloorAreas, Viewport2d 1.16) unless D-S08-11 allows stubs.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-10",
+   "title": "The web viewer shows published drawings",
+   "scope": "port_whole_reapply_vv of WebViewer 1.2.0 (keeping VV Documents(), no register, no IsSitePlanSheet). ModeController viewer guards (Enter, OnSheetsChanged) and WaitForFirstDrawing resolving at once in viewer mode. SheetSurface ShowPublished (adapted to VV's layers) and ZOOM_SETTLED_EVENT, or a ZOOM_EVENT debounce. Loader wait seam.",
+   "depends_on": [
+    "WP-S08-08"
+   ],
+   "size": "M",
+   "acceptance": [
+    "With ?authoring=off, opening every drawing makes 0 WebGL draw calls and 0 snapshot renders",
+    "The PDF button opens the baked PDF (200, application/pdf) or toasts that none is published",
+    "Tiers swap on zoom with no draws; the previous drawing's images are released",
+    "A tab pressed mid-load takes the cover over; the 3D Model tab drops it",
+    "The loader screen does not wait 2.5 s for renders",
+    "With authoring on, the editor path is unchanged"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Medium. ModeController and SheetSurface are also touched by other slices, so serialise. Until a project is published every drawing shows the grey panel, so publish before deploying.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-11",
+   "title": "Document sharing (66) and the Share buttons",
+   "scope": "Create VVM/LE/66__Feature__DocumentSharing/ (7 files): Links and CSS verbatim; Manifest, Button, Open, Config and README adapted (no statements or register; VV link base; missing drawing -> first sheet or specification). Add Share to the dock, Toolbar and SpecEditor Bar. Link the CSS through the loader. The loader starts Share__Open on ?open=. Dispatch na-app-scene-ready in LoadingSequence; add DrawData IsLoaded. Port the ShareLinks test without the s/ region.",
+   "depends_on": [
+    "WP-S08-08",
+    "WP-S08-09"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Every Share button copies the configured live link (never localhost) before any await",
+    "A drawing link opens its Read view in the viewer before the 3D model loads; the loading screen returns on the 3D Model tab",
+    "The specification link opens Read; a deleted sheet's link opens the first sheet or the specification with a toast",
+    "Publish writes PublishedDocuments__ShareLinks__.json locally, and (when ticked) on R2, just before the index",
+    "Na__Test__ShareLinks__ (VV) passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/",
+    "80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "risk": "Medium. The keys are permanent once a link is sent, so settle D-S08-05 and D-S08-06 first.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S08-12",
+   "title": "Published cache class in the shared Vale service worker",
+   "scope": "Add wpwa-published- to Whitecardopedia__Pwa__ServiceWorker__Logic__.js: hashed assets cache-first with an LRU cap, published JSON network-first, PDFs passthrough. Add it to the owned prefixes and the activate keep-list, and bump the token with the publishing release (Adam's sign-off).",
+   "depends_on": [
+    "WP-S08-10"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Hashed published files are served from the cache on a second visit",
+    "A re-published index is seen on the next load",
+    "The activate handler keeps the bucket",
+    "The token bump is logged in the SW file and the VV devlog"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "risk": "A token bump evicts every Vale app's caches, models included.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-13",
+   "title": "Ledger and documentation (both sides)",
+   "scope": "VV ledger: a return-trip section for TV v2.155/v2.156/v2.166 with per-row states; DIV-4 transport rows; correct row 1189; revisit row 1169. VV devlog entries per release. VV README notes: Chrome/Edge to publish; rename behaviour. TV header-only corrections: port notes that say VV has no web viewer; PdfExporter PORT NOTE; realign plan DIV-4; WebViewer/SheetSurface logs missing v2.155/v2.156; the dead IsSitePlanSheet import; the AA00 example shape.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Every new or changed VV file has a ledger row with its parity state",
+    "Row 1189 corrected",
+    "The TV notes corrected with no behaviour change"
+   ],
+   "files_tv": [
+    "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md",
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "files_vv": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__README__.md"
+   ],
+   "hot_files": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Low. Parallel sessions write the devlog, so re-read its top before adding a version.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S08-14",
+   "title": "PdfExporter full re-sync to TV 1.12.0",
+   "scope": "After the dependency slices land (PaintOrder, MarkupBridge 1.20, SheetChrome 1.14, ShapeRings, HatchPatterns, SheetImages, ViewportRotation, ElevationDepthFog, site plans, ModelSource, SpecMargin regions): take TV's whole file and re-apply the VV seams (console prefix, subject, 42__ path, filename code until DocumentId).",
+   "depends_on": [
+    "WP-S08-02",
+    "WP-S08-03"
+   ],
+   "size": "M",
+   "acceptance": [
+    "The diff against TV is header and listed seams only",
+    "The PDF prints in Layers-list order with each frame over its viewport; turned viewports, pictures, regions, fog and site plans (where present) print as the screen shows",
+    "Na__Verify__Exports__ passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "risk": "Gated by many other slices; landing it early breaks module linking.",
+   "tests_to_port": []
+  }
+ ],
+ "decisions_needed": [
+  {
+   "id": "D-S08-01",
+   "question": "Where do VV's published documents live?",
+   "options": "(a) VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/ on R2 and WCP/Projects/{folderId}/06__... locally, keeping the schema names verbatim; (b) .../LayoutEditor/PublishedDocuments/ to match VV's LayoutEditor/Linework|Snapshots, which changes Folders__Root in the shared contract",
+   "recommendation": "(a). The schema stays identical in both apps and needs no code change, because VV's project-relative root is the project folder.",
+   "blocks": [
+    "WP-S08-05",
+    "WP-S08-07",
+    "WP-S08-09"
+   ]
+  },
+  {
+   "id": "D-S08-02",
+   "question": "Which write order does VV publishing use?",
+   "options": "(a) TV's: local first, R2 only on a deliberate tick, verify, manifest last, index last; (b) VV's R2-first two-phase convention",
+   "recommendation": "(a), recorded as a deliberate exception to VV's R2-first rule. The rule is about project data; a published document is a reviewed deliverable.",
+   "blocks": [
+    "WP-S08-09"
+   ]
+  },
+  {
+   "id": "D-S08-03",
+   "question": "Which typeface do VV sheets and PDFs use?",
+   "options": "(a) port PdfFonts and embed Open Sans (VV D14, VV's screen face) from a VV-owned copy, switch the sheet face to Open Sans-first and re-measure the title block; (b) a Vale brand typeface (no files in the repositories; needs files and a licence); (c) keep non-embedded Helvetica (ledger 1169 status quo)",
+   "recommendation": "(a). (c) leaves every Vale PDF rendering in a different face in each reader, and screen annotations differing from print. The published reader's font must match whatever is chosen.",
+   "blocks": [
+    "WP-S08-03",
+    "WP-S08-08",
+    "WP-S08-14"
+   ]
+  },
+  {
+   "id": "D-S08-04",
+   "question": "Where is Publish Drawings opened in VV, given there is no Drawing Register?",
+   "options": "(a) port the Drawing Register (another slice) and use its bar, as TV does; (b) an interim entry in the Layout Editor Dev section (localhost only); (c) a toolbar button",
+   "recommendation": "(a) for an identical experience, with (b) until the register lands.",
+   "blocks": [
+    "WP-S08-09"
+   ]
+  },
+  {
+   "id": "D-S08-05",
+   "question": "What link form does VV's Share hand out?",
+   "options": "(a) <VV live app URL>?project=<code>&open=<key>, resolved by VV's R2 master index, with base and pattern in config; (b) a short resolver page like TV's s/ on a Vale-controlled host",
+   "recommendation": "(a) now. (b) only if Vale moves to its own domain: the base is config, but the keys are permanent.",
+   "blocks": [
+    "WP-S08-11"
+   ]
+  },
+  {
+   "id": "D-S08-06",
+   "question": "What is a VV document id (it names published folders, archives and the share fallback)?",
+   "options": "(a) the stored Drawing No., sanitised, falling back to VV's '<code>-<order>' default; (b) TV's three-fact composition (project code + phase + number), only together with the register/phase port",
+   "recommendation": "(a) as an interim adapter, decided before the first publish. A later change of id creates new folders and archives the old ones.",
+   "blocks": [
+    "WP-S08-09",
+    "WP-S08-11"
+   ]
+  },
+  {
+   "id": "D-S08-07",
+   "question": "How do VV's share and viewer treat statements and the register?",
+   "options": "(a) omit both kinds now and keep the key constants reserved; (b) hold sharing until the Statement Writer and Register are ported",
+   "recommendation": "(a)",
+   "blocks": [
+    "WP-S08-11"
+   ]
+  },
+  {
+   "id": "D-S08-08",
+   "question": "Is published output committed to the ValeCodebase repo?",
+   "options": "(a) ignore Projects/**/06__Layout__PublishedDocuments/ (R2 is the reader's source; GitHub Pages then has no fallback copy); (b) commit everything except 00__Archive__Revisions; (c) commit all",
+   "recommendation": "(a) or (b). Never commit archive zips (TV's own '**/00__Archive/' rule misses '00__Archive__Revisions' too).",
+   "blocks": [
+    "WP-S08-05"
+   ]
+  },
+  {
+   "id": "D-S08-09",
+   "question": "How should the shared Whitecardopedia sync purge be fixed?",
+   "options": "(a) purge top-level keys only (Delimiter='/') and paginate; (b) skip named prefixes (06__Layout__PublishedDocuments/, LayoutEditor/, PresentationMode/, 00__)",
+   "recommendation": "(a), which matches the function's stated intent. It must precede VV's first R2 publish.",
+   "blocks": [
+    "WP-S08-04",
+    "WP-S08-09"
+   ]
+  },
+  {
+   "id": "D-S08-10",
+   "question": "Should the shared Vale service worker get a published cache class and a token bump?",
+   "options": "(a) yes, with the publishing release; (b) no class, relying on HTTP cache headers",
+   "recommendation": "(a). The bump is Adam's call because it evicts every Vale app's caches.",
+   "blocks": [
+    "WP-S08-12"
+   ]
+  },
+  {
+   "id": "D-S08-11",
+   "question": "Should 65 and PdfExporter wait for the dependency slices, or be stubbed to get the phone-safe reader sooner?",
+   "options": "(a) wait, then port verbatim; (b) stub RenderFogForExport/SitePlanDrawing/IsSitePlan* now (fog and site plans only)",
+   "recommendation": "(a). (b) only for fog and site plans; PaintOrder, BuildLayerPrimitives, BuildViewportFrame and FloorAreas cannot be stubbed without changing the published sheet.",
+   "blocks": [
+    "WP-S08-09",
+    "WP-S08-14"
+   ]
+  },
+  {
+   "id": "D-S08-12",
+   "question": "What upload mode and size ceiling does the new worker route use?",
+   "options": "(a) raw streamed body up to about 95 MB; (b) base64 JSON like the existing asset route (25 MB, whole file in Worker memory)",
+   "recommendation": "(a)",
+   "blocks": [
+    "WP-S08-05"
+   ]
+  }
+ ],
+ "coverage": {
+  "files_examined": 128,
+  "files_in_scope_tv": 51,
+  "files_in_scope_vv": 36,
+  "not_examined": [
+   "Full bodies of TV Publish__Panel, Publish__Raster (Encode only), Publish__Sheet and Publish__Viewports (headers, imports, exports and key calls only)",
+   "Full bodies of TV 52 Elements, Paint, Sheet, Viewports, Unpublished and LoadingScreen (headers, imports and exports only; Urls and Config read in full)",
+   "Full bodies of TV 66 Links, Manifest, Button and Open (headers, imports, exports and README only)",
+   "TV worker CloudflareHandler__R2__.js bodies beyond the route list and prefix guards",
+   "Test bodies of Na__Test__PublishedReader__, PublishedSchema__ and ShareLinks__ (headers and locations only)",
+   "TV Statement Writer publish modules (52__Feature__StatementWriter/07__Export__Publish) - out of scope; noted as a future share-record writer",
+   "VV 61 FormOverlay, email template and GenerateEmail bodies; VV worker ProjectVisibility, ProjectEditor save body and the CloudflareHelper__Build/Master* helpers",
+   "TV example fixture element files (only the index and share record summarised)",
+   "Live behaviour: no browser run, no worker probed, no R2 listing, no publish executed"
+  ]
+ }
+}

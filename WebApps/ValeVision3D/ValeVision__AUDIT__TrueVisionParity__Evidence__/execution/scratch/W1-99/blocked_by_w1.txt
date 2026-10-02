@@ -1,0 +1,351 @@
+﻿rows 610 end of W1: {'-': 279, 'none': 153, 'list': 178}  ledger now (end of W0): {'-': 276, 'none': 118, 'list': 216}
+cells that change: 116
+  cleared to none: 38
+  3.1 | `40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js`
+      was: none
+      now: -
+  3.1 | `42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js`
+      was: `Na__FloorPlan__StoreyLevel__.js` (missing, W1-08)
+      now: none
+  3.1 | `42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js`
+      was: 9 modules: `Na__DrawView__DevRowShell__.js` (missing, W1-06); `Na__DrawView__DraftGuard__.js` (missing, W1-06); `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); and 6 more (landed by W1-06, W1-08, W2-01, W2-40)
+      now: 5 modules: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__DevMenu__Controls__.js` (missing, W2-01); `Na__DrawingPlanes__Grip__.js` (missing, W2-01); and 2 more (landed by W2-01, W2-40)
+  3.1 | `42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js`
+      was: `Na__DrawView__DevRowShell__.js` (missing, W1-06); `Na__FloorPlan__DevMenu__StoreyRow__.js` (missing, W1-08)
+      now: none
+  3.1 | `42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js`
+      was: `Na__FloorPlan__StoreyLevel__.js` (missing, W1-08); `Na__FloorPlan__ConfigState__.js` (+1 name, W1-08)
+      now: none
+  3.1 | `45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js`
+      was: 10 modules: `Na__DrawView__DevRowShell__.js` (missing, W1-06); `Na__DrawView__DraftGuard__.js` (missing, W1-06); `Na__Elevation__AutoName__.js` (missing, W1-10); and 7 more (landed by W1-06, W1-10, W2-01, W2-40)
+      now: 5 modules: `Na__DrawingPlanes__Bounds__.js` (missing, W2-40); `Na__DrawingPlanes__DevMenu__Controls__.js` (missing, W2-01); `Na__DrawingPlanes__Grip__.js` (missing, W2-01); and 2 more (landed by W2-01, W2-40)
+  3.1 | `45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js`
+      was: `Na__DrawView__DevRowShell__.js` (missing, W1-06); `Na__Elevation__AutoName__.js` (missing, W1-10); `Na__ElevationDepthFog__DevMenu__Row__.js` (missing, W2-03); `Na__Elevation__ProjectJson__Data__.js` (+2 names, W1-10)
+      now: `Na__ElevationDepthFog__DevMenu__Row__.js` (missing, W2-03)
+  3.1 | `45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js`
+      was: `Na__ElevationDepthFog__RecordData__.js` (missing, W1-09)
+      now: none
+  3.1 | `46__System__NorthDirection/Na__North__CompassGizmo__.js`
+      was: `Na__RenderLoop__InteractiveOverlays__.js` (missing, W1-01)
+      now: none
+  3.1 | `46__System__NorthDirection/Na__North__DevMenu__Editor__.js`
+      was: `Na__North__CompassGizmo__.js` (+2 names, W1-11)
+      now: none
+  3.1 | `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js`
+      was: 32 modules: `Na__AppUtils__KeyScope__.js` (missing, W1-29); `Na__ModelGroup__PhaseLibrary__.js` (missing, W1-01); `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); and 29 more (landed by W1-13, W1-17, W1-21, W1-27, 
+      now: 26 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__Panel__DrawingGrid__.js` (missing, W2-18); and 23 more (landed by W1-21, W1-27,
+  3.1 | `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js`
+      was: `Na__LayoutEditor__ModeController__.js` (+4 names, W1-34); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-34)
+      now: `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-34)
+  3.1 | `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js`
+      was: `Na__DrawView__ProjectData__.js` (+4 names, W1-05)
+      now: none
+  3.1 | `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js`
+      was: 8 modules: `Na__LayoutEditor__SheetModel__AreaGroups__.js` (missing, W1-20); `Na__DrawView__ProjectData__.js` (+1 name, W1-05); `Na__LayoutEditor__SheetModel__Groups__.js` (+1 name, W1-20); and 5 more (landed by W1-20, W
+      now: 7 modules: `Na__LayoutEditor__SheetModel__AreaGroups__.js` (missing, W1-20); `Na__LayoutEditor__SheetModel__Groups__.js` (+1 name, W1-20); `Na__LayoutEditor__SheetModel__Layers__.js` (+7 names, W1-20); and 4 more (landed
+  3.1 | `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js`
+      was: 5 modules: `Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js` (missing, W1-13); `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__Register__Numbering__.js` (missing, W1-13); and 
+      now: `Na__LayoutEditor__SheetModel__State__.js` (+1 name, W1-20); `Na__LayoutEditor__SheetRecords__.js` (+6 names, W1-19)
+  3.1 | `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__SitePlanComposites__.js` (missing, W1-13); `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); `Na__LayoutEditor__SheetRecords__.js` (+1
+      now: `Na__LayoutEditor__SheetRecords__.js` (+1 name, W1-19)
+  3.1 | `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js`
+      was: 7 modules: `Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js` (missing, W1-13); `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); and 4 more (l
+      now: none
+  3.1 | `51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js`
+      was: `Na__AppUtils__KeyScope__.js` (missing, W1-29)
+      now: none
+  3.1 | `51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js`
+      was: 6 modules: `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); and 3 more (landed by W1-15, W1-16, W1
+      now: `Na__LayoutEditor__PdfFonts__.js` (missing, W1-25)
+  3.1 | `51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js`
+      was: 5 modules: `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__VectorQuality__.js` (missing, W1-14); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); and 2 more (landed by W1-26, W1-28)
+      now: `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26); `Na__LayoutEditor__MarkupBridge__.js` (+2 names, W1-28)
+  3.1 | `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__MarkupBridge__.js` (+1 name, W1-28)
+      now: `Na__LayoutEditor__MarkupBridge__.js` (+1 name, W1-28)
+  3.1 | `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js`
+      was: `Na__LayoutEditor__DimensionRounding__.js` (missing, W1-13); `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__FloorAreas__Paint__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+1 name
+      now: `Na__LayoutEditor__FloorAreas__Paint__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+  3.1 | `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js`
+      was: `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); `Na__ProjectQr__Symbol__.js` (missing, W1-15); `Na__LayoutEditor__SheetImages__Paint__.js` (missing, W1-16); `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)
+      now: `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js`
+      was: 8 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); and 5 more (landed by W1-14, W1-21, W
+      now: 7 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); and 4 more (landed by W1-21, W2-14, W
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js`
+      was: `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); `Na__LayoutEditor__DraftMode__State__.js` (missing, W1-14); `Na__ProjectedLinework__ConfigAccess__.js` 
+      now: `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js`
+      was: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11)
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js`
+      was: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__DraftMode__State__.js` (missing, W1-14)
+      now: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16)
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js`
+      was: `Na__ModelGroup__PhaseLibrary__.js` (missing, W1-01); `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__FloorPlan__ProjectJson__Data__.js` (+2 names, W1-08); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+      now: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js`
+      was: `Na__LayoutEditor__NoteRegions__Tool__.js` (missing, W2-22); `Na__LayoutEditor__FloorAreas__Tool__.js` (missing, W1-27); `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28); `Na__LayoutEditor__MeasureParse__.js` (+3 n
+      now: `Na__LayoutEditor__NoteRegions__Tool__.js` (missing, W2-22); `Na__LayoutEditor__FloorAreas__Tool__.js` (missing, W1-27); `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28)
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__ShapeGeometry__.js` (+1 name, W1-26)
+      now: `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__ShapeGeometry__.js` (+1 name, W1-26)
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js`
+      was: 12 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); and 9 more (landed by W1-26, W1-27, W2-1
+      now: 11 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ObjectSnap__.js` (missing, W2-19); and 8 more (landed by W1-26, W1-27, W2-21, W2-
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js`
+      was: 14 modules: `Na__AppUtils__KeyScope__.js` (missing, W1-29); `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); and 11 more (landed by W1-26, W1-27, W2-18, W2-19, W
+      now: 13 modules: `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__ObjectSnap__.js` (missing, W2-19); and 10 more (landed by W1-26, W1-27, W2-18, W2
+  3.1 | `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js`
+      was: 17 modules: `Na__LayoutEditor__MoveAnchor__.js` (missing, W2-25); `Na__LayoutEditor__ObjectSnap__GridMoves__.js` (missing, W2-19); `Na__LayoutEditor__ObjectSnap__Moves__.js` (missing, W2-19); and 14 more (landed by W1-14
+      now: 16 modules: `Na__LayoutEditor__MoveAnchor__.js` (missing, W2-25); `Na__LayoutEditor__ObjectSnap__GridMoves__.js` (missing, W2-19); `Na__LayoutEditor__ObjectSnap__Moves__.js` (missing, W2-19); and 13 more (landed by W1-26
+  3.1 | `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js`
+      was: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); `Na__LayoutEditor__SheetModel__.js` 
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+  3.1 | `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js`
+      was: `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13)
+      now: none
+  3.1 | `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js`
+      was: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+  3.1 | `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js`
+      was: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__.js` (missing, W2-41)
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__.js` (missing, W2-41)
+  3.1 | `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js`
+      was: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js`
+      was: `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17)
+      now: none
+  3.1 | `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js`
+      was: 8 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); and 5 more (landed by W1-08, W1-13, W1-21
+      now: 5 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__SitePlan__Store__.js` (missing, W2-14); and 2 more (landed by W1-21, W2-21)
+  3.1 | `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js`
+      was: 13 modules: `Na__LayoutEditor__VectorQuality__.js` (missing, W1-14); `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); and 10 more (landed by W1-16, W2-18, W2-19,
+      now: 11 modules: `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__ObjectSnap__.js` (missing, W2-19); and 8 more (landed by W2-18, W2-19, W2-27, W3-
+  3.1 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js`
+      was: `Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js` (missing, W1-13); `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__NoteRegions__.js` (missing, W2-32); `Na__LayoutEditor__Spec
+      now: `Na__LayoutEditor__NoteRegions__.js` (missing, W2-32); `Na__LayoutEditor__SpecMargin__Column__.js` (missing, W2-32)
+  3.1 | `51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js`
+      was: 12 modules: `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); `Na__ProjectQr__ProjectLink__.js` (missing, W1-15); `Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js` (missing, W3-17); and 9 more (landed by 
+      now: 10 modules: `Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js` (missing, W3-17); `Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js` (missing, W2-38); `Na__LayoutEditor__ScrapbookParametric__ProjectQr__.j
+  3.1 | `51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.1 | `51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__ScrapbookParametric__.js` (+2 names, W2-37)
+      now: `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__ScrapbookParametric__.js` (+2 names, W2-37)
+  3.1 | `51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js`
+      was: 10 modules: `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); and 7 more (landed by W1-16, W1-17, W1-2
+      now: 5 modules: `Na__LayoutEditor__PdfFonts__.js` (missing, W1-25); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26); and 2 more (landed by W1-28, W2-16)
+  3.4 | `05__RenderPipeline/Na__RenderLoop__Invalidation.js`
+      was: none
+      now: -
+  3.4 | `25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+      was: none
+      now: -
+  3.5 | `40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js`
+      was: `Na__DrawView__DrawingUsage__.js` (missing, W1-06)
+      now: none
+  3.5 | `40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js`
+      was: `Na__DrawView__DraftMaths__.js` (missing, W1-06); `Na__DrawView__ProjectData__.js` (+1 name, W1-05); `Na__DrawView__RowAccordion__.js` (+2 names, W1-06)
+      now: none
+  3.5 | `42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js`
+      was: `Na__FloorPlan__ProjectJson__Data__.js` (+3 names, W1-08)
+      now: none
+  3.5 | `45__System__ElevationViews/Na__Elevation__AutoName__.js`
+      was: `Na__Elevation__AutoNameText__.js` (missing, W1-10)
+      now: none
+  3.5 | `47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js`
+      was: 5 modules: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40); `Na__DrawingPlanes__Overlay__.js` (missing, W2-01); and 2 more (landed by W1-01, W2-40)
+      now: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40); `Na__DrawingPlanes__Overlay__.js` (missing, W2-01); `Na__DrawingPlanes__PlaneMesh__.js` (missing, W2-40)
+  3.5 | `47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js`
+      was: 5 modules: `Na__RenderLoop__InteractiveOverlays__.js` (missing, W1-01); `Na__DrawingPlanes__Bounds__.js` (missing, W2-40); `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); and 2 more (landed by W2-40)
+      now: `Na__DrawingPlanes__Bounds__.js` (missing, W2-40); `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40); `Na__DrawingPlanes__PlaneMesh__.js` (missing, W2-40)
+  3.5 | `48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js`
+      was: `Na__DrawView__DevRowShell__.js` (missing, W1-06)
+      now: none
+  3.5 | `49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js`
+      was: `Na__DrawView__DevRowShell__.js` (missing, W1-06); `Na__ElevationDepthFog__ConfigState__.js` (missing, W1-09)
+      now: none
+  3.5 | `49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js`
+      was: `Na__ElevationDepthFog__ConfigState__.js` (missing, W1-09); `Na__ElevationDepthFog__Maths__.js` (missing, W1-09)
+      now: none
+  3.5 | `49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js`
+      was: `Na__ElevationDepthFog__ConfigState__.js` (missing, W1-09); `Na__ElevationDepthFog__Maths__.js` (missing, W1-09); `Na__ElevationDepthFog__Shader__.js` (missing, W1-09)
+      now: none
+  3.5 | `50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js`
+      was: `Na__DoorAnimation__FindDoorGroups.js` (missing, W1-02); `Na__ProjectedLinework__Storeys__.js` (missing, W2-43); `3dObjectIInteraction__Animation__ClickToOpenDoors__.js` (+6 names, W1-02); `Na__ProjectedLinework__ConfigA
+      now: `Na__ProjectedLinework__Storeys__.js` (missing, W2-43); `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+  3.5 | `51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js`
+      was: `Na__ProjectQr__Symbol__.js` (missing, W1-15); `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)
+      now: `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)
+  3.5 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js`
+      was: `Na__ModelGroup__PhaseLibrary__.js` (missing, W1-01); `Na__LayoutEditor__Viewport2d__SitePlan__.js` (missing, W2-16); `Na__SitePlan__Store__.js` (missing, W2-14)
+      now: `Na__LayoutEditor__Viewport2d__SitePlan__.js` (missing, W2-16); `Na__SitePlan__Store__.js` (missing, W2-14)
+  3.5 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js`
+      was: `Na__ProjectedLinework__DoorPose__.js` (missing, W2-06); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__FloorPlan__ProjectJson__Data__.js` (+1 name, W1-08)
+      now: `Na__ProjectedLinework__DoorPose__.js` (missing, W2-06)
+  3.5 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js`
+      was: `Na__ElevationDepthFog__ConfigState__.js` (missing, W1-09); `Na__ElevationDepthFog__Maths__.js` (missing, W1-09); `Na__Elevation__ProjectJson__Data__.js` (+2 names, W1-10)
+      now: none
+  3.5 | `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js`
+      was: 6 modules: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__SitePlanComposites__.js` (missing, W1-13); `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); and 3 more (landed by W1-21, W2-16)
+      now: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__Viewport2d__Linework__.js` (+1 name, W2-16); `Na__LayoutEditor__EdgeStyles__.js` (+1 name, W2-16)
+  3.5 | `51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js`
+      was: `Na__LayoutEditor__DraftMode__State__.js` (missing, W1-14); `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28)
+      now: `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28)
+  3.5 | `51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js`
+      was: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28); `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+      now: `Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28); `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+  3.5 | `51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State
+      now: `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42)
+  3.5 | `51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js`
+      was: 7 modules: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); and 4 more (landed by W
+      now: 5 modules: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__Index__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); and 2 more (landed by 
+  3.5 | `51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js`
+      was: 6 modules: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42); `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14); and 3 more (landed by
+      now: 5 modules: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); and 2 more (landed by W1-26, W
+  3.5 | `51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js`
+      was: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+  3.5 | `51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js`
+      was: `Na__AppUtils__KeyScope__.js` (missing, W1-29)
+      now: none
+  3.5 | `51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js`
+      was: `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+      now: `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+  3.5 | `51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js`
+      was: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+      now: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js`
+      was: `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__OffsetTool__.js` (missing, W2-41); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorToo
+      now: `Na__LayoutEditor__VectorTools__OffsetTool__.js` (missing, W2-41); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__State__.js` (missing, W2-27)
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js`
+      was: 6 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14); and 3 more (landed by W2
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js`
+      was: 9 modules: `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Boolean__.js` (missing, W2-27); and 6 more (landed by W1-21, 
+      now: 8 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Boolean__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); and 5 more (landed 
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js`
+      was: 5 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); and 2 more (landed b
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js`
+      was: 8 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); and 5 more (landed 
+      now: 7 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__Offset__.js` (missing, W2-27); and 4 more (landed 
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js`
+      was: `Na__LayoutEditor__VectorTools__Curves__.js` (missing, W1-14)
+      now: none
+  3.5 | `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js`
+      was: 6 modules: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); and 3 more (landed by 
+      now: 5 modules: `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__State__.js` (missing, W2-27); and 2 more (landed b
+  3.5 | `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js`
+      was: `Na__LayoutEditor__SitePlanComposites__.js` (missing, W1-13); `Na__LayoutEditor__SheetModel__.js` (+2 names, W1-21)
+      now: `Na__LayoutEditor__SheetModel__.js` (+2 names, W1-21)
+  3.5 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js`
+      was: `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__SpecMargin__Column__.js` (missing, W2-32)
+      now: `Na__LayoutEditor__SpecMargin__Column__.js` (missing, W2-32)
+  3.5 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js`
+      was: 7 modules: `Na__LayoutEditor__DrawingGrid__State__.js` (missing, W1-14); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); and 4 more (landed by W1-
+      now: 5 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__NoteRegions__Tool__.js` (missing, W2-22); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); and 2 more (landed by W1-28, W3-
+  3.5 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js`
+      was: `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__SheetModel__.js` (+2 names, W1-21)
+      now: `Na__LayoutEditor__SheetModel__.js` (+2 names, W1-21)
+  3.5 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js`
+      was: `Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js` (missing, W1-13); `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13)
+      now: none
+  3.5 | `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js`
+      was: 6 modules: `Na__LayoutEditor__SheetRecords__NoteRegions__.js` (missing, W1-13); `Na__LayoutEditor__NoteRegions__.js` (missing, W2-32); `Na__LayoutEditor__NoteRegions__Grips__.js` (missing, W3-11); and 3 more (landed by W
+      now: 5 modules: `Na__LayoutEditor__NoteRegions__.js` (missing, W2-32); `Na__LayoutEditor__NoteRegions__Grips__.js` (missing, W3-11); `Na__LayoutEditor__NoteRegions__Tool__.js` (missing, W2-22); and 2 more (landed by W1-21, W3
+  3.5 | `51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js`
+      was: 9 modules: `Na__LayoutEditor__DocumentKeys__.js` (missing, W1-30); `Na__LayoutEditor__Register__Data__.js` (missing, W4-18); `Na__LayoutEditor__Register__Export__.js` (missing, W4-10); and 6 more (landed by W4-07, W4-08,
+      now: 8 modules: `Na__LayoutEditor__Register__Data__.js` (missing, W4-18); `Na__LayoutEditor__Register__Export__.js` (missing, W4-10); `Na__LayoutEditor__Register__Notes__.js` (missing, W4-18); and 5 more (landed by W4-07, W4-
+  3.5 | `51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js`
+      was: 5 modules: `Na__LayoutEditor__Register__Data__.js` (missing, W4-18); `Na__LayoutEditor__Register__DeleteDialog__.js` (missing, W4-18); `Na__LayoutEditor__Register__Numbering__.js` (missing, W1-13); and 2 more (landed by 
+      now: `Na__LayoutEditor__Register__Data__.js` (missing, W4-18); `Na__LayoutEditor__Register__DeleteDialog__.js` (missing, W4-18); `Na__LayoutEditor__AutoSave__.js` (+3 names, W1-07); `Na__LayoutEditor__SheetModel__.js` (+4 nam
+  3.5 | `51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js`
+      was: 13 modules: `Na__ContextMenuSystem__Ui__MenuRenderer__.js` (missing, W4-11); `Na__LayoutEditor__DocumentKeys__.js` (missing, W1-30); `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); and 10 more (landed by W1-15
+      now: 11 modules: `Na__ContextMenuSystem__Ui__MenuRenderer__.js` (missing, W4-11); `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); `Na__LayoutEditor__Statement__Lockstep__.js` (missing, W2-30); and 8 more (landed by
+  3.5 | `51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js`
+      was: `Na__LayoutEditor__PdfExporter__.js` (+1 name, W3-16)
+      now: none
+  3.5 | `51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publis
+      was: 6 modules: `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); `Na__LayoutEditor__Statement__Images__.js` (missing, W4-05); `Na__LayoutEditor__Statement__Publish__Images__.js` (missing, W4-12); and 3 more (landed 
+      now: 5 modules: `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); `Na__LayoutEditor__Statement__Images__.js` (missing, W4-05); `Na__LayoutEditor__Statement__Publish__Images__.js` (missing, W4-12); and 2 more (landed 
+  3.5 | `51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Sta
+      was: `Na__ProjectQr__Painter__.js` (missing, W1-15); `Na__ProjectQr__ProjectLink__.js` (missing, W1-15); `Na__ProjectQr__Symbol__.js` (missing, W1-15)
+      now: none
+  3.5 | `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js`
+      was: `Na__ProjectQr__Encoder__.js` (missing, W1-15); `Na__ProjectQr__ProjectLink__.js` (missing, W1-15)
+      now: none
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js`
+      was: 7 modules: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02); and 4 more (landed b
+      now: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Menu__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Pub
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js`
+      was: 7 modules: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Handles__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02); and 4 more (landed by
+      now: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Handles__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js`
+      was: 5 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Paint__.js` (missing, W1-16); and 2 more (landed b
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js`
+      was: `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16)
+      now: none
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js`
+      was: 5 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Paint__.js` (missing, W1-16); and 2 more (landed b
+      now: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__Grips__.js` (+1 name, W2-24)
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js`
+      was: 7 modules: `Na__LayoutEditor__SheetImages__Encode__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Publish__.js` (missing, W3-18); and 4 more (lande
+      now: `Na__LayoutEditor__SheetImages__Publish__.js` (missing, W3-18); `Na__LayoutEditor__EditScope__.js` (+1 name, W2-21); `Na__LayoutEditor__SheetTools__ToolState__.js` (+1 name, W3-01)
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js`
+      was: 5 modules: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02); and 2 more (landed b
+      now: `Na__LayoutEditor__SheetImages__Crop__.js` (missing, W3-02); `Na__LayoutEditor__SheetImages__Insert__.js` (missing, W3-02)
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js`
+      was: `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Painter__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16); `Na__LayoutEditor__SheetImage
+      now: none
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js`
+      was: 5 modules: `Na__LayoutEditor__SheetImages__Encode__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Paint__.js` (missing, W1-16); and 2 more (landed 
+      now: none
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js`
+      was: 7 modules: `Na__LayoutEditor__SheetImages__Encode__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16); and 4 more (landed 
+      now: `Na__LayoutEditor__SheetImages__Store__.js` (missing, W3-18); `Na__LayoutEditor__SheetRecords__.js` (+1 name, W1-19)
+  3.5 | `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js`
+      was: `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16)
+      now: none
+  3.5 | `51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLi
+      was: 6 modules: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__SitePlanComposites__.js` (missing, W1-13); `Na__LayoutEditor__HatchPatterns__.js` (missing, W1-17); and 3 more (landed by W1-21, W2-16, W2-39)
+      now: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js` (missing, W2-39); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__Viewport2d__.js` (+2 names,
+  3.5 | `51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+      now: none
+  3.5 | `51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js`
+      was: `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); `Na__LayoutEditor__FloorAreas__Geometry__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+5 names, W1-21)
+      now: `Na__LayoutEditor__FloorAreas__Geometry__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+5 names, W1-21)
+  3.5 | `51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js`
+      was: `Na__LayoutEditor__OrthoMode__State__.js` (missing, W1-14); `Na__LayoutEditor__FloorAreas__.js` (missing, W1-27); `Na__LayoutEditor__FloorAreas__Paint__.js` (missing, W1-27); `Na__LayoutEditor__Grips__.js` (+1 name, W2-2
+      now: `Na__LayoutEditor__FloorAreas__.js` (missing, W1-27); `Na__LayoutEditor__FloorAreas__Paint__.js` (missing, W1-27); `Na__LayoutEditor__Grips__.js` (+1 name, W2-24)
+  3.5 | `51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js`
+      was: 5 modules: `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__FloorAreas__.js` (missing, W1-27); `Na__LayoutEditor__Publish__Raster__.js` (missing, W4-03); and 2 more (landed by W1-28, W4-01)
+      now: `Na__LayoutEditor__FloorAreas__.js` (missing, W1-27); `Na__LayoutEditor__Publish__Raster__.js` (missing, W4-03); `Na__PublishedSchema__Paths__.js` (missing, W4-01); `Na__LayoutEditor__MarkupBridge__.js` (+1 name, W1-28)
+  3.5 | `51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js`
+      was: 7 modules: `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); `Na__LayoutEditor__Publish__Raster__.js` (missing, W4-03); `Na__LayoutEditor__Publish__Sheet__.js` (missing, W4-03); and 4 more (landed by W1-21, W1-26, W2
+      now: 6 modules: `Na__LayoutEditor__Publish__Raster__.js` (missing, W4-03); `Na__LayoutEditor__Publish__Sheet__.js` (missing, W4-03); `Na__PublishedSchema__Paths__.js` (missing, W4-01); and 3 more (landed by W1-21, W1-26, W2-1
+  3.5 | `51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js`
+      was: 6 modules: `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); `Na__LayoutEditor__Share__Links__.js` (missing, W4-07); `Na__LayoutEditor__Share__Manifest__.js` (missing, W4-07); and 3 more (landed by W1-05, W1-21,
+      now: `Na__LayoutEditor__Statement__Data__.js` (missing, W4-06); `Na__LayoutEditor__Share__Links__.js` (missing, W4-07); `Na__LayoutEditor__Share__Manifest__.js` (missing, W4-07); `Na__LayoutEditor__SheetModel__.js` (+1 name, 

@@ -1,0 +1,21 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 10 named file(s) - 10 PORT NOTE(s), 10 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 1 since rewritten (their full checks apply)
+
+  PENDING  10 release placeholder(s) in 10 file(s), for the wave's Parity Scribe: W1-20 x10
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:47  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:44  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:37  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:50  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:41  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:36  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:40  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js:42  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:33  {{VVREL:W1-20}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:51  {{VVREL:W1-20}}
+
+  Baseline entries that no longer apply (the file was written since 01-Oct-2026):
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js
+
+  RESULT: PASS (0 fail, 0 warn, 10 pending)

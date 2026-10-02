@@ -1,0 +1,27 @@
+﻿node : node:fs:3090
+At line:1 char:445
++ ... tch\W1-12"; node 80__Testing__PrototypeEnvironment/Na__Test__DrawingD ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (node:fs:3090:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  binding.copyFile(
+          ^
+
+Error: ENOENT: no such file or directory, copyfile 'D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModule
+s\45__System__ElevationViews\Na__Elevation__AutoNameText__.js' -> 
+'C:\Users\adamw\AppData\Local\Temp\na-drafts-c2AY0A\AutoNameText.mjs'
+    at copyFileSync (node:fs:3090:11)
+    at load (file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__Drawi
+ngDrafts__.test.mjs:69:9)
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingDraf
+ts__.test.mjs:75:25 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'copyfile',
+  path: 'D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D\\02__Src__AppModules\\45__System__ElevationViews\\Na__Elev
+ation__AutoNameText__.js',
+  dest: 'C:\\Users\\adamw\\AppData\\Local\\Temp\\na-drafts-c2AY0A\\AutoNameText.mjs'
+}
+
+Node.js v22.23.2

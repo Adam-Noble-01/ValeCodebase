@@ -1,0 +1,1087 @@
+/* =============================================================================
+ * VALEVISION3D - PRESENTATION MODE - SCENE CAROUSEL STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__PresentationMode__Styles__SceneCarousel__.css
+ * NAMESPACE  : Na__PresentationMode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for the Presentation Mode bottom carousel and the
+ *              per-scene editor panel inside the Dev Tools menu
+ * CREATED    : 11-Jun-2026
+ *
+ * =============================================================================
+ */
+
+
+/* #Region ---
+ * REGION | Carousel Container (hidden by default)
+ * ----- */
+
+    .na-pm-carousel {
+        position                           : fixed;
+        bottom                             : 26px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        display                            : none;           /* hidden until visible class added   */
+        align-items                        : center;
+        gap                                : 8px;
+        background                         : rgba(255, 255, 255, 0.96);
+        border-radius                      : 16px;
+        padding                            : 10px 12px;
+        box-shadow                         : 0 4px 24px rgba(0, 0, 0, 0.14);
+        max-width                          : calc(100vw - 40px);
+        z-index                            : 1004;              /* <-- Above nav toolbar (1002), header (1001) and help panel (1003) so the active card's blue ring is never clipped by other menu chrome */
+        backdrop-filter                    : blur(8px);
+        -webkit-backdrop-filter            : blur(8px);
+    }
+
+    .na-pm-carousel--visible {
+        display                            : flex;           /* carousel shown when this class present */
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Carousel Navigation Buttons (Prev / Next)
+ * ----- */
+
+    .na-pm-carousel__nav {
+        position                           : relative;       /* establishes stacking order vs the cards wrapper below */
+        z-index                            : 1;
+        flex-shrink                        : 0;
+        background                         : transparent;
+        border                             : none;
+        font-size                          : 1.5rem;
+        color                              : #333;
+        cursor                             : pointer;
+        padding                            : 4px 8px;
+        border-radius                      : 8px;
+        line-height                        : 1;
+        transition                         : background 0.15s, color 0.15s;
+    }
+
+    .na-pm-carousel__nav:hover {
+        background                         : #eef3f8;
+        color                              : #0066cc;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Cards Wrapper (horizontally scrollable row)
+ * ----- */
+
+    .na-pm-carousel__cards {
+        position                           : relative;       /* above the nav buttons so the active card's ring is never clipped by them */
+        z-index                            : 2;
+        display                            : flex;
+        gap                                : 8px;
+        overflow-x                         : auto;
+        scroll-behavior                    : smooth;
+        scrollbar-width                    : none;           /* hide scrollbar Firefox     */
+        -ms-overflow-style                 : none;           /* hide scrollbar IE          */
+        max-width                          : 70vw;
+        padding                            : 2px 0;
+    }
+
+    .na-pm-carousel__cards::-webkit-scrollbar {
+        display                            : none;           /* hide scrollbar Chrome/Safari */
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Individual Scene Card
+ * ----- */
+
+    .na-pm-carousel__card {
+        flex-shrink                        : 0;
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 4px;
+        background                         : transparent;
+        border                             : 2px solid transparent;
+        border-radius                      : 10px;
+        padding                            : 4px;
+        cursor                             : pointer;
+        transition                         : border-color 0.18s, transform 0.18s;
+        width                              : 90px;
+    }
+
+    .na-pm-carousel__card:hover {
+        border-color                       : #99bedd;
+        transform                          : scale(1.03);
+    }
+
+    .na-pm-carousel__card--active {
+        border-color                       : #1a7fc4;        /* active scene — blue ring   */
+        background                         : rgba(26, 127, 196, 0.06);
+    }
+
+    .na-pm-carousel__card--active:hover {
+        border-color                       : #1a7fc4;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Card Pop Feedback (click / touch / number-key hotkey)
+ * ----- */
+
+    /* Plays once whenever a card becomes the active scene, whatever triggered
+       it — a click, a tap, or a number-key hotkey (see SetActiveScene in
+       SceneCarousel.js, which adds and removes this class). A quick scale-up
+       and settle so the choice reads as "landed" even when nothing else on
+       screen moves yet (the camera flight takes a beat to catch up).        */
+    @keyframes na-pm-carousel-card-pop {
+        0%   { transform: scale(1);    }
+        45%  { transform: scale(1.06); }
+        100% { transform: scale(1);    }
+    }
+
+    .na-pm-carousel__card--pop {
+        animation                          : na-pm-carousel-card-pop 0.32s ease-out;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Thumbnail Image and Placeholder
+ * ----- */
+
+    .na-pm-carousel__thumb {
+        width                              : 82px;
+        height                             : 52px;
+        object-fit                         : cover;
+        border-radius                      : 6px;
+        display                            : block;
+    }
+
+    .na-pm-carousel__thumb--placeholder {
+        background                         : #f0f2f4;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : 1.4rem;
+        color                              : #aaa;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Scene Name Label
+ * ----- */
+
+    .na-pm-carousel__label {
+        font-size                          : 0.68rem;
+        color                              : #333;
+        text-align                         : center;
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        max-width                          : 86px;
+        line-height                        : 1.2;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Adaptive Layout - Top Toolbar Position
+ * ----- */
+
+    /* When body.na-presentation-mode-active the nav toolbar moves to the top.
+       The carousel at the bottom fills the vacated area.                     */
+    body.na-presentation-mode-active .na-nav-toolbar {
+        bottom                             : auto;
+        top                                : calc((var(--Vale_HeaderHeight, 54px) + var(--Vale_LayoutTabStripHeight, 0px)) + 14px);  /* below header */
+        left                               : 50%;
+        transform                          : translateX(-50%);
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Inactive Toolbar Opacity Fade
+ * ----- */
+
+    /* Idle by default, exactly like the Tools & Settings menu: pure CSS
+       hover/focus response with no JS timer lag. The --wake class is a
+       short-lived flash applied by NavigationToolbar Controls only for
+       hotkey-driven mode changes, which CSS hover cannot see.            */
+    .na-nav-toolbar {
+        opacity                            : 0.5;            /* 50% idle default */
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0);      /* shadow hidden while idle */
+        transition                         : opacity 0.3s ease, box-shadow 0.3s ease;  /* same fade as the other menus */
+    }
+
+    .na-nav-toolbar:hover,
+    .na-nav-toolbar:focus-within,
+    .na-nav-toolbar.na-nav-toolbar--wake {
+        opacity                            : 1;              /* fully opaque on interaction */
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.14);   /* shadow animates in with the opacity */
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Inactive Carousel Opacity Fade
+ * ----- */
+
+    /* Same idle recipe as the toolbar and menus. Taps, swipes and clicks get
+       a JS wake flash (na-pm-carousel--wake, see SceneCarousel.js) that holds
+       the carousel opaque through the scene camera flight, then lets it fade
+       back out. Keyboard focus holds it opaque via :focus-visible — unlike
+       :focus-within this does NOT pin it opaque after an ordinary tap, so
+       the fade-out always happens on touch devices. Ported from TrueVision3D
+       16-Sep-2026, now that the Views button no longer keeps the carousel
+       permanently opaque-by-toggle. */
+    .na-pm-carousel {
+        opacity                            : 0.5;            /* 50% idle default */
+        box-shadow                         : 0 4px 24px rgba(0, 0, 0, 0);      /* shadow hidden while idle */
+        transition                         : opacity 0.3s ease, box-shadow 0.3s ease;  /* same fade as the other menus */
+    }
+
+    .na-pm-carousel:hover,
+    .na-pm-carousel.na-pm-carousel--wake {
+        opacity                            : 1;              /* fully opaque while in use */
+        box-shadow                         : 0 4px 24px rgba(0, 0, 0, 0.14);   /* shadow animates in with the opacity */
+    }
+
+    /* Keyboard focus wake kept as its own rule: browsers without :has()
+       support drop only this selector, never the hover/wake rule above.  */
+    .na-pm-carousel:has(:focus-visible) {
+        opacity                            : 1;              /* fully opaque while keyboard-focused */
+        box-shadow                         : 0 4px 24px rgba(0, 0, 0, 0.14);
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Responsive Adjustments
+ * ----- */
+
+    @media (max-width: 560px) {
+        .na-pm-carousel__card {
+            width                          : 72px;
+        }
+
+        .na-pm-carousel__thumb {
+            width                          : 64px;
+            height                         : 42px;
+        }
+
+        .na-pm-carousel__label {
+            font-size                      : 0.62rem;
+            max-width                      : 70px;
+        }
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor Panel
+ * ----- */
+
+    .na-pm-dev__panel {
+        max-height                         : 60vh;
+        overflow-y                         : auto;
+    }
+
+    .na-pm-dev__scene-row {
+        border-top                         : 1px solid #e8eaed;
+        padding                            : 10px 0;
+    }
+
+    .na-pm-dev__scene-header {
+        margin-bottom                      : 6px;
+    }
+
+    .na-pm-dev__row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        margin-bottom                      : 6px;
+    }
+
+    .na-pm-dev__slider-row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        margin-bottom                      : 6px;
+    }
+
+    .na-pm-dev__label {
+        font-size                          : 0.78rem;
+        color                              : #555;
+        min-width                          : 70px;
+        flex-shrink                        : 0;
+    }
+
+    .na-pm-dev__input {
+        flex                               : 1;
+        padding                            : 3px 6px;
+        font-size                          : 0.78rem;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+    }
+
+    .na-pm-dev__input--short {
+        max-width                          : 60px;
+        flex                               : none;
+    }
+
+    .na-pm-dev__slider {
+        flex                               : 1;
+    }
+
+    .na-pm-dev__value {
+        font-size                          : 0.75rem;
+        color                              : #444;
+        min-width                          : 72px;
+        text-align                         : right;
+        flex-shrink                        : 0;
+    }
+
+    .na-pm-dev__select {
+        flex                               : 1;
+        font-size                          : 0.78rem;
+        padding                            : 2px 4px;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+    }
+
+    /* Nav Mode switch: Orbit | Fly | Walk as one segmented control filling
+       the row like the dropdowns do. The lit segment borrows the navigation
+       toolbar's pale blue, because it means the same thing.                 */
+    .na-pm-dev__segmented {
+        flex                               : 1;
+        display                            : flex;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+        overflow                           : hidden;
+        background                         : #f4f6f8;
+    }
+
+    .na-pm-dev__segment {
+        flex                               : 1;
+        padding                            : 3px 0;
+        font-size                          : 0.76rem;
+        font-family                        : inherit;
+        color                              : #444;
+        background                         : transparent;
+        border                             : none;
+        border-left                        : 1px solid #ccc;
+        cursor                             : pointer;
+        transition                         : background 0.14s, color 0.14s;
+    }
+
+    .na-pm-dev__segment:first-child {
+        border-left                        : none;
+    }
+
+    .na-pm-dev__segment:hover:not(:disabled):not(.is-active) {
+        background                         : #e8edf3;
+    }
+
+    .na-pm-dev__segment.is-active {
+        background                         : #dbe9f7;          /* navigation toolbar's active blue */
+        color                              : #1a7fc4;
+        font-weight                        : 600;
+    }
+
+    .na-pm-dev__segment:disabled {
+        color                              : #b3b3b3;
+        cursor                             : not-allowed;
+    }
+
+    .na-pm-dev__actions {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        margin-top                         : 8px;
+    }
+
+    .na-pm-dev__btn {
+        padding                            : 4px 10px;
+        font-size                          : 0.76rem;
+        border                             : 1px solid #ccc;
+        border-radius                      : 5px;
+        background                         : #f4f6f8;
+        cursor                             : pointer;
+        transition                         : background 0.14s;
+    }
+
+    .na-pm-dev__btn:hover {
+        background                         : #e8edf3;
+    }
+
+    .na-pm-dev__btn--primary {
+        border-color                       : #1a7fc4;
+        color                              : #1a7fc4;
+        background                         : #eef5fb;
+    }
+
+    .na-pm-dev__btn--primary:hover {
+        background                         : #daeaf6;
+    }
+
+    .na-pm-dev__btn--danger {
+        border-color                       : #cc3333;
+        color                              : #cc3333;
+        background                         : #fdf0f0;
+    }
+
+    .na-pm-dev__btn--danger:hover {
+        background                         : #fce0e0;
+    }
+
+    /* A GRID, not a wrapping row. Six buttons of six widths wrapped into a
+       ragged block where nothing lined up and the pairing was accidental -
+       which button sat next to Clear All Scenes depended on the panel's width
+       that day. The grid pairs them on purpose. Used by the Presentation
+       Scenes panel only; every other dev panel's buttons are
+       .na-pm-dev__actions, which is still a wrapping row. */
+    .na-pm-dev__global-actions {
+        display                            : grid;
+        grid-template-columns              : 1fr 1fr;
+        gap                                : 6px;
+        padding-top                        : 10px;
+        border-top                         : 1px solid #e8eaed;
+        margin-top                         : 8px;
+    }
+
+    .na-pm-dev__global-actions .na-pm-dev__btn {
+        width                              : 100%;
+    }
+
+    .na-pm-dev__btn--wide {
+        grid-column                        : 1 / -1;
+    }
+
+    .na-pm-dev__empty {
+        font-size                          : 0.78rem;
+        color                              : #888;
+        text-align                         : center;
+        padding                            : 12px 0;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Panel Head and Square Add Button
+ * ----- */
+
+    /* The group editor takes the width it needs; the + never moves off the
+       top-right corner however far that section unfolds. */
+    .na-pm-dev__panel-head {
+        display                            : flex;
+        align-items                        : flex-start;
+        gap                                : 6px;
+    }
+
+    .na-pm-dev__panel-head .na-pm-dev__group-container {
+        flex                               : 1;
+        min-width                          : 0;
+    }
+
+    .na-pm-dev__square-btn {
+        flex-shrink                        : 0;
+        width                              : 26px;
+        height                             : 26px;
+        padding                            : 0;
+        font-size                          : 1.05rem;
+        line-height                        : 1;
+        border                             : 1px solid #1a7fc4;
+        border-radius                      : 5px;
+        background                         : #eef5fb;
+        color                              : #1a7fc4;
+        cursor                             : pointer;
+        transition                         : background 0.14s;
+    }
+
+    .na-pm-dev__square-btn:hover {
+        background                         : #daeaf6;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Folded Scene Rows
+ * ----- */
+
+    /* A folded row is its header strip and nothing else. The body is present
+       in the document throughout, which is what lets the carousel re-point
+       this panel with a class toggle instead of a rebuild. */
+    .na-pm-dev__scene-body {
+        display                            : none;
+        padding-top                        : 8px;
+    }
+
+    .na-pm-dev__scene-row.is-open > .na-pm-dev__scene-body {
+        display                            : block;
+    }
+
+    .na-pm-dev__scene-row.is-open > .na-pm-dev__scene-header {
+        border-bottom                      : 1px solid #e8eaed;
+        padding-bottom                     : 5px;
+    }
+
+    .na-pm-dev__scene-title-btn {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 5px;
+        flex                               : 1;
+        min-width                          : 0;
+        padding                            : 2px 0;
+        font                               : inherit;
+        text-align                         : left;
+        background                         : none;
+        border                             : none;
+        cursor                             : pointer;
+        color                              : inherit;
+    }
+
+    .na-pm-dev__scene-title-btn:hover .na-pm-dev__scene-title {
+        color                              : #1a7fc4;
+    }
+
+    .na-pm-dev__scene-arrow {
+        flex-shrink                        : 0;
+        font-size                          : 0.7rem;
+        color                              : #9aa3ad;
+        transform                          : rotate(-90deg);
+        transition                         : transform 0.15s;
+    }
+
+    .na-pm-dev__scene-row.is-open .na-pm-dev__scene-arrow {
+        transform                          : rotate(0deg);
+    }
+
+    /* A state chip, not a ranking: the same neutral treatment a folded row's
+       counterparts get, saying which kind of scene this is and nothing about
+       how important it is. */
+    .na-pm-dev__scene-badge {
+        flex-shrink                        : 0;
+        padding                            : 1px 5px;
+        font-size                          : 0.58rem;
+        font-weight                        : 600;
+        letter-spacing                     : 0.04em;
+        color                              : #6b7480;
+        background                         : #eef0f3;
+        border                             : 1px solid #dfe3e8;
+        border-radius                      : 3px;
+    }
+
+    .na-pm-dev__scene-row--layout-only .na-pm-dev__scene-title {
+        color                              : #6b7480;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Thumbnail and Identity Block
+ * ----- */
+
+    .na-pm-dev__identity {
+        display                            : flex;
+        align-items                        : flex-start;
+        gap                                : 8px;
+        margin-bottom                      : 8px;
+    }
+
+    .na-pm-dev__identity-fields {
+        flex                               : 1;
+        min-width                          : 0;
+    }
+
+    .na-pm-dev__identity-fields .na-pm-dev__row:last-child {
+        margin-bottom                      : 0;
+    }
+
+    .na-pm-dev__thumb {
+        flex-shrink                        : 0;
+        width                              : 84px;
+        height                             : 56px;
+        padding                            : 0;
+        overflow                           : hidden;
+        border                             : 1px solid #d6dbe1;
+        border-radius                      : 4px;
+        background                         : #f4f6f8;
+        cursor                             : pointer;
+        transition                         : border-color 0.14s;
+    }
+
+    .na-pm-dev__thumb:hover {
+        border-color                       : #1a7fc4;
+    }
+
+    .na-pm-dev__thumb-img {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : cover;
+    }
+
+    .na-pm-dev__thumb--empty {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : 0.62rem;
+        color                              : #9aa3ad;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - FOV Row with Inline Move Speed
+ * ----- */
+
+    /* Two settings on one line, in a panel about 280px wide inside a dropdown.
+       Everything here is sized to that: the slider is the only thing allowed
+       to take the slack, and nothing else carries a min-width that could push
+       the move speed box off the right edge. FOV keeps the slider because
+       framing is a thing you drag and watch; move speed is a number set once
+       a project. */
+    .na-pm-dev__slider-row--fov {
+        gap                                : 3px;
+        flex-wrap                          : nowrap;
+    }
+
+    .na-pm-dev__label--inline {
+        min-width                          : 0;
+    }
+
+    .na-pm-dev__slider-row--fov .na-pm-dev__slider {
+        flex                               : 1 1 auto;
+        min-width                          : 38px;
+    }
+
+    .na-pm-dev__slider-row--fov .na-pm-dev__value {
+        min-width                          : 0;
+        font-size                          : 0.66rem;
+        white-space                        : nowrap;
+    }
+
+    .na-pm-dev__inline-field {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 2px;
+        flex                               : 0 0 auto;
+    }
+
+    .na-pm-dev__inline-label,
+    .na-pm-dev__inline-suffix {
+        font-size                          : 0.64rem;
+        color                              : #6b7480;
+    }
+
+    .na-pm-dev__input--tiny {
+        width                              : 36px;
+        max-width                          : 36px;
+        flex                               : none;
+        padding                            : 2px 2px;
+        font-size                          : 0.72rem;
+        text-align                         : right;
+        -moz-appearance                    : textfield;
+    }
+
+    /* Chrome reserves room for the spinner on a number input even when it is
+       only shown on hover, which on a 36px box is most of the box. */
+    .na-pm-dev__input--tiny::-webkit-outer-spin-button,
+    .na-pm-dev__input--tiny::-webkit-inner-spin-button {
+        -webkit-appearance                 : none;
+        margin                             : 0;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Advanced Section
+ * ----- */
+
+    .na-pm-dev__advanced {
+        margin-top                         : 8px;
+    }
+
+    .na-pm-dev__advanced-toggle {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 5px;
+        width                              : 100%;
+        padding                            : 3px 0;
+        font-size                          : 0.74rem;
+        color                              : #6b7480;
+        text-align                         : left;
+        background                         : none;
+        border                             : none;
+        cursor                             : pointer;
+    }
+
+    .na-pm-dev__advanced-toggle:hover {
+        color                              : #1a7fc4;
+    }
+
+    .na-pm-dev__advanced-toggle[aria-expanded="true"] .na-pm-dev__advanced-arrow {
+        transform                          : rotate(180deg);
+    }
+
+    .na-pm-dev__advanced-body {
+        display                            : none;
+        padding                            : 8px 0 2px 8px;
+        border-left                        : 2px solid #e8eaed;
+    }
+
+    .na-pm-dev__advanced-body.is-open {
+        display                            : block;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Checkbox Rows
+ * ----- */
+
+    .na-pm-dev__row--checkbox {
+        margin-bottom                      : 8px;
+    }
+
+    .na-pm-dev__checkbox-label {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        font-size                          : 0.78rem;
+        color                              : #444;
+        cursor                             : pointer;
+    }
+
+    .na-pm-dev__checkbox-text {
+        line-height                        : 1.3;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Advanced > Lighting Subsection
+ * ----- */
+
+    /* A subsection, not another fold: it closes the Advanced list under a
+       rule and a small caps title, so the four sliders read as one group
+       rather than four more settings in a column of unrelated ones. */
+    .na-pm-dev__lighting {
+        margin-top                         : 10px;
+        padding-top                        : 8px;
+        border-top                         : 1px solid #e8eaed;
+    }
+
+    .na-pm-dev__lighting-title {
+        margin-bottom                      : 6px;
+        font-size                          : 0.66rem;
+        font-weight                        : 600;
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+        color                              : #6b7480;
+    }
+
+    /* The slider takes the slack; the number box is the exact value. The
+       label keeps the Advanced list's 70px so every control starts in line. */
+    .na-pm-dev__slider-row--lighting {
+        gap                                : 6px;
+        flex-wrap                          : nowrap;
+    }
+
+    .na-pm-dev__slider-row--lighting .na-pm-dev__slider {
+        flex                               : 1 1 auto;
+        min-width                          : 48px;
+    }
+
+    .na-pm-dev__input--lighting {
+        width                              : 40px;
+        max-width                          : 40px;
+    }
+
+    .na-pm-dev__lighting-status {
+        margin                             : 2px 0 6px 0;
+        font-size                          : 0.7rem;
+        line-height                        : 1.35;
+        color                              : #6b7480;
+    }
+
+    /* Amber, not red: unsaved is a state to notice, not an error. */
+    .na-pm-dev__lighting-status.is-pending {
+        color                              : #a15c00;
+    }
+
+    .na-pm-dev__lighting-actions {
+        display                            : grid;
+        grid-template-columns              : 1fr 1fr;
+        gap                                : 6px;
+    }
+
+    .na-pm-dev__lighting-actions .na-pm-dev__btn {
+        width                              : 100%;
+    }
+
+    .na-pm-dev__lighting-actions .na-pm-dev__btn:disabled {
+        opacity                            : 0.45;
+        cursor                             : default;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Scene Editor - Action and Global Button Layout
+ * ----- */
+
+    /* A grid, so Delete lands in the far column of its own line whatever the
+       panel width - rather than sometimes sitting beside Update Scene and
+       sometimes below it, depending on how three button labels happened to
+       measure. It is never the button next to the one that was aimed at. */
+    .na-pm-dev__scene-body .na-pm-dev__actions {
+        display                            : grid;
+        grid-template-columns              : 1fr 1fr;
+        gap                                : 6px;
+    }
+
+    .na-pm-dev__scene-body .na-pm-dev__btn {
+        width                              : 100%;
+    }
+
+    .na-pm-dev__scene-body .na-pm-dev__btn--trailing {
+        grid-column                        : 2;
+        margin-left                        : 0;
+    }
+
+    .na-pm-dev__rule {
+        height                             : 0;
+        margin                             : 14px 0 10px;
+        border                             : none;
+        border-top                         : 1px solid #e0e4e9;
+    }
+
+    .na-pm-dev__danger-actions {
+        display                            : flex;
+        justify-content                    : flex-start;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Dev Menu Modal - Confirm, Type-to-Confirm and Batch Progress
+ * ----- */
+
+    /* Above the loading overlays, because a batch drives those overlays while
+       its own progress dialog is on screen. */
+    .na-pm-modal {
+        display                            : none;
+        position                           : fixed;
+        inset                              : 0;
+        z-index                            : 10050;
+        align-items                        : center;
+        justify-content                    : center;
+    }
+
+    .na-pm-modal.is-open {
+        display                            : flex;
+    }
+
+    .na-pm-modal__backdrop {
+        position                           : absolute;
+        inset                              : 0;
+        background                         : rgba(20, 24, 28, 0.55);
+    }
+
+    .na-pm-modal__card {
+        position                           : relative;
+        width                              : min(420px, calc(100vw - 32px));
+        padding                            : 18px 20px 16px;
+        border-radius                      : 8px;
+        background                         : #ffffff;
+        box-shadow                         : 0 12px 40px rgba(0, 0, 0, 0.28);
+        font-family                        : inherit;
+    }
+
+    .na-pm-modal__title {
+        margin                             : 0 0 8px;
+        font-size                          : 0.95rem;
+        font-weight                        : 600;
+        color                              : #23282d;
+    }
+
+    .na-pm-modal__message {
+        margin                             : 0 0 12px;
+        font-size                          : 0.8rem;
+        line-height                        : 1.45;
+        color                              : #555d66;
+    }
+
+    .na-pm-modal__prompt {
+        margin                             : 0 0 6px;
+        font-size                          : 0.8rem;
+        color                              : #23282d;
+    }
+
+    .na-pm-modal__input {
+        width                              : 100%;
+        padding                            : 6px 8px;
+        margin-bottom                      : 4px;
+        font-size                          : 0.85rem;
+        letter-spacing                     : 0.06em;
+        border                             : 1px solid #ccc;
+        border-radius                      : 5px;
+    }
+
+    .na-pm-modal__input:focus {
+        outline                            : none;
+        border-color                       : #cc3333;
+    }
+
+    /* The app's loading circle, scaled down to dialog size. It is the only
+       moving thing between two renders, so it is what tells you the run is
+       alive while the bar sits still. */
+    .na-pm-modal__spinner-row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 12px;
+        margin-bottom                      : 10px;
+    }
+
+    .na-pm-modal__spinner {
+        flex                               : 0 0 auto;
+        width                              : 28px;
+        height                             : 28px;
+        margin-bottom                      : 0;
+    }
+
+    .na-pm-modal__spinner::before {
+        width                              : 28px;
+        height                             : 28px;
+        border-width                       : 3px;
+    }
+
+    /* A finished run shows a mark, not a stopped ring. A ring with a coloured
+       arc reads as "working" whether or not it is turning, which is how a
+       completed batch got reported as a hang. */
+    .na-pm-modal__spinner--done::before,
+    .na-pm-modal__spinner--warn::before {
+        animation                          : none;
+        border                             : none;
+        border-radius                      : 0;
+        font-size                          : 1.35rem;
+        font-weight                        : 700;
+        line-height                        : 28px;
+        text-align                         : center;
+    }
+
+    .na-pm-modal__spinner--done::before {
+        content                            : '\2713';                        /* check mark */
+        color                              : #2e7d32;
+    }
+
+    .na-pm-modal__spinner--warn::before {
+        content                            : '!';
+        color                              : #b26a00;
+    }
+
+    .na-pm-modal__status {
+        flex                               : 1;
+        min-width                          : 0;
+        margin                             : 0;
+        font-size                          : 0.78rem;
+        color                              : #555d66;
+        min-height                         : 1.2em;
+        overflow-wrap                      : anywhere;
+    }
+
+    .na-pm-modal__count {
+        margin                             : 4px 0 0;
+        font-size                          : 0.72rem;
+        color                              : #8b939c;
+        text-align                         : right;
+        min-height                         : 1em;
+    }
+
+    .na-pm-modal__bar {
+        height                             : 6px;
+        margin-bottom                      : 4px;
+        overflow                           : hidden;
+        border-radius                      : 3px;
+        background                         : #e8eaed;
+    }
+
+    .na-pm-modal__bar-fill {
+        height                             : 100%;
+        width                              : 0%;
+        background                         : #1a7fc4;
+        transition                         : width 0.2s;
+    }
+
+    .na-pm-modal__footer {
+        display                            : flex;
+        justify-content                    : flex-end;
+        gap                                : 8px;
+        margin-top                         : 14px;
+    }
+
+    .na-pm-modal__btn {
+        padding                            : 6px 14px;
+        font-size                          : 0.8rem;
+        border                             : 1px solid #ccc;
+        border-radius                      : 5px;
+        background                         : #f4f6f8;
+        color                              : #33383d;
+        cursor                             : pointer;
+        transition                         : background 0.14s;
+    }
+
+    .na-pm-modal__btn:hover:not(:disabled) {
+        background                         : #e8edf3;
+    }
+
+    .na-pm-modal__btn--confirm {
+        border-color                       : #1a7fc4;
+        background                         : #eef5fb;
+        color                              : #1a7fc4;
+    }
+
+    .na-pm-modal__btn--confirm:hover:not(:disabled) {
+        background                         : #daeaf6;
+    }
+
+    .na-pm-modal__btn--danger {
+        border-color                       : #cc3333;
+        background                         : #fdf0f0;
+        color                              : #cc3333;
+    }
+
+    .na-pm-modal__btn--danger:hover:not(:disabled) {
+        background                         : #fce0e0;
+    }
+
+    .na-pm-modal__btn:disabled,
+    .na-pm-modal__btn.is-disabled {
+        opacity                            : 0.4;
+        cursor                             : not-allowed;
+    }
+
+/* endregion ---- */

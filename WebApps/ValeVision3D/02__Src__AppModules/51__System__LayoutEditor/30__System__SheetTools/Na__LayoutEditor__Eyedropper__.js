@@ -38,7 +38,10 @@
 //               stays   : the words, the position, the leader, the layer
 //
 //   DIMENSION   travels : text size, colour, terminator, terminator size,
-//                         precision, unit suffix
+//                         precision, unit suffix,
+//                         the extension line lengths and the padlock between
+//                         them (a full line is a real value, and puts a
+//                         shortened target back to full)
 //               stays   : the two ends it measures, the value override, the
 //                         viewport it is bound to, the layer
 //                         (the offset travels only when CopyOffset is on - it
@@ -61,10 +64,11 @@
 //                         turns a note into a bubble.
 //               stays   : the text, the tip, the anchor, the layer
 //
-//   VIEWPORT    travels : render composites, whether the caption shows, and
-//                         the scale
+//   VIEWPORT    travels : render composites, whether the frame and caption
+//                         show, and the scale
 //               stays   : the scene, the drawing, the frame on the paper,
-//                         the pan, the name, the layer, the lock
+//                         the pan, the name, the layer, the lock, the doors,
+//                         the design phase
 //               locked  : a locked viewport is not a source and not a
 //                         target. The eyedropper does not even resolve one,
 //                         so a lock lets the pointer reach markup and other
@@ -87,8 +91,6 @@
 // - Viewports do not load the palette. New viewports are added from the
 //   panel, not drawn with a tool, so there is no "new viewports" setting
 //   for a style to land in.
-// - TrueVision also copies whether the frame itself shows (Viewport__ShowFrame).
-//   That toggle is not in this tree yet, so the trait stays there.
 //
 // -----------------------------------------------------------------------------
 //
@@ -106,17 +108,44 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Eyedropper__.js
-// - Ported on     : 13-Sep-2026 for ValeVision3D v2.24.0 (a TrueVision-first feature)
-// - Parity        : adapted
-// - Divergences   : Header, console prefix. Viewport matching (1.5.0) omits
-//                   Viewport__ShowFrame, which this tree does not store yet.
-// - Back-port     : n/a (authored in TrueVision)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js
+// - Source version: 1.9.0 (TrueVision3D v2.139.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. TrueVision authored it
+//                   (12-Sep-2026); this app's copy was its 1.7.0 (17-Sep-2026; first ValeVision3D v2.24.0,
+//                   13-Sep-2026), TrueVision's 1.8.0, adapted without the Viewport__ShowFrame trait. The
+//                   viewport record carries Viewport__ShowFrame since SheetRecords 1.39.0, so the trait
+//                   is taken as TrueVision has it. Also taken: the dimension extension-line traits
+//                   (1.4.0), pictures left out (1.8.1, v2.116.0), a turned viewport's box (1.8.2,
+//                   v2.138.0), Dimension__RoundUp (1.9.0, v2.139.0), and two changes TrueVision made
+//                   without a version step - the Shape__Hatch trait (v2.90.0, commit 62dade1c) and the
+//                   dimension linePt and dash traits (v2.152.0); a trait whose field a record lacks
+//                   copies its absent value. The hint-line comment reads TrueVision's v2.124.0 text (the
+//                   toolbar has no undo, fit or zoom buttons since W1-35). "NOT tried by Adam" in
+//                   TrueVision; ported under DR-01 (c).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 17-Sep-2026 - Version 1.7.0
+// 21-Sep-2026 - Version 1.9.0
+// - A dimension's Round up to 5 mm (Dimension__RoundUp) is a style trait: the
+//   dropper and Paste properties copy it with the decimals and the units, and
+//   the Dimensions panel's switch reaches every selected dimension. A source
+//   without the field copies as off.
+//
+// 21-Sep-2026 - Version 1.8.2
+// - A viewport's box is the box round its frame as it stands, turned
+//   (Viewport__RotationDeg) or not.
+//
+// 21-Sep-2026 - Version 1.8.1
+// - A picture (Sheet Images) is neither a source nor a target: Record answers
+//   null for a shape carrying Shape__Image, so Copy properties, Paste
+//   properties and the dropper all pass it by.
+//
+// 17-Sep-2026 - Version 1.8.0
 // - MANY ITEMS AT ONCE. ApplyMany writes one style bag onto a whole selection,
 //   one undo step per kind, skipping locked items rather than refusing the lot.
 //   PaintMany is the held style over a selection, which is what the context
@@ -126,37 +155,37 @@
 //   to them, so the panels can write a field to every selected item through
 //   the same declaration - and a text item's words, which are not a trait,
 //   cannot travel with its size.
-// - Ported from TrueVision3D v2.57.0 (Eyedropper 1.8.0). The numbering stays
-//   one behind: this tree never took the extension-line traits of TrueVision's
-//   1.4.0, so its 1.7.0 is that tree's 1.8.0.
+//
+// 14-Sep-2026 - Version 1.7.0
+// - Vectors carry their dashed-edge style (Shape__LineStyle). Like the fill
+//   and the gradient, a null line style is a real value and clears the
+//   target's back to a solid edge.
 //
 // 14-Sep-2026 - Version 1.6.0
-// - Dashed edges travel with the other vector traits (dash / Shape__LineStyle,
-//   nullable, palette dashOn). A null line style is a solid edge and clears
-//   the target's, the same way a null fill does.
-// - Ported from TrueVision3D (eyedropper dashed edges).
-//
-// 14-Sep-2026 - Version 1.5.0
-// - Unlocked viewports match: render composites, caption and scale travel
-//   from one viewport to another. A locked viewport (its own lock or its
-//   layer) is not a source and not a target, and the sheet tools do not
+// - Unlocked viewports match: render composites, frame, caption and scale
+//   travel from one viewport to another. A locked viewport (its own lock or
+//   its layer) is not a source and not a target, and the sheet tools do not
 //   even resolve one under the eyedropper, so the dropper can reach markup
 //   and other unlocked viewports through a locked frame.
-// - TrueVision also copies the frame-shown flag; that toggle is not here.
-// - Ported from TrueVision3D (eyedropper 1.6.0).
 //
-// 14-Sep-2026 - Version 1.4.0
+// 14-Sep-2026 - Version 1.5.0
 // - Dimensions carry their terminator size (tickLengthMm) to painted
 //   dimensions and to the palette, so a run of dimensions takes the same
 //   arrow, tick or dot size one click at a time.
-// - Ported from TrueVision3D v2.43.0.
+//
+// 14-Sep-2026 - Version 1.4.0
+// - Dimensions carry their extension line lengths - start, end and whether the
+//   two are linked - to painted dimensions and to the palette, so a run of
+//   dimensions takes the same short lines one click at a time.
+// - A trait can declare absent: the value a record means by leaving its field
+//   out. The extension fields are stored only when they differ from the full,
+//   linked lines, and a source without them still paints a target back to full.
 //
 // 14-Sep-2026 - Version 1.3.0
 // - Leaders join the trait table: text, line, endpoint, bubble and fill. Their
 //   type travels to the palette only, through a new trait flag, paletteOnly,
 //   which Apply leaves out of every paint.
 // - Vectors carry their fill and edge opacity.
-// - Ported from TrueVision3D v2.35.0.
 //
 // 13-Sep-2026 - Version 1.2.0
 // - Palette mode (Shift+B): SyncPalette loads an item's style into the settings
@@ -165,13 +194,10 @@
 //   shape; the fill and the gradient carry a palette switch in the trait table.
 // - A synced item pulses. Pick always returns the dropper to item mode, and
 //   Click refuses in palette mode.
-// - Ported from TrueVision3D v2.30.0.
 //
 // 13-Sep-2026 - Version 1.1.0
 // - Vectors carry their gradient (Shape__Gradient). Like the fill, a null
-//   gradient is a real value and clears the target's. The trait line itself came
-//   across early, inside v2.24.0's copy of this module; it takes effect with the
-//   gradient tool in v2.26.0. Ported from TrueVision.
+//   gradient is a real value and clears the target's.
 //
 // 12-Sep-2026 - Version 1.0.0
 // - First cut. Text, dimensions and vector shapes. Viewports left alone.
@@ -206,6 +232,7 @@
     } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__LeaderBounds } from '../15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeShapeGeo__Bounds } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
+    import { Na__LeVpRot__Bounds } from '../20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: the box round a turned frame
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -247,6 +274,11 @@
     // paletteOnly : true marks a trait that only ever sets the settings for
     // new objects. It is read off a source and handed to the palette, but a
     // paint never writes it onto an existing object.
+    //
+    // absent : value is what a record means when it leaves the field out - a
+    // field stored only when it differs from its default. That value is copied
+    // as if it had been read, so a source without the field still puts a
+    // target back to the default instead of leaving the target as it was.
     // ------------------------------------------------------------
     const Na__LeDrop__TRAITS = Object.freeze({
         annotation : {
@@ -277,7 +309,13 @@
                 { patch : 'tickLengthMm', field : 'Dimension__TickLengthMm' },
                 { patch : 'precision',   field : 'Dimension__Precision'   },
                 { patch : 'unitsSuffix', field : 'Dimension__UnitsSuffix' },
-                { patch : 'offsetMm',    field : 'Dimension__OffsetMm', optional : 'copyOffset' }
+                { patch : 'offsetMm',    field : 'Dimension__OffsetMm', optional : 'copyOffset' },
+                { patch : 'startExtensionMm', field : 'Dimension__StartExtensionMm', nullable : true, absent : null },   // <-- null, or no field at all, is the full line: a real value to copy
+                { patch : 'endExtensionMm',   field : 'Dimension__EndExtensionMm',   nullable : true, absent : null },
+                { patch : 'extensionsLinked', field : 'Dimension__ExtensionsLinked', absent : true },                     // <-- Stored only as false
+                { patch : 'roundUp',          field : 'Dimension__RoundUp',          absent : false },                    // <-- Stored only as true: a missing field is an unrounded figure, a real value to copy
+                { patch : 'linePt',           field : 'Dimension__LinePt',           nullable : true, absent : null },   // <-- No field is the sheet's Dimension pt: a real value to copy
+                { patch : 'dash',             field : 'Dimension__LineStyle',        nullable : true, absent : null, palette : 'dashOn' }   // <-- No field is a solid line, as on a vector
             ]
         },
         shape : {
@@ -295,6 +333,7 @@
                 { patch : 'gradient',     field : 'Shape__Gradient',   nullable : true, palette : 'gradientOn' },  // <-- Likewise; records are never edited in place, so the held copy cannot change
                 { patch : 'dash',         field : 'Shape__LineStyle',  nullable : true, palette : 'dashOn' },      // <-- A null line style is a solid edge, a real value to copy
                 { patch : 'fillOpacity',   field : 'Shape__FillOpacity'   },
+                { patch : 'hatch',        field : 'Shape__Hatch'        },   // <-- A hatch is a style trait, so it copies with the rest
                 { patch : 'strokeOpacity', field : 'Shape__StrokeOpacity' }
             ]
         },
@@ -331,6 +370,7 @@
             noPalette: true,                                                   // <-- New viewports are added from the panel, not drawn with a tool
             traits   : [
                 { patch : 'styles',           field : 'Viewport__Styles' },     // <-- The render composites: cloned on extract so the held copy cannot change
+                { patch : 'showFrame',        field : 'Viewport__ShowFrame', absent : true },   // <-- Stored only as false: a missing field is a shown frame, a real value to copy
                 { patch : 'showScaleLabel',   field : 'Viewport__ShowScaleLabel' },
                 { patch : 'scaleDenominator', field : 'Viewport__ScaleDenominator' }
             ]
@@ -386,7 +426,10 @@
         if (!sheet || !id) return null;
         if (kind === 'annotation') return (sheet.Sheet__Annotations || []).find((a) => a.Annotation__Id === id) || null;
         if (kind === 'dimension')  return (sheet.Sheet__Dimensions  || []).find((d) => d.Dimension__Id  === id) || null;
-        if (kind === 'shape')      return (sheet.Sheet__Shapes      || []).find((s) => s.Shape__Id      === id) || null;
+        if (kind === 'shape') {
+            const shape = (sheet.Sheet__Shapes || []).find((s) => s.Shape__Id === id) || null;
+            return (shape && !shape.Shape__Image) ? shape : null;               // <-- A picture has no edge, fill or hatch to give or take: neither a source nor a target
+        }
         if (kind === 'leader')     return (sheet.Sheet__Leaders     || []).find((l) => l.Leader__Id     === id) || null;
         if (kind === 'viewport')   return Na__LeModel__GetViewportById(sheet, id);
         return null;
@@ -441,6 +484,7 @@
         entry.traits.forEach((trait) => {
             if (trait.optional && setup[trait.optional] !== true) return;                   // <-- Switched off in the config
             let value = record[trait.field];
+            if (value === undefined && Object.prototype.hasOwnProperty.call(trait, 'absent')) value = trait.absent;   // <-- A field left out means its default
             if (value === undefined) return;
             if (value === null && trait.nullable !== true) return;                          // <-- Only a declared-nullable trait may copy an absence
             if (value && typeof value === 'object') value = JSON.parse(JSON.stringify(value));   // <-- A snapshot: the held copy cannot change if the source is edited
@@ -610,7 +654,7 @@
         if (kind === 'annotation') return Na__LeMarkup__AnnotationBounds(record);
         if (kind === 'shape')      return Na__LeShapeGeo__Bounds(record);
         if (kind === 'leader')     return Na__LeMarkup__LeaderBounds(record);
-        if (kind === 'viewport')   return record.Viewport__FrameMm || null;                 // <-- Ready for the viewport expansion
+        if (kind === 'viewport')   return record.Viewport__FrameMm ? Na__LeVpRot__Bounds(record) : null;   // <-- Ready for the viewport expansion; the box round the frame as it stands
         if (kind !== 'dimension')  return null;
 
         const skeleton = Na__LeMarkup__DimensionSkeleton(record);
@@ -692,10 +736,10 @@
     // whether the last click bounced and why.
     //
     // The text is COMPOSED ONCE per state change and stored, never computed on
-    // read. The toolbar re-syncs on a zoom, an undo and every model change, so
-    // a hint that cleared itself when it was read would vanish the instant the
-    // user nudged the wheel - and the refusal, the one line actually worth
-    // reading, is exactly the one that would be lost.
+    // read. The toolbar re-syncs on every model change and every tool, snap
+    // and scope change, so a hint that cleared itself when it was read would
+    // vanish at the next thing the user did - and the refusal, the one line
+    // actually worth reading, is exactly the one that would be lost.
     // ------------------------------------------------------------
     function Na__LeDrop__Compose(refusal) {
         if (Na__LeDrop__Mode === Na__LeDrop__MODE_PALETTE) {

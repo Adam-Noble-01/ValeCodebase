@@ -1,0 +1,488 @@
+#### Na__RenderLoop__InteractiveOverlays__.js: +10 / -3
+--- TV b2aa9151 05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js
++++ candidate Na__RenderLoop__InteractiveOverlays__.js
+@@ -1,4 +1,4 @@
+ // =============================================================================
+-// TRUEVISION3D - RENDER LOOP - INTERACTIVE OVERLAYS
++// VALEVISION3D - RENDER LOOP - INTERACTIVE OVERLAYS
+ // =============================================================================
+ //
+@@ -41,6 +41,13 @@
+ //
+ // PORT NOTE:
+-// - Authored in   : TrueVision3D first (20-Sep-2026)
+-// - ValeVision    : not yet ported.
++// - Ported from   : TrueVision3D 02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js
++// - Source version: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-01}}
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - Its caller, ValeVision's render loop, begins a frame only while Video Studio's preview is not
++//     playing (DR-32): a seam in Na__AppFlow__LoadingSequence.js, not in this file.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+#### Na__ModelGroup__PhaseLibrary__.js: +24 / -4
+--- TV b2aa9151 26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js
++++ candidate Na__ModelGroup__PhaseLibrary__.js
+@@ -1,4 +1,4 @@
+ // =============================================================================
+-// TRUEVISION3D - MODEL GROUP - DESIGN PHASE LIBRARY
++// VALEVISION3D - MODEL GROUP - DESIGN PHASE LIBRARY
+ // =============================================================================
+ //
+@@ -41,4 +41,24 @@
+ // -----------------------------------------------------------------------------
+ //
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js
++// - Source version: 1.0.0 (TrueVision3D v2.32.0, 13-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-01}}
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++//   - Never initialised (DR-09 (a)). ValeVision projects have no design phases (no modelGroups), its
++//     loading sequence calls none of Initialize, SetGroups, SetLiveLoading or SetLive, and it has no
++//     ModelGroupSelector. Uninitialised, the library answers as "the live model": IsLive(undefined) is
++//     true, GetGroups() is empty and GetDefaultId() is null, so every viewport resolves to the live
++//     model with no renderId, and Ensure(id) resolves false for any id. Two answers to know: GetStatus()
++//     of no id is 'loading' (TrueVision's callers read the status only for a phase with a renderId),
++//     and Ensure() with NO id waits for a live model nobody reports - callers go through
++//     Na__LeSource__WaitFor, which resolves true at once for a null id, as TrueVision's Model Source
++//     does. It lands for the names TrueVision's Model Source and snapshot renderer import.
++// - Back-port     : none.
++//
++// -----------------------------------------------------------------------------
++//
+ // DEVELOPMENT LOG:
+ // 13-Sep-2026 - Version 1.0.0
+@@ -216,5 +236,5 @@
+         for (let i = 0; i < ready.length && excess > 0; i++) {
+             if (ready[i].pins > 0) continue;
+-            console.log('[TrueVision3D] Design phase let go (cache holds ' + Na__PhaseLib__CacheSize + '): ' + ready[i].label);
++            console.log('[ValeVision3D] Design phase let go (cache holds ' + Na__PhaseLib__CacheSize + '): ' + ready[i].label);
+             Na__PhaseLib__Dispose(ready[i]);
+             excess--;
+@@ -283,5 +303,5 @@
+             entry.message  = '';
+             entry.lastUsed = performance.now();
+-            console.log('[TrueVision3D] Design phase loaded off-scene: ' + entry.label + ' (' + groups.size + ' categories).');
++            console.log('[ValeVision3D] Design phase loaded off-scene: ' + entry.label + ' (' + groups.size + ' categories).');
+             Na__PhaseLib__Evict();
+             Na__PhaseLib__Dispatch('ready', entry.groupId);
+@@ -294,5 +314,5 @@
+             entry.failedAt = Date.now();
+             entry.message  = String((error && error.message) || error);
+-            console.warn('[TrueVision3D] Design phase could not be loaded: ' + entry.label, error);
++            console.warn('[ValeVision3D] Design phase could not be loaded: ' + entry.label, error);
+             Na__PhaseLib__Dispatch('failed', entry.groupId);
+             return false;
+#### Na__RenderLoop__Invalidation.js: +68 / -1
+--- VV pre-image Na__RenderLoop__Invalidation.js
++++ candidate Na__RenderLoop__Invalidation.js
+@@ -19,12 +19,47 @@
+ //     na-pause-render-loop     — hold every frame (a 2D sheet owns the screen); requests queue.
+ //     na-resume-render-loop    — lift a hold; one frame paints if anything asked meanwhile.
++// - Na__RenderLoop__IsPaused answers whether any hold is in place. Pause and
++//   Resume keep a mirror of the holds, reason for reason, before they dispatch,
++//   because the modules taken from TrueVision ask this module rather than the
++//   render loop (TrueVision keeps its holds here).
+ //
+ // INTEGRATION:
+ // - Na__AppFlow__LoadingSequence.js registers window listeners for all three events.
+ // - Feature modules import Na__RenderLoop__RequestRender() after camera or scene changes.
++// - Modules that must not act while a sheet holds the engine read
++//   Na__RenderLoop__IsPaused.
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js - the name
++//                   Na__RenderLoop__IsPaused only, with a ValeVision body (K2 X3); the rest of the file is
++//                   ValeVision's own
++// - Source version: TrueVision's file has no version line or log; IsPaused as it has stood since TrueVision3D
++//                   v2.24.0 (11-Sep-2026, commit aa580db3; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-01}}
++// - Parity        : adapted
++// - Divergences   :
++//   - The holds are ValeVision's events: Pause and Resume dispatch na-pause-render-loop and
++//     na-resume-render-loop, and the loading sequence keeps the reason set its render loop obeys.
++//     TrueVision's Pause and Resume keep the set in this module and dispatch nothing. The set here is a
++//     mirror of the sequence's, counted the same way (a missing or empty reason is 'general'), so
++//     IsPaused answers as TrueVision's does.
++//   - Pause and Resume return nothing; TrueVision's return the number of holds left (no caller reads it).
++//   - Resume asks for no frame itself: the loading sequence paints one when the last hold clears and a
++//     frame was asked for meanwhile.
++// - Legacy        : TrueVision's copy of this file has no module version, so the Source version names the
++//                   release and the commit instead.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 01-Oct-2026 - Version 1.1.1 (TrueVision's IsPaused, {{VVREL:W1-01}})
++// - Na__RenderLoop__IsPaused, TrueVision's name for "is any hold in place?",
++//   answered from a mirror of the holds that Pause and Resume keep. The
++//   pause and resume events, and the loading sequence's own reason set,
++//   are unchanged.
++//
+ // 10-Sep-2026 - Version 1.1.0
+ // - Pause and resume added so the Layout Editor can idle the engine while a sheet is open.
+@@ -47,4 +82,22 @@
+     const NA__PAUSE_RENDER_LOOP_EVENT     = 'na-pause-render-loop';      // <-- Hold every frame until resumed
+     const NA__RESUME_RENDER_LOOP_EVENT    = 'na-resume-render-loop';     // <-- Lift a hold by reason
++    // ------------------------------------------------------------
++
++// endregion -------------------------------------------------------------------
++
++
++// -----------------------------------------------------------------------------
++// REGION | Module State
++// -----------------------------------------------------------------------------
++
++    // MODULE VARIABLES | The Holds, Mirrored
++    // ------------------------------------------------------------
++    // A SET of reasons rather than a boolean, because more than one system can
++    // want the loop stopped at once. The loading sequence keeps the set its
++    // render loop obeys, fed by the two events above; this is its mirror, kept
++    // by Pause and Resume themselves, so the question TrueVision's modules ask
++    // of this module - is the engine held? - has an answer here.
++    // ------------------------------------------------------------
++    const Na__RenderLoop__PauseReasons = new Set();                         // <-- Every reason paused and not yet resumed
+     // ------------------------------------------------------------
+ 
+@@ -87,4 +140,5 @@
+     // ------------------------------------------------------------
+     function Na__RenderLoop__Pause(reason = 'general') {
++        Na__RenderLoop__PauseReasons.add(reason || 'general');              // <-- Mirrored first, so IsPaused already answers for the listeners
+         window.dispatchEvent(new CustomEvent(NA__PAUSE_RENDER_LOOP_EVENT, {
+             detail: { reason }                                              // <-- Who is holding the engine
+@@ -97,7 +151,19 @@
+     // ------------------------------------------------------------
+     function Na__RenderLoop__Resume(reason = 'general') {
++        Na__RenderLoop__PauseReasons.delete(reason || 'general');           // <-- Mirrored first, as Pause does
+         window.dispatchEvent(new CustomEvent(NA__RESUME_RENDER_LOOP_EVENT, {
+             detail: { reason }
+         }));
++    }
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Is Any Hold in Place?
++    // ------------------------------------------------------------
++    // TrueVision's question, answered from the mirror above: true from the
++    // moment a holder pauses until the last one resumes.
++    // ------------------------------------------------------------
++    function Na__RenderLoop__IsPaused() {
++        return Na__RenderLoop__PauseReasons.size > 0;
+     }
+     // ------------------------------------------------------------
+@@ -122,5 +188,6 @@
+         Na__RenderLoop__StopActiveRender,
+         Na__RenderLoop__Pause,
+-        Na__RenderLoop__Resume
++        Na__RenderLoop__Resume,
++        Na__RenderLoop__IsPaused
+     };
+     // ------------------------------------------------------------
+#### Na__UiFeature__ModelToggle__Controls.js: +144 / -13
+--- VV pre-image Na__UiFeature__ModelToggle__Controls.js
++++ candidate Na__UiFeature__ModelToggle__Controls.js
+@@ -20,8 +20,56 @@
+ // - Exposes Na__ModelToggle__ApplySceneLayerVisibility so Presentation Mode
+ //   scene transitions can drive these same category toggles per tour scene.
++// - Exposes TrueVision's registry names for the Layout Editor's snapshot
++//   renderer: SetCategoryVisibleByKey (exact key, silent), and BorrowRegistry
++//   and RestoreRegistry, which lend the registry to another design phase's
++//   categories for the length of one render.
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
++//                   - hunks only: the names SetCategoryVisibleByKey, BorrowRegistry and RestoreRegistry, with
++//                   ValeVision bodies (K2 X3), and the registry rebuilt as a new map with a generation rather than
++//                   cleared in place; the rest of the file is ValeVision's own
++// - Source version: TrueVision's file has no version line; SetCategoryVisibleByKey as it has stood since
++//                   TrueVision3D v2.25.0 (12-Sep-2026, commit f8321d60), BorrowRegistry, RestoreRegistry and the
++//                   new map since v2.32.0 (13-Sep-2026); read at b2aa9151
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-01}}
++// - Parity        : diverged (both apps' copies descend from the 10-Feb-2026 original; never taken whole)
++// - Divergences   :
++//   - Category keys and display names are ValeVision's.
++//   - SetCategoryVisibility is ValeVision's exact-key setter, with a silent flag for renders, and it
++//     dispatches na-model-visibility-changed, which the projected linework and the snapshot renderer listen
++//     for (kept: S02b-V01). TrueVision exports a token matcher under that name and dispatches nothing.
++//   - Each registry entry keeps its dev button; TrueVision finds the button in the page. A borrowed entry
++//     has none, so the dev buttons never follow a borrowed registry.
++//   - ValeVision-only export (K2 X2): Na__ModelToggle__GetCategories, for the Video Studio. Not here yet:
++//     TrueVision's GetVisibilityState, ApplyVisibilityState and SetAllCategoriesVisible (its Presentation
++//     Mode state capture and context menu read them) and its guard against wiring the panel button twice.
++//   - Nothing borrows the registry: ValeVision has no design phases (DR-09 (a)).
++// - Legacy        : TrueVision's copy of this file has no module version (its log entries carry dates only),
++//                   so the Source version names releases instead.
++// - Back-port     : the na-model-visibility-changed dispatch (TrueVision's pipeline and snapshot renderer listen
++//                   for it and nothing there dispatches it) - offered with the TrueVision lane (DR-36), not done
++//                   here.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 01-Oct-2026 - Version 1.2.3 (TrueVision's registry names, {{VVREL:W1-01}})
++// - Na__ModelToggle__SetCategoryVisibleByKey, Na__ModelToggle__BorrowRegistry
++//   and Na__ModelToggle__RestoreRegistry at TrueVision's names (TrueVision3D
++//   v2.25.0 and v2.32.0), with ValeVision bodies: the exact-key setter is
++//   silent and keeps the dev button in step; a borrow lends the registry to
++//   a design phase's categories for one render and leaves the dev buttons
++//   alone. Nothing borrows it yet (no design phases here).
++// - BuildButtons makes a new map, with a generation, instead of clearing the
++//   old one in place, so a borrowed map is never emptied under a render and
++//   RestoreRegistry can tell when the 3D view rebuilt it meanwhile.
++// - The na-model-visibility-changed dispatch is unchanged.
++// - PORT NOTE added. DEVELOPMENT LOG re-ordered newest first, and the 01-Sep
++//   entry renumbered 1.1.1 (it was a second 1.2.0); the text of every entry
++//   is unchanged.
++//
+ // 18-Sep-2026 - Version 1.2.2
+ // - Display names for the eight Linetype__ categories, and no buttons for them:
+@@ -39,15 +87,5 @@
+ // - SetCategoryVisibility dispatches na-model-visibility-changed so the projected linework refreshes.
+ //
+-// 10-Feb-2026 - Version 1.0.0
+-// - Initial implementation.
+-//
+-// 01-Jul-2026 - Version 1.1.0
+-// - Added Na__ModelToggle__ApplySceneLayerVisibility (exported) so per-scene
+-//   SketchUp tag/layer state (captured by the Cloud Sync plugin) can drive
+-//   these category toggles automatically on scene transitions.
+-// - Toggle buttons now keep a reference to their DOM element in the state map
+-//   so programmatic visibility changes stay in sync with the active class.
+-//
+-// 01-Sep-2026 - Version 1.2.0
++// 01-Sep-2026 - Version 1.1.1 (written as 1.2.0; renumbered 01-Oct-2026)
+ // - Added Na__ModelToggle__GetCategories and Na__ModelToggle__CaptureVisibilityMap
+ //   so the Video Studio can list the loaded categories in its own UI and snapshot
+@@ -57,4 +95,14 @@
+ //   the map with dead group references. Harmless while nothing read the map
+ //   wholesale; not harmless now that a snapshot of it gets saved to a project.
++//
++// 01-Jul-2026 - Version 1.1.0
++// - Added Na__ModelToggle__ApplySceneLayerVisibility (exported) so per-scene
++//   SketchUp tag/layer state (captured by the Cloud Sync plugin) can drive
++//   these category toggles automatically on scene transitions.
++// - Toggle buttons now keep a reference to their DOM element in the state map
++//   so programmatic visibility changes stay in sync with the active class.
++//
++// 10-Feb-2026 - Version 1.0.0
++// - Initial implementation.
+ //
+ // =============================================================================
+@@ -156,4 +204,6 @@
+     // ------------------------------------------------------------
+     let Na__ModelToggle__StateMap = new Map();                            // <-- Map of category -> { group, visible }
++    let Na__ModelToggle__Generation = 0;                                  // <-- Bumped each time the 3D view rebuilds the map
++    let Na__ModelToggle__Borrowed = false;                                // <-- A render has lent the map to another design phase
+     // ------------------------------------------------------------
+ 
+@@ -287,4 +337,76 @@
+ 
+ // -----------------------------------------------------------------------------
++// REGION | Layout Editor Renders - Exact Keys and the Lent Registry
++// -----------------------------------------------------------------------------
++
++    // FUNCTION | Show or Hide One Category by Its Exact Key
++    // ------------------------------------------------------------
++    // TrueVision's exact-key setter, which its Layout Editor snapshot renderer
++    // calls for the Model Layers hides of one picture. SILENT, like every
++    // change a render makes and puts straight back: the visibility event
++    // would reset the projected linework and the snapshot fingerprints in the
++    // middle of the render that caused it. Returns false when the category is
++    // not loaded this session. The dev button follows the 3D view's registry,
++    // never a borrowed one.
++    // ------------------------------------------------------------
++    function Na__ModelToggle__SetCategoryVisibleByKey(categoryKey, visible) {
++        const state = Na__ModelToggle__StateMap.get(categoryKey);         // <-- Look up state entry
++        if (!state) return false;                                        // <-- Not loaded this session: nothing to hide
++        const wanted  = visible !== false;
++        state.visible = wanted;                                          // <-- Update internal state
++        if (state.group) state.group.visible = wanted;                   // <-- Set THREE.Group visibility
++        if (!Na__ModelToggle__Borrowed && state.button) {
++            state.button.classList.toggle(Na__ModelToggle__ActiveClass, wanted);  // <-- Keep the dev button in step
++        }
++        return true;
++    }
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Lend the Registry to Another Design Phase for One Render
++    // ------------------------------------------------------------
++    // TrueVision's Layout Editor can draw a design phase the 3D view does not
++    // hold, by putting that phase's model into the scene for the length of one
++    // render. Everything the render asks of this module - the Context Layer,
++    // the Model Layers hides, a saved layer map, the capture that puts them
++    // back - must then act on THAT phase's category groups. loadedGroups is
++    // the loader's category Map for the phase; the token returned is what
++    // RestoreRegistry takes. A borrowed map has no dev buttons: they describe
++    // the 3D view and are left alone throughout. ValeVision has no design
++    // phases yet, so nothing borrows it.
++    // ------------------------------------------------------------
++    function Na__ModelToggle__BorrowRegistry(loadedGroups) {
++        const token    = { map : Na__ModelToggle__StateMap, generation : Na__ModelToggle__Generation, borrowed : Na__ModelToggle__Borrowed };
++        const borrowed = new Map();
++        if (loadedGroups && typeof loadedGroups.forEach === 'function') {
++            loadedGroups.forEach((group, categoryKey) => {
++                borrowed.set(categoryKey, { group : group, visible : group.visible !== false, button : null });
++            });
++        }
++        Na__ModelToggle__StateMap = borrowed;
++        Na__ModelToggle__Borrowed = true;
++        return token;
++    }
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Hand the Registry Back
++    // ------------------------------------------------------------
++    // Returns false, and leaves the registry as it is, when the 3D view rebuilt
++    // it during the borrow: that map is the true one.
++    // ------------------------------------------------------------
++    function Na__ModelToggle__RestoreRegistry(token) {
++        if (!token) return false;
++        if (token.generation !== Na__ModelToggle__Generation) return false;
++        Na__ModelToggle__StateMap = token.map;
++        Na__ModelToggle__Borrowed = token.borrowed === true;
++        return true;
++    }
++    // ------------------------------------------------------------
++
++// endregion -------------------------------------------------------------------
++
++
++// -----------------------------------------------------------------------------
+ // REGION | Dynamic UI Button Generation
+ // -----------------------------------------------------------------------------
+@@ -302,5 +424,11 @@
+     // like the toggle simply has no effect on that model.
+     function Na__ModelToggle__BuildButtons(loadedGroups) {
+-        Na__ModelToggle__StateMap.clear();                               // <-- Drop categories from a previously loaded model
++        // A NEW MAP, NOT A CLEARED ONE. A render that has borrowed the registry
++        // for another design phase holds the previous map object; clearing it
++        // in place would empty that phase's categories out from under the
++        // render. The generation tells RestoreRegistry this map now stands.
++        Na__ModelToggle__StateMap = new Map();                           // <-- Drop categories from a previously loaded model
++        Na__ModelToggle__Generation += 1;
++        Na__ModelToggle__Borrowed = false;
+         if (loadedGroups) {
+             loadedGroups.forEach((group, categoryKey) => {
+@@ -413,5 +541,8 @@
+         Na__ModelToggle__GetCategories,
+         Na__ModelToggle__GetCategoryKeys,
+-        Na__ModelToggle__CaptureVisibilityMap
++        Na__ModelToggle__CaptureVisibilityMap,
++        Na__ModelToggle__SetCategoryVisibleByKey,
++        Na__ModelToggle__BorrowRegistry,
++        Na__ModelToggle__RestoreRegistry
+     };
+     // ------------------------------------------------------------
+#### Na__AppFlow__LoadingSequence.js: +55 / -7
+--- VV pre-image Na__AppFlow__LoadingSequence.js
++++ candidate Na__AppFlow__LoadingSequence.js
+@@ -32,4 +32,7 @@
+ // - Initialises door animations and walk-mode collision meshes.
+ // - Starts the RAF render loop (including walk mode, door proximity updates).
++// - Switches the interactive overlays (authoring aids such as the drawing
++//   planes) on for the live 3D frame only - never on a 2D drawing, never in
++//   a Video Studio preview - and off again as every frame ends.
+ // - Attaches the window resize handler.
+ //
+@@ -47,8 +50,10 @@
+ // - Ported from   : TrueVision3D 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js - hunks only: the
+ //                   localhost R2 overlay of the editor-owned keys and the transport facade's merge base (TrueVision3D
+-//                   v2.7.1), sceneConfig in the drawings dispatch (v2.21.0) and na-app-scene-ready (v2.8.0); the rest
+-//                   of the file is ValeVision's own
++//                   v2.7.1), sceneConfig in the drawings dispatch (v2.21.0), na-app-scene-ready (v2.8.0) and the
++//                   interactive overlay frame - BeginFrame on the 3D path, EndFrame in the tick's finally (v2.82.0);
++//                   the rest of the file is ValeVision's own
+ // - Source version: 1.3.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151)
+-// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.1
++// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.1; the interactive overlay frame 01-Oct-2026 for
++//                   ValeVision3D {{VVREL:W1-01}}
+ // - Parity        : diverged (two independent lines since 24-Feb-2026, TrueVision 1.3.1 and ValeVision 1.7.x: never
+ //                   taken whole; TrueVision's hunks are replayed into ValeVision's sequence)
+@@ -56,7 +61,13 @@
+ //   - ValeVision's own sequence: dual render engine, resilient loads and the load watchdog, the SketchUp launch
+ //     scene and orbit pivot swap, cross-section, Video Studio and fog-plane wiring, the 2D drawing branch of the
+-//     render loop. Not taken from TrueVision: model groups and the design-phase library (1.3.0; DR-09), the legacy
+-//     project fetch, the PWA project-name refinement, its fog effect and its per-project cull distance and FOV
+-//     overrides.
++//     render loop. Not taken from TrueVision: model groups and the design-phase library (1.3.0; DR-09 - the
++//     library is at TrueVision's path but this sequence never initialises it), the legacy project fetch, the
++//     PWA project-name refinement, its fog effect, its per-project cull distance and FOV overrides, and its
++//     render loop's engine-hold stand-down, thrown-frame guard and ArmNextFrame (the progressive-render
++//     remainder, W2-07): the tick still checks this sequence's own hold set.
++//   - The interactive overlay frame begins only while Video Studio's preview is not playing (DR-32), so
++//     authoring overlays stay out of the preview as they stay out of every export; TrueVision has no Video
++//     Studio. The try round RenderFrame has no catch: a thrown frame still ends the overlay frame, then
++//     propagates as before.
+ //   - The transport facade is ValeVision's (DIV-4): Na__CfApi__Initialize is async and is started here, with the
+ //     app config, once the master index has settled; TrueVision's Index.html starts it with its Worker URL.
+@@ -75,4 +86,12 @@
+ //
+ // DEVELOPMENT LOG:
++// 01-Oct-2026 - Version 1.7.2 (interactive overlay frame, {{VVREL:W1-01}})
++// - The render loop brackets the live 3D frame for the interactive overlays
++//   (Na__RenderLoop__InteractiveOverlays__, TrueVision v2.82.0): BeginFrame
++//   straight after the 2D drawing branch unless Video Studio's preview is
++//   playing, and EndFrame in a finally round RenderFrame, so every frame
++//   ends it, a thrown one included. With nothing registered both calls touch
++//   nothing and every frame draws exactly as before.
++//
+ // 01-Oct-2026 - Version 1.7.1 (TrueVision transport wiring, v2.71.1)
+ // - Starts the transport facade (Na__CfApi__Initialize, with the app config)
+@@ -465,4 +484,14 @@
+         NA__RESUME_RENDER_LOOP_EVENT
+     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
++    // ------------------------------------------------------------
++
++    // MODULE IMPORTS | Interactive Overlays (authoring aids drawn in the live 3D frame and nowhere else)
++    // ------------------------------------------------------------
++    // @delegate: ../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js
++    // ------------------------------------------------------------
++    import {
++        Na__InteractiveOverlays__BeginFrame,
++        Na__InteractiveOverlays__EndFrame
++    } from '../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js';
+     // ------------------------------------------------------------
+ 
+@@ -1530,4 +1559,18 @@
+                 Na__PlOverlay__SyncFrame();                                  // <-- Register the projected linework overlay (port Phase 4)
+                 return Na__RenderLoop__ActiveReasons.size > 0;               // <-- Only pan/zoom keeps frames coming
++            }
++
++            // INTERACTIVE 3D FRAME | The only frame an authoring overlay is drawn in.
++            // The drawing planes sit in the main scene, and the main scene is also
++            // rendered by a sheet's 3D viewport, a thumbnail, a still and a video
++            // export. They are invisible by default and switched on HERE - past the
++            // hold and past the 2D drawing, so neither can ever show one - and
++            // switched off again in the tick's finally. A render path nobody has
++            // written yet therefore cannot print a plane.
++            // NOT IN A VIDEO STUDIO PREVIEW. The preview is the video being made,
++            // drawn through this same frame, and authoring aids stay out of it as
++            // they stay out of the video export.
++            if (!Na__VideoStudio__Preview__IsPlaying()) {
++                Na__InteractiveOverlays__BeginFrame();
+             }
+ 
+@@ -1670,5 +1713,10 @@
+             Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
+ 
+-            const keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
++            let keepRendering = false;
++            try {
++                keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
++            } finally {
++                Na__InteractiveOverlays__EndFrame();                         // <-- Every path, thrown frames included: no overlay outlives its frame
++            }
+             if (document.hidden) return;
+ 

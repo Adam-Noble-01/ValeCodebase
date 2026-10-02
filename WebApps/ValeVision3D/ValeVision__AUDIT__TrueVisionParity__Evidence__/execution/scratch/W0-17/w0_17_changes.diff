@@ -1,0 +1,87 @@
+--- ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W0-17/preimage/index.html	2026-10-01 18:45:01.732029100 +0100
++++ index.html	2026-10-01 19:31:56.309098700 +0100
+@@ -1411,6 +1411,7 @@
+     import { Na__DrawView__Transitions__Initialize } from './02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+     import { Na__DrawView__RenderPreset__Initialize, Na__DrawView__RenderPreset__GetExportOverrides } from './02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js';
+     import { Na__DrawView__MaterialPreset__Initialize } from './02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js';
++    import { Na__SectSceneData__Initialize } from './02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js';
+     import { Na__FloorPlanMode__Initialize } from './02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+     import { Na__FloorPlan__DevMenu__Initialize } from './02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js';
+     import { Na__ElevGizmo__Initialize } from './02__Src__AppModules/45__System__ElevationViews/Na__Elevation__PlaneGizmo__.js';
+@@ -1961,6 +1962,44 @@
+ // REGION | Engine Entry Points
+ // -----------------------------------------------------------------------------
+ 
++    // RESOLVE THE AUTHORING GATE (must precede every dev surface)
++    // @delegate: ./02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js
++    // Resolved once, here, so an ?authoring=on parameter is honoured before any
++    // panel asks. A gate that changed answer mid-session would leave half the
++    // dev surfaces built and half not.
++    Na__DevGate__Initialize();
++    // ------------------------------------------------------------
++
++
++    // ARM THE DRAWINGS DATA LISTENER (must precede the loading sequence)
++    // ------------------------------------------------------------
++    // This only registers a window listener, so it costs nothing on a project
++    // with no drawings. It is placed HERE, above the loading sequence, rather
++    // than with the other drawing systems further down, because the loading
++    // sequence dispatches the drawings block exactly once and a listener
++    // attached afterwards never hears it. It happens to survive lower down
++    // today - the dispatch sits behind several awaits - but that is a property
++    // of the fetches above it, not a guarantee, and the failure mode is a
++    // project that silently opens with no drawings.
++    // @delegate: ./02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
++    Na__DrawView__ProjectData__Initialize();
++    Na__SectSceneData__Initialize();           // <-- Same reason: the section bindings are dispatched once, either side of the drawings block
++
++    // DRAWING VIEW CONFIG | Registered and fetched here, before anything can want it.
++    // @delegate: ./02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ConfigState__.js
++    // Until 13-Sep-2026 neither call existed in TrueVision. The module was ported
++    // from ValeVision, whose index.html makes both; the calls were not ported, so
++    // Na__DrawView__AppConfig__.json was never read and the main config overrides
++    // never applied - every drawing setup value came from the built-in fallbacks.
++    // NOT AWAITED, deliberately: an await in this block opens exactly the window
++    // the note above warns about, where a dispatch lands before its listener. The
++    // one consumer that renders through the presets - the Layout Editor - waits
++    // for this same promise in its own ready chain.
++    Na__DrawCfg__SetAppConfig(Na__AppConfig__Data);                             // <-- Main config overrides the system JSON
++    void Na__DrawCfg__Load();                                                   // <-- Once; the presets and the adapter read through its getters
++    // ------------------------------------------------------------
++
++
+     // INITIALIZE LOADING SEQUENCE
+     // ------------------------------------------------------------
+     Na__AppFlow__StartLoadingSequence({
+@@ -2199,14 +2238,13 @@
+ 
+     Na__PresentationMode__DevTools__InitializeCameraPathVisualizer(Na__Scene__Main); // <-- 3D path visualizer (localhost-only)
+ 
+-    // DRAWING SYSTEMS | Drawings data, drawing view core presets, floor plans, elevations (port Phases 2 and 3)
++    // DRAWING SYSTEMS | Drawing view core transitions and presets, floor plans, elevations (port Phases 2 and 3)
+     // @delegate: ./02__Src__AppModules/40__System__DrawingViewCore/
+     // @delegate: ./02__Src__AppModules/42__System__FloorPlanViews/
+     // @delegate: ./02__Src__AppModules/45__System__ElevationViews/
++    // The drawings data listener, the section bindings and the drawing view
++    // config are armed above the loading sequence (REGION | Engine Entry Points).
+     // ------------------------------------------------------------
+-    Na__DrawCfg__SetAppConfig(Na__AppConfig__Data);                             // <-- Main config overrides the system JSON
+-    Na__DrawCfg__Load();                                                        // <-- Once; the presets and the adapter read through it
+-    Na__DrawView__ProjectData__Initialize();                                    // <-- Listens for the drawings block from the loading sequence
+     Na__DrawView__Transitions__Initialize({ camera : Na__Camera__Main, controls : Na__Controls__Orbit });
+     Na__DrawView__RenderPreset__Initialize({
+         renderer    : Na__Renderer__Main,
+@@ -2253,13 +2291,6 @@
+ 
+     // PROJECTED LINEWORK | Config, overlay, pipeline and Dev section (port Phase 4)
+     // @delegate: ./02__Src__AppModules/50__System__ProjectedLinework/
+-    // AUTHORING GATE | Resolved once, before any dev surface asks.
+-    // @delegate: ./02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js
+-    // An ?authoring=on parameter must be honoured before the first panel is
+-    // built; a gate that changed answer halfway would leave some dev surfaces
+-    // built and some not.
+-    Na__DevGate__Initialize();
+-
+     Na__PlCfg__SetAppConfig(Na__AppConfig__Data);                               // <-- Main config overrides the exclusion tokens
+     Na__PlOverlay__Initialize({ canvas : Na__Renderer__Main.domElement });
+     Na__PlPipe__Initialize({ modelRoot : Na__ModelGroup__Root });

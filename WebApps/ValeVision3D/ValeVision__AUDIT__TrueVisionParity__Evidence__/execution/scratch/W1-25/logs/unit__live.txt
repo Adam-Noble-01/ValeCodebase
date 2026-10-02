@@ -1,0 +1,24 @@
+W1-25 PdfFonts unit harness - LIVE file (jsPDF 4.1.0)
+  PASS  config: FontFamily OpenSans, both bases the AD04 host, three cuts  (light:AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf, normal:AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf, bold:AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf)
+  PASS  the module imports exactly one name, GetPdfSetup from the ConfigState barrel  (../03__Core__Config/Na__LayoutEditor__ConfigState__.js -> { Na__LeCfg__GetPdfSetup })
+  PASS  exports: EnsureLoaded, Install, SetFont  (Na__LePdfFonts__EnsureLoaded, Na__LePdfFonts__Install, Na__LePdfFonts__SetFont)
+  PASS  Install before the cuts load answers false (nothing to install)
+  PASS  SetFont before the cuts load answers false (the caller falls back)
+  PASS  EnsureLoaded resolves true (two callers at once share one load)
+  PASS  three fetches, one per cut, each from the configured host only (base and CDN are one address)  (AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf, AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf, AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf)
+  PASS  EnsureLoaded again: true at once, no fetch
+  PASS  Install(doc) answers true
+  PASS  the document knows OpenSans in light, normal and bold  (["light","normal","bold"])
+  PASS  Install(doc) a second time: true, nothing added twice
+  PASS  Install on something that is not a jsPDF document answers false
+  PASS  SetFont maps weights to the cuts as TrueVision does (<=300 light, >=600 bold, else normal)  (bold->bold normal->normal light->light 600->bold 700->bold 400->normal 500->normal 300->light 200->light 600->bold semibold->normal undefined->normal)
+  PASS  a document with text set through SetFont writes (43537 bytes)
+  PASS  cuts installed but never set: putOnlyUsedFonts leaves Open Sans out (1126 bytes)
+  PASS  host down: EnsureLoaded resolves false, never rejects
+  PASS  host down: one warning per cut, with this app's console prefix  (3 warnings)
+  PASS  host down: Install false, SetFont false (Helvetica remains)
+  PASS  host back: the next EnsureLoaded tries again and succeeds
+  PASS  Light missing: loads the other two, and a light run sets Regular  (["normal","bold"])
+  PASS  Light missing: one warning naming the file
+
+W1-25 PdfFonts unit harness: 21 passed, 0 failed

@@ -1,0 +1,101 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe -B 80__Testing__PrototypeEnvironment/Na__Test__UserSpellingsApi__.test.py
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+
+ValeVision3D - user spellings api
+
+  The shipped dictionary
+  PASS  it is a JSON object with its Meta, stamp and groups
+  PASS  it round-trips through the house-style writer byte for byte
+  PASS  the app group is present, last and empty
+  PASS  every entry is made of words the app reads back
+  PASS  no word is listed twice
+  PASS  the specifications' own trade words are in it
+
+  The shipped dictionary in ValeVision3D
+  PASS  it lives at the app root, in 50__ValeVision__UserConfig/ValeVision__UserSpellings__.json
+  PASS  its keys are ValeVision's: Meta, UpdatedIso and Groups prefixed ValeVision__UserSpellings__
+  PASS  its Meta names the file it is in
+  PASS  the app group is titled Added in ValeVision
+  PASS  it lists no Noble Architecture app, and the Vale apps instead
+  PASS  nothing in it names TrueVision
+  PASS  the file is UTF-8 with no byte order mark
+
+  Read
+  PASS  a read answers the document and that it can be written
+  PASS  ...and status ok
+  PASS  server.py serves the route, GET and POST
+  PASS  ...and answers { status ok, writable true, document } through server.py
+
+  Add
+[UserConfig] Added "Zeroflex" to the spelling dictionary
+  PASS  a new word is added, trimmed
+  PASS  it lands in the app group
+  PASS  the file stays in the house style
+  PASS  only the new word and the stamp are new lines in the file
+  PASS  the stamp moved on
+[UserConfig] Added "aardvarkboard" to the spelling dictionary
+[UserConfig] Added "Mumbleply" to the spelling dictionary
+  PASS  the app group is kept in alphabetical order, whatever the case
+  PASS  a word another group already has, in any case, is not added twice
+  PASS  ...and the file is not rewritten
+  PASS  an accented word the file has is found as it is
+[UserConfig] Added "O’Brien" to the spelling dictionary
+  PASS  an apostrophe inside a word is taken, as typed
+  PASS  ...and the straight apostrophe is the same word
+  PASS  a console that cannot print the word never fails the add
+  PASS  a word of the Vale software group, in any case, is not added twice either
+
+  Remove
+[UserConfig] Removed "zeroflex" from the spelling dictionary
+  PASS  a word is removed in any case
+  PASS  ...and is gone from the file
+[UserConfig] Removed "Kingspan" from the spelling dictionary
+  PASS  a word in a hand-made group is removed from that group
+  PASS  a word that is only part of an entry (Farrow & Ball) is not removed
+  PASS  removing a word the file does not have changes nothing
+
+  Refusals
+  PASS  two words are refused
+  PASS  a path is refused
+  PASS  markup is refused
+  PASS  digits alone are refused
+  PASS  a leading apostrophe is refused
+  PASS  a hyphenated pair is refused (add each)
+  PASS  an empty word is refused
+  PASS  a word that is not text is refused
+  PASS  a word too long is refused
+  PASS  an unknown action is refused
+  PASS  a body that is not a JSON object is refused
+  PASS  a word with digits and letters is a word (K15)
+
+  A broken or missing file
+[UserConfig] ValeVision__UserSpellings__.json is not valid JSON: line 1, column 20 (Expecting ',' delimiter) - nothing was written
+  PASS  a file that is not JSON is never overwritten by an add
+  PASS  ...and the answer says so: unreadable, the line and column, nothing written
+[UserConfig] ValeVision__UserSpellings__.json is not valid JSON: line 1, column 20 (Expecting ',' delimiter)
+  PASS  a read of it answers the same, so the app can say where to look
+[UserConfig] ValeVision__UserSpellings__.json is not UTF-8 text (byte 14): save it as UTF-8
+  PASS  a file that is not UTF-8 is unreadable too, and says so
+  PASS  a file saved with a byte order mark (some Windows editors) is read
+[UserConfig] Added "Zeroflex" to the spelling dictionary
+  PASS  ...and an add writes it back without the mark, in the house style, the word in
+  PASS  a missing file is reported, not made from nothing
+  PASS  a read of a missing file answers no document
+
+  The atomic write
+  PASS  a write lands
+  PASS  and leaves no temporary file
+  PASS  where the move is refused the file is still written, in place
+  PASS  ...and the temporary file is cleaned up
+
+  An add and a remove, on a fresh copy
+[UserConfig] Added "Quixotiboard" to the spelling dictionary
+[UserConfig] Removed "Quixotiboard" from the spelling dictionary
+  PASS  an add and then a remove of the same word both land
+  PASS  ...and leave the file byte for byte as it was, but for its stamp
+  PASS  the shipped dictionary was never written
+
+  ALL PASSED
+

@@ -1,0 +1,18 @@
+
+TrueVision3D - Hide swings and 1:200
+
+  The config (the shipped SheetSetup unit, the shipped JSON)
+
+  1:200 (the shipped ScaleManager)
+
+  The record (the shipped SheetRecords normaliser and UpdateViewport)
+  PASS  a viewport saved before Hide swings gains no key from a load
+  PASS  and a second load leaves it byte-identical
+  PASS  a tick and an untick are both kept
+  PASS  anything that is not a boolean is taken off
+  FAIL  1:200 survives a load; 1:150, which is on no list, still does not
+        got  [50,50]
+        want [200,50]
+
+FAIL - 1 check(s) failed.
+

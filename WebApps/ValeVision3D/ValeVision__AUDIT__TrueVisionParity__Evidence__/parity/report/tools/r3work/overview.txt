@@ -1,0 +1,393 @@
+S01-F13 | transport | critical | build_vv_transport | 80__CloudflareIntegration ApiClient: 16 TV drawing/LE files import Na__CfApi__* - VV needs a facade at TV's path
+S01-F14 | transport | high | build_vv_transport | 03__AppUtils/Na__AppUtils__LocalProjectMirror__.js (TV-only) - imported by 6 drawing/LE files
+S01-F15 | wiring | high | needs_decision | ProjectLoader exports GetProjectFolderFromUrl / GetYearFromUrl used by 11-12 TV files; VV lacks them
+S01-F16 | wiring | high | port_adapted | Three keyboards: KeyScope (TV-only) + VV 3D hotkey handler guard
+S01-F43 | data_schema | high | port_adapted | Runtime model category keys are app-prefixed; TV code hard-codes TrueVision__ categories
+S01-F44 | data_schema | high | port_adapted | Project file names and storage layout: TrueVision__X__.json / 30__TrueVision__AppContent vs VaApps/Projects/<folderId>/project.json
+S01-F45 | transport | high | build_vv_transport | Local-server naming: ProjectVision routes, probe and header vs VV's WCP Flask conventions
+S01-F46 | data_schema | medium | port_adapted | Browser storage keys: identical names, except keys that embed the app name
+S01-F50 | wiring | high | update_wiring | Stylesheet registration: TV CSS index vs VV loader Na__LeLoad__STYLESHEETS
+S01-F51 | wiring | high | update_wiring | index.html wiring: TV Index.html:885-919 vs VV index.html:1375-1442
+S01-F52 | wiring | medium | update_wiring | Shared Whitecardopedia service worker precaches VV paths and must be bumped
+S01-F55 | test | medium | port_test | Test naming is identical; TV has ~70 tests for features VV lacks
+S01-F56 | tooling | low | retire_vv | VV legacy 04__Lib__ThirdParty__Three (17 tracked files) is unreferenced
+S01-F57 | tooling | low | needs_decision | 1,857 node_modules files are tracked under VV 62__Feature__EmailWorkers/CloudflareWorker
+S01-F61 | tooling | low | port_adapted | Root docs and app-root content folders: naming targets
+S01-V01 | wiring | medium | update_wiring | Na__RenderLoop__IsPaused missing in VV; VV's render-loop hold is event-based
+S01-V02 | wiring | medium | port_adapted | Shared VV modules lack TV export names: ModelToggle x3, ClickToOpenDoors x6
+S01-V04 | wiring | medium | port_adapted | TV LE reads TV PWA globals for the project's display name; VV has no such global
+S01-V05 | wiring | medium | update_wiring | WCP's shared SW registrar can reload a VV editor with unsaved sheets
+S02a-F03 | tooling | low | no_action | drift_all vv_ver is the PORT NOTE source version; DraftMode plan is unrelated to DraftGuard
+S02a-F04 | data_schema | critical | port_adapted | TV editors pass the presentation config where VV data modules expect a drawings block
+S02a-F06 | transport | medium | build_vv_transport | v2.146 drawings save guard needs Flask routes VV does not have
+S02a-F21 | data_schema | medium | needs_decision | CrossSection__SceneData positionMm sign is opposite in the two apps (TD06 not met)
+S02a-F35 | data_schema | low | needs_decision | VV-only record key Elevation__SeededFrom
+S02a-F43 | wiring | low | port_adapted | Drawing-planes bounds tokens must be checked against VV's model root
+S02a-F44 | wiring | medium | update_wiring | VV render-loop invalidation lacks Na__RenderLoop__IsPaused
+S02a-F46 | wiring | medium | needs_decision | DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate
+S02a-F47 | wiring | medium | port_adapted | Presentation Dev modal is TV 1.2.0, VV 1.0.0
+S02a-F48 | wiring | medium | update_wiring | Layout Editor call sites that change with this slice
+S02a-F49 | wiring | high | update_wiring | LE modules blocked by this slice (ordering for the planner)
+S02a-F50 | wiring | medium | update_wiring | index.html, CSS index and render loop wiring for the new systems
+S02a-F53 | test | medium | port_test | Drawing-system tests to port to VV
+S02a-F57 | wiring | medium | port_adapted | Depth fog needs the live cut's depth (RenderDepthInto) from VV's section tool
+S02a-V01 | wiring | medium | update_wiring | Thumbnail capture signature differs: ported TV editors cannot take the Update picture, and VV's batch thumbnails already fail
+S02a-V02 | wiring | medium | update_wiring | Shared service-worker token must be bumped for the renumber and every export-changing S02a WP
+S02b-F09 | wiring | medium | backport_to_tv | TV copied VV's dimension split but never wired it: duplicate config, orphan modules
+S02b-F26 | wiring | critical | port_adapted | Door module (25) must reach the TV 1.9.0 exports, plus FindDoorGroups, before any folder 50 port
+S02b-F27 | transport | low | keep_vv_divergence | Persistence 1.2.1 FolderId is TV-only (DIV-4): keep VV's folder resolution
+S02b-F33 | tooling | medium | backport_to_tv | TV ConfigAccess fallback build token does not match its JSON
+S02b-F34 | transport | medium | needs_decision | A new BuildToken makes every VV baked linework asset stale; plan a re-bake
+S02b-F36 | wiring | medium | update_wiring | Layout Editor consumers of linework modifiers (ModelLayers group, Viewport2d Frame and Linework)
+S02b-F37 | wiring | high | update_wiring | Layout Editor plan doors and hide swings chain needed before sheets use DoorPose
+S02b-F41 | wiring | medium | update_wiring | Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+S02b-F42 | wiring | medium | update_wiring | Depth fog in VV exports: add a fog-only per-tile hook before the existing section overlay
+S02b-F43 | wiring | medium | update_wiring | Depth fog on sheets: Layout Editor Viewport2d__DepthFog, sixth frame layer, composite, record key, PDF
+S02b-F46 | data_schema | low | no_action | New record keys are nested and compatible; each app reads the other's
+S02b-F47 | transport | low | no_action | No VV worker or local-server change is needed for this slice
+S02b-F48 | wiring | medium | update_wiring | Published Documents (52) copy TV's linework folder-id rule; VV must use its own
+S02b-F49 | test | medium | port_test | Port the FlushJoins, StoreyBand and ElevationDepthFog tests verbatim
+S02b-F50 | test | low | port_test | Port Na__Test__HideSwings__ adapted, after the Layout Editor plan doors work
+S02b-F51 | test | low | port_test | Na__Test__DimensionRoundUp__ tests the Layout Editor, not plan dimensions
+S02b-F52 | test | low | port_test | The ColourPalette test will flag VV's plan annotation colour input
+S02b-F54 | tooling | low | no_action | Docs in scope: the fog plan is the brief; the GPU drain plan and LE performance notes need nothing here
+S02b-F56 | wiring | low | no_action | Projected linework app wiring already matches TV
+S02b-V01 | wiring | high | keep_vv_divergence | VV-only folder-50 integrations TV never wired: keep them through every host-file port
+S02b-V04 | tooling | low | no_action | Scratch link simulation reproduces the dependency chain; use it as a pre-flight gate
+S03a-F02 | data_schema | high | port_adapted | AppConfig brand seams and NA-specific values a blind copy would break
+S03a-F05 | data_schema | low | backport_to_tv | TV defect: three Measure labels sit in the Selection block and are dead
+S03a-F16 | wiring | medium | update_wiring | Viewer path: TV never renders a sheet for a reader (v2.155.0)
+S03a-F18 | wiring | high | update_wiring | Document tabs opened from 3D: VV loader wait would cover the page
+S03a-F23 | wiring | high | update_wiring | Loader STYLESHEETS must mirror TV's CSS-index LE imports
+S03a-F24 | wiring | high | update_wiring | Loader facade additions: strip actions, view copies, model source, shared links
+S03a-F29 | wiring | high | port_adapted | VV 3D hotkeys answer under drawing tabs (code-path evidence)
+S03a-F33 | test | high | port_test | Keyboard and mode tests to port; new VV-only tests
+S03a-F34 | tooling | medium | port_adapted | jsPDF, html2canvas and the Classic scan live in the legacy folder
+S03a-F40 | data_schema | medium | port_adapted | Drawing Register and Statement Writer config blocks need VV values
+S03a-F41 | wiring | medium | update_wiring | Mode controller Ready chain grows with each feature
+S03a-F42 | wiring | high | update_wiring | Per-feature mode-controller hunks (from the TV import walk)
+S03a-F44 | wiring | medium | update_wiring | Left-column tabs (Document Preferences | Specification)
+S03a-V01 | wiring | high | update_wiring | Barrel ahead of its units breaks module linking
+S03a-V03 | wiring | medium | update_wiring | Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+S03b-F01 | data_schema | critical | port_whole_reapply_vv | SheetRecords schema 24 versions behind (TV 1.39.0 vs VV 1.15.0)
+S03b-F02 | data_schema | high | port_whole_reapply_vv | VV normalisers DROP or COERCE TV-era fields on the next load
+S03b-F03 | data_schema | critical | port_whole_reapply_vv | Layer-stack migration (RestackLegacyLayers) must precede the paint order
+S03b-F07 | wiring | medium | update_wiring | Likely VV bug: Common fields seed never runs on the first editor load
+S03b-F17 | transport | high | build_vv_transport | v2.146 guards 2 and 3 (save judged before R2, backups kept) need VV transport work
+S03b-F42 | wiring | high | update_wiring | Import closure: other slices' leaves and seams must exist before the core files swap
+S03b-F43 | wiring | medium | update_wiring | Config readers, AppConfig keys and labels the slice ports need
+S03b-F44 | test | medium | port_test | TV tests that cover this slice and that VV lacks
+S03b-F50 | wiring | medium | update_wiring | New model, surface and markup exports have consumers in other slices
+S03b-F51 | wiring | low | update_wiring | Shared service worker token risk on cross-module export changes
+S03b-V01 | wiring | high | update_wiring | VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+S03b-V02 | wiring | high | port_adapted | 53 ProjectLink imports two ProjectLoader functions VV lacks: ShapeGeometry 1.6.0+ and QrCell fail at link time even with the QR switched off
+S03b-V04 | test | medium | port_test | The schema port's acceptance must whitelist every key TV's normaliser adds to VV sheets, measured against VV's current normalised output
+S04a-F04 | tooling | medium | no_action | drift_all 'header-only' hides real changes in 4 rows of this slice
+S04a-F06 | wiring | high | update_wiring | Render entry points take different positional arguments in the two apps
+S04a-F25 | wiring | medium | update_wiring | Viewport rotation is wired through 31 TV files
+S04a-F28 | wiring | high | update_wiring | Plan doors depend on pieces outside the Layout Editor that VV lacks
+S04a-F30 | wiring | medium | port_adapted | Fog images need a callback route that VV's tiled renderer lacks (DIV-1)
+S04a-F32 | wiring | high | update_wiring | Model Source's support chain is missing in VV
+S04a-F33 | wiring | low | backport_to_tv | Both SnapshotRenderers call their own section engine directly for three things, not through the DIV-2 adapter
+S04a-F36 | transport | high | build_vv_transport | The site plan Store needs a VV transport adapter
+S04a-F40 | data_schema | high | needs_decision | Site plan record fields, stems and project data keys
+S04a-F41 | transport | medium | build_vv_transport | There is no Vale site plan data pipeline
+S04a-F43 | data_schema | medium | update_wiring | VV SheetRecords loses three of this slice's fields and ignores the rest
+S04a-F44 | wiring | medium | update_wiring | Config and ConfigState gaps for this slice
+S04a-F45 | wiring | medium | update_wiring | ModeController lacks this slice's registrations
+S04a-F46 | wiring | medium | update_wiring | Draft mode guards are compiled into three viewport files
+S04a-F52 | test | medium | port_test | Tests to port with this slice
+S04a-V01 | wiring | high | update_wiring | Whole-file takes need their whole import closure: eight shared files can only be taken whole at the end
+S04a-V03 | wiring | medium | update_wiring | Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+S04a-V04 | data_schema | medium | build_vv_transport | Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+S04b-F05 | wiring | medium | update_wiring | Draft render guards missing from VV's viewport modules
+S04b-F06 | wiring | high | needs_decision | Zoom-settle event (TV v2.111) is a prerequisite VV lacks
+S04b-F30 | wiring | high | update_wiring | PointerDrag ApplyDrag must take the drafting-aid sequence
+S04b-F31 | wiring | medium | update_wiring | PointerPress lacks the carry grab and the move-anchor press handling
+S04b-F32 | wiring | medium | update_wiring | HitResolution still owns the vector move snap that TV moved out
+S04b-F33 | wiring | high | update_wiring | Keyboard lacks the K, F6, F7, F8 and F9 cases and RedrawHeld
+S04b-F34 | wiring | high | update_wiring | Key map rows, fallback rows, catalogue entries and SHEET_CHORDS missing
+S04b-F35 | wiring | high | update_wiring | Toolbar lacks the split Snap button, its menu and five drafting toggles
+S04b-F36 | wiring | medium | update_wiring | Mode controller must register the grid panel, attach grid and axes, and repoint Clear
+S04b-F37 | wiring | high | update_wiring | Measurements has no Say echo line, which six new modules import
+S04b-F38 | wiring | medium | update_wiring | SheetSurface needs a chrome cache and GetSheetChrome for title-block snaps
+S04b-F39 | wiring | medium | update_wiring | SheetModel lacks IsLayerSelectable (reference layers), which Sources imports
+S04b-F40 | wiring | high | port_verbatim | Three pure leaves and ShapeGeometry ring helpers are prerequisites of the snap folder
+S04b-F41 | wiring | medium | update_wiring | Snapping and carry config keys missing from VV config
+S04b-F42 | wiring | high | update_wiring | Four new stylesheets must go into VV's loader STYLESHEETS, not a CSS index
+S04b-F43 | wiring | medium | update_wiring | Grips and frames must be painted on their points for the snap marker to register
+S04b-F44 | wiring | low | no_action | Other TV snap consumers will need the folder when their own features port
+S04b-F48 | transport | low | no_action | No transport work: drafting aids write nothing to R2, the worker or a server
+S04b-F50 | test | medium | port_test | Port the ObjectSnap bundle helper and the ObjectSnap suite
+S04b-F51 | test | medium | port_test | Port the OrthoMode suite (it gates the tool, drag and keyboard wiring)
+S04b-F52 | test | medium | port_test | Port the DrawingGrid suite (its TV header is stale)
+S04b-F53 | test | low | port_test | Port the DrawingAxes suite
+S04b-F54 | test | medium | port_test | Port the MoveAnchor, GroupMoveSnapping and MoveRetype suites with their WPs
+S04b-F55 | test | medium | port_test | Port the PaintedOnThePoint suite as the joint marker, grips and frames gate
+S04b-F56 | test | medium | no_action | DraftGuard, DraftRestore and DrawingDrafts test the browser draft, not Draft mode
+S04b-F57 | tooling | medium | no_action | Port-signal index misses the 'ValeVision : not yet ported' marker (126 TV files)
+S04b-F58 | tooling | medium | no_action | drift_all 'header-only' rows and version columns are unreliable
+S04b-F59 | tooling | medium | no_action | VV's export verifier checks unreferenced modules, so seams must precede folders
+S04b-F63 | wiring | critical | update_wiring | TONE import trap: repointing a VV caller without dropping TONE breaks module linking
+S04b-F64 | wiring | low | port_verbatim | Draft and grid CSS assume TV's SheetSurface 1.7.0 paper stack
+S04b-V02 | wiring | medium | update_wiring | A Snapping__ shim must not re-export the controller (module cycle through Measurements)
+S04b-V03 | wiring | high | port_adapted | ShapeGeometry seam must be a hunk: TV's whole 1.9.0 file would not link in VV and brings NA's QR
+S04b-V04 | wiring | medium | update_wiring | Viewport carry needs TV-only CarryTarget in HitResolution and mandatory config keys
+S05a-F30 | wiring | critical | update_wiring | Hub import closure: 12 TV-only systems must exist first
+S05a-F31 | wiring | high | update_wiring | Shared-module exports the slice needs that VV lacks
+S05a-F32 | wiring | high | update_wiring | Config readers missing fields make features fail silently
+S05a-F33 | wiring | high | port_adapted | Key map content behind; VV fallback has TV's v2.115 bug
+S05a-F34 | wiring | medium | update_wiring | Mode controller wiring for key scope and document keys
+S05a-F35 | wiring | high | update_wiring | VV 3D hotkeys fire under drawing tabs and in label edits
+S05a-F36 | wiring | high | update_wiring | MarginGrip must learn IsMoveAuto in the same commit as the hub
+S05a-F37 | wiring | medium | update_wiring | Specification must register broken and note resolvers
+S05a-F38 | wiring | medium | update_wiring | Controls__Pc carries Page Down paging and the focus fix
+S05a-F39 | wiring | low | update_wiring | Other slices' modules that import new slice names
+S05a-F40 | wiring | medium | update_wiring | Exact S04b names the sheet tools call
+S05a-F44 | test | medium | port_test | 12 TV tests cover the slice; VV has none
+S05a-F45 | tooling | medium | no_action | Use the export verifier as the gate; mind its argument
+S05a-F50 | tooling | low | no_action | Three TV files exceed the 1,000-line split rule
+S05a-F51 | data_schema | low | no_action | Record fields read by TV code are inert until owners land
+S05a-F52 | transport | low | no_action | No transport in this slice
+S05a-V01 | wiring | high | update_wiring | Hub and Sheet Images form a link-time import cycle
+S05a-V02 | transport | critical | update_wiring | Hub link closure reaches TV's worker client and NA site-plan data
+S05a-V05 | wiring | medium | update_wiring | Grips and Measurements wait on different chains; split WP-S05a-07
+S05b-F06 | data_schema | medium | port_adapted | Hatch library content: Construction pack yes, Site Plan pack per decision, reference PNGs not needed
+S05b-F08 | wiring | critical | update_wiring | Load-order trap: ObjectSnap Sources statically imports VectorTools Curves
+S05b-F25 | data_schema | high | port_verbatim | Shape record: Shape__Hatch, Shape__Curve, Shape__Holes unknown to VV
+S05b-F26 | data_schema | high | port_verbatim | Dimension record: AtScale never written, extension lines, RoundUp, LinePt, LineStyle absent in VV
+S05b-F27 | wiring | high | update_wiring | SheetModel API gaps the vector tools need, plus facade re-exports
+S05b-F28 | wiring | high | port_verbatim | SheetChrome: hatch deck and holed polylines on screen and in the PDF
+S05b-F29 | wiring | high | port_adapted | MarkupBridge dimension hunks: scale, extension lines, round up, line weight and dashes
+S05b-F30 | wiring | high | update_wiring | Six sheet-tools dispatch sites and extras for the vector tools
+S05b-F31 | wiring | high | update_wiring | Holes awareness in the sheet tools must ship with the Boolean tools
+S05b-F32 | wiring | medium | update_wiring | Eyedropper lacks the hatch trait and six dimension style traits
+S05b-F33 | wiring | high | update_wiring | ModeController: hatch ready chain, panel registrations, vector tools initialise
+S05b-F35 | wiring | high | update_wiring | Keys: 13 vector/Boolean rows, When contexts, and a key-map engine VV lacks
+S05b-F36 | wiring | medium | port_adapted | Config keys, ToolSetup readers and tool defaults for at-scale, round-up, hatch and dimension styles
+S05b-F37 | wiring | medium | port_verbatim | PanelHost LinkedPairRow/ShowLink and the Linked Pair CSS region
+S05b-F38 | wiring | high | update_wiring | Drawing tools depend on TV's Object Snap folder (VV still on its own Snapping module)
+S05b-F40 | wiring | medium | port_verbatim | Prerequisite leaves from other slices are import-free and inert - land them early
+S05b-F41 | transport | low | no_action | No transport work: library and configs are static app files; VV keeps its own worker and storage
+S05b-F42 | test | medium | port_test | Port Na__Test__VectorTools__ (138 checks)
+S05b-F43 | test | medium | port_test | Port Na__Test__VectorBooleans__ (148 checks)
+S05b-F44 | test | medium | port_test | Port Na__Test__HatchLineControls__ (47 checks) with site plan parts adapted
+S05b-F45 | test | low | port_test | Port Na__Test__DimensionRoundUp__ (21 checks) verbatim
+S05b-F46 | test | low | port_test | Secondary tests: vector-hatch rows, stubs, and a misrouted VectorQuality test
+S05b-F53 | tooling | low | backport_to_tv | TV config defect: three Measurements labels nested in the Selection block (VV is right)
+S05b-F54 | tooling | low | no_action | Hatch library loads serially inside the editor's ready chain
+S05b-F56 | wiring | low | no_action | Floor Areas and Note Region pass-throughs in Shape/Rectangle tools are inert in VV
+S05b-F57 | wiring | medium | update_wiring | Placing Text, Leaders and Dimensions inside an open group depends on EditScope 1.4.0
+S05b-V01 | wiring | high | needs_decision | Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+S05b-V02 | wiring | medium | update_wiring | Vector-tool menus and the speaker line need ContextMenu 1.1.0 flyouts and Measurements Say (missed prerequisites)
+S05b-V03 | wiring | medium | update_wiring | Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreachable files
+S05b-V04 | test | low | port_test | Three more TV suites load this slice's files; two suites are claimed by three slices
+S05b-V05 | tooling | low | fix_ledger | Vendored Clipper2 index notes go stale when the Boolean leaf lands
+S06a-F20 | wiring | medium | update_wiring | ModeController: left-column tabs, tab hints and 7 TV sections absent
+S06a-F21 | wiring | medium | update_wiring | Selecting a viewport leaves the markup sections open in VV
+S06a-F22 | wiring | low | update_wiring | AppConfig: accordion list and panel labels to add with each feature
+S06a-F28 | transport | low | keep_vv_divergence | Custom Scrapbook transport: VV adaptation is correct (keep)
+S06a-F29 | transport | low | no_action | Scrapbook server blueprints are at logic parity
+S06a-F30 | data_schema | medium | backport_to_tv | TV scrapbook folders 02-05 missing on disk: saves there fail
+S06a-F39 | data_schema | medium | port_adapted | Parametric config lacks 485 keys and new tiles; VV wording must survive
+S06a-F46 | transport | medium | port_adapted | Spec row editor needs spell check and a WriteLocalCopy export over VV's existing notes client
+S06a-F47 | test | medium | port_test | Scrapbook tests at TV v2.85 state; ~25 TV-only tests prove this slice
+S06a-F50 | tooling | high | needs_decision | VV ships under a shared service worker whose token hasn't moved
+S06a-F51 | wiring | medium | needs_decision | VV measures paper text in Helvetica; paper shows Open Sans
+S06a-F53 | wiring | medium | port_verbatim | Port the ViewportRotation leaf early: it unblocks 4 files
+S06a-F55 | tooling | medium | no_action | drift_all 'header-only' understates two Scrapbook files
+S06a-V01 | wiring | high | update_wiring | Whole-file ports must remap drawing-folder import paths (40->42, 42->43)
+S06a-V03 | wiring | low | port_adapted | Notes toggle removal must also drop its AppConfig labels and sentence (duplicates WP-S06b-11)
+S06a-V04 | tooling | high | needs_decision | Cross-slice ownership overlaps (Toolbar, PanelHost, AreaSchedule, WriteLocalCopy, dictionary, Snapping__)
+S06b-F01 | transport | critical | port_whole_reapply_vv | VV spec Sync overwrites on-disk edits; drafts restored unasked
+S06b-F04 | transport | high | build_vv_transport | R2DrawingNotes needs a cloud-only write and the local file's date
+S06b-F05 | transport | medium | build_vv_transport | Flask drawing-notes route: no Last-Modified, in-place write, no backup
+S06b-F06 | transport | low | keep_vv_divergence | No Cloudflare worker change or deploy needed for this slice
+S06b-F14 | wiring | high | update_wiring | ModeController lockstep wiring (mount, StartWatch, StopWatch)
+S06b-F15 | wiring | low | update_wiring | Save Sheets does not say when the specification was held
+S06b-F16 | data_schema | medium | update_wiring | Specification config: lockstep keys missing
+S06b-F19 | wiring | medium | port_verbatim | LeaderGeometry 1.0.0 lacks SetBrokenResolver and SetNoteResolver
+S06b-F23 | data_schema | critical | port_verbatim | VV NormaliseMarginNotes drops region and leaderless keys
+S06b-F24 | wiring | high | update_wiring | SheetModel__Sheets lacks margin patch keys and region functions
+S06b-F33 | wiring | medium | update_wiring | Margin config, labels and the PDF overflow toast
+S06b-F38 | wiring | high | update_wiring | Floor Areas touches about 25 shared modules in VV
+S06b-F39 | data_schema | high | update_wiring | Floor-area data schema absent from VV records
+S06b-F41 | wiring | medium | update_wiring | Floor Areas depends on TV-only systems from other slices
+S06b-F43 | wiring | medium | update_wiring | Colour Palette wiring: PanelHost, PlanAnnotations toolbar, CSS index
+S06b-F45 | transport | high | build_vv_transport | VV needs a local route for the user spelling dictionary
+S06b-F47 | wiring | low | update_wiring | Spell Check has one consumer, in another slice
+S06b-F52 | test | high | port_test | None of the slice's TV tests exist in VV
+S06b-F54 | test | low | port_test | VV SpecificationPdf test page loads jsPDF from the legacy folder
+S06b-F56 | transport | low | keep_vv_divergence | VV web authoring cannot sync the specification
+S06b-V01 | wiring | high | port_verbatim | Floor Areas and Region tool modules must precede the hub/MarkupBridge ports
+S06b-V03 | wiring | medium | update_wiring | Whitecardopedia service-worker token must be bumped per package
+S06b-V04 | transport | medium | needs_decision | Spec transport seam conflicts with S09's CfApi/LocalMirror shims
+S06b-V05 | transport | low | build_vv_transport | Flask drawing-notes GET re-serialises with sorted keys
+S06b-V06 | wiring | low | no_action | 58 RowEditor can port verbatim once WP-S06b-01 lands
+S07a-F13 | data_schema | high | port_adapted | Register configuration and project block absent in VV
+S07a-F15 | data_schema | high | needs_decision | VV project codes are not unique per folder: affects {project} in Document IDs and QR resolver keys
+S07a-F16 | wiring | high | update_wiring | ModeController has no register view, mount, open or image wiring
+S07a-F17 | wiring | high | update_wiring | No Document Register tab: VV tab strip and lazy loader know only sheet and spec views
+S07a-F19 | wiring | high | port_adapted | History and AutoSave lack the register hooks
+S07a-F20 | wiring | medium | update_wiring | Web viewer has no register entry
+S07a-F21 | transport | critical | build_vv_transport | Register persistence must run on VV's own worker and Flask: facade plus the 3-argument save contract
+S07a-F23 | wiring | medium | needs_decision | Register PDF and pack export need PdfFonts and PdfExporter strict mode
+S07a-F25 | wiring | low | update_wiring | Other features consume the register and the QR system: keep the paths identical
+S07a-F30 | data_schema | medium | port_adapted | QR config is NA-addressed; VV needs its own address, index and floor, shipped switched off
+S07a-F32 | transport | high | build_vv_transport | VV has no QR resolver: printed codes need a Vale-owned short address and index
+S07a-F34 | wiring | medium | update_wiring | Shape__Qr and the 'qr' primitive are absent from VV's record, shape painter, chrome and exporter
+S07a-F44 | data_schema | low | port_adapted | Sheet Images config describes NA storage and hosting
+S07a-F46 | transport | high | build_vv_transport | VV needs a Flask blueprint equivalent to NAAPPS ProjectVision__TrueVisionSheetImages__Api__.py
+S07a-F47 | transport | high | build_vv_transport | VV worker and client cannot list, copy, delete or store sheet pictures
+S07a-F48 | wiring | high | update_wiring | VV drawings save has no save steps and no step notes in the Save Sheets toast
+S07a-F49 | wiring | high | update_wiring | Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+S07a-F50 | wiring | high | needs_decision | Picture editing depends on TV-only editor systems: ObjectSnap, PickUpMove, WithAdoption, RegisterShapeProvider
+S07a-F52 | test | medium | port_test | Port the ProjectQr tests; rewrite only the resolver-index section
+S07a-F53 | test | medium | port_test | Port the Sheet Images tests (Node save-step suite and Flask API suite)
+S07a-F54 | test | medium | port_test | Neither app tests the register: author a numbering and transaction test (VV first, back-port)
+S07a-F55 | test | low | port_test | VV's title block cells test enforces the divergence the register removes
+S07a-F60 | tooling | low | port_adapted | Vendor PDF.js 3.11.174 in VV (and in TV) instead of borrowing PlanVision's copy
+S07a-V01 | data_schema | high | needs_decision | VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+S07a-V03 | wiring | medium | update_wiring | TV v2.116.0 also gave its service worker a sheet-pictures bucket; VV's shared worker has none
+S07a-V04 | wiring | high | update_wiring | Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+S07a-V05 | data_schema | medium | port_adapted | VV project.json identity fields are unreliable; resolve folder and name through the master index and projectName
+S07a-V07 | test | low | port_test | Other slices' TV tests stub this slice's names; they only port cleanly if 51/53 names land verbatim
+S07b-F07 | transport | critical | port_adapted | Transport unit is the single VV seam - rewrite it on VV's worker and Flask
+S07b-F21 | data_schema | medium | port_adapted | Standard sections config JSON carries NA words
+S07b-F26 | transport | critical | build_vv_transport | VV Flask blueprint for statement files
+S07b-F27 | transport | critical | build_vv_transport | VV worker handler for statement R2 reads and writes
+S07b-F28 | transport | high | build_vv_transport | VV client module Na__AppUtils__R2StatementDocs__
+S07b-F29 | transport | high | build_vv_transport | VV catch-all static route answers a missing file with index.html and HTTP 200
+S07b-F30 | data_schema | high | build_vv_transport | VV storage layout: statements folder, index file, R2 keys, CDN
+S07b-F31 | wiring | high | update_wiring | Config block, GetStatementSetup and tab labels missing in VV
+S07b-F32 | wiring | high | update_wiring | ModeController has no statement view
+S07b-F33 | wiring | high | update_wiring | VV loader facade and TabStrip need the statements view
+S07b-F34 | wiring | critical | update_wiring | Keyboard: VV's 3D hotkeys would eat statement typing, and Backspace navigates back
+S07b-F35 | wiring | high | update_wiring | Document Sharing and Statement Data depend on each other; keep Share__Open off VV start-up
+S07b-F36 | wiring | medium | update_wiring | Project QR Code is a static import of the page, the publisher and the hub
+S07b-F37 | wiring | medium | update_wiring | Na__LePdf__LoadLibrary export missing in VV PdfExporter
+S07b-F38 | tooling | medium | port_verbatim | Vendor html2canvas 1.4.1 into VV
+S07b-F39 | tooling | medium | update_wiring | Bump VV's service worker token with the release
+S07b-F40 | tooling | high | port_adapted | .gitignore allowlist for VV statement folders
+S07b-F44 | wiring | low | port_adapted | VV has no project display-name source (TrueVision__Pwa__ProjectContext)
+S07b-F45 | test | high | port_test | Seven node suites must run on a VV fixture, not live project files
+S07b-F46 | test | medium | port_test | Six browser harnesses and the reference Typora CSS
+S07b-F47 | test | medium | port_test | Statement end-to-end test server
+S07b-F48 | test | low | port_test | Export and module-graph verification gates the port
+S07b-F56 | data_schema | medium | port_verbatim | Index schema and statement folder conventions stay identical
+S07b-F57 | wiring | medium | update_wiring | No direct import of Sheet Images, Spell Check or Colour Palette; a transitive dependency on the Published Schema, Published Documents and Document Publishing through Docu
+S07b-V01 | transport | critical | build_vv_transport | VV's project sync deletes every published statement picture from R2
+S07b-V02 | data_schema | high | port_adapted | Statement file names would carry the raw ?project= folder id as {code}, slash included
+S07b-V04 | transport | medium | build_vv_transport | Statement worker routes: store without caching and do not bump the shared build manifest per file
+S07b-V05 | wiring | high | update_wiring | WP-05, WP-06 and WP-07 cannot land separately; the writing surface needs ProjectQrCode
+S07b-V07 | wiring | medium | update_wiring | A shared statement link must itself load VV's lazy editor
+S07b-V09 | test | low | port_test | VV node suites need the QR port, VV's ProjectLoader seam and a VV address bar
+S07b-V10 | test | low | port_test | Off-localhost acceptance needs a port other than 8000/8090
+S08-F02 | transport | critical | build_vv_transport | Whitecardopedia project sync would delete every published picture (and likely thumbnails/snapshots) from R2
+S08-F07 | transport | high | port_adapted | Publish__Transport must be re-pointed at VV's Flask blueprint and VV's worker
+S08-F08 | transport | high | build_vv_transport | VV worker needs published-document routes (file, list, scoped delete) in VV's own storage
+S08-F09 | transport | high | build_vv_transport | VV Flask mirror for local filing (list, read, write, archive, prune)
+S08-F10 | transport | high | build_vv_transport | A published write must never bump VV's global build manifest
+S08-F11 | data_schema | high | needs_decision | VV has no document id, yet it names every published folder, archive and share fallback
+S08-F15 | wiring | high | update_wiring | ModeController must never render a sheet in the viewer
+S08-F18 | wiring | high | update_wiring | Publish entry point: TV opens Publish Drawings from the Drawing Register, which VV lacks
+S08-F21 | transport | medium | build_vv_transport | VV client utility for published files (03__AppUtils), not a VV 80__CloudflareIntegration folder
+S08-F22 | transport | medium | build_vv_transport | VV Flask returns index.html with HTTP 200 for any missing file
+S08-F23 | wiring | medium | port_adapted | Reader URL order on VV localhost must start with the Flask-served copy
+S08-F24 | wiring | medium | update_wiring | VV ProjectLoader lacks GetProjectFolderFromUrl/GetYearFromUrl, which 52, 65 and 66 import
+S08-F25 | wiring | medium | update_wiring | VV SheetSurface lacks ShowPublished and ZOOM_SETTLED_EVENT
+S08-F26 | wiring | medium | update_wiring | VV loader would hold its screen 2.5 s for renders that never come in the published viewer
+S08-F27 | wiring | medium | update_wiring | Share entry points and start-up wiring in VV
+S08-F29 | data_schema | medium | needs_decision | Where VV's published documents live
+S08-F31 | wiring | medium | port_adapted | Statements and the register: share and viewer document kinds that depend on TV-only features
+S08-F32 | transport | medium | update_wiring | The shared Vale service worker has no published cache class
+S08-F33 | wiring | medium | needs_decision | Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+S08-F35 | test | medium | port_test | Port Na__Test__PublishedSchema__ (59 checks) with a VV fixture
+S08-F36 | test | medium | port_test | Port Na__Test__PublishedReader__ (63 checks) and its harness
+S08-F37 | test | medium | port_test | Port Na__Test__ShareLinks__ (68 checks) without the s/ resolver region
+S08-F38 | test | medium | port_test | New tests for VV's published Flask routes and worker handler (TV has none)
+S08-F40 | tooling | medium | needs_decision | No git policy for published output in the ValeCodebase repository
+S08-F46 | tooling | low | backport_to_tv | TV's example fixture is not yet at the final file shape
+S08-F47 | tooling | low | no_action | Publishing needs Chrome or Edge on the authoring machine
+S08-F48 | transport | low | no_action | A project rename or delete carries the published folder correctly
+S08-V02 | wiring | medium | port_adapted | VV ResolveAssetUrl sends 11 projects to GitHub Pages only; the published reader must build its R2 URL itself
+S08-V05 | wiring | medium | update_wiring | S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+S08-V06 | transport | low | build_vv_transport | Three VV project folders contain a space and fail the proposed worker and Flask guards
+S09-F07 | wiring | medium | update_wiring | VV attaches the drawings, section-scene and DrawCfg listeners after the loading sequence starts (latent race TV fixed)
+S09-F08 | wiring | low | update_wiring | DevGate initialised after the dev surfaces in VV (before them in TV)
+S09-F11 | wiring | high | update_wiring | Loader facade lacks the entry points TV's TabStrip 2.0.0 and DevMenu need
+S09-F12 | wiring | high | port_whole_reapply_vv | VV-only ModeController API and listeners must be re-applied on any whole-file port of TV's ModeController
+S09-F13 | wiring | medium | port_whole_reapply_vv | Loader-boundary seams in SheetRecords (DrawingCode leaf) and RenameDrawing (facade restamp)
+S09-F14 | wiring | medium | update_wiring | Late-start semantics: ported LE modules must not rely on hearing the first drawings-loaded event
+S09-F15 | wiring | medium | update_wiring | Loader STYLESHEETS list must gain TV's eagerly imported LE sheets, in TV cascade order
+S09-F17 | wiring | low | update_wiring | CSS index: 54/55 must be eager; two ordering differences to verify
+S09-F18 | data_schema | medium | keep_vv_divergence | Project-data dispatch contract differs; VV must keep its own
+S09-F19 | wiring | low | update_wiring | na-app-scene-ready is never dispatched in VV
+S09-F20 | wiring | medium | port_adapted | Render-loop hooks TV features need in VV's loading sequence, composer and thumbnail renderer
+S09-F27 | transport | high | build_vv_transport | 21 Na__CfApi__* names imported by TV drawing modules have no VV equivalent
+S09-F28 | transport | high | build_vv_transport | LocalProjectMirror (8 names, drawings save guard) has no VV equivalent
+S09-F29 | transport | medium | build_vv_transport | ProjectLoader lacks GetProjectFolderFromUrl and GetYearFromUrl (12 TV importers)
+S09-F30 | transport | medium | keep_vv_divergence | R2AssetUpload: VV path guard and failure contract must grow with each TV asset kind
+S09-F31 | transport | medium | build_vv_transport | Local-server identity and route families differ (health probe, /api/truevision vs /api/valevision)
+S09-F32 | data_schema | low | keep_vv_divergence | Main config drawing blocks: VV-only DrawingView__Config and ProjectedLinework__Config; LayoutEditor__Config aligned
+S09-F33 | data_schema | low | port_adapted | RenderEffect__ProfileLines Drawing2d keys diverged (TV removed Drawing2dEdgeWidth in v2.27.0)
+S09-F34 | data_schema | medium | needs_decision | Overlay keys: TV's three allow-lists vs VV's patch-own-keys sync; rules for new data
+S09-F36 | wiring | medium | update_wiring | 32 TV-only window events arrive with TV modules; names must be kept exactly
+S09-F37 | wiring | high | keep_vv_divergence | Scene-activation event names diverge; TV's section scene data listens to an event TV never fires
+S09-F38 | wiring | medium | keep_vv_divergence | na-model-visibility-changed has no dispatcher in TV; VV's must survive ports
+S09-F39 | wiring | medium | port_whole_reapply_vv | VV-only listeners in North DevMenu and SheetModel must be re-applied on whole-file ports
+S09-F41 | tooling | high | needs_decision | Shared WCP service-worker token not bumped since VV v2.67 although releases added exports
+S09-F42 | tooling | medium | port_adapted | WCP worker lacks TV's SWR 'no-cache' refresh fix and does not precache VV's lazily linked LE sheets
+S09-F43 | test | medium | port_test | Harness results: VV green, TV red on a known false positive; the Exports harness is blind to facade property calls
+S09-F44 | test | medium | port_test | Wiring-relevant TV tests to port with their features (paths need the folder map)
+S09-F48 | wiring | medium | update_wiring | Index-level wiring each TV-only system needs when it lands (47, 49, 66, 27, mode-controller contexts)
+S09-F52 | tooling | low | no_action | TV placeholder Na__AppLoader__ProjectDataLoader__.js should not be ported
+S09-V02 | wiring | medium | port_whole_reapply_vv | Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41
+S09-V04 | wiring | low | update_wiring | Event catalogue misses listeners registered from arrays or unresolved constants
+S09-V05 | data_schema | low | port_adapted | Main config nested-key diff: TV-only ortho line bias and loader keys; VV keeps the legacy models.baseMesh schema
+S10-F07 | wiring | high | update_wiring | Loader facade and ModeController seams needed by the compact strip and the veils
+S10-F16 | wiring | high | update_wiring | Stylesheet loading model: every ported TV sheet needs a VV home (index, loader list or self-link)
+S10-F17 | tooling | high | needs_decision | Shared Whitecardopedia service-worker token not bumped since 18-Sep
+S10-F35 | test | medium | port_test | No TV test covers the strip, fold or veils; port the UI-adjacent TV tests and add a parity gate
+S10-V01 | wiring | high | update_wiring | VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil
+S10-V05 | wiring | medium | port_adapted | Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install
+S11-F09 | transport | high | build_vv_transport | Publishing, sharing and the published-drawings loading screen absent; VV has the web viewer but no published system
+S11-F18 | transport | medium | build_vv_transport | Save-path guards and 'where the sheets went' messages not ported (DIV-4)
+S11-F28 | wiring | medium | backport_to_tv | Back-port: Add Viewport list fills once in TV - VV v2.45.1 fix never landed
+S11-F39 | tooling | medium | needs_decision | Module version numbers are not comparable between the apps
+S11-F40 | tooling | high | fix_ledger | Swarm needs a single-writer ledger/devlog procedure
+S11-F46 | test | medium | port_test | Verification baseline passes today; TV tests to port are mapped per release
+S11-F47 | tooling | medium | port_test | No tool checks PORT NOTE source versions or leftover release tokens
+S11-V02 | wiring | high | update_wiring | 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+S11-V06 | tooling | medium | fix_ledger | The 'Source version' PORT NOTE line already exists in 72 VV files, and drift_all.tsv reads it as VV's version
+S11-V09 | wiring | medium | update_wiring | Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo
+S12-F01 | transport | critical | build_vv_transport | Sync pipeline purges every subfolder image on R2
+S12-F02 | transport | high | build_vv_transport | Sync uploads the whole local project.json over R2's editor keys
+S12-F06 | wiring | high | update_wiring | ProjectLoader identity helpers and localhost repository fallback
+S12-F07 | transport | high | build_vv_transport | VV worker 1.6.0: project GET, merge-keys, guarded project-files family
+S12-F08 | transport | high | build_vv_transport | Flask persistence core: guarded save, fingerprint, backups, files/<name>, health, JSON 404
+S12-F09 | wiring | high | update_wiring | Loading sequence: Initialize, SetLoadedProjectData, editor-owned overlay
+S12-F12 | data_schema | high | needs_decision | Save guards for VV, plus VV-first R2 judging (D-S12-05)
+S12-F13 | transport | medium | needs_decision | Every editor write bumps VV's global build manifest (D-S12-06)
+S12-F14 | transport | medium | build_vv_transport | Worker handlers skip folderId validation; an old worker misroutes new POSTs
+S12-F15 | transport | medium | build_vv_transport | Flask answers unknown API GETs with 200 index.html
+S12-F16 | tooling | medium | needs_decision | Local-server identity probe: add /api/health (D-S12-07)
+S12-F17 | data_schema | medium | needs_decision | Relative storage layout for new content (D-S12-03)
+S12-F18 | wiring | high | build_vv_transport | Repository URLs must be app-root relative in VV
+S12-F31 | data_schema | high | build_vv_transport | One editor-owned key list: VV's Na__DevSavedKeys equivalent
+S12-F33 | data_schema | medium | port_adapted | Absolute URLs in project data vs VV project rename
+S12-F34 | data_schema | low | port_adapted | Project display-name source differs
+S12-F35 | data_schema | low | port_adapted | Browser storage keys and IndexedDB names
+S12-F36 | data_schema | low | port_adapted | Sibling and config file names (TrueVision__* -> ValeVision__*)
+S12-F37 | transport | low | update_wiring | Shared service worker would cache CDN png/svg as shell assets
+S12-F41 | test | high | port_test | Port the persistence and transport tests
+S12-F42 | transport | medium | build_vv_transport | Phase-2 mirror failure leaves disk behind R2
+S12-F45 | transport | medium | needs_decision | Deploy ordering and unverified worker state
+S12-F46 | wiring | medium | update_wiring | VV 41 SceneData registers its block with ProjectData
+S12-F47 | transport | low | build_vv_transport | Raw streaming vs base64 for large files; Cloudflare limits unchecked
+S12-F48 | data_schema | medium | backport_to_tv | TV dev-owned key lists lack CrossSection__SceneData and LayoutEditor__DrawingRegister
+S12-F49 | wiring | low | backport_to_tv | TV Register Data hard-codes TV file names (back-port a location helper)
+S12-F50 | data_schema | medium | port_whole_reapply_vv | Port SheetRecords before features that add record keys or enum values
+S12-V01 | data_schema | medium | backport_to_tv | CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met
+S12-V02 | data_schema | high | build_vv_transport | project.json folderId is unreliable: never use it for R2 or disk paths
+S12-V03 | wiring | medium | update_wiring | Printed project name never fills: VV reads a TV-only global, and both apps read the presentation block

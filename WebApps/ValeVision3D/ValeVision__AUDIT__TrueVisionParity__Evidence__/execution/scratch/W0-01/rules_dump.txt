@@ -1,0 +1,113 @@
+id: K3
+generated: 01-Oct-2026
+tv_head: b2aa9151 (v2.172.0)
+vv_head: 7b4e593a (v2.71.0)
+description: K3 canonical work-package catalogue: every raw work package (data/work_packages.json, 221) merged, split and ordered into waves W0-W6 plus the TrueVision lane WT, with dependencies, gates, hot-file ownership and acceptance.
+size_rule: S <= 300 est. lines, M <= 1,200, L <= 2,500, XL above 2,500 or more than 15 files; every XL carries split_justification.
+
+path_notation:
+{
+ "TVM/": "TV app root/02__Src__AppModules",
+ "TV/": "D:\\11_RefLib__StudioRepository__RemoteSystem\\NaWeb\\na-apps\\30__TrueVision__CoreAppCode",
+ "VVM/": "VV app root/02__Src__AppModules",
+ "VV/": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D",
+ "WCP/": "D:\\10_CoreLib__ValeCodebase\\WebApps\\Whitecardopedia",
+ "VCB/": "D:\\10_CoreLib__ValeCodebase",
+ "NAAPPS/": "D:\\11_RefLib__StudioRepository__RemoteSystem\\NaWeb\\na-apps",
+ "NAWEB/": "D:\\11_RefLib__StudioRepository__RemoteSystem\\NaWeb",
+ "(new)": "created by this package",
+ "edits": "canonical repo-qualified paths this package writes (vv_targets + hot_files + tv_targets)"
+}
+
+STANDARD GATES:
+"G1: node VV/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs exits 0 (baseline 01-Oct-2026: 517 modules, 0 failures; the count only grows)."
+"G2: node VV/80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs exits 0 with a non-zero file count (it also checks modules nothing imports yet, so an inert landing must still link)."
+"G3: python parity/report/tools/k2_path_gate.py --root <VV app root> exits 0 (CSS @import, new URL(...), config path strings, retired folder names)."
+"G4 (from W0-04 on): node VV/80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs and Na__Verify__PortNotes__.mjs exit 0 (VALEVISION3D banners, FILE lines, no [TrueVision3D prefix, no TrueVision__ literal, no window.TrueVision__, no NaProjectPortal / 30__TrueVision__AppContent / /na-apps/30__TrueVision__CoreAppCode / noble-architecture.com/q/ or /s/, every PORT NOTE carries a Source version, no {{VVREL: token left after the scribe). Exempt: the whole PORT NOTE block of a file, history documents (devlog, ledger, __PLAN__, __NOTES__, Research__ and TASK__ files) and the named TrueVisionHub statement file W4-12 keeps at TV's path. A hit on W0-04's baseline allow-list prints WARN instead of failing: the SpecPdf__.js:147 read until W0-12 (that part is empty by W0-99), and PORT NOTEs written before the K2 H5 format without a Source version line until a package next writes the file. [F.8 C13]"
+"G5: every ported or new TV test named in tests_to_port exits 0 under node (mjs/cjs) or python (py) from the VV app root; browser harnesses (.html) are run on the WCP Flask server."
+"G6: VVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js is VV's own facade (W0-12): no VV file contains TV's transport (na-truevision-api, NaProjectPortal/, a TV R2 key builder) and no VV file was copied from TV 80__CloudflareIntegration. (This replaces the older slice acceptance line \"No file under VVM imports 80__CloudflareIntegration\", which predates K1 DR-27.)"
+"G7: the package returns a Port Record (S11 Appendix C) and never edits VV/ValeVision__PARITY__TrueVisionLedger__.md or VV/ValeVision__DEVLOG__.md; module DEVELOPMENT LOG lines carry {{VVREL:<wp_id>}} for the Parity Scribe to resolve."
+
+SWARM RULES:
+"R1 (DR-05): one owner per file per wave; a hot file is edited only as its hot_file_ownership rule says (integrator or the stated serial order)."
+"R2 (DR-05): leaves first, hubs last. A TV file is taken whole only once every module and name it imports exists in VV; until then it is not landed (no throwaway stubs) unless a package names an explicit, recorded seam."
+"R3 (DR-05/K2 H5): a whole-file port takes TV HEAD b2aa9151 text verbatim and re-applies only the listed VV seams (banner token, console prefix, PORT NOTE, app-token literals, VV transport through the facade, VV-only exports). After W0-02 no folder-number seam exists for 40/42-46 and folder paths port unchanged. The pin advances per file only at a wave boundary and only by the delegator: a TV file an approved WT package changed takes Adam's TV commit as its pin for every VV package dispatched afterwards; Adam's own TV releases after b2aa9151 wait until the delegator re-pins those files; a delta to a file already ported becomes a Release Watermark row and a follow-up hunk package; the Port Record names the commit read (F.1 P2). [F.8 C3]"
+"R4 (DR-34): a whole-file port takes TV's module version and DEVELOPMENT LOG; VV history moves to one PORT NOTE line. Hunk-replayed files keep VV's own sequence plus a Source version line."
+"R5 (S11 B10): coding packages never edit the ledger or the VV devlog; the Parity Scribe pass of each wave allocates VV versions (step size per W0-01: Adam's devlog memory says patch bumps, DR-34 assumes v2.72.0 onwards; if Adam has not answered by W0-99, patch steps from v2.71.1, F.5.5), resolves {{VVREL:}} tokens, writes devlog entries and ledger rows. [F.8 C6]"
+"R6 (DR-07): no package edits or bumps the shared Whitecardopedia service worker except W0-08 and W6-02; every Port Record carries a SHARED SERVICE WORKER note (new modules, new exports, bump needed yes/no)."
+"R7 (DR-36): no package edits TrueVision except the WT lane, and only with Adam's per-package approval; VV never copies TV's known-broken variants over working VV ones (DR-37 item 4)."
+"R8 (DR-06/DR-28): no package writes new pictures, published files or statements under VaApps/Projects/{folderId}/ subfolders on R2 until Adam has applied the W0-07 sync fix and deployed worker 1.6.0 (their routes are new in W0-10, and the deployed /assets route accepts only thumbnail, linework and snapshot keys); worker routes are proven under wrangler dev and deployed by Adam only. [F.8 C29]"
+"R9 (DR-43/K2 V2): NA-only content never ships in VV; features whose content is NA-only land switched off until Adam supplies Vale content."
+"R10 (DR-01/DR-40): TV releases Adam has not confirmed are ported but named in the Port Record; the four gesture changes (DR-40 items 7-10) are held until Adam says yes (guard constants in W3-03, removed by W3-04)."
+"R11 (waves): a wave starts only after the previous wave's Parity Scribe pass (its xx-99 package) has finished; Adam commits once per wave (S11 B10 item 7). Inside W0 Adam also commits twice: W0-01's PLAN edit alone before W0-02 is dispatched, then W0-02 alone (code only) before any other W0 package (F.5.7). [F.8 C10] Every commit stages only the integrator's path list, never git add -A at VCB/ (F.1 P19). [F.8 C4] A hard-gated package whose gate is still closed when the rest of its wave is DONE is marked SKIPPED-HELD by the integrator, which counts as DONE for its dependents and its scribe; released later, it runs as a follow-up after a hot-file re-check (F.4.2 step 6). [F.8 C9]"
+
+F8 CORRECTIONS (keys):
+{
+ "applied": "01-Oct-2026",
+ "by": "H2 (k3_build.py through k3_f8_corrections.py); rows C34-C36 added by H1 (01-Oct-2026) and applied the same way",
+ "rows": "Section F (report/R6__F_SwarmDelegationPlan.md), F.8 rows C1-C36",
+ "ops": "report/tools/r6_corrections.py (EARLIER_ROW_OPS, CORRECTIONS, PLANNER_OPS, RULE_OPS); W5-07 in report/tools/k3_f8_corrections.py",
+ "record": "data/wp_corrections_applied.json (correction -> package -> field -> old -> new)",
+ "baseline": "data/wp_canonical.pre_h2.json, data/hot_file_ownership.pre_h2.json, data/wp_raw_map.pre_h2.json",
+ "marks": "a changed line ends in [F.8 Cn]; an added target, hot file or source note carries (F.8 Cn); each corrected package lists its rows in f8_corrections",
+ "rows_applied": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C6",
+  "C7",
+  "C9",
+  "C10",
+  "C11",
+  "C12",
+  "C13",
+  "C14",
+  "C15",
+  "C16",
+  "C17",
+  "C18",
+  "C19",
+  "C20",
+  "C21",
+  "C22",
+  "C23",
+  "C24",
+  "C25",
+  "C26",
+  "C27",
+  "C28",
+  "C29",
+  "C30",
+  "C31",
+  "C32",
+  "C33",
+  "C34",
+  "C35",
+  "C36"
+ ],
+ "rows_with_nothing_to_apply": {
+  "C5": "no package field or K3 rule carries it; K3__WorkPackages.md section 14 now records the service-worker question as resolved",
+  "C8": "no package field or K3 rule carries it; swarm sizing is F.2.3's recommendation"
+ },
+ "packages_added": [
+  "W5-07"
+ ],
+ "rules_amended": [
+  "R3",
+  "R5",
+  "R8",
+  "R11",
+  "G4"
+ ]
+}
+
+WAVES:
+{"wave": "W0", "est_lines": 15619, "unestimated": [], "sizes": {"S": 6, "XL": 3, "L": 3, "M": 8}, "scribe": "W0-99", "critical_path": ["W0-01", "W0-02", "W0-07", "W0-10", "W0-12", "W0-13", "W0-99"], "critical_path_lines": 5599}
+{"wave": "W1", "est_lines": 34200, "unestimated": [], "sizes": {"M": 21, "S": 8, "L": 10}, "scribe": "W1-99", "critical_path": ["W1-13", "W1-19", "W1-20", "W1-21", "W1-22", "W1-25", "W1-26", "W1-27", "W1-28", "W1-36", "W1-99"], "critical_path_lines": 12950}
+{"wave": "W2", "est_lines": 52190, "unestimated": [], "sizes": {"L": 22, "S": 9, "M": 13}, "scribe": "W2-99", "critical_path": ["W2-40", "W2-01", "W2-03", "W2-34", "W2-35", "W2-16", "W2-39", "W2-99"], "critical_path_lines": 13570}
+{"wave": "W3", "est_lines": 15020, "unestimated": [], "sizes": {"M": 9, "L": 3, "XL": 1, "S": 6}, "scribe": "W3-99", "critical_path": ["W3-18", "W3-02", "W3-03", "W3-05", "W3-07", "W3-09", "W3-10", "W3-17", "W3-14", "W3-99"], "critical_path_lines": 11330}
+{"wave": "W4", "est_lines": 33960, "unestimated": [], "sizes": {"M": 4, "L": 13, "XL": 1, "S": 1}, "scribe": "W4-99", "critical_path": ["W4-04", "W4-05", "W4-06", "W4-07", "W4-08", "W4-10", "W4-12", "W4-13", "W4-14", "W4-99"], "critical_path_lines": 19460}
+{"wave": "W5", "est_lines": 2590, "unestimated": ["W5-06"], "sizes": {"M": 3, "S": 4, "XL": 1}, "scribe": "W5-99", "critical_path": ["W5-01", "W5-05", "W5-07", "W5-99"], "critical_path_lines": 1570}
+{"wave": "W6", "est_lines": 1070, "unestimated": [], "sizes": {"M": 2, "S": 2}, "scribe": "W6-04", "critical_path": ["W6-03", "W6-01", "W6-04"], "critical_path_lines": 950}
+{"wave": "WT", "est_lines": 4010, "unestimated": [], "sizes": {"XL": 1, "S": 8, "M": 3}, "scribe": null, "critical_path": ["WT-01", "WT-09", "WT-02", "WT-12", "WT-03", "WT-04", "WT-05", "WT-06", "WT-07", "WT-10", "WT-11", "WT-08"], "critical_path_lines": 4010}

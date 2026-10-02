@@ -1,0 +1,11 @@
+﻿control                                       matches the landed file (22/22 pass)
+M1 default packing SLOW                       caught - fails C2, C11
+M2 no strict check on a 3D render             caught - fails C14
+M3 no strict check on a missing source        caught - fails C13, C15
+M4 save not awaited                           caught - fails C16, C17
+M5 LoadLibrary not exported                   caught - fails C1, C18, C19, C20
+M6 the viewport loop drops the options        caught - fails C10, C13, C14, C15
+M7 ExportSheet drops the options              caught - fails C15
+M8 any truthy pictureCompression passes       caught - fails C11
+M9 the 3D picture skips AddPicture            caught - fails C2, C10, C11, C12
+RESULT: PASS - control clean, every mutant caught

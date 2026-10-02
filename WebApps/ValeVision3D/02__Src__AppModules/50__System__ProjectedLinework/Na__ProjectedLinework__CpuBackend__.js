@@ -32,9 +32,36 @@
 //     authored   the SketchUp linework, occlusion-clipped like the rest -
 //                except the LINETYPE tags (dashed, dotted, centre, door swings,
 //                clearances, overhead extents, joins, demolition), which are
-//                drawing data and go to the page uncut and unclipped
+//                drawing data and go to the page uncut and unclipped; on a
+//                plan, the ones drawn flat on a floor (door swings and
+//                clearances) keep to the storey its cut passes through
 //     section    the outline of cut material, never occluded because the
 //                cut is by definition the nearest thing to the viewer
+//
+// - THREE RULES MATCH THE LIVE 3D VIEW, and the Dev menu's Run Diff runs with
+//   all of them off, because the vendored backends it compares against apply
+//   none of them:
+//
+//   HIDE FLUSH JOINS (options.HideFlushJoins, on unless the config says false).
+//   Before clipping, Na__ProjectedLinework__FlushJoins__ cuts out of the model
+//   edges every span where faces of one plane lie along the edge on both
+//   sides - a wall band flush on the wall below, a pier between windows - which
+//   the 3D view shows as one unbroken surface. Outlines and real creases keep
+//   their lines; the authored linework never passes through it.
+//
+//   SEAMS OCCLUDE (options.SeamsOcclude, on unless the config says false) is
+//   handed to the clip kernel: where two occluders meet exactly along an
+//   edge's line, the seam hides what lies behind it, as the depth buffer does
+//   in 3D.
+//
+//   LINEWORK FIRST (options.LineworkFirst, off unless the config turns it on).
+//   A category that ships SketchUp linework gives the visible class its
+//   silhouettes only, and is never intersection-tested beside another such
+//   category; its creases reach the drawing through the authored class alone.
+//   A strict mode, not the default: SketchUp's hidden flags cannot tell a join
+//   from an outline, so it also loses outlines the modeller hid - the ground
+//   box's top edge, which is the ground line of every elevation. Much faster
+//   on a large model.
 //
 // INTEGRATION:
 // - Na__ProjectedLinework__Projector__ calls PrepareIntersections and
@@ -43,31 +70,45 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__CpuBackend__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : adapted
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__CpuBackend__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0, 1.2.0 and 1.2.1 followed, 1.2.1 being TrueVision's 1.3.1);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.4.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim. The 1.3.1 log entry's "Back-port PENDING to ValeVision3D" is TrueVision's
+//                   history: this app took that change as its own 1.2.1 on 18-Sep-2026.
 // - Divergences   :
-//   - IncludeHiddenEdges from the drawing's styles (D21); edges split at the cut; four line classes.
-//   - Authored edges (D18) and the section outline run alongside the model edges.
-// - Back-port     : none pending.
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 18-Sep-2026 - Version 1.2.1
+// 21-Sep-2026 - Version 1.4.0
+// - One storey per plan. The linetype GLBs are one file for the whole
+//   building, so a plan drew every storey's door swings and clearances. On a
+//   plan, the annotation whose category matches options.Storeys.AnnotationTokens
+//   is kept to the storey the cut passes through (Na__ProjectedLinework__Storeys__,
+//   the floors measured on collected.Storeys); the rest of the annotation, and
+//   every elevation and section, is drawn exactly as before. ProjectView returns
+//   Storey - which storey, and how many annotation edges were left off it.
+//
+// 18-Sep-2026 - Version 1.3.1
 // - Annotation linework. Na__PlCpu__SplitAnnotation divides the authored
 //   edges by owner key against options.AnnotationCategoryTokens: the SketchUp
 //   LINETYPE categories go to the page uncut and unclipped, everything else
 //   authored is cut at the drawing cut and occlusion-clipped as before. With
 //   no owner table there is nothing to divide by and the whole buffer takes
-//   the old path. Ported from TrueVision3D CpuBackend 1.3.1.
+//   the old path. Back-port PENDING to ValeVision3D, on Adam's sign-off.
 //
-// 13-Sep-2026 - Version 1.2.0
-// - Every line class is built with its owner tags. Stage, intersection and
-//   authored edges carry their category ids through the cut, the view transform
-//   and the clip, and ProjectView attaches them to the classes object,
-//   non-enumerably (see Na__ProjectedLinework__Owners__.js). Ported from TrueVision3D (Edge Styles).
+// 14-Sep-2026 - Version 1.3.0
+// - Linework first: ProjectView and PrepareIntersections hand the collection's
+//   linework category Set to the edge extractor while options.LineworkFirst
+//   is on. Seams occlude: every clip call carries options.SeamsOcclude to the
+//   kernel. Hide flush joins: each view's model edges pass through
+//   Na__PlFlush__CutFlushJoins before clipping while options.HideFlushJoins is
+//   on. (1.2.0, the owner tags of 12-Sep-2026, was never logged here.)
 //
 // 10-Sep-2026 - Version 1.1.0
 // - Intersection budget passed through to the edge extractor.
@@ -96,6 +137,7 @@
         Na__PlEdges__ToDrawingSegments
     } from './Na__ProjectedLinework__EdgeExtractor__.js';
     import { Na__ProjectedLinework__WorkerPool__Run } from './Na__ProjectedLinework__WorkerPool__.js';
+    import { Na__PlFlush__CutFlushJoins } from './Na__ProjectedLinework__FlushJoins__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Segment Owner Tags
@@ -105,6 +147,15 @@
         Na__PlOwners__Blank,
         Na__PlOwners__Attach
     } from './Na__ProjectedLinework__Owners__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Storeys (a plan's storey band)
+    // ------------------------------------------------------------
+    import {
+        Na__PlStorey__ForCut,
+        Na__PlStorey__MarkKeys,
+        Na__PlStorey__KeepEdges
+    } from './Na__ProjectedLinework__Storeys__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -268,7 +319,8 @@
             {
                 ScaleDivisor           : options.ScaleDivisor,
                 MinimumSegmentLengthMm : options.MinimumSegmentLengthMm,
-                IncludeHiddenEdges     : options.IncludeHiddenEdges === true
+                IncludeHiddenEdges     : options.IncludeHiddenEdges === true,
+                SeamsOcclude           : options.SeamsOcclude === true           // <-- Posted to every worker whole, with the rest of these options
             },
             {
                 MaxWorkers             : options.MaxWorkers,
@@ -298,7 +350,10 @@
         // per collection and the stage pass runs per view, so if the two built
         // their own tables the ids in the cached intersection buffer would mean
         // different categories from the ids in this view's stage buffer.
-        const found = await Na__PlEdges__ExtractIntersectionEdges(collected.Instances, slicer, collected.Report, limits, collected.OwnerTable || null);
+        // LINEWORK FIRST. This pass is cached on the collection, and the pipeline
+        // keys collections on the rule, so one never holds the other rule's lines.
+        const linework = (options && options.LineworkFirst === true) ? (collected.LineworkCategories || null) : null;
+        const found = await Na__PlEdges__ExtractIntersectionEdges(collected.Instances, slicer, collected.Report, limits, collected.OwnerTable || null, linework);
         collected.IntersectionEdges  = found.Edges;
         collected.IntersectionOwners = found.Owners;
         collected.Report.IntersectionMs    = Math.round(performance.now() - startedAt);
@@ -348,10 +403,12 @@
         };
 
         // EDGES | Hard and silhouette per instance, the cut lines placed, then
-        // everything divided at the drawing cut.
+        // everything divided at the drawing cut. Under linework first a category
+        // that ships SketchUp linework gives its silhouettes and nothing else.
         announce(Na__PlCpu__PHASE_EDGES);
         startedAt = performance.now();
-        const stage      = Na__PlEdges__ExtractStageEdges(collected.Instances, up[0], up[1], up[2], options.AngleThresholdDegrees, ownerTable);
+        const linework   = options.LineworkFirst === true ? (collected.LineworkCategories || null) : null;
+        const stage      = Na__PlEdges__ExtractStageEdges(collected.Instances, up[0], up[1], up[2], options.AngleThresholdDegrees, ownerTable, linework);
         const combined   = Na__PlCpu__Concat(stage.Edges, collected.IntersectionEdges);
         // The intersection buffer is cached per collection and can be empty
         // because the pass was skipped on a house-scale model, so its tag count
@@ -362,10 +419,20 @@
         const split      = Na__PlEdges__SplitByCut(combined, definition.Cut, combinedOwners);
         const annotated  = Na__PlCpu__SplitAnnotation(collected.AuthoredEdges, tagsFor(collected.AuthoredEdges, collected.AuthoredOwners), ownerTable, options.AnnotationCategoryTokens || []);
         const authored   = Na__PlEdges__SplitByCut(annotated.Rest, definition.Cut, annotated.RestOwners);
-        const modelEdges = Na__PlEdges__ToViewSpace(split.Kept, viewMap, options.EdgeLiftWorldUnits, split.KeptOwners);
+        const viewEdges  = Na__PlEdges__ToViewSpace(split.Kept, viewMap, options.EdgeLiftWorldUnits, split.KeptOwners);
+        // HIDE FLUSH JOINS. Joins between two faces of one plane leave the model's
+        // own edges here, before the clip; the authored linework never passes through.
+        const modelEdges = options.HideFlushJoins === true ? Na__PlFlush__CutFlushJoins(soup, viewEdges) : viewEdges;
         const drawnEdges = Na__PlEdges__ToViewSpace(authored.Kept, viewMap, options.EdgeLiftWorldUnits, authored.KeptOwners);
+        // STOREY | On a plan, the annotation drawn flat on a floor keeps to the
+        // storey the cut passes through: the linetype GLBs hold every storey's
+        // lines in one file, and nothing below would take the others away.
+        const band     = options.Storeys ? Na__PlStorey__ForCut(collected.Storeys || null, definition.Cut) : null;
+        const onStorey = band
+            ? Na__PlStorey__KeepEdges(annotated.Annotation, annotated.AnnotationOwners, Na__PlStorey__MarkKeys(ownerTable ? ownerTable.Keys : null, options.Storeys.AnnotationTokens), band)
+            : { Edges : annotated.Annotation, Owners : annotated.AnnotationOwners, Dropped : 0 };
         // ANNOTATION | Straight to the page from here: no cut, no clip.
-        const annotationDrawn = Na__PlEdges__ToDrawingSegments(annotated.Annotation, viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, annotated.AnnotationOwners);
+        const annotationDrawn = Na__PlEdges__ToDrawingSegments(onStorey.Edges, viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, onStorey.Owners);
         mark(Na__PlCpu__PHASE_EDGES, startedAt);
         Na__PlCpu__CheckAbort(settings);
 
@@ -432,9 +499,10 @@
         return {
             Classes       : classes,
             Phases        : phases,
-            EdgeCount     : modelEdges.Count + drawnEdges.Count + Math.floor(annotated.Annotation.length / 6),
+            EdgeCount     : modelEdges.Count + drawnEdges.Count + Math.floor(onStorey.Edges.length / 6),
             OccluderCount : soup.TriCount,
-            StagedCount   : soup.SourceCount
+            StagedCount   : soup.SourceCount,
+            Storey        : band ? { Keys : band.Keys, FloorUnits : band.FloorUnits, CutUnits : band.CutUnits, AnnotationOffStorey : onStorey.Dropped } : null
         };
     }
     // ------------------------------------------------------------

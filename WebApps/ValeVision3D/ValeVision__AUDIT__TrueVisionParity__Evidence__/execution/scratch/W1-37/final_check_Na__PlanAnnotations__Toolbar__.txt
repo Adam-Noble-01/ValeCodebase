@@ -1,0 +1,3 @@
+$ node --check 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+(exit 0)
+

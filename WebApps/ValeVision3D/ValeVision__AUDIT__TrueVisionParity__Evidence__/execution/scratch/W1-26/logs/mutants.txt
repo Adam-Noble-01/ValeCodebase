@@ -1,0 +1,28 @@
+== m1-measure-helvetica: CAUGHT (13 check(s) failed)
+     FAIL  after: the chrome measures in the embedded Open Sans cut (the PDF's own metrics)
+     FAIL  3047__Doous Sheet_001 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)   12.66 %
+     FAIL  3047__Doous Sheet_001 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else   ['Helvetica', 'Helvetica-Bold'] -> ['Helvetica', 'Helvetica-Bold']
+     FAIL  3047__Doous Sheet_001 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)   13 runs, worst 2.335 %
+     FAIL  44371__Gill Sheet_001 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)   12.66 %
+     FAIL  44371__Gill Sheet_001 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else   ['Helvetica', 'Helvetica-Bold'] -> ['Helvetica', 'Helvetica-Bold']
+     FAIL  44371__Gill Sheet_001 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)   10 runs, worst 0.977 %
+     FAIL  57994__Harris__Scheme-02 Sheet_001 (A2 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)   12.84 %
+     FAIL  57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else   ['Helvetica', 'Helvetica-Bold'] -> ['Helvetica', 'Helvetica-Bold']
+     FAIL  57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)   6 runs, worst 0.975 %
+     FAIL  57994__Harris__Scheme-02 Sheet_002 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)   12.66 %
+     FAIL  57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else   ['Helvetica'] -> ['Helvetica']
+     FAIL  57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)   6 runs, worst 0.977 %
+== m2-no-holes: CAUGHT (3 check(s) failed)
+     FAIL  on screen: the hole is bare paper and the ring is filled (even-odd)   [[47, 111, 208, 255], [255, 255, 255, 255]]
+     FAIL  in the PDF: the hole is bare paper and the ring is filled   [[45, 112, 209], [255, 255, 255]]
+     FAIL  in the PDF's content stream: the even-odd fill operator (B* or f*)
+== m3-frame-always: CAUGHT (1 check(s) failed)
+     FAIL  Viewport__ShowFrame false: neither frame nor caption on screen nor in the PDF (only the sheet's own border is left)   hidden ['rect', 'rect', 'rect', 'text'], shown ['rect', 'rect', 'rect', 'text']; one viewport's 
+== m4-halo-always: CAUGHT (1 check(s) failed)
+     FAIL  a bubble whose note is gone: a red halo on screen when the editor asks, none in a PDF (which never asks)
+== m5-prefix-kept: CAUGHT (1 check(s) failed)
+     FAIL  A4 portrait: the prefix is dropped (the Rev cell reads B) - the strip drawn is the strip solved with bare values, where Revision B would have cut the date further   {'date bare': 13.508, 'date with prefix': 12.979}
+== m6-qr-shape-ignores-switch: CAUGHT (1 check(s) failed)
+     FAIL  shipped config: no code anywhere - 53 off, the end cell off, no symbol, a Shape__Qr box draws only its box, no strip has a cell
+== clean (live tree, all three scenarios): analysis exit 0 - EVERY CHECK PASSED
+MUTANTS CAUGHT: 6 of 6

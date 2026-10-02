@@ -1,0 +1,8 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 573 files in 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment and index.html - 348 PORT NOTE(s), 448 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 115 still as recorded, 24 since rewritten (their full checks apply)
+
+  PENDING  115 release placeholder(s) in 93 file(s), for the wave's Parity Scribe: W1-01 x8, W1-02 x2, W1-03 x4, W1-04 x3, W1-05 x3, W1-06 x9, W1-08 x6, W1-09 x6, W1-10 x5, W1-11 x2, W1-12 x5, W1-13 x10, W1-14 x7, W1-15 x6, W1-16 x7, W1-17 x1, W1-18 x2, W1-23 x14, W1-24 x2, W1-29 x3, W1-30 x1, W1-31 x5, W1-32 x4
+
+  RESULT: PASS (0 fail, 129 warn, 115 pending)

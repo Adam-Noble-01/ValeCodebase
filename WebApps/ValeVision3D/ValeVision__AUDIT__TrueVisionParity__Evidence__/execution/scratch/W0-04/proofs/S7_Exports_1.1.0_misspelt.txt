@@ -1,0 +1,14 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs
+(exit 1, 0.60 s)
+
+ValeVision3D - named export resolution
+  files checked : 415
+  loader facade : 34 editor name(s) reached through mode, model, spec, config, viewport3d, pdf in 4 file(s)
+
+
+  FAIL - 2 loader facade name(s) not exported:
+
+    02__Src__AppModules\51__System__LayoutEditor\01__Core__Loader\Na__LayoutEditor__Loader__.js:589
+        "mode.Na__LeMode__Entr"  ->  not exported by 02__Src__AppModules\51__System__LayoutEditor\05__Core__ModeController\Na__LayoutEditor__ModeController__.js
+    02__Src__AppModules\51__System__LayoutEditor\01__Core__Loader\Na__LayoutEditor__Loader__.js:591
+        "mode.Na__LeMode__Entr"  ->  not exported by 02__Src__AppModules\51__System__LayoutEditor\05__Core__ModeController\Na__LayoutEditor__ModeController__.js

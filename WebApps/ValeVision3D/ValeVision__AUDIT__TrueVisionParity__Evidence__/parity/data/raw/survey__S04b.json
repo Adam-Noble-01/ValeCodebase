@@ -1,0 +1,1929 @@
+{
+ "slice_id": "S04b",
+ "report_path": "C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S04b__LE_DraftMode_Grid_ObjectSnap_Ortho_Axes.md",
+ "summary": "None of TV's five Layout Editor drafting aids exists in VV: Draft mode (K, 26__System__DraftMode), the Drawing Grid (F6/F7, 27), Object Snap (F3, 28, which also holds the viewport carry and the Ctrl+click move anchor), Ortho (F8, 32) and the Drawing Axes (F9, 33). That is 31 TV-only files, 8,752 lines, written v2.107-v2.149 (21-22 Sep), each with the header 'ValeVision : not yet ported - it waits for Adam's sign-off'. The five folder numbers are free in VV. VV's 30__System__SheetTools/Na__LayoutEditor__Snapping__.js (1.2.0) is the ancestor of TV's object snap, not a rival: TV ported it from VV, took it to 1.5.0, then split it into 11 units in 28__System__ObjectSnap at v2.129 (git 7ab70638) and deleted it. Every VV function maps to a TV unit, except the marker TONE (colour by tool), which TV replaced with colour by target. The new files drop in nearly verbatim, but they import nine names VV does not export yet: Measurements Say, SheetSurface ZOOM_SETTLED_EVENT (the v2.111 zoom settle) and GetSheetChrome, SheetModel IsLayerSelectable, ShapeGeometry Rings/EdgePairs, and three pure leaves (ViewportRotation, VectorTools Curves, ShapeRings). They are also switched on from about 20 hub files that VV holds far behind TV (PointerDrag 1.4.0 vs 1.19.0, Keyboard 1.3.0 vs 1.18.0, Toolbar 1.9.0 vs 1.24.0, KeyMap 1.0.0 vs 1.11.0). The slice needs no transport work: every setting is per-browser localStorage or session-only. Three traps: VV's old marker CSS in Styles__Main__Paper must be deleted with the new stylesheet; TONE imports must be dropped when callers are repointed, or module linking fails; and the DraftGuard, DraftRestore and DrawingDrafts tests cover the browser draft (persistence), not Draft mode. Recommended order: leaves, then seams, then folders, then a one-wave Snapping re-export shim with the CSS swap, then the toggles and keys, and last the carry and the anchor. The anchor waits for Adam's sign-off and for Ctrl-drag copy.",
+ "findings": [
+  {
+   "id": "S04b-F01",
+   "category": "folder",
+   "title": "Five TV drafting-aid folders are absent from VV's Layout Editor",
+   "detail": "TV LE has 26__System__DraftMode (4 files), 27__System__DrawingGrid (5), 28__System__ObjectSnap (16), 32__System__OrthoMode (3), 33__System__DrawingAxes (3): 31 files, 8,752 lines, all TV v2.107-v2.149 (21-22 Sep-2026). VV LE has none of them, and the numbers 26/27/28/32/33 are unused in VV (VV LE holds 01,03,05,07,10,15,20,25,30,35,40,50,55,56,57,60,70,80), so the folders can be created with TV's exact names and every later port copies file for file.",
+   "recommendation": "Create the five folders in VV LE with identical names and numbers and port their files (WP-S04b-03/04/05/06/10/11/12). No renumbering anywhere.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes"
+   ],
+   "vv_paths": [],
+   "tv_version": "v2.107.0-v2.149.0",
+   "evidence": "ls of both LE trees; drift_all.tsv marks all 31 files tv-only; each TV JS header: 'ValeVision : not yet ported - it waits for Adam's sign-off.'",
+   "est_lines": 8752
+  },
+  {
+   "id": "S04b-F02",
+   "category": "vv_only",
+   "title": "VV Snapping__.js is the pre-folder ancestor of TV's object snap: retire it",
+   "detail": "VV 30__System__SheetTools/Na__LayoutEditor__Snapping__.js 1.2.0 (455 lines) equals TV Snapping 1.3.0 (tones). TV continued to 1.5.0 (FindOnViewport v2.28, title-block chrome and grid fallback v2.114, reference layers v2.123), then dissolved it into 28__System__ObjectSnap at v2.129 and deleted it after an hour as a re-export (git 7ab70638). Every VV function survives in a TV unit (map in report b.5); TONE_VERTEX/DIMENSION/VIEWPORT were removed (colour by target). TV has no file of this name.",
+   "recommendation": "Do not port or rename it. Replace it with the 28 folder; for one wave turn it into a re-export shim (new names plus TONE strings) so the 10 importers keep linking, then delete it behind a grep gate.",
+   "action": "retire_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js"
+   ],
+   "tv_version": "Snapping 1.5.0 (deleted v2.129.0)",
+   "vv_version": "1.2.0",
+   "depends_on": [
+    "S04b-F12",
+    "S04b-F17",
+    "S04b-F18",
+    "S04b-F21"
+   ],
+   "evidence": "VV Snapping__.js:41-66; TV ObjectSnap__.js:60-63 (came across from Snapping 1.5.0, which no longer exists); git log --diff-filter=D shows 7ab70638.",
+   "est_lines": 455
+  },
+  {
+   "id": "S04b-F03",
+   "category": "missing_module",
+   "title": "Draft mode state leaf (Na__LayoutEditor__DraftMode__State__.js) missing",
+   "detail": "A leaf with no imports: the session-only Draft flag, CHANGED_EVENT 'na-layouteditor-draft-changed', IsOn and AssignOn. It is a leaf on purpose: Viewport2d, Viewport2d__Frame and Viewport3d read IsOn before booking a raster render, and importing the controller would close a cycle through the sheet surface. Off on every load; never written to a record, the browser draft or localStorage.",
+   "recommendation": "Port verbatim (header and port note only). The viewport modules must import IsOn from this leaf, never from the controller.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js"
+   ],
+   "tv_version": "1.0.0 (v2.107.0)",
+   "evidence": "DraftMode__State__.js:17-24, exports :100-104; importers Viewport2d:217, Viewport2d__Frame:111, Viewport3d:148.",
+   "est_lines": 107
+  },
+  {
+   "id": "S04b-F04",
+   "category": "missing_module",
+   "title": "Draft mode controller, config and stylesheet missing",
+   "detail": "K toggles body.na-le-draft: every paper line becomes a one-device-pixel hairline (non-scaling-stroke at 1/(zoom*dpr), re-solved on ZOOM_SETTLED), with no dashes and no fills (a fill-only shape is outlined in #7a8591). Rasters are display:none; raster-only and 3D frames show an outline and a note. Imports the state leaf and SheetSurface ZOOM_SETTLED_EVENT/GetZoom/Refresh. The config Meta mentions TrueVision and its plan doc (labels are brand-neutral). The CSS uses literal 'Open Sans' and .na-le-paper__highlights.",
+   "recommendation": "Port the JS verbatim; reword Config Meta__Research for VV; apply VV's font convention to the note text if wanted; add the CSS to VV loader STYLESHEETS after Main__Paper (WP-S04b-04).",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css"
+   ],
+   "tv_version": "1.1.0 (v2.107.0, v2.111.0)",
+   "vv_adaptation": "Header, console prefix [ValeVision3D LayoutEditor]; Config Meta wording; optional Vale font token for the note.",
+   "depends_on": [
+    "S04b-F03",
+    "S04b-F06",
+    "S04b-F05",
+    "S04b-F42"
+   ],
+   "evidence": "DraftMode__.js:92-93 imports, :269-282 Set; Styles__DraftMode__.css:95, :159; devlog v2.107.0 (5662), v2.111.0 (5404).",
+   "est_lines": 542
+  },
+  {
+   "id": "S04b-F05",
+   "category": "wiring",
+   "title": "Draft render guards missing from VV's viewport modules",
+   "detail": "TV refuses to BOOK raster renders in Draft: Viewport2d 1.13.0 (:217 import, :308 raster-only body class, :400/:423 debounce timers), Viewport2d__Frame 1.3.0 (:111, :309, :424, :432 stillWanted), Viewport3d 1.8.0 (:148, :470, :501, :526). VV has the same scheduler shape (Frame ScheduleUnderlay :181, Viewport3d RenderNow stillWanted :386), so the hunks map one for one; VV has no depth fog, so those lines drop. DIV-1 (VV's composer route) is unaffected, because Draft never calls a renderer.",
+   "recommendation": "Apply the Draft hunks to VV Viewport2d, Viewport2d__Frame and Viewport3d (or verify them after the viewports slice ports those files whole), and add the na-le-frame__body--raster-only marking.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js"
+   ],
+   "tv_version": "Viewport2d 1.13.0, Frame 1.3.0, Viewport3d 1.8.0",
+   "vv_version": "1.8.0 / 1.1.0 / 1.6.1",
+   "depends_on": [
+    "S04b-F03"
+   ],
+   "evidence": "grep Na__LeDraft__IsOn in TV 20__System__Viewports; VV Frame:181, Viewport3d:386; PLAN__DraftMode section 6 'Also touched'.",
+   "est_lines": 40
+  },
+  {
+   "id": "S04b-F06",
+   "category": "wiring",
+   "title": "Zoom-settle event (TV v2.111) is a prerequisite VV lacks",
+   "detail": "Draft 1.1.0, the grid controller, the axes and Marker 1.1.0 listen for Na__LeSurface__ZOOM_SETTLED_EVENT ('na-layouteditor-zoom-settled', TV SheetSurface:235). It came with v2.111: SheetSurface 1.8.0 (NoteZoomGesture :631, SettleZoom, na-le-paper--zooming), Navigation 1.2.0, Controls__Pc 1.2.0, Controls__TouchScreen 1.1.0, EditorSetup 1.2.0, AppConfig Navigation ZoomSettleMs 350 and HoldPaperWhileZooming. VV SheetSurface is 1.6.0 and its AppConfig has neither key.",
+   "recommendation": "Have the SheetSurface slice port the full v2.111 package before this slice's folders land. Interim only: export ZOOM_SETTLED_EVENT and fire it after every applied zoom (D-S04b-04).",
+   "action": "needs_decision",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "tv_version": "SheetSurface 1.8.0 (v2.111.0)",
+   "vv_version": "1.6.0",
+   "evidence": "imports.py: VV SheetSurface lacks ZOOM_SETTLED_EVENT for DraftMode, DrawingGrid, DrawingAxes, Marker; devlog v2.111.0 Files list (5481-5490).",
+   "est_lines": 250
+  },
+  {
+   "id": "S04b-F07",
+   "category": "missing_module",
+   "title": "Drawing grid state leaf missing",
+   "detail": "LayOut's grid settings, one for one, with limits and per-browser overrides (na-layouteditor-drawing-grid). Show (F6) and Snap (F7) are separate switches; the snap step is the finest grid ticked; Nearest (:335) and SnapPoint (:350) take no radius. It is a leaf because Search reads it on every pointer move. Read by Search, GridMoves, ViewportSnapMove, DimensionTool, LeaderTool and TextTool (plus TV-only NoteRegions grips).",
+   "recommendation": "Port verbatim.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js"
+   ],
+   "tv_version": "1.0.0 (v2.114.0)",
+   "evidence": "DrawingGrid__State__.js:13-46, exports :365-380; revdeps: 8 TV importers.",
+   "est_lines": 383
+  },
+  {
+   "id": "S04b-F08",
+   "category": "missing_module",
+   "title": "Drawing grid controller, config and stylesheet missing",
+   "detail": "One device-resolution canvas over the visible paper (+160 px overdraw), drawn as points or lines, redrawn on settle, pan, resize or model change; attached with the sheet input, so never drawn for a viewer. F6/F7 echo through Measurements Say. Imports SheetSurface ZOOM_EVENT/ZOOM_SETTLED_EVENT/GetElements/GetLayout/GetZoom/GetPixelsPerMm (VV lacks only ZOOM_SETTLED). The defaults are Adam's NA A2 LayOut template. The CSS z-index assumes TV's SheetSurface 1.7.0 stack.",
+   "recommendation": "Port verbatim and link the CSS. In the app, check 'Draw grid on top' on and off against VV's pre-stack paper (chrome z2, markup z3).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css"
+   ],
+   "tv_version": "1.0.0 (v2.114.0)",
+   "depends_on": [
+    "S04b-F06",
+    "S04b-F37",
+    "S04b-F42"
+   ],
+   "evidence": "DrawingGrid__.js:83-104 imports, :591 Attach, :617 Detach; VV Styles__Main__Paper__.css:55-58 (chrome z2, markup z3).",
+   "est_lines": 821
+  },
+  {
+   "id": "S04b-F09",
+   "category": "missing_module",
+   "title": "Drawing Grid panel section missing",
+   "detail": "Document Preferences > Drawing Grid: LayOut's Grid controls in order, a readout of the minor spacing and snap step, a screen-only note and Reset. Registered straight after Panel__Sheet (TV ModeController :529, 1.24.0). It uses PanelHost RegisterSection/OnControl/Refresh/Row/Input/Select/Button/Note and the na-le-subheading and na-le-row--toggle classes, all present in VV. In TV it sits on the left column's Document Preferences tab (ModeController 1.20.0); VV's left column has no tabs.",
+   "recommendation": "Port verbatim and register it right after Na__LePanelSheet__Register() (VV ModeController :416). Leave the left-column tabs to the panels slice.",
+   "action": "port_verbatim",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S04b-F08",
+    "S04b-F36"
+   ],
+   "evidence": "Panel__DrawingGrid__.js:55-74, :193-230; imports.py: VV PanelHost lacks nothing.",
+   "est_lines": 247
+  },
+  {
+   "id": "S04b-F10",
+   "category": "missing_module",
+   "title": "Ortho state leaf with the Ortho XOR Shift rule missing",
+   "detail": "Ortho flag (localStorage na-layouteditor-ortho), the Shift temporary override and Na__LeOrtho__Resolve(shiftKey) (:154), which returns Ortho XOR Shift. Tools and the drag call Resolve wherever they asked Shift alone, so nothing changes with Ortho off. It is a leaf because the controller imports Measurements, which imports the tools.",
+   "recommendation": "Port verbatim.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js"
+   ],
+   "tv_version": "1.0.0 (v2.113.0)",
+   "evidence": "OrthoMode__State__.js:13-45, :154-158; importers ShapeTool:151, DimensionTool:183, PointerDrag:348.",
+   "est_lines": 180
+  },
+  {
+   "id": "S04b-F11",
+   "category": "missing_module",
+   "title": "Ortho controller and config missing",
+   "detail": "F8 Set/Toggle: remembers the choice, echoes <Ortho on>/<Ortho off> through Measurements Say, writes a console line and dispatches CHANGED_EVENT 'na-layouteditor-ortho-changed'. The config holds ShiftTemporaryOverride, EchoOnSwitch, the labels and the AutoCAD research. A Ctrl+L alternate ships disabled because Ctrl+L is the browser's address bar.",
+   "recommendation": "Port verbatim; wire F8 (S04b-F33, S04b-F34) and the Ortho button (S04b-F35).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json"
+   ],
+   "tv_version": "1.0.0 (v2.113.0)",
+   "depends_on": [
+    "S04b-F10",
+    "S04b-F37"
+   ],
+   "evidence": "OrthoMode__.js:96-103 imports, :188-204 Set/Toggle; devlog v2.113.0 (5206).",
+   "est_lines": 258
+  },
+  {
+   "id": "S04b-F12",
+   "category": "missing_module",
+   "title": "ObjectSnap state leaf missing (keeps VV's F3 storage key and event name)",
+   "detail": "Master switch, six running modes (end, mid, int, perp, cen, near; near off by default), five targets (viewport, shape, text, dimension, paper), a naming switch and the words from config, all remembered per browser. It reuses VV's 'na-layouteditor-osnap' key and 'na-layouteditor-snap-changed' event, so VV users keep their F3 choice. The default now comes from State Defaults (true) rather than AppConfig Snapping Enabled (also true in VV), so nothing visibly changes.",
+   "recommendation": "Port verbatim.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js"
+   ],
+   "tv_version": "1.0.0 (v2.129.0)",
+   "evidence": "ObjectSnap__State__.js:71-99 constants, :121-126 defaults; VV Snapping__.js:95-96, :130.",
+   "est_lines": 337
+  },
+  {
+   "id": "S04b-F13",
+   "category": "missing_module",
+   "title": "ObjectSnap geometry leaf missing",
+   "detail": "Pure maths in paper mm: Foot (perpendicular), Nearest, DistanceToSegment, Cross (touching counts, parallel never does), Centroid (centre of area) and CellsOfSegment (an exact grid walk). Namespace Na__LeOsnapGeo. No model, DOM or config, so it runs under Node.",
+   "recommendation": "Port verbatim.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js"
+   ],
+   "tv_version": "1.0.0",
+   "evidence": "Geometry__.js:12-37 header, exports Foot, Nearest, DistanceToSegment, Cross, Centroid, CellsOfSegment.",
+   "est_lines": 219
+  },
+  {
+   "id": "S04b-F14",
+   "category": "missing_module",
+   "title": "ObjectSnap glyphs leaf missing",
+   "detail": "Eight AutoCAD glyphs (square, triangle, cross, boxed right angle, circle, hourglass, grid ring, dashed infer circle) and six menu illustrations from one table, so the menu never shows a shape the paper does not. Stroked in currentColor over a white casing; the stylesheet sets the colour by target.",
+   "recommendation": "Port verbatim.",
+   "action": "port_verbatim",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js"
+   ],
+   "tv_version": "1.0.0",
+   "evidence": "Glyphs__.js:12-36, GLYPHS table; exports GlyphSvg, IllustrationSvg.",
+   "est_lines": 157
+  },
+  {
+   "id": "S04b-F15",
+   "category": "missing_module",
+   "title": "ObjectSnap linework index missing (VV Build/IndexFor grown into it)",
+   "detail": "Files each 2D viewport's linework on a 4 mm grid, both POINTS (ends and middles, as VV does) and SEGMENTS (for Intersection, Perpendicular and Nearest). Segments are clipped to the frame (Liang-Barsky); turned frames are filed through window ToFrame/FrameToPaper, with an identity fallback when the window lacks them, as VV's Window 1.0.0 does. VV's Viewport2d GetSnapSource has the same contract (VV :289). The key adds the HiddenLines flag.",
+   "recommendation": "Port verbatim; no VV change needed for the snap-source contract.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js"
+   ],
+   "tv_version": "1.1.0 (v2.129.0, v2.138.0)",
+   "vv_version": "Snapping 1.2.0 :153-219",
+   "evidence": "Index__.js:152-203 Build, :212 IndexFor; TV Viewport2d:475 vs VV Viewport2d:289 GetSnapSource (identical body).",
+   "est_lines": 296
+  },
+  {
+   "id": "S04b-F16",
+   "category": "missing_module",
+   "title": "ObjectSnap sheet sources missing; their imports need four VV seams",
+   "detail": "Live scan of the sheet's own snap points and lines: vector vertices, mids and centroids; circle and arc centres and quadrants; holed rings; text box corners, mids and centre; dimension points; the paper's chrome (border, title block, notes margin) and note regions. Reference and hidden layers are excluded (Offers). Imports VV lacks: SheetModel IsLayerSelectable, SheetSurface GetSheetChrome, ShapeGeometry Rings/EdgePairs, and VectorTools Curves KIND_CIRCLE/Describe (folder 37 absent). VV's chrome primitives have the same shape.",
+   "recommendation": "Port verbatim after the seams (S04b-F38, S04b-F39, S04b-F40) land; do not adapt its imports.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js"
+   ],
+   "tv_version": "1.2.0 (v2.129, v2.143, v2.150)",
+   "depends_on": [
+    "S04b-F38",
+    "S04b-F39",
+    "S04b-F40"
+   ],
+   "evidence": "Sources__.js:105-120 imports; imports.py VV lacks IsLayerSelectable, GetSheetChrome, Rings, EdgePairs; VV SheetChrome__.js:228-242 primitive shape.",
+   "est_lines": 565
+  },
+  {
+   "id": "S04b-F17",
+   "category": "missing_module",
+   "title": "ObjectSnap Search (the API every tool imports) missing",
+   "detail": "Find, Snap, FindOnViewport, FindGrid, OnLinework, SegmentsInBox and RadiusMm. Six weighted modes (end 1, int 1.05, mid/cen 1.25, perp 1.4; near last), crossings between the sheet's lines and the drawing's, and the drawing outranks a vector's copy within 0.05 mm (VV: on a tie the sheet wins). Grid is the fallback; options.from feeds Perpendicular. Snap ignores a legacy string 4th argument. Imports ViewportRotation Bounds and DrawingGrid State.",
+   "recommendation": "Port verbatim. Tools import this unit, never the controller (cycle rule, ObjectSnap__.js:33-37).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js"
+   ],
+   "tv_version": "1.1.0 (v2.129.0, v2.138.0)",
+   "vv_version": "Snapping 1.2.0 Find :327, Snap :376",
+   "depends_on": [
+    "S04b-F07",
+    "S04b-F40",
+    "S04b-F15",
+    "S04b-F16"
+   ],
+   "evidence": "Search__.js:99-142 imports, :164 WEIGHTS, :410 Find, :511 Snap, exports :627-654 (no TONE names).",
+   "est_lines": 657
+  },
+  {
+   "id": "S04b-F18",
+   "category": "missing_module",
+   "title": "ObjectSnap marker (SVG, colour by target, painted on the point) missing",
+   "detail": "Replaces VV ShowMarker/HideMarker (Snapping :398, :423). Draws an SVG glyph per kind, coloured by target, at 18 px. It is placed by one transform (translate, scale 1/zoom, -50%), with left/top written inline (Marker 1.1.0, v2.137: was 8.8 device px off at 32x), and re-placed on ZOOM_SETTLED. It has an optional name tag and GetMarkerPoint for the axes. The tone argument is gone; the target falls back from the kind.",
+   "recommendation": "Port verbatim together with the new stylesheet, and delete VV's old marker CSS in the same commit (S04b-F23).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js"
+   ],
+   "tv_version": "1.1.0 (v2.129.0, v2.137.0)",
+   "vv_version": "Snapping 1.2.0",
+   "depends_on": [
+    "S04b-F06",
+    "S04b-F12",
+    "S04b-F14",
+    "S04b-F23"
+   ],
+   "evidence": "Marker__.js:97-109 imports, :160 PlaceMarker, :188 ShowMarker, :244 GetMarkerPoint; drift_all wrongly shows 1.0.0 (log lists 1.0.0 first).",
+   "est_lines": 265
+  },
+  {
+   "id": "S04b-F19",
+   "category": "missing_module",
+   "title": "ObjectSnap Moves missing: VV's SnapShapeTranslation moved here and gained GroupTranslation",
+   "detail": "ShapeTranslation is VV HitResolution:311 SnapShapeTranslation, moved verbatim (TV HitResolution 1.7.0) and since extended: a held axis survives a snap (HitRes 1.5.0) and GridTranslation applies when no object snap is in reach (1.4.0). GroupTranslation (TV 19-Sep, commit 32767407) snaps a whole selection by its members' points; VV group moves do not snap at all.",
+   "recommendation": "Port verbatim; repoint VV PointerDrag to it and delete SnapShapeTranslation from VV HitResolution (WP-S04b-08).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "HitResolution 1.2.0",
+   "depends_on": [
+    "S04b-F17",
+    "S04b-F20"
+   ],
+   "evidence": "Moves__.js:35-38 port note, :83, :111; VV HitResolution:311-324 (no lock, no grid); grep snapPoints in VV: none.",
+   "est_lines": 159
+  },
+  {
+   "id": "S04b-F20",
+   "category": "missing_module",
+   "title": "ObjectSnap GridMoves (LayOut grab-point grid moves) missing",
+   "detail": "GridGrabPoint, GridDragDelta and GridTranslation. An item lands on the grid by the point it was picked up from (a corner, a mid or a centre near the press, else the press point). This runs first in ApplyDrag for text, leaders, dimensions and frames; the axis lock, Shift and Ortho then hold the move to whole grid steps. It is the fallback for Moves. Imports AxisLock Get, DrawingGrid State and ViewportRotation TurnVector.",
+   "recommendation": "Port verbatim; wire GridDragDelta at the top of VV ApplyDrag (S04b-F30).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js"
+   ],
+   "tv_version": "1.2.0 (v2.114, v2.129, v2.138)",
+   "depends_on": [
+    "S04b-F07",
+    "S04b-F40"
+   ],
+   "evidence": "GridMoves__.js:12-47, imports :86-93; TV PointerDrag:609.",
+   "est_lines": 330
+  },
+  {
+   "id": "S04b-F21",
+   "category": "missing_module",
+   "title": "ObjectSnap controller and config missing (VV SetEnabled/Toggle grown into it)",
+   "detail": "The public face of the switches: SetEnabled (:219), Toggle (:235), SetMode, SetTarget and SetNaming. It writes a console line, echoes <Osnap on>/<Osnap off> through Measurements Say and dispatches a snapshot event. The config's Modes and Targets defaults are pushed into the State leaf. The config holds behaviour, mode and target defaults, labels and the AutoCAD research; the radius, marker size and carry keys stay in AppConfig Snapping.",
+   "recommendation": "Port verbatim; repoint VV Keyboard, Toolbar and ContextMenu to it.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json"
+   ],
+   "tv_version": "1.0.0 (v2.129.0)",
+   "vv_version": "Snapping 1.2.0 :126-141",
+   "depends_on": [
+    "S04b-F12",
+    "S04b-F18",
+    "S04b-F37"
+   ],
+   "evidence": "ObjectSnap__.js:83-99 imports, :151-169 ApplyConfig, :219-235; importers Keyboard:254, Toolbar:211, ContextMenu:163.",
+   "est_lines": 388
+  },
+  {
+   "id": "S04b-F22",
+   "category": "missing_module",
+   "title": "Snap options menu and the Snap button's caret missing",
+   "detail": "AutoCAD-style dropdown from an arrow beside Snap: the F3 switch, six modes each with a picture, five targets each with its colour swatch (the legend) and the naming switch. It stays open while rows are clicked, never takes keyboard focus, and closes on Escape. It is appended to document.body at z-index 1200, the same as VV's .na-le-menu. Toolbar 1.20.0 adds the split button and caret (.na-le-toolbar__split, __btn--caret; absent in VV).",
+   "recommendation": "Port verbatim; build the split Snap button in VV Toolbar (S04b-F35).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S04b-F21",
+    "S04b-F14",
+    "S04b-F35"
+   ],
+   "evidence": "Menu__.js:12-41, exports IsMenuOpen/OpenMenu/CloseMenu/ToggleMenu; TV Toolbar:473-481; VV Main__Paper .na-le-menu z-index 1200 (:425).",
+   "est_lines": 350
+  },
+  {
+   "id": "S04b-F23",
+   "category": "ui",
+   "title": "Snap stylesheet missing, and VV's old marker rules will corrupt the new marker",
+   "detail": "Styles__ObjectSnap__.css holds the marker (one RGB per target), the Snap split and caret, the menu and the move-anchor cross. VV keeps the old rules in Styles__Main__Paper__.css: a .na-le-osnap with a 1.5 px border and tinted background, tone classes, and .na-le-osnap--mid with a triangle clip-path (~296-337), plus .na-le-osnap--infer (~577-581). TV's new .na-le-osnap sets no border, background or clip-path, so left in place they box every glyph and clip the midpoint triangle.",
+   "recommendation": "Link Styles__ObjectSnap__.css in VV loader STYLESHEETS and, in the same commit, delete VV's old .na-le-osnap* rules, keeping .na-le-frame__progress. Use the Vale font token for the menu.",
+   "action": "port_adapted",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "vv_adaptation": "Menu font var(--Vale_FontFamily, 'Open Sans', Helvetica, Arial, sans-serif); colours unchanged (VV LE already uses TV's literal palette).",
+   "depends_on": [
+    "S04b-F42"
+   ],
+   "evidence": "TV ObjectSnap css:48-67 (no border/clip); TV Main__Paper:413-416 says rules moved; VV Main__Paper:306-337, :577-581.",
+   "est_lines": 432
+  },
+  {
+   "id": "S04b-F24",
+   "category": "missing_module",
+   "title": "Viewport snap move (carry a viewport by its linework) never ported",
+   "detail": "TV 1.6.0 (v2.28 to v2.138; moved into 28 at v2.129). It carries a frame by a point of its own drawing, snaps that point to other drawings, acquires tracking points (AcquireDwellMs 400, AcquireMax 3) with level/plumb guides, and takes the arrow-key lock, the grid, a Ctrl-drag copy (Retarget) and turned frames. The VV ledger says 'not ported - comes with the carry' (rows 446, 504, 720, 1128). It needs PointerPress GrabAt, PointerDrag Hover/CarryTarget/Solve/Finish/RerunViewportDrag, Keyboard Esc, ToolState, SheetTools Refresh, config keys and the carry CSS.",
+   "recommendation": "Port it in the late wave, after the SheetTools hub ports (PointerDrag 1.7.0 or later) and Adam's sign-off (D-S04b-01); mirror TV's carry CSS in Main__Paper.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js"
+   ],
+   "tv_version": "1.6.0",
+   "depends_on": [
+    "S04b-F17",
+    "S04b-F30",
+    "S04b-F31",
+    "S04b-F33",
+    "S04b-F41",
+    "S04b-F61"
+   ],
+   "evidence": "ViewportSnapMove__.js:71-131 port note and log; VV ledger lines 446, 504, 720, 1128; TV Main__Paper.css:814-887.",
+   "est_lines": 720
+  },
+  {
+   "id": "S04b-F25",
+   "category": "missing_module",
+   "title": "Move anchor (Ctrl+click, move from this point to that point) missing",
+   "detail": "TV 1.0.0 plus config (v2.149). Ctrl+click on ONE item arms a red cross and picks up Move; dragging the cross re-places it with snapping; dragging the item carries it by the cross. Its imports exist in VV except Measurements Say, but its wiring needs PointerPress 1.8.0, PointerDrag 1.19.0, Keyboard 1.16.0, HitResolution 1.10.0, ToolState 1.7.0, SheetTools 1.39.0, KeyMap 1.10.0 (anchor in MatchSelectionModifier) and SelectionBindings MoveAnchorModifier 'Ctrl'. Ctrl is shared with Ctrl-drag copy (TV v2.117), which VV lacks.",
+   "recommendation": "Port last, after the carry and the CopyDrag port, and on Adam's confirmation (D-S04b-01, D-S04b-08).",
+   "action": "needs_decision",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json"
+   ],
+   "tv_version": "1.0.0 (v2.149.0)",
+   "depends_on": [
+    "S04b-F24",
+    "S04b-F30",
+    "S04b-F31",
+    "S04b-F32",
+    "S04b-F33",
+    "S04b-F34",
+    "S04b-F37"
+   ],
+   "evidence": "MoveAnchor__.js:69-83 integration, :108-130 imports; devlog v2.149.0 (1669-1755); VV KeyMap:348 returns {combine, anywhere} only.",
+   "est_lines": 741
+  },
+  {
+   "id": "S04b-F26",
+   "category": "missing_module",
+   "title": "Drawing Axes Overlay (F9) folder missing",
+   "detail": "Red horizontal and green (#00a000) vertical lines through the cursor, edge to edge of the sheet, crossing at the snap marker when one shows (GetMarkerPoint), never mid-pan (na-le-stage--panning, which VV's Controls__Pc :107 already sets). Whole device pixels and compositor layers only; hidden over panels and for a finger; never printed. Remembered per browser. Imports SheetSurface (VV lacks only ZOOM_SETTLED), SheetModel CHANGED, Measurements Say and the Marker.",
+   "recommendation": "Port verbatim and link the CSS; wire Attach/Detach, F9 and the Axes button in WP-S04b-09.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css"
+   ],
+   "tv_version": "1.0.0 (v2.131.0)",
+   "depends_on": [
+    "S04b-F06",
+    "S04b-F18",
+    "S04b-F37",
+    "S04b-F42"
+   ],
+   "evidence": "DrawingAxes__.js:92-103 imports, :476 Attach; devlog v2.131.0 (3436-3542).",
+   "est_lines": 680
+  },
+  {
+   "id": "S04b-F27",
+   "category": "drift",
+   "title": "AxisLock is code-identical; only TV's header names the viewport carry",
+   "detail": "git diff --no-index -w shows header lines only. VV authored it (TV port note: ported from ValeVision3D, verbatim). TV's INTEGRATION adds a paragraph: ViewportSnapMove reads Get(), which is why this module is the single source of the axis names. VV's importers are TV's minus MoveAnchor, ObjectSnap GridMoves, ViewportSnapMove and VectorTools ArcTool.",
+   "recommendation": "No code change. Copy TV's INTEGRATION paragraph into VV's header when ViewportSnapMove lands (WP-S04b-11).",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "S04b-F24"
+   ],
+   "evidence": "git diff --no-index -w TV vs VV AxisLock: 16 header lines (TV :32-35 extra paragraph); revdeps for both apps.",
+   "est_lines": 4
+  },
+  {
+   "id": "S04b-F28",
+   "category": "drift",
+   "title": "TextTool and LeaderTool carry grid-snap code despite being classed 'header-only'",
+   "detail": "drift_all marks TextTool (TV 1.4.0, VV 1.3.0) and LeaderTool (TV 1.2.0, VV 1.0.0) header-only, but the diff of code lines shows the Grid Snap import plus Na__LeGrid__SnapPoint calls (TextTool: the click lands on the grid; LeaderTool: the head follows the grid as it is drawn and where it lands) and LeaderTool's snap import repoint to ObjectSnap Search.",
+   "recommendation": "Apply TextTool 1.4.0 and LeaderTool 1.2.0 (import plus 1-2 lines each) with the grid wiring in WP-S04b-07; treat 'header-only' rows as unverified until a code-line diff confirms them.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js"
+   ],
+   "tv_version": "TextTool 1.4.0, LeaderTool 1.2.0 (v2.114.0)",
+   "vv_version": "1.3.0 / 1.0.0",
+   "depends_on": [
+    "S04b-F07",
+    "S04b-F17"
+   ],
+   "evidence": "git diff -w code lines: TextTool +import :90 and 'point = Na__LeGrid__SnapPoint(point)'; LeaderTool 2 SnapPoint calls and the Search import.",
+   "est_lines": 8
+  },
+  {
+   "id": "S04b-F29",
+   "category": "drift",
+   "title": "Dimension, Draw and Rectangle tools: snap repoint, targets, from-points and Ortho",
+   "detail": "DimensionTool (TV 1.12.0 vs VV 1.5.0): Ortho via Resolve in OrientationFor/Span (1.8.0), grid OffsetFor (1.9.0), inference skips reference layers (1.10.0), Search import with { from : start } and TARGET_DIMENSION instead of TONE_DIMENSION (1.11.0). ShapeTool (1.10.0 vs 1.6.0): Resolve in SnapOrConstrain (1.8.0), { from : last vertex }, closing marker {KIND_END, TARGET_SHAPE} (1.9.0). RectangleTool: repoint only.",
+   "recommendation": "Apply these hunks with WP-S04b-07, or verify them after the DrawingTools slice's whole-file ports. Drop every TONE import in the same edit.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js"
+   ],
+   "tv_version": "DimensionTool 1.12.0, ShapeTool 1.10.0, RectangleTool 1.4.0",
+   "vv_version": "1.5.0 / 1.6.0 / 1.2.0",
+   "depends_on": [
+    "S04b-F10",
+    "S04b-F07",
+    "S04b-F17",
+    "S04b-F63"
+   ],
+   "evidence": "git diff -w filtered to Osnap/LeGrid/LeOrtho lines (report c.3); VV imports DimensionTool:129, ShapeTool:121, RectangleTool:98.",
+   "est_lines": 40
+  },
+  {
+   "id": "S04b-F30",
+   "category": "wiring",
+   "title": "PointerDrag ApplyDrag must take the drafting-aid sequence",
+   "detail": "TV ApplyDrag (:583): anchor relocate (:587) or carry (:599); GridDragDelta unless the move is exact (:609); ortho = !exact and Resolve(shift) (:617), passed to every nearer-axis line, VpMove Solve and ShapeTranslation; GroupTranslation (:648); vertex snap with { from : VertexNeighbours } (:709, helper :565); dimension end snap with the other end as from (:779). Raw shift still goes to DragPatch and RotateTo. FinishDrag :1001-1011. VV ApplyDrag (:226) uses raw shift and SnapShapeTranslation.",
+   "recommendation": "Bring VV PointerDrag to TV's sequence in WP-S04b-08 (or via the SheetTools slice's whole-file port to 1.19.0, which requires the 26/27/28/32 folders first). Add the anchor and carry steps only in their own WPs.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js"
+   ],
+   "tv_version": "1.19.0 (1.7.0 to 1.19.0)",
+   "vv_version": "1.4.0",
+   "depends_on": [
+    "S04b-F10",
+    "S04b-F19",
+    "S04b-F20",
+    "S04b-F17"
+   ],
+   "evidence": "TV PointerDrag devlog 1.7.0-1.19.0; grep of call sites :462-779, :1001-1034; VV PointerDrag:137, :226-343.",
+   "est_lines": 120
+  },
+  {
+   "id": "S04b-F31",
+   "category": "wiring",
+   "title": "PointerPress lacks the carry grab and the move-anchor press handling",
+   "detail": "TV PointerPress (1.10.0 vs VV 1.1.0) imports VpMove GrabAt (:202, used :354) and MoveAnchor Arm/Grab/ForDrag/HitAt/Recentre (:203; :525 ArmAnchor on a Ctrl+click release via Anchorable, :633 a press on the cross, :822 drag.anchorMm for a whole-object, set or frame move, :864 double-click recentre). VV has none of it, and no Anchorable or CarryTarget helpers.",
+   "recommendation": "Add with WP-S04b-11 (GrabAt) and WP-S04b-12 (anchor), or verify after the SheetTools slice ports PointerPress whole.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js"
+   ],
+   "tv_version": "1.10.0 (anchor 1.8.0)",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S04b-F24",
+    "S04b-F25"
+   ],
+   "evidence": "grep Na__LeVpMove__GrabAt / Na__LeAnchor__ in TV PointerPress (:202-203, :354, :525, :633, :822, :864); VV: no matches.",
+   "est_lines": 60
+  },
+  {
+   "id": "S04b-F32",
+   "category": "wiring",
+   "title": "HitResolution still owns the vector move snap that TV moved out",
+   "detail": "VV HitResolution 1.2.0 exports Na__LeTools__SnapShapeTranslation (:311, exported :530) and imports Find/ShowMarker/HideMarker from Snapping (:112). TV 1.7.0 moved the move snaps into ObjectSnap Moves; it keeps only the Shift-click insert diamond's Find, from Search. TV 1.10.0 adds anchor Holds/HoldsItems so an item with the cross keeps Move up.",
+   "recommendation": "Remove SnapShapeTranslation (PointerDrag imports Moves instead) and repoint to Search in WP-S04b-08; add the anchor check in WP-S04b-12.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js"
+   ],
+   "tv_version": "1.11.0 (1.4.0, 1.5.0, 1.7.0, 1.10.0)",
+   "vv_version": "1.2.0",
+   "depends_on": [
+    "S04b-F19"
+   ],
+   "evidence": "VV HitResolution:112, :279, :311-324, :530; TV HitResolution devlog 1.7.0 'SnapShapeTranslation and SnapGroupTranslation have LEFT'.",
+   "est_lines": 30
+  },
+  {
+   "id": "S04b-F33",
+   "category": "wiring",
+   "title": "Keyboard lacks the K, F6, F7, F8 and F9 cases and RedrawHeld",
+   "detail": "TV Keyboard 1.18.0 (VV 1.3.0) imports the Osnap controller, Ortho, Draft, Grid, Axes and VpMove (:254-259). Cases :790-844 are preventDefault and repeat-guarded; F8 and F7 call RedrawHeld (:469), which re-aims a band or a drag after Ortho or Grid Snap changes. Esc clears tracking points (:692); arrow keys lock the anchor (1.16.0). VV has ShiftRedraw (:299) and Rerun (:319) but no RedrawHeld, RerunViewportDrag or RerunAnchorDrag.",
+   "recommendation": "Add the five cases and RedrawHeld in WP-S04b-09, adapted: omit the VectorTools branch and the viewport and anchor reruns until those systems land.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js"
+   ],
+   "tv_version": "1.18.0 (1.7.0, 1.8.0, 1.9.0, 1.13.0, 1.16.0)",
+   "vv_version": "1.3.0",
+   "vv_adaptation": "RedrawHeld without Na__LeVec__ and without RerunViewportDrag/RerunAnchorDrag until WP-11/12.",
+   "depends_on": [
+    "S04b-F04",
+    "S04b-F08",
+    "S04b-F11",
+    "S04b-F26",
+    "S04b-F34"
+   ],
+   "evidence": "TV Keyboard:254-259, :469-505, :790-844; VV Keyboard:123, :299, :319, :458.",
+   "est_lines": 90
+  },
+  {
+   "id": "S04b-F34",
+   "category": "wiring",
+   "title": "Key map rows, fallback rows, catalogue entries and SHEET_CHORDS missing",
+   "detail": "TV key file rows: Ortho__Toggle F8, Ortho__ToggleCtrlL (off), View__DraftToggle k/K, View__GridToggle F6, Snap__GridToggle F7, View__AxesToggle F9 (:277-350), five catalogue rows (:1156-1177), SelectionBindings MoveAnchorModifier and CopyDragModifier 'Ctrl'. KeyMap fallback rows at :192-197 (1.1.0/1.3.0/1.4.0/1.9.0). SHEET_CHORDS (State 1.4.0/1.7.0, TV :149) adds the four function keys. VV has only Snap__Toggle F3. VV's file is KeyMappings__.json; TV renamed its own to Na__Hotkeys__DrawingTabs__.json (v2.110).",
+   "recommendation": "Add each row to VV's key JSON, catalogue and KeyMap fallback (the DrawingTabKeys rule) plus SHEET_CHORDS in WP-S04b-09; the file name follows the config slice (D-S04b-07).",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js"
+   ],
+   "tv_version": "KeyMap 1.11.0, State 1.8.0",
+   "vv_version": "KeyMap 1.0.0, State 1.1.0",
+   "depends_on": [
+    "S04b-F65"
+   ],
+   "evidence": "TV Hotkeys JSON :266-350, :1151-1177, :910-911; TV KeyMap:192-197; TV State:149 vs VV State:84; VV KeyMappings keys list (no k, f6-f9).",
+   "est_lines": 120
+  },
+  {
+   "id": "S04b-F35",
+   "category": "wiring",
+   "title": "Toolbar lacks the split Snap button, its menu and five drafting toggles",
+   "detail": "TV Toolbar 1.24.0 (VV 1.9.0): after the tools, a span.na-le-toolbar__split holds Snap and a 'snap-menu' caret (:473-481), followed by Draft, Grid, Grid Snap, Ortho and Axes (:485-501), each lit by na-le-toolbar__btn--active and aria-pressed, with words re-read from each system's config on every sync (:280-345). It listens on the CHANGED events (:587-589) and calls CloseMenu on unmount (:600). VV has a plain Snap button (:291) labelled from AppConfig SnapToggle.",
+   "recommendation": "Add the split button, the menu and the five toggles in WP-S04b-09 (or verify after the Toolbar slice's whole-file port, which requires the five folders first).",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "tv_version": "1.24.0 (1.13.0, 1.14.0, 1.15.0, 1.16.0, 1.20.0, 1.22.0)",
+   "vv_version": "1.9.0",
+   "depends_on": [
+    "S04b-F04",
+    "S04b-F08",
+    "S04b-F11",
+    "S04b-F21",
+    "S04b-F22",
+    "S04b-F26"
+   ],
+   "evidence": "TV Toolbar:211-220 imports, :473-501 buttons, :587-605 listeners; VV Toolbar:110, :171, :291, :360-371.",
+   "est_lines": 110
+  },
+  {
+   "id": "S04b-F36",
+   "category": "wiring",
+   "title": "Mode controller must register the grid panel, attach grid and axes, and repoint Clear",
+   "detail": "TV ModeController 1.32.0 (VV 1.18.0): imports :327-329 and :349; Na__LePanelGrid__Register() right after Sheet (:529, 1.24.0); Grid and Axes Attach in AttachSheetInput after Na__LeTools__Attach (:574-575) and Detach before it (:585-586) (1.24.0, 1.28.0); Na__LeOsnap__Clear from Search (:774). VV's AttachSheetInput (:448-454), DetachSheetInput (:455-461) and Clear (:228, :558) have the same shape.",
+   "recommendation": "Apply in WP-S04b-09 (or verify after the ModeController slice's whole-file port).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "1.32.0",
+   "vv_version": "1.18.0",
+   "depends_on": [
+    "S04b-F08",
+    "S04b-F09",
+    "S04b-F26",
+    "S04b-F17"
+   ],
+   "evidence": "TV ModeController:327-349, :529, :574-586, :774; VV ModeController:228, :416, :448-461, :558.",
+   "est_lines": 12
+  },
+  {
+   "id": "S04b-F37",
+   "category": "wiring",
+   "title": "Measurements has no Say echo line, which six new modules import",
+   "detail": "TV Measurements 1.6.0 (v2.113) adds Na__LeMeasure__Say(text) (:1176): a timed line above the box, never shown over a value being typed. It is imported by the Ortho, Grid, Axes and Osnap controllers and by MoveAnchor. VV Measurements 1.4.0 has ShowHint(text, isError, timed) (:492) and IsTyping, so Say is an 8-line addition plus an export. TV 1.5.1 also places the box on zoom settle.",
+   "recommendation": "Add Say verbatim and export it (WP-S04b-02), or take Measurements 1.6.0 or later from the SheetTools slice.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js"
+   ],
+   "tv_version": "1.6.0 (in 1.10.0)",
+   "vv_version": "1.4.0",
+   "evidence": "TV Measurements:1168-1180 and export :1200; imports.py: VV lacks Na__LeMeasure__Say for DrawingGrid, OrthoMode, DrawingAxes, ObjectSnap__, MoveAnchor.",
+   "est_lines": 10
+  },
+  {
+   "id": "S04b-F38",
+   "category": "wiring",
+   "title": "SheetSurface needs a chrome cache and GetSheetChrome for title-block snaps",
+   "detail": "Sources reads the border and title block primitives through Na__LeSurface__GetSheetChrome (TV SheetSurface 1.9.0, :708), which returns the cached build from 1.7.0 (Na__LeSurface__Chrome, keyed by sheetId). VV 1.6.0 builds the primitives into a local in RefreshChrome (:576). VV's primitives have the same shape, so ChromeFrom works unchanged. VV's Classic scanned title block offers no lines; Modern does.",
+   "recommendation": "Keep the primitives with their sheet id in VV RefreshChrome and export GetSheetChrome, verbatim from TV (WP-S04b-02), unless the SheetSurface slice has landed 1.9.0.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "tv_version": "1.7.0 cache, 1.9.0 getter (v2.114.0)",
+   "vv_version": "1.6.0",
+   "evidence": "TV SheetSurface:708-711; VV SheetSurface:576-578; VV SheetChrome:123-124, :228-242.",
+   "est_lines": 12
+  },
+  {
+   "id": "S04b-F39",
+   "category": "wiring",
+   "title": "SheetModel lacks IsLayerSelectable (reference layers), which Sources imports",
+   "detail": "Sources' Offers() requires IsLayerVisible AND IsLayerSelectable (TV SheetModel__Layers:374: !layer or layer.Layer__Selectable !== false; re-exported by SheetModel). VV has no reference layers, so the function returns true for every VV layer. The reference-layer feature itself (v2.123, Layers 1.4.0) belongs to the layers slice.",
+   "recommendation": "Add IsLayerSelectable to VV SheetModel__Layers plus the SheetModel re-export (verbatim, WP-S04b-02), or take Layers 1.4.0 from the layers slice.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js"
+   ],
+   "tv_version": "Layers 1.4.0 (v2.123.0)",
+   "vv_version": "Layers 1.0.0",
+   "evidence": "TV SheetModel__Layers__.js:374-377; TV SheetModel__.js:491, :837; imports.py: VV lacks it.",
+   "est_lines": 8
+  },
+  {
+   "id": "S04b-F40",
+   "category": "wiring",
+   "title": "Three pure leaves and ShapeGeometry ring helpers are prerequisites of the snap folder",
+   "detail": "Search and GridMoves import ViewportRotation (Bounds, TurnVector; TV 1.0.0, v2.138); Sources imports VectorTools__Curves (KIND_CIRCLE, Describe; TV 1.0.0) and ShapeGeometry Rings/EdgePairs, which need the ShapeRings leaf (TV 1.1.0, v2.150). All three leaves import nothing and stay inert in VV (no RotationDeg, Shape__Curve or Shape__Holes on VV records). TV's own trap note: renaming Curves or its exports stops the editor loading.",
+   "recommendation": "Port the three leaves verbatim early (WP-S04b-01) and add Holes/Rings/EdgePairs to VV ShapeGeometry (WP-S04b-02); coordinate with the viewports, vector tools and booleans slices (D-S04b-05).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js"
+   ],
+   "tv_version": "ViewportRotation 1.0.0, Curves 1.0.0, ShapeRings 1.1.0, ShapeGeometry 1.9.0",
+   "vv_version": "ShapeGeometry 1.5.0",
+   "evidence": "no import lines in the three leaves; TV ShapeGeometry:127, :164-205; TrueVision__PLAN__VectorTools__.md section 9 trap.",
+   "est_lines": 1150
+  },
+  {
+   "id": "S04b-F41",
+   "category": "wiring",
+   "title": "Snapping and carry config keys missing from VV config",
+   "detail": "TV GetSnappingSetup (ToolSetup 1.5.0, :337-357) also returns sheetChrome (1.2.0), viewportCarry, viewportTracking, acquireDwellMs, acquireMax and trackMarkerSizePx. TV AppConfig Snapping adds SheetChrome(+Note), ViewportCarry(+Note), ViewportTracking, AcquireDwellMs 400, AcquireMax 3 and TrackMarkerSizePx 11 (:322-330). VV ToolSetup 1.0.0 (:286-296) and AppConfig (:257-265) stop at MarkerSizePx 18 (same value as TV).",
+   "recommendation": "Add the reader keys and the AppConfig keys verbatim (WP-S04b-02); the carry keys can wait for WP-S04b-11, but adding them now is harmless.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "tv_version": "ToolSetup 1.5.0",
+   "vv_version": "ToolSetup 1.0.0",
+   "evidence": "python diff of LayoutEditor__Snapping__Config (6 TV-only keys); TV ToolSetup:345, :351-355.",
+   "est_lines": 20
+  },
+  {
+   "id": "S04b-F42",
+   "category": "wiring",
+   "title": "Four new stylesheets must go into VV's loader STYLESHEETS, not a CSS index",
+   "detail": "TV imports DraftMode, DrawingGrid, ObjectSnap and DrawingAxes CSS from 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css (:164-167), between Main__Paper and Panels. VV loads the editor lazily: its CSS index imports only Styles__Boot (:92-93), and Na__LeLoad__STYLESHEETS (Loader.js:125-134) links the rest on first use. Without the entries the new UI renders unstyled.",
+   "recommendation": "Insert the four hrefs in TV's order after Main__Paper (Loader.js:128) and before Panels (:129). Do not touch VV's CSS index.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "depends_on": [
+    "S04b-F04",
+    "S04b-F08",
+    "S04b-F23",
+    "S04b-F26"
+   ],
+   "evidence": "TV Styles__Index__.css:161-174; VV Loader:125-134, :265-277; VV Styles__Index__.css:92-93.",
+   "est_lines": 4
+  },
+  {
+   "id": "S04b-F43",
+   "category": "wiring",
+   "title": "Grips and frames must be painted on their points for the snap marker to register",
+   "detail": "OnLinework drives the grip state colours (green on a drawing point, a green ring on a line, blue off it; Grips 1.10.0, v2.129). Grips 1.11.0 places grips and the rubber band by transform (Place, PlaceBand), and SheetSurface 1.11.0 places frames by translate (v2.137). VV Grips is 1.8.0 and SheetSurface 1.6.0. Without them the marker is exact but the drawing and grips stand up to half a device pixel times the zoom away from it.",
+   "recommendation": "Owned by the Grips and SheetSurface slices; treat Na__Test__PaintedOnThePoint__ passing in VV as the joint acceptance gate (WP-S04b-13).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "tv_version": "Grips 1.11.0/1.12.0, SheetSurface 1.11.0",
+   "vv_version": "Grips 1.8.0, SheetSurface 1.6.0",
+   "depends_on": [
+    "S04b-F18"
+   ],
+   "evidence": "devlog v2.137.0 (2909-3010): 17.1 px apart before, 0.14 after; TV Grips devlog 1.10.0-1.12.0.",
+   "est_lines": 80
+  },
+  {
+   "id": "S04b-F44",
+   "category": "wiring",
+   "title": "Other TV snap consumers will need the folder when their own features port",
+   "detail": "In TV, Scrapbook__TileDrag, ScrapbookParametric__Grips (passes { grid : false } so a scale bar keeps its 50 mm steps), SheetImages__Crop/__Handles, NoteRegions__Grips, FloorAreas__LabelGrip and six VectorTools all snap through ObjectSnap Search, the grid and Ortho. VV has 55/56/57 scrapbook folders whose TileDrag and parametric grips do not snap at all today; the other features are TV-only.",
+   "recommendation": "No work here. Tell the scrapbook, sheet images, note regions, floor areas and vector tools slices to import Search (never the controller) and to keep { grid : false } for parametric slides.",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js"
+   ],
+   "depends_on": [
+    "S04b-F17"
+   ],
+   "evidence": "revdeps TV (__Search__ importers); grep Osnap in VV 55/56/57: none; devlog v2.114 'ScrapbookParametric__Grips 1.4.0 { grid : false }'.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F45",
+   "category": "ui",
+   "title": "Snap marker colour changes meaning for VV users (by tool to by target)",
+   "detail": "VV colours the marker by the TOOL snapping: blue vertex/Draw, orange Dimension, purple viewport carry (Snapping:27-32; VV Main__Paper tone rules). TV colours it by what was snapped TO: purple viewport linework, blue vector, orange text, red dimension, slate paper and grid (ObjectSnap css:62-67). The shapes become AutoCAD SVG glyphs at 18 px. Orange changes meaning, and red is new.",
+   "recommendation": "Adopt TV's target colours for an identical experience (D-S04b-02) and record the change in the VV devlog entry that switches the snap over.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "depends_on": [
+    "S04b-F23"
+   ],
+   "evidence": "VV Snapping__.js:27-32, :104-107; VV Main__Paper:316-326; TV Marker__.js:19-26; devlog v2.129 'the colour will tell you what object it's matching with'.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F46",
+   "category": "ui",
+   "title": "Drafting aids UI set VV is missing: toolbar toggles, echo line, grid section, overlays",
+   "detail": "After the tools: a [Snap|v] split with the options menu, then Draft, Grid, Grid Snap, Ortho and Axes, each lit while on. The Measurements box echoes <Osnap on>, <Ortho on>, <Grid on>, <Grid snap on> and <Drawing axes on>, plus the anchor's three sentences. A Drawing Grid section sits under Sheet (TV: on the Document Preferences tab). Paper overlays: the grid canvas, the red/green axes, the red anchor cross, the carry ring/crosses/guides, and the Draft hairline look with its notes. None appear in the web viewer.",
+   "recommendation": "Deliver as one consistent UI in WP-S04b-09 so the toolbar matches TV button for button; leave the left-column tabs to the panels slice.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "depends_on": [
+    "S04b-F35",
+    "S04b-F09",
+    "S04b-F37"
+   ],
+   "evidence": "TV Toolbar:473-501; config Labels in each folder; ModeController 1.20.0 left tabs.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F47",
+   "category": "ui",
+   "title": "Vale identity: the colours port as they are; only UI-chrome fonts need the Vale token",
+   "detail": "VV's LE stylesheets already use TV's literal palette (#1a7fc4 active toolbar button, VV Styles__Main__.css:313-317), so the snap, draft, grid and axes colours port unchanged. Fonts: VV writes chrome text as var(--Vale_FontFamily, 'Open Sans', sans-serif) (Styles__Main__.css:73, Boot:45) and on-paper text as literal 'Open Sans' (Main__Paper:276, :399). TV's new CSS uses literal 'Open Sans' for the snap menu, the marker name tag and the Draft notes. The config labels are brand-neutral (LayOut, AutoCAD, SketchUp).",
+   "recommendation": "Use the Vale font token in .na-le-osnap-menu; keep the literal on-paper fonts. List both in the PORT NOTE Divergences.",
+   "action": "port_adapted",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css"
+   ],
+   "evidence": "VV grep --Vale_ tokens in LE css (FontFamily x4); TV ObjectSnap css:118, :200; Draft css:159.",
+   "est_lines": 3
+  },
+  {
+   "id": "S04b-F48",
+   "category": "transport",
+   "title": "No transport work: drafting aids write nothing to R2, the worker or a server",
+   "detail": "Every switch is per-browser localStorage (na-layouteditor-drawing-grid, -ortho, -drawing-axes, -osnap, -osnap-modes, -osnap-targets, -osnap-names) or session-only (Draft, the anchor cross). Nothing is written to a sheet, the browser draft, R2 or the PDF. A grep of VV modules finds no clash with these keys or with the new window events. DIV-4 (VV's own worker and storage) is untouched.",
+   "recommendation": "None. Keep this slice out of any WCP/CloudflareWorker or WCP/server.py work package.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "State headers (Grid State:32-35, Ortho State:33-36, Osnap State:29-33, Draft State:22-24, Axes:51-52); VV grep of the key and event names: no matches.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F49",
+   "category": "permanent_divergence",
+   "title": "VV has no service worker: TV's cache-token bumps have no VV counterpart",
+   "detail": "TV releases in this slice bump the PWA token (v2.111 2026-09-21-03, v2.113 -05, v2.114 -06, v2.149 2026-09-22-12) whenever a deployed module imports a new name. VV has no PWA worker (ledger: 'n/a - this tree has no PWA worker'). In VV, a deployment change for these systems is only the loader's STYLESHEETS list and the module graph.",
+   "recommendation": "Keep the divergence; port notes say 'service worker token: n/a'. No WP should touch a VV service worker.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "devlog v2.111/v2.113/v2.114/v2.149 'Service worker' lines; VV ledger row 'Service worker token | ... | n/a - this tree has no PWA worker'.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F50",
+   "category": "test",
+   "title": "Port the ObjectSnap bundle helper and the ObjectSnap suite",
+   "detail": "Na__TestEnv__ObjectSnapBundle__.cjs joins the folder's units with their imports stripped, resolving paths relative to 02__Src__AppModules, so it ports as is. Na__Test__ObjectSnap__.test.mjs (81 checks plus 8 note-region checks) tests the real State, Geometry, Index, Sources, Search and Glyphs, and loads the real ViewportRotation and VectorTools Curves leaves by path, so those leaves must exist in VV first.",
+   "recommendation": "Port both with header changes only once WP-S04b-01 and WP-S04b-06 land; run them with node from VV's 80__Testing__PrototypeEnvironment.",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F40",
+    "S04b-F17"
+   ],
+   "evidence": "Bundle:57, :81-97 (path-generic); ObjectSnap test reads ViewportRotation and Curves by path.",
+   "est_lines": 471
+  },
+  {
+   "id": "S04b-F51",
+   "category": "test",
+   "title": "Port the OrthoMode suite (it gates the tool, drag and keyboard wiring)",
+   "detail": "Na__Test__OrthoMode__.test.mjs (55 checks) loads the shipped State, controller and config, plus KeyMap, the key JSON, DimensionGeometry, AxisLock, Keyboard, PointerDrag, SheetTools__State, DimensionTool and ShapeTool, with their imports stubbed. Its rule and controller sections pass as soon as the folder lands; the tool, drag and keyboard sections pass only once VV's hubs carry the matching hunks. It reads TV's key file name.",
+   "recommendation": "Port it with WP-S04b-03 and enable it section by section; point its key-file path at VV's file (D-S04b-07).",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F11",
+    "S04b-F29",
+    "S04b-F30",
+    "S04b-F33",
+    "S04b-F34"
+   ],
+   "evidence": "OrthoMode test header :12-33 and the path list (12 shipped files).",
+   "est_lines": 464
+  },
+  {
+   "id": "S04b-F52",
+   "category": "test",
+   "title": "Port the DrawingGrid suite (its TV header is stale)",
+   "detail": "Na__Test__DrawingGrid__.test.mjs (57 checks) covers the real DrawingGrid State, the snap through the ObjectSnap bundle (grid fallback, object snap first, { grid : false }, title block and notes-margin points), GridMoves, and F6/F7 in the key JSON and fallback. Its header still describes the deleted Snapping__ and SheetTools__GridDrag__ - a TV doc slip.",
+   "recommendation": "Port with WP-S04b-05/06/09, correcting the header in the VV copy; offer the header fix back to TV.",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F07",
+    "S04b-F20",
+    "S04b-F34"
+   ],
+   "evidence": "DrawingGrid test header :12-27 vs imports (bundle, GridMoves path).",
+   "est_lines": 303
+  },
+  {
+   "id": "S04b-F53",
+   "category": "test",
+   "title": "Port the DrawingAxes suite",
+   "detail": "Na__Test__DrawingAxes__.test.mjs (50 checks) tests the real module against a fake paper (crossing at the marker or the cursor, device-pixel edges at zooms 1/2.37/0.5/4 and dpr 1/1.5/1.25/2, show and hide rules), plus the key map, SHEET_CHORDS, the Keyboard F9 case and the Toolbar. The module sections pass once the folder lands; the key and toolbar sections need WP-S04b-09.",
+   "recommendation": "Port it with WP-S04b-10 and enable the key and toolbar sections after WP-S04b-09.",
+   "action": "port_test",
+   "severity": "low",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F26",
+    "S04b-F33",
+    "S04b-F35"
+   ],
+   "evidence": "DrawingAxes test header :12-28, its path list.",
+   "est_lines": 447
+  },
+  {
+   "id": "S04b-F54",
+   "category": "test",
+   "title": "Port the MoveAnchor, GroupMoveSnapping and MoveRetype suites with their WPs",
+   "detail": "Na__Test__MoveAnchor__ (70 checks) runs the shipped cross with PointerDrag 1.19.0 and PointerPress 1.8.0. Na__Test__GroupMoveSnapping__ (1.2.2) runs the ObjectSnap bundle with Moves, the ViewportRotation leaf, Groups, the SelectionSet and PointerDrag's IsMoveDrag/IsViewportMoveDrag/ApplyDrag. Na__Test__MoveRetype__ runs Moves, AxisLock and PointerDrag. Each passes only when VV's PointerDrag and PointerPress match TV.",
+   "recommendation": "Port GroupMoveSnapping and MoveRetype with WP-S04b-08, and MoveAnchor with WP-S04b-12; adapt headers and stubs only.",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveAnchor__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F25",
+    "S04b-F30",
+    "S04b-F19"
+   ],
+   "evidence": "test headers; path lists (MoveAnchor: MoveAnchor, PointerDrag, PointerPress; GroupMoveSnapping: Groups, ViewportRotation, bundle incl. Moves).",
+   "est_lines": 1136
+  },
+  {
+   "id": "S04b-F55",
+   "category": "test",
+   "title": "Port the PaintedOnThePoint suite as the joint marker, grips and frames gate",
+   "detail": "Na__Test__PaintedOnThePoint__.test.mjs (116 checks, mutation-checked) runs the shipped Marker (with State and Glyphs via the bundle) and Grips' Place/PlaceBand/ShowBand cut from the shipped file, and reads SheetSurface and both stylesheets as text, at zooms 0.34x to 64x. It needs Marker 1.1.0, Grips 1.11.0 and SheetSurface 1.11.0 in VV.",
+   "recommendation": "Port it with WP-S04b-06; expect the marker part to pass at once and the grips and frames part after WP-S04b-13.",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs"
+   ],
+   "depends_on": [
+    "S04b-F18",
+    "S04b-F43"
+   ],
+   "evidence": "PaintedOnThePoint test header :12-41; path list (SheetSurface, Main__Paper.css, ObjectSnap css, Grips).",
+   "est_lines": 344
+  },
+  {
+   "id": "S04b-F56",
+   "category": "test",
+   "title": "DraftGuard, DraftRestore and DrawingDrafts test the browser draft, not Draft mode",
+   "detail": "Na__Test__DraftGuard__.test.cjs (AutoSave plus DrawView ProjectData; v2.146 three guards), Na__Test__DraftRestore__.test.mjs (browser draft restore order; v2.145) and Na__Test__DrawingDrafts__.test.mjs (a drawing's draft vs its saved state) cover persistence of unsaved sheets. None loads a 26__System__DraftMode file. 'Draft' means two different things in TV: Draft MODE (K, visual) and the browser DRAFT (AutoSave).",
+   "recommendation": "Reassign these three suites to the persistence/AutoSave slice. Name both meanings explicitly in VV WP titles to avoid confusion.",
+   "action": "no_action",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs"
+   ],
+   "evidence": "test headers' PURPOSE lines; path lists (40__System__DrawingViewCore ProjectData, 07 AutoSave); no 26__System__DraftMode path.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F57",
+   "category": "tooling",
+   "title": "Port-signal index misses the 'ValeVision : not yet ported' marker (126 TV files)",
+   "detail": "ref/tv_portnote_markers.txt indexes 'Ported from / Parity / Back-port' lines, but TV files authored there first carry 'ValeVision    : not yet ported - it waits for Adam's sign-off.' (126 files app-wide; 20 in this slice: 26:2, 27:3, 28:12, 32:2, 33:1). ViewportSnapMove uses a third form: 'Ported to : ValeVision3D ... (pending)'. Slices relying on the index alone will under-count port signals.",
+   "recommendation": "Re-run the marker index with the patterns 'ValeVision +: not yet ported' and 'Ported to +: ValeVision3D' and share it with every slice.",
+   "action": "no_action",
+   "severity": "medium",
+   "evidence": "grep -rl -E 'ValeVision +: not yet ported' TVM: 126 files; tv_portnote_markers.txt has no line for 26/27/32/33 files.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F58",
+   "category": "tooling",
+   "title": "drift_all 'header-only' rows and version columns are unreliable",
+   "detail": "39 of 107 header-only rows differ in non-comment code. Some are only folder-number import paths, but TextTool and LeaderTool (this slice) hide real Grid Snap code. Version extraction takes the first log entry: ObjectSnap Marker shows 1.0.0 though its newest is 1.1.0, and ViewportSnapMove (1.6.0), MoveAnchor (1.0.0) and the Ortho controller (1.0.0) show blank.",
+   "recommendation": "Reclassify header-only rows by a code-line diff that ignores comments and the app name, and take the highest version in each log. Until then, treat header-only as 'verify'.",
+   "action": "no_action",
+   "severity": "medium",
+   "evidence": "python code-line comparison over drift_all header-only rows (39/107 differ); Marker__.js log lists 1.0.0 at :73 before 1.1.0 at :79.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F59",
+   "category": "tooling",
+   "title": "VV's export verifier checks unreferenced modules, so seams must precede folders",
+   "detail": "VV's Na__Verify__Exports__.mjs scans every module under 02__Src__AppModules whether or not anything imports it. A new folder whose imports name exports VV lacks (Say, ZOOM_SETTLED_EVENT, GetSheetChrome, IsLayerSelectable, Rings/EdgePairs, the leaves) fails the verifier even though the browser would never load it. Na__Verify__ModuleGraph__.mjs covers file resolution.",
+   "recommendation": "Make both verifiers exiting 0 part of every WP's acceptance, and order the WPs leaves, then seams, then folders, then wiring.",
+   "action": "no_action",
+   "severity": "medium",
+   "evidence": "VV Na__Verify__Exports__.mjs:21-25 ('With no arguments it checks every module'); imports.py results (report b.11).",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F60",
+   "category": "ledger",
+   "title": "VV ledger has no rows for the drafting aids, and its subfolder table is stale",
+   "detail": "The ledger's last return trip is 20-Sep (TV ~v2.85), so v2.107-v2.149 (Draft, Ortho, Grid, ObjectSnap, Axes, Marker fix, MoveAnchor) are absent. The subfolder table still lists 'Snapping, AxisLock' under 30 for both apps (row 1130) and ViewportSnapMove as TrueVision-only under 20 (row 1128). Row 720 'not ported - comes with the carry' and row 715 (Snapping 1.2.0 tones ported) describe a TV structure that no longer exists.",
+   "recommendation": "Add a return-trip section per landed WP; fix rows 1128 and 1130 (28__System__ObjectSnap holds Snapping's successors and ViewportSnapMove); close row 720 with WP-S04b-11 (WP-S04b-15).",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "evidence": "ledger_index.txt (latest return trip 20-Sep); ledger lines 715, 720, 1128, 1130.",
+   "est_lines": 60
+  },
+  {
+   "id": "S04b-F61",
+   "category": "decision",
+   "title": "Sign-off: TV headers say every drafting aid waits for Adam before reaching VV",
+   "detail": "All 23 JS files in the five folders say 'ValeVision : not yet ported - it waits for Adam's sign-off'. TV devlogs also note 'NOT tried by Adam; NOT in ValeVision' for v2.129, v2.131 and v2.137. Two of the seven systems change mouse gestures in VV: pressing on 2D linework carries the viewport, and Ctrl+click arms a cross.",
+   "recommendation": "Treat the parity brief as sign-off for Draft, Grid, Ortho, Object Snap and Axes; confirm the viewport carry and the move anchor with Adam before WP-S04b-11/12 (D-S04b-01).",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "header port notes; devlog v2.129 (3782), v2.131 (3532), v2.137 (3010) 'NOT tried by Adam; NOT in ValeVision'.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F62",
+   "category": "decision",
+   "title": "Sequencing: targeted hunks into VV's old hubs vs whole-file hub ports",
+   "detail": "Hubs at TV level import the drafting-aid folders (PointerDrag 1.19.0, Keyboard 1.18.0, Toolbar 1.24.0, ModeController 1.32.0, PointerPress 1.10.0), so a whole-file hub port cannot land before these folders. Conversely, these folders import hub exports VV lacks. The snap behaviour itself can switch over through the Snapping__ shim without touching any hub.",
+   "recommendation": "Use the mixed order (D-S04b-03): leaves, seams, folders, shim plus CSS swap; toggles and keys as small hunks unless the hub ports are in the same wave; carry and anchor only after the hub ports.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "revdeps (hub imports of 26/27/28/32/33); imports.py (folder imports of hub names VV lacks).",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F63",
+   "category": "wiring",
+   "title": "TONE import trap: repointing a VV caller without dropping TONE breaks module linking",
+   "detail": "VV PointerDrag (:137) and DimensionTool (:129) import Na__LeOsnap__TONE_DIMENSION. TV Search exports no TONE names, and an ES module import of a missing named export is a link-time SyntaxError that blanks the whole lazily-loaded editor. TV Search.Snap and Marker.ShowMarker silently ignore a legacy tone argument, so the call sites themselves need no change.",
+   "recommendation": "Either drop the TONE import in the same edit as the repoint, or have the Snapping__ shim export TONE_VERTEX/DIMENSION/VIEWPORT as plain strings for one wave (D-S04b-09). Gate with Na__Verify__Exports__.",
+   "action": "update_wiring",
+   "severity": "critical",
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js"
+   ],
+   "depends_on": [
+    "S04b-F02"
+   ],
+   "evidence": "VV PointerDrag:137, DimensionTool:129, :172, :243, :291, :316, PointerDrag:343; TV Search exports :627-654; Search:506-514 (legacy arg).",
+   "est_lines": 6
+  },
+  {
+   "id": "S04b-F64",
+   "category": "wiring",
+   "title": "Draft and grid CSS assume TV's SheetSurface 1.7.0 paper stack",
+   "detail": "The Draft CSS excludes .na-le-paper__highlights (TV 1.7.0 splits the markup into slots, highlights last); VV 1.6.0 has one markup SVG, so Draft would also hairline the selection highlights. The grid canvas z-index (3 on top, 0 under) and the axes layer (5, before the handles) assume TV's stack (stack z1, focus z4, handles z5); VV has chrome z2, markup z3, focus z4, handles z5. 'On top' works by DOM order; 'under' needs checking.",
+   "recommendation": "Port the CSS unchanged and verify in the app. The full fix is SheetSurface 1.7.0 from the SheetSurface slice; no VV-only CSS fork.",
+   "action": "port_verbatim",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "depends_on": [
+    "S04b-F04",
+    "S04b-F08"
+   ],
+   "evidence": "Draft css:95; Grid css:15-20 stack notes; VV Main__Paper:55-58; grep na-le-paper__highlights: VV 0, TV 2.",
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-F65",
+   "category": "decision",
+   "title": "Key file naming divergence affects where the new rows go and the test ports",
+   "detail": "VV LE/03__Core__Config/Na__LayoutEditor__KeyMappings__.json (VV-only name) and TV Na__Hotkeys__DrawingTabs__.json (renamed at TV v2.110 'Three Tool Sets, Three Keyboards', with KeyScope). The TV OrthoMode, DrawingGrid, DrawingAxes and DrawingTabKeys suites read TV's name by path; DrawingTabKeys also needs 03__AppUtils/Na__AppUtils__KeyScope__.js, which VV lacks.",
+   "recommendation": "Follow the config/keys slice's naming decision (D-S04b-07). Until then add the rows to KeyMappings__.json and adapt the test paths; defer DrawingTabKeys until KeyScope lands.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json"
+   ],
+   "evidence": "TV Hotkeys JSON :2 description; drift_all KeyMappings vv-only and Hotkeys tv-only; test path lists; find KeyScope in VV: none.",
+   "est_lines": 0
+  }
+ ],
+ "work_packages": [
+  {
+   "id": "WP-S04b-01",
+   "title": "Port the pure leaves the object snap imports",
+   "scope": "Port verbatim (header and port note only): LE/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js 1.0.0, LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js 1.0.0 and LE/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js 1.1.0. All three import nothing and are inert for VV records. Skip any a sibling slice has already landed.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "The three files exist at TV's paths, import nothing and export exactly TV's names",
+    "git diff --no-index -w against TV shows header/port-note lines only",
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs exit 0"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js"
+   ],
+   "hot_files": [],
+   "risk": "Low. The only risk is clashing with the viewports, vector tools or booleans slices porting the same files; coordinate ownership.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-02",
+   "title": "Add the exports the drafting aids import (seams)",
+   "scope": "Additive, verbatim from TV: Measurements Na__LeMeasure__Say (1.6.0) plus its export; SheetSurface ZOOM_SETTLED_EVENT (the full v2.111 package if D-S04b-04 says full, else fire the event after every zoom), the chrome cache and GetSheetChrome (1.7.0/1.9.0); SheetModel__Layers IsLayerSelectable plus the SheetModel re-export; ShapeGeometry Holes/Rings/EdgePairs (importing ShapeRings); ConfigState__ToolSetup GetSnappingSetup sheetChrome and the carry keys; AppConfig Snapping keys (and the Navigation keys with v2.111). Skip any seam an owning slice has already landed.",
+   "depends_on": [
+    "WP-S04b-01"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Every name listed in report b.11 resolves from VV",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs exit 0",
+    "No visible change in the app (except the soft-then-sharp zoom if the full v2.111 package is ported)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "risk": "Medium. Every file is a hub owned by another slice (SheetSurface, Measurements, layers, markup, config); serialise with them or merge these seams into their WPs.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-03",
+   "title": "Port the Ortho mode folder",
+   "scope": "Port LE/32__System__OrthoMode/ (State 1.0.0, controller 1.0.0, Config) with VV headers, console prefix and port notes. Nothing imports it yet.",
+   "depends_on": [
+    "WP-S04b-02"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Three files present; verifiers exit 0",
+    "Code regions identical to TV (diff shows header/console lines only)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json"
+   ],
+   "hot_files": [],
+   "risk": "Low.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs (rule and controller sections now)"
+   ]
+  },
+  {
+   "id": "WP-S04b-04",
+   "title": "Port Draft mode with its render guards",
+   "scope": "Port LE/26__System__DraftMode/ (4 files); reword Config Meta for VV; Vale font token for the CSS note if chosen. Apply the Draft hunks to Viewport2d (1.13.0: IsOn import, raster-only class, timer guards; no fog lines), Viewport2d__Frame (1.3.0) and Viewport3d (1.8.0), importing IsOn from the State leaf only. Add the stylesheet to VV loader STYLESHEETS after Main__Paper. The K binding lands in WP-S04b-09.",
+   "depends_on": [
+    "WP-S04b-02"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Verifiers exit 0; no import cycle (the viewports import only DraftMode__State__)",
+    "After WP-09, in the app: K draws one-device-pixel hairlines in their own colours with no dashes or fills, and hides rasters",
+    "Changing the raster level in Draft books 0 renders; K off shows the held pictures at once, then exactly one render where stale",
+    "The PDF export is byte-for-byte as before"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Low to medium: three viewport hubs are touched (viewports slice). Selection highlights also go hairline until SheetSurface 1.7.0.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-05",
+   "title": "Port the Drawing Grid folder",
+   "scope": "Port LE/27__System__DrawingGrid/ (State, controller, Panel, Config, CSS) verbatim; add the CSS to VV loader STYLESHEETS. Registering the panel, Attach/Detach and F6/F7 land in WP-S04b-09.",
+   "depends_on": [
+    "WP-S04b-02"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Files present; verifiers exit 0",
+    "After WP-09: F6 draws 1 mm points crisp at zooms 0.5x-6x with heavier 10 mm points; F7 snaps the Draw tool to the nearest grid point; panel changes redraw at once; 'Draw grid on top' off puts the canvas under the drawings; nothing appears in the PDF"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Low. Check z-index against VV's pre-stack paper.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs (state section now)"
+   ]
+  },
+  {
+   "id": "WP-S04b-06",
+   "title": "Port the Object Snap core and switch VV's snapping over",
+   "scope": "Port 13 files of LE/28__System__ObjectSnap/ (State, Geometry, Glyphs, Index, Sources, Search, Marker, Moves, GridMoves, controller, Menu, Config, Styles__ObjectSnap__.css), excluding ViewportSnapMove and MoveAnchor. Add the CSS to the loader STYLESHEETS and, in the same commit, delete VV's old .na-le-osnap* rules from Styles__Main__Paper__.css (keep .na-le-frame__progress). Replace the body of VV Snapping__.js with a one-wave re-export shim: the new names from Search, Marker and the controller, plus TONE_VERTEX/DIMENSION/VIEWPORT as plain strings.",
+   "depends_on": [
+    "WP-S04b-01",
+    "WP-S04b-02",
+    "WP-S04b-05"
+   ],
+   "size": "L",
+   "acceptance": [
+    "All 10 VV importers of Snapping__ still link; verifiers exit 0",
+    "Markers are SVG glyphs coloured by target (purple linework, blue vector, orange text, red dimension, slate paper/grid), with no bordered box and no clipped triangle",
+    "Text corners, the title-block border and the notes-margin divider ends snap; Intersection, Perpendicular (with a from point) and Centre are found; Nearest is off by default",
+    "At 32x zoom the marker's middle sits on the vertex"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Medium-high. The snap behaviour visibly changes in one step (colours, extra modes and targets). The CSS deletion and the shim must land in the same commit as the folder.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs (marker part)"
+   ]
+  },
+  {
+   "id": "WP-S04b-07",
+   "title": "Move the drawing tools onto the new snap, Ortho and the grid",
+   "scope": "In DimensionTool, ShapeTool, RectangleTool, LeaderTool and TextTool: import from ObjectSnap Search, drop TONE, use TARGET constants on hand-made markers, pass options.from (the Draw tool's last vertex, the dimension's first point), call Na__LeOrtho__Resolve where Shift was asked alone, and use Na__LeGrid__SnapPoint (text placement, the leader head, the dimension offset). Hunks per report c.3, or verify after the DrawingTools slice's whole-file ports.",
+   "depends_on": [
+    "WP-S04b-03",
+    "WP-S04b-05",
+    "WP-S04b-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "No Snapping__ or TONE import left in 35__System__DrawingTools; verifiers exit 0",
+    "With Ortho on (via the console until WP-09), the Draw band is held horizontal or vertical and Shift frees it; a new dimension is ortho from its first frame",
+    "Perpendicular is found from the previous vertex; with Grid Snap on, text and leader heads land on the grid"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js"
+   ],
+   "risk": "Medium: the DrawingTools slice may be rewriting the same files whole; serialise.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs (Draw and Dimension sections)"
+   ]
+  },
+  {
+   "id": "WP-S04b-08",
+   "title": "Wire the sheet-tools pointer paths to the new snap",
+   "scope": "PointerDrag: ApplyDrag works out ortho once with Resolve, runs GridDragDelta first unless the move is exact, uses ObjectSnap Moves ShapeTranslation and GroupTranslation, snaps a vertex with { from : VertexNeighbours } (port the helper) and a dimension end with its other end as from, and drops TONE. HitResolution: remove SnapShapeTranslation and point the insert diamond's Find at Search. ContextMenu: import Toggle/IsEnabled from the controller. Or verify after the SheetTools slice's whole-file ports.",
+   "depends_on": [
+    "WP-S04b-03",
+    "WP-S04b-05",
+    "WP-S04b-06"
+   ],
+   "size": "L",
+   "acceptance": [
+    "A vector moved whole keeps a held axis (Shift or an arrow) through a snap",
+    "A group move snaps one member's point and moves every member by the same delta",
+    "With Grid Snap on, a text item moves by its grab point in whole grid steps",
+    "A typed length is exact (no snap, grid or Ortho); verifiers exit 0"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js"
+   ],
+   "risk": "High: PointerDrag is VV 1.4.0 vs TV 1.19.0 (1,085 diff lines) and owned by the SheetTools slice; prefer a whole-file port there once the folders exist.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs (ApplyDrag section)"
+   ]
+  },
+  {
+   "id": "WP-S04b-09",
+   "title": "Wire keys, toolbar and mode controller; delete Snapping__.js",
+   "scope": "Key rows Ortho__Toggle F8, Ortho__ToggleCtrlL (off), View__DraftToggle k/K, View__GridToggle F6, Snap__GridToggle F7 and View__AxesToggle F9 in the key JSON, its catalogue and the KeyMap fallback; SHEET_CHORDS for the four function keys. Keyboard: the five cases plus RedrawHeld (without the VectorTools, viewport and anchor reruns) and the Snap__Toggle repoint. Toolbar: the Snap split, caret and menu plus Draft, Grid, Grid Snap, Ortho and Axes with sync and listeners. ModeController: register the grid panel after Sheet, Grid and Axes Attach/Detach, and the Osnap Clear repoint. Then delete VV Snapping__.js.",
+   "depends_on": [
+    "WP-S04b-03",
+    "WP-S04b-04",
+    "WP-S04b-05",
+    "WP-S04b-06",
+    "WP-S04b-07",
+    "WP-S04b-08",
+    "WP-S04b-10"
+   ],
+   "size": "L",
+   "acceptance": [
+    "grep -r 'Snapping__' 02__Src__AppModules returns nothing; verifiers exit 0",
+    "F3, F6, F7, F8, F9 and K each switch once per press: not on repeat, not from a text box, yes from a focused panel checkbox; the browser's own F6/F7/F9 are taken",
+    "The toolbar buttons light while on; the echo line shows <Osnap on>, <Ortho on>, <Grid on>, <Grid snap on>, <Drawing axes on>",
+    "The snap menu opens under its caret, its rows switch and are remembered, and Escape closes only the menu",
+    "Every JSON key row has an identical fallback row"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js"
+   ],
+   "risk": "High contention: six hubs shared with the config, keyboard, toolbar and mode-controller slices. If those slices port whole TV files, this WP reduces to deleting Snapping__ plus verification.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs (keyboard section)",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs (keys section)",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs (keys and toolbar sections)",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs (after VV gains KeyScope)"
+   ]
+  },
+  {
+   "id": "WP-S04b-10",
+   "title": "Port the Drawing Axes folder",
+   "scope": "Port LE/33__System__DrawingAxes/ (controller, Config, CSS) verbatim; add the CSS to the loader STYLESHEETS. F9, the button and Attach land in WP-S04b-09.",
+   "depends_on": [
+    "WP-S04b-02",
+    "WP-S04b-06"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Files present; verifiers exit 0",
+    "After WP-09: the lines run edge to edge in whole device pixels at any zoom, cross on the snap marker when one shows, and hide over panels and for touch"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Low.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs (module sections)"
+   ]
+  },
+  {
+   "id": "WP-S04b-11",
+   "title": "Port the viewport snap move (carry by a linework point)",
+   "scope": "Port Na__LayoutEditor__ViewportSnapMove__.js 1.6.0. Wiring: PointerPress GrabAt; PointerDrag OnMove hover with CarryTarget, ApplyDrag Solve, FinishDrag Finish and RerunViewportDrag; Keyboard Esc Clear; ToolState Clear; SheetTools Refresh after a model change; CopyDrag Retarget once CopyDrag exists. Add the carry CSS block (TV Main__Paper.css:814-887) to VV Main__Paper and the carry keys if WP-02 did not. Add TV's INTEGRATION paragraph to the AxisLock header.",
+   "depends_on": [
+    "WP-S04b-06",
+    "WP-S04b-08",
+    "WP-S04b-09"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Hovering a 2D viewport's linework under Select shows the purple endpoint marker; pressing there carries the viewport so the point lands exactly on another drawing's corner",
+    "Resting on another viewport's point acquires a tracking cross, with red level and green plumb guides",
+    "An arrow key holds the carry to an axis; F3 off restores the plain frame move; one undo step per carry"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js"
+   ],
+   "risk": "High: needs PointerDrag 1.7.0 or later (RerunViewportDrag) and PointerPress structures from the SheetTools slice; changes press behaviour on viewports (D-S04b-01).",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-12",
+   "title": "Port the Move Anchor (Ctrl+click)",
+   "scope": "Port Na__LayoutEditor__MoveAnchor__.js and its Config. Wiring per TV v2.149: PointerPress 1.8.0 (Arm, Grab, ForDrag, Recentre, Anchorable), PointerDrag 1.19.0 (Hover, Holds, IsDrag, Relocate, Carry, ShowAt, Finish, IsAnchorDrag, RerunAnchorDrag), Keyboard 1.16.0 (the cross's axis lock), HitResolution 1.10.0 (Holds keeps Move up), ToolState 1.7.0, SheetTools 1.39.0 (Ready, Refresh, Clear), KeyMap 1.10.0 (anchor in MatchSelectionModifier, GetMoveAnchorModifier), the ConfigState 1.29.0 re-export, and SelectionBindings MoveAnchorModifier 'Ctrl' in the key JSON.",
+   "depends_on": [
+    "WP-S04b-06",
+    "WP-S04b-08",
+    "WP-S04b-09",
+    "WP-S04b-11"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Ctrl+click on one item arms the red cross in the middle of its box and picks up Move; Ctrl+click added to another selection, a plain click and a Ctrl-drag copy do not",
+    "Dragging the cross snaps it to object snap, the item's own box and the grid; a double click recentres it",
+    "Dragging the item lands the cross exactly on the snap; one undo step; arming writes nothing to the sheet"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json"
+   ],
+   "risk": "High: changes what Ctrl+click means; should follow the CopyDrag (TV v2.117) port so Ctrl is identical to TV (D-S04b-08).",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveAnchor__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S04b-13",
+   "title": "Paint grips and frames on their points (cross-slice gate)",
+   "scope": "Grips 1.10.0/1.11.0 (OnLinework state colours, grips at their real size counter-scaled, Place/PlaceBand) and SheetSurface 1.11.0 (frames carried by a translate). Owned by the Grips and SheetSurface slices; this WP is the acceptance gate that the snap marker, the drawing and the grips register at high zoom.",
+   "depends_on": [
+    "WP-S04b-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "At 32x on a 150% display the marker, the painted wall corner and a snapped grip coincide within 0.3 device px",
+    "An open vector's vertices on drawing points are solid green, those on a line are a green ring, and free ones are blue; a picked vertex is red"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js"
+   ],
+   "risk": "Medium; belongs to other slices. Do not duplicate their work: verify only.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S04b-14",
+   "title": "Port the drafting-aid test harness and suites",
+   "scope": "Port Na__TestEnv__ObjectSnapBundle__.cjs (path-generic) and the suites, each staged with the WP it covers: ObjectSnap, OrthoMode, DrawingGrid, DrawingAxes, GroupMoveSnapping, MoveRetype, PaintedOnThePoint, MoveAnchor. Adapt headers, the key-file path (D-S04b-07) and stubs for hubs VV has not reached. Do NOT port DraftGuard, DraftRestore or DrawingDrafts here (persistence slice).",
+   "depends_on": [
+    "WP-S04b-03",
+    "WP-S04b-05",
+    "WP-S04b-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Each ported suite exits 0 with node from VV's 80__Testing__PrototypeEnvironment once its WP has landed",
+    "Suite code is unchanged apart from headers, paths and stubs"
+   ],
+   "files_tv": [
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveAnchor__.test.mjs"
+   ],
+   "files_vv": [
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs"
+   ],
+   "hot_files": [],
+   "risk": "Low; suites that cut code from shipped hubs fail until those hubs match TV, which is the point.",
+   "tests_to_port": [
+    "Na__TestEnv__ObjectSnapBundle__.cjs",
+    "Na__Test__ObjectSnap__.test.mjs",
+    "Na__Test__OrthoMode__.test.mjs",
+    "Na__Test__DrawingGrid__.test.mjs",
+    "Na__Test__DrawingAxes__.test.mjs",
+    "Na__Test__GroupMoveSnapping__.test.cjs",
+    "Na__Test__MoveRetype__.test.mjs",
+    "Na__Test__PaintedOnThePoint__.test.mjs",
+    "Na__Test__MoveAnchor__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S04b-15",
+   "title": "Update the ledger, devlog and port notes",
+   "scope": "VV ledger: add a return-trip section per landed WP citing the TV versions (v2.107, v2.111, v2.113, v2.114, v2.129, v2.131, v2.137, v2.138, v2.149); fix the subfolder table rows 1128 and 1130 (28__System__ObjectSnap replaces Snapping in 30 and holds ViewportSnapMove); close row 720 when WP-11 lands. VV devlog entry per WP ('## ValeVision3D v2.N.0 - DD-Mon-YYYY - Title', number taken from a fresh read of the devlog top, minor bumps). Give every ported file a VV port note.",
+   "depends_on": [
+    "WP-S04b-06",
+    "WP-S04b-09"
+   ],
+   "size": "S",
+   "acceptance": [
+    "The ledger names every landed file with parity verbatim or adapted and its divergences",
+    "No stale 'Snapping' or 'ViewportSnapMove TrueVision-only' rows remain",
+    "Devlog versions are unique and in order"
+   ],
+   "files_tv": [],
+   "files_vv": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "hot_files": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Low; parallel sessions bump the devlog, so re-read its top before writing.",
+   "tests_to_port": []
+  }
+ ],
+ "decisions_needed": [
+  {
+   "id": "D-S04b-01",
+   "question": "TV's headers say every drafting aid 'waits for Adam's sign-off' before reaching ValeVision. Is the parity brief that sign-off, for all seven systems?",
+   "options": "(a) yes for all seven; (b) yes for Draft, Grid, Ortho, Object Snap and Axes, and confirm separately the two that change mouse gestures (viewport carry: a press on linework carries the viewport; move anchor: Ctrl+click arms a cross)",
+   "recommendation": "(b). Port the five now; confirm the carry and the anchor with Adam, then port them last.",
+   "blocks": [
+    "WP-S04b-11",
+    "WP-S04b-12"
+   ]
+  },
+  {
+   "id": "D-S04b-02",
+   "question": "Should VV's snap marker colour mean the target (TV: purple linework, blue vector, orange text, red dimension, slate paper/grid) instead of the tool snapping (VV today: blue vertex, orange dimension, purple viewport)?",
+   "options": "keep VV's tool tones; adopt TV's target colours",
+   "recommendation": "Adopt TV's target colours for an identical experience, and say in the VV devlog that orange changes meaning.",
+   "blocks": [
+    "WP-S04b-06"
+   ]
+  },
+  {
+   "id": "D-S04b-03",
+   "question": "Should the aids be wired by targeted hunks into VV's old hub files now, or wait for the SheetTools, DrawingTools, Toolbar and ModeController slices to port those hubs whole?",
+   "options": "hunks now; wait for whole-file ports; mixed",
+   "recommendation": "Mixed. Land leaves, seams, folders and the Snapping__ shim first (the snap behaviour switches without a hub rewrite). Do toggles, keys and the toolbar as small hunks only if the hub ports are not in the same wave. Do the carry and the anchor only after the hub ports.",
+   "blocks": [
+    "WP-S04b-07",
+    "WP-S04b-08",
+    "WP-S04b-09"
+   ]
+  },
+  {
+   "id": "D-S04b-04",
+   "question": "Should VV take TV's full v2.111 zoom-settle package, or only an interim ZOOM_SETTLED_EVENT fired after every zoom?",
+   "options": "full package (SheetSurface 1.8.0, Navigation, Controls, EditorSetup, AppConfig Navigation keys); interim event",
+   "recommendation": "The full package via the SheetSurface slice. Use the interim event only if that slice is scheduled after this one.",
+   "blocks": [
+    "WP-S04b-02",
+    "WP-S04b-04",
+    "WP-S04b-05",
+    "WP-S04b-10"
+   ]
+  },
+  {
+   "id": "D-S04b-05",
+   "question": "Should three pure leaves from other subsystems (ViewportRotation, VectorTools Curves, ShapeRings) be ported early, creating a one-file 37__System__VectorTools, or should the snap units' imports be adapted?",
+   "options": "early leaves verbatim; adapted imports (a VV-only divergence in Sources, Search and GridMoves)",
+   "recommendation": "Early leaves verbatim: zero behaviour change, and the snap units stay byte-identical to TV.",
+   "blocks": [
+    "WP-S04b-01",
+    "WP-S04b-06"
+   ]
+  },
+  {
+   "id": "D-S04b-06",
+   "question": "The Drawing Grid defaults are Adam's NA A2 LayOut template (10 mm major in 10, #969696 over #d6d5c9, Points, on top). Should Vale use the same values?",
+   "options": "identical; Vale template values",
+   "recommendation": "Identical now. The config is per app, so Vale can retune later without code.",
+   "blocks": [
+    "WP-S04b-05"
+   ]
+  },
+  {
+   "id": "D-S04b-07",
+   "question": "VV's drawing-tab key file is Na__LayoutEditor__KeyMappings__.json; TV renamed its own to Na__Hotkeys__DrawingTabs__.json (v2.110), and the ported tests read TV's name. Rename in VV?",
+   "options": "keep VV's name and adapt the tests; rename to TV's name (with KeyScope, config slice)",
+   "recommendation": "Follow the config/keys slice. Until it renames, add the rows to KeyMappings__.json and point the ported tests at it.",
+   "blocks": [
+    "WP-S04b-09",
+    "WP-S04b-14"
+   ]
+  },
+  {
+   "id": "D-S04b-08",
+   "question": "Should the move anchor land before VV has TV's Ctrl-drag copy (v2.117 SheetTools__CopyDrag__), given both use Ctrl?",
+   "options": "before, with the copy path dormant; after the CopyDrag port",
+   "recommendation": "After, so Ctrl click and Ctrl drag mean exactly what they mean in TV.",
+   "blocks": [
+    "WP-S04b-12"
+   ]
+  },
+  {
+   "id": "D-S04b-09",
+   "question": "Retire VV Snapping__.js in one commit (10 importer repoints), or through a one-wave re-export shim that also exports the old TONE names?",
+   "options": "single commit; shim for one wave, then delete behind a grep gate",
+   "recommendation": "Shim for one wave, then delete, as TV did ('a re-export for an hour', ObjectSnap__.js:60-63). This avoids the TONE link-time break.",
+   "blocks": [
+    "WP-S04b-06",
+    "WP-S04b-09"
+   ]
+  }
+ ],
+ "coverage": {
+  "files_examined": 112,
+  "files_in_scope_tv": 32,
+  "files_in_scope_vv": 2,
+  "not_examined": [
+   "Full bodies of TV ObjectSnap__Menu__.js, __Glyphs__.js, __Geometry__.js and GridMoves lines 130-330: headers, imports and exports read; logic not line-reviewed",
+   "TV Na__LayoutEditor__ViewportSnapMove__.js lines 175-638 and MoveAnchor__.js lines 200-707: headers, imports, exports and call sites read",
+   "Full bodies of TV PointerDrag (2,130 lines) and PointerPress (929): only the drafting-aid call sites and devlogs were read",
+   "TV tests Na__Test__LayerMenu__, __CopyDrag__, __SetMoveLeaderTips__, __ViewportRotation__, __DrawingTabKeys__: headers and path lists only",
+   "VV PanelHost left-column tab support (whether RegisterTab('left') works) was not verified",
+   "No in-app checks: per the user's standing instruction, the swarm should hand Adam a checklist"
+  ]
+ }
+}

@@ -90,24 +90,40 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// PORT NOTE: Ported from TrueVision3D v2.44.0 on 14-Sep-2026.
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ViewportClipboard__.js
-// - Ported on     : 14-Sep-2026
-// - Parity        : adapted (ValeVision header and console prefix)
-// - Divergences   : none in this module
-//
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js
+// - Source version: 1.4.0 (TrueVision3D v2.138.0, 21-Sep-2026; 1.3.0 v2.123.0, 21-Sep-2026; read at
+//                   b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - whole, with rotatable viewports
+//                   (package W3-06): a copy keeps its turn and a turned viewport pasted at a click
+//                   puts the top left of the box round its turned frame there (1.4.0); LayerFor
+//                   refuses a reference layer (1.3.0). This app's copy was 1.2.0, first ported
+//                   14-Sep-2026 from TrueVision3D v2.44.0. TrueVision's v2.123.0 and v2.138.0 are NOT
+//                   tried by Adam; ported under DR-01 (c).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.4.0 (TrueVision)
+// - A copy keeps its turn (Viewport__RotationDeg rides in the record), and a
+//   turned viewport pasted at a click puts the top left of the box round its
+//   turned frame at the click, where a level one puts its corner.
+//
+// 21-Sep-2026 - Version 1.3.0
+// - LayerFor refuses a REFERENCE layer (Layer__Selectable false) as it
+//   refuses a hidden or a locked one: a pasted viewport or vector there would
+//   be out of the pointer's reach the moment it landed. TrueVision first;
+//   not yet in ValeVision.
+//
 // 18-Sep-2026 - Version 1.2.0
 // - Paste a vector always lands in place now (Na__LeClip__PasteShape passes
 //   fanOut false to LandShape), with a toast (ShapePasted) saying so.
 //   Duplicate keeps the old fanned-out placement (fanOut true) since it has
 //   no toast of its own. Viewport paste and duplicate are unchanged.
-//   Ported from TrueVision3D.
 //
-// 14-Sep-2026 - Ported from TrueVision3D v2.44.0.
 // 14-Sep-2026 - Version 1.1.0
 // - Vectors join the clipboard. Kind 'shape': copy, paste and duplicate a
 //   selected vector the way a viewport already does. A paste is the whole
@@ -117,7 +133,6 @@
 //   the sheet has a usable vector layer of that id, otherwise the default
 //   vector layer. Ctrl+C / Ctrl+V / Ctrl+D and the right-click menu. One
 //   paste is one undo step. Viewport copy, paste and duplicate are unchanged.
-// - Ported from TrueVision3D v2.44.0.
 //
 // 13-Sep-2026 - Version 1.0.0
 // - First cut. Copy, paste and duplicate for viewports: the placement run, the
@@ -147,6 +162,7 @@
     import { Na__LeLayout__Solve } from '../07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js';
     import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Bounds, Na__LeShapeGeo__Translated } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LePanels__GetContext } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
+    import { Na__LeVpRot__Bounds } from './Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: the box round a turned frame
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -352,14 +368,14 @@
     // HELPER FUNCTION | The Layer a Paste Keeps, or Null for the Sheet's Default of That Type
     // ------------------------------------------------------------
     // Layer ids are per sheet, so on another sheet the same id can name a
-    // layer of a different purpose - or one that is hidden or locked, where a
-    // paste would either vanish or refuse to move. type, when given, must
-    // match (a vector paste must not land on a viewport layer that happens
-    // to share an id).
+    // layer of a different purpose - or one that is hidden, locked or a
+    // reference layer, where a paste would vanish, refuse to move or be out
+    // of reach. type, when given, must match (a vector paste must not land on
+    // a viewport layer that happens to share an id).
     // ------------------------------------------------------------
     function Na__LeClip__LayerFor(sheet, layerId, type) {
         const layer = layerId ? Na__LeModel__GetLayerById(sheet, layerId) : null;
-        if (!layer || layer.Layer__Visible === false || layer.Layer__Locked === true) return null;
+        if (!layer || layer.Layer__Visible === false || layer.Layer__Locked === true || layer.Layer__Selectable === false) return null;
         if (type && layer.Layer__Type !== type) return null;
         return layer.Layer__Id;
     }
@@ -374,7 +390,12 @@
     function Na__LeClip__Land(sheet, source, atMm) {
         const record = Na__LeClip__Clone(source);
         const frame  = record.Viewport__FrameMm || {};
-        const spot   = Na__LeClip__Place(sheet, frame, atMm || { x : frame.X, y : frame.Y }, !atMm);
+        // A TURNED VIEWPORT (Viewport__RotationDeg) pasted at a click puts the
+        // corner you SEE there - the top left of the box round the turned frame
+        // - not the level corner, which the turn has carried somewhere else.
+        const box    = (atMm && record.Viewport__RotationDeg && record.Viewport__FrameMm) ? Na__LeVpRot__Bounds(record) : null;
+        const ask    = box ? { x : atMm.x + (frame.X - box.X), y : atMm.y + (frame.Y - box.Y) } : atMm;
+        const spot   = Na__LeClip__Place(sheet, frame, ask || { x : frame.X, y : frame.Y }, !atMm);
         record.Viewport__FrameMm = Object.assign({}, frame, spot);
         record.Viewport__Name    = Na__LeClip__UniqueName(sheet, source);
         record.Viewport__LayerId = Na__LeClip__LayerFor(sheet, source.Viewport__LayerId);

@@ -1,0 +1,38 @@
+﻿[1] the landed editor, its row builders, the 48 placeholder and the drawing core link and evaluate
+  PASS editor (3 exports) and 48 (1 export) link through the import map with every real import; the data module no longer exports SetAzimuthDeg / SetSeededFrom; STYLE_KEYS stays (F.8 C20, DR-32)
+[2] Initialize both as index.html does (elevation mode .then)
+  PASS Elevations Initialize({ modelRoot, camera, showToast }) and Cross Sections Initialize() both true; both items revealed
+[3] the panel: + in the head, no Save anywhere, Bake Missing in the foot
+  PASS head = title + square +; foot = + Add Elevation, Seed N / E / S / W, Bake Missing Thumbnails; no Save Elevations / Save Thumbnail / Pick Face / "Viewed from" (TV s.2 items 1, 6, 9)
+[4] the open row reads as TrueVision's 2.1.0, with the fog block and the Advanced fold
+  PASS row: statement "Direction not known yet - set north under Dev Tools > North ..."; captions ["Plane in the 3D view","Drawing type","Plane position","Fog"]; Fog under View depth, directly above Advanced (bearing + 4 style toggles + Exclude); actions ["Preview","Annotate","Update Elevation","Revert"]; Delete alone below the rule (TV s.2 items 1, 8, 10-12; DR-15; D33)
+[5] + adds an elevation centred on the BUILDING, not the landscape
+[ValeVision3D] 1 thumbnail baked and saved.
+  PASS "Elevation 2": plane through (15 000, -15 000) - the building's centre (the landscape would put it at about (40 000, -40 000)); card in Elevations; saved at once (R2 + local); opened; its card baked and the bake saved once through SaveBlock (TV s.2 items 7, 9; v2.82.0; v2.46.0 seam)
+[6] a plane slider move lights NOT UPDATED; another save carries the last-updated record
+[ValeVision3D] "Elevation 2" has changes that have not been updated - this save wrote it as it was last updated.
+  PASS Plane X 15 000 -> 16 000: NOT UPDATED, Update awake; a Save from any other panel wrote the plane as last updated (TV s.2 items 5, 16)
+[7] Drawing type Section: live cut through the adapter; the card moves to Cross Sections when Update keeps it
+  PASS live cut "ElevationCut__Elevation_003" through Na__DrawView__SectionAdapter__SetPlaneDistanceMm (2 calls, live then exact; DIV-2); the card stayed in Elevations while a draft and moved to Cross Sections (Group_006) in the Update's ONE save, linework baked first, card re-captured (D28; TV s.2 items 2-4; D20)
+[8] the fog block turns fog on and off, asks for a render, and is a draft edit
+  PASS On: fog on, RequestRender asked once, NOT UPDATED, "Fog: switched on - ..."; End 9000 another render; Update (green, not red: fog is not a move) saved it; Off: "Fog: switched off.", Revert put it back on (TV 2.1.0 onFogChange; DR-15)
+[9] the Advanced fold's style toggles re-apply live; exclusion tokens are trimmed as the plans'
+  PASS Whitecard toggled on the elevation on screen: Na__ElevationMode__ApplyStyles ran, NOT UPDATED, "Drawing styles have changed."; " Trees,  Hedges , ,Fences" stored ["Trees","Hedges","Fences"] as the plans store it (OC-11); Revert cleared both
+[10] Update is refused while a thumbnail bake is running
+[ValeVision3D] 1 thumbnail baked and saved.
+  PASS pressed during a bake: refused with a toast, no dialog; after it the row reverts cleanly
+[11] leaving a changed row asks: Keep Editing stays, Discard puts it back
+  PASS a typed name (Elevation__NameIsAuto false) is a draft: opening another row asked (Keep Editing kept it), closing the panel asked and stayed open, Discard put "Elevation 2" back (TV s.2 items 13, 16)
+[12] Seed N / E / S / W: named from the project's north, centred on the building, one bake run
+[ValeVision3D] "Elevation 2" has changes that have not been updated - this save wrote it as it was last updated.
+[ValeVision3D] 4 thumbnails baked and saved.
+  PASS north at 90: the four are ["East Elevation","North Elevation","South Elevation","West Elevation"], each through the building's centre (15 000, -15 000); asked first; one save, then ONE bake run (4 captures) and ONE save; no Elevation__SeededFrom written (TV s.2 item 9; v2.82.0; DR-32)
+[13] Elevation__SeededFrom survives read and save
+  PASS TEST ELEVATION keeps Elevation__SeededFrom "manual" in memory and in the last R2 and local saves (DR-32, F.8 C20)
+[14] the Cross Sections panel lists the project's Section-type elevations and follows CHANGED_EVENT
+  PASS placeholder: shared head with the + disabled, the note, and the list ["West Section","West Section 2"] - it grew when an Update made "West Section 2" a section (Na__DrawData__CHANGED_EVENT); that card moved to Cross Sections too (DR-26, D28)
+[15] Delete asks, removes the elevation and its card, and saves
+  PASS Delete asked, removed the elevation and its card, and saved (TV s.2 item 8)
+  PASS no TrueVision / Noble Architecture / NaProjectPortal / PS01 text in any toast, dialog or panel string shown
+
+16 checks, ALL PASSED; R2 writes recorded 9, local 9, captures 8

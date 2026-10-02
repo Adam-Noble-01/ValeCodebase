@@ -19,8 +19,8 @@
     "Navmode__OrbitMaxDistanceMm": 80000,
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "28-Sep-2026 at 14:56",
-        "model_name": "Washington__WhiteCardModel__0.8.2__",
+        "captured_at": "02-Oct-2026 at 16:56",
+        "model_name": "Washington__MaxModel__0.0.2__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
@@ -62,7 +62,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -103,7 +108,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -144,7 +154,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -185,7 +200,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -226,7 +246,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -267,7 +292,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -308,7 +338,12 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             },
@@ -349,47 +384,52 @@
                     "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true
                 },
                 "section_planes": null
             }
         ]
     },
     "allImages": [
-        "IMG01__3dView__MainShot__Far____WhitecardImage__28-Sep-2026.png",
-        "IMG02__3dView__MainShot__Closer____WhitecardImage__28-Sep-2026.png",
-        "IMG03__3dView__CloserView____WhitecardImage__28-Sep-2026.png",
-        "IMG04__3dView__FullContext-02____WhitecardImage__28-Sep-2026.png",
-        "IMG05__3dView__OrangeryDoors____WhitecardImage__28-Sep-2026.png",
-        "IMG06__3dView__EntranceDoor____WhitecardImage__28-Sep-2026.png",
-        "IMG07__3dView__BirdsEye-01____WhitecardImage__28-Sep-2026.png",
-        "IMG08__3dView__BirdsEye-02____WhitecardImage__28-Sep-2026.png"
+        "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__02-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__02-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__02-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__02-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__02-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__02-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__02-Oct-2026.png"
     ],
     "artPairsMap": {},
     "basePath": "Projects/2026/64135__Washington",
     "displayImages": [
-        "IMG01__3dView__MainShot__Far____WhitecardImage__28-Sep-2026.png",
-        "IMG02__3dView__MainShot__Closer____WhitecardImage__28-Sep-2026.png",
-        "IMG03__3dView__CloserView____WhitecardImage__28-Sep-2026.png",
-        "IMG04__3dView__FullContext-02____WhitecardImage__28-Sep-2026.png",
-        "IMG05__3dView__OrangeryDoors____WhitecardImage__28-Sep-2026.png",
-        "IMG06__3dView__EntranceDoor____WhitecardImage__28-Sep-2026.png",
-        "IMG07__3dView__BirdsEye-01____WhitecardImage__28-Sep-2026.png",
-        "IMG08__3dView__BirdsEye-02____WhitecardImage__28-Sep-2026.png"
+        "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__02-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__02-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__02-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__02-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__02-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__02-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__02-Oct-2026.png"
     ],
     "displayName": "Washington",
     "enabled": true,
     "folderId": "2026/64135__Washington",
     "hasGlb_R2": true,
     "images": [
-        "IMG01__3dView__MainShot__Far____WhitecardImage__28-Sep-2026.png",
-        "IMG02__3dView__MainShot__Closer____WhitecardImage__28-Sep-2026.png",
-        "IMG03__3dView__CloserView____WhitecardImage__28-Sep-2026.png",
-        "IMG04__3dView__FullContext-02____WhitecardImage__28-Sep-2026.png",
-        "IMG05__3dView__OrangeryDoors____WhitecardImage__28-Sep-2026.png",
-        "IMG06__3dView__EntranceDoor____WhitecardImage__28-Sep-2026.png",
-        "IMG07__3dView__BirdsEye-01____WhitecardImage__28-Sep-2026.png",
-        "IMG08__3dView__BirdsEye-02____WhitecardImage__28-Sep-2026.png"
+        "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__02-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__02-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__02-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__02-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__02-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__02-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__02-Oct-2026.png"
     ],
     "isR2Loaded": true,
     "productionData": {
@@ -414,7 +454,7 @@
         "timeAllocated": 6,
         "timeTaken": 6
     },
-    "thumbnailImage": "IMG01__3dView__MainShot__Far____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -440,10 +480,19 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__Linetype__DoorSwings__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ExistingRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ExistingRoofs__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedDoors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedDoors__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedFurniture__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedFurniture__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedRoofs__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__ProposedWalls__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/64135__Washington/Washington__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
@@ -458,7 +507,7 @@
                 "PresentationMode__Scene__Id": "su_scene_1",
                 "PresentationMode__Scene__Name": "01 | Main Shot",
                 "PresentationMode__Scene__Order": 1,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainShot__Far____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": -31833,
@@ -494,7 +543,7 @@
                 "PresentationMode__Scene__Id": "su_scene_2",
                 "PresentationMode__Scene__Name": "02 | Closer",
                 "PresentationMode__Scene__Order": 2,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__MainShot__Closer____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__MainShot__Closer____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 15755,
@@ -530,7 +579,7 @@
                 "PresentationMode__Scene__Id": "su_scene_3",
                 "PresentationMode__Scene__Name": "03 | Closer 02",
                 "PresentationMode__Scene__Order": 3,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG03__3dView__CloserView____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG03__3dView__CloserView____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 49428,
@@ -566,7 +615,7 @@
                 "PresentationMode__Scene__Id": "su_scene_4",
                 "PresentationMode__Scene__Name": "04 | Full Context 02",
                 "PresentationMode__Scene__Order": 4,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG04__3dView__FullContext-02____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG04__3dView__FullContext-02____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 72013,
@@ -602,7 +651,7 @@
                 "PresentationMode__Scene__Id": "su_scene_5",
                 "PresentationMode__Scene__Name": "05 | Orangery Doors",
                 "PresentationMode__Scene__Order": 5,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG05__3dView__OrangeryDoors____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG05__3dView__OrangeryDoors____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 61749,
@@ -638,7 +687,7 @@
                 "PresentationMode__Scene__Id": "su_scene_6",
                 "PresentationMode__Scene__Name": "06 | Entrance Door",
                 "PresentationMode__Scene__Order": 6,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG06__3dView__EntranceDoor____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG06__3dView__EntranceDoor____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 42740,
@@ -678,7 +727,7 @@
                 "PresentationMode__Scene__Id": "su_scene_7",
                 "PresentationMode__Scene__Name": "07 | Bird's-eye 01",
                 "PresentationMode__Scene__Order": 7,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG07__3dView__BirdsEye-01____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG07__3dView__BirdsEye-01____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 59339,
@@ -714,7 +763,7 @@
                 "PresentationMode__Scene__Id": "su_scene_8",
                 "PresentationMode__Scene__Name": "08 | Bird's-eye 02",
                 "PresentationMode__Scene__Order": 8,
-                "PresentationMode__Scene__ThumbnailUrl": "IMG08__3dView__BirdsEye-02____WhitecardImage__28-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__ThumbnailUrl": "IMG08__3dView__BirdsEye-02____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
                 "PresentationMode__Scene__CameraPosition": {
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": -3266,

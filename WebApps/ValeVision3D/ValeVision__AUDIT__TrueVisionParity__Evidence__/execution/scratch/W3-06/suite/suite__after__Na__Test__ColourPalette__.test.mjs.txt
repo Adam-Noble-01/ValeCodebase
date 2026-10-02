@@ -1,0 +1,60 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs
+exit 0
+
+PASS  nothing is available before the config has loaded
+PASS  and a standard colour asked for early gives its fallback, not undefined
+PASS  the shipped config loads without a single warning
+PASS  and then the palette is available
+PASS  loading is announced once, as "loaded"
+PASS  one palette to start with, and it is the one on show
+PASS  its groups are Monochrome then Dimensions, in the order written
+PASS  Monochrome is the ten SSOT greys, black to white
+PASS  Dimensions are Proposed red, Existing blue and Special GREEN, each at 150 - no black in the row
+PASS  the three are one family: every one has a single channel at 150 and the rest at nothing
+PASS  every colour carries a menu name, a technical name and the menu name of its group
+PASS  every technical name is three-stage, ColourPalette__{Group}__{Colour}, and sits under its own group
+PASS  every block names itself as its key does
+PASS  every block names the group it sits in
+PASS  every hex agrees with the rgb written beside it
+PASS  no technical name is used twice
+PASS  the Monochrome group IS the SSOT greyscale series: same keys, same order, same values
+PASS  a colour written any of the ways this codebase writes one comes out as one lower case hex
+PASS  and anything that is not a colour is null, never black
+PASS  a standard colour by its technical name
+PASS  a name the file has not got gives the fallback
+PASS  a field's colour is named from the palette, whatever case it was written in
+PASS  a colour the palette has not got is null
+PASS  a colour given as rgb alone gets its hex; a broken one and a duplicate name are skipped; an empty group is dropped
+PASS  and each slip is said on the console: no colour, a disagreement, a name used twice
+PASS  the palette on show starts as the config's default
+PASS  another can be put up, once; it is remembered; a key the file has not got is refused
+PASS  a remembered palette the file no longer has falls back to the default
+PASS  with room above the field the stack sits over it: palette 6 px above the field, right edges together
+PASS  and the mixer is hung to END 4 px above the palette, its left edge on the palette's - where Adam drew the box
+PASS  too near the top for both, the stack goes BESIDE the field - to its left, as the panels are down the right - foot level with the field's
+PASS  and the order has not changed: the mixer is still on top of the palette, never under the field
+PASS  a field at the very top keeps the whole stack inside the window
+PASS  in the LEFT panel there is no room to the field's left, so the stack goes to its right
+PASS  in a window too narrow for either side it is kept inside the window, over whatever it must be
+PASS  nothing ever lands outside the window, wherever the field is
+PASS  with the mixer switched off no room is kept for it: the palette alone sits over the field, and a mixer asked for later still goes on top
+PASS  a maximised window at 100 % reads as 100 %, hidden window edges and all
+PASS  125 % and 80 % are read off the two widths
+PASS  a display set to 150 % at 100 % zoom is NOT mistaken for zoom
+PASS  a docked side panel narrows the page like a zoom would; it is only believed if the pixel ratio agrees
+PASS  a test pane emulating a 1400 px page in a 1024 px window (seen 21-Sep-2026, where it read as 75 % and left an 87 px gap) is not a zoom step
+PASS  anything unreadable is 100 %
+PASS  a field is only attached if it IS a colour input
+PASS  a colour input is attached, once
+PASS  a click on the field is cancelled (or the browser would hang its mixer from the FIELD) and opens the palette
+PASS  the proxy is given its whole box BEFORE it enters the page, so it is never laid out anywhere else
+PASS  and it is measured after the last change to it and straight before showPicker - the layout the browser hangs the mixer from is current
+PASS  the proxy is the strip along the top of the stack, and carries the field's colour into the mixer
+PASS  what the mixer does to the proxy reaches the field
+PASS  a swatch pick puts the colour in the field, tells it as the browser would, and closes both
+PASS  and the mixer's late report as it closes cannot land over the colour just picked
+PASS  every file that makes its own <input type="color"> hands it to Na__ColourPalette__Attach
+PASS  and the panel host attaches every colour input its factory makes, which is every colour field in the editor's panels
+PASS  the stylesheet is imported by the style index, so the service worker's token governs it (never injected on first use)
+
+55 passed, 0 failed

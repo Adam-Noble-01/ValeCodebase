@@ -1,0 +1,85 @@
+ValeVision3D - the Layer flyout and reference layers
+  PASS  a layer from before reference layers comes out of the normaliser byte-identical
+  PASS  a reference layer keeps Layer__Selectable false
+  PASS  true, or anything else, is not stored: selectable is every layer's default
+  PASS  IsLayerSelectable: a layer with no key, and a layer the sheet does not have, are both selectable
+  PASS  Ref on: the record stores false, it reads unselectable, and it is announced once as layers
+  PASS  Ref off: the key comes off the record again
+  PASS  Ref on takes its items out of the selection: the line on it, and the group all of whose members are on it; the rest stay
+  PASS  only the sheet being worked on is trimmed: an id on another sheet names another record
+  PASS  hiding a layer trims the selection too, as Blender deselects what it hides; a group with a member still shown stays
+  PASS  ItemLayerId reads every layered kind, and null for a group or an item that is gone
+  PASS  every kind moves at once - a viewport under its own lock too, as that lock holds its framing, not its layer - and a group record is passed over
+  PASS  one announcement for the lot, as layers: one undo step, and the whole sheet restacks
+  PASS  moved onto a layer that is shown and selectable, the selection stays as it was
+  PASS  nothing to move - everything already there - announces nothing
+  PASS  an item on a locked layer stays where it is
+  PASS  and a locked layer takes nothing
+  PASS  a layer that does not exist takes nothing either
+  PASS  a line put away on a HIDDEN layer leaves the selection - no Delete can reach what cannot be seen
+  PASS  and one put on a REFERENCE layer leaves it too - it can no longer be picked
+  PASS  IsItemPickable: a line on a reference layer no, the drawing's line yes, a group while any member can be picked, an item that is gone yes
+  PASS  and a line on a hidden layer no
+  PASS  GetLayerByName: the name as the eye reads it - case and runs of spaces ignored
+  PASS  and null for a name the sheet lacks, or for no name at all
+  PASS  LayerIndexLike: directly over the nearest layer it sat over there - Construction Lines goes over Dimensions
+  PASS  Adam's Guides, the top of Rear Elevation's list, goes to the top of this one
+  PASS  with nothing it sat over to be found here, directly under the nearest it sat under
+  PASS  matched by name as GetLayerByName matches - the other sheet may spell it with other capitals
+  PASS  with neither, the same place in the list, as near as this one allows
+  PASS  CreateLayer silent: made at the index given, with its name and type, the sheet marked changed and nothing announced
+  PASS  and the array itself in list order, so the first layer of a type is still the frontmost
+  PASS  UpdateLayer silent: changed and marked, not announced
+  PASS  and without silent, CreateLayer announces as ever - at the bottom of the list when no index is given
+  PASS  one construction line: a Layer row naming the layer it is on, then the rule that closes its section
+  PASS  its flyout: the Layers list top first, Vectors dotted, a hidden layer saying so, a locked one greyed
+  PASS  a reference layer says so, and is still offered - that is how a line is put out of reach
+  PASS  a selection over two layers: both ringed, and the row says how many
+  PASS  a group is its members: picking a layer moves the members, and the group record never reaches the model
+  PASS  and the toast names the layer, since nothing on the sheet moves
+  PASS  one item: "Moved to ..."
+  PASS  an item on a locked layer is left out of the move, and the toast says it stayed
+  PASS  everything held by a lock: every row greyed, the layer it is on still dotted, so it can still be looked up
+  PASS  nothing that sits on a layer: no Layer row at all
+  PASS  InsertShape keeps a layer the sheet has, whatever its type: a copy of a construction line stays on Construction Lines
+  PASS  and a layer id the sheet does not have falls back by kind - and the fallback is written, not thrown away
+  PASS  a Ctrl-drag copy on its own sheet keeps its original's General layer, a line and a note alike - it used to go to Vectors and Text
+  PASS  a set from ANOTHER sheet that brings no layers - a Scrapbook item - still needs a layer of its own type there: the same id may name another layer
+  PASS  and no copy lands on a reference layer, as none lands on a hidden or a locked one: it would be out of reach
+  PASS  a paste on a sheet WITHOUT the layer makes it, and every item from it lands on it - the lines and the note alike; the drawing's line goes to Vectors by name
+  PASS  the layer is made with the name and type it has there, in the same place in the list - over Dimensions, as on Rear Elevation
+  PASS  the Images layer that shares the source layer's id takes nothing
+  PASS  ONE UNDO STEP: the layer is made silently, and every announcement - the vector's, then layers' to redraw the list - sees the same finished sheet
+  PASS  everything pasted is selected, and the toast names the layer made
+  PASS  a second paste finds the layer the first one made: nothing made, no layers announcement, a plain toast
+  PASS  Adam's Guides, at the top of Rear Elevation's list, is made at the top of West Elevation's
+  PASS  a CUT brings its layer too: the lines leave Rear Elevation and land on a Construction Lines layer made on the other sheet
+  PASS  a layer of the same name found HIDDEN is switched on, and takes the items whatever its type or capitals - still one step
+  PASS  and the toast says it was switched on
+  PASS  a layer of the same name found LOCKED takes nothing, as a locked layer takes nothing from the flyout: its items go to their kind's layer
+  PASS  and the toast says why
+  PASS  a locked layer that is the item's own kind's layer keeps it - it was going there anyway - and says nothing about it
+  PASS  a layer of the same name that is a REFERENCE layer takes its items, as the source layer did - and they are left out of the selection
+  PASS  and the toast says they can be seen, not picked
+  PASS  a paste back on the sheet it came from keeps 1.5.0's rule: the original's layer by id, and nothing made
+  PASS  two layers missing: each made in its place, and the toast names both
+node:internal/modules/esm/resolve:275
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\80__Testing__PrototypeEnvironment\Na__TestEnv__ObjectSnapBundle__.cjs' imported from D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\80__Testing__PrototypeEnvironment\Na__Test__LayerMenu__.test.mjs
+    at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+    at moduleResolve (node:internal/modules/esm/resolve:861:10)
+    at defaultResolve (node:internal/modules/esm/resolve:985:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:680:36)
+    at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+    at ModuleLoader.import (node:internal/modules/esm/loader:679:21)
+    at defaultImportModuleDynamicallyForModule (node:internal/modules/esm/utils:222:31) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs'
+}
+
+Node.js v22.23.2

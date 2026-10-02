@@ -1,0 +1,7 @@
+﻿SAME  // MODULE IMPORTS | Which Keyboard Is Live, and Whether the Focus Takes Typing
+SAME  import { Na__KeyScope__MODEL, Na__KeyScope__Is, Na__KeyScope__IsTypingTarget } from './Na__AppUtils__KeyScope__.js';
+SAME  // A text box, a text area, a list - or anything contenteditable, which the
+SAME  // old tag test missed, so a key was taken from any editable region.
+SAME  return Na__KeyScope__IsTypingTarget(document.activeElement);          // <-- True if typing context is active
+SAME  if (!Na__KeyScope__Is(Na__KeyScope__MODEL)) return;                  // <-- A drawing or a document tab has the keyboard
+every replayed line is TrueVision 2.1.0's (prefix/path translated): True

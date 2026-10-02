@@ -1,0 +1,526 @@
+// =============================================================================
+// VALEVISION3D - PROJECTED LINEWORK - CPU BACKEND
+// =============================================================================
+//
+// FILE       : Na__ProjectedLinework__CpuBackend__.js
+// NAMESPACE  : Na__PlCpu
+// MODULE     : Projected Linework - CPU Backend
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Drive the whole projection through the module's own kernel
+// CREATED    : 09-Sep-2026
+//
+// DESCRIPTION:
+// - The default backend, available everywhere, and the one that produces the
+//   linework the drawing is judged against. Nothing here does geometry: it
+//   decides the ORDER of the work, what is kept between drawings, and what is
+//   handed to the workers.
+//
+// - PER MODEL STATE, once, cached with the collection:
+//     the instance list and the authored edges
+//     every geometry's hard and candidate silhouette edges (weak cache)
+//     the lines where two solids cut through one another
+//   PER DRAWING:
+//     cutting and flattening the triangles, turning them to face the view,
+//     culling back faces, building the tree, splitting the edges at the cut,
+//     deciding which silhouettes the view breaks, clipping.
+//
+// - FOUR CLASSES COME OUT (D18, D21):
+//     visible    model edges on the kept side, the parts nothing hides
+//     hidden     with Hidden Lines on: the parts something hides, plus every
+//                edge between the viewer and the cut (above a plan's datum,
+//                in front of a section plane), dashed
+//     authored   the SketchUp linework, occlusion-clipped like the rest -
+//                except the LINETYPE tags (dashed, dotted, centre, door swings,
+//                clearances, overhead extents, joins, demolition), which are
+//                drawing data and go to the page uncut and unclipped; on a
+//                plan, the ones drawn flat on a floor (door swings and
+//                clearances) keep to the storey its cut passes through
+//     section    the outline of cut material, never occluded because the
+//                cut is by definition the nearest thing to the viewer
+//
+// - THREE RULES MATCH THE LIVE 3D VIEW, and the Dev menu's Run Diff runs with
+//   all of them off, because the vendored backends it compares against apply
+//   none of them:
+//
+//   HIDE FLUSH JOINS (options.HideFlushJoins, on unless the config says false).
+//   Before clipping, Na__ProjectedLinework__FlushJoins__ cuts out of the model
+//   edges every span where faces of one plane lie along the edge on both
+//   sides - a wall band flush on the wall below, a pier between windows - which
+//   the 3D view shows as one unbroken surface. Outlines and real creases keep
+//   their lines; the authored linework never passes through it.
+//
+//   SEAMS OCCLUDE (options.SeamsOcclude, on unless the config says false) is
+//   handed to the clip kernel: where two occluders meet exactly along an
+//   edge's line, the seam hides what lies behind it, as the depth buffer does
+//   in 3D.
+//
+//   LINEWORK FIRST (options.LineworkFirst, off unless the config turns it on).
+//   A category that ships SketchUp linework gives the visible class its
+//   silhouettes only, and is never intersection-tested beside another such
+//   category; its creases reach the drawing through the authored class alone.
+//   A strict mode, not the default: SketchUp's hidden flags cannot tell a join
+//   from an outline, so it also loses outlines the modeller hid - the ground
+//   box's top edge, which is the ground line of every elevation. Much faster
+//   on a large model.
+//
+// INTEGRATION:
+// - Na__ProjectedLinework__Projector__ calls PrepareIntersections and
+//   ProjectView.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__CpuBackend__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0, 1.2.0 and 1.2.1 followed, 1.2.1 being TrueVision's 1.3.1);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.4.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim. The 1.3.1 log entry's "Back-port PENDING to ValeVision3D" is TrueVision's
+//                   history: this app took that change as its own 1.2.1 on 18-Sep-2026.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.4.0
+// - One storey per plan. The linetype GLBs are one file for the whole
+//   building, so a plan drew every storey's door swings and clearances. On a
+//   plan, the annotation whose category matches options.Storeys.AnnotationTokens
+//   is kept to the storey the cut passes through (Na__ProjectedLinework__Storeys__,
+//   the floors measured on collected.Storeys); the rest of the annotation, and
+//   every elevation and section, is drawn exactly as before. ProjectView returns
+//   Storey - which storey, and how many annotation edges were left off it.
+//
+// 18-Sep-2026 - Version 1.3.1
+// - Annotation linework. Na__PlCpu__SplitAnnotation divides the authored
+//   edges by owner key against options.AnnotationCategoryTokens: the SketchUp
+//   LINETYPE categories go to the page uncut and unclipped, everything else
+//   authored is cut at the drawing cut and occlusion-clipped as before. With
+//   no owner table there is nothing to divide by and the whole buffer takes
+//   the old path. Back-port PENDING to ValeVision3D, on Adam's sign-off.
+//
+// 14-Sep-2026 - Version 1.3.0
+// - Linework first: ProjectView and PrepareIntersections hand the collection's
+//   linework category Set to the edge extractor while options.LineworkFirst
+//   is on. Seams occlude: every clip call carries options.SeamsOcclude to the
+//   kernel. Hide flush joins: each view's model edges pass through
+//   Na__PlFlush__CutFlushJoins before clipping while options.HideFlushJoins is
+//   on. (1.2.0, the owner tags of 12-Sep-2026, was never logged here.)
+//
+// 10-Sep-2026 - Version 1.1.0
+// - Intersection budget passed through to the edge extractor.
+//
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 4.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Soup, Edges and the Worker Pool
+    // ------------------------------------------------------------
+    import {
+        Na__PlSoup__ViewMapFromBasis,
+        Na__PlSoup__BuildViewSoup
+    } from './Na__ProjectedLinework__SoupBuilder__.js';
+    import {
+        Na__PlEdges__ExtractStageEdges,
+        Na__PlEdges__ExtractIntersectionEdges,
+        Na__PlEdges__SplitByCut,
+        Na__PlEdges__ToViewSpace,
+        Na__PlEdges__ToDrawingSegments
+    } from './Na__ProjectedLinework__EdgeExtractor__.js';
+    import { Na__ProjectedLinework__WorkerPool__Run } from './Na__ProjectedLinework__WorkerPool__.js';
+    import { Na__PlFlush__CutFlushJoins } from './Na__ProjectedLinework__FlushJoins__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Segment Owner Tags
+    // ------------------------------------------------------------
+    import {
+        Na__PlOwners__Concat,
+        Na__PlOwners__Blank,
+        Na__PlOwners__Attach
+    } from './Na__ProjectedLinework__Owners__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Storeys (a plan's storey band)
+    // ------------------------------------------------------------
+    import {
+        Na__PlStorey__ForCut,
+        Na__PlStorey__MarkKeys,
+        Na__PlStorey__KeepEdges
+    } from './Na__ProjectedLinework__Storeys__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Phase Labels
+    // ------------------------------------------------------------
+    const Na__PlCpu__PHASE_INTERSECTING = 'Finding solid intersections';
+    const Na__PlCpu__PHASE_OCCLUDERS    = 'Sorting occluders';
+    const Na__PlCpu__PHASE_EDGES        = 'Finding edges';
+    const Na__PlCpu__PHASE_CLIPPING     = 'Clipping edges';
+    const Na__PlCpu__PHASE_AUTHORED     = 'Clipping authored linework';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Helpers
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Join Two Scene Space Edge Buffers
+    // ------------------------------------------------------------
+    function Na__PlCpu__Concat(first, second) {
+        if (!second || second.length === 0) return first || new Float64Array(0);
+        if (!first  || first.length  === 0) return second;
+        const joined = new Float64Array(first.length + second.length);
+        joined.set(first, 0);
+        joined.set(second, first.length);
+        return joined;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Join Two Drawing Segment Buffers
+    // ------------------------------------------------------------
+    function Na__PlCpu__ConcatSegments(first, second) {
+        if (!second || second.length === 0) return first || new Float32Array(0);
+        if (!first  || first.length  === 0) return second;
+        const joined = new Float32Array(first.length + second.length);
+        joined.set(first, 0);
+        joined.set(second, first.length);
+        return joined;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Append Segments and Their Owner Tags Together
+    // ------------------------------------------------------------
+    // target is { Segments, Owners } and is mutated. Owners null means this
+    // render is not tagging at all, in which case only the coordinates move.
+    //
+    // THE TAG LENGTH IS DERIVED FROM THE SEGMENTS, never trusted. A half that
+    // arrives with no tags (an empty clip, a backend that does not tag) is
+    // padded with the unknown owner to exactly its own segment count, so the
+    // two buffers cannot drift apart no matter which half was missing.
+    // ------------------------------------------------------------
+    function Na__PlCpu__Append(target, segments, owners) {
+        const add = segments || new Float32Array(0);
+        target.Segments = Na__PlCpu__ConcatSegments(target.Segments, add);
+        if (target.Owners !== null) {
+            const count = Math.floor(add.length / 4);
+            const tags  = (owners && owners.length === count) ? owners : Na__PlOwners__Blank(count);
+            target.Owners = Na__PlOwners__Concat(target.Owners, tags);
+        }
+        return target;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Is This Owner Key an Annotation Category?
+    // ------------------------------------------------------------
+    function Na__PlCpu__IsAnnotationKey(key, tokens) {
+        if (!key) return false;
+        const lower = String(key).toLowerCase();
+        for (let i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
+            if (token && lower.indexOf(String(token).toLowerCase()) !== -1) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Divide the Authored Edges Into Annotation and the Rest
+    // ------------------------------------------------------------
+    // ANNOTATION IS DRAWING DATA, NOT MODEL GEOMETRY. The SketchUp linetype tags
+    // - dashed, dotted, centre, door swings, clearances, overhead extents, joins,
+    // demolition - say what a line MEANS on a drawing. So they are not divided at
+    // the cut plane and not occlusion-clipped: an overhead extent is drawn to be
+    // seen through the roof above it, and a clearance lying flat on a floor slab
+    // must not be clipped away by the slab it sits on. Everything else authored
+    // is clipped exactly as before.
+    //
+    // The test runs once over the owner KEY TABLE - a handful of categories -
+    // so the per-edge decision below is an array lookup, not a string match.
+    // Without an owner table there is nothing to tell them apart by, and the
+    // whole buffer stays the Rest, which is what every earlier version did.
+    // ------------------------------------------------------------
+    function Na__PlCpu__SplitAnnotation(edges, owners, ownerTable, tokens) {
+        const source = edges || new Float64Array(0);
+        const whole  = { Annotation : new Float64Array(0), AnnotationOwners : owners ? new Uint16Array(0) : null, Rest : source, RestOwners : owners || null };
+        if (!ownerTable || !owners || !Array.isArray(tokens) || tokens.length === 0) return whole;
+
+        const keys   = ownerTable.Keys || [];
+        const marked = new Uint8Array(keys.length);
+        let   any    = false;
+        for (let i = 0; i < keys.length; i++) {
+            if (Na__PlCpu__IsAnnotationKey(keys[i], tokens)) { marked[i] = 1; any = true; }
+        }
+        if (!any) return whole;
+
+        const count = Math.floor(source.length / 6);
+        let   hits  = 0;
+        for (let i = 0; i < count; i++) { const id = owners[i]; if (id < marked.length && marked[id] === 1) hits++; }
+        if (hits === 0) return whole;
+
+        const annotation       = new Float64Array(hits * 6);
+        const annotationOwners = new Uint16Array(hits);
+        const rest             = new Float64Array((count - hits) * 6);
+        const restOwners       = new Uint16Array(count - hits);
+        let   a = 0;
+        let   r = 0;
+
+        for (let i = 0; i < count; i++) {
+            const id = owners[i];
+            if (id < marked.length && marked[id] === 1) {
+                annotation.set(source.subarray(i * 6, (i * 6) + 6), a * 6);
+                annotationOwners[a++] = id;
+            } else {
+                rest.set(source.subarray(i * 6, (i * 6) + 6), r * 6);
+                restOwners[r++] = id;
+            }
+        }
+
+        return { Annotation : annotation, AnnotationOwners : annotationOwners, Rest : rest, RestOwners : restOwners };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Throw If the Render Has Been Abandoned
+    // ------------------------------------------------------------
+    function Na__PlCpu__CheckAbort(settings) {
+        if (settings.AbortSignal && settings.AbortSignal.aborted) {
+            throw new DOMException('Projection aborted', 'AbortError');
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Clip One Edge Buffer Through the Pool
+    // ------------------------------------------------------------
+    async function Na__PlCpu__Clip(soup, edges, options, settings) {
+        return Na__ProjectedLinework__WorkerPool__Run(
+            soup,
+            edges,
+            {
+                ScaleDivisor           : options.ScaleDivisor,
+                MinimumSegmentLengthMm : options.MinimumSegmentLengthMm,
+                IncludeHiddenEdges     : options.IncludeHiddenEdges === true,
+                SeamsOcclude           : options.SeamsOcclude === true           // <-- Posted to every worker whole, with the rest of these options
+            },
+            {
+                MaxWorkers             : options.MaxWorkers,
+                MinimumEdgesForWorkers : options.MinimumEdgesForWorkers,
+                YieldEveryMs           : options.YieldEveryMs,
+                AbortSignal            : settings.AbortSignal
+            }
+        );
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Per Model State Preparation
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Find the Cut Lines Between Solids, Once per Collection
+    // ------------------------------------------------------------
+    async function Na__PlCpu__PrepareIntersections(collected, slicer, options) {
+        if (collected.HasIntersections) return collected;
+
+        const startedAt = performance.now();
+        const limits    = { MaxPairs : options ? options.IntersectionMaxPairs : 0, SelfMaxTriangles : options ? options.IntersectionSelfMaxTriangles : 0 };
+        // THE COLLECTION'S OWN OWNER TABLE, not a fresh one. This pass is cached
+        // per collection and the stage pass runs per view, so if the two built
+        // their own tables the ids in the cached intersection buffer would mean
+        // different categories from the ids in this view's stage buffer.
+        // LINEWORK FIRST. This pass is cached on the collection, and the pipeline
+        // keys collections on the rule, so one never holds the other rule's lines.
+        const linework = (options && options.LineworkFirst === true) ? (collected.LineworkCategories || null) : null;
+        const found = await Na__PlEdges__ExtractIntersectionEdges(collected.Instances, slicer, collected.Report, limits, collected.OwnerTable || null, linework);
+        collected.IntersectionEdges  = found.Edges;
+        collected.IntersectionOwners = found.Owners;
+        collected.Report.IntersectionMs    = Math.round(performance.now() - startedAt);
+        collected.Report.IntersectionCount = Math.floor(collected.IntersectionEdges.length / 6);
+        collected.HasIntersections         = true;
+        return collected;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Per Drawing Projection
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Project One Drawing From the Collected and Sampled Model
+    // ------------------------------------------------------------
+    // run carries { AbortSignal, OnPhase }. Returns the four classes in
+    // drawing millimetres plus the phase timings.
+    // ------------------------------------------------------------
+    async function Na__PlCpu__ProjectView(collected, sampled, definition, options, run) {
+        const settings = run || {};
+        const phases   = [];
+        const mark     = (name, startedAt) => phases.push({ Phase : name, Ms : Math.round(performance.now() - startedAt) });
+        const announce = (name) => { if (typeof settings.OnPhase === 'function') settings.OnPhase(name); };
+        const viewMap  = Na__PlSoup__ViewMapFromBasis(definition.Basis);
+        const up       = definition.UpScene;
+
+        // OCCLUDERS | Cut, turned, culled, treed.
+        announce(Na__PlCpu__PHASE_OCCLUDERS);
+        let startedAt = performance.now();
+        const soup = Na__PlSoup__BuildViewSoup(sampled, viewMap, { MaxLeafSize : options.BvhMaxLeafSize });
+        mark(Na__PlCpu__PHASE_OCCLUDERS, startedAt);
+        Na__PlCpu__CheckAbort(settings);
+
+        // OWNER TAGS | On when the collection carries a table, which the
+        // projector builds from the instance list. Absent is a working render
+        // with class colours only, which is what every other backend produces.
+        const ownerTable = collected.OwnerTable || null;
+        const tagging    = ownerTable !== null;
+        const blank      = () => (tagging ? Na__PlOwners__Blank(0) : null);
+        const tagsFor    = (edgeBuffer, existing) => {
+            if (!tagging) return null;
+            if (existing) return existing;
+            return Na__PlOwners__Blank(Math.floor((edgeBuffer ? edgeBuffer.length : 0) / 6));
+        };
+
+        // EDGES | Hard and silhouette per instance, the cut lines placed, then
+        // everything divided at the drawing cut. Under linework first a category
+        // that ships SketchUp linework gives its silhouettes and nothing else.
+        announce(Na__PlCpu__PHASE_EDGES);
+        startedAt = performance.now();
+        const linework   = options.LineworkFirst === true ? (collected.LineworkCategories || null) : null;
+        const stage      = Na__PlEdges__ExtractStageEdges(collected.Instances, up[0], up[1], up[2], options.AngleThresholdDegrees, ownerTable, linework);
+        const combined   = Na__PlCpu__Concat(stage.Edges, collected.IntersectionEdges);
+        // The intersection buffer is cached per collection and can be empty
+        // because the pass was skipped on a house-scale model, so its tag count
+        // is taken from its own edge count rather than assumed to exist.
+        const combinedOwners = tagging
+            ? Na__PlOwners__Concat(stage.Owners, tagsFor(collected.IntersectionEdges, collected.IntersectionOwners))
+            : null;
+        const split      = Na__PlEdges__SplitByCut(combined, definition.Cut, combinedOwners);
+        const annotated  = Na__PlCpu__SplitAnnotation(collected.AuthoredEdges, tagsFor(collected.AuthoredEdges, collected.AuthoredOwners), ownerTable, options.AnnotationCategoryTokens || []);
+        const authored   = Na__PlEdges__SplitByCut(annotated.Rest, definition.Cut, annotated.RestOwners);
+        const viewEdges  = Na__PlEdges__ToViewSpace(split.Kept, viewMap, options.EdgeLiftWorldUnits, split.KeptOwners);
+        // HIDE FLUSH JOINS. Joins between two faces of one plane leave the model's
+        // own edges here, before the clip; the authored linework never passes through.
+        const modelEdges = options.HideFlushJoins === true ? Na__PlFlush__CutFlushJoins(soup, viewEdges) : viewEdges;
+        const drawnEdges = Na__PlEdges__ToViewSpace(authored.Kept, viewMap, options.EdgeLiftWorldUnits, authored.KeptOwners);
+        // STOREY | On a plan, the annotation drawn flat on a floor keeps to the
+        // storey the cut passes through: the linetype GLBs hold every storey's
+        // lines in one file, and nothing below would take the others away.
+        const band     = options.Storeys ? Na__PlStorey__ForCut(collected.Storeys || null, definition.Cut) : null;
+        const onStorey = band
+            ? Na__PlStorey__KeepEdges(annotated.Annotation, annotated.AnnotationOwners, Na__PlStorey__MarkKeys(ownerTable ? ownerTable.Keys : null, options.Storeys.AnnotationTokens), band)
+            : { Edges : annotated.Annotation, Owners : annotated.AnnotationOwners, Dropped : 0 };
+        // ANNOTATION | Straight to the page from here: no cut, no clip.
+        const annotationDrawn = Na__PlEdges__ToDrawingSegments(onStorey.Edges, viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, onStorey.Owners);
+        mark(Na__PlCpu__PHASE_EDGES, startedAt);
+        Na__PlCpu__CheckAbort(settings);
+
+        // CLIPPING | Everything above exists to make these calls small.
+        announce(Na__PlCpu__PHASE_CLIPPING);
+        startedAt = performance.now();
+        const modelResult = await Na__PlCpu__Clip(soup, modelEdges, options, settings);
+        mark(Na__PlCpu__PHASE_CLIPPING, startedAt);
+        Na__PlCpu__CheckAbort(settings);
+
+        let authoredResult = { Segments : new Float32Array(0), HiddenSegments : null, Owners : null, HiddenOwners : null };
+        if (drawnEdges.Count > 0) {
+            announce(Na__PlCpu__PHASE_AUTHORED);
+            startedAt = performance.now();
+            authoredResult = await Na__PlCpu__Clip(soup, drawnEdges, options, settings);
+            mark(Na__PlCpu__PHASE_AUTHORED, startedAt);
+            Na__PlCpu__CheckAbort(settings);
+        }
+
+        // HIDDEN | What the occluders covered, plus what lies between the
+        // viewer and the cut. Only assembled when the drawing asked for it.
+        const hidden = { Segments : new Float32Array(0), Owners : blank() };
+        if (options.IncludeHiddenEdges) {
+            Na__PlCpu__Append(hidden, modelResult.HiddenSegments,    modelResult.HiddenOwners);
+            Na__PlCpu__Append(hidden, authoredResult.HiddenSegments, authoredResult.HiddenOwners);
+            const aboveCut      = Na__PlEdges__ToDrawingSegments(split.Removed,    viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, split.RemovedOwners);
+            const aboveCutDrawn = Na__PlEdges__ToDrawingSegments(authored.Removed, viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, authored.RemovedOwners);
+            Na__PlCpu__Append(hidden, aboveCut.Segments,      aboveCut.Owners);
+            Na__PlCpu__Append(hidden, aboveCutDrawn.Segments, aboveCutDrawn.Owners);
+        }
+
+        // SECTION | The outline of cut material, straight to the page; the
+        // light crossings (glass) join the visible class as thin lines.
+        const section = Na__PlEdges__ToDrawingSegments(sampled.SectionEdges,      viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, tagging ? sampled.SectionOwners      : null);
+        const light   = Na__PlEdges__ToDrawingSegments(sampled.SectionEdgesLight, viewMap, options.ScaleDivisor, options.MinimumSegmentLengthMm, tagging ? sampled.SectionOwnersLight : null);
+
+        const visible  = Na__PlCpu__Append({ Segments : new Float32Array(0), Owners : blank() }, modelResult.Segments, modelResult.Owners);
+        Na__PlCpu__Append(visible, light.Segments, light.Owners);
+        const drawn    = Na__PlCpu__Append({ Segments : new Float32Array(0), Owners : blank() }, authoredResult.Segments, authoredResult.Owners);
+        Na__PlCpu__Append(drawn, annotationDrawn.Segments, annotationDrawn.Owners);
+        const cutLines = Na__PlCpu__Append({ Segments : new Float32Array(0), Owners : blank() }, section.Segments, section.Owners);
+
+        const classes = {
+            visible  : visible.Segments,
+            hidden   : hidden.Segments,
+            authored : drawn.Segments,
+            section  : cutLines.Segments
+        };
+
+        // ATTACH, DO NOT MERGE. The tags are hidden on the classes object as
+        // non-enumerable properties, so every existing consumer - the class
+        // loops, the segment count, the serialiser - sees exactly the four
+        // arrays it saw before. Attach refuses a mismatched buffer and says so,
+        // in which case the drawing paints per class and is still correct.
+        if (tagging) {
+            Na__PlOwners__Attach(classes, {
+                visible  : visible.Owners,
+                hidden   : hidden.Owners,
+                authored : drawn.Owners,
+                section  : cutLines.Owners
+            }, ownerTable.Keys);
+        }
+
+        return {
+            Classes       : classes,
+            Phases        : phases,
+            EdgeCount     : modelEdges.Count + drawnEdges.Count + Math.floor(onStorey.Edges.length / 6),
+            OccluderCount : soup.TriCount,
+            StagedCount   : soup.SourceCount,
+            Storey        : band ? { Keys : band.Keys, FloorUnits : band.FloorUnits, CutUnits : band.CutUnits, AnnotationOffStorey : onStorey.Dropped } : null
+        };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Projected Linework CPU Backend API
+    // ------------------------------------------------------------
+    export {
+        Na__PlCpu__PHASE_INTERSECTING,
+        Na__PlCpu__PrepareIntersections,
+        Na__PlCpu__ProjectView
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

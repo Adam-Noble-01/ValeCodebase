@@ -1,0 +1,114 @@
+W1a checkpoint: W1a__20261002-0331 (mtime 02-Oct 03:31:37)
+changed since baseline (records excluded): 356  by status code: {" D": 2, " M": 131, "??": 142, "R ": 22, "RM": 59}
+untouched since the W1a checkpoint: 281 (byte-identical to it: 276; changed: 0; not comparable: 5)
+touched in the continuation: 75 (new since W1a: 53; W1a paths written again: 22)
+W1a checkpoint paths no longer dirty: 0 []
+continuation-touched with a strict continuation owner: 75; loose mention only: 0; no continuation record at all: 0
+hash attestation of the continuation-touched: {"record": 75}
+continuation-touched outside every continuation edits/hot list: 6 (new files 3, existing files 3)
+
+== UNTOUCHED SINCE W1a BUT CHANGED (defect) ==
+== UNTOUCHED, NOT COMPARABLE ==
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionPublished__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionShared__Lib__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionSheetImages__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionStatements__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionUserConfig__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+
+== CONTINUATION-TOUCHED, NO STRICT CONTINUATION OWNER ==
+
+== CONTINUATION-TOUCHED, MORE THAN ONE STRICT CONTINUATION OWNER ==
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json  <- W1-22,W1-25,W1-26
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js  <- W1-22,W1-26
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js  <- W1-25,W1-28
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs  <- W1-22,W1-26
+
+== CONTINUATION-TOUCHED OUTSIDE EVERY CONTINUATION EDITS LIST ==
+   M WebApps/ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js  vv_target of -  strict: W1-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js  vv_target of -  strict: W1-25
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js  vv_target of -  strict: W1-28
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  vv_target of -  strict: W1-26
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs  vv_target of -  strict: W1-07
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs  vv_target of -  strict: W1-07
+
+== HASH NOT ATTESTED ==
+
+== ALL CONTINUATION-TOUCHED (code path mtime eol sha1 <- strict owners | attest | declared) ==
+   M WebApps/ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js  02-Oct 09:08:12  CRLF  1ac3aaae0f95  <- W1-36 | record:W1-36 | -  [new since W1a]
+  RM WebApps/ValeVision3D/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js  02-Oct 03:50:44  LF  9bb180013445  <- W1-37 | record:W1-37 | W1-37
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js  02-Oct 05:22:01  CRLF  0a390e6650a6  <- W1-21 | record:W1-21 | W1-21
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json  02-Oct 07:18:58  LF  543b7919a1bd  <- W1-22,W1-25,W1-26 | record:W1-26 | W1-22,W1-25
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js  02-Oct 07:18:58  LF  c6739f68e7fa  <- W1-22,W1-26 | record:W1-26 | W1-22
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js  02-Oct 09:08:12  CRLF  26a24216bf62  <- W1-36 | record:W1-36 | W1-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js  02-Oct 05:52:47  LF  037e6ccec25b  <- W1-07 | record:W1-07 | W1-07
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js  02-Oct 04:03:40  CRLF  9c6d32e7600f  <- W1-19 | record:W1-19 | W1-19  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js  02-Oct 05:57:35  LF  b49da296bc28  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js  02-Oct 05:22:01  LF  b5786aa74cb7  <- W1-21 | record:W1-21 | W1-21
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js  02-Oct 05:57:35  LF  24d817e94e05  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js  02-Oct 05:22:01  LF  c795e86107c3  <- W1-21 | record:W1-21 | W1-21
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js  02-Oct 04:34:05  LF  0b980a1e8eed  <- W1-20 | record:W1-20 | W1-20
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js  02-Oct 04:34:05  LF  4893e777c5d0  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js  02-Oct 04:34:05  LF  28134016966d  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js  02-Oct 04:34:05  LF  17a5ca464546  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js  02-Oct 04:34:05  LF  cea58de357dd  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js  02-Oct 04:34:05  LF  8bd2ac1d572b  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js  02-Oct 05:22:01  LF  b6441fcc1492  <- W1-21 | record:W1-21 | W1-21  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js  02-Oct 04:34:05  LF  4cb2056cb83c  <- W1-20 | record:W1-20 | W1-20
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js  02-Oct 04:34:05  LF  7b847fa72c51  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js  02-Oct 04:34:05  LF  53da4b14d763  <- W1-20 | record:W1-20 | W1-20
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js  02-Oct 04:03:40  LF  f98593fb92e8  <- W1-19 | record:W1-19 | W1-19
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js  02-Oct 09:08:12  LF  9e1236972039  <- W1-36 | record:W1-36 | W1-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js  02-Oct 09:08:12  LF  5ec2690cf3af  <- W1-36 | record:W1-36 | W1-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js  02-Oct 09:08:12  LF  61871df2f2c5  <- W1-36 | record:W1-36 | W1-36  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js  02-Oct 07:18:58  LF  76ab7127192f  <- W1-26 | record:W1-26 | W1-26  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js  02-Oct 08:37:14  LF  c23f1c829020  <- W1-28 | record:W1-28 | W1-28  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css  02-Oct 08:37:14  CRLF  6a923cd23f96  <- W1-28 | record:W1-28 | W1-28  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css  02-Oct 05:57:35  LF  a0860e671800  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js  02-Oct 05:57:35  LF  418bd8b84afd  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js  02-Oct 05:57:35  LF  cd74931e7f0f  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js  02-Oct 07:18:58  LF  d88dadb9e682  <- W1-26 | record:W1-26 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js  02-Oct 07:18:58  LF  78d8cc85e685  <- W1-26 | record:W1-26 | W1-26
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js  02-Oct 08:37:14  LF  4256c5c249c2  <- W1-28 | record:W1-28 | W1-28  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js  02-Oct 07:18:58  LF  d275e45fd2ea  <- W1-26 | record:W1-26 | W1-26  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js  02-Oct 08:37:14  LF  e9a5992abdfe  <- W1-28 | record:W1-28 | W1-28
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js  02-Oct 07:18:58  LF  3f7e973d256e  <- W1-26 | record:W1-26 | W1-26  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js  02-Oct 04:14:07  LF  4cf785878c5a  <- W1-38 | record:W1-38 | W1-38  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css  02-Oct 04:14:07  LF  835b99741ff3  <- W1-38 | record:W1-38 | W1-38  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js  02-Oct 06:27:46  CRLF  0651f2aab563  <- W1-25 | record:W1-25 | -
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js  02-Oct 06:27:46  LF  b4cc24b3aefc  <- W1-25 | record:W1-25 | W1-25
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js  02-Oct 08:37:14  CRLF  ed1c8ce2b48c  <- W1-28 | record:W1-28 | -  [new since W1a]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js  02-Oct 08:37:14  CRLF  4d103048e438  <- W1-25,W1-28 | record:W1-28 | W1-25,W1-28
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js  02-Oct 05:57:35  LF  747eafd78679  <- W1-22 | record:W1-22 | W1-22  [new since W1a]
+   M WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css  02-Oct 06:27:46  LF  eb46c4c394ee  <- W1-25 | record:W1-25 | W1-25  [new since W1a]
+   M WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css  02-Oct 03:50:44  CRLF  74711196196c  <- W1-37 | record:W1-37 | W1-37
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html  02-Oct 05:57:35  CRLF  ba334f2fc0ad  <- W1-22 | record:W1-22 | W1-22
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs  02-Oct 07:18:58  LF  068836965641  <- W1-22,W1-26 | record:W1-26 | W1-22,W1-26  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js  02-Oct 04:34:05  LF  f4487a0c26ca  <- W1-20 | record:W1-20 | W1-20  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js  02-Oct 07:18:58  LF  2c846f6261ea  <- W1-26 | record:W1-26 | W1-22  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js  02-Oct 07:53:25  LF  393c22929508  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json  02-Oct 07:53:25  LF  6d6f6430893b  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js  02-Oct 07:53:25  LF  06bb39f34cbc  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js  02-Oct 07:53:25  LF  365ce5527897  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js  02-Oct 07:53:25  LF  eab0ce20f691  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js  02-Oct 07:53:25  LF  90bba9a30c26  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js  02-Oct 06:27:46  LF  22078667bc20  <- W1-25 | record:W1-25 | W1-25  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js  02-Oct 03:50:44  LF  9de2c9ea7978  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json  02-Oct 03:50:44  LF  af7eef406907  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js  02-Oct 03:50:44  LF  252e5bdd278a  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js  02-Oct 03:50:44  LF  c2cc121f62e9  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css  02-Oct 03:50:44  LF  774394e1b539  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/54__Feature__ColourPalette/README__ColourPalette__.md  02-Oct 03:50:44  LF  589741cc1098  <- W1-37 | record:W1-37 | W1-37  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  02-Oct 07:18:58  LF  c369fe72019e  <- W1-26 | record:W1-26 | -
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs  02-Oct 09:08:12  LF  7c7656fca46a  <- W1-36 | record:W1-36 | W1-36  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs  02-Oct 04:14:07  LF  697a15d2256d  <- W1-38 | record:W1-38 | W1-38  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs  02-Oct 05:52:47  LF  6f97bb91753e  <- W1-07 | record:W1-07 | -  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs  02-Oct 05:52:47  LF  0fa1c55cb187  <- W1-07 | record:W1-07 | -  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs  02-Oct 07:53:25  LF  4f43862a8c06  <- W1-27 | record:W1-27 | W1-27  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs  02-Oct 08:37:14  LF  101ccd3e9d28  <- W1-28 | record:W1-28 | W1-28  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs  02-Oct 09:08:12  LF  1a1dbe8e23e6  <- W1-36 | record:W1-36 | W1-36  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SheetsNormaliseOnce__.test.mjs  02-Oct 05:22:01  LF  00bdeaecf8a0  <- W1-21 | record:W1-21 | W1-21  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html  02-Oct 07:18:58  LF  83ff27842b9e  <- W1-26 | record:W1-26 | W1-26  [new since W1a]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__VectorQuality__.test.mjs  02-Oct 08:37:14  LF  3998453bfd57  <- W1-28 | record:W1-28 | W1-28  [new since W1a]
+
+== DECLARED EDITS OF CONTINUATION PACKAGES NOT DIRTY-SINCE-W1a ==
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs  <- W1-36  (ABSENT)

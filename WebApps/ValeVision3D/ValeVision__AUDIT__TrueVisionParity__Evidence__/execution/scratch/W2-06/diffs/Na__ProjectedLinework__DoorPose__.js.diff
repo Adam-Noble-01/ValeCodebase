@@ -1,0 +1,30 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - DOOR POSE
++// VALEVISION3D - PROJECTED LINEWORK - DOOR POSE
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__DoorPose__.js
+@@ -56,8 +56,18 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a - authored in TrueVision3D
+-// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off.
++// - Ported from   : TrueVision3D 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js
++// - Source version: 1.3.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD);
++//                   1.0.0 to 1.3.0 are TrueVision3D v2.42.0, v2.48.1, v2.105.0 and v2.140.0, none of them yet
++//                   confirmed by Adam in TrueVision.
++// - Parity        : verbatim. The door module 1.9.0 contract and FindDoorGroups it imports landed with W1-02.
++//                   Only the projector and the pipeline call it so far, and no drawing outside the Layout
++//                   Editor carries a DoorPose, so they read the model exactly as before; its Layout Editor
++//                   callers (PlanDoors, SnapshotRenderer) arrive with later packages.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //

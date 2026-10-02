@@ -1,0 +1,458 @@
+{
+ "slice_id": "S09",
+ "claims_checked": 172,
+ "confirmed_ids": [
+  "S09-F03",
+  "S09-F04",
+  "S09-F05",
+  "S09-F07",
+  "S09-F08",
+  "S09-F10",
+  "S09-F12",
+  "S09-F13",
+  "S09-F14",
+  "S09-F15",
+  "S09-F17",
+  "S09-F18",
+  "S09-F19",
+  "S09-F20",
+  "S09-F21",
+  "S09-F24",
+  "S09-F25",
+  "S09-F28",
+  "S09-F30",
+  "S09-F31",
+  "S09-F33",
+  "S09-F35",
+  "S09-F36",
+  "S09-F38",
+  "S09-F39",
+  "S09-F42",
+  "S09-F43",
+  "S09-F46",
+  "S09-F47",
+  "S09-F49",
+  "S09-F50",
+  "S09-F51",
+  "S09-F52",
+  "S09-F54",
+  "S09-F55"
+ ],
+ "refuted": [
+  {
+   "id": "S09-F09",
+   "reason": "False premise: there is no instant-vs-flight difference. TV's plan and elevation controllers (TV 42/45 ModeController 1.1.0, the pre-port lineage) fly the camera themselves with Na__PresentationMode__Camera__AnimateToScene (TV 42 ModeController:533-546, 624-630; TV 45:592-600, 687-692). They use FloorPlanViews__Transition__IntoPlanMs/OutOfPlanMs and ElevationViews__Transition__IntoElevationMs/OutOfElevationMs, which are 1400 ms easeInOutCubic in both apps' system JSONs. VV's 43/46 controllers fly the same values through Na__DrawView__Transitions__FlyTo (VV 43 ModeController:522-530; 46:592-600). The 'Initialize is still called by nobody' note covers only TV's Transitions module, which TV's plan and elevation controllers never import; TV's LE ModeController and SnapshotRenderer use it for Suspend/Resume only. Main-config DrawingView__Config__TransitionIntoMs/OutOfMs feed Na__DrawCfg__GetTransitionSetup, which nothing calls in either app. VV must keep Transitions__Initialize({camera, controls}): its controllers suspend OrbitControls through it, so following recommendation (a) would leave orbit live under every plan pan. D-S09-05 is withdrawn. The only real Transitions delta is TV 1.1.0's returnToOrbit option (S02a-F12), and S02a-F24 already says to keep VV's controllers."
+  }
+ ],
+ "corrections": [
+  {
+   "id": "S09-F01",
+   "field": "detail",
+   "new_value": "Under the section 4.1 map (TV 40/42/43/44/45/46 -> VV 42/43/44/45/46/47), TV's 40-55 modules carry 381 cross-folder specifiers in 150 files (the verifier's recount reproduces this). 141 of them target a drawing folder whose number differs; 11 target 41, a different engine in VV; 17 target TV-only 47 and 49 (47 x10, 49 x7). Nothing in TV 40-55 imports 48__System__CrossSectionViews: it is reached only from TV Index.html:909. TV 47__System__DrawingPlanes has no VV home because VV 47 is NorthDirection. Every whole-file port, and every TV Na__Test__* that loads sources by path, needs hand rewrites. The established files that also move are index.html, 01 LoadingSequence, four 21 PresentationMode modules and 30 ImageExport. This is the same renumber as S02a-F01 and WP-S01-01R / WP-S02a-01, and needs one owner.",
+   "reason": "Recount: 48 has zero importers among TV 40-55 modules, so the TV-only total is 17, not 19."
+  },
+  {
+   "id": "S09-F01",
+   "field": "evidence",
+   "new_value": "work_s09/cross_folder_imports.py and verify_s09_r2/xfolder.py: TV 381 specifiers / 150 files; targets 40x81, 44x21, 42x13, 45x13, 43x8, 46x5, 47x10, 49x7, 48x0 (48 is imported only by TV Index.html:909). TV plan section 4.1 fixed the map on 10-Sep-2026.",
+   "reason": "The original evidence listed 48x2, which the recount does not reproduce."
+  },
+  {
+   "id": "S09-F02",
+   "field": "detail",
+   "new_value": "TV drawing and Layout Editor modules import these TV-only top-level folders: 27 ContextMenuSystem (2), 47 DrawingPlanes (10), 49 ElevationDepthFog (7), 52 Layout__PublishedDocuments (4), 53 Data__Layout__PublishedSchema (12), 54 ColourPalette (2), 55 SpellCheck (1) and 80 CloudflareIntegration (16). No 40-55 module imports 48 CrossSectionViews; only TV Index.html:909 does. VV has none of these folders. The numbers 47 and 80 matter: 47 is VV NorthDirection, and 80 holds TV's transport client. TV also has an app-root 80__CloudflareIntegration folder holding the worker source.",
+   "reason": "48 has 0 importers inside 40-55, not 2. The other counts reproduce."
+  },
+  {
+   "id": "S09-F06",
+   "field": "detail",
+   "new_value": "TV v2.115.0 renamed Na__LayoutEditor__KeyMappings__.json to Na__Hotkeys__DrawingTabs__.json (one file per kind of tab). ConfigState__KeyMap__ 1.11.0 fetches the new name (TV:152); VV 1.0.0 fetches the old one (VV:63). The top-level schema is the same (11 identical blocks). TV adds MeasurementsBox__ArrayCharacters, SelectionBindings__CopyDragModifier and SelectionBindings__MoveAnchorModifier, plus 22 TV-only actions (1,267 vs 856 lines; v2.117, 119, 130, 131, 141, 142, 149, 151). Verifier: two shared keys change meaning in TV's file. T carries Tool__Trim (When InContainer) listed above Tool__Text, and F is Tool__Offset with Nav__ZoomFit disabled. VV's KeyMap 1.0.0 has no When matcher. Shared actions keep their keys; only labels differ (Copy/Paste/Duplicate/Group describe TV's wider clipboard). TV-only LE/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json serves the document tabs.",
+   "reason": "The survey missed the When-gated rebinding of T and the F rebinding, which make a content-first rename a regression."
+  },
+  {
+   "id": "S09-F06",
+   "field": "recommendation",
+   "new_value": "Rename the VV file and take TV's content only in the same change as ConfigState__KeyMap__ 1.11.0 (When-aware MatchKeyBinding). That change is WP-S03a-02 (the rename alone is also WP-S01-03R): one owner. Never land TV's JSON on VV's 1.0.0 matcher, or T stops reaching the Text tool. Also decide whether VV accepts losing F = Zoom Fit before 37 VectorTools makes F = Offset do anything; the alternative is keeping Nav__ZoomFit enabled until then. Port 31__System__DocumentKeys (file and JSON) with the document tabs. Keep VV's 3D dictionary.",
+   "reason": "WP-S09-05 bundled the content step with the early KeyScope work."
+  },
+  {
+   "id": "S09-F11",
+   "field": "detail",
+   "new_value": "TV TabStrip 2.0.0 (v2.158.0; PORT NOTE: back-port PENDING to VV) imports ConfigState, SheetModel (incl. IsSitePlanSheet), ModeController (Ready, VIEW_REGISTER, VIEW_STATEMENT, OpenRegister, OpenStatements) and SpecData directly. VV's TabStrip 1.5.0 uses 22 Na__LeLoad__ facade names. The facade (36 exports) has no register or statement views and no OpenRegister/OpenStatements/IsSitePlanSheet/Ready. Verifier: the DevMenu half does not need a port. VV DevMenu 1.4.0 (19-Sep-2026) is VV's own facade lineage. It already reaches Na__LeVp3d__Bake, KIND_2D/3D and Na__LePdf__ExportSheet through editor.viewport3d/model/pdf after Na__LeLoad__Require (VV DevMenu:221-231, 345), and it already carries TV DevMenu 1.3.0's tab-label change. The only TV delta is DevMenu 1.2.0 (13-Sep-2026): a linework bake names a drawing only when Na__LeSource__Resolve(v).isLive, which matters only once design phases exist.",
+   "reason": "The original implied that TV's DevMenu must be ported through the facade; VV's newer DevMenu already does that."
+  },
+  {
+   "id": "S09-F11",
+   "field": "recommendation",
+   "new_value": "When TabStrip 2.0.0 is ported, add Na__LeLoad__VIEW_REGISTER='register', VIEW_STATEMENT='statement', OpenRegister, OpenStatements, IsSitePlanSheet (answered pre-load from Sheet__DrawingType) and Ready, plus CheckNames rows for the two view constants. Do not replace VV's DevMenu with TV's. If D-S09-07 brings real phases, add ModelSource to the loader's ImportEditor list and the isLive filter to VV's bake list.",
+   "reason": "This avoids a swarm agent overwriting VV DevMenu 1.4.0 (Layout Mode switch, facade) with TV 1.3.0."
+  },
+  {
+   "id": "S09-F16",
+   "field": "evidence",
+   "new_value": "Rule lines matching .na-le-tab: TV Styles__Main__ 23, VV Boot 18, VV Styles__Main__ 0 (verifier recount); VV Boot PORT NOTE lines 4-8.",
+   "reason": "The original counts (26/20/1) do not reproduce; the claim itself holds."
+  },
+  {
+   "id": "S09-F22",
+   "field": "recommendation",
+   "new_value": "Keep VV's path and re-point the import in every ported TV module (checklist step 1), unless D-S09-V02 / D-S01-07 moves VV's file to TV's path (S01-F20). Decide once, before the renumber WP. If the file moves, update its 4 VV importers (LoadingSequence:216, VideoStudio FrameRenderer:112 and Timeline__Thumbnails:117, 42 Transitions:63) and the WCP SW precache entry (logic:318).",
+   "reason": "Conflicts with S01-F20; one decision is needed."
+  },
+  {
+   "id": "S09-F22",
+   "field": "action",
+   "new_value": "needs_decision",
+   "reason": "Two slices recommend opposite actions (keep the VV path vs move to TV's path)."
+  },
+  {
+   "id": "S09-F23",
+   "field": "recommendation",
+   "new_value": "Decide D-S09-07 once, together with D-S01-14, D-S03a-10 and D-S04a-02 (the same question). Verifier: TV's PhaseLibrary imports only LoadAllModels, SeparateOrbitCubeUrl, ClassifyUrls and Na__ModelCategories__LoadOrder from 15 MultiModel, and VV exports all four. Uninitialised, it answers IsLive(undefined) = true. Porting TV's file verbatim and uninitialised (S04a-F31 option B) is therefore likely viable and keeps the 14 names identical; a hand-written single-phase shim is the fallback if a runtime check fails. VV's precedent is LE/20 ViewportIdentity 1.0.0 (v2.67.0), ported without the phase branch: PhaseOf returns PHASE_NONE, with the note 'if model groups ever arrive here, take TrueVision's PhaseOf whole'.",
+   "reason": "A verbatim port links against VV's MultiModel, so a shim may be unnecessary; the decision is duplicated across four slices."
+  },
+  {
+   "id": "S09-F26",
+   "field": "recommendation",
+   "new_value": "Port 27 together with the 52 Statement Writer, or give VV a renderer shim with the same two names. A shim also needs styling: TV's renderer is styled by 27/Na__ContextMenuSystem__Styles__.css, imported eagerly by TV's CSS index:103. Otherwise map the two names onto VV's own LE context menu (30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js) and its styles. If the 3D menu is adopted, wire its init, CSS and LoadingSequence reset as TV does (Index.html:886, 1609; LoadingSequence:176, 628).",
+   "reason": "A shim of the two functions alone would render an unstyled menu."
+  },
+  {
+   "id": "S09-F27",
+   "field": "detail",
+   "new_value": "TV 80/Na__CloudflareIntegration__ApiClient__.js 1.5.0 provides IsConfigured, MergeAndSaveKeys, GetLoadedProjectData, ReadProjectData, Read/WriteProjectFile, ProjectFileLocation, AdminFileLocation, PlansFileLocation, Read/WriteStatementFile, StatementFileLocation, Upload/List/DeletePublished, Upload/List/Copy/DeleteSheetImage, SheetImageLocation and SHEET_IMAGES_ARCHIVE. Importers are 40 ProjectData and LE SheetModel__Sheets, ProjectRecord, SpecData, Register, Statement, SheetImages, Publish and ScrapbookParametric. Verifier: no VV module exports these names, but VV covers parts of the job under its own names. Na__AppUtils__R2SaveProjectJson saves the whole document (re-read from Flask) in place of MergeAndSaveKeys. Na__R2Notes__ReadCloud/Write/ReadLocal/WriteLocal handle one sibling file (ValeVision__DrawingNotes__.json), like Read/WriteProjectFile. Na__AppUtils__R2AssetUpload covers asset writes and Na__AppUtils__FetchProjectJson covers ReadProjectData. Any shim should wrap these rather than re-implement them.",
+   "reason": "'No VV equivalent' was too strong; the partial equivalents are the implementation basis."
+  },
+  {
+   "id": "S09-F27",
+   "field": "recommendation",
+   "new_value": "Decide D-S09-04 and D-S09-V01 first. S09, S01-F13 and S07b-V03 recommend a VV module at TV's path with the same 21 signatures; S08-F21 recommends a VV per-document client in 03__AppUtils and no 80 folder. Whichever wins applies to every slice. If the same-name shim wins, implement it over whitecardopedia-editor-api and WCP Flask under VaApps/Projects/{folderId}/, wrapping R2SaveProjectJson, R2DrawingNotes, R2AssetUpload and FetchProjectJson. Keep VV's X-Editor-Api-Key model (S12-F38). The PORT NOTE says: diverged, same signature, different transport.",
+   "reason": "This records a cross-slice conflict that must be settled once before any transport WP."
+  },
+  {
+   "id": "S09-F29",
+   "field": "recommendation",
+   "new_value": "Add both names to VV ProjectLoader, but match how TV's callers use them, not TV's implementation. TV's functions read the URL params ?project-folder and ?year (2-digit, default '26'), and every caller builds year + '/' + folder (e.g. TV PL Persistence:456-459). VV URLs carry only ?project=<code>. VV's shim should split Na__AppUtils__NormalizeProjectFolderId(Na__AppUtils__GetProjectCodeFromUrl()) into its 4-digit year and folder halves, so the joined string equals VV's folderId. Audit the 12 importers for any other use of the year: NA-hosted share/QR URL builders (53, 66, 52 PubDoc Urls) may assume TV's 2-digit form. Precedent: VV's own PL Persistence already resolves the folder this way (:447) instead of importing the two names.",
+   "reason": "Answering 'from the master index' without matching TV's join semantics could build wrong R2 paths."
+  },
+  {
+   "id": "S09-F32",
+   "field": "detail",
+   "new_value": "Both apps' ConfigState modules read DrawingView__Config and ProjectedLinework__Config from the main config, but only VV's main config carries them. VV sets background #ffffff, section fill and line #505050 at 2 px, and exclusion tokens. Verifier: VV also sets DrawingView__Config__TransitionIntoMs/OutOfMs 1400, but those two keys are dead in both apps. They feed Na__DrawCfg__GetTransitionSetup, which nothing calls; the plan and elevation flights read FloorPlanViews__Transition__* and ElevationViews__Transition__* (1400 in both apps) from the 43/46 (TV 42/45) system JSONs. TV falls back to its system JSON. LayoutEditor__Config__ReadOnlyOnWeb is true in both. No 40-55 module reads CloudflareConfig, ImageExport__Panel/Config, StoreyVisibility or the VV transport blocks.",
+   "reason": "The '1400 ms flights' were wrongly attributed to these keys."
+  },
+  {
+   "id": "S09-F32",
+   "field": "recommendation",
+   "new_value": "Keep VV's two blocks (the Vale look). The Transition keys are harmless dead keys: leave them, or delete them in both apps by decision. Add only blocks TV's main config carries for a landed module. Nested TV-only keys (OrthoDepthBiasMm etc.) are covered by S09-V05.",
+   "reason": "D-S09-05 is withdrawn."
+  },
+  {
+   "id": "S09-F34",
+   "field": "detail",
+   "new_value": "TV keeps 8 dev-owned top-level keys in three lists: Na__DevSavedKeys (localhost overlay, LoadingSequence:352-361), DEV_OWNED_PROJECT_DATA_KEYS (ModelSync:121-130) and TRUEVISION_DEV_OWNED_KEYS (BuildScript:83-92). TV's rule is to nest new data inside LayoutEditor__DrawingsData (north, depth fog, elevations). VV has no list. Verifier correction: the WCP SketchUp cloud sync merges only its own keys into the LOCAL working copy, but then uploads that local project.json WHOLE to R2 (WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:715-739, called at :927, :936, :987). An editor-written key therefore survives a sync only if the syncing machine's local copy holds it, i.e. if the Flask mirror succeeded on that machine; R2SaveProjectJson treats a mirror failure as a red toast. VV saves re-read the full project from Flask (VV 42 ProjectData:382-415). VV-only keys to preserve: LayoutEditor__DrawingsData__LayoutModeEnabled, CrossSection__Config, CrossSection__SceneData, ValeVison3D__SketchUpCameraData, RenderEngine__Config.",
+   "reason": "The survey's 'a new VV top-level key survives sync' rests on a devlog line about one block; the sync code uploads whole local files (agrees with S12-F31)."
+  },
+  {
+   "id": "S09-F34",
+   "field": "recommendation",
+   "new_value": "In VV, follow TV's nesting rule (no new top-level key without a decision). Do not port TV's three hand-synchronised lists. Adopt S12-F31's single VV list, ProjectData__EditorOwnedKeys in Na__AppConfig__Main.json, read by the localhost overlay (D-S12-04) and by the sync tool (WP-S12-01). Every new top-level key joins that list (D-S09-V03). Keep every VV-only key listed. Track a stale-base save guard under S09-F28.",
+   "reason": "This aligns with S12-F31 and the actual sync behaviour."
+  },
+  {
+   "id": "S09-F34",
+   "field": "action",
+   "new_value": "needs_decision",
+   "reason": "Whether VV gets an editor-owned key list is D-S09-V03 (shared with S12)."
+  },
+  {
+   "id": "S09-F37",
+   "field": "detail",
+   "new_value": "VV SceneTransition:451 dispatches na-pm-scene-activated. VV 41 SceneData relies on it to restore section bindings, and VV 71 ExportRenderLayers PreviewController (:69) invalidates its preview on it. Verifier: per-scene lighting does not listen; SceneTransition calls PerSceneLighting directly before the announcement (VV SceneTransition:38-55, 149-156). TV's SceneTransition dispatches nothing. TV's carousel dispatches na-presentation-mode-scene-activated (VV's equivalent is na-pm-scene-selected, deliberately renamed: VV carousel:205), but TV 41 SectionCut SceneData:104 listens for na-pm-scene-activated, so TV's section bindings never restore on scene change. This breaks the plan's rule that events keep their ValeVision names (TV plan :291).",
+   "reason": "Per-scene lighting does not depend on the event; another VV listener (71 ExportRenderLayers) was missed."
+  },
+  {
+   "id": "S09-F40",
+   "field": "detail",
+   "new_value": "TV v2.110.0 fixed a bug: 'T on a drawing picked the Text tool AND put the hidden model into Walk mode'. TV's fix is the leaf 03/Na__AppUtils__KeyScope__.js 1.1.0 (MODEL/SHEET/DOCUMENT scopes, Follow, IsTypingTarget with contenteditable, ControlKeepsKey). VV's HotkeyHandler 1.0.0 guards only input/textarea/select focus. Its R, B, T, Y, V, 1-9, Page Up/Down and Alt+Shift+F callbacks (index.html:1792-1810) have walk/fly/carousel guards but no tab scope. Verifier additions, from code reading: (1) V (ToggleViewsPanel) is also bound, and V is the drawing tabs' Select key. (2) The handler loads every dictionary row, including the eleven ValeVision__DrawingMarkup__Contextual documentation rows, so plain D, O, Delete and Escape match too: preventDefault plus a 'No callback' warning on every press. (3) Contenteditable is not treated as typing. In VV's in-place plan annotation label (44/Na__PlanAnnotations__Editor__.js:236, keydown handler :424-434), lower-case r, t, b, y, v, d, o, the digits and Delete are swallowed, and R, T, B, Y, V and the digits also fire their 3D actions. Not run in a browser.",
+   "reason": "The defect is broader than reported; it includes a live VV drawing bug in plan annotation labels."
+  },
+  {
+   "id": "S09-F40",
+   "field": "recommendation",
+   "new_value": "One owner: WP-S03a-V03 (duplicates S03a-F28/F29 and S05a-F06/F35). Port KeyScope verbatim. Gate VV's handler with Na__KeyScope__Is(MODEL), use IsTypingTarget, and skip any row without a registered callback before preventDefault. Have the ModeController call Follow, and use ControlKeepsKey in Controls__Pc and SheetTools__Keyboard. Port TV Na__Test__DrawingTabKeys__ and __DocumentKeys__.",
+   "reason": "This adds the no-callback skip and points to the single owning WP."
+  },
+  {
+   "id": "S09-F41",
+   "field": "recommendation",
+   "new_value": "Decide D-S09-06: a per-release bump, or a VV-specific bucket and token inside the shared worker. Precondition for any bump that ships editor changes: WP-S01-11 / S01-V05, so that WCP's registrar holds its controllerchange reload while the VV Layout Editor has unsaved work. Today it reloads on localhost too, waiting only for the load watchdog (Registrar:110-150, localhost :86-89); TV's registrar checks window.TrueVision__Pwa__HasUnsavedWork (TV Registrar:59, 133-134, 167; TV AutoSave:566). Until decided, every WP records 'token needed' in its devlog entry.",
+   "reason": "Without the hold, the recommended bumps can reload an open editor with unsaved sheets."
+  },
+  {
+   "id": "S09-F44",
+   "field": "detail",
+   "new_value": "TV has 91 Na__Test__* files (.mjs/.cjs/.py/.html) and VV has 10 (verifier count; not about 70 and 8). TV also has a TV-only Na__Verify__RubySyntax__.py for its SketchUp tools. Wiring-relevant: DrawingTabKeys, DocumentKeys, SheetPagingWalkExit (keys and Transitions exit), DraftRestore and SheetsNormaliseOnce (loader late start), ShareLinks, DrawingPlanes, ElevationDepthFog, PublishedSchema/Reader, and the server tests ProjectDataSaveGuard.test.py, SheetImagesApi.test.py, StatementServer.py and UserSpellingsApi.test.py. They load sources by TV path, so each needs the folder map, or D-S09-02.",
+   "reason": "Recounted from both 80__Testing folders."
+  },
+  {
+   "id": "S09-F45",
+   "field": "recommendation",
+   "new_value": "Make VV's loader screen say what TV's veil says. Verifier: VeilDrawingsHeadline, VeilDrawingViews and VeilModelHeadline are code fallbacks passed to Na__LeCfg__GetLabel (TV LoadingVeil:321, 339, 388), not keys in either LE AppConfig JSON, and the config is not loaded before the editor anyway. So copy the text: change the title 'Loading Layout Editor...' (VV LoadingScreen:61) to 'Your Drawings Are Loading'; 'Drawing the Views' already matches (VV Loader:146). Adopt the 550 ms delay where the load allows. Port the in-host veil CSS with the LoadingVeil 1.1.0 parity work. Bring the compact strip via S09-F11/F16.",
+   "reason": "The labels cannot be read from config before the load; only the title differs."
+  },
+  {
+   "id": "S09-F48",
+   "field": "detail",
+   "new_value": "TV Index.html wires 47 DrawingPlanes (imports 913-915; PlaneOverlay/PlaneGrip/PlaneUi inits 1747-1749; CSS 123), 49 ElevationDepthFog (import 919, Initialise 1783, CSS 130), 66 ShareOpen (904, called right after the editor starts, not in its .then, 1738) and 27 ContextMenu (886, 1609, CSS 103). VV's index has none of these. 66 must go through the loader facade in VV. Verifier: TV also passes controls to its plan and elevation controllers because TV's older controllers own OrbitControls. VV keeps its own controllers (S02a-F24), which get controls through Na__DrawView__Transitions__Initialize, so no controls change is part of this wiring and the D-S09-05 dependency is withdrawn.",
+   "reason": "S09-F09 is refuted."
+  },
+  {
+   "id": "S09-F48",
+   "field": "recommendation",
+   "new_value": "Each owning slice's WP adds the TV import, init and CSS lines at TV's positions. VV's 66 opener is called via the facade. Keep VV's Transitions__Initialize call and the {camera, canvas, modelRoot} controller contexts. Serialise index.html and CSS index edits. The 47/48 lines overlap S02a-F50: one owner.",
+   "reason": "Removing Transitions__Initialize would leave orbit live under VV's drawing views."
+  },
+  {
+   "id": "S09-F53",
+   "field": "detail",
+   "new_value": "(1) The header points at a missing TV working copy, D:\\WE10_--_Public-Repo_--_Live-Website\\... (2) 'New in TrueVision, not in ValeVision' still lists DevGate and both verify harnesses as missing from VV; all three exist. (3) The loader is listed as a pending back-port (line 1230) but as 'Not a back-port candidate' (line 1244). (4) VV devlog v2.58.0 (:1394-1395) says 'ValeVision has no service worker', while v2.44.1 (:2546-2569; not v2.45.0) and index.html:44 show it registers the shared one. The VV AutoSave PORT NOTE repeats the 'no service worker' error (S01-V05).",
+   "reason": "The 'registers' note is in v2.44.1."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S09-V01",
+   "category": "ui",
+   "title": "Keep VV's confirm-dialog markup and styles; TV's ConfirmDialog falls back to window.confirm",
+   "detail": "Both apps ship Na__AppUtils__ConfirmDialog 1.0.0, which falls back to native window.confirm when #naConfirmDialog is absent (TV ConfirmDialog:18, 86-87, 146-147). VV has the modal markup in index.html (1323-1330: naConfirmDialog, Backdrop, Title, Message, Cancel, Confirm) and .na-confirm-dialog rules in Na__UiFeature__Styles__DropdownAndToast__.css. TV has neither, so every TV Layout Editor confirm (sheet delete, register, statements, scrapbook, Dev) is the browser's system dialog. In this one place VV's drawing experience is ahead of TV's, and an index.html or CSS alignment that copies TV's markup or stylesheets would delete VV's modal.",
+   "recommendation": "Keep VV's markup and CSS through every index.html and CSS-index edit, and list them in the checklist's keep set. Ported TV modules that call Na__AppUtils__ConfirmDialog__Show will show VV's modal unchanged. The TV back-port belongs to S10-F19 / WP-S10-07R.",
+   "action": "keep_vv_divergence",
+   "severity": "medium",
+   "evidence": "No 'naConfirmDialog' anywhere in TV Index.html, CSS or modules except the ConfirmDialog constants (grep); TV 03/Na__AppUtils__ConfirmDialog.js:18, 48-52, 86-87, 146-147; VV index.html:1323-1330; VV 03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css (.na-confirm-dialog); duplicates S10-F19.",
+   "tv_paths": [
+    "Index.html",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js"
+   ],
+   "vv_paths": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css"
+   ],
+   "tv_version": "ConfirmDialog 1.0.0",
+   "vv_version": "ConfirmDialog 1.0.0",
+   "depends_on": [
+    "S10-F19"
+   ],
+   "est_lines": 0
+  },
+  {
+   "id": "S09-V02",
+   "category": "wiring",
+   "title": "Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41",
+   "detail": "TV 40/Na__DrawView__ProjectData__.js 1.6.0 receives the CrossSection__SceneData block through Na__DrawData__RegisterSectionBlockProvider (TV ProjectData:270, 762-764, 851-852), which TV 41 SectionCut SceneData calls at init (:78-86). VV 42/Na__DrawView__ProjectData__.js hard-imports Na__SectSceneData__GetProjectBlock from VV 41 CrossSectionView (:92-94, used at :409). A whole-file port of TV's ProjectData into VV compiles and passes both harnesses, but no provider is registered, so VV silently stops saving section bindings on every drawings save.",
+   "recommendation": "When TV's ProjectData is ported, add one Na__DrawData__RegisterSectionBlockProvider(Na__SectSceneData__GetProjectBlock) call to VV 41 SceneData's Initialize (S12-F46 owns the change), and list the seam in the PORT NOTE Divergences. Keep VV's {sceneData} event detail (DIV-2). Acceptance: save a section binding, reload, and the binding is still in project.json.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "evidence": "TV 40 ProjectData:270, 762-764, 851-852; TV 41 Na__SectionCut__SceneData__.js:78-86; VV 42 ProjectData:92-94, 409; duplicates S12-F46.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js"
+   ],
+   "tv_version": "ProjectData 1.6.0",
+   "depends_on": [
+    "S12-F46"
+   ],
+   "est_lines": 5
+  },
+  {
+   "id": "S09-V04",
+   "category": "wiring",
+   "title": "Event catalogue misses listeners registered from arrays or unresolved constants",
+   "detail": "work_s09/event_catalogue.py drops every listener whose name it cannot resolve statically; unresolved tokens are filtered out, not reported. Missed in VV: 71/Na__ExportRenderLayers__PreviewController__.js:65-72 registers listeners from an array for na-request-active-render, na-render-engine-switch, na-render-engine-changed, na-pm-scene-activated, na-elevation-state-changed and na-crosssection-config-loaded. Missed in both apps: 21/Na__PresentationMode__DevMenu__SceneEditor.js listens to na-presentation-groups-changed through Na__PresentationMode__DevMenu__GROUPS_CHANGED_EVENT, so Appendix A shows that event with no listener. The remaining unresolved tokens (?name, ?type, ?entry) are DOM-event loops in Controls__Pc, TouchScreen, SheetTools, Viewport3dZoom, PanelHost, ColourPalette and SpellCheck.",
+   "recommendation": "Read Appendix A together with these rows. Keep the VV 71 listener when porting TV 21 files: it is a second VV consumer of na-pm-scene-activated (S09-F37). Retiring VV 40 2dElevationsView (D-S09-10) leaves the na-elevation-state-changed listener dead, which is harmless. If the catalogue is re-run for the swarm, make it report unresolved tokens instead of dropping them.",
+   "action": "update_wiring",
+   "severity": "low",
+   "evidence": "verify_s09_r2/events_unresolved.py output; VV 71 PreviewController:65-72; work_s09/event_catalogue.py main() keeps only resolved names that have dispatch/listen sets.",
+   "tv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__PreviewController__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js"
+   ],
+   "est_lines": 0
+  },
+  {
+   "id": "S09-V05",
+   "category": "data_schema",
+   "title": "Main config nested-key diff: TV-only ortho line bias and loader keys; VV keeps the legacy models.baseMesh schema",
+   "detail": "The survey diffed top-level blocks and the drawing blocks. A full key-tree diff of 02__AppData/Na__AppConfig__Main.json finds these TV-only nested keys: models.RenderConfig__Linework.RenderConfig__Linework__OrthoDepthBiasMm (2) and ...EdgeColorLightnessReduction (10); RenderEffect__ProfileLines__ColorPassIncludesLinework (true); RenderEffect__AmbientOcclusion__SamplesNote; models.BaseMesh__DefaultMaterial.* and models.RenderConfig__InstanceConsolidation.*, where VV keeps models.baseMesh.material.*. OrthoDepthBiasMm is drawing-relevant. TV v2.38.1 (devlog :12796) made fat lines under an orthographic camera bias by a distance, fixing lines showing through faces up to 75 mm behind them in plan and elevation base images and PDFs. VV's MultiModel still subtracts the constant DepthBias (VV 15 MultiModel:683-691) with logarithmicDepthBuffer on (VV index.html:1658). The rest are model-loader and 3D-effect tuning; VV-only Scene__Environment glass overrides and a MaterialsSystem LibraryUrl also differ.",
+   "recommendation": "Carry OrthoDepthBiasMm only with the MultiModel change that reads it (owner S02b-F45 / S11-F20). Leave the 15/05 keys and value differences to their slices. Never copy TV's main config whole. Record VV's legacy models.baseMesh schema as a VV divergence until the model-loader slice aligns it.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "verify_s09_r2 key-tree diff of both Na__AppConfig__Main.json files; TV devlog v2.38.1 :12796-12830; TV 15 MultiModel:585-614; VV 15 MultiModel:683-691; VV index.html:1658.",
+   "tv_paths": [
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js"
+   ],
+   "tv_version": "MultiModel 1.4.0",
+   "vv_version": "MultiModel 1.3.0",
+   "depends_on": [
+    "S02b-F45"
+   ],
+   "est_lines": 3
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S09-05",
+   "reason": "Duplicate with an unsafe step. KeyScope plus the HotkeyHandler gate (and skipping rows without a callback) is WP-S03a-V03. The key-file rename with TV content is WP-S03a-02, atomically with KeyMap 1.11.0 (the rename alone is also WP-S01-03R). Landing TV's file on VV's KeyMap 1.0.0 would make T reach Tool__Trim (When InContainer, listed above Text) and would disable F = Zoom Fit (F is Offset in TV's file). 31 DocumentKeys travels with S01-F27 and the register/statement WPs; the tests are in WP-S03a-02/V03 and WP-S05a-09."
+  },
+  {
+   "id": "WP-S09-09",
+   "reason": "Depends on D-S09-05, which is withdrawn because S09-F09 is refuted. Replaced by WP-S09-09R with the same scope."
+  },
+  {
+   "id": "WP-S09-11",
+   "reason": "Missing precondition: until WP-S01-11 adds the registrar's unsaved-work hold, any token bump reloads open VV editors that hold unsaved work, on localhost too. Replaced by WP-S09-11R."
+  },
+  {
+   "id": "WP-S09-12",
+   "reason": "Its step 'controls passed to plan/elevation mode controllers and Transitions per D-S09-05' is wrong: VV keeps its own controllers, which need Na__DrawView__Transitions__Initialize({camera, controls}). Replaced by WP-S09-12R."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S09-09R",
+   "title": "Main config alignment for drawing blocks (replaces WP-S09-09)",
+   "scope": "Align the RenderEffect__ProfileLines Drawing2d keys with TV once VV bakes take their width from the RenderComposites profileLinework weight. Confirm the live-view width under DIV-1 before dropping Drawing2dEdgeWidth. Decide the Drawing2d__Description naming. Keep DrawingView__Config (its two Transition keys are dead in both apps; delete them only by decision) and ProjectedLinework__Config. Carry new LE main-config keys only as their features land. OrthoDepthBiasMm travels with S02b-F45's MultiModel change, and ProjectData__EditorOwnedKeys with WP-S12-01 (D-S09-V03).",
+   "depends_on": [
+    "RenderComposites port (S04a)"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Getter diff of Na__DrawCfg__* before and after (TV v2.30.2 method) shows only intended changes",
+    "Existing VV sheets bake with unchanged outline weight",
+    "Plan and elevation flights still take 1.4 s"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json"
+   ],
+   "risk": "Low-medium: line weight on every sheet."
+  },
+  {
+   "id": "WP-S09-11R",
+   "title": "Shared service worker: refresh fix, precache and token policy (replaces WP-S09-11)",
+   "scope": "Back-port TV SW 1.9.54's stale-while-revalidate refresh (fetch with cache:'no-cache') to the WCP worker logic. Add VV's lazily linked LE stylesheets (the 8 loader sheets plus the 56/57 self-linked scrapbook sheets) to the WCP precache list. Apply D-S09-06 (a per-release bump or a VV bucket). Do not bump the token until WP-S01-11 has made WCP's registrar hold its controllerchange reload while VV's Layout Editor has unsaved work.",
+   "depends_on": [
+    "D-S09-06",
+    "WP-S01-11"
+   ],
+   "size": "S",
+   "acceptance": [
+    "After a deploy, a warm client gets a changed LE stylesheet on its first load",
+    "With unsaved sheet edits open, a worker update does not reload the page",
+    "Whitecardopedia gallery still works offline as before",
+    "Token change recorded in the WCP logic devlog and the VV devlog"
+   ],
+   "files_vv": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "hot_files": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js",
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"
+   ],
+   "risk": "Medium: the worker is shared with Whitecardopedia; Adam must approve."
+  },
+  {
+   "id": "WP-S09-12R",
+   "title": "index.html wiring for each TV-only system as it lands (replaces WP-S09-12)",
+   "scope": "As the owning slices land them, add the imports, init calls and CSS imports at TV's positions: 47 DrawingPlanes (3 inits after the LE block; CSS after the elevation sheets), 49 ElevationDepthFog (Initialise last; CSS), 66 ShareOpen via the loader facade (if D-S09-08 allows) and 27 ContextMenu (if adopted: init after the loading sequence, CSS, LoadingSequence ResetForModelChange). Keep VV's Na__DrawView__Transitions__Initialize({camera, controls}) call and the {camera, canvas, modelRoot} plan and elevation contexts, because VV keeps its own controllers (S02a-F24). Keep the #naConfirmDialog markup (S09-V01). One owner with S02a-F50 for the 47/48 lines.",
+   "depends_on": [
+    "D-S09-02",
+    "D-S09-08",
+    "WP-S09-01",
+    "WP-S09-07"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Both harnesses exit 0 after each addition",
+    "Adam's in-app checklist for each system passes",
+    "No DOM id collision in the Dev menu",
+    "Orbit does not move under a plan or elevation pan (Transitions still initialised)"
+   ],
+   "files_vv": [
+    "index.html"
+   ],
+   "hot_files": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "risk": "Medium: serialise with every other index.html edit."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S09-V01",
+   "question": "Which transport client shape do all slices use: same-name shims at TV's paths (S09 D-S09-04, S01-F13, S07b-V03, D-S07a-08) or VV per-document clients in 03__AppUtils (S08-F21 Na__AppUtils__R2PublishedDocs__, S07b-F28 R2StatementDocs__)?",
+   "options": "(a) Same-name, same-signature VV modules at TV's paths (80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js, 03/Na__AppUtils__LocalProjectMirror__.js), so TV importers port verbatim. (b) Per-document VV clients in 03__AppUtils, with every TV importer adapted. (c) Hybrid: a same-name facade at TV's path whose bodies call per-document VV clients.",
+   "recommendation": "(c), or (a) if Adam prefers fewer files. Verbatim TV importers are worth more than avoiding an 80 folder. S08-F10's rule (a published write never bumps VV's build manifest) and S12-F38's API-key model can both live behind the facade. Decide before WP-S09-06 and the S07a/S07b/S08 transport WPs.",
+   "blocks": [
+    "WP-S09-06",
+    "S09-F27",
+    "S09-F28",
+    "S08-F21",
+    "S07b-F28"
+   ]
+  },
+  {
+   "id": "D-S09-V02",
+   "question": "Should DistanceCulling stay at VV's path (05__RenderPipeline/02__Engine__MaxEngine/, S09-F22) or move to TV's 05__RenderPipeline/ (S01-F20 / D-S01-07)?",
+   "options": "(a) Keep VV's path and re-point the import in every ported TV file (TV 40 Transitions, 42/45 ModeControllers). (b) Move VV's file to TV's path in the renumber WP, updating its 4 VV importers and the WCP precache entry (logic:318).",
+   "recommendation": "(b) if the renumber WP (WP-S01-01R / WP-S02a-01) runs, because it already touches every importer and needs a token bump; otherwise (a). Decide once.",
+   "blocks": [
+    "S09-F22",
+    "S01-F20",
+    "checklist step 1"
+   ]
+  },
+  {
+   "id": "D-S09-V03",
+   "question": "Does VV get one editor-owned top-level key list (S12-F31 ProjectData__EditorOwnedKeys), given that the WCP SketchUp sync uploads the local project.json whole to R2?",
+   "options": "(a) Yes: one list in Na__AppConfig__Main.json, read by the localhost overlay and by the sync tool's R2 merge (WP-S12-01). (b) No list: rely on the local Flask mirror always holding every editor key (S09-F34 as surveyed).",
+   "recommendation": "(a). The sync uploads the local working copy whole (AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:927/936/987), so (b) loses keys written on another machine or after a failed mirror. Every new top-level key then joins the list.",
+   "blocks": [
+    "S09-F34",
+    "WP-S12-01",
+    "checklist step 6"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "Main-config full key-tree diff, including nested keys in shared blocks (S09-V05)",
+  "Entry HTML DOM-id and imported-name diffs; found the TV confirm-dialog markup gap (S09-V01)",
+  "Plan and elevation flight timings traced to the per-system JSONs in both apps (S09-F09 refuted, D-S09-05 withdrawn)",
+  "WCP SketchUp cloud-sync project.json upload path (S09-F34 corrected; D-S09-V03)",
+  "WCP registrar controllerchange reload with unsaved editor work (S09-F41 corrected; WP-S09-11R)",
+  "VV hotkey dictionary documentation rows and contenteditable plan-label typing (S09-F40 corrected)",
+  "Drawing-tab key file action and key-collision analysis, including When-gated T and rebound F (S09-F06 corrected; WP-S09-05 refuted)",
+  "Event catalogue unresolved and array registrations (S09-V04)",
+  "Section-block provider seam for a whole TV ProjectData port (S09-V02)",
+  "Harnesses read (read-only) and re-run in both apps; numbers reproduce exactly",
+  "No action: TV-only 80__Testing/Na__Verify__RubySyntax__.py (SketchUp tools), VV 02__AppData MaterialsLibrary JSON and .rb utility, TV app-root Na__Pwa__ServiceWorker__.js stub, AppCore__DataLib__Loader diff (no drawing terms)"
+ ],
+ "notes": "A strong, well-evidenced slice. Of 55 findings, 35 are confirmed as written, 19 are corrected and 1 is refuted. The harness numbers and almost every line citation reproduce exactly. The refutation matters most. S09-F09 / D-S09-05 claimed TV lands instantly on a plan or elevation while VV flies 1.4 s. In fact both fly 1400 ms easeInOutCubic: TV from its own older controllers via AnimateToScene, VV through Transitions. Following the recommendation would have removed VV's Transitions__Initialize and left orbit live under every drawing pan. That withdrawal ripples into F32, F48, WP-S09-09 and WP-S09-12 (both re-issued as R versions) and the checklist's step 3.\n\nOther substantive corrections:\n- F34: the WCP SketchUp sync uploads the local project.json whole, so S12-F31's editor-owned key list is needed (D-S09-V03).\n- F06 / WP-S09-05: TV's key file must not land without KeyMap 1.11.0, or T loses Text and F loses Zoom Fit. The work is owned by WP-S03a-02 and WP-S03a-V03.\n- F40: the hotkey fault is broader. It also eats V, D, O, Delete and Escape, and today it eats letters typed into VV's contenteditable plan annotation labels.\n- F41: every token bump needs WP-S01-11's unsaved-work hold first.\n- F11: do not port TV's DevMenu over VV's newer facade one.\n- F27/F29: VV has partial transport equivalents, and TV's folder/year semantics differ.\n\nWhat the planner should watch:\n- Many duplicates across slices need one owner each: KeyScope (S01/S03a/S05a/S09), the renumber (S01/S02a/S09), PhaseLibrary (D-S09-07 = D-S01-14 = D-S03a-10 = D-S04a-02), SnapshotHistory (S01/S02b/S09) and the section-block seam (S12-F46 = S09-V02).\n- Open conflicts: transport client shape (S08-F21 vs S09/S01/S07b, D-S09-V01), DistanceCulling path (S01-F20 vs S09-F22, D-S09-V02) and editor-owned keys (S12-F31 vs S09-F34).\n- Items where VV is ahead must never be overwritten by TV copies: the styled confirm modal, the controllers routed through Transitions, DevMenu 1.4.0, the loader seams and the na-pm-scene-activated dispatch.\n\nUnverified: nothing was run in a browser (key eating, CSS order, flight equivalence beyond config and code paths), and the TV CrossSection__SceneData loss and the WCP sync behaviour were established by reading code only. The report is edited in place with a full Verification section; the pre-edit copy is verify_s09_r2/S09__report__before_verify.md."
+}

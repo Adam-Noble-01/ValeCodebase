@@ -1,0 +1,26 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs --self-test
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - parity naming lint self-test (planted copies in memory)
+  PASS  a clean planted module passes
+  PASS  FAILS on a planted TrueVision__ literal
+  PASS  FAILS on a planted window.TrueVision__ read
+  PASS  FAILS on a planted NaProjectPortal string
+  PASS  FAILS on the QR /q/ and share /s/ resolvers
+  PASS  FAILS on a [TrueVision3D console prefix, a TrueVision3D__ storage key and an X-TrueVision- header
+  PASS  FAILS on TrueVision's banner, in either header style
+  PASS  FAILS on a drawing-system module with no banner, or a FILE line naming another file
+  PASS  FAILS on a TrueVision__ literal in a DESCRIPTION comment (only PORT NOTE and DEVELOPMENT LOG blocks are exempt)
+  PASS  PASSES this app's cdn.noble-architecture.com/VaApps and font URLs
+  PASS  PASSES a TrueVision string inside a PORT NOTE block (the real AutoSave__.js:81)
+  PASS  ...and the same line FAILS once it is moved out of the PORT NOTE into code
+  PASS  PASSES a TrueVision__ literal inside a DEVELOPMENT LOG block (TrueVision's log taken verbatim, DR-34)
+  PASS  PASSES the named TrueVisionHub file (TrueVision's file at b2aa9151)
+  PASS  ...and FAILS the same content at any other path
+  PASS  FAILS an unregistered folder number (08 is TrueVision growth, 00 has no row, 28 is registered for another folder)
+  PASS  PASSES every folder the registry names for this app, and a TrueVision folder landing at its shared number
+  PASS  FAILS a Layout Editor stylesheet with no home, and one with two
+  PASS  the fingerprint ignores line endings, so a checkout does not take a file off the baseline
+
+  Every self-test case passed (19).

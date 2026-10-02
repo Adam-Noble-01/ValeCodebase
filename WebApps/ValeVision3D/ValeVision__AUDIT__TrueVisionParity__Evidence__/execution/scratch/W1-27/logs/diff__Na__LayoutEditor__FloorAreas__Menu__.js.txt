@@ -1,0 +1,31 @@
+diff --git a/C:/Users/adamw/AppData/Local/Temp/claude/C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins/a1674149-918e-4d62-a79a-e7961f105155/scratchpad/W1-27_tv/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
+index f4eb3682..bb8c7f9a 100644
+--- a/C:/Users/adamw/AppData/Local/Temp/claude/C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins/a1674149-918e-4d62-a79a-e7961f105155/scratchpad/W1-27_tv/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
++++ b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - FLOOR AREAS - THE RIGHT-CLICK MENU
++// VALEVISION3D - LAYOUT EDITOR - FLOOR AREAS - THE RIGHT-CLICK MENU
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__FloorAreas__Menu__.js
+@@ -32,8 +32,17 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Authored in   : TrueVision3D first (21-Sep-2026)
+-// - ValeVision    : not yet ported - it goes with the rest of Floor Areas.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
++// - Source version: 1.1.1 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-27}}
++// - Parity        : verbatim, and inert until Floor Areas switches on (DR-14 (A)): nothing in
++//                   this app imports it until the sheet tools' context menu is TrueVision's.
++//                   TrueVision's floor area plan keeps its ValeVision phase open until Adam has
++//                   signed Floor Areas off; ported under DR-01 (c) - the Port Record names every
++//                   TrueVision release it carries that Adam has not confirmed in TrueVision itself.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //

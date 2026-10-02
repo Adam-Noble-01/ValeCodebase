@@ -1,0 +1,16 @@
+@@@@ mc_p2_divergence OLD
+//   - Not yet taken, each arriving with its feature: the register and statements pages, the
+//     first-open veil, the sheet keyboard's restart and Page Up / Page Down, the drawing grid and
+//     axes, vector tools, sheet images, floor areas, patterns, site plans and design phases, the
+//     specification lockstep, note regions, the left column's two tabs, the published viewer's
+//     guards, and SectionForKind's site plan, floor area and picture rules.
+@@@@ mc_p2_divergence NEW
+//   - Not yet taken, each arriving with its feature: the register and statements pages, the
+//     first-open veil, the sheet keyboard's restart and Page Up / Page Down, the drawing grid and
+//     axes, vector tools, sheet images, floor areas, patterns, site plans and design phases, the
+//     specification lockstep, note regions, the left column's two tabs, the published viewer's
+//     guards, and SectionForKind's site plan, floor area and picture rules.
+//   - The import order, and three comments where TrueVision's words would misstate this app (the
+//     parametric library's elements, the ready chain's count, the markup route's history), stay
+//     this app's until the convergence pass.
+@@@@ END

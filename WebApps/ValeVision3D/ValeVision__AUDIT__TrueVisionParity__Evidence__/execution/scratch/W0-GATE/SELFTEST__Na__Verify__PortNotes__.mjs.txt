@@ -1,0 +1,19 @@
+ValeVision3D - port-note verifier self-test (planted copies in memory)
+  PASS  a clean K2 H5 header passes
+  PASS  its well-formed placeholder is pending, not a failure
+  PASS  with --scribe the same placeholder fails
+  PASS  a planted malformed placeholder fails ({{VVREL:x}})
+  PASS  a placeholder in code fails
+  PASS  a planted out-of-order entry fails (older entry above a newer one)
+  PASS  a version written above a higher one on the same day fails
+  PASS  a repeated version fails
+  PASS  a TrueVision port with no Source version fails
+  PASS  a Source version without the TrueVision3D app version fails
+  PASS  a legacy marker is read (findings then print WARN with its reason)
+  PASS  an oldest-first log outside the drawing system passes
+  PASS  ...but one entry out of its step there still fails
+  PASS  the watermark lists TrueVision entries dated after this app's newest, oldest day first, with the release
+  PASS  the fingerprint ignores line endings and a resolved placeholder
+  PASS  ...and changes when anything else changes
+
+  Every self-test case passed (16).

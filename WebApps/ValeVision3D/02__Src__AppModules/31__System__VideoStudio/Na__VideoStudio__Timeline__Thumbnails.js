@@ -114,7 +114,7 @@
     // ------------------------------------------------------------
     import { Na__VerticalCorrection__ApplyFrame } from '../11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js';
     import { Na__CameraFollow__Update }           from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js';
-    import { Na__DistanceCulling__Update }        from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+    import { Na__DistanceCulling__Update }        from '../05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js';
     import { Na__FogPlaneSystem__GetFogPass }     from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
     import { Na__FogPlane__UpdateFogPassPerFrame } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js';
     // ------------------------------------------------------------

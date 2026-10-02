@@ -1,0 +1,298 @@
+{
+ "autosave": null,
+ "old": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D\\ValeVision__AUDIT__TrueVisionParity__Evidence__\\execution\\scratch\\W1-07\\preimage\\Na__LayoutEditor__AutoSave__.js",
+ "results": [
+  {
+   "name": "the old app (AutoSave 1.3.1) opens Doous clean: one sheet, no draft, no question",
+   "passed": true
+  },
+  {
+   "name": "the old app writes its draft as it always did: { savedAt, sheets }, no base",
+   "passed": true
+  },
+  {
+   "name": "1.5.0 asks about the pre-upgrade draft on the first load - exactly once",
+   "passed": true
+  },
+  {
+   "name": "the question offers Decide Later, Discard Draft and Apply Draft (the real Modal 1.2.0, in that order)",
+   "passed": true
+  },
+  {
+   "name": "Apply Draft and Discard Draft are both marked destructive (red)",
+   "passed": true
+  },
+  {
+   "name": "its details say the draft did not say what it grew from",
+   "passed": true
+  },
+  {
+   "name": "the footnote says Decide Later keeps it until an edit replaces it",
+   "passed": true
+  },
+  {
+   "name": "nothing touched the sheets while asking: the saved sheet, not dirty",
+   "passed": true
+  },
+  {
+   "name": "nothing writes the draft while the question is open (an edit, then past the draft debounce)",
+   "passed": true
+  },
+  {
+   "name": "Decide Later: the draft is left where it was, the \"not applied\" toast",
+   "passed": true
+  },
+  {
+   "name": "the next load asks again (the draft was left aside), once",
+   "passed": true
+  },
+  {
+   "name": "Discard Draft: the draft is removed from this browser",
+   "passed": true
+  },
+  {
+   "name": "...the saved sheets stay: no unsaved note, the model clean",
+   "passed": true
+  },
+  {
+   "name": "...the \"discarded\" toast, not an error",
+   "passed": true
+  },
+  {
+   "name": "...and nothing was written anywhere: no R2 write, no local POST",
+   "passed": true
+  },
+  {
+   "name": "the load after Discard asks nothing (asked about once)",
+   "passed": true
+  },
+  {
+   "name": "the temporary project file was never written in P",
+   "passed": true
+  },
+  {
+   "name": "no request left the harness unexpectedly (P)",
+   "passed": true
+  },
+  {
+   "name": "both windows load Doous and learn the same base: server.py's fingerprint of the file",
+   "passed": true
+  },
+  {
+   "name": "neither asks anything, neither is dirty; the flag answers false in both",
+   "passed": true
+  },
+  {
+   "name": "the flag is published as window.Na__Pwa__HasUnsavedWork, the module's own function, and no TrueVision-named global",
+   "passed": true
+  },
+  {
+   "name": "AutoSave exports TrueVision 1.5.0's six names",
+   "passed": true
+  },
+  {
+   "name": "A: the edit makes A dirty, its draft says it grew from the base loaded, the flag answers true",
+   "passed": true
+  },
+  {
+   "name": "A: Save Sheets lands - one R2 write (merge-keys), then server.py's guarded POST, one green toast",
+   "passed": true
+  },
+  {
+   "name": "A: the local write carried the base A loaded (X-ValeVision-Drawings-Base)",
+   "passed": true
+  },
+  {
+   "name": "A: the file and R2 now hold A's note; A's base is the file's new fingerprint; A's draft is cleared",
+   "passed": true
+  },
+  {
+   "name": "B: its edit is in its own draft, grown from the base B loaded (before A's save)",
+   "passed": true
+  },
+  {
+   "name": "B: Save Sheets is refused BEFORE R2 is written - no merge-keys request, no R2 write of any kind",
+   "passed": true
+  },
+  {
+   "name": "B: the refusal came from server.py's fingerprint (asked, then nothing posted)",
+   "passed": true
+  },
+  {
+   "name": "B: the file on disk is untouched (A's note, A's bytes)",
+   "passed": true
+  },
+  {
+   "name": "B: one red toast with TrueVision v2.146.0's words",
+   "passed": true
+  },
+  {
+   "name": "B: still dirty, its draft still there, the flag still holds an update reload",
+   "passed": true
+  },
+  {
+   "name": "B reloads: the drawings are A's, the base is the file's new fingerprint, and B's draft is offered - once",
+   "passed": true
+  },
+  {
+   "name": "the question names both bases and the saved stamp A wrote",
+   "passed": true
+  },
+  {
+   "name": "nothing touched B's sheets while asking (not dirty, A's note only)",
+   "passed": true
+  },
+  {
+   "name": "Decide Later: the draft is left for the next load, the drawings as saved (A's), not dirty",
+   "passed": true
+  },
+  {
+   "name": "the next reload asks again, once",
+   "passed": true
+  },
+  {
+   "name": "Discard Draft: the draft is gone, the drawings stay as saved (A's), not dirty",
+   "passed": true
+  },
+  {
+   "name": "...and the reload after Discard asks nothing",
+   "passed": true
+  },
+  {
+   "name": "Decide Later and Discard Draft wrote nothing: the file is still A's",
+   "passed": true
+  },
+  {
+   "name": "a reload with the refused draft again (B's browser as B left it) asks again",
+   "passed": true
+  },
+  {
+   "name": "Apply Draft: B's draft is put back over the saved drawings, dirty, the \"applied\" toast and console line",
+   "passed": true
+  },
+  {
+   "name": "...and the draft stays until a save clears it",
+   "passed": true
+  },
+  {
+   "name": "...Save Sheets then lands (the window's base is the file as it now is): R2 and disk hold B's note, the draft is cleared",
+   "passed": true
+  },
+  {
+   "name": "the reload after that save asks nothing and shows B's note, clean",
+   "passed": true
+  },
+  {
+   "name": "no window logged a console error",
+   "passed": true
+  },
+  {
+   "name": "no request left the harness unexpectedly (T)",
+   "passed": true
+  },
+  {
+   "name": "every R2 write sat under VaApps/Projects/2026/3047__Doous/",
+   "passed": true
+  },
+  {
+   "name": "A's edit puts A's draft in the shared store",
+   "passed": true
+  },
+  {
+   "name": "B's edit replaces it with B's draft (one key per project, one browser)",
+   "passed": true
+  },
+  {
+   "name": "A saves: R2 and disk take A's note",
+   "passed": true
+  },
+  {
+   "name": "...and A's save leaves B's draft in the store (it is not A's)",
+   "passed": true
+  },
+  {
+   "name": "B saves: refused before R2 (no merge-keys), the file untouched, the red toast",
+   "passed": true
+  },
+  {
+   "name": "B reloads in the same browser: B's draft is offered, once; the sheets are A's until answered",
+   "passed": true
+  },
+  {
+   "name": "Apply Draft puts B's note back, dirty",
+   "passed": true
+  },
+  {
+   "name": "no request left the harness unexpectedly (T2)",
+   "passed": true
+  },
+  {
+   "name": "no window in any scenario logged a console error",
+   "passed": true
+  },
+  {
+   "name": "the real 2026/3047__Doous project.json and notes are byte-for-byte unchanged",
+   "passed": true
+  }
+ ],
+ "evidence": {
+  "preUpgradeQuestion": {
+   "title": "Unsaved sheet changes from this browser",
+   "message": "This browser kept sheet changes that were never saved, but the project's drawings are not the ones those changes were made on: they have been saved since, by another window or on the file itself. Applying the draft puts EVERY sheet back to the draft's copy, including whatever was saved since. Discarding it keeps the drawings as saved.",
+   "details": [
+    "Draft written: 05:57 on 02/10/2026, 1 sheet",
+    "Drawings as saved: no saved stamp yet, 1 sheet",
+    "Base: sha1:ae1dcb469cbad37692763bbaaaf2a074791bd8f5 now; the draft grew from a copy that did not say"
+   ],
+   "footnote": "Decide Later leaves the draft for the next time this project opens; editing before then replaces it.",
+   "buttons": [
+    {
+     "label": "Decide Later",
+     "className": "na-pm-modal__btn na-pm-modal__btn--cancel"
+    },
+    {
+     "label": "Discard Draft",
+     "className": "na-pm-modal__btn na-pm-modal__btn--cancel na-pm-modal__btn--danger"
+    },
+    {
+     "label": "Apply Draft",
+     "className": "na-pm-modal__btn na-pm-modal__btn--confirm na-pm-modal__btn--danger"
+    }
+   ]
+  },
+  "twoWindowQuestion": {
+   "title": "Unsaved sheet changes from this browser",
+   "message": "This browser kept sheet changes that were never saved, but the project's drawings are not the ones those changes were made on: they have been saved since (05:57 on 02/10/2026), by another window or on the file itself. Applying the draft puts EVERY sheet back to the draft's copy, including whatever was saved since. Discarding it keeps the drawings as saved.",
+   "details": [
+    "Draft written: 05:57 on 02/10/2026, 1 sheet",
+    "Drawings as saved: 05:57 on 02/10/2026, 1 sheet",
+    "Base: sha1:0d20866c8afc9489f88f3da50e5bc419b3b9c468 now; the draft grew from sha1:ae1dcb469cbad37692763bbaaaf2a074791bd8f5"
+   ],
+   "footnote": "Decide Later leaves the draft for the next time this project opens; editing before then replaces it.",
+   "buttons": [
+    {
+     "label": "Decide Later",
+     "className": "na-pm-modal__btn na-pm-modal__btn--cancel"
+    },
+    {
+     "label": "Discard Draft",
+     "className": "na-pm-modal__btn na-pm-modal__btn--cancel na-pm-modal__btn--danger"
+    },
+    {
+     "label": "Apply Draft",
+     "className": "na-pm-modal__btn na-pm-modal__btn--confirm na-pm-modal__btn--danger"
+    }
+   ]
+  },
+  "bRefusalToast": [
+   {
+    "message": "Not saved: the project's drawings on disk are not the ones this window loaded - they were saved elsewhere at 05:57 on 02/10 since. Reload to pick them up; this window's unsaved changes will be offered as a draft.",
+    "isError": true
+   }
+  ],
+  "bases": {
+   "F0": "sha1:ae1dcb469cbad37692763bbaaaf2a074791bd8f5",
+   "F1": "sha1:0d20866c8afc9489f88f3da50e5bc419b3b9c468"
+  }
+ }
+}

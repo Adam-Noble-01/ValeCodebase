@@ -1,0 +1,30 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-99\run_g5.py FINAL
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+Na__Test__AppConfigParity__.test.mjs           exit=0    0.3s pass~8    fail~0   PASS  the Drawing Register offers none of TrueVision's four job stages | PASS  the Statement Writer has its switch (LayoutEditor__Statement__Enabled, now false) | Every check passed.
+Na__Test__DimensionRoundUp__.test.mjs          exit=0    0.1s pass~21   fail~0   PASS  A step of 0 rounds nothing | PASS  A missing step rounds nothing | Every check passed.
+Na__Test__DocumentKeys__.test.mjs              exit=0    0.3s pass~75   fail~0   PASS  VV: a held key acts once, and Command counts as Ctrl | PASS  VV: the same Ctrl+S on a drawing tab is left to the drawing | Every check passed.
+Na__Test__DrawingDrafts__.test.mjs             exit=0    0.1s pass~50   fail~0   PASS  "North Elevation Rear" is the author's own | PASS  nothing is recognised while north is not set | ALL CHECKS PASSED
+Na__Test__DrawingNotesRoute__.test.py          exit=0    0.4s pass~43   fail~0   PASS  ...and the file outside the Projects folder was neither read nor written | PASS  the real Projects folder and backup root were never the target | PASS - the drawing notes route reads, writes, keeps and refuses as it should.
+Na__Test__ElevationDepthFog__.test.mjs         exit=0    0.1s pass~68   fail~0   PASS  ...with the fall-off | PASS  ...and with the colour | All checks passed.
+Na__Test__FloorPlanStoreyLevel__.test.mjs      exit=0    0.1s pass~37   fail~0   PASS  anything that is not a setup is read as the built-in one | PASS  a setup made from the fallback cannot edit the fallback | PASS - every check passed.
+Na__Test__LoaderFacade__.test.mjs              exit=0    2.7s pass~118  fail~0   PASS  a load that fails: the Ready asked before it resolves false | PASS  a load that fails: the reason is on the console | PASS - every check passed (117).
+Na__Test__LoaderStylesheets__.test.mjs         exit=0    0.2s pass~7    fail~0   PASS  Surfaces is first and WebViewer last | PASS  no listed sheet is also imported by the CSS index (one home each; the index keeps only Styles__Boot) | Every check passed.
+Na__Test__NorthCompass__.test.mjs              exit=0    0.1s pass~24   fail~0   PASS  a building at 45 degrees gets the four intercardinals | PASS  configured words are used, missing ones fall back | PASS - every check passed.
+Na__Test__PerSceneLighting__.test.mjs          exit=0    0.1s pass~40   fail~0   PASS  switched off, the Dev menu is told to hide and no picture is re-keyed | PASS  an app config from before v2.71.0 still lights the model exactly as before | All checks passed.
+Na__Test__ProjectDataSaveGuard__.test.py       exit=0    1.8s pass~60   fail~1   PASS a path outside /api/ still falls back to the index page | PASS the real Projects folder and backup root were never the target | FAILURES: 0
+Na__Test__ProjectQr__.test.mjs                 exit=0    0.1s pass~62   fail~0   ok    a project whose master-index entry has no key draws no code, even switched on | ok    nor does a project the master index does not list | 62 passed, 0 failed
+Na__Test__PublishedApi__.test.py               exit=0    0.6s pass~54   fail~1   PASS a published file that is not there, read the way the reader reads it on localhost (/Whitecardopedia/Projects/...), is a JSON 404, never the index page | PASS the Projects folder is pointed back at Whitecardopedia/Projects | FAILURES: 0
+Na__Test__ScrapbookApi__.test.py               exit=0    0.3s pass~26   fail~0   PASS  deleting what has already gone is a 404 | PASS  the real scrapbook folder was never the target | PASS - the scrapbook api saves, lists, quarantines and refuses as it should.
+Na__Test__ScrapbookDrawingTitle__.test.mjs     exit=0    0.1s pass~40   fail~0   PASS  the type builds with no tools at all, as it must under the tile | PASS  a missing config still draws the house title | PASS - every check passed.
+Na__Test__ScrapbookScaleBar__.test.mjs         exit=0    0.1s pass~36   fail~0   PASS  Show units writes them on the last numeral only | PASS  describe reads the length both ways | PASS - the scale bar draws the house bar and holds its rules.
+Na__Test__SheetImagesApi__.test.py             exit=0    0.4s pass~42   fail~1   PASS ...and its list answers from the Projects folder (not the JSON 404 for unknown routes) | PASS the Projects folder is pointed back at Whitecardopedia/Projects | FAILURES: 0
+Na__Test__TitleBlockCells__.test.mjs           exit=0    0.1s pass~0    fail~0   pass  no strip, all zero | pass  a row with no WidthMm takes the module default | ALL CHECKS PASSED
+Na__Test__TransportFacade__.test.mjs           exit=0    1.3s pass~176  fail~0   PASS  ...banner VALEVISION3D and a PORT NOTE with TrueVision's source version | 175 passed, 0 failed; the modules logged 6 line(s) along the way. | PASS - every check passed.
+Na__Test__UserSpellingsApi__.test.py           exit=0    1.9s pass~62   fail~0   PASS  ...and leave the file byte for byte as it was, but for its stamp | PASS  the shipped dictionary was never written | ALL PASSED
+Na__Test__ViewportRotation__.test.mjs          exit=0    0.1s pass~16   fail~0   PASS  a turned one opens one and writes one cm | PASS  the matrix puts each level point where the turn puts it on the paper (to a hundredth of a point, 0.004 mm) | Every check passed.
+Na__Test__ViewportTitleText__.test.mjs         exit=0    0.1s pass~28   fail~0   PASS  a configured placeholder word is used | PASS  bad facts become their empty values and text is tidied to one line | PASS - every check passed.
+Na__Test__StatementServer__.py --check         exit=0    0.6s pass~63   fail~1   PASS ...and no other project file is written by this server (400) | PASS the Projects root is pointed back at Whitecardopedia/Projects | FAILURES: 0
+
+G5 FINAL: 24 test(s), 24 pass, 0 fail

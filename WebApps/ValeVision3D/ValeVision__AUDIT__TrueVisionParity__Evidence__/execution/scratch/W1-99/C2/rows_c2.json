@@ -1,0 +1,1304 @@
+[
+ {
+  "rel": "43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+  "sub": "3.1",
+  "line": 332,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "`43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js`",
+   "same path",
+   "1.0.0 (31-Aug-2026)",
+   "1.1.0",
+   "drifted (52 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.1.0",
+   "`Na__DrawView__MarkupMount__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+  "sub": "3.6",
+  "line": 901,
+  "pk": [
+   "W1-21"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js`",
+   "-",
+   "-",
+   "-",
+   "VV-only; keep: permanent VV divergence, the lazy loader (DR-24 (a), D64; PD-05); not a back-port candidate; W1-31, W1-33, W1-34 (v2.71.2): TrueVision's entry points and view names mirrored (VIEW_REGISTER, VIEW_STATEMENT, Ready, HasFeature, IsSitePlanSheet, OpenRegister and OpenStatements, refusing until W4-10 and W4-13) with the registration pattern in its header; the body class at the press and the no-wait hand-over to the first-open veil (W1-33); its header for TabStrip 2.0.0 (W1-34); module 1.1.3; its PORT NOTE's Back-port line now says what this row says",
+   "ValeVision-only facade: TrueVision's names answered the same before and after the editor loads; two CheckNames rows for the view names (W1-33); the site-plan row waits for W1-21",
+   "-",
+   "index.html (+3)",
+   "-",
+   "01-Oct-2026",
+   "W1-31, W1-33, W1-34, W4-08",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+  "sub": "3.2",
+  "line": 549,
+  "pk": [
+   "W1-22",
+   "W1-25",
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json`",
+   "same path",
+   "-",
+   "-",
+   "adapted - every TrueVision key, block, note and label in one additive pass, in TrueVision's formatting (W0-15); the jsPDF path and the Classic scan repointed (W0-16); 79 listed seams held by Na__Test__AppConfigParity__ (v2.71.1) [was: drifted (2083 diff lines)]; W1-32, W1-34, W1-35 (v2.71.2): the FocusNote reworded without its Floor Areas, Patterns and site plan clauses; the four tab-strip labels and the MarginNotes description took TrueVision's values; MarginToggle and MarginToggleTitle deleted (TrueVision has neither); the gate took the seven stale rows off the parity test's allow-list (72 seams)",
+   "72 seams: brand 17, decision 12, identity 11, NA path 3, TrueVision defect 3, ValeVision-only 6, withheld 20 (each with its owner in the test's allow-list) [was: 79 seams: brand 17, decision 12, identity 11, NA path 3, TrueVision defect 3, ValeVision-only 8, withheld 25 (each with its owner in the test's allow-list)]",
+   "-",
+   "`Na__LayoutEditor__ConfigState__Readers__.js`",
+   "-",
+   "01-Oct-2026",
+   "W0-03, W0-15, W0-16, W1-32, W1-34, W1-35, W1-22, W1-25, W2-14, W2-29, W2-36, W3-07, W3-09, W3-10, W5-01, W5-05, W5-07",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+  "sub": "3.1",
+  "line": 394,
+  "pk": [
+   "W1-22",
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js`",
+   "same path",
+   "1.9.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151) - taken whole (W0-15) [was: unrecorded]",
+   "1.9.0",
+   "adapted - TrueVision 1.9.0 taken whole, ValeVision fallbacks re-applied (W0-15); its jsPDF fallback is TrueVision's since W0-16 (v2.71.1) [was: drifted (266 diff lines); next: port_adapted]",
+   "Vale logo, Drawn By, PDF author and creator fallbacks; rows fallback DrawingNumber and scales 20/50/100 until W1-22; Helvetica-first style font until W1-25; swing key ValeVision__Linetype__DoorSwings; PDF font fallbacks on the AD04 cuts (DR-21)",
+   "none (TV 1.9.0 taken whole at b2aa9151) [was: 21-Sep 1.9.0; 21-Sep 1.8.0]",
+   "`Na__LayoutEditor__ConfigState__.js`",
+   "-",
+   "01-Oct-2026",
+   "W0-15, W0-16, W1-22",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+  "sub": "3.1",
+  "line": 397,
+  "pk": [
+   "W1-36"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js`",
+   "same path",
+   "1.32.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151) - hunks only (W1-32, W1-33, W1-34) [was: cites TrueVision3D v2.57.0]",
+   "1.32.0",
+   "adapted (hunk replay; never whole before W5-03) - the KeyScope reader and Follow, DocumentKeys Ready and Initialize, the view names, EnterUnder and Quiet, FOLD_GROUP, PreloadMetrics' promise, the refusing OpenRegister and OpenStatements (W1-32); the first-open veil at TrueVision's call site (W1-33); OpenSpecification through EnterUnder (W1-34); VV module 1.18.3 (v2.71.2) [was: drifted (828 diff lines); next: port_whole_reapply_vv]",
+   "VV initialised by 01__Core__Loader; WaitForFirstDrawing; IsAvailable = Layout Mode on AND a sheet; the loader INTEGRATION; Layout Mode (DR-25); the scene-broadcast listeners; the Snapping shim until W2-19; the immediate first-open seam (Q-COVER); refusing OpenRegister and OpenStatements bodies",
+   "the feature hunks of 1.21.0-1.32.0 stay with their packages (W1-36 keys and paging; W2-16, W2-19, W2-29, W2-31, W2-35, W3-05, W3-07, W3-09, W3-10, W3-11, W4-09, W4-10, W4-13) [was: 21-Sep 1.28.0; 21-Sep 1.27.0; 21-Sep 1.26.0; 21-Sep 1.25.0; 21-Sep 1.24.0; 21-Sep 1.23.0; 21-Sep 1.22.0; 21-Sep 1.21.0 [2.57.0,2.104.0]; 22-Sep 1.29.0; 23-Sep 1.30.0; 29-Sep 1.32.0 [2.166.0]; 29-Sep 1.31.0]",
+   "LE loader",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W1-31, W1-32, W1-33, W1-34, W1-36, W2-19, W2-29, W2-31, W2-35, W2-16, W3-05, W3-07, W3-09, W3-10, W3-11, W4-10, W4-09, W4-13, W5-03, W5-07",
+   "26 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__Panel__DrawingGrid__.js` (missing, W2-18); and 23 more (landed by W1-21, W1-27, W1-36, W2-14, W2-18, W2-19, W2-29, W2-30, W2-31, W2-35, W2-41, W3-02, W3-10, W3-11, W4-06, W4-09, W4-10, W4-12, W4-18)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+  "sub": "3.1",
+  "line": 400,
+  "pk": [
+   "W1-07"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js`",
+   "same path",
+   "close guard and unsaved-work flag from TrueVision3D AutoSave",
+   "1.5.0",
+   "drifted (314 diff lines); next: port_whole_reapply_vv; W0-08 (v2.71.1): TrueVision's unsaved-work flag replayed as window.Na__Pwa__HasUnsavedWork (inert until the prepared registrar is deployed); 1.5.0 whole waits for W1-07",
+   "the flag is published as window.Na__Pwa__HasUnsavedWork (K2 K4); its reader is the staged Whitecardopedia registrar (W0-08, not deployed); re-apply the name when W1-07 takes 1.5.0 whole [was: No TrueVision__Pwa__HasUnsavedWork reader in VV (shared Whitecardopedia worker)]",
+   "22-Sep 1.5.0; 22-Sep 1.4.0",
+   "`Na__LayoutEditor__ModeController__.js`",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W0-08, W1-07",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js",
+  "sub": "3.6",
+  "line": 904,
+  "pk": [
+   "W1-19"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js`",
+   "-",
+   "-",
+   "-",
+   "VV-only; keep while the loader exists: the tab-code leaf (DR-24; an offer to TV is WT-10, held)",
+   "-",
+   "-",
+   "LE loader (+1)",
+   "-",
+   "01-Oct-2026",
+   "WT-10",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js",
+  "sub": "3.1",
+  "line": 401,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js`",
+   "same path",
+   "cites TrueVision3D v2.46.0",
+   "1.0.0",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__Measurements__.js` (+5)",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+  "sub": "3.1",
+  "line": 402,
+  "pk": [
+   "W1-21"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js`",
+   "same path",
+   "cites TrueVision3D v2.35.0",
+   "1.7.0",
+   "drifted (112 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.7.0",
+   "`Na__LayoutEditor__ModeController__.js` (+3)",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W0-06, W1-21",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js",
+  "sub": "3.1",
+  "line": 405,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.2.0",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__ItemClipboard__.js` (+8)",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+  "sub": "3.1",
+  "line": 406,
+  "pk": [
+   "W1-21"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js`",
+   "same path",
+   "cites TrueVision3D v2.52.0",
+   "-",
+   "drifted (502 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.33.0; 21-Sep 1.32.0; 21-Sep 1.31.0; 21-Sep 1.30.0; 21-Sep 1.29.0; 21-Sep 1.28.0; 22-Sep 1.35.1 [2.147.0]; 22-Sep 1.35.0; 22-Sep 1.34.0",
+   "LE loader (+65)",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W1-21, W4-07",
+   "7 modules: `Na__LayoutEditor__SheetModel__AreaGroups__.js` (missing, W1-20); `Na__LayoutEditor__SheetModel__Groups__.js` (+1 name, W1-20); `Na__LayoutEditor__SheetModel__Layers__.js` (+7 names, W1-20); and 4 more (landed by W1-20, W1-21)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js",
+  "sub": "3.5",
+  "line": 640,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js`",
+   "-",
+   "1.0.0",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "`Na__LayoutEditor__SheetRecords__.js` (+1 name, W1-19)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js",
+  "sub": "3.1",
+  "line": 407,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js`",
+   "same path",
+   "unrecorded",
+   "1.0.0",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__History__.js` (+4)",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js",
+  "sub": "3.1",
+  "line": 408,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js`",
+   "same path",
+   "unrecorded",
+   "1.0.0",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js",
+  "sub": "3.1",
+  "line": 409,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js`",
+   "same path",
+   "unrecorded",
+   "1.3.0",
+   "drifted (64 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.2.0; 22-Sep 1.3.0",
+   "`Na__LayoutEditor__SheetModel__.js` (+2)",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+  "sub": "3.1",
+  "line": 410,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js`",
+   "same path",
+   "unrecorded",
+   "1.4.0",
+   "drifted (349 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.4.0; 21-Sep 1.3.0; 21-Sep 1.2.1; 21-Sep 1.2.0; 21-Sep 1.1.0",
+   "`Na__LayoutEditor__SheetModel__.js` (+5)",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js",
+  "sub": "3.1",
+  "line": 411,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js`",
+   "same path",
+   "unrecorded",
+   "1.2.0",
+   "verbatim (header only); next: port_adapted",
+   "-",
+   "22-Sep 1.2.0",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js",
+  "sub": "3.1",
+  "line": 412,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js`",
+   "same path",
+   "unrecorded",
+   "1.6.0",
+   "drifted (216 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.5.0; 21-Sep 1.4.0; 21-Sep 1.3.0; 21-Sep 1.2.1; 21-Sep 1.2.0; 21-Sep 1.1.0; 22-Sep 1.6.0",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "`Na__LayoutEditor__SheetModel__Layers__.js` (+1 name, W1-20)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js",
+  "sub": "3.1",
+  "line": 413,
+  "pk": [
+   "W1-21"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js`",
+   "same path",
+   "cites TrueVision3D v2.70.0",
+   "1.4.0",
+   "drifted (435 diff lines); next: port_whole_reapply_vv",
+   "transport seam (DIV-4): TV imports Na__CfApi__GetLoadedProjectData - VV facade (W0-12)",
+   "21-Sep 1.2.0; 22-Sep 1.4.0; 22-Sep 1.3.0",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "TV: Na__CloudflareIntegration__ApiClient__ -> VV facade (DIV-4)",
+   "01-Oct-2026",
+   "W1-21",
+   "`Na__LayoutEditor__SheetModel__State__.js` (+1 name, W1-20); `Na__LayoutEditor__SheetRecords__.js` (+6 names, W1-19)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+  "sub": "3.1",
+  "line": 414,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js`",
+   "same path",
+   "unrecorded",
+   "1.2.0",
+   "drifted (69 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.2.0",
+   "`Na__LayoutEditor__SheetModel__.js` (+8)",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "`Na__LayoutEditor__SheetRecords__.js` (+2 names, W1-19)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js",
+  "sub": "3.1",
+  "line": 415,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js`",
+   "same path",
+   "unrecorded",
+   "1.2.0",
+   "drifted (43 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.1.0; 22-Sep 1.2.0",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+  "sub": "3.1",
+  "line": 416,
+  "pk": [
+   "W1-20"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js`",
+   "same path",
+   "unrecorded",
+   "1.4.0",
+   "drifted (165 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.3.0; 21-Sep 1.2.0; 22-Sep 1.4.0",
+   "`Na__LayoutEditor__SheetModel__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-20",
+   "`Na__LayoutEditor__SheetRecords__.js` (+1 name, W1-19)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+  "sub": "3.1",
+  "line": 417,
+  "pk": [
+   "W1-19"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js`",
+   "same path",
+   "cites TrueVision3D v2.70.0",
+   "1.39.0",
+   "drifted (1229 diff lines); next: port_whole_reapply_vv",
+   "DrawingCode__ leaf re-export; no register/DocumentId; one drawing type",
+   "21-Sep 1.34.0; 21-Sep 1.33.0; 21-Sep 1.32.0; 21-Sep 1.31.0; 21-Sep 1.30.0; 21-Sep 1.29.0; 21-Sep 1.28.0; 21-Sep 1.27.0; 21-Sep 1.26.0; 21-Sep 1.25.0; 21-Sep 1.24.0; 22-Sep 1.38.0; 22-Sep 1.37.0; 22-Sep 1.36.0; 22-Sep 1.35.0; 23-Sep 1.39.0",
+   "`Na__LayoutEditor__Panel__MarginNotes__.js` (+12)",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W1-19",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+  "sub": "3.1",
+  "line": 418,
+  "pk": [
+   "W1-36"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.4.0",
+   "drifted (165 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.4.0; 21-Sep 1.3.0 [2.110.0]; 21-Sep 1.2.0",
+   "`Na__LayoutEditor__ModeController__.js` (+1)",
+   "-",
+   "01-Oct-2026",
+   "W0-03, W1-36",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+  "sub": "3.1",
+  "line": 419,
+  "pk": [
+   "W1-36"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.1.0",
+   "verbatim (header only); next: port_adapted",
+   "-",
+   "21-Sep 1.1.0",
+   "`Na__LayoutEditor__ModeController__.js`",
+   "-",
+   "01-Oct-2026",
+   "W0-03, W1-36",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+  "sub": "3.1",
+  "line": 420,
+  "pk": [
+   "W1-36"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.3.0",
+   "drifted (56 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.3.0; 21-Sep 1.2.0",
+   "`Na__LayoutEditor__Controls__Pc__.js` (+5)",
+   "-",
+   "01-Oct-2026",
+   "W1-36",
+   "`Na__LayoutEditor__SheetSurface__.js` (+1 name, W1-28)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+  "sub": "3.1",
+  "line": 421,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.14.0",
+   "drifted (433 diff lines); next: port_whole_reapply_vv",
+   "Helvetica measuring face (no PdfFonts)",
+   "17-Sep 1.8.0; 19-Sep 1.9.0; 21-Sep 1.13.0; 21-Sep 1.12.0; 21-Sep 1.11.0; 21-Sep 1.10.0; 22-Sep 1.14.0",
+   "`Na__LayoutEditor__DimensionGeometry__.js` (+13)",
+   "-",
+   "01-Oct-2026",
+   "W1-26",
+   "`Na__LayoutEditor__PdfFonts__.js` (missing, W1-25)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+  "sub": "3.1",
+  "line": 422,
+  "pk": [
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.13.0",
+   "drifted (499 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.12.0; 21-Sep 1.11.0; 21-Sep 1.10.0; 21-Sep 1.9.0; 21-Sep 1.8.0; 21-Sep 1.7.0; 22-Sep 1.13.0",
+   "`Na__LayoutEditor__Controls__Pc__.js` (+31)",
+   "-",
+   "01-Oct-2026",
+   "W1-28",
+   "`Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26); `Na__LayoutEditor__MarkupBridge__.js` (+2 names, W1-28)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+  "sub": "3.1",
+  "line": 424,
+  "pk": [
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css`",
+   "same path",
+   "cites TrueVision3D v2.45.0",
+   "-",
+   "drifted (429 diff lines); next: no_action (re-verify VV seams)",
+   "-",
+   "none (date rule)",
+   "LE loader",
+   "-",
+   "01-Oct-2026",
+   "W1-28, W2-20, W2-19, W2-24, W2-25, W5-02",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css",
+  "sub": "3.1",
+  "line": 425,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css`",
+   "same path",
+   "cites TrueVision3D v2.72.0",
+   "-",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "LE loader",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js",
+  "sub": "3.1",
+  "line": 426,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js`",
+   "same path",
+   "unrecorded",
+   "1.2.0",
+   "drifted (91 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.2.0",
+   "`Na__LayoutEditor__TitleBlock__Modern__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js",
+  "sub": "3.1",
+  "line": 427,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js`",
+   "same path",
+   "unrecorded",
+   "1.0.0",
+   "verbatim (header only); next: no_action",
+   "VV-only meaning: Vale scan (TD04)",
+   "none (date rule)",
+   "`Na__LayoutEditor__SheetChrome__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js",
+  "sub": "3.1",
+  "line": 428,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.5.0",
+   "drifted (166 diff lines); next: port_adapted",
+   "Vale logo + cell, Helvetica-measured widths, Drawing No. (not Document ID)",
+   "21-Sep 1.5.0",
+   "`Na__LayoutEditor__SheetChrome__.js`",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "`Na__LayoutEditor__TitleBlock__QrCell__.js` (missing, W1-22); `Na__LayoutEditor__TitleBlock__Cells__.js` (+1 name, W1-22)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js",
+  "sub": "3.5",
+  "line": 643,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js`",
+   "-",
+   "1.0.0",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43",
+   "all (first TV release naming it: v2.81.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "`Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+  "sub": "3.1",
+  "line": 429,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js`",
+   "same path",
+   "cites TrueVision3D v2.31.0",
+   "1.6.0",
+   "drifted (131 diff lines); next: port_adapted",
+   "-",
+   "23-Sep 1.6.0",
+   "`Na__LayoutEditor__DimensionTool__.js` (+4)",
+   "-",
+   "01-Oct-2026",
+   "W1-26",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js",
+  "sub": "3.1",
+  "line": 430,
+  "pk": [
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js`",
+   "same path",
+   "unrecorded",
+   "1.4.0",
+   "drifted (133 diff lines); next: port_adapted",
+   "-",
+   "22-Sep 1.4.0 [2.141.0]; 22-Sep 1.3.0",
+   "`Na__LayoutEditor__EditScope__.js` (+13)",
+   "-",
+   "01-Oct-2026",
+   "W1-28",
+   "`Na__LayoutEditor__MarkupBridge__.js` (+1 name, W1-28)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js",
+  "sub": "3.1",
+  "line": 431,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js`",
+   "same path",
+   "unrecorded",
+   "1.3.0",
+   "drifted (153 diff lines); next: port_adapted",
+   "-",
+   "18-Sep 1.2.0; 22-Sep 1.3.0",
+   "`Na__LayoutEditor__Grips__.js` (+5)",
+   "-",
+   "01-Oct-2026",
+   "W1-26",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+  "sub": "3.1",
+  "line": 432,
+  "pk": [
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js`",
+   "same path",
+   "cites TrueVision3D v2.52.0",
+   "1.20.0",
+   "drifted (484 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "18-Sep 1.13.0; 21-Sep 1.18.0; 21-Sep 1.17.0; 21-Sep 1.16.0; 21-Sep 1.15.0; 21-Sep 1.14.0; 22-Sep 1.19.0; 23-Sep 1.20.0",
+   "`Na__LayoutEditor__DimensionTool__.js` (+16)",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W1-28",
+   "`Na__LayoutEditor__FloorAreas__Paint__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+  "sub": "3.1",
+  "line": 434,
+  "pk": [
+   "W1-26"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js`",
+   "same path",
+   "cites TrueVision3D v2.45.0",
+   "1.9.0",
+   "drifted (281 diff lines); next: port_whole_reapply_vv",
+   "-",
+   "21-Sep 1.8.0; 21-Sep 1.7.0; 21-Sep 1.6.0; 22-Sep 1.9.0",
+   "`Na__LayoutEditor__EditScope__.js` (+15)",
+   "-",
+   "01-Oct-2026",
+   "W1-26",
+   "`Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js",
+  "sub": "3.1",
+  "line": 477,
+  "pk": [
+   "W1-38"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js`",
+   "same path",
+   "- (from Lantern Designer)",
+   "1.6.0",
+   "drifted (196 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.6.0",
+   "`Na__LayoutEditor__GradientTool__.js` (+21)",
+   "-",
+   "01-Oct-2026",
+   "W1-38",
+   "`Na__ColourPalette__.js` (missing, W1-37)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css",
+  "sub": "3.1",
+  "line": 487,
+  "pk": [
+   "W1-38"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css`",
+   "same path",
+   "- (from Lantern Designer)",
+   "-",
+   "drifted (214 diff lines); next: no_action (re-verify VV seams)",
+   "-",
+   "none (date rule)",
+   "LE loader",
+   "-",
+   "01-Oct-2026",
+   "W1-38",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+  "sub": "3.1",
+  "line": 497,
+  "pk": [
+   "W1-25"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js`",
+   "same path",
+   "- (authored in ValeVision first; TrueVision's file is its twin)",
+   "1.0.0",
+   "drifted (39 diff lines); next: no_action (re-verify VV seams)",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__SpecEditor__.js` (+3)",
+   "-",
+   "01-Oct-2026",
+   "-",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+  "sub": "3.1",
+  "line": 508,
+  "pk": [
+   "W1-25"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js`",
+   "same path",
+   "1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; still 1.0.0 at HEAD b2aa9151) [was: unrecorded]",
+   "1.0.0",
+   "adapted - the project name through Na__CfApi__GetProjectDisplayName (W0-12) and the console prefix (W0-03); v2.71.1 [was: drifted (28 diff lines); next: no_action (re-verify VV seams)]",
+   "Helvetica (no PdfFonts until W1-25); the project name from the facade accessor (alias > displayName > projectName) in place of TrueVision's PWA global [was: Helvetica (no PdfFonts); project name from folder id]",
+   "none (date rule)",
+   "`Na__LayoutEditor__SpecEditor__Actions__.js`",
+   "VV facade: Na__CfApi__GetProjectDisplayName (W0-12)",
+   "01-Oct-2026",
+   "W0-02, W0-03, W0-12, W1-25",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js",
+  "sub": "3.1",
+  "line": 523,
+  "pk": [
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js`",
+   "same path",
+   "cites TrueVision3D v2.85.0",
+   "1.2.2",
+   "drifted (53 diff lines); next: port_adapted",
+   "-",
+   "21-Sep 1.2.2; 21-Sep 1.2.1",
+   "`Na__LayoutEditor__Panel__ScrapbookParametric__.js`",
+   "-",
+   "01-Oct-2026",
+   "W2-37",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js",
+  "sub": "3.5",
+  "line": 800,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js`",
+   "-",
+   "1.2.2",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "`Na__LayoutEditor__FloorAreas__Geometry__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+5 names, W1-21)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json",
+  "sub": "3.5",
+  "line": 801,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json`",
+   "-",
+   "-",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js",
+  "sub": "3.5",
+  "line": 802,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js`",
+   "-",
+   "1.1.0",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "none"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js",
+  "sub": "3.5",
+  "line": 804,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js`",
+   "-",
+   "1.1.1",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "`Na__LayoutEditor__FloorAreas__.js` (missing, W1-27); `Na__LayoutEditor__FloorAreas__Geometry__.js` (missing, W1-27); `Na__LayoutEditor__SheetModel__.js` (+2 names, W1-21)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js",
+  "sub": "3.5",
+  "line": 805,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js`",
+   "-",
+   "1.1.0",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "`Na__LayoutEditor__FloorAreas__.js` (missing, W1-27)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js",
+  "sub": "3.5",
+  "line": 807,
+  "pk": [
+   "W1-27"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js`",
+   "-",
+   "1.0.0",
+   "TV-only (not yet in VV)",
+   "gated, verbatim - DR-14 A",
+   "all (first TV release naming it: v2.104.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-27",
+   "`Na__LayoutEditor__FloorAreas__.js` (missing, W1-27)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+  "sub": "3.1",
+  "line": 527,
+  "pk": [
+   "W1-25",
+   "W1-28"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js`",
+   "same path",
+   "1.12.0 (TrueVision3D v2.160.0, 23-Sep-2026; read at b2aa9151) - hunks (W1-23, W1-24) [was: unrecorded]",
+   "1.12.0",
+   "adapted (hunk replay) - TrueVision's EnsureLinework call (W1-23); FAST picture packing (1.11.0), the strict and pictureCompression options, the awaited save, LoadLibrary split and exported (W1-24); VV module 1.2.2 (v2.71.2) [was: drifted (364 diff lines); next: port_whole_reapply_vv]",
+   "Helvetica; StyleBands [was: Helvetica; StyleBands; jsPDF path (VV vendors jsPDF under 35__System__PageLayoutSystem) - its jsPDF part closed in v2.71.1: jsPDF 4.1.0 at TrueVision's vendor 05 path, W0-16]; EnsureJsPdf without the Open Sans wait until PdfFonts (W1-25)",
+   "1.2.0, 1.4.0's Open Sans half, 1.6.0-1.10.0 and the rest of 1.12.0 (W1-25, W1-28, W3-06, W3-09, W3-11, W3-16) [was: 17-Sep 1.5.0; 20-Sep 1.6.0; 21-Sep 1.9.0; 21-Sep 1.8.0; 21-Sep 1.7.0; 22-Sep 1.10.0; 23-Sep 1.12.0; 23-Sep 1.11.0]",
+   "LE loader (+4)",
+   "-",
+   "01-Oct-2026",
+   "W0-02, W1-23, W1-24, W1-25, W1-28, W3-16",
+   "5 modules: `Na__LayoutEditor__PdfFonts__.js` (missing, W1-25); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-21); `Na__LayoutEditor__SheetChrome__.js` (+1 name, W1-26); and 2 more (landed by W1-28, W2-16)"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js",
+  "sub": "3.1",
+  "line": 528,
+  "pk": [
+   "W1-22"
+  ],
+  "cells": [
+   "`51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js`",
+   "same path",
+   "unrecorded",
+   "1.0.0",
+   "verbatim (header only); next: no_action",
+   "-",
+   "none (date rule)",
+   "`Na__LayoutEditor__PdfExporter__.js` (+1)",
+   "-",
+   "01-Oct-2026",
+   "W1-22",
+   "-"
+  ]
+ },
+ {
+  "rel": "51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js",
+  "sub": "3.5",
+  "line": 810,
+  "pk": [
+   "W1-25"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js`",
+   "-",
+   "1.0.0",
+   "TV-only (not yet in VV)",
+   "gated, adapted - DR-21 a",
+   "all (first TV release naming it: v2.52.0-54.0 (ffbaee21))",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-25",
+   "none"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/Na__ColourPalette__.js",
+  "sub": "3.5",
+  "line": 840,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/Na__ColourPalette__.js`",
+   "-",
+   "1.0.0",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "`Na__ColourPalette__Manager__.js` (missing, W1-37); `Na__ColourPalette__Picker__.js` (missing, W1-37)"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/Na__ColourPalette__Config__.json",
+  "sub": "3.5",
+  "line": 841,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/Na__ColourPalette__Config__.json`",
+   "-",
+   "-",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "-"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/Na__ColourPalette__Manager__.js",
+  "sub": "3.5",
+  "line": 842,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/Na__ColourPalette__Manager__.js`",
+   "-",
+   "1.1.0",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "none"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/Na__ColourPalette__Picker__.js",
+  "sub": "3.5",
+  "line": 843,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/Na__ColourPalette__Picker__.js`",
+   "-",
+   "1.1.0",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "`Na__ColourPalette__Manager__.js` (missing, W1-37)"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/Na__ColourPalette__Styles__.css",
+  "sub": "3.5",
+  "line": 844,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/Na__ColourPalette__Styles__.css`",
+   "-",
+   "-",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "-"
+  ]
+ },
+ {
+  "rel": "54__Feature__ColourPalette/README__ColourPalette__.md",
+  "sub": "3.5",
+  "line": 845,
+  "pk": [
+   "W1-37"
+  ],
+  "cells": [
+   "- (lands at the TV path)",
+   "`54__Feature__ColourPalette/README__ColourPalette__.md`",
+   "-",
+   "-",
+   "TV-only (not yet in VV)",
+   "gated, adapted - Vale name/dictionary (DR-20)",
+   "all (first TV release naming it: v2.126.0)",
+   "-",
+   "-",
+   "01-Oct-2026",
+   "W1-37",
+   "-"
+  ]
+ }
+]

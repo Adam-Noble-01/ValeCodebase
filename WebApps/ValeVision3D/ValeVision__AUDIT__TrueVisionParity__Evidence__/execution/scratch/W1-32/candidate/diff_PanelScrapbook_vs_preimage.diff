@@ -1,0 +1,59 @@
+--- a/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
++++ b/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
+@@ -31,17 +31,38 @@
+ //
+ // PORT NOTE:
+-// - Ported from   : TrueVision3D 55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js,
+-//                   its 1.2.0 (TrueVision v2.85.0)
+-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
++// - Source version: 1.2.1 (TrueVision3D v2.91.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-32}}. First ported 20-Sep-2026 for ValeVision3D
++//                   v2.68.0, from TrueVision's 1.2.0 (TrueVision3D v2.85.0), as this app's 1.0.0.
+ // - Parity        : adapted
+-// - Divergences   : A config that cannot be read shows the section on every sheet to say so, where
+-//                   TrueVision shows it only on a site plan sheet: this app has no such sheets.
+-// - Back-port     : n/a (this IS the port)
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - A config that cannot be read shows the section on every sheet to say so, where TrueVision shows
++//     it only on a site plan sheet: this app has no site plan sheets, and its sheet model does not
++//     export Na__LeModel__IsSitePlanSheet yet, so the import and the show rule in Sync keep this
++//     app's form.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
+-// 20-Sep-2026 - Version 1.0.0
+-// - Ported from TrueVision3D's 1.2.0.
++// 20-Sep-2026 - Version 1.2.1
++// - The Scrapbook tab carries hover text (the panel host's spec.hint), as the
++//   other three column tabs now do, so no tab is marked out from its peers.
++//
++// 19-Sep-2026 - Version 1.2.0
++// - The section moves from the left column to a Scrapbook tab at the top of
++//   the right one, which Adam asked for, beside the Parametric and Custom
++//   libraries. RegisterTab adds the tab; its wording is the config's Title.
++//
++// 19-Sep-2026 - Version 1.1.0
++// - The tile, its drag, its ghost and its drop moved out to
++//   Na__LayoutEditor__Scrapbook__TileDrag__, so the Custom and Parametric
++//   scrapbooks drag the same way from the same code. Nothing about the
++//   gestures changed. The keyboard placing is the tile's own now, rather
++//   than a delegated panel control.
++//
++// 14-Sep-2026 - Version 1.0.0
++// - Initial implementation.
+ //
+ // =============================================================================
+@@ -204,6 +225,7 @@
+     // ------------------------------------------------------------
+     function Na__LePanelScrap__RegisterTab() {
+-        const tab = Na__LePanels__RegisterTab('right', { id : Na__LeScrap__TAB_ID, title : Na__LeScrap__Label('Title', 'Scrapbook') });
+-        if (tab) Na__LeScrap__Ready().then(() => { tab.button.textContent = Na__LeScrap__Label('Title', 'Scrapbook'); });
++        const hint = () => Na__LeScrap__Label('TabHint', 'Ready-made, dynamic and saved items to drag onto the sheet.');
++        const tab  = Na__LePanels__RegisterTab('right', { id : Na__LeScrap__TAB_ID, title : Na__LeScrap__Label('Title', 'Scrapbook'), hint : hint() });
++        if (tab) Na__LeScrap__Ready().then(() => { tab.button.textContent = Na__LeScrap__Label('Title', 'Scrapbook'); tab.button.title = hint(); });
+         return tab;
+     }

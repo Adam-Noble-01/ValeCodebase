@@ -1,0 +1,33 @@
+def na_collect_source_image_names(wcp_project_dir: Path) -> List[str]:
+    """Return the sorted IMG## source PNG names stored directly in the
+    Whitecardopedia project folder (the generated 524p thumbnails excluded)."""
+    if not wcp_project_dir.is_dir():
+        return []
+    img_pattern = re.compile(r'^IMG\d{2,3}.*__WhitecardImage__.*\.png$', re.IGNORECASE)
+    return sorted(
+        f.name for f in wcp_project_dir.iterdir()
+        if f.is_file() and img_pattern.match(f.name) and THUMBNAIL_SUFFIX_TOKEN not in f.name
+    )
+
+
+def na_repoint_merged_scene_thumbnails(document: Dict, wcp_project_dir: Path) -> str:
+    """Re-point IMG-slot scene thumbnails inside the document about to be uploaded.
+
+    The upload takes PresentationMode__SavedCameraScenes from R2 (the editor
+    owns it), so the re-point na_update_project_json_images made to the local
+    copy is applied again here, to R2's copy of the block. Hand-authored paths
+    (PresentationMode/Thumbnails/...) are never touched, and a slot with no
+    image in this edition is named, not guessed at. Returns a note for the
+    report ('' when there was nothing to do)."""
+    source_images = na_collect_source_image_names(wcp_project_dir)
+    if not source_images:
+        return ''                                                # <-- Nothing to anchor a slot on
+    repointed, orphaned = na_repoint_presentation_thumbnails(document, source_images)
+    notes = []
+    if repointed:
+        notes.append(f're-pointed {repointed} scene thumbnail(s) on the uploaded copy')
+    if orphaned:
+        notes.append(f"no image exported for: {', '.join(orphaned)}")
+    return '; '.join(notes)
+
+

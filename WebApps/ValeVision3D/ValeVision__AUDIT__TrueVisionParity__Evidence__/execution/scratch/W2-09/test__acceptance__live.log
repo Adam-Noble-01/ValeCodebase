@@ -1,0 +1,86 @@
+﻿W2-09 acceptance - old (pre-port) against new (D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+
+Enhance - the call ValeVision makes today, Apply(canvas) with no strength
+  PASS  setup "shipped": no strength makes the same calls with the same parameters
+  PASS  setup "shipped": strength 100 makes the same calls as the old pass
+  PASS  setup "shipped": strength 0 makes no call and hands the canvas back
+  PASS  setup "awkward": no strength makes the same calls with the same parameters
+  PASS  setup "awkward": strength 100 makes the same calls as the old pass
+  PASS  setup "awkward": strength 0 makes no call and hands the canvas back
+  PASS  setup "sharpenOff": no strength makes the same calls with the same parameters
+  PASS  setup "sharpenOff": strength 100 makes the same calls as the old pass
+  PASS  setup "sharpenOff": strength 0 makes no call and hands the canvas back
+  PASS  setup "halfOpacity": no strength makes the same calls with the same parameters
+  PASS  setup "halfOpacity": strength 100 makes the same calls as the old pass
+  PASS  setup "halfOpacity": strength 0 makes no call and hands the canvas back
+  PASS  no canvas is handed back as is (null canvas) - old and new agree
+
+Render Composites - config fetched
+  PASS  the export lists are identical
+  PASS  FIELD is still Viewport__CompositeWeights
+  PASS  every row but Enhance Whitecard (and the fallback's Depth Fog) is identical, in the same order
+  PASS  the fetched config has no depthFog row yet (W2-12 adds it)
+  PASS  Enhance Whitecard is a percent weight 0..100, default 100, step 5, labelled Strength, toggle kept
+  PASS  the old copy had no weight on it
+  PASS  toggle rows: the same keys apart from the fallback's Depth Fog
+  PASS  weight rows: the old list plus Enhance Whitecard, in drawing order
+  PASS  key projectedLinework: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key profileLinework: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key sectionOutline: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key hiddenLines: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key glassOpaque: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key whitecard: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key baseImage: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key contextLayer: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key nothingLikeThis: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  raster tokens (2D) identical for every viewport without an Enhance weight
+  PASS  raster tokens (3D) identical for every viewport without an Enhance weight
+  PASS  the full token identical for every viewport
+  PASS  typing 40 stores Viewport__CompositeWeights { enhanceWhitecard: 40 }
+  PASS  the normaliser keeps it on load and save
+  PASS  Weight reads it back as 40
+  PASS  IsOverridden lights the reset arrow
+  PASS  the 2D raster token moves to enhanceWhitecard:40
+  PASS  the 3D raster token moves to enhanceWhitecard:40
+  PASS  beside a 2D-only pixel weight and a factor, 2D keys both raster weights and 3D only the Enhance one
+  PASS  typing 400 clamps to 100
+  PASS  typing -5 clamps to 0 (the pass then skips both effects)
+  PASS  the reset arrow (null) removes the override, and the tokens go back to empty
+  PASS  a stored legacy weight on the old copy was dropped by the normaliser (it had no weight kind)
+  PASS  a viewport never touched still keys exactly as before (empty tokens)
+
+Render Composites - config fetch failed (built-in inventory)
+  PASS  the export lists are identical
+  PASS  FIELD is still Viewport__CompositeWeights
+  PASS  every row but Enhance Whitecard (and the fallback's Depth Fog) is identical, in the same order
+  PASS  the built-in inventory carries TrueVision's depthFog toggle first, with no weight
+  PASS  Enhance Whitecard is a percent weight 0..100, default 100, step 5, labelled Strength, toggle kept
+  PASS  the old copy had no weight on it
+  PASS  toggle rows: the same keys apart from the fallback's Depth Fog
+  PASS  weight rows: the old list plus Enhance Whitecard, in drawing order
+  PASS  key projectedLinework: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key profileLinework: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key sectionOutline: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key hiddenLines: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key glassOpaque: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key whitecard: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key baseImage: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key contextLayer: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  key nothingLikeThis: Row, Clamp, Weight, Factor and IsOverridden answer identically
+  PASS  raster tokens (2D) identical for every viewport without an Enhance weight
+  PASS  raster tokens (3D) identical for every viewport without an Enhance weight
+  PASS  the full token identical for every viewport
+  PASS  typing 40 stores Viewport__CompositeWeights { enhanceWhitecard: 40 }
+  PASS  the normaliser keeps it on load and save
+  PASS  Weight reads it back as 40
+  PASS  IsOverridden lights the reset arrow
+  PASS  the 2D raster token moves to enhanceWhitecard:40
+  PASS  the 3D raster token moves to enhanceWhitecard:40
+  PASS  beside a 2D-only pixel weight and a factor, 2D keys both raster weights and 3D only the Enhance one
+  PASS  typing 400 clamps to 100
+  PASS  typing -5 clamps to 0 (the pass then skips both effects)
+  PASS  the reset arrow (null) removes the override, and the tokens go back to empty
+  PASS  a stored legacy weight on the old copy was dropped by the normaliser (it had no weight kind)
+  PASS  a viewport never touched still keys exactly as before (empty tokens)
+
+  PASS - 77/77 checks.

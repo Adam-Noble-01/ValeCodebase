@@ -1,0 +1,60 @@
+// =============================================================================
+// TRUEVISION3D - TEST - ORTHO MODE (F8)
+// =============================================================================
+//
+// FILE       : Na__Test__OrthoMode__.test.mjs
+// NAMESPACE  : Na__Test
+// MODULE     : Ortho Mode Test
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Prove AutoCAD's Ortho on F8: the Ortho XOR Shift rule, and that the Draw tool, the Dimension tool, every drag and the keyboard obey it
+// CREATED    : 21-Sep-2026
+//
+// DESCRIPTION:
+// - THE RULE. The leaf (Na__LayoutEditor__OrthoMode__State__) is loaded as
+//   shipped: Resolve must answer AutoCAD's truth table, Shift override on and
+//   off, and the flag must come back from the browser's storage.
+// - THE SWITCH. The controller is loaded over the SAME leaf instance, with the
+//   real config JSON: Toggle must remember, announce and echo "<Ortho on>" /
+//   "<Ortho off>" exactly once per real change.
+// - THE DRAW TOOL, THE DIMENSION TOOL AND THE DRAG (ApplyDrag) are loaded with
+//   the real axis lock and the real leaf, everything else stubbed: with Ortho
+//   off each must do exactly what it did before; with it on each point must be
+//   held the way a held Shift held it; with Shift held as well each must be
+//   free again; an arrow lock must still win; a snap must supply only the
+//   coordinate along the held axis; a typed length must be exact; and the two
+//   places Shift means something else (a viewport handle, the rotate grip)
+//   must still hear the raw key.
+// - THE KEYBOARD. The real key map module with the SHIPPED JSON, and the real
+//   sheet tools state: F8 must switch Ortho once per press (not on repeat),
+//   from a panel checkbox too but never from a text box, never with Ctrl, and
+//   from the built-in fallback key map as well; Ctrl+L must ship off; and F8
+//   or Shift must re-aim the band or a drag that has really moved.
+// - Each module is the shipped file with its import lines swapped for stubs
+//   and nothing else touched.
+//
+// USAGE:
+//     node 80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs
+//
+//   Exit 0 = every check passed. Exit 1 = at least one did not.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.0.0
+// - Written with Ortho mode (Na__LayoutEditor__OrthoMode__, F8).
+//
+// =============================================================================
+
+import { readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { tmpdir } from 'node:os';
+
+
+// -----------------------------------------------------------------------------
+// REGION | A Browser Just Big Enough
+// -----------------------------------------------------------------------------
+
+    const announced = [];
+    const storage   = new Map();
+    globalThis.CustomEvent = class { constructor(type, init) { this.type = type; this.detail = init ? init.detail : undefined; } };

@@ -6,7 +6,7 @@
 // NAMESPACE  : Na__LePanelLayers
 // MODULE     : Layout Editor - Panel Layers
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : The left panel: layer rows with eye, lock, name, type, order, add, delete and a type filter
+// PURPOSE    : The left panel: layer rows with eye, lock, reference switch, name, type, order, add, delete and a type filter
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
@@ -22,8 +22,16 @@
 //   model until release: one reorder, one undo step. A focused grip takes
 //   the arrow keys too, so the order can still be changed without a mouse.
 // - THE LOCK BUTTON NAMES WHAT A CLICK WILL DO: "Lock" on an open layer,
-//   "Unlock" on a locked one. A locked layer's button carries a faint red -
-//   enough to spot the locked rows at a glance, and no more.
+//   "Unlock" on a locked one.
+// - THE REF BUTTON MAKES A REFERENCE LAYER, Blender's Selectable switch: the
+//   layer is drawn and printed as ever, but nothing on it can be clicked,
+//   boxed, hovered or snapped to - the pointer passes straight through to
+//   whatever lies beneath. A lock is the other half: it stops an edit and
+//   still offers its points to snap to. The button reads Ref either way.
+// - ONE RED FOR EVERY SWITCH AWAY FROM ITS USUAL STATE: Off, Unlock (locked)
+//   and Ref (a reference layer) all carry the same faint red. A finished
+//   drawing has every layer On, unlocked and selectable, so a red button
+//   anywhere down the three columns is one still to put back.
 //
 // INTEGRATION:
 // - Registered into the panel host by the mode controller.
@@ -31,23 +39,51 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (layer panel purpose)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, after Lantern Designer
+//                   30__System__DrawingEditorMode's layer panel); TrueVision3D took it for v2.21.0
+//                   (10-Sep-2026) and authored 1.1.0 to 1.3.0. This app's copy took 1.1.0 back on
+//                   13-Sep-2026, then its own 1.1.1 and 1.1.2 (TrueVision's 1.1.1 labels and the Off
+//                   half of 1.3.0, hunk replay, ValeVision3D v2.71.4); since ported back whole from
+//                   TrueVision3D 1.3.0 (HEAD b2aa9151)
+// - Source version: 1.3.0 (TrueVision3D v2.154.0, 23-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - whole: the Ref switch (1.2.0,
+//                   v2.123.0: its button, handler, words and the list's note) and Ref's share of the
+//                   one red (1.3.0, v2.154.0). Releases Adam has not confirmed in TrueVision are named
+//                   in the Port Record (DR-01 (c)).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 23-Sep-2026 - Version 1.3.0
+// - The On / Off button is red while the layer is Off (na-le-btn--eye
+//   is-off, aria-pressed), and the Ref button's faint blue becomes the lock's
+//   faint red: Adam's "when layers are off, make the button red, like with
+//   the locked and the same with ref", so a layer left in any of the three
+//   switched states shows at a glance.
+//
+// 21-Sep-2026 - Version 1.2.0
+// - A third switch beside On and Lock, Ref, for Adam's "non-selectable layer
+//   ... so you can see it, but nothing tries to snap or bind to it. Blender
+//   has a system like this, so copy that": Blender's Selectable restriction,
+//   with its snapping's Exclude Non-Selectable always on. It writes the layer
+//   record's Selectable (Na__LeModel__UpdateLayer selectable), and a layer
+//   switched to reference lets go of anything of its that was selected.
+// - The note under the list says what Ref does.
+//
+// 21-Sep-2026 - Version 1.1.1
+// - The Images layer type (pictures, 54__Feature__SheetImages) reads "Images"
+//   in the type select and the filter.
+//
 // 13-Sep-2026 - Version 1.1.0
 // - A grip replaces the Up and Down buttons and the whole-row HTML drag and
 //   drop: press it, drag up or down, release. Arrow keys on a focused grip
 //   step the layer one row.
 // - The lock button reads Lock / Unlock instead of Open / Locked, and is a
 //   faint red while locked.
-// - Ported from TrueVision, where it was authored first and signed off.
-//   Below the header this file is now TrueVision's line for line.
 //
 // 10-Sep-2026 - Version 1.0.1
 // - Vectors layer type.
@@ -94,7 +130,7 @@
     // MODULE CONSTANTS | Section Id and Type Labels
     // ------------------------------------------------------------
     const Na__LePanelLayers__ID = 'layers';
-    const Na__LePanelLayers__TYPE_LABELS = { viewport : 'Viewports', annotation : 'Annotations', dimension : 'Dimensions', vector : 'Vectors', mixed : 'General' };
+    const Na__LePanelLayers__TYPE_LABELS = { viewport : 'Viewports', annotation : 'Annotations', dimension : 'Dimensions', vector : 'Vectors', area : 'Floor Areas', image : 'Images', mixed : 'General' };   // <-- 'area' holds the measured rooms (59__Feature__FloorAreas), 'image' the pictures (54__Feature__SheetImages)
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | The Grip
@@ -148,11 +184,21 @@
         row.className = 'na-le-layer' + (layer.Layer__Visible === false ? ' na-le-layer--hidden' : '') + (locked ? ' na-le-layer--locked' : '');
         row.setAttribute('data-na-layer-id', layer.Layer__Id);
 
-        const eye = Na__LePanels__Button(layer.Layer__Visible === false ? 'Off' : 'On', 'layer-eye', 'na-le-btn--icon', layer.Layer__Id);
+        const hidden = layer.Layer__Visible === false;                            // <-- The same test the model shows by
+        const eye = Na__LePanels__Button(hidden ? 'Off' : 'On', 'layer-eye', 'na-le-btn--icon na-le-btn--eye' + (hidden ? ' is-off' : ''), layer.Layer__Id);
         eye.title = 'Show or hide';
+        eye.setAttribute('aria-pressed', String(hidden));
         const lock = Na__LePanels__Button(locked ? 'Unlock' : 'Lock', 'layer-lock', 'na-le-btn--icon na-le-btn--lock' + (locked ? ' is-locked' : ''), layer.Layer__Id);
         lock.title = locked ? 'Locked - click to unlock' : 'Lock this layer';
         lock.setAttribute('aria-pressed', String(locked));
+
+        // THE REFERENCE SWITCH | Blender's Selectable: shown, never picked
+        const reference = layer.Layer__Selectable === false;                       // <-- The same test the model picks by
+        const refer = Na__LePanels__Button(Na__LeCfg__GetLabel('LayerReference', 'Ref'), 'layer-ref', 'na-le-btn--icon na-le-btn--ref' + (reference ? ' is-reference' : ''), layer.Layer__Id);
+        refer.title = reference
+            ? Na__LeCfg__GetLabel('LayerReferenceOnTitle', 'Reference layer: shown and printed, but nothing on it can be selected or snapped to - click to make it selectable again')
+            : Na__LeCfg__GetLabel('LayerReferenceTitle', 'Make this a reference layer: shown and printed, but nothing on it can be selected or snapped to');
+        refer.setAttribute('aria-pressed', String(reference));
 
         const name = document.createElement('span');
         name.className   = 'na-le-layer__name';
@@ -173,11 +219,12 @@
         grip.setAttribute('aria-label', 'Drag to reorder, or use the arrow keys');
         grip.setAttribute('data-na-control', 'layer-grip');
         grip.setAttribute('data-na-role', layer.Layer__Id);
-        [ eye, lock, grip ].forEach((b) => { b.disabled = !editable; });
+        [ eye, lock, refer, grip ].forEach((b) => { b.disabled = !editable; });
         if (editable) grip.addEventListener('pointerdown', (e) => Na__LePanelLayers__DragStart(e, grip, layer.Layer__Id));
 
         row.appendChild(eye);
         row.appendChild(lock);
+        row.appendChild(refer);
         row.appendChild(name);
         row.appendChild(type);
         row.appendChild(grip);
@@ -355,7 +402,7 @@
             foot.appendChild(Na__LePanels__Button(Na__LeCfg__GetLabel('DeleteLayer', 'Delete selected type'), 'layer-delete', 'na-le-btn--danger'));
             body.appendChild(foot);
         }
-        body.appendChild(Na__LePanels__Note(Na__LeCfg__GetLabel('LayersNote', 'Top of the list draws frontmost. Types are tags for filtering; any layer can hold anything.')));
+        body.appendChild(Na__LePanels__Note(Na__LeCfg__GetLabel('LayersNote', 'Top of the list draws frontmost. Types are tags for filtering; any layer can hold anything. Ref makes a reference layer: shown and printed, but nothing on it can be selected or snapped to.')));
     }
     // ------------------------------------------------------------
 
@@ -411,6 +458,7 @@
         });
         Na__LePanels__OnControl('click', 'layer-eye',  (e, el, id) => { const s = Na__LeModel__GetActiveSheet(); const l = s && s.Sheet__Layers.find((x) => x.Layer__Id === id); if (l) Na__LeModel__UpdateLayer(s, id, { visible : l.Layer__Visible === false }); });
         Na__LePanels__OnControl('click', 'layer-lock', (e, el, id) => { const s = Na__LeModel__GetActiveSheet(); const l = s && s.Sheet__Layers.find((x) => x.Layer__Id === id); if (l) Na__LeModel__UpdateLayer(s, id, { locked : !l.Layer__Locked }); });
+        Na__LePanels__OnControl('click', 'layer-ref',  (e, el, id) => { const s = Na__LeModel__GetActiveSheet(); const l = s && s.Sheet__Layers.find((x) => x.Layer__Id === id); if (l) Na__LeModel__UpdateLayer(s, id, { selectable : l.Layer__Selectable === false }); });
         Na__LePanels__OnControl('keydown', 'layer-grip', (e, el, id) => {
             const step = e.key === 'ArrowUp' ? -1 : (e.key === 'ArrowDown' ? 1 : 0);
             if (!step) return;

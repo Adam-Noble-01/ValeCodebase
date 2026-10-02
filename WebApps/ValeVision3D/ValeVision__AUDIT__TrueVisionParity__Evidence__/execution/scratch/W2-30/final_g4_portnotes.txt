@@ -1,0 +1,27 @@
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 11 named file(s) - 11 PORT NOTE(s), 11 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  PENDING  11 release placeholder(s) in 11 file(s), for the wave's Parity Scribe: W2-30 x11
+
+  WATERMARK  TrueVision D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode at b2aa9151 (git)
+  The TrueVision DEVELOPMENT LOG entries dated after this app's newest log entry (the S11 c.1 rule; same-day entries are not flagged), under 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification:
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js
+        this app 29-Sep-2026 | TrueVision 1.5.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js
+        this app 29-Sep-2026 | TrueVision 1.1.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js
+        this app 29-Sep-2026 | TrueVision 1.1.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js
+        this app 29-Sep-2026 | TrueVision 1.1.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js
+        this app 29-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js
+        this app 29-Sep-2026 | TrueVision 1.2.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js
+        this app 29-Sep-2026 | TrueVision 1.3.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js
+        this app 22-Sep-2026 | TrueVision 1.2.0 | after: -
+
+  RESULT: PASS (0 fail, 0 warn, 11 pending)

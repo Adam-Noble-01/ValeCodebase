@@ -29,14 +29,24 @@
 //   constrain through here; Na__LayoutEditor__SheetTools__ toggles the
 //   lock from the arrow keys; Na__LayoutEditor__Grips__ colours the
 //   rubber band by the locked axis.
+// - Na__LayoutEditor__ViewportSnapMove__ reads Get() to hold a carried
+//   viewport, which is why this module IS the one source of the two axis
+//   names: a lock the keyboard sets and a lock a solver reads have to be
+//   spelled the same, or one of them silently never matches.
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : none
-// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.13 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.13, port Phase 5); TrueVision3D
+//                   took it back unchanged and added the INTEGRATION paragraph naming
+//                   ViewportSnapMove (v2.98.0, no version step); since ported back whole from
+//                   TrueVision3D 1.0.0 (HEAD b2aa9151)
+// - Source version: 1.0.0 (TrueVision3D v2.98.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - header sync with the hub (the code and
+//                   the INTEGRATION paragraph were already TrueVision's since v2.71.4).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------

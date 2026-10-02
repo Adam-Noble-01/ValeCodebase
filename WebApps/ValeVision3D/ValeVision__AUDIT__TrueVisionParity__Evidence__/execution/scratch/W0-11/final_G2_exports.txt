@@ -1,0 +1,8 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs
+ValeVision3D - named export resolution
+  files checked : 415
+
+  PASS - every named import resolves to a real export,
+         and every Na__ identifier used is imported or declared.
+
+EXIT=0

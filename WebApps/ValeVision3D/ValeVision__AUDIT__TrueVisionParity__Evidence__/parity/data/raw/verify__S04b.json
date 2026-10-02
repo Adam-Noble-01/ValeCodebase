@@ -1,0 +1,471 @@
+{
+ "slice_id": "S04b",
+ "claims_checked": 130,
+ "confirmed_ids": [
+  "S04b-F01",
+  "S04b-F03",
+  "S04b-F04",
+  "S04b-F05",
+  "S04b-F07",
+  "S04b-F08",
+  "S04b-F09",
+  "S04b-F10",
+  "S04b-F11",
+  "S04b-F12",
+  "S04b-F13",
+  "S04b-F14",
+  "S04b-F16",
+  "S04b-F17",
+  "S04b-F18",
+  "S04b-F19",
+  "S04b-F20",
+  "S04b-F21",
+  "S04b-F22",
+  "S04b-F23",
+  "S04b-F25",
+  "S04b-F26",
+  "S04b-F27",
+  "S04b-F28",
+  "S04b-F30",
+  "S04b-F31",
+  "S04b-F32",
+  "S04b-F34",
+  "S04b-F35",
+  "S04b-F36",
+  "S04b-F37",
+  "S04b-F38",
+  "S04b-F39",
+  "S04b-F41",
+  "S04b-F42",
+  "S04b-F43",
+  "S04b-F44",
+  "S04b-F45",
+  "S04b-F47",
+  "S04b-F48",
+  "S04b-F50",
+  "S04b-F51",
+  "S04b-F52",
+  "S04b-F53",
+  "S04b-F54",
+  "S04b-F55",
+  "S04b-F56",
+  "S04b-F58",
+  "S04b-F59",
+  "S04b-F60",
+  "S04b-F62",
+  "S04b-F63",
+  "S04b-F64",
+  "S04b-F65"
+ ],
+ "refuted": [
+  {
+   "id": "S04b-F49",
+   "reason": "VV is NOT without a service worker. VV index.html:44 loads ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js, which registers the WebApps-root stub D:\\10_CoreLib__ValeCodebase\\WebApps\\Na__Pwa__ServiceWorker__.js importing Whitecardopedia__Pwa__ServiceWorker__Logic__.js ('Caching brain of the Whitecardopedia + ValeVision3D PWA'). On the live https origin shell JS/CSS is served stale-while-revalidate against PWA_SW_VERSION_TOKEN = '2026-09-18-1' (:229); its log bumps the token for VV Layout Editor releases and records a mixed old/new module graph failing to link (1.0.7). The VV ledger itself corrected its 'n/a - this tree has no PWA worker' rows (:135-175) and VV devlog v2.67-v2.71 carry 'THE SHARED SERVICE WORKER' notes. Replaced by S04b-V01, D-S04b-V01 and WP-S04b-16. Action keep_vv_divergence is wrong: the step is a per-wave note plus Adam's token decision."
+  }
+ ],
+ "corrections": [
+  {
+   "id": "S04b-F02",
+   "field": "detail",
+   "new_value": "VV 30__System__SheetTools/Na__LayoutEditor__Snapping__.js 1.2.0 (455 lines) is TV Snapping 1.1.0 (sheet objects, ported back as VV 1.1.0) plus TV 1.3.0's marker tones (ported back as VV 1.2.0, ledger row 715). It does NOT contain TV 1.2.0's FindOnViewport or the { kind:'viewport' } exclusion (v2.28, never ported), so it is not 'equal to TV 1.3.0'. TV continued to 1.5.0 (title-block chrome points and grid fallback v2.114, reference layers v2.123), then dissolved it into 28__System__ObjectSnap at v2.129 and deleted it after an hour as a re-export (git 7ab70638, 21-Sep). Every VV function survives in a TV unit (map in report b.5); TONE_VERTEX/DIMENSION/VIEWPORT were removed (colour by target). TV has no file of this name. VV's header says the tone colours live in Styles__Main__.css; they are actually in Styles__Main__Paper__.css:306-337 (stale comment). Its 10 VV importers: ModeController:228 (Clear), ContextMenu:100 (Toggle, IsEnabled), HitResolution:112 (Find, ShowMarker, HideMarker), Keyboard:123 (Toggle), PointerDrag:137 (TONE_DIMENSION, Snap, HideMarker), DimensionTool:129 (TONE_DIMENSION, Snap, ShowMarker, HideMarker), LeaderTool:77 and RectangleTool:98 (Snap, HideMarker), ShapeTool:121 (Snap, ShowMarker, HideMarker), Toolbar:110 (CHANGED_EVENT, IsEnabled, Toggle).",
+   "reason": "VV 1.2.0 lacks TV 1.2.0's FindOnViewport (verified: no such function in VV Snapping__.js); the location of the tone CSS in VV's own header is stale."
+  },
+  {
+   "id": "S04b-F02",
+   "field": "recommendation",
+   "new_value": "Do not port or rename it. Replace it with the 28 folder through a one-wave re-export shim (WP-S04b-06R) that imports ONLY from __Search__ (Find, Snap, ShowMarker, HideMarker, Clear, IsEnabled, KIND_END, KIND_MID) and __State__ (CHANGED_EVENT) and declares TONE_VERTEX/DIMENSION/VIEWPORT as local strings. It must never import the controller: that file imports Measurements, and VV Measurements__.js:118-120 imports ShapeTool, RectangleTool and DimensionTool, which import the shim. That is the cycle TV's ObjectSnap__.js:33-37 forbids. In the same commit repoint the only Toggle importers (Keyboard:123, Toolbar:110, ContextMenu:100) to the controller and ModeController:228 to __Search__. Delete the shim behind a grep gate in WP-S04b-09.",
+   "reason": "The survey's shim re-exports the controller, which puts the controller on the tools' import chain and creates a module cycle (see S04b-V02)."
+  },
+  {
+   "id": "S04b-F06",
+   "field": "detail",
+   "new_value": "Draft 1.1.0, the grid controller, the axes and Marker 1.1.0 listen for Na__LeSurface__ZOOM_SETTLED_EVENT ('na-layouteditor-zoom-settled', TV SheetSurface:235). It came with v2.111, whose own Files list (TrueVision__DEVLOG__.md:5481-5490) is: SheetSurface 1.8.0 (NoteZoomGesture :631, SettleZoom, na-le-paper--zooming), Navigation 1.2.0, Controls__Pc 1.2.0, Controls__TouchScreen 1.1.0, Styles__Main__Paper.css (the hold rule), SheetTools__.js 1.32.0 (settle listeners), SheetTools__PointerDrag__.js 1.8.0 (pan skip), Measurements 1.5.1, 50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js 1.2.0, Toolbar 1.14.0 (SyncZoom), ConfigState__EditorSetup 1.2.0, and AppConfig Navigation ZoomSettleMs 350 and HoldPaperWhileZooming. VV SheetSurface is 1.6.0 and VV MarginGrip 1.0.0 (TV 1.3.0); VV's AppConfig has neither Navigation key.",
+   "reason": "The finding's file list omitted SheetTools__.js, PointerDrag, Measurements, MarginGrip, Toolbar and the CSS hold rule, which the devlog's Files list includes. MarginGrip was missing from the report entirely."
+  },
+  {
+   "id": "S04b-F15",
+   "field": "evidence",
+   "new_value": "Index__.js:152-203 Build (level = window.ToFrame || window.ToPaper; onto = window.FrameToPaper || identity), :212 IndexFor; VV Window has ToPaper (Viewport2d__Window__.js:87). TV Viewport2d:475 vs VV Viewport2d:289 GetSnapSource: identical except TV's key appends '|' + win.RotationDeg (Viewport2d 1.14.0), which is undefined and inert in VV.",
+   "reason": "Function-body diff shows one differing line (the rotation suffix in the key), so 'identical body' is not quite right; the contract still matches."
+  },
+  {
+   "id": "S04b-F24",
+   "field": "detail",
+   "new_value": "TV 1.6.0 (v2.28 to v2.138; moved into 28 at v2.129). It carries a frame by a point of its own drawing, snaps that point to other drawings, acquires tracking points (AcquireDwellMs 400, AcquireMax 3) with level/plumb guides, and takes the arrow-key lock, the grid, a Ctrl-drag copy (Retarget) and turned frames. The VV ledger says 'not ported - comes with the carry' (rows 446, 504, 720, 1128). TV's realign plan phase L (line 807) has the snap-move back-port as 'Pending Adam's sign-off'. It needs: Na__LeTools__CarryTarget, which is TV-only code in TV SheetTools__HitResolution__.js:753-768 (exported :797; that file's port note lists it as a TrueVision divergence; VV left it out, SheetTools__.js:257-258); PointerPress GrabAt (:353-354); PointerDrag hover, Solve (:676), Finish (:1003) and RerunViewportDrag; Keyboard Esc Clear (:692); ToolState; SheetTools Refresh; and the carry CSS (TV Main__Paper.css:824-887). The ToolSetup reader keys viewportCarry, viewportTracking, acquireDwellMs, acquireMax and trackMarkerSizePx are mandatory. ViewportSnapMove reads them with no fallback (:254, :317, :347, :368, :375, :406, :516), so with VV's ToolSetup 1.0.0 the carry is a silent no-op.",
+   "reason": "CarryTarget lives in HitResolution, not PointerDrag, and the config keys are required. Both were missed."
+  },
+  {
+   "id": "S04b-F24",
+   "field": "recommendation",
+   "new_value": "Port it in the late wave (WP-S04b-11R), after the SheetTools hub ports (PointerDrag 1.7.0 or later) and Adam's sign-off (D-S04b-01). Add CarryTarget to VV HitResolution, with GetSelectionItems and IsSelected added to its SheetModel import (VV SheetModel already exports both, :597-598). Make the carry reader and AppConfig keys part of the same WP, and mirror TV's carry CSS in Main__Paper.",
+   "reason": "The original WP omitted HitResolution and treated the keys as optional."
+  },
+  {
+   "id": "S04b-F29",
+   "field": "detail",
+   "new_value": "DimensionTool (TV 1.12.0 vs VV 1.5.0): Ortho via Resolve in OrientationFor/Span (1.8.0); grid OffsetFor via Na__LeGrid__SnapPoint (1.9.0); inference skips reference layers by importing Na__LeModel__IsLayerSelectable (1.10.0), so the hunk needs the F39 seam; Search import with { from : start } and TARGET_DIMENSION instead of TONE_DIMENSION (1.11.0). ShapeTool (1.10.0 vs 1.6.0): Resolve in SnapOrConstrain (1.8.0), { from : last vertex }, and the closing marker {KIND_END, TARGET_SHAPE} (1.9.0). RectangleTool: the snap repoint only. Its other code differences (d.land, area, layerId) belong to note regions and floor areas, not this slice. The whole-file code diffs are 52 lines (DimensionTool) and 38 (ShapeTool).",
+   "reason": "The git diff shows DimensionTool importing IsLayerSelectable, a dependency the finding did not name."
+  },
+  {
+   "id": "S04b-F33",
+   "field": "vv_adaptation",
+   "new_value": "Port RedrawHeld with three things removed: the Na__LeVec__ branch; the TOOL_AREA test in the Draw branch (TV Keyboard:479, 'tool === TOOL_DRAW || tool === TOOL_AREA'; Floor Areas is TV-only and VV's SheetTools__State defines no TOOL_AREA); and RerunViewportDrag/RerunAnchorDrag until WP-11R and WP-12 land.",
+   "reason": "TV RedrawHeld also references Na__LeTools__TOOL_AREA, which VV lacks."
+  },
+  {
+   "id": "S04b-F40",
+   "field": "recommendation",
+   "new_value": "Port the three leaves verbatim early (WP-S04b-01), skipping any that S05b or S04a has already landed. Add only Holes, Rings and EdgePairs, with an import of ShapeRings Of/Edges/Split, to VV ShapeGeometry as a hunk (WP-S04b-02R). Never copy TV's whole ShapeGeometry 1.9.0: it also imports SheetChrome PushQr (VV lacks it), 53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js (NA's Project Portal QR) and 54__Feature__SheetImages/...SheetImages__Paint__.js (TV-only), and would not link in VV. Coordinate with S03b, which owns ShapeGeometry (D-S04b-05).",
+   "reason": "imports.py on TV ShapeGeometry: VV lacks PushQr and the 53 and 54 files. A whole-file port would break VV and pull in NA identity content (S04b-V03)."
+  },
+  {
+   "id": "S04b-F57",
+   "field": "detail",
+   "new_value": "ref/tv_portnote_markers.txt indexes 'Ported from / Parity / Back-port' lines. TV files authored in TV first instead carry 'ValeVision    : not yet ported - it waits for Adam's sign-off.' The verifier counts 124 files under TV 02__Src__AppModules (122 JS + 2 CSS) and none in 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment or 80__CloudflareIntegration; the survey's 126 could not be reproduced. 20 are in this slice (26:2, 27:3, 28:12, 32:2, 33:1). ViewportSnapMove uses a third form: 'Ported to : ValeVision3D 51__System__LayoutEditor (pending)' (:75). The index has exactly one line for these five folders (ViewportSnapMove's Parity line). Slices that rely on the index alone will under-count port signals.",
+   "reason": "Recount gives 124, not 126."
+  },
+  {
+   "id": "S04b-F61",
+   "field": "detail",
+   "new_value": "20 of the 21 JS files in the five folders say 'ValeVision : not yet ported - it waits for Adam's sign-off'. The 21st, ViewportSnapMove, says 'Ported to : ValeVision3D 51__System__LayoutEditor (pending)'. TV devlogs say 'NOT tried by Adam; NOT in ValeVision' (or 'Adam has not tried it. Not in ValeVision') at 2906 (v2.138), 3010 (v2.137), 3532 (v2.131), 3782 (v2.129), 5200 (v2.114) and 5321 (v2.113). v2.111 (5493) and v2.107 (5785) say 'Not ported ... on Adam's sign-off'; v2.149 is silent. TV's realign plan (line 807) has the snap-move back-port as 'Pending Adam's sign-off'. Two of the seven systems change mouse gestures in VV: pressing on 2D linework carries the viewport, and Ctrl+click arms a cross.",
+   "reason": "The folders hold 21 JS files, not 23, and only 20 carry the marker."
+  },
+  {
+   "id": "S04b-F63",
+   "field": "recommendation",
+   "new_value": "Either drop the TONE import in the same edit as the repoint, or keep the Snapping__ shim exporting TONE_VERTEX/DIMENSION/VIEWPORT as local string constants for one wave (D-S04b-09, WP-S04b-06R). The shim imports only __Search__ and __State__, never the controller. Gate every step with Na__Verify__Exports__.mjs.",
+   "reason": "Aligns the trap's fix with the cycle-free shim (S04b-V02)."
+  },
+  {
+   "id": "D-S04b-09",
+   "field": "recommendation",
+   "new_value": "Use a shim for one wave, then delete it with a grep gate (TV's own route, ObjectSnap__.js:60-63). The shim re-exports __Search__ and __State__ names plus the TONE strings, never the controller (cycle through Measurements). In the same commit, repoint the three Toggle importers (Keyboard:123, Toolbar:110, ContextMenu:100) to the controller and ModeController:228 to __Search__ (WP-S04b-06R).",
+   "reason": "The original recommendation would route the controller through the tools' import chain."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S04b-V01",
+   "category": "decision",
+   "title": "VV runs under the shared Whitecardopedia service worker: each wave needs Adam's token decision",
+   "detail": "Refutes F49. VV index.html:44 loads ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js. It registers the WebApps-root stub Na__Pwa__ServiceWorker__.js, which importScripts Whitecardopedia__Pwa__ServiceWorker__Logic__.js ('Caching brain of the Whitecardopedia + ValeVision3D PWA'). On VV's live https origin (adam-noble-01.github.io), shell JS/CSS is served stale-while-revalidate against PWA_SW_VERSION_TOKEN = '2026-09-18-1' (:229); on localhost it is network-first. The worker's own log records token bumps for VV Layout Editor releases (1.0.5 to 1.0.8) and a mixed old/new module graph failing to link ('does not provide an export named ...', 1.0.7). VV's ledger corrected its own 'n/a - this tree has no PWA worker' rows (:135-175), and VV devlog v2.67-v2.71 end with 'THE SHARED SERVICE WORKER' notes. This slice adds 31 modules, puts new exports on Measurements, SheetSurface, SheetModel, SheetModel__Layers and ShapeGeometry in the seam wave alone, and repoints 10 importers: exactly that failure. Bumping the token evicts every Vale app's caches, models included, so it is Adam's call, and the file is outside VV's tree. The worker's best-effort precache lists only VV start-up modules, none in 51__System__LayoutEditor, so deleting Snapping__.js cannot break its install.",
+   "recommendation": "No WP edits the Whitecardopedia worker. Every WP of this slice ends its VV devlog entry with a 'THE SHARED SERVICE WORKER' note naming the new modules and the new exports on existing modules. Ledger return-trip rows record 'Service worker token: shared Whitecardopedia worker - Adam's call', never 'n/a'. Raise one bump request with Adam per deployed wave (D-S04b-V01, WP-S04b-16).",
+   "action": "needs_decision",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "vv_paths": [
+    "index.html",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "evidence": "VV index.html:19 (manifest), :44 (registrar); D:\\10_CoreLib__ValeCodebase\\WebApps\\Whitecardopedia\\02__Src__AppModules\\62__Feature__AppInstallability\\Whitecardopedia__Pwa__ServiceWorker__Logic__.js:9, :22, :85-108 (1.0.7, 1.0.8 log), :229 (token), :260 (precache list: VV start-up modules only); D:\\10_CoreLib__ValeCodebase\\WebApps\\Na__Pwa__ServiceWorker__.js:14-31; VV ledger :89-93, :135-175; VV devlog :91, :194, :473-478; TV devlog v2.111 'Service worker' (5477-5479) shows the same reasoning in TV.",
+   "depends_on": [],
+   "est_lines": 0
+  },
+  {
+   "id": "S04b-V02",
+   "category": "wiring",
+   "title": "A Snapping__ shim must not re-export the controller (module cycle through Measurements)",
+   "detail": "The survey's shim (F02, WP-S04b-06, D-S04b-09) re-exports 'the new names from Search, Marker and the controller'. The controller imports Measurements for Say (ObjectSnap__.js:99), and VV Measurements__.js:118-120 imports ShapeTool, RectangleTool and DimensionTool, all of which import Snapping__.js. Routing Toggle/SetEnabled through the shim creates tools -> Snapping -> controller -> Measurements -> tools, the cycle TV's ObjectSnap__.js:33-37 exists to avoid ('a tool importing it would close a cycle'). VV Measurements calls the tools only inside function bodies, so it would probably not throw today, but it is a latent TDZ trap, and Na__Verify__ModuleGraph__.mjs checks resolution only, not cycles. Only Keyboard:123, Toolbar:110 and ContextMenu:100 import Toggle; no VV module imports SetEnabled, KIND_END or KIND_MID. TV State exports CHANGED_EVENT and IsEnabled; Search re-exports IsEnabled, Find, Snap, Clear, ShowMarker and HideMarker. Compatibility of the unchanged VV call sites was verified: Search.Snap ignores a string 4th argument (:506-512), ShowMarker(hit) ignores a 2nd, Marker.TargetOf (:141-146) colours tone-less hits (infer -> dimension, else -> shape), and TV's exclusion shapes are VV's (Sources:414-457).",
+   "recommendation": "The shim imports only from __Search__ (Find, Snap, ShowMarker, HideMarker, Clear, IsEnabled, KIND_END, KIND_MID) and __State__ (CHANGED_EVENT), with TONE_VERTEX/DIMENSION/VIEWPORT as local strings. In the same commit, repoint Keyboard:123, Toolbar:110 and ContextMenu:100 to ../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js and ModeController:228 to __Search__ (WP-S04b-06R). Acceptance: grep shows no import of Na__LayoutEditor__ObjectSnap__.js from the shim or from 35__System__DrawingTools.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "ObjectSnap controller 1.0.0, Search 1.1.0 (v2.129.0)",
+   "vv_version": "Snapping 1.2.0, Measurements 1.4.0",
+   "evidence": "TV ObjectSnap__.js:33-37, :99; VV Measurements__.js:118-120 (tool calls only inside functions: :405-665); VV Toggle importers Keyboard:123, Toolbar:110, ContextMenu:100, Clear importer ModeController:228; TV State and Search export lists; VV Na__Verify__ModuleGraph__.mjs:13-20 (resolution walk only).",
+   "depends_on": [
+    "S04b-F02",
+    "S04b-F63"
+   ],
+   "est_lines": 20
+  },
+  {
+   "id": "S04b-V03",
+   "category": "wiring",
+   "title": "ShapeGeometry seam must be a hunk: TV's whole 1.9.0 file would not link in VV and brings NA's QR",
+   "detail": "F40 and WP-S04b-02 take Holes/Rings/EdgePairs from TV ShapeGeometry 1.9.0, listed under action port_verbatim. TV ShapeGeometry__.js:119-127 also imports SheetChrome Na__LeChrome__PushQr (VV SheetChrome 1.5.0 lacks it), 53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js (NA's 'Project Portal' QR block: TV-only, NA identity) and 54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js (TV-only; per S03b its source chain reaches 80__CloudflareIntegration). These arrived in 1.6.0-1.8.0 (Shape__Qr, Shape__Image, portal grey). Running imports.py on the file shows VV lacks PushQr and both folders. S03b owns ShapeGeometry and lists it as port_verbatim with those dependencies.",
+   "recommendation": "Add only `import { Na__LeRings__Of, Na__LeRings__Edges, Na__LeRings__Split } from './Na__LayoutEditor__ShapeRings__.js'`, Holes (:164), Rings (:172), EdgePairs (:202) and their exports to VV ShapeGeometry; this is inert in VV, which has no Shape__Holes. Skip it if S03b has already landed its port. Tell S03b that a whole-file port needs the 53/54 decisions (NA QR identity, Sheet Images transport) first.",
+   "action": "port_adapted",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js"
+   ],
+   "tv_version": "ShapeGeometry 1.9.0 (v2.150.0); Shape__Qr 1.6.0 (v2.100), Shape__Image 1.7.0 (v2.116), portal grey 1.8.0 (v2.120)",
+   "vv_version": "1.5.0",
+   "vv_adaptation": "Hunk only: three functions, one import of the ShapeRings leaf and three exports. No Shape__Qr or Shape__Image code, and no SheetChrome change.",
+   "evidence": "TV ShapeGeometry__.js:119-127 (imports), :47-75 (log 1.6.0-1.9.0), :164/:172/:202; work_s04b/imports.py on it: VV lacks Na__LeChrome__PushQr and the 53 and 54 files; S03b report ShapeGeometry row.",
+   "depends_on": [
+    "S04b-F40"
+   ],
+   "est_lines": 30
+  },
+  {
+   "id": "S04b-V04",
+   "category": "wiring",
+   "title": "Viewport carry needs TV-only CarryTarget in HitResolution and mandatory config keys",
+   "detail": "Na__LeTools__CarryTarget ('the viewport a press may carry by a point', null when a handle, the rotate grip, content editing, a lock or a multi-selection owns the press) is TV-only code in TV SheetTools__HitResolution__.js:753-768, exported :797. The TV port note (:49) lists it as a TrueVision divergence. PointerPress:353 calls it before GrabAt, and PointerDrag's hover calls it too. VV recorded leaving it out (SheetTools__.js:257-258, 'this tree has no viewport carry yet'), and WP-S04b-11 does not list HitResolution. It reads Editable, GetSelectionItems, IsSelected, GetEditingViewport, GetViewportById and IsViewportLocked: VV HitResolution has all but GetSelectionItems and IsSelected in scope, and VV SheetModel exports both (:597-598). ViewportSnapMove also reads viewportCarry (:406), viewportTracking (:368, :516), acquireDwellMs (:375), acquireMax (:347) and trackMarkerSizePx (:254, :317) with no fallback. VV ToolSetup 1.0.0 returns none of them, so the carry would be a silent no-op.",
+   "recommendation": "WP-S04b-11R: add CarryTarget to VV HitResolution, with GetSelectionItems and IsSelected added to its SheetModel import. Make ToolSetup's five carry reader keys and the AppConfig keys part of the same WP. Accept on 'with ViewportCarry false the plain frame move returns'.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "tv_version": "HitResolution 1.11.0, ViewportSnapMove 1.6.0, ToolSetup 1.5.0",
+   "vv_version": "HitResolution 1.2.0, ToolSetup 1.0.0",
+   "evidence": "TV HitResolution:26-28, :49, :753-768, :797; TV PointerPress:353-354; VV SheetTools__.js:257-258; TV ViewportSnapMove:254, :317, :347, :368, :375, :406, :516; VV ToolSetup:286-296; VV SheetModel:597-598; TV realign plan :807.",
+   "depends_on": [
+    "S04b-F24",
+    "S04b-F41"
+   ],
+   "est_lines": 25
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S04b-02",
+   "reason": "Its hot-file list for the full v2.111 package omits files the devlog's own Files list includes: SheetTools__.js 1.32.0, SheetTools__PointerDrag__.js 1.8.0, Toolbar__.js 1.14.0 and 50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js 1.2.0. It also cites ShapeGeometry 1.9.0 as a verbatim source, while TV's whole file imports 53 ProjectQr, 54 SheetImages and SheetChrome PushQr. Replaced by WP-S04b-02R."
+  },
+  {
+   "id": "WP-S04b-06",
+   "reason": "Its Snapping__ shim re-exports the controller, which creates the tools -> Snapping -> controller -> Measurements -> tools cycle. It also leaves the three Toggle importers (Keyboard, Toolbar, ContextMenu) on the shim, so their files are missing from its hot files. Replaced by WP-S04b-06R."
+  },
+  {
+   "id": "WP-S04b-11",
+   "reason": "It misses Na__LeTools__CarryTarget, TV-only code in HitResolution that PointerPress and the hover call (HitResolution is not among its hot files). It treats the carry config keys as optional, although ViewportSnapMove reads them with no fallback, so the carry would silently do nothing. Replaced by WP-S04b-11R."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S04b-02R",
+   "title": "Add the exports the drafting aids import (seams), corrected",
+   "scope": "Additive, taken from TV. (1) Measurements Na__LeMeasure__Say (1.6.0; 8 lines using VV's existing ShowHint/IsTyping/Root) plus its export. (2) SheetSurface ZOOM_SETTLED_EVENT, either via the full v2.111 package or as the interim event fired after every applied zoom, per D-S04b-04. (3) The chrome cache keyed by sheet id in RefreshChrome, plus GetSheetChrome (1.7.0/1.9.0). (4) SheetModel__Layers IsLayerSelectable plus the SheetModel re-export. (5) ShapeGeometry as a HUNK ONLY: `import { Na__LeRings__Of, Na__LeRings__Edges, Na__LeRings__Split } from './Na__LayoutEditor__ShapeRings__.js'`, Holes, Rings, EdgePairs and their exports. Never TV's whole 1.9.0 file, which imports 53 ProjectQr, 54 SheetImages and SheetChrome PushQr. (6) ToolSetup GetSnappingSetup sheetChrome plus the five carry keys. (7) AppConfig Snapping keys, plus Navigation ZoomSettleMs/HoldPaperWhileZooming if v2.111 is taken. Skip any seam its owning slice has already landed (S03b: SheetSurface, ShapeGeometry, SheetModel; S05a: Measurements; S03a: config).",
+   "depends_on": [
+    "WP-S04b-01"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Every name in report b.11 resolves from VV",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs exit 0",
+    "VV ShapeGeometry imports nothing from 53__Feature__ProjectQrCode or 54__Feature__SheetImages, and SheetChrome is unchanged",
+    "Nothing visible changes in the app except, with the full v2.111 package, the soft-then-sharp zoom",
+    "The VV devlog entry carries a SHARED SERVICE WORKER note naming the new exports (WP-S04b-16)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js"
+   ],
+   "risk": "Medium. Every file is a hub owned by another slice; the last nine apply only if the full v2.111 package is taken here. Serialise with S03b, S05a and S03a, or merge these seams into their WPs. The ShapeGeometry hunk must never become a whole-file copy.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-06R",
+   "title": "Port the Object Snap core with a cycle-free switch-over",
+   "scope": "Port the 13 core files of LE/28__System__ObjectSnap/ (State, Geometry, Glyphs, Index, Sources, Search, Marker, Moves, GridMoves, controller, Menu, Config, Styles__ObjectSnap__.css) with VV headers, console prefix and port notes, and link the CSS in the loader STYLESHEETS after Main__Paper. In the SAME commit: (1) delete VV's old .na-le-osnap, tone, [hidden] and --mid rules (Styles__Main__Paper__.css:296-337, keeping .na-le-frame__progress) and .na-le-osnap--infer (:577-581); (2) replace Snapping__.js with a shim that imports ONLY from __Search__ (Find, Snap, ShowMarker, HideMarker, Clear, IsEnabled, KIND_END, KIND_MID) and __State__ (CHANGED_EVENT), declares TONE_VERTEX/'vertex', TONE_DIMENSION/'dimension' and TONE_VIEWPORT/'viewport' as local constants, and does not import the controller; (3) repoint Keyboard__.js:123 (Toggle), Toolbar__.js:110 (CHANGED_EVENT, IsEnabled, Toggle) and SheetTools__ContextMenu__.js:100 (Toggle, IsEnabled) to ../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js, and ModeController__.js:228 (Clear) to __Search__.",
+   "depends_on": [
+    "WP-S04b-01",
+    "WP-S04b-02R",
+    "WP-S04b-05"
+   ],
+   "size": "L",
+   "acceptance": [
+    "The remaining Snapping__ importers (HitResolution, PointerDrag, Dimension/Shape/Rectangle/Leader tools) still link; both verifiers exit 0",
+    "grep finds no import of Na__LayoutEditor__ObjectSnap__.js in Snapping__.js or in 35__System__DrawingTools",
+    "Markers are SVG glyphs coloured by target (purple linework, blue vector, orange text, red dimension, slate paper/grid), with no bordered box and no clipped triangle",
+    "F3, the toolbar Snap button and the context-menu row still switch snapping and now echo <Osnap on>/<Osnap off>",
+    "Text corners, the Modern title block and the notes margin divider snap; Intersection and Centre are found; Nearest is off by default",
+    "At 32x the marker's middle sits on the vertex",
+    "The VV devlog entry carries the SHARED SERVICE WORKER note (WP-S04b-16)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "risk": "Medium-high. Snap behaviour changes visibly in one step (colours, Intersection/Centre, text and paper targets). The CSS deletion, the shim and the four repoints must land in the same commit as the folder. Keyboard, Toolbar and ModeController are shared with WP-S04b-09 and the hub slices, so serialise.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs (marker part)"
+   ]
+  },
+  {
+   "id": "WP-S04b-11R",
+   "title": "Port the viewport snap move (carry by a linework point), corrected",
+   "scope": "Port Na__LayoutEditor__ViewportSnapMove__.js 1.6.0. Add TV's Na__LeTools__CarryTarget to VV SheetTools__HitResolution__.js (TV :753-768, exported :797), adding Na__LeModel__GetSelectionItems and Na__LeModel__IsSelected to its SheetModel import; VV SheetModel already exports both. Wiring: PointerPress GrabAt (TV :353-354); PointerDrag hover with CarryTarget, ApplyDrag Solve (:676), FinishDrag Finish (:1003) and RerunViewportDrag (PointerDrag 1.7.0); Keyboard Escape Na__LeVpMove__Clear (:692); ToolState Clear; SheetTools Refresh after a model change; CopyDrag Retarget only once CopyDrag exists; the carry CSS (TV Styles__Main__Paper__.css:824-887). Also REQUIRED: the ToolSetup reader keys and AppConfig keys ViewportCarry, ViewportTracking, AcquireDwellMs, AcquireMax and TrackMarkerSizePx, which ViewportSnapMove reads with no fallback. Finally, TV's INTEGRATION paragraph goes into VV's AxisLock header.",
+   "depends_on": [
+    "WP-S04b-06R",
+    "WP-S04b-08",
+    "WP-S04b-09"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Hovering a 2D viewport's linework under Select shows the purple endpoint marker; pressing there carries the viewport so the point lands exactly on another drawing's corner",
+    "Resting on another viewport's point acquires a tracking cross, with red level and green plumb guides",
+    "With LayoutEditor__Snapping__ViewportCarry false, the plain frame move returns (proves the key is read)",
+    "A press on a crop handle, the rotate grip, a locked viewport or one member of a multi-selection never carries",
+    "An arrow key holds the carry to an axis; F3 off restores the plain frame move; one undo step per carry; both verifiers exit 0"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js"
+   ],
+   "risk": "High. It needs PointerDrag 1.7.0 or later (RerunViewportDrag) and the PointerPress structures from the SheetTools slice, and it changes what a press on viewport linework does. Wait for Adam's answer to D-S04b-01. HitResolution is also edited by WP-S04b-08 and WP-S04b-12, so serialise.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S04b-16",
+   "title": "Shared service worker note and token decision for every wave of this slice",
+   "scope": "Per D-S04b-V01. No WP edits D:\\10_CoreLib__ValeCodebase\\WebApps\\Whitecardopedia\\02__Src__AppModules\\62__Feature__AppInstallability\\Whitecardopedia__Pwa__ServiceWorker__Logic__.js or anything else outside the ValeVision3D app root. Each VV devlog entry of this slice ends with a 'THE SHARED SERVICE WORKER' note in VV's own form (VV devlog v2.67-v2.71). The note lists the new modules, the existing modules that gained exports, and whether the token (PWA_SW_VERSION_TOKEN, :229, '2026-09-18-1' on 01-Oct-2026) needs bumping before deploy. The swarm hands Adam one consolidated bump request per deployed wave. Ledger return-trip rows record 'Service worker token: shared Whitecardopedia worker - Adam's call', never 'n/a'.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Every VV devlog entry written by this slice carries the note",
+    "No file outside D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D is modified",
+    "Adam has answered D-S04b-V01 before any wave is deployed to the live origin"
+   ],
+   "files_tv": [],
+   "files_vv": [
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "hot_files": [
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "Low to write. The risk it manages is high: a warm client holding old and new modules fails to link the editor.",
+   "tests_to_port": []
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S04b-V01",
+   "question": "ValeVision3D is served by the SHARED Whitecardopedia + ValeVision3D service worker (PWA_SW_VERSION_TOKEN '2026-09-18-1', shell JS stale-while-revalidate away from localhost). This slice adds 31 modules and new exports on existing ones (five in the seam wave: Measurements, SheetSurface, SheetModel, SheetModel__Layers, ShapeGeometry). Should the shared token be bumped as these land?",
+   "options": "(a) one bump per deployed wave of this slice; (b) one bump after the whole slice; (c) no bump, accepting that warm clients may fail to link the editor until a second visit",
+   "recommendation": "Adam's call: the token evicts every Vale app's caches, models included (VV ledger :135-175). Recommend (a), because this is exactly the mixed-graph link failure the worker's own log records. Swarm agents never edit the worker; they write the devlog note (WP-S04b-16).",
+   "blocks": [
+    "WP-S04b-02R",
+    "WP-S04b-06R",
+    "WP-S04b-09",
+    "WP-S04b-16"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "The shared Whitecardopedia + ValeVision3D PWA service worker on VV's live origin (refutes F49; S04b-V01)",
+  "Module cycle created by a Snapping__ shim that re-exports the controller (S04b-V02)",
+  "TV ShapeGeometry 1.9.0 import chain (53 ProjectQr, 54 SheetImages, SheetChrome PushQr): a whole-file copy would not link in VV (S04b-V03)",
+  "Na__LeTools__CarryTarget in TV HitResolution and the mandatory carry config keys (S04b-V04)",
+  "v2.111 package file 50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js (VV 1.0.0, TV 1.3.0) and the other v2.111 hot files missing from WP-S04b-02",
+  "RedrawHeld's TOOL_AREA branch (Floor Areas, TV-only) in the Keyboard adaptation",
+  "All 35 TV files outside the five folders that reference them, each mapped to c.3, (d).10 or another slice"
+ ],
+ "notes": "The survey was strong. All 31 files are accounted for, and every one of the nine 'VV lacks' names was independently re-resolved and then searched for in VV under any name; none exists. All 43 hub-file version pairs, the devlog line references and nearly every path:line I sampled (about 130 claims) were exact. One finding is refuted: F49. VV is NOT without a service worker. It sits under the shared Whitecardopedia worker, the VV ledger already corrects this at :135-175, and several sibling slices get it right. Four gaps added. (1) The token decision is Adam's (S04b-V01, D-S04b-V01, WP-S04b-16). (2) The proposed Snapping__ shim must not re-export the controller, or it closes the tools -> controller -> Measurements -> tools cycle (S04b-V02; WP-06 replaced by 06R). (3) The ShapeGeometry seam must be a hunk: TV's whole 1.9.0 file imports NA's Project Portal QR (53) and Sheet Images (54) (S04b-V03). (4) The carry needs TV-only CarryTarget in HitResolution and treats missing config keys as 'off' (S04b-V04; WP-11 replaced by 11R). Minor corrections: VV Snapping 1.2.0 lacks TV 1.2.0's FindOnViewport; the marker counts are 20 of 21 JS files and 124 app-wide; F06's v2.111 file list was incomplete (MarginGrip and others; WP-02 replaced by 02R); DimensionTool also needs IsLayerSelectable; RedrawHeld must drop TOOL_AREA. Watch: (a) cross-slice ownership. S03b owns ShapeGeometry, SheetSurface and SheetModel and plans a whole-file ShapeGeometry port; S05b also ports Curves and ShapeRings; S05a's hub ports cannot link before these folders exist. The planning agent must serialise WP-02R/06R/09 against those slices. (b) The TV devlogs say Adam has not yet tried most of these aids in TV itself, so D-S04b-01 (sign-off) is real. (c) Nothing was executed: no Node suites and no in-app checks. The cycle risk was judged by reading VV Measurements, where every tool call is inside a function body, so it is latent rather than an immediate crash. Report edited in place, with a Verification section appended; a pre-verification copy is at scratchpad/parity/verify_s04b/S04b_report_before_verify.md."
+}

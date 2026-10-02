@@ -1,0 +1,2 @@
+9baf50e38d6b3798b505b9a73428aa2c2c422f54ce3ff1c7facf7e97a45bc774  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js  9505 bytes  crlf=188
+2f9658fb16fcc7275c46e514e0ccfe2e03897322d2f37fcab2d6d76c5f850c74  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js  15754 bytes  crlf=289

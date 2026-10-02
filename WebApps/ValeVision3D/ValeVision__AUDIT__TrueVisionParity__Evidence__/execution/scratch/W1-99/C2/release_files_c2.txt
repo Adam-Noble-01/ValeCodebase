@@ -1,0 +1,646 @@
+﻿=== v2.32.0 13-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: PhaseLibrary uninitialised and ModelToggle's registry borrow W1-01; the Model Source argument slots W1-23) | pk W1-01, W2-16, W1-23 | Model Source - Existing and Proposed on One Sheet, the Same View of Two Models
+    VV  W1-01/W1-11                   01__AppCore/Na__AppFlow__LoadingSequence.js
+    VV  W1-01                         26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js
+    -                                 26__System__ToggleModelElements/Na__UiFeature__ModelGroupSelector.js
+    VV  W1-01                         26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
+    VV                                50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                                51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js
+    VV  W1-23                         51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    VV  W1-34                         51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+=== v2.36.0 14-Sep-2026 | class PORTED | VV unrecorded (commit 66937440, ~14-Sep) | pk - | Project Specification & Margin Notes - Notes Numbered by Their Place, Bubbles That Follow 
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV  W1-34                         51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+    VV                 W1-22          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js
+    VV  W1-34                         51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+    VV                                80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+    VV  W1-06          W1-37          03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+=== v2.38.0 14-Sep-2026 | class **PENDING-SIGNOFF** | VV - | pk W1-26, W1-19, W3-15 | Viewport Frames Switch Off - Set Out With Them, Then Title the Drawing Yourself
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+=== v2.39.0 14-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the local-mirror facade W0-12, the two labels W0-15); VV v2.71.2 (part: ProjectData's local copy and Save(showToast, report), W1-05) | pk W1-05, W0-12 | Save Sheets Says Where the Sheets Went - R2 and a Local Copy
+    VV                                03__AppUtils/Na__AppUtils__LocalProjectMirror__.js
+    VV  W1-05/W1-12                   40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+=== v2.40.0 14-Sep-2026 | class **PARTIAL** | VV VV v2.35.0 | pk W1-18, W2-26, W3-12 | The Measurements Box and Drawing at Scale - Type the Size, Draw It True
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-22          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV  W1-13                         51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js
+=== v2.41.0 14-Sep-2026 | class **PENDING-SIGNOFF** | VV - | pk W1-26, W1-19, W1-38, W3-12 | Fixed Length Extension Lines - Dimensions Stand Clear of the Drawing
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js
+=== v2.42.0 14-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the door module's 1.9.0 contract and FindDoorGroups, W1-02) | pk W2-06, W2-11, W1-02, W2-16, W3-15 | Doors Stand Open on Plans - Click One to Close It
+    -                                 50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js
+    VV                                50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js
+    VV                                50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js
+    VV                                50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js
+    VV                                50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    VV  W1-23                         51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+=== v2.48.0 14-Sep-2026 | class **PENDING-SIGNOFF** | VV - | pk W2-14, W1-19, W1-34, W4-10 | Site Plan Drawings, Part 1 - Drawing Type, Tab Order and the Site Plan Store
+    VV  W1-34                         51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    -                                 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js
+    -                                 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js
+    -                                 TrueVision__PLAN__SitePlanDrawings__.md
+=== v2.49.0 14-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: ScaleManager's site plan scale list, inert, W1-13) | pk W2-14, W2-16, W1-13 | Site Plan Drawings, Part 2 - Site Plan Viewports at 1:500 and 1:1250
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV  W1-13                         51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    -                                 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js
+    VV                                51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    -                                 TrueVision__PLAN__SitePlanDrawings__.md
+=== v2.52.0 14-Sep-2026 | class PORTED | VV VV v2.41.0 | pk - | Rotate Text - a Round Grip Turns a Text Box
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js
+=== v2.53.0 14-Sep-2026 | class DELIBERATE | VV host VV v2.68.0 | pk - | Scrapbook - Drag the Mapping Data Credentials and the North Point onto a Site Plan
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js
+    VV  W1-32                         51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
+    VV                                51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js
+    -                                 TrueVision__PLAN__SitePlanDrawings__.md
+    -                                 TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md
+=== v2.54.0 14-Sep-2026 | class PORTED | VV VV v2.44.0; v2.71.1 (the unlogged Assets 1.0.1 and Persistence 1.2.1, W0-14) | pk - | Margin Notes Spread Out When the Column Has Room
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js
+    -                                 TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md
+=== v2.58.2 17-Sep-2026 | class **PARTIAL** | VV VV v2.54.0 | pk W2-07, W1-19, W2-16 | The Progressive Renderer Was Rebuilding Its Buffer on Every Chunk
+    VV  W1-01/W1-11                   01__AppCore/Na__AppFlow__LoadingSequence.js
+    VV                                05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js
+=== v2.61.0 17-Sep-2026 | class PORTED | VV VV v2.54.0 | pk - | The Title Block Says What Paper It Is, and Names Every Scale On the Sheet
+    VV  W1-13                         51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js
+    VV                 W1-22          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+=== v2.61.1 17-Sep-2026 | class PORTED | VV VV v2.54.1 | pk - | Viewport Captions Stop Eating Their Own Scale
+    VV                 W1-25          51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
+=== v2.63.0 17-Sep-2026 | class PORTED | VV VV v2.56.0 | pk - | The Specification Is a Document Now: It Has a Revision, a Number, and a Download
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js
+    VV                 W1-25          51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+    VV                 W1-22          51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+=== v2.69.0 19-Sep-2026 | class **REOPENED** | VV - | pk W1-25, W4-18 | The Register Was Never Given Its Font, So Every Reader Invented One
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-25          51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+    -                                 51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js
+    VV                 W1-25          51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
+=== v2.70.0 19-Sep-2026 | class PORTED | VV VV v2.61.0 | pk - | The Number Was Typed Twice and Shown Twice: a Tab Reads "D03 - 3D Images" and Nobody Types
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+=== v2.71.0 19-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: Register__Numbering inert W1-13; the document code accessor W1-12) | pk W1-13, W1-19, W1-21, W1-22, W1-12 | A Drawing Number Was Three Facts in a Trench Coat, and Renumbering Shot Two of Them
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-13                         51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js
+    -                                 TrueVision__NOTES__DrawingNumberingSchema__.md
+=== v2.72.0 19-Sep-2026 | class PORTED | VV VV v2.60.0 | pk - | Three Greys, Three Shadows and Three Letterheads for One Pack of Documents
+    VV  W1-33                         51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css
+    VV                 W1-22          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+=== v2.75.0 19-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-21, W0-08 | Safari Reads the First Manifest and Never Looks Again, and the First One Was the Wrong One
+    -                                 62__Feature__AppInstallability/README__PwaInstallability__.md
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__Handler__InstalledStandalone__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__Handler__IosSafari__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__Manifest__Builder__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__PromptUi__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js
+    -                                 03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css
+=== v2.79.0 19-Sep-2026 | class PORTED | VV VV v2.66.0 | pk - | A Title Block Cell Is a Width in Millimetres, Not a Share of the Paper - and a Drawing Now
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-22          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js
+    -                                 51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js
+    -                                 51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js
+    -                                 51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js
+=== v2.81.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the Project QR system, switched off, W1-15) | pk W1-15, W1-22, W1-26 | A Drawing Can Be Scanned Into Its Own Model - Once Its Address Was Short Enough for the Ti
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js
+=== v2.89.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: SitePlanComposites and its config, dormant, W1-13; the hatch module's token and tile polylines W1-17) | pk W2-14, W1-13, W2-16, W1-17 | A Site Plan Is Two Different Drawings, and the Panel That Tuned Them Was Writing to a Reco
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js
+    VV  W1-17                         51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+=== v2.90.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the hatch module, W1-17) | pk W1-17, W1-26, W2-29, W3-12 | A Hatch Stopped Being a Site Plan Thing and Became Something Any Vector Can Have
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+    VV  W1-17                         51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+=== v2.91.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the Properties tab hint and Panel__Scrapbook 1.2.1, W1-32) | pk W2-35, W1-32, W1-38, W2-30 | You Cannot Read the Specification and Tag a Drawing at the Same Time, So the Specification
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js
+    VV  W1-32                         51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
+    VV                                51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js
+    -                                 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js
+    -                                 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js
+=== v2.93.0 20-Sep-2026 | class **PENDING-SIGNOFF** | VV - | pk W2-09, W2-16, W1-23, W1-38 | The Enhance Whitecard Effect Had One Setting, and That Setting Was All of It
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js
+    VV                                51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js
+    VV                                51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js
+    VV  W1-23                         51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css
+=== v2.94.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the fog leaves and test W1-09; the elevation data module 1.1.0 W1-10; the depthFog render slot W1-23) | pk W1-09, W2-03, W2-12, W2-16, W1-10, W1-23 | An Elevation Drew the Coach House Forty Metres Back as Hard as the Wall in Front of It, So
+    -                                 40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js
+    VV  W1-05/W1-12                   40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    VV                                40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js
+    -                                 41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js
+    -                                 41__System__SectionCutEngine/Na__SectionCut__Engine__.js
+    -                                 49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js
+    VV  W1-09                         49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js
+    -                                 49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js
+    VV  W1-09                         49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js
+    VV                                51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js
+    VV  W1-23                         51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    -                                 TrueVision__PLAN__ElevationDepthFog__.md
+=== v2.95.0 20-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the local statement routes and test server W0-19, the facade's statement names W0-12, the Statement config with Enabled = false W0-15); VV v2. | pk W4-04, W4-05, W4-06, W4-12, W4-13, W4-15, W4-16, W2-13, W0-19, W0-12, W0-15 | The Statements a Project Is Won On Were the One Document the App Could Not Open, So It Now
+    -                                 51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+=== v2.100.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-38, W1-15, W2-37 | A Drawing Can Now Ask to Be Scanned: the Project Portal Block, Whose Code Is the Project's
+    VV                                21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+    VV                                51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js
+    -                                 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+    -                                 TrueVision__PLAN__ScrapbookSystem__.md
+=== v2.104.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W1-27, W3-10, W3-17, W1-20 | A Room's Area Is Not Something to Store, It Is a Question to Ask the Drawing Underneath It
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js
+    VV                                51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js
+    -                                 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js
+    -                                 51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js
+    -                                 51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+    -                                 TrueVision__PLAN__FloorAreas__.md
+=== v2.106.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: PaintOrder 1.0.0 inert W1-13; the viewport-folds-the-group rule W1-32) | pk W1-28, W1-19, W1-13, W1-32 | The Layers List Was Only Ever the Order of the Viewports; Now It Is the Order of the Sheet
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV  W1-13                         51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js
+    VV                 W1-28          51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js
+    -                                 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+    -                                 TrueVision__PLAN__FloorAreas__.md
+=== v2.109.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W1-22, W2-38 | The Big Sheets Give the Small Title Block Cells Air, the Rev Cell Says "Revision A", and t
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-22          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+=== v2.111.0 21-Sep-2026 | class **PENDING-SIGNOFF** | VV - | pk W1-28, W2-18, W1-36 | Zoom Now, Redraw When It Rests: a Wheel Notch Was Rebuilding Things That Had Nothing to Do
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-36          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+    -                                 TrueVision__PLAN__DraftMode__.md
+=== v2.112.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: Transitions 1.1.0 W1-04; DocumentKeys 1.0.1 W1-30; the mode controller's returnToOrbit W1-32) | pk W1-36, W1-04, W4-10, W1-32, W1-30 | Page Down Turns the Drawing, Ctrl+S Saves the Register, and Opening a Drawing Really Leave
+    VV                                10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js
+    VV                                10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
+    VV  W1-04                         40__System__DrawingViewCore/Na__DrawView__Transitions__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js
+    VV                 W1-36          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js
+    -                                 51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js
+=== v2.114.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the Drawing grid state leaf, W1-14) | pk W2-18, W3-05, W1-14 | The Drawing Grid: SketchUp LayOut's Grid, Shown on F6 and Snapped To on F7 - and the Title
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    -                                 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js
+    VV  W1-14                         51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js
+    -                                 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js
+    -                                 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js
+    VV                                51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js
+=== v2.115.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the per-tab key file names W0-03, the drawing-tab key content and KeyMap 1.11.0 W0-15); VV v2.71.2 (part: KeyScope 1.1.0's ControlKeepsKey W1- | pk W1-29, W1-30, W1-36, W0-03, W0-15 | M Was Never Stuck: Every Click on the Paper Left the Keyboard in Whatever Panel Control Ha
+    VV                                01__AppCore/Na__AppConfig__Loader.js
+    VV  W1-29/W1-32                   03__AppUtils/Na__AppUtils__KeyScope__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-36          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js
+    VV  W1-30/W1-32                   51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js
+=== v2.116.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the local sheet-image routes W0-18, the facade's sheet-image names W0-12); VV v2.71.2 (part: the Sheet Images render leaves W1-16; ProjectData | pk W1-16, W3-18, W3-02, W3-09, W0-18, W0-12, W1-05 | Sheet Images: a Picture on a Drawing Is Filed Under That Drawing's Number, Wherever the Nu
+    VV  W1-05/W1-12                   40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-16                         51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js
+    VV                                80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+=== v2.120.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the QR symbol's grey, the config, the README and the tests, W1-15) | pk W1-15, W1-26, W2-38 | The Project Portal Block's Code Is a Soft Grey, Not Black; the Title Block's Stays Black
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md
+=== v2.121.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: Encode, Geometry and Setup 1.1.0 and the config, W1-16) | pk W1-16, W3-18, W3-09 | Sheet Pictures Are Stored at Print Size, Not Render Size: a 13.8 MB PNG Placed 196 mm Wide
+    VV  W1-16                         51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js
+    VV  W1-16                         51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js
+    -                                 51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js
+=== v2.123.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-21, W3-13, W1-20, W3-03 | A Right Click Moves Anything to Another Drawing Layer, and a Layer Can Be Made a Reference
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js
+    -                                 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+=== v2.124.0 21-Sep-2026 | class PORTED | VV VV v2.71.2 (W1-35) | pk W1-35, W5-01 | Undo, Redo, Fit and the Zoom Readout Leave the Drawing Toolbar; Their Keys Stay
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-36          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+=== v2.125.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W1-27, W3-10 | A Room's Label Starts in the Middle of Its Box, and in Edit Mode It Can Be Dragged to Wher
+    VV                 W1-27          51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js
+    VV                 W1-27          51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js
+    -                                 51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js
+=== v2.126.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the hatch module, the Construction Materials pack and the root index, W1-17) | pk W1-37, W1-17, W2-29, W3-12 | A Colour Palette Opens Above Every Colour Field; a Hatch Gets Its Own Line Weight and Colo
+    VV                 W1-37          43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js
+    VV                 W1-37          54__Feature__ColourPalette/Na__ColourPalette__.js
+    VV                 W1-37          54__Feature__ColourPalette/Na__ColourPalette__Manager__.js
+    VV                 W1-37          54__Feature__ColourPalette/Na__ColourPalette__Picker__.js
+    VV                 W1-37          54__Feature__ColourPalette/README__ColourPalette__.md
+=== v2.127.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-21, W1-20, W1-21, W3-03 | A Paste on Another Sheet Brings Its Layer: Found by Name, or Made Where It Sat in the List
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js
+    -                                 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+=== v2.130.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the curves leaf, W1-14) | pk W2-27, W2-28, W1-14, W3-07 | The Vector Editor Could Draw a Line and a Rectangle and Move Their Points; It Can Now Trim
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js
+    VV  W1-14                         51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+    -                                 TrueVision__PLAN__VectorTools__.md
+=== v2.133.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W1-37, W1-38 | The Browser's Colour Mixer Opened a Screen Away From the Field; It Now Sits on Top of the 
+    VV                 W1-37          54__Feature__ColourPalette/Na__ColourPalette__Picker__.js
+=== v2.135.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W1-36 | An Author Zooms In to 6400%; the Web Viewer Still Stops at 800%
+    VV                                03__AppUtils/Na__AppUtils__DevGate__.js
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js
+    VV                 W1-36          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js
+=== v2.136.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the vector quality leaf, W1-14) | pk W1-14, W1-28, W1-21, W5-01 | Dimensioning a Heavy Plan: the Pointer Move Drops From 12 ms to Half a Millisecond, and a 
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js
+    VV  W1-35                         51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+    -                                 TrueVision__NOTES__LayoutEditorPerformance__.md
+=== v2.137.0 21-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-42, W2-24, W1-28 | The Snap Marker Sits ON the Corner It Found: at 32x It Was Painted 17 Pixels From It, Half
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js
+=== v2.138.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the rotation leaf and its test section, W1-14) | pk W1-14, W3-06, W3-03 | Viewports Turn on the Page: a Round Grip Off the Top of the Frame Turns the Whole Viewport
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js
+    VV                                51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js
+    VV                                51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js
+    VV                                51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+=== v2.139.0 21-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: DimensionRounding and its test, W1-13) | pk W1-13, W2-26, W3-12, W1-28 | Round Up to 5 mm: a Dimension Can Show Its Figure Raised to the Next 5 mm, With an Asteris
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-13                         51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js
+=== v2.140.0 22-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-11, W2-16, W3-15, W1-22 | Hide Swings: a Roof Plan No Longer Draws the Top Storey's Door Swings Over Its Roof - and 
+    VV  W1-08                         42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+    -                                 50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js
+    VV                 W1-22/W1-26    51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+    VV  W1-13                         51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    -                                 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js
+    VV  W1-23                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js
+    VV  W1-23                         51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+    VV                 W1-38          51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css
+=== v2.141.0 22-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-21, W3-03, W1-28, W1-14 | A Leader Travels With What It Is Moved With, and a Group Takes Its Leaders and Dimensions
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js
+    -                                 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js
+=== v2.142.0 22-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-21, W1-28, W3-03 | A Viewport Groups With Its Notes, and What Is Placed Inside an Open Group Joins It
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+    VV                 W1-28          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js
+    -                                 51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js
+=== v2.143.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the note-regions record leaf, W1-13) | pk W2-22, W2-32, W3-11, W3-03, W1-13 | Overspill Note Regions: Boxes Drawn Anywhere on a Sheet That Hold the Notes the Margin Can
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js
+    VV  W1-32/W1-33/W1-34 W1-36          51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-13                         51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js
+    VV  W1-23/W1-24    W1-25/W1-28    51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+=== v2.144.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the user-config spellings API and the Vale dictionary W0-18, atomic JSON writes W0-09) | pk W2-34, W2-35, W3-03, W0-18, W0-09 | A Specification Note Is Reworded Beside the Drawing, Spell-Checked With the Practice's Own
+    VV                                51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+    VV  W1-14                         51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js
+    -                                 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js
+    -                                 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js
+    -                                 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js
+    -                                 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js
+    -                                 55__Feature__SpellCheck/Na__SpellCheck__.js
+    -                                 55__Feature__SpellCheck/README__SpellCheck__.md
+    VV  W1-06          W1-37          03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+    VV                                03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css
+=== v2.145.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: Na__DrawData__IsLoaded, W1-05) | pk W1-07, W1-05, W1-21 | The Browser Draft of Unsaved Sheets Comes Back After a Reload, Whichever Gets There First 
+    VV  W1-05/W1-12                   40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    VV                 W1-07          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+=== v2.146.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: the local server's save guard, fingerprint and backups W0-09, the local-mirror facade W0-12); VV v2.71.2 (part: ProjectData 1.6.0's drawings s | pk W1-07, W0-12, W1-05, W1-06, W0-09 | Three Guards Round the Project File: a Draft Is Judged Before It Goes Back, a Save Is Judg
+    VV                                03__AppUtils/Na__AppUtils__LocalProjectMirror__.js
+    VV  W1-06                         21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js
+    VV  W1-05/W1-12                   40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    VV                 W1-07          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+=== v2.147.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: the leaderless-notes record leaf, W1-13) | pk W2-32, W1-21, W1-13, W1-19 | Leaderless Notes: Whole Specification Groups Listed on a Sheet With No Bubble Pointing at 
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+    VV                 W1-21          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV  W1-13                         51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js
+    -                                 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js
+    VV                                51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css
+=== v2.148.0 22-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W3-17, W3-10, W1-27 | Project Floor Areas: One Master List of Floors Across Every Sheet, and a Floor After a Sch
+    -                                 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js
+    -                                 51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js
+=== v2.150.0 22-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: ShapeRings W1-13; the hatch module's even-odd holes W1-17; GradientTool 1.1.0 W1-18) | pk W2-27, W2-41, W1-13, W3-07, W3-03, W1-17, W1-18 | Boolean Tools and Vectors With Holes: Union, Subtract, Trim, Intersect, Split and Outer Sh
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+    VV  W1-13/W1-18                   51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js
+    -                                 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js
+    VV  W1-18                         51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js
+    VV  W1-17                         51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js
+    -                                 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js
+    VV                 W1-27          51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
+    -                                 51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js
+=== v2.152.0 23-Sep-2026 | class **PARTIAL** | VV VV v2.71.2 (part: LineStyleTool 1.1.0, W1-18) | pk W3-12, W1-26, W1-18, W1-28 | Dimension Line Weight and Line Style: Line pt and Dashed Lines in the Dimensions Panel
+    VV                 W1-20          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js
+    VV                 W1-19          51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+    VV                 W1-26          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js
+    VV                 W1-28          51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js
+    VV                                51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js
+    VV                                51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js
+    VV  W1-18                         51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js
+=== v2.154.0 23-Sep-2026 | class **NOT-CONSIDERED** | VV - | pk W2-36, W3-13, W1-28, W2-21 | Layer Switches in One Red: Off, Unlock and Ref Show Which Layers Are Out of Their Usual St
+    VV                                51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js
+=== v2.155.0 23-Sep-2026 | class **PARTIAL** | VV VV v2.71.1 (part: Phase 0 vendors W0-16, the local publishing routes W0-19, the facade's published names W0-12); VV v2.71.2 (part: PdfExporter 1.11.0's FAST pic | pk W4-01, W4-17, W4-02, W4-03, W4-07, W4-09, W0-16, W6-03, W0-19, W0-12, W1-24, W1-15 | Publishing: Drawings Are Baked Once on the Authoring Machine, and the Web Viewer Only Show
+    -                                 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js
+    -                                 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js
+    VV  W1-15                         51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js
+    -                                 51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js
+    VV                                51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css
+    VV                                51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js
+    VV                                51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js
+    VV                                51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js
+    VV                                51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Config__.json
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Elements__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Paint__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Sheet__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Styles__Main__.css
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Unpublished__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js
+    -                                 52__System__Layout__PublishedDocuments/Na__PubDoc__Viewports__.js
+    -                                 52__System__Layout__PublishedDocuments/README__PublishedDocuments__.md
+    -                                 53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json
+    -                                 53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js
+    -                                 53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js
+    -                                 53__Data__Layout__PublishedSchema/README__PublishedSchema__.md
+    -                                 TrueVision__PLAN__PublishingSystem__.md

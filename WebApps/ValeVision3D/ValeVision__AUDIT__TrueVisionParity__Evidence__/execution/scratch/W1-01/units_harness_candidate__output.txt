@@ -1,0 +1,57 @@
+﻿W1-01 unit harness - candidate
+  PASS  ModelToggle keeps its six exports
+  PASS  ModelToggle exports exactly the six plus TrueVision's three names
+  PASS  three categories registered and three dev buttons built
+  PASS  a dev toggle click still dispatches na-model-visibility-changed (linework and snapshot fingerprints refresh)
+  PASS  ...hides the group, drops the active class and asks for a frame
+  PASS  SetCategoryVisibility (non-silent) still dispatches the event
+  PASS  SetCategoryVisibility silent says nothing
+  PASS  SetCategoryVisibleByKey hides by exact key and answers true
+  PASS  ...silently: no visibility event and no frame request (a render puts it straight back)
+  PASS  ...the dev button follows
+  PASS  ...and the capture sees it
+  PASS  SetCategoryVisibleByKey with no flag shows (visible !== false, as TrueVision)
+  PASS  SetCategoryVisibleByKey of a category not loaded answers false and changes nothing
+  PASS  SetCategoryVisibleByKey is an exact key, never a token ("Landscape" hides nothing)
+  PASS  BorrowRegistry answers a token
+  PASS  while borrowed the registry is the phase's categories
+  PASS  ...captured from the phase groups' own visibility
+  PASS  the exact-key setter acts on the phase's groups
+  PASS  ...and never on the 3D view's groups or dev buttons
+  PASS  ApplySceneLayerVisibility acts on the phase too, buttons untouched
+  PASS  RestoreRegistry hands the 3D view's registry back (true)
+  PASS  ...exactly as it was before the borrow
+  PASS  after the restore the dev buttons follow again
+  PASS  RestoreRegistry(null) answers false
+  PASS  a rebuild during a borrow never empties the lent map in place (a new map, not a cleared one)
+  PASS  RestoreRegistry after that rebuild answers false and keeps the rebuilt registry
+  PASS  ...whose dev buttons follow (the borrow flag was reset by the rebuild)
+  PASS  a borrow and an immediate restore succeed (same generation)
+  PASS  the next rebuild leaves the map a token was given untouched (BuildButtons replaces, never clears in place)
+  PASS  with no dev markup the categories still register and the exact-key setter works
+  PASS  PhaseLibrary links against ValeVision's MultiModel and exports TrueVision's 23 names
+  PASS  ...every name Model Source imports
+  PASS  ...every name the snapshot renderer imports
+  PASS  uninitialised: IsLive(undefined) is true (DR-09 (a))
+  PASS  uninitialised: no groups, no default, no live id, nothing to choose
+  PASS  uninitialised: a named phase is never live and has no ready entry
+  PASS  uninitialised: GetStatus of no id is "loading" (read only for a phase with a renderId)
+  PASS  uninitialised: GetStatus of a named phase is "unloaded"
+  PASS  uninitialised: GetCategoryKeys of a named phase is empty, of the live model empty too
+  PASS  uninitialised: Ensure of a named phase resolves false at once
+  PASS  uninitialised: Ensure(null) waits for a live model nobody reports (documented: callers use Na__LeSource__WaitFor)
+  PASS  uninitialised: nothing was dispatched by the reads (only SetGroups/SetLive/loads announce)
+  PASS  SetCacheLimit refuses nonsense and takes a limit
+  PASS  (not done in ValeVision) SetGroups registers, the default skips "existing"
+  PASS  (not done in ValeVision) GetCategoryKeys of a phase is read by ValeVision's real MultiModel classifier
+  PASS  InteractiveOverlays exports TrueVision's six names
+  PASS  Begin and End with nothing registered touch nothing and do not throw
+  PASS  Register / SetWanted / Unregister refuse a missing object
+  PASS  a group registered already wanted is still invisible outside a frame
+  PASS  ...visible inside a frame
+  PASS  SetWanted(false) inside a frame hides it at once
+  PASS  SetWanted(true) inside a frame shows it at once
+  PASS  EndFrame hides it
+  PASS  registered during a frame and not wanted: invisible
+
+54 passed, 0 failed

@@ -1,0 +1,26 @@
+﻿ValeVision3D - Enhance Whitecard strength
+  PASS  100 is the pass exactly as it was - levels
+  PASS  100 is the pass exactly as it was - sharpen
+  PASS  a caller that passes no strength gets the full pass
+  PASS  a null strength gets the full pass
+  PASS  0 runs neither pass - the render is handed back untouched
+  PASS  50 puts the white point halfway
+  PASS  50 puts the black point halfway
+  PASS  50 puts the gamma halfway
+  PASS  50 puts the sharpen opacity halfway
+  PASS  25 is a quarter of the way, not a preset
+  PASS  the sharpen radius does not move with the dial
+  PASS  a strength over 100 clamps to the full pass
+  PASS  a negative strength clamps to nothing at all
+  PASS  no strength ever hands the sharpen an opacity of zero
+  PASS  a lower strength leaves that grey darker, step by step
+  PASS  0 leaves it exactly as the renderer wrote it
+  PASS  full strength clips the whitecard white point to paper white
+  PASS  a low strength does not clip it yet - that is the whole point of the dial
+  PASS  the shipped config gives Enhance Whitecard a percent weight
+  PASS  its range is 0 to 100
+  PASS  its default is the full pass
+  PASS  the built-in fallback row agrees with the shipped config
+  PASS  a percent weight is inside the raster cache key
+
+  PASS - the Enhance Whitecard dial runs 0 to 100 and 100 is the old pass.

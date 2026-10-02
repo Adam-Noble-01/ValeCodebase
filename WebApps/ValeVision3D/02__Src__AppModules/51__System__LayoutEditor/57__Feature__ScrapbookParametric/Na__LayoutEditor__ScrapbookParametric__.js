@@ -35,9 +35,26 @@
 // - UNGROUP IS EXPLODE. The vectors and text stay; the block goes with the
 //   group record.
 // - A TYPE STAYS PURE BY BEING HANDED WHAT IT CANNOT REACH. build and handles
-//   are given a tools object - today one thing, a way to measure text on the
-//   paper - which the panel sets from the editor's own chrome. A type that
-//   ignores it, or runs under Node where there is none, draws all the same.
+//   are given a tools object - a way to measure text on the paper, and
+//   whether that measure is yet the paper's own - which the panel sets from
+//   the editor's own chrome. A type that ignores it, or runs under Node where
+//   there is none, draws all the same.
+// - A MEASURE CAN BE WRONG WHEN IT IS TAKEN. Until jsPDF and the Open Sans
+//   cuts have loaded the chrome answers an average-width estimate, and an
+//   element built then keeps it in its records. Refit asks each element whose
+//   type can tell (definition.refit) whether it still fits, and rebuilds the
+//   ones that do not - only once the tools say the measure is the real one.
+// - WHAT IS RESTYLED BY HAND CAN BE KEPT. A type that offers adopt is shown
+//   its members as they stand whenever its parameters are read, and answers
+//   with what they now say about it - a colour given to a member inside the
+//   group, words typed over its label. So the panel shows the element as it
+//   is, and a rebuild - a grip dragged, a setting changed - keeps the hand
+//   edit instead of drawing over it. The cabinet infill is the first.
+// - A TYPE MAY BE HELD BY A BASE POINT. One that answers base(params) - the
+//   cabinet infill, held by its bottom left corner like a CAD block - is
+//   dropped with that point where the pointer let go (Insert, at 'base'),
+//   and a grip there moves it. Its corner grips move its ORIGIN as well as
+//   its size, which Regenerate does by being handed the origin to build at.
 // - AN ELEMENT IS A PRESET OF A TYPE. The library lists elements; two may be
 //   one type with different Element__Params, as the Drawing Title is offered
 //   with its scale bar and without.
@@ -54,19 +71,85 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js,
-//                   its 1.2.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
-// - Parity        : adapted
-// - Divergences   : This app has no site plan drawing type, so ElementsFor filters by the one type
-//                   every sheet is, where TrueVision asks the sheet model. Nothing else differs.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js
+// - Source version: 1.7.0 (TrueVision3D v2.134.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before
+//                   it was 1.0.0 (TrueVision's 1.2.0, ValeVision3D v2.68.0, 20-Sep-2026). 1.3.0
+//                   (v2.96.0), 1.4.0 (v2.100.0), 1.5.0 (v2.122.0), 1.6.0 (v2.128.0) and 1.7.0
+//                   (v2.134.0) are "NOT tried by Adam" in TrueVision: ported under DR-01 (c) and
+//                   named for the Parity Scribe.
+// - Parity        : adapted - TrueVision 1.7.0's code with the one seam below
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - ElementsFor files every sheet as an architectural one (const type = 'architectural'),
+//     as this app's Na__LayoutEditor__Scrapbook__ does: site plans are dormant here (DR-08 (B)),
+//     so no sheet is one. TrueVision asks Na__LeModel__IsSitePlanSheet; its three imports are
+//     kept as TrueVision has them, unused.
+//   - Until the panel 1.8.0 lands (W3-14) this app's panel (TrueVision's 1.2.0) registers the
+//     scale bar and the drawing title only and hands SetTools no metricsReady, so Refit rebuilds
+//     nothing yet and the 1.4.0, 1.6.0 and 1.7.0 hooks (choices, linkable, adopt, base) wait
+//     for the types that use them (W2-38, W3-14).
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.2.0.
+// 21-Sep-2026 - Version 1.7.0
+// - The base point, for the Cabinet Infill after Adam used it ("make the
+//   insertion point ... the bottom left, like a proper XY"). A type may
+//   answer base(params): BasePoint reads it, Insert with { at : 'base' } puts
+//   that point where the drop landed rather than centring the element there,
+//   and HandlesOf passes a type's base grip and its named corner grips
+//   through with the rest. Regenerate takes options.origin, the paper point
+//   to build at: a corner dragged with the opposite one held moves the
+//   element's origin, and a base grip moves nothing else.
+//
+// 21-Sep-2026 - Version 1.6.0
+// - A type's optional adopt(params, records): what its members, as they
+//   stand, now say about its parameters - a colour or a dash given to one
+//   inside the group, words typed over a label. GetParams lays it over the
+//   stored parameters, so every reader sees the element as it is, and
+//   Regenerate lays it under the patch, so a rebuild keeps a hand edit and
+//   an explicit choice still wins over it. Nothing is written by asking.
+//   For the Cabinet Infill, whose fill Adam means to recolour by hand.
+//
+// 21-Sep-2026 - Version 1.5.0
+// - Refit, and a type's optional refit(params, tools, records): the elements
+//   on a sheet whose records no longer fit what their words measure now are
+//   rebuilt where they stand, silently, for the caller to announce. Asked
+//   only once tools.metricsReady() says the measure is the paper's own - a
+//   fit to the estimate would undo a good one. For the Drawing Title, whose
+//   underline now runs five millimetres past its words and was drawn short on
+//   RB05 by a rebuild that ran before the metrics had loaded.
+//
+// 21-Sep-2026 - Version 1.4.0
+// - For the Project Portal element. ShapePatch carries Shape__Qr, so a
+//   regenerated element can resize its QR code in the record it already has.
+//   A type may offer `choices` - its own entries for the lookup grip's menu,
+//   each a patch - and may say `linkable : false`, which keeps it out of the
+//   viewport link's hands altogether.
+//
+// 20-Sep-2026 - Version 1.3.0
+// - HandlesOf passes a type's slide point through with the rest. A type that
+//   has no such grip simply has no slide, exactly as one with no scale to
+//   look up has no lookup, so nothing else here had to learn what it is for.
+//
+// 20-Sep-2026 - Version 1.2.0
+// - For the Drawing Title. SetTools: build and handles are handed a tools
+//   object (measureTextMm). ResetToStandard takes options.patch, so a change
+//   of scale and a change of the facts a title is written from are one
+//   rebuild. Elements are presets: ElementId, ElementParams and
+//   ElementPreviewParams, and a type's name may come from
+//   Elements__TypeNames. A type may name the parameters the link module
+//   fills from a viewport (definition.facts).
+//
+// 19-Sep-2026 - Version 1.1.0
+// - HandlesOf passes every grip point a type gives, by the name it gives it
+//   (the link socket, for the link noodle).
+//
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation: the config, the type registry, the block,
+//   BuildSet, Insert, Regenerate, AnchorOf and Portable.
 //
 // =============================================================================
 
@@ -78,6 +161,9 @@
     // MODULE IMPORTS | Model, Records, Groups, the Host's Bounds and the Item Clipboard
     // ------------------------------------------------------------
     import {
+        Na__LeModel__DRAWING_ARCHITECTURAL,
+        Na__LeModel__DRAWING_SITEPLAN,
+        Na__LeModel__IsSitePlanSheet,
         Na__LeModel__GetGroups,
         Na__LeModel__GetGroupById,
         Na__LeModel__GetShapeById,
@@ -123,7 +209,7 @@
     let   Na__LeParam__Status      = Na__LeParam__STATUS_LOADING;
     let   Na__LeParam__LoadPromise = null;
     const Na__LeParam__Types       = new Map();     // <-- type name -> definition
-    let   Na__LeParam__Tools       = Object.freeze({});   // <-- What a type's build and handles are handed: { measureTextMm(text, sizeMm, weight) }
+    let   Na__LeParam__Tools       = Object.freeze({});   // <-- What a type's build and handles are handed: { measureTextMm(text, sizeMm, weight), metricsReady(), projectName() }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -200,9 +286,52 @@
     //     build(params, tools)        { records : [{ kind, record }] } from an
     //                                 origin of (0, 0), the first record a
     //                                 vector whose first point IS (0, 0)
-    //     handles(params)             { stretch, lookup } as { x, y } from the origin
+    //     handles(params)             { stretch, lookup, slide, link, base } as
+    //                                 { x, y, away } from the origin, and
+    //                                 corners, a list of { name, x, y, away };
+    //                                 any of them null for a type that has no
+    //                                 such grip
     //     stretchTo(params, xMm, yMm) the parameters a stretch grip at that point gives
+    //     slideTo(params, xMm, exact) the parameters a slide grip at that point
+    //                                 gives; exact says the point was snapped
+    //                                 (optional - only a type with a slide grip)
     //     describe(params)            { real, paper } for the panel's length line
+    //     choices(params)             what the lookup grip's menu offers BEYOND
+    //                                 the scale and the split every scaled type
+    //                                 has: [{ label, checked, patch } |
+    //                                 { separator : true }], each patch merged
+    //                                 over the element's parameters as one undo
+    //                                 step (optional)
+    //     linkable                    false for a type that is never tied to a
+    //                                 viewport: it is dropped with no link, the
+    //                                 follower leaves it alone and the panel
+    //                                 shows it no link row (optional, default on)
+    //     refit(params, tools, records)
+    //                                 true when an element's records, as they
+    //                                 stand, no longer fit what its words
+    //                                 measure now: records is { shapes, texts },
+    //                                 its members' records in slot order,
+    //                                 moved to its origin. Asked by Refit only
+    //                                 (optional - a type that measures text)
+    //     base(params, tools)         the point the element is held by, from
+    //                                 its origin: dropped there, moved by a
+    //                                 grip there (optional - the cabinet
+    //                                 infill's bottom left corner)
+    //     cornerTo(params, name, xMm, yMm, exact)
+    //                                 { params, shift } a named corner grip
+    //                                 dragged to that point gives, both read
+    //                                 from the origin the drag began at;
+    //                                 shift is the new origin from the old -
+    //                                 the corner opposite stays where it was
+    //                                 (optional - a type whose handles give
+    //                                 corners)
+    //     adopt(params, records)      a patch of what the members, as they
+    //                                 stand, say about the parameters: a
+    //                                 style given to one by hand inside the
+    //                                 group. records as refit's. Laid over the
+    //                                 stored parameters by GetParams and under
+    //                                 the patch by Regenerate; an undefined
+    //                                 value takes its key off (optional)
     // }
     // ------------------------------------------------------------
     function Na__LeParam__RegisterType(definition) {
@@ -216,11 +345,32 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Is a Type Ever Tied to a Viewport
+    // ------------------------------------------------------------
+    // True unless its definition says otherwise, so every type written
+    // before this answer existed goes on being linked exactly as it was. A
+    // type that says no is dropped with no link, left alone by the follower
+    // and shown no link row: the Project Portal block reads the project, not
+    // a drawing, and a cable from it to the nearest elevation would say
+    // something untrue about what it is.
+    // ------------------------------------------------------------
+    function Na__LeParam__IsLinkable(type) {
+        const definition = Na__LeParam__GetType(type);
+        return !definition || definition.linkable !== false;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Set What a Type's Build and Handles Are Handed
     // ------------------------------------------------------------
-    // tools: { measureTextMm(text, sizeMm, weight) -> paper millimetres }.
+    // tools: { measureTextMm(text, sizeMm, weight) -> paper millimetres,
+    //          metricsReady() -> true once that measure is the paper's own
+    //                            rather than an estimate,
+    //          projectName() -> what the project on screen is called }.
     // A type is pure - it imports no DOM and no editor module - so whatever
-    // it needs from the editor arrives here. The panel sets it once.
+    // it needs from the editor arrives here. The panel sets it once. Each
+    // entry is a FUNCTION, called on every build, so what it answers is
+    // whatever is true at the moment the element is drawn.
     // ------------------------------------------------------------
     function Na__LeParam__SetTools(tools) {
         Na__LeParam__Tools = Object.freeze(Object.assign({}, (tools && typeof tools === 'object') ? tools : {}));
@@ -316,8 +466,34 @@
         const block = Na__LeParam__GetBlockById(sheet, groupId);
         if (!block) return null;
         const definition = Na__LeParam__GetType(block.Parametric__Type);
-        const stored     = (block.Parametric__Params && typeof block.Parametric__Params === 'object') ? block.Parametric__Params : {};
+        const stored     = Na__LeParam__Adopted(sheet, groupId, definition, (block.Parametric__Params && typeof block.Parametric__Params === 'object') ? block.Parametric__Params : {});
         return (typeof definition.normalise === 'function') ? definition.normalise(stored) : Object.assign({}, stored);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Stored Parameters, With What the Members Now Say Laid Over Them
+    // ------------------------------------------------------------
+    // The type's adopt, for a type that has one; the stored parameters as
+    // they are for every other, and whenever the members cannot be read. A
+    // type that throws adopts nothing. Returns a new object: the block on the
+    // group is never touched by asking.
+    //
+    // WHY EVERY READ AND NOT ONLY A REBUILD. The grips take the parameters
+    // when a drag begins and hand back WHOLE parameter sets from then on, so
+    // a hand edit read only at rebuild time would be overwritten by the
+    // stale copy the drag was carrying - and Escape would put that copy back.
+    // Read here, the drag starts from the element as it is.
+    // ------------------------------------------------------------
+    function Na__LeParam__Adopted(sheet, groupId, definition, stored) {
+        if (!definition || typeof definition.adopt !== 'function') return stored;
+        const group  = sheet ? Na__LeModel__GetGroupById(sheet, groupId) : null;
+        const anchor = group ? Na__LeParam__AnchorOf(sheet, groupId) : null;
+        if (!anchor) return stored;
+        let patch = null;
+        try { patch = definition.adopt(Object.assign({}, stored), Na__LeParam__RecordsAt(sheet, group, anchor)); }
+        catch (error) { patch = null; }                                    // <-- A type that cannot answer keeps what is stored
+        return (patch && typeof patch === 'object') ? Object.assign({}, stored, patch) : stored;
     }
     // ------------------------------------------------------------
 
@@ -420,9 +596,10 @@
 
     // FUNCTION | Where an Element's Grips Are on the Paper
     // ------------------------------------------------------------
-    // { anchor, stretch, lookup, link, params, type } in paper millimetres -
-    // every point the type gives, by the name it gives it; null for a plain
-    // group, or a type that has no grips.
+    // { anchor, stretch, lookup, slide, link, base, corners, params, type } in
+    // paper millimetres - every point the type gives, by the name it gives it,
+    // corners as a list of named points; null for a plain group, or a type
+    // that has no grips.
     // ------------------------------------------------------------
     function Na__LeParam__HandlesOf(sheet, groupId) {
         const block  = Na__LeParam__GetBlockById(sheet, groupId);
@@ -434,7 +611,11 @@
         const handles = definition.handles(params, Na__LeParam__Tools);
         if (!handles) return null;
         const place = (point) => (point ? { x : anchor.x + point.x, y : anchor.y + point.y, away : Array.isArray(point.away) ? point.away : [ 0, 0 ] } : null);   // <-- away: the way the grip stands clear of its point
-        return { anchor : anchor, stretch : place(handles.stretch), lookup : place(handles.lookup), link : place(handles.link), params : params, type : block.Parametric__Type };
+        const corners = (Array.isArray(handles.corners) ? handles.corners : [])
+            .filter((corner) => !!corner && typeof corner.name === 'string' && Number.isFinite(corner.x) && Number.isFinite(corner.y))
+            .map((corner) => Object.assign(place(corner), { name : corner.name }));   // <-- Named, because the type is asked about a corner by its name
+        return { anchor : anchor, stretch : place(handles.stretch), lookup : place(handles.lookup), slide : place(handles.slide), link : place(handles.link),
+                 base : place(handles.base), corners : corners, params : params, type : block.Parametric__Type };
     }
     // ------------------------------------------------------------
 
@@ -476,6 +657,35 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | A Preset Made Whole: the Type's Defaults, the Preset Over Them, Normalised
+    // ------------------------------------------------------------
+    // What an element dropped from that preset will hold, before a drop has
+    // given it anything of its own.
+    // ------------------------------------------------------------
+    function Na__LeParam__WholeParams(definition, params) {
+        const standard = (typeof definition.defaults === 'function') ? definition.defaults(params ? params.ScaleDenominator : undefined) : {};
+        const merged   = Object.assign({}, standard, params || {});
+        return (typeof definition.normalise === 'function') ? definition.normalise(merged) : merged;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Point an Element Is Held By, From Its Origin (null for a type without one)
+    // ------------------------------------------------------------
+    // The type's base(params) for a preset made whole - the cabinet infill's
+    // bottom left corner. The scrapbook's tile drag hangs the ghost from it and
+    // Insert puts it where the drop landed. A type without one is held by its
+    // middle, as every element was.
+    // ------------------------------------------------------------
+    function Na__LeParam__BasePoint(type, params) {
+        const definition = Na__LeParam__GetType(type);
+        if (!definition || typeof definition.base !== 'function') return null;
+        const point = definition.base(Na__LeParam__WholeParams(definition, params), Na__LeParam__Tools);
+        return (point && Number.isFinite(point.x) && Number.isFinite(point.y)) ? { x : point.x, y : point.y } : null;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build an Element Into the Item Clipboard's Set Shape
     // ------------------------------------------------------------
     // { kind : 'set', itemId, roots, entries, origin, size }: every vector and
@@ -489,9 +699,7 @@
     function Na__LeParam__BuildSet(type, params, link, originMm) {
         const definition = Na__LeParam__GetType(type);
         if (!definition) return null;
-        const base   = (typeof definition.defaults === 'function') ? definition.defaults(params ? params.ScaleDenominator : undefined) : {};
-        const merged = Object.assign({}, base, params || {});
-        const whole  = (typeof definition.normalise === 'function') ? definition.normalise(merged) : merged;
+        const whole  = Na__LeParam__WholeParams(definition, params);
         const leaves = Na__LeParam__BuildLeaves(definition, whole, originMm || null);
         if (leaves.length < 2) return null;
         let   serial = 0;
@@ -517,7 +725,9 @@
     // ------------------------------------------------------------
     // One undo step, kept on the paper the way a paste is. The element is
     // selected, so its grips are up at once; the selected roots are
-    // returned, or null.
+    // returned, or null. options.at 'base' puts the type's base point on the
+    // paper point instead of the element's middle - how a CAD block is
+    // inserted, and how the cabinet infill lands on a cupboard's corner.
     //
     // BUILT WHERE IT LANDS, NOT BUILT AND THEN MOVED. A set InsertSet moves has
     // an arbitrary offset added to every coordinate, which leaves each a few
@@ -528,11 +738,15 @@
     // origin at its tidy final place, and handed over with nothing to add.
     // Only a drop the paper's edge pushes back in is still moved.
     // ------------------------------------------------------------
-    function Na__LeParam__Insert(sheet, type, centreMm, params, link) {
+    function Na__LeParam__Insert(sheet, type, centreMm, params, link, options) {
         if (!sheet || !centreMm || !Number.isFinite(centreMm.x) || !Number.isFinite(centreMm.y)) return null;
         const measured = Na__LeParam__BuildSet(type, params, link, null);
         if (!measured) return null;
-        const origin = {
+        const held   = (options && options.at === 'base') ? Na__LeParam__BasePoint(type, params) : null;   // <-- A type held by a base point lands with THAT point on the drop
+        const origin = held ? {
+            x : Na__LeParam__Round(centreMm.x - held.x),
+            y : Na__LeParam__Round(centreMm.y - held.y)
+        } : {
             x : Na__LeParam__Round(centreMm.x - (measured.size.WidthMm  / 2) - measured.origin.x),
             y : Na__LeParam__Round(centreMm.y - (measured.size.HeightMm / 2) - measured.origin.y)
         };
@@ -564,7 +778,8 @@
             fillOpacity   : record.Shape__FillOpacity,
             strokeOpacity : record.Shape__StrokeOpacity,
             gradient      : record.Shape__Gradient || null,
-            dash          : record.Shape__LineStyle || null
+            dash          : record.Shape__LineStyle || null,
+            qr            : (record.Shape__Qr && typeof record.Shape__Qr === 'object') ? record.Shape__Qr : null   // <-- The project's QR symbol inside the box, and null takes it off again
         };
     }
     function Na__LeParam__TextPatch(record) {
@@ -606,6 +821,9 @@
     //             inside an announcement already (a viewport's scale change)
     //     link    undefined leaves the link alone, null removes it, an
     //             object replaces it
+    //     origin  the paper point to build at, { x, y }, in place of where
+    //             the element stands: a corner grip that moves the origin, a
+    //             base grip, and Escape putting either back
     // THE MEMBER LIST IS REWRITTEN BEFORE THE LEFT-OVERS ARE DELETED. The
     // model prunes any group left with fewer than two live members, so
     // deleting first would take the group, and its block, with them.
@@ -616,10 +834,11 @@
         const block = Na__LeParam__GetBlock(group);
         if (!block) return null;
         const definition = Na__LeParam__GetType(block.Parametric__Type);
-        const anchor     = Na__LeParam__AnchorOf(sheet, groupId);
-        if (!anchor) return null;
-        const opts   = options || {};
-        const stored = (block.Parametric__Params && typeof block.Parametric__Params === 'object') ? block.Parametric__Params : {};
+        const opts       = options || {};
+        const standing   = Na__LeParam__AnchorOf(sheet, groupId);
+        if (!standing) return null;
+        const anchor     = (opts.origin && Number.isFinite(opts.origin.x) && Number.isFinite(opts.origin.y)) ? { x : opts.origin.x, y : opts.origin.y } : standing;   // <-- Built somewhere else only when asked
+        const stored = Na__LeParam__Adopted(sheet, groupId, definition, (block.Parametric__Params && typeof block.Parametric__Params === 'object') ? block.Parametric__Params : {});   // <-- A hand edit under the patch: kept unless the patch says otherwise
         const merged = Object.assign({}, stored, patch || {});
         const params = (typeof definition.normalise === 'function') ? definition.normalise(merged) : merged;
         const leaves = Na__LeParam__BuildLeaves(definition, params, anchor);
@@ -685,6 +904,68 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | An Element's Own Records, Moved to Its Origin, Slot for Slot
+    // ------------------------------------------------------------
+    // { shapes, texts } in member order, what a type's refit and adopt are
+    // shown. A member whose record has gone keeps its slot as null, so every
+    // slot after it still means what it means to the type.
+    // ------------------------------------------------------------
+    function Na__LeParam__RecordsAt(sheet, group, anchor) {
+        const held = Na__LeParam__Members(group);
+        return {
+            shapes : held.shapes.map((member) => {
+                const record = Na__LeModel__GetShapeById(sheet, member.id);
+                if (!record) return null;
+                const points = Array.isArray(record.Shape__Points) ? record.Shape__Points : [];
+                return Object.assign({}, record, { Shape__Points : points.map((p) => (Array.isArray(p) ? [ p[0] - anchor.x, p[1] - anchor.y ] : p)) });
+            }),
+            texts  : held.texts.map((member) => {
+                const record = Na__LeModel__GetAnnotationById(sheet, member.id);
+                if (!record) return null;
+                return Object.assign({}, record, { Annotation__PosXMm : record.Annotation__PosXMm - anchor.x, Annotation__PosYMm : record.Annotation__PosYMm - anchor.y });
+            })
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Rebuild the Elements on a Sheet Whose Measured Words No Longer Fit (silent)
+    // ------------------------------------------------------------
+    // A type that draws from a measurement of its words - the Drawing Title,
+    // whose underline runs five millimetres past them - was drawn with
+    // whatever the measure answered at the time. Before jsPDF and the Open
+    // Sans cuts have loaded that is the chrome's average-width estimate, and a
+    // sheet's first refresh of a session runs before they land, so a title
+    // rebuilt then keeps the estimate in its records until something rebuilds
+    // it again. Each element whose type offers refit is asked whether it
+    // still fits; the ones that do not are rebuilt where they stand, as a
+    // change of parameters would rebuild them. Silent throughout: the caller
+    // announces, once, for all of them.
+    //
+    // NOTHING IS ASKED until tools.metricsReady() answers true. A fit to the
+    // estimate would undo a good fit, and an element with no answer at all
+    // is left exactly as it is. Returns the ids of the groups it rebuilt.
+    // ------------------------------------------------------------
+    function Na__LeParam__Refit(sheet) {
+        const rebuilt = [];
+        const ready   = Na__LeParam__Tools.metricsReady;
+        if (!sheet || typeof ready !== 'function' || ready() !== true) return rebuilt;
+        Na__LeParam__ListOnSheet(sheet).forEach((group) => {
+            const block      = Na__LeParam__GetBlock(group);
+            const definition = block ? Na__LeParam__GetType(block.Parametric__Type) : null;
+            if (!definition || typeof definition.refit !== 'function') return;
+            const anchor = Na__LeParam__AnchorOf(sheet, group.Group__Id);
+            if (!anchor) return;
+            let misfits = false;
+            try { misfits = definition.refit(Na__LeParam__GetParams(sheet, group.Group__Id), Na__LeParam__Tools, Na__LeParam__RecordsAt(sheet, group, anchor)) === true; }
+            catch (error) { misfits = false; }                                   // <-- A type that cannot answer leaves its element as it is
+            if (misfits && Na__LeParam__Regenerate(sheet, group.Group__Id, {}, { silent : true })) rebuilt.push(group.Group__Id);
+        });
+        return rebuilt;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -705,6 +986,7 @@
         Na__LeParam__Label,
         Na__LeParam__RegisterType,
         Na__LeParam__GetType,
+        Na__LeParam__IsLinkable,
         Na__LeParam__SetTools,
         Na__LeParam__ElementsFor,
         Na__LeParam__ElementName,
@@ -720,11 +1002,13 @@
         Na__LeParam__AnchorOf,
         Na__LeParam__IsLocked,
         Na__LeParam__HandlesOf,
+        Na__LeParam__BasePoint,
         Na__LeParam__BuildSet,
         Na__LeParam__Insert,
         Na__LeParam__Announce,
         Na__LeParam__Regenerate,
-        Na__LeParam__ResetToStandard
+        Na__LeParam__ResetToStandard,
+        Na__LeParam__Refit
     };
     // ------------------------------------------------------------
 

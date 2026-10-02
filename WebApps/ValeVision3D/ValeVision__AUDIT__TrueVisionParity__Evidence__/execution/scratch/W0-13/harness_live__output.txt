@@ -1,0 +1,307 @@
+W0-13 harness - LoadingSequence served from: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\01__AppCore\Na__AppFlow__LoadingSequence.js
+owned keys (app config): 13
+
+lh-150-r2-newer - localhost, worker 1.5.0, R2 holds a newer drawings block than disk
+  PASS  lh-150: the sequence ran to its end without throwing
+  PASS  lh-150: no load-error overlay
+  PASS  lh-150: na-app-scene-ready fired exactly once
+  PASS  lh-150: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-150: ...with no detail (TrueVision's event carries none)
+  PASS  lh-150: ...after the drawings dispatch
+  PASS  lh-150: no request outside the fakes
+  PASS  lh-150: no write of any kind (only GETs)
+  PASS  lh-150: the drawings block was dispatched once
+  PASS  lh-150: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-150: drawings detail block is the expected one
+  PASS  lh-150: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-150: drawings detail projectCode is the ?project= token
+  PASS  lh-150: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; R2's editor-owned keys over the disk copy)
+  PASS  lh-150: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-150: every project dispatch happened with the merge base registered
+  PASS  lh-150: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-150: the overlay is logged and names the keys R2 changed
+  PASS  lh-150: every listed key R2 holds now has R2's value
+  PASS  lh-150: a listed key R2 lacks keeps the local value (CrossSection__Config)
+  PASS  lh-150: a pipeline key is never overlaid (images stay the local copy's)
+  PASS  lh-150: a key not on the list is never overlaid (valeVision_ModelUrls)
+  PASS  lh-150: a key only R2 has is not copied (R2OnlyKey)
+  PASS  lh-150: the identity keys stay the local copy's (projectCode, projectName, folderId)
+  PASS  lh-150: na-navigation-modes-loaded carries R2's flags (fly off) - the overlay ran before anything read the data
+  PASS  lh-150: na-crosssection-config-loaded carries the local value R2 lacks
+  PASS  lh-150: R2 was read once, through the CDN (worker 1.5.0 lists no project route), fresh (?t=, no-store)
+  PASS  lh-150: the worker was asked only for /health (no project route on 1.5.0, no write)
+  PASS  lh-150: the editor config was read once from the local server
+  PASS  lh-150: the R2 read finished before the first project dispatch
+
+pre-image on lh-150 (the same world) - shows what changed
+  PASS  pre: the pre-image dispatched the disk block (the bug the overlay fixes)
+  PASS  pre: the pre-image sent no sceneConfig
+  PASS  pre: the pre-image dispatched no na-app-scene-ready
+  PASS  pre: the pre-image registered no merge base
+  PASS  pre: the pre-image made no R2 read and asked no worker
+
+lh-160-r2-newer - localhost, worker 1.6.0 (project route listed), ?project=3047
+  PASS  lh-160: the sequence ran to its end without throwing
+  PASS  lh-160: no load-error overlay
+  PASS  lh-160: na-app-scene-ready fired exactly once
+  PASS  lh-160: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-160: ...with no detail (TrueVision's event carries none)
+  PASS  lh-160: ...after the drawings dispatch
+  PASS  lh-160: no request outside the fakes
+  PASS  lh-160: no write of any kind (only GETs)
+  PASS  lh-160: the drawings block was dispatched once
+  PASS  lh-160: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-160: drawings detail block is the expected one
+  PASS  lh-160: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-160: drawings detail projectCode is the ?project= token
+  PASS  lh-160: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; R2's editor-owned keys over the disk copy)
+  PASS  lh-160: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-160: every project dispatch happened with the merge base registered
+  PASS  lh-160: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-160: R2 was read once through the worker's project route, with the editor key
+  PASS  lh-160: no CDN overlay read when the worker serves the project route
+  PASS  lh-160: the local copy came from the local server under the token (/api/projects/3047)
+  PASS  lh-160: the overlay is logged
+
+lh-matched - localhost, R2 and disk identical (2026/3047__Doous today)
+  PASS  lh-matched: the sequence ran to its end without throwing
+  PASS  lh-matched: no load-error overlay
+  PASS  lh-matched: na-app-scene-ready fired exactly once
+  PASS  lh-matched: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-matched: ...with no detail (TrueVision's event carries none)
+  PASS  lh-matched: ...after the drawings dispatch
+  PASS  lh-matched: no request outside the fakes
+  PASS  lh-matched: no write of any kind (only GETs)
+  PASS  lh-matched: the drawings block was dispatched once
+  PASS  lh-matched: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-matched: drawings detail block is the expected one
+  PASS  lh-matched: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-matched: drawings detail projectCode is the ?project= token
+  PASS  lh-matched: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the shared copy)
+  PASS  lh-matched: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-matched: every project dispatch happened with the merge base registered
+  PASS  lh-matched: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-matched: the overlay is logged as matching
+  PASS  lh-matched: the document the session runs equals the disk copy
+
+lh-no-list - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-no-list: the sequence ran to its end without throwing
+  PASS  lh-no-list: no load-error overlay
+  PASS  lh-no-list: na-app-scene-ready fired exactly once
+  PASS  lh-no-list: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-no-list: ...with no detail (TrueVision's event carries none)
+  PASS  lh-no-list: ...after the drawings dispatch
+  PASS  lh-no-list: no request outside the fakes
+  PASS  lh-no-list: no write of any kind (only GETs)
+  PASS  lh-no-list: the drawings block was dispatched once
+  PASS  lh-no-list: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-no-list: drawings detail block is the expected one
+  PASS  lh-no-list: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-no-list: drawings detail projectCode is the ?project= token
+  PASS  lh-no-list: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-no-list: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-no-list: every project dispatch happened with the merge base registered
+  PASS  lh-no-list: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-no-list: says why in the console (warn: "No ProjectData__EditorOwnedKeys list in the app config")
+  PASS  lh-no-list: nothing was overlaid (the document is the disk copy)
+  PASS  lh-no-list: no overlay success line
+  PASS  lh-no-list: R2 overlay reads = 0
+
+lh-no-editor-config - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-no-editor-config: the sequence ran to its end without throwing
+  PASS  lh-no-editor-config: no load-error overlay
+  PASS  lh-no-editor-config: na-app-scene-ready fired exactly once
+  PASS  lh-no-editor-config: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-no-editor-config: ...with no detail (TrueVision's event carries none)
+  PASS  lh-no-editor-config: ...after the drawings dispatch
+  PASS  lh-no-editor-config: no request outside the fakes
+  PASS  lh-no-editor-config: no write of any kind (only GETs)
+  PASS  lh-no-editor-config: the drawings block was dispatched once
+  PASS  lh-no-editor-config: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-no-editor-config: drawings detail block is the expected one
+  PASS  lh-no-editor-config: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-no-editor-config: drawings detail projectCode is the ?project= token
+  PASS  lh-no-editor-config: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-no-editor-config: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-no-editor-config: every project dispatch happened with the merge base registered
+  PASS  lh-no-editor-config: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-no-editor-config: says why in the console (info: "No editor worker for this project")
+  PASS  lh-no-editor-config: nothing was overlaid (the document is the disk copy)
+  PASS  lh-no-editor-config: no overlay success line
+  PASS  lh-no-editor-config: R2 overlay reads = 0
+  PASS  lh-no-editor-config: worker calls = 0
+
+lh-r2-500 - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-r2-500: the sequence ran to its end without throwing
+  PASS  lh-r2-500: no load-error overlay
+  PASS  lh-r2-500: na-app-scene-ready fired exactly once
+  PASS  lh-r2-500: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-r2-500: ...with no detail (TrueVision's event carries none)
+  PASS  lh-r2-500: ...after the drawings dispatch
+  PASS  lh-r2-500: no request outside the fakes
+  PASS  lh-r2-500: no write of any kind (only GETs)
+  PASS  lh-r2-500: the drawings block was dispatched once
+  PASS  lh-r2-500: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-r2-500: drawings detail block is the expected one
+  PASS  lh-r2-500: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-r2-500: drawings detail projectCode is the ?project= token
+  PASS  lh-r2-500: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-r2-500: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-r2-500: every project dispatch happened with the merge base registered
+  PASS  lh-r2-500: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-r2-500: says why in the console (warn: "Could not read project.json from R2")
+  PASS  lh-r2-500: nothing was overlaid (the document is the disk copy)
+  PASS  lh-r2-500: no overlay success line
+  PASS  lh-r2-500: R2 overlay reads = 1
+
+lh-r2-missing - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-r2-missing: the sequence ran to its end without throwing
+  PASS  lh-r2-missing: no load-error overlay
+  PASS  lh-r2-missing: na-app-scene-ready fired exactly once
+  PASS  lh-r2-missing: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-r2-missing: ...with no detail (TrueVision's event carries none)
+  PASS  lh-r2-missing: ...after the drawings dispatch
+  PASS  lh-r2-missing: no request outside the fakes
+  PASS  lh-r2-missing: no write of any kind (only GETs)
+  PASS  lh-r2-missing: the drawings block was dispatched once
+  PASS  lh-r2-missing: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-r2-missing: drawings detail block is the expected one
+  PASS  lh-r2-missing: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-r2-missing: drawings detail projectCode is the ?project= token
+  PASS  lh-r2-missing: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-r2-missing: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-r2-missing: every project dispatch happened with the merge base registered
+  PASS  lh-r2-missing: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-r2-missing: says why in the console (info: "R2 holds no project.json for this project yet")
+  PASS  lh-r2-missing: nothing was overlaid (the document is the disk copy)
+  PASS  lh-r2-missing: no overlay success line
+  PASS  lh-r2-missing: R2 overlay reads = 1
+
+lh-r2-hangs - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-r2-hangs: the sequence ran to its end without throwing
+  PASS  lh-r2-hangs: no load-error overlay
+  PASS  lh-r2-hangs: na-app-scene-ready fired exactly once
+  PASS  lh-r2-hangs: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-r2-hangs: ...with no detail (TrueVision's event carries none)
+  PASS  lh-r2-hangs: ...after the drawings dispatch
+  PASS  lh-r2-hangs: no request outside the fakes
+  PASS  lh-r2-hangs: no write of any kind (only GETs)
+  PASS  lh-r2-hangs: the drawings block was dispatched once
+  PASS  lh-r2-hangs: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-r2-hangs: drawings detail block is the expected one
+  PASS  lh-r2-hangs: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-r2-hangs: drawings detail projectCode is the ?project= token
+  PASS  lh-r2-hangs: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-r2-hangs: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-r2-hangs: every project dispatch happened with the merge base registered
+  PASS  lh-r2-hangs: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-r2-hangs: says why in the console (warn: "R2 did not answer within 0.4 s")
+  PASS  lh-r2-hangs: nothing was overlaid (the document is the disk copy)
+  PASS  lh-r2-hangs: no overlay success line
+  PASS  lh-r2-hangs: R2 overlay reads = 1
+
+lh-health-hangs - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-health-hangs: the sequence ran to its end without throwing
+  PASS  lh-health-hangs: no load-error overlay
+  PASS  lh-health-hangs: na-app-scene-ready fired exactly once
+  PASS  lh-health-hangs: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-health-hangs: ...with no detail (TrueVision's event carries none)
+  PASS  lh-health-hangs: ...after the drawings dispatch
+  PASS  lh-health-hangs: no request outside the fakes
+  PASS  lh-health-hangs: no write of any kind (only GETs)
+  PASS  lh-health-hangs: the drawings block was dispatched once
+  PASS  lh-health-hangs: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-health-hangs: drawings detail block is the expected one
+  PASS  lh-health-hangs: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-health-hangs: drawings detail projectCode is the ?project= token
+  PASS  lh-health-hangs: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-health-hangs: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-health-hangs: every project dispatch happened with the merge base registered
+  PASS  lh-health-hangs: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-health-hangs: says why in the console (warn: "R2 did not answer within 0.4 s")
+  PASS  lh-health-hangs: nothing was overlaid (the document is the disk copy)
+  PASS  lh-health-hangs: no overlay success line
+  PASS  lh-health-hangs: R2 overlay reads = 0
+
+lh-other-project - the overlay gives way, the load goes on with the disk copy
+  PASS  lh-other-project: the sequence ran to its end without throwing
+  PASS  lh-other-project: no load-error overlay
+  PASS  lh-other-project: na-app-scene-ready fired exactly once
+  PASS  lh-other-project: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-other-project: ...with no detail (TrueVision's event carries none)
+  PASS  lh-other-project: ...after the drawings dispatch
+  PASS  lh-other-project: no request outside the fakes
+  PASS  lh-other-project: no write of any kind (only GETs)
+  PASS  lh-other-project: the drawings block was dispatched once
+  PASS  lh-other-project: drawings detail keys are block, sceneConfig, projectCode
+  PASS  lh-other-project: drawings detail block is the expected one
+  PASS  lh-other-project: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  lh-other-project: drawings detail projectCode is the ?project= token
+  PASS  lh-other-project: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the disk copy as the local server gave it)
+  PASS  lh-other-project: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  lh-other-project: every project dispatch happened with the merge base registered
+  PASS  lh-other-project: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  lh-other-project: says why in the console (warn: "is project 9999, the local copy is 3047")
+  PASS  lh-other-project: nothing was overlaid (the document is the disk copy)
+  PASS  lh-other-project: no overlay success line
+  PASS  lh-other-project: R2 overlay reads = 1
+  PASS  lh-r2-hangs: the load waited about the budget, not the watchdog's 120 s
+  PASS  lh-health-hangs: the load waited about the budget, not the watchdog's 120 s
+
+lh-fetch-fails - the local server has no such project
+  PASS  lh-fetch-fails: the load error overlay shows
+  PASS  lh-fetch-fails: no na-app-scene-ready (the scene never showed)
+  PASS  lh-fetch-fails: no merge base registered
+  PASS  lh-fetch-fails: no drawings dispatch
+  PASS  lh-fetch-fails: no R2 overlay read
+
+lh-no-project - localhost, no ?project= (config defaults)
+  PASS  lh-no-project: the sequence ran to its end without throwing
+  PASS  lh-no-project: no load-error overlay
+  PASS  lh-no-project: na-app-scene-ready fired exactly once
+  PASS  lh-no-project: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  lh-no-project: ...with no detail (TrueVision's event carries none)
+  PASS  lh-no-project: no request outside the fakes
+  PASS  lh-no-project: no write of any kind (only GETs)
+  PASS  lh-no-project: the facade is not started (no editor config, no worker)
+  PASS  lh-no-project: no merge base registered
+  PASS  lh-no-project: no drawings dispatch (ValeVision dispatches inside the project branch)
+  PASS  lh-no-project: the same requests as the pre-image
+
+pages - GitHub Pages: the live site
+  PASS  pages: the sequence ran to its end without throwing
+  PASS  pages: no load-error overlay
+  PASS  pages: na-app-scene-ready fired exactly once
+  PASS  pages: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  pages: ...with no detail (TrueVision's event carries none)
+  PASS  pages: ...after the drawings dispatch
+  PASS  pages: no request outside the fakes
+  PASS  pages: no write of any kind (only GETs)
+  PASS  pages: the drawings block was dispatched once
+  PASS  pages: drawings detail keys are block, sceneConfig, projectCode
+  PASS  pages: drawings detail block is the expected one
+  PASS  pages: drawings detail sceneConfig is the raw presentation block of the document the session runs
+  PASS  pages: drawings detail projectCode is the ?project= token
+  PASS  pages: Na__CfApi__GetLoadedProjectData() is the memoised project data the session runs (same object; the CDN copy)
+  PASS  pages: ...and the drawings block it dispatched is that document's own block (same object)
+  PASS  pages: every project dispatch happened with the merge base registered
+  PASS  pages: na-navigation-modes-loaded carries the flags of the document the session runs
+  PASS  pages: no worker call, no editor-config request, no R2 overlay read
+  PASS  pages: no request to a local server
+  PASS  pages: no overlay log line of any kind
+  PASS  pages: the request list is identical to the pre-image's (web load path unchanged)
+  PASS  pages: the same events with the same details as the pre-image, apart from sceneConfig and na-app-scene-ready
+  PASS  pages: the only new event is na-app-scene-ready
+
+pages-no-project - GitHub Pages, no ?project=
+  PASS  pages-no-project: the sequence ran to its end without throwing
+  PASS  pages-no-project: no load-error overlay
+  PASS  pages-no-project: na-app-scene-ready fired exactly once
+  PASS  pages-no-project: ...after the canvas became visible (canvas-visible, overlay hidden)
+  PASS  pages-no-project: ...with no detail (TrueVision's event carries none)
+  PASS  pages-no-project: no request outside the fakes
+  PASS  pages-no-project: no write of any kind (only GETs)
+  PASS  pages-no-project: no worker call, no local server, no merge base
+  PASS  facade: exports the four names the sequence imports
+
+RESULT: PASS (273 passed, 0 failed)

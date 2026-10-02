@@ -1,0 +1,84 @@
+== A. syntax sweep (W3-touched files) ==
+js           checked  57  failures 0
+py           checked   0  failures 0
+json         checked   2  failures 0
+html-inline  checked   0  failures 0
+other        checked   2  failures 0
+line endings: LF 60, CRLF 2, mixed 0 []; BOM 0 []
+
+== B. release placeholders (every dirty file of the programme, the WCP Flask files, execution/prepared) ==
+placeholders: 70 in 58 file(s) (in the PortNotes verifier scope 68, outside it 2)
+  {{VVREL:<wp_id>}}      1
+  {{VVREL:W3-01}}        2
+  {{VVREL:W3-02}}        6
+  {{VVREL:W3-03}}        17
+  {{VVREL:W3-05}}        5
+  {{VVREL:W3-06}}        3
+  {{VVREL:W3-07}}        5
+  {{VVREL:W3-09}}        5
+  {{VVREL:W3-10}}        6
+  {{VVREL:W3-11}}        5
+  {{VVREL:W3-12}}        3
+  {{VVREL:W3-13}}        2
+  {{VVREL:W3-14}}        1
+  {{VVREL:W3-15}}        1
+  {{VVREL:W3-16}}        2
+  {{VVREL:W3-17}}        2
+  {{VVREL:W3-18}}        3
+  {{VVREL:}}             1
+outside the verifier scope:
+  WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:200  - `R5 (S11 B10): coding packages never edit the ledger or the VV devlog; the Parity Scribe pass of each wave allocates VV versions (step size per W0-01: Adam's devlog mem
+  WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:216  - `G7: the package returns a Port Record (S11 Appendix C) and never edits VV/ValeVision__PARITY__TrueVisionLedger__.md or VV/ValeVision__DEVLOG__.md; module DEVELOPMENT L
+
+== C. G6 transport rule ==
+files scanned: 660 (+ index.html); hits: 16
+  02__Src__AppModules\25__System__3dObject__InteractionSystem\Na__DoorAnimation__FindDoorGroups.js:42  //   making it robust for both TrueVision__ (flat) and Storey__ (storey) GLBs.
+  02__Src__AppModules\40__System__DrawingViewCore\Na__DrawView__ProjectData__.js:139  //   the repository's TrueVision__ProjectData__.json through the ProjectVision
+  02__Src__AppModules\50__System__ProjectedLinework\Na__ProjectedLinework__ConfigAccess__.js:43  //     (TrueVision__ in TrueVision): a runtime owner key carries the app's token (K2 K3), as in the JSON.
+  02__Src__AppModules\50__System__ProjectedLinework\Na__ProjectedLinework__StageSampler__.js:62  //     (TrueVision__ in TrueVision): a runtime category key carries the app's token (K2 K3).
+  02__Src__AppModules\51__System__LayoutEditor\03__Core__Config\Na__LayoutEditor__ConfigState__.js:140  // - GetSpecificationSetup: FileName is TrueVision__DrawingNotes__.json (the
+  02__Src__AppModules\51__System__LayoutEditor\03__Core__Config\Na__LayoutEditor__ConfigState__SheetSetup__.js:66  //   ['TrueVision__Linetype__DoorSwings']): the SketchUp door swing linework
+  02__Src__AppModules\51__System__LayoutEditor\07__Core__SheetData\Na__LayoutEditor__AutoSave__.js:81  //     (K2 K4), where TrueVision publishes window.TrueVision__Pwa__HasUnsavedWork; the DESCRIPTION
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:84  //   - Manifest names (D-S04a-03): both are read, the shared GLB Builder's own TrueVision__SitePlanData__
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:87  //   - Stems renamed on read (S04a-V04): a layer stem TrueVision__SitePlan__X is read as ValeVision__SitePlan__X
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:92  //     names its content folder, its ProjectVision build and TrueVision__ stems.
+  02__Src__AppModules\51__System__LayoutEditor\25__System__RenderStyles\Na__LayoutEditor__EdgeStyles__.js:58  //     TrueVision__SitePlan__ stems to this app's token as it reads them (W2-14). Dormant with site plans
+  02__Src__AppModules\51__System__LayoutEditor\25__System__RenderStyles\Na__LayoutEditor__EdgeStyles__.js:66  // - Site plan categories (TrueVision__SitePlan__...) take their default style from
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__.js:150  // - Canonical file TrueVision__DrawingNotes__.json, kept locally beside the
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__State__.js:59  //   FileJson and FileIso (what the local TrueVision__DrawingNotes__.json held
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__Transport__.js:98  //   TrueVision__DrawingNotes__.json now, then READ BACK and compared before
+  02__Src__AppModules\51__System__LayoutEditor\57__Feature__ScrapbookParametric\Na__LayoutEditor__Panel__ScrapbookParametric__.js:61  //     app's facade (K2 K4), where TrueVision reads window.TrueVision__Pwa__ProjectContext;
+
+== D. ignored by-products and project data since the W2 checkpoint (02-Oct 13:23:27) ==
+ignored entries: 51; ignored files modified after the W2 checkpoint: 18
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G1.out  02-Oct 14:43:49
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G2.out  02-Oct 14:43:50
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G3.out  02-Oct 14:44:41
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G4n.out  02-Oct 14:44:30
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G4n_files.out  02-Oct 14:44:29
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G4p.out  02-Oct 14:44:31
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-10\G4p_files.out  02-Oct 14:44:31
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G1.out  02-Oct 14:51:44
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G2.out  02-Oct 14:51:45
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G3.out  02-Oct 14:52:15
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G4n.out  02-Oct 14:51:54
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G4n_files.out  02-Oct 14:51:53
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G4p.out  02-Oct 14:51:55
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-11\G4p_files.out  02-Oct 14:51:53
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-17\Na__Verify__Exports__.out  02-Oct 13:33:36
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-17\Na__Verify__ModuleGraph__.out  02-Oct 13:33:35
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-17\Na__Verify__ParityNaming__.out  02-Oct 13:33:37
+  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W3-17\Na__Verify__PortNotes__.out  02-Oct 13:33:37
+files under WCP Projects/ modified after the W2 checkpoint: 0
+
+== E. shared Vale infrastructure (live) and WCP Flask files ==
+WebApps/Whitecardopedia/Tools__DevUtils: git status lines 0, git diff HEAD --stat ''; newest file 04-Sep 09:16:01 (99__MigrationLogs\PromoteProjectType__RenameJournal__20260904_091601.json)
+WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability: git status lines 0, git diff HEAD --stat ''; newest file 18-Sep 21:20:04 (Whitecardopedia__Pwa__ServiceWorker__Logic__.js)
+WebApps/Whitecardopedia/CloudflareWorker/src: git status lines 0, git diff HEAD --stat ''; newest file 15-Sep 08:32:55 (index.js)
+  Server__ValeVisionPublished__Api__.py         mtime 01-Oct 22:24:23  before the W2 checkpoint
+  Server__ValeVisionScrapbook__Api__.py         mtime 22-Sep 08:08:57  before the W2 checkpoint
+  Server__ValeVisionShared__Lib__.py            mtime 01-Oct 22:24:23  before the W2 checkpoint
+  Server__ValeVisionSheetImages__Api__.py       mtime 01-Oct 22:24:23  before the W2 checkpoint
+  Server__ValeVisionStatements__Api__.py        mtime 01-Oct 22:24:23  before the W2 checkpoint
+  Server__ValeVisionUserConfig__Api__.py        mtime 01-Oct 22:24:23  before the W2 checkpoint
+  server.py                                     mtime 01-Oct 20:21:20  before the W2 checkpoint

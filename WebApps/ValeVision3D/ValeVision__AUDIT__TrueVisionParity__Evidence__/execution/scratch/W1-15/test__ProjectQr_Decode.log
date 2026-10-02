@@ -1,0 +1,49 @@
+  inks: black 0, portal 89 on 255
+
+  ok    v1-longest     black  version  1  read in 15 of 15 renderings
+  ok    v1-longest     portal version  1  read in 15 of 15 renderings
+  ok    v1-shortest    black  version  1  read in 15 of 15 renderings
+  ok    v1-shortest    portal version  1  read in 15 of 15 renderings
+  ok    v2-longest     black  version  2  read in 15 of 15 renderings
+  ok    v2-longest     portal version  2  read in 15 of 15 renderings
+  ok    v2-shortest    black  version  2  read in 15 of 15 renderings
+  ok    v2-shortest    portal version  2  read in 15 of 15 renderings
+  ok    v3-longest     black  version  3  read in 15 of 15 renderings
+  ok    v3-longest     portal version  3  read in 15 of 15 renderings
+  ok    v3-shortest    black  version  3  read in 15 of 15 renderings
+  ok    v3-shortest    portal version  3  read in 15 of 15 renderings
+  ok    v4-longest     black  version  4  read in 15 of 15 renderings
+  ok    v4-longest     portal version  4  read in 15 of 15 renderings
+  ok    v4-shortest    black  version  4  read in 15 of 15 renderings
+  ok    v4-shortest    portal version  4  read in 15 of 15 renderings
+  ok    v5-longest     black  version  5  read in  7 of 15 renderings
+  ok    v5-longest     portal version  5  read in  7 of 15 renderings
+  ok    v5-shortest    black  version  5  read in 15 of 15 renderings
+  ok    v5-shortest    portal version  5  read in 15 of 15 renderings
+  ok    v6-longest     black  version  6  read in 15 of 15 renderings
+  ok    v6-longest     portal version  6  read in 15 of 15 renderings
+  ok    v6-shortest    black  version  6  read in 15 of 15 renderings
+  ok    v6-shortest    portal version  6  read in 15 of 15 renderings
+  ok    v7-longest     black  version  7  read in 15 of 15 renderings
+  ok    v7-longest     portal version  7  read in 15 of 15 renderings
+  ok    v7-shortest    black  version  7  read in 15 of 15 renderings
+  ok    v7-shortest    portal version  7  read in 15 of 15 renderings
+  ok    v8-longest     black  version  8  read in 15 of 15 renderings
+  ok    v8-longest     portal version  8  read in 15 of 15 renderings
+  ok    v8-shortest    black  version  8  read in 15 of 15 renderings
+  ok    v8-shortest    portal version  8  read in 15 of 15 renderings
+  ok    v9-longest     black  version  9  read in 15 of 15 renderings
+  ok    v9-longest     portal version  9  read in 15 of 15 renderings
+  ok    v9-shortest    black  version  9  read in 15 of 15 renderings
+  ok    v9-shortest    portal version  9  read in 15 of 15 renderings
+  ok    v10-longest    black  version 10  read in 15 of 15 renderings
+  ok    v10-longest    portal version 10  read in 15 of 15 renderings
+  ok    v10-shortest   black  version 10  read in  8 of 15 renderings
+  ok    v10-shortest   portal version 10  read in  8 of 15 renderings
+  ok    Vale-candidate black  version  4  read in 15 of 15 renderings
+  ok    Vale-candidate portal version  4  read in 15 of 15 renderings
+  ok    Ref-42-bytes   black  version  3  read in 15 of 15 renderings
+  ok    Ref-42-bytes   portal version  3  read in 15 of 15 renderings
+
+22 cases in 2 inks | wrong reads: 0 | case and ink pairs nothing could read: 0
+

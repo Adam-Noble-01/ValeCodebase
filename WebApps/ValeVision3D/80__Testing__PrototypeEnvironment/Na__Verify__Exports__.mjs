@@ -17,16 +17,52 @@
 //   ValeVision calls it Na__NavToolbar__SetActiveMode; both files parse, the
 //   graph resolves, and the import throws at runtime.
 // - Static, so it runs without a browser and covers modules no page loads yet.
+// - THE LOADER FACADE. The Layout Editor loads lazily: its loader
+//   (51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js)
+//   imports the editor's entry modules with literal import() calls and
+//   then reaches every name by property - editor.mode.Na__LeMode__Enter() -
+//   which no import statement shows, so a renamed or missing editor export
+//   passed both harnesses and failed only in the browser. Pass 3 reads the
+//   parts Na__LeLoad__ImportEditor names (mode, model, spec, config,
+//   viewport3d, pdf; a part added there is picked up), finds every
+//   <part>.Na__<Name> property in the loader and in each module that imports
+//   the loader, and proves the part's module exports that Name (S09 B13).
+// - A RUN THAT CHECKS NOTHING FAILS. A [subdir] argument is relative to
+//   02__Src__AppModules, and a wrong one used to check 0 files and pass
+//   (K3 gate G2 asks for a count above 0).
 //
 // USAGE:
-//     node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs [subdir ...]
+//     node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs [subdir ...] [--self-test]
 //
 //   With no arguments it checks every module under 02__Src__AppModules.
+//   --self-test proves pass 3 on copies of the loader held in memory: as it
+//   stands it passes, and a deliberately misspelt Na__LeMode__ or
+//   Na__LeModel__ name fails.
 //   Exit 0 = every imported name is exported. Exit 1 = at least one is not.
 //
 // -----------------------------------------------------------------------------
 //
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026); TrueVision3D carries
+//                   the twin at the same path (1.0.0 at b2aa9151, identical apart
+//                   from the app names)
+// - Parity        : diverged (from 1.1.0)
+// - Divergences   :
+//   - Pass 3, the loader facade names: TrueVision has no loader (its editor
+//     loads with the page, DR-24), so it has nothing to check there.
+//   - A run that checks no file fails.
+// - Back-port     : the zero-file rule only, offered with the TrueVision lane
+//                   (WP-S09-14, DR-36); not done here.
+//
+// -----------------------------------------------------------------------------
+//
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.1.0 (v2.71.1)
+// - Pass 3: every editor.<part>.Na__<Name> the Layout Editor loader facade
+//   calls is proved exported by the module Na__LeLoad__ImportEditor binds to
+//   that part; --self-test plants a misspelt name in memory and sees it fail.
+// - A run that checks 0 files fails instead of passing.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Written for the ValeVision re-alignment port.
 //
@@ -162,11 +198,91 @@ const SRC_ROOT   = resolve(APP_ROOT, '02__Src__AppModules');
 
 
 // -----------------------------------------------------------------------------
+// REGION | Loader Facade
+// -----------------------------------------------------------------------------
+
+    const LOADER_PATH = resolve(SRC_ROOT, '51__System__LayoutEditor', '01__Core__Loader', 'Na__LayoutEditor__Loader__.js');
+
+    // FUNCTION | Read the Parts Na__LeLoad__ImportEditor Binds
+    // ------------------------------------------------------------
+    // Promise.all([ import('a'), import('b'), ... ]).then(([ mode, model, ... ]) => ...):
+    // the n-th name is the n-th module. Returns Map(part -> module path), or
+    // null when the function cannot be read.
+    // ------------------------------------------------------------
+    function FacadeParts(loaderPath, source) {
+        const code  = StripComments(source);
+        const start = code.indexOf('function Na__LeLoad__ImportEditor');
+        if (start === -1) return null;
+        const then = code.indexOf('.then(', start);
+        if (then === -1) return null;
+        const specs = Array.from(code.slice(start, then).matchAll(/import\(\s*['"]([^'"]+)['"]\s*\)/g)).map((m) => m[1]);
+        const names = code.slice(then).match(/^\.then\(\s*\(\s*\[([^\]]*)\]\s*\)/);
+        if (!names) return null;
+        const parts = names[1].split(',').map((p) => p.trim()).filter(Boolean);
+        if (!parts.length || parts.length !== specs.length) return null;
+        return new Map(parts.map((part, at) => [ part, resolve(dirname(loaderPath), specs[at]) ]));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Check Every <part>.Na__<Name> a File Reaches Through the Facade
+    // ------------------------------------------------------------
+    // Returns { calls, failures : [{ file, line, part, name, reason }] }.
+    // ------------------------------------------------------------
+    function FacadeFailures(file, source, parts) {
+        const code     = StripComments(source);
+        const names    = Array.from(parts.keys()).map((p) => p.replace(/[$]/g, '\\$')).join('|');
+        const pattern  = new RegExp('(?:\\.|\\?\\.)(' + names + ')(?:\\.|\\?\\.)(Na__[A-Za-z0-9_$]+)', 'g');
+        const failures = [];
+        let calls = 0;
+        let match;
+        while ((match = pattern.exec(code)) !== null) {
+            calls += 1;
+            const target = parts.get(match[1]);
+            const info   = ExportsOf(target);
+            if (info.missing) {
+                failures.push({ file, line : code.slice(0, match.index).split('\n').length, part : match[1], name : match[2], reason : 'the part\'s module was not found (' + relative(APP_ROOT, target) + ')' });
+            } else if (!info.hasWildcard && !info.names.has(match[2])) {
+                failures.push({ file, line : code.slice(0, match.index).split('\n').length, part : match[1], name : match[2], reason : 'not exported by ' + relative(APP_ROOT, target) });
+            }
+        }
+        return { calls, failures };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Pass 3 Over the Loader and Every Module That Imports It
+    // ------------------------------------------------------------
+    // loaderSource lets the self-test hand in a planted copy.
+    // ------------------------------------------------------------
+    function FacadeCheck(fileList, loaderSource) {
+        const parts = FacadeParts(LOADER_PATH, loaderSource);
+        if (!parts) return { parts : null, calls : 0, files : 0, failures : [ { file : LOADER_PATH, line : 0, part : '-', name : 'Na__LeLoad__ImportEditor', reason : 'its import() list and the names it binds could not be read' } ] };
+        const users = fileList.filter((f) => f !== LOADER_PATH && /from\s*['"][^'"]*Na__LayoutEditor__Loader__\.js['"]/.test(StripComments(readFileSync(f, 'utf8'))));
+        let calls = 0;
+        const failures = [];
+        [ [ LOADER_PATH, loaderSource ], ...users.map((f) => [ f, readFileSync(f, 'utf8') ]) ].forEach(([ file, source ]) => {
+            const result = FacadeFailures(file, source, parts);
+            calls += result.calls;
+            failures.push(...result.failures);
+        });
+        return { parts, calls, files : users.length + 1, failures };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Run
 // -----------------------------------------------------------------------------
 
     const args    = process.argv.slice(2);
-    const roots   = args.length > 0 ? args.map(a => resolve(SRC_ROOT, a)) : [SRC_ROOT];
+    const flags   = args.filter(a => a.startsWith('--'));
+    const subdirs = args.filter(a => !a.startsWith('--'));
+    const unknown = flags.filter(f => f !== '--self-test');
+    if (unknown.length) { console.log('Unknown option ' + unknown.join(', ') + ' (usage: [subdir ...] [--self-test])'); process.exit(2); }
+    const roots   = subdirs.length > 0 ? subdirs.map(a => resolve(SRC_ROOT, a)) : [SRC_ROOT];
     const files   = roots.flatMap(r => (existsSync(r) ? CollectJsFiles(r) : []));
     const exportCache = new Map();
 
@@ -181,9 +297,60 @@ const SRC_ROOT   = resolve(APP_ROOT, '02__Src__AppModules');
         return result;
     }
 
+    // ---------------------------------------------------------------
+    // SELF-TEST | Pass 3 on copies of the loader held in memory
+    // ---------------------------------------------------------------
+    if (flags.includes('--self-test')) {
+        const all      = CollectJsFiles(SRC_ROOT);
+        const original = readFileSync(LOADER_PATH, 'utf8');
+        const plant    = (from, to) => (original.indexOf(from) === -1 ? null : original.split(from).join(to));
+        const cases    = [
+            [ 'the loader as it stands: every facade name is exported', FacadeCheck(all, original), (r) => r.parts && r.failures.length === 0 && r.calls > 0 ],
+            [ 'a deliberately misspelt Na__LeMode__ name fails (Na__LeMode__Enter -> Na__LeMode__Entr)',
+              FacadeCheck(all, plant('.Na__LeMode__Enter(', '.Na__LeMode__Entr(') || ''), (r) => r.failures.some((f) => f.name === 'Na__LeMode__Entr') ],
+            [ 'a misspelt Na__LeModel__ name fails (Na__LeModel__GetSheets -> Na__LeModel__GetSheetz)',
+              FacadeCheck(all, plant('.Na__LeModel__GetSheets(', '.Na__LeModel__GetSheetz(') || ''), (r) => r.failures.some((f) => f.name === 'Na__LeModel__GetSheetz') ],
+            [ 'an import() list whose bound names cannot be read fails rather than passing',
+              FacadeCheck(all, original.replace(/\.then\(\s*\(\s*\[[^\]]*\]\s*\)/, '.then((modules)')), (r) => !r.parts && r.failures.length > 0 ]
+        ];
+        console.log('ValeVision3D - named export resolution, pass 3 self-test (copies of the loader in memory)');
+        let failed = 0;
+        cases.forEach(([ name, result, ok ]) => { const pass = ok(result); if (!pass) failed++; console.log((pass ? '  PASS  ' : '  FAIL  ') + name); });
+        console.log(failed === 0 ? '\n  Every self-test case passed (' + cases.length + ').' : '\n  ' + failed + ' self-test case(s) FAILED.');
+        process.exit(failed === 0 ? 0 : 1);
+    }
+
     console.log('ValeVision3D - named export resolution');
     console.log(`  files checked : ${files.length}`);
+
+    // ---------------------------------------------------------------
+    // ZERO FILES | a wrong [subdir] argument checks nothing: that is a failure
+    // ---------------------------------------------------------------
+    if (files.length === 0) {
+        console.log('');
+        console.log('  FAIL - no files checked: a [subdir] argument is relative to 02__Src__AppModules.');
+        process.exit(1);
+    }
+
+    // ---------------------------------------------------------------
+    // PASS 3 | The loader facade's editor names (when the loader is in the checked set)
+    // ---------------------------------------------------------------
+    const facade = files.includes(LOADER_PATH) ? FacadeCheck(files, readFileSync(LOADER_PATH, 'utf8')) : null;
+    if (facade) {
+        console.log(`  loader facade : ${facade.calls} editor name(s) reached through ${facade.parts ? Array.from(facade.parts.keys()).join(', ') : '(parts unreadable)'} in ${facade.files} file(s)`);
+    }
     console.log('');
+    const facadeFailures = facade ? facade.failures : [];
+    const PrintFacade = () => {
+        if (facadeFailures.length === 0) return;
+        console.log('');
+        console.log(`  FAIL - ${facadeFailures.length} loader facade name(s) not exported:`);
+        console.log('');
+        for (const f of facadeFailures) {
+            console.log(`    ${relative(APP_ROOT, f.file)}${f.line ? ':' + f.line : ''}`);
+            console.log(`        "${f.part}.${f.name}"  ->  ${f.reason}`);
+        }
+    };
 
     const failures = [];
 
@@ -323,21 +490,26 @@ const SRC_ROOT   = resolve(APP_ROOT, '02__Src__AppModules');
                 console.log(`        "${f.name}"  from  "${f.from}"  ->  ${f.reason}`);
             }
         }
+        PrintFacade();
         process.exit(1);
     }
 
-    if (failures.length === 0) {
+    if (failures.length === 0 && facadeFailures.length === 0) {
         console.log('  PASS - every named import resolves to a real export,');
-        console.log('         and every Na__ identifier used is imported or declared.');
+        console.log('         and every Na__ identifier used is imported or declared'
+                    + (facade ? ',\n         and every editor name the loader facade calls is exported.' : '.'));
         process.exit(0);
     }
 
-    console.log(`  FAIL - ${failures.length} unresolved name(s):`);
-    console.log('');
-    for (const f of failures) {
-        console.log(`    ${relative(APP_ROOT, f.file)}`);
-        console.log(`        "${f.name}"  from  "${f.from}"  ->  ${f.reason}`);
+    if (failures.length > 0) {
+        console.log(`  FAIL - ${failures.length} unresolved name(s):`);
+        console.log('');
+        for (const f of failures) {
+            console.log(`    ${relative(APP_ROOT, f.file)}`);
+            console.log(`        "${f.name}"  from  "${f.from}"  ->  ${f.reason}`);
+        }
     }
+    PrintFacade();
     process.exit(1);
 
 // endregion -------------------------------------------------------------------

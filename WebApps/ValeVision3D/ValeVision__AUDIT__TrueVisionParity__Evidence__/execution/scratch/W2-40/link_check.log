@@ -1,0 +1,20 @@
+[1] link and evaluate through the import map
+  PASS four modules linked and evaluated; three r184 and three/addons/lines resolved (function)
+[2] exports equal TrueVision's
+  PASS Na__DrawingPlanes__Maths__.js: 13 exports, as its export block
+  PASS Na__DrawingPlanes__ConfigState__.js: 8 exports, as its export block
+  PASS Na__DrawingPlanes__Bounds__.js: 4 exports, as its export block
+  PASS Na__DrawingPlanes__PlaneMesh__.js: 9 exports, as its export block
+[3] ConfigState: the shipped AppConfig and the fallbacks agree
+  PASS Load() fetched 47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json and every getter (snap, bounds, appearance, grip) is unchanged by it
+  PASS bounds tokens as shipped; lift 100 mm = 0.1 units, overshoot 1500 mm = 1.5 units (Na__Math__Units, 1000 mm per unit)
+  PASS labels read through: "Drawing planes in the 3D view"
+[4] Bounds on models named as ValeVision's loader names them
+  PASS current export: building measured from the two MainBuildingModel groups only (11 m wide, not the 80 m site), 4 flat ground triangles kept
+  PASS vertical frame: 14.000 m wide (11 + 2 x 1.5), ground cut 0.050, bottom edge 0.150 (100 mm above it)
+  PASS horizontal frame: 14.000 x 12.000 m at the 1.6 m cut
+  PASS older export: usedFallback, sized from the whole bucket (80.0 m), no ground cut, bottom edge at the bucket foot + 0.1 (-4.850) - the documented degrade
+[5] PlaneMesh: create, dress, move, dispose
+  PASS 6 objects on layer 1 marked naSectionCutHelper; 4 regions; a move is one matrix write (shape kept); disposed
+
+RESULT: PASS (13 checks)

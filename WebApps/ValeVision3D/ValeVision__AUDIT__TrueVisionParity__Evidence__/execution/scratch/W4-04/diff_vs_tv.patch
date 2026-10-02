@@ -1,0 +1,529 @@
+﻿diff --git a/tv/Na__LayoutEditor__Statement__Md__Figure__.js b/out/Na__LayoutEditor__Statement__Md__Figure__.js
+index 4eff8d4b..c85210ab 100644
+--- a/tv/Na__LayoutEditor__Statement__Md__Figure__.js
++++ b/out/Na__LayoutEditor__Statement__Md__Figure__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - FIGURE BLOCKS
++// VALEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - FIGURE BLOCKS
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__Statement__Md__Figure__.js
+@@ -49,8 +49,14 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 29-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the statement tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js
++// - Source version: 1.0.0 (TrueVision3D v2.165.0, 29-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
++//                   switched off, K1 DR-10; nothing outside the feature imports it)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+diff --git a/tv/Na__LayoutEditor__Statement__Md__Inline__.js b/out/Na__LayoutEditor__Statement__Md__Inline__.js
+index 72346023..a76a1962 100644
+--- a/tv/Na__LayoutEditor__Statement__Md__Inline__.js
++++ b/out/Na__LayoutEditor__Statement__Md__Inline__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - INLINE
++// VALEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - INLINE
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__Statement__Md__Inline__.js
+@@ -43,8 +43,14 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the statement tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js
++// - Source version: 1.0.0 (TrueVision3D v2.95.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
++//                   switched off, K1 DR-10; nothing outside the feature imports it)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+diff --git a/tv/Na__LayoutEditor__Statement__Md__Render__.js b/out/Na__LayoutEditor__Statement__Md__Render__.js
+index f84411a0..9049601d 100644
+--- a/tv/Na__LayoutEditor__Statement__Md__Render__.js
++++ b/out/Na__LayoutEditor__Statement__Md__Render__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - RENDER
++// VALEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - RENDER
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__Statement__Md__Render__.js
+@@ -38,8 +38,14 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the statement tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js
++// - Source version: 1.2.0 (TrueVision3D v2.165.0, 29-Sep-2026; 1.1.0 v2.162.0, 1.0.0 v2.95.0; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
++//                   switched off, K1 DR-10; nothing outside the feature imports it)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D; the console prefix is [ValeVision3D Statement] (K2 C1).
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+@@ -119,7 +125,7 @@
+                 const out = fn(html, context || Na__LeStmtRnd__Context);
+                 if (out && typeof out.Html === 'string') return out;
+             } catch (error) {
+-                console.warn('[TrueVision3D Statement] A standard section could not be drawn; its marker is shown instead.', error);
++                console.warn('[ValeVision3D Statement] A standard section could not be drawn; its marker is shown instead.', error);
+             }
+         }
+         return null;
+diff --git a/tv/Na__LayoutEditor__Statement__Md__Serialise__.js b/out/Na__LayoutEditor__Statement__Md__Serialise__.js
+index fd0470b4..9c2ca599 100644
+--- a/tv/Na__LayoutEditor__Statement__Md__Serialise__.js
++++ b/out/Na__LayoutEditor__Statement__Md__Serialise__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - SERIALISE
++// VALEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - SERIALISE
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__Statement__Md__Serialise__.js
+@@ -40,8 +40,14 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the statement tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js
++// - Source version: 1.0.0 (TrueVision3D v2.95.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
++//                   switched off, K1 DR-10; nothing outside the feature imports it)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+diff --git a/tv/Na__LayoutEditor__Statement__Md__Tokenise__.js b/out/Na__LayoutEditor__Statement__Md__Tokenise__.js
+index a31ad96d..65ce6122 100644
+--- a/tv/Na__LayoutEditor__Statement__Md__Tokenise__.js
++++ b/out/Na__LayoutEditor__Statement__Md__Tokenise__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - TOKENISER
++// VALEVISION3D - LAYOUT EDITOR - STATEMENT MARKDOWN - TOKENISER
+ // =============================================================================
+ //
+ // FILE       : Na__LayoutEditor__Statement__Md__Tokenise__.js
+@@ -44,12 +44,29 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the statement tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js
++// - Source version: 1.0.0 (TrueVision3D v2.95.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
++//                   switched off, K1 DR-10; nothing outside the feature imports it)
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - CRLF-tolerant (K1 DR-37 item 1, a declared ValeVision seam; module 1.0.1): Tokenise reads
++//     each line without the CR of a CRLF line end (the private Na__LeStmtMd__WithoutCr) and cuts
++//     every block's Lines from the file's own lines, so a CRLF statement finds its headings, rules
++//     and tables and still joins back byte for byte. Nothing is normalised on read. Text, Body,
++//     Html, Head, Rows and Items carry no CR; the exports are TrueVision's, unchanged.
++// - Back-port     : the same fix in TrueVision (K1 DR-37 (a), package WT-03, under DR-36 with
++//                   Adam's approval); once it lands there this file can be ported back byte for byte.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.0.1 ({{VVREL:W4-04}})
++// - ValeVision3D: CRLF-tolerant (K1 DR-37 item 1, a declared ValeVision seam).
++//   The block rules read each line without the CR of a CRLF line end; every
++//   block's Lines keep the file's own bytes, so Join is still byte for byte.
++//
+ // 20-Sep-2026 - Version 1.0.0
+ // - Initial implementation.
+ //
+@@ -99,6 +116,21 @@
+     // ------------------------------------------------------------
+ 
+ 
++    // HELPER FUNCTION | A Line Without the CR of a CRLF Line End
++    // ------------------------------------------------------------
++    // VALEVISION SEAM (K1 DR-37 item 1). A statement checked out with
++    // core.autocrlf has CRLF line ends, and the block rules above end in $,
++    // which the CR left on each line defeats: the file would come back with
++    // no heading, rule or table at all. Every rule reads the line with that
++    // one CR set aside; the block's Lines keep it, so Join still returns the
++    // file byte for byte. Nothing is normalised on read.
++    // ------------------------------------------------------------
++    function Na__LeStmtMd__WithoutCr(line) {
++        return line.endsWith('\r') ? line.slice(0, -1) : line;
++    }
++    // ------------------------------------------------------------
++
++
+     // HELPER FUNCTION | Does a Line Open a Block That Is Not a Paragraph
+     // ------------------------------------------------------------
+     // Asked while a paragraph is being gathered, so it decides where an
+@@ -261,7 +293,8 @@
+     // ------------------------------------------------------------
+     function Na__LeStmtMd__Tokenise(text) {
+         const source = (typeof text === 'string') ? text : '';
+-        const lines  = source.split('\n');
++        const raw    = source.split('\n');                                      // <-- The file's own lines, a CRLF line's CR still on it: every block's Lines (DR-37 seam)
++        const lines  = raw.map(Na__LeStmtMd__WithoutCr);                        // <-- The same lines with that CR set aside: what every rule reads (DR-37 seam)
+         const blocks = [];
+         let   index  = 0;
+ 
+@@ -271,7 +304,7 @@
+             while (at < lines.length && lines[at].trim() !== '---') at++;
+             if (at < lines.length) {
+                 const end = Na__LeStmtMd__TakeBlanks(lines, at + 1);
+-                blocks.push({ Kind : 'frontmatter', Lines : lines.slice(0, end), Body : lines.slice(1, at) });
++                blocks.push({ Kind : 'frontmatter', Lines : raw.slice(0, end), Body : lines.slice(1, at) });
+                 index = end;
+             }
+         }
+@@ -280,7 +313,7 @@
+         if (index < lines.length && Na__LeStmtMd__IsBlank(lines[index])) {
+             const end = Na__LeStmtMd__TakeBlanks(lines, index);
+             if (end > index) {
+-                blocks.push({ Kind : 'blank', Lines : lines.slice(index, end) });
++                blocks.push({ Kind : 'blank', Lines : raw.slice(index, end) });
+                 index = end;
+             }
+         }
+@@ -291,13 +324,13 @@
+             // A LONE TRAILING EMPTY STRING is the newline the file ends with,
+             // not a block. It is kept so the join comes out byte for byte.
+             if (index === lines.length - 1 && line === '') {
+-                blocks.push({ Kind : 'blank', Lines : [ '' ] });
++                blocks.push({ Kind : 'blank', Lines : [ raw[index] ] });
+                 break;
+             }
+ 
+             if (Na__LeStmtMd__IsBlank(line)) {
+                 const end = Na__LeStmtMd__TakeBlanks(lines, index);
+-                blocks.push({ Kind : 'blank', Lines : lines.slice(index, end) });
++                blocks.push({ Kind : 'blank', Lines : raw.slice(index, end) });
+                 index = end;
+                 continue;
+             }
+@@ -312,7 +345,7 @@
+                 const end   = Na__LeStmtMd__TakeBlanks(lines, close);
+                 blocks.push({
+                     Kind  : 'code',
+-                    Lines : lines.slice(index, end),
++                    Lines : raw.slice(index, end),
+                     Info  : fence[2].trim(),
+                     Body  : lines.slice(index + 1, at)
+                 });
+@@ -326,7 +359,7 @@
+                 const end   = Na__LeStmtMd__TakeBlanks(lines, close);
+                 blocks.push({
+                     Kind  : 'html',
+-                    Lines : lines.slice(index, end),
++                    Lines : raw.slice(index, end),
+                     Html  : lines.slice(index, close).join('\n')
+                 });
+                 index = end;
+@@ -339,7 +372,7 @@
+                 const end = Na__LeStmtMd__TakeBlanks(lines, index + 1);
+                 blocks.push({
+                     Kind  : 'heading',
+-                    Lines : lines.slice(index, end),
++                    Lines : raw.slice(index, end),
+                     Level : heading[1].length,
+                     Text  : heading[2]
+                 });
+@@ -350,7 +383,7 @@
+             // HORIZONTAL RULE
+             if (Na__LeStmtMd__RE_RULE.test(line)) {
+                 const end = Na__LeStmtMd__TakeBlanks(lines, index + 1);
+-                blocks.push({ Kind : 'rule', Lines : lines.slice(index, end) });
++                blocks.push({ Kind : 'rule', Lines : raw.slice(index, end) });
+                 index = end;
+                 continue;
+             }
+@@ -364,7 +397,7 @@
+                 const end   = Na__LeStmtMd__TakeBlanks(lines, close);
+                 blocks.push({
+                     Kind  : 'table',
+-                    Lines : lines.slice(index, end),
++                    Lines : raw.slice(index, end),
+                     Head  : Na__LeStmtMd__Cells(line),
+                     Align : Na__LeStmtMd__Cells(lines[index + 1]).map((cell) => {
+                         const left  = cell.startsWith(':');
+@@ -384,7 +417,7 @@
+                 const end = Na__LeStmtMd__TakeBlanks(lines, at);
+                 blocks.push({
+                     Kind  : 'quote',
+-                    Lines : lines.slice(index, end),
++                    Lines : raw.slice(index, end),
+                     Text  : lines.slice(index, at).map((one) => one.replace(Na__LeStmtMd__RE_QUOTE, '$1')).join('\n')
+                 });
+                 index = end;
+@@ -397,7 +430,7 @@
+                 const end   = Na__LeStmtMd__TakeBlanks(lines, close);
+                 blocks.push({
+                     Kind    : 'list',
+-                    Lines   : lines.slice(index, end),
++                    Lines   : raw.slice(index, end),
+                     Ordered : Na__LeStmtMd__RE_ORDERED.test(line),
+                     Items   : Na__LeStmtMd__ReadItems(lines.slice(index, close))
+                 });
+@@ -411,7 +444,7 @@
+             const end = Na__LeStmtMd__TakeBlanks(lines, at);
+             blocks.push({
+                 Kind  : 'paragraph',
+-                Lines : lines.slice(index, end),
++                Lines : raw.slice(index, end),
+                 Text  : lines.slice(index, at).join('\n')
+             });
+             index = end;
+diff --git a/tv/Na__Test__StatementFigureTitle__.test.mjs b/out/Na__Test__StatementFigureTitle__.test.mjs
+index 8cf78ca8..5db5ae5f 100644
+--- a/tv/Na__Test__StatementFigureTitle__.test.mjs
++++ b/out/Na__Test__StatementFigureTitle__.test.mjs
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - TEST - STATEMENT FIGURE TITLES
++// VALEVISION3D - TEST - STATEMENT FIGURE TITLES
+ // =============================================================================
+ //
+ // FILE       : Na__Test__StatementFigureTitle__.test.mjs
+@@ -29,7 +29,31 @@
+ //
+ // -----------------------------------------------------------------------------
+ //
++// PORT NOTE:
++// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__StatementFigureTitle__.test.mjs
++// - Source version: 1.0.0 (TrueVision3D v2.165.0, 29-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, with the markdown modules it tests
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner reads ValeVision3D.
++//   - The specimen is ValeVision's committed fixture statement
++//     (TestEnv__StatementFixtures/TestEnv__StatementFixture__DesignStatement__.md),
++//     read whatever line ends the checkout gave it and proved twice: with LF and as its CRLF twin.
++//     TrueVision's live RB05 files are never read (K2 V2); where DESCRIPTION says "the real RB05
++//     statement", read this fixture.
++//   - The RB05 region becomes the fixture region, run on both twins: exactly five figures (three
++//     old captions taken in, two figures already titled, one of them switched off) in place of
++//     "at least 23"; the CRLF twin converts to the same document as LF, line ends aside.
++//   - The legacy document is also taken in with CRLF line ends (K1 DR-37 item 1).
++// - Back-port     : TrueVision's own frozen fixture and CRLF case are WT-03's (K1 DR-37 (a), DR-36).
++//
++// -----------------------------------------------------------------------------
++//
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.0.1 ({{VVREL:W4-04}})
++// - ValeVision3D: the committed fixture and its CRLF twin in place of RB05;
++//   the legacy document with CRLF line ends (K1 DR-37 item 1).
++//
+ // 29-Sep-2026 - Version 1.0.0
+ // - Initial implementation.
+ //
+@@ -41,7 +65,6 @@ import path from 'node:path';
+ import url  from 'node:url';
+ 
+ const here     = path.dirname(url.fileURLToPath(import.meta.url));
+-const repoRoot = path.resolve(here, '..', '..', '..');
+ 
+ // THE MARKDOWN FOLDER IS COPIED WHOLE, beside a package.json that makes node
+ // read .js as a module: Md__Figure imports its neighbours by their own names.
+@@ -75,8 +98,13 @@ const CROPPED = '<div class="na-figure" style="zoom: 100%; display: block; overf
+               + '</div>';
+ const OLD_CAPTION = '​\t\t**Fig 3.1  -**  Site Location  -  Local Context To Woodhouse Eaves And Deans Lane';
+ 
+-const RB05 = path.join(repoRoot, 'na-project-portal', '26-Projects', 'RB05__WestFarm', '30__TrueVision__AppContent',
+-                       '10__StatementDocs', '01__PreApp__Statement', 'RB05_T01_S01__WestFarm__PreApplicationStatement__.md');
++// THE FIXTURE | ValeVision's committed statement, in place of the real RB05
++// Three old captions under pictures (a zero-width space and tabs, spaces, a
++// plain zero-width space), two figures already titled (one switched off), a
++// bare logo and a picture followed by prose - five figures once converted.
++const FIXTURE          = path.join(here, 'TestEnv__StatementFixtures', 'TestEnv__StatementFixture__DesignStatement__.md');
++const FIXTURE_CAPTIONS = 3;
++const FIXTURE_FIGURES  = 5;
+ 
+ // endregion -------------------------------------------------------------------
+ 
+@@ -151,15 +179,20 @@ const stripped  = LEGACY.replace(/\n\n[​\s]*\*\*Fig [^\n]*/g, '');
+ check('nothing outside the figures changed', unwrapped === stripped, JSON.stringify(unwrapped));
+ check('the spacing under each caption is kept under its figure', adopted.Markdown.includes('</figure>\n\n\n#### 3.2'));
+ check('a second pass takes in nothing', Fig.Na__LeStmtFigMd__AdoptCaptions(adopted.Markdown).Count === 0);
+-
+-console.log('\nThe real RB05 statement (converted 29-Sep-2026, or not yet)');
+-if (!fs.existsSync(RB05)) {
+-    console.log('  SKIP  RB05 statement not found at ' + RB05);
+-} else {
+-    const text    = fs.readFileSync(RB05, 'utf8');
++const adoptedCrlf = Fig.Na__LeStmtFigMd__AdoptCaptions(LEGACY.replace(/\n/g, '\r\n'));
++check('with CRLF line ends: the same two taken in, the same document, line ends aside',
++      adoptedCrlf.Count === 2 && adoptedCrlf.Markdown.replace(/\r\n/g, '\n') === adopted.Markdown, adoptedCrlf.Count + ' taken');
++
++console.log('\nThe fixture statement and its CRLF twin (ValeVision, in place of the real RB05 statement)');
++const FIXTURE_LF = fs.readFileSync(FIXTURE, 'utf8').replace(/\r\n/g, '\n');
++const converted  = {};
++for (const [ label, text ] of [ [ 'LF', FIXTURE_LF ], [ 'CRLF', FIXTURE_LF.replace(/\n/g, '\r\n') ] ]) {
++    console.log('  ' + label);
+     const result  = Fig.Na__LeStmtFigMd__AdoptCaptions(text);
+     const figures = Na__LeStmtMd__Tokenise(result.Markdown).filter((b) => b.Kind === 'html' && /^<figure\b/.test(b.Html));
+-    check('every figure is one block (' + figures.length + ', at least 23)', figures.length >= 23
++    converted[label] = result.Markdown;
++    check('every old caption is taken in (' + result.Count + ' of ' + FIXTURE_CAPTIONS + ')', result.Count === FIXTURE_CAPTIONS);
++    check('every figure is one block (' + figures.length + ', exactly ' + FIXTURE_FIGURES + ')', figures.length === FIXTURE_FIGURES
+           && figures.every((b) => b.Html.split('\n').length >= 4 && /<\/figure>$/.test(b.Html)), figures.length + ' figures');
+     check('no old caption is left directly under a picture',
+           !Na__LeStmtMd__Tokenise(result.Markdown).some((b, i, all) => b.Kind === 'paragraph' && Fig.Na__LeStmtFigMd__IsCaption(b.Text)
+@@ -167,6 +200,7 @@ if (!fs.existsSync(RB05)) {
+     check('the result still round-trips byte for byte', Na__LeStmtMd__Join(Na__LeStmtMd__Tokenise(result.Markdown)) === result.Markdown);
+     check('a second pass takes in nothing', Fig.Na__LeStmtFigMd__AdoptCaptions(result.Markdown).Count === 0);
+ }
++check('the CRLF twin converts to the same document as LF, line ends aside', converted.CRLF.replace(/\r\n/g, '\n') === converted.LF);
+ 
+ // endregion -------------------------------------------------------------------
+ 
+diff --git a/tv/Na__Test__StatementRoundTrip__.test.mjs b/out/Na__Test__StatementRoundTrip__.test.mjs
+index 8ebf4f2a..b168ca57 100644
+--- a/tv/Na__Test__StatementRoundTrip__.test.mjs
++++ b/out/Na__Test__StatementRoundTrip__.test.mjs
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - TEST - STATEMENT MARKDOWN ROUND TRIP
++// VALEVISION3D - TEST - STATEMENT MARKDOWN ROUND TRIP
+ // =============================================================================
+ //
+ // FILE       : Na__Test__StatementRoundTrip__.test.mjs
+@@ -28,7 +28,30 @@
+ //
+ // -----------------------------------------------------------------------------
+ //
++// PORT NOTE:
++// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__StatementRoundTrip__.test.mjs
++// - Source version: 1.0.0 (TrueVision3D v2.95.0, 20-Sep-2026; with the unlogged v2.167.0 heading-count rule; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, with the markdown modules it tests
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner reads ValeVision3D.
++//   - The specimen is ValeVision's committed fixture statement
++//     (TestEnv__StatementFixtures/TestEnv__StatementFixture__DesignStatement__.md),
++//     read whatever line ends the checkout gave it and proved twice: with LF and as its CRLF twin.
++//     TrueVision's live RB05 files are never read (K2 V2); where DESCRIPTION says "the real RB05
++//     statement", read this fixture.
++//   - A CRLF Twins region (K1 DR-37 item 1): every synthetic case and the fixture, with CRLF line
++//     ends, joins back byte for byte and cuts into the same blocks with the same words as with LF,
++//     and no derived field carries a CR; a file mixing both line ends joins back byte for byte.
++// - Back-port     : TrueVision's own frozen fixture and CRLF case are WT-03's (K1 DR-37 (a), DR-36).
++//
++// -----------------------------------------------------------------------------
++//
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.0.1 ({{VVREL:W4-04}})
++// - ValeVision3D: the committed fixture and its CRLF twin in place of RB05;
++//   the CRLF Twins region (K1 DR-37 item 1).
++//
+ // 20-Sep-2026 - Version 1.0.0
+ // - Initial implementation.
+ //
+@@ -40,7 +63,6 @@ import path from 'node:path';
+ import url  from 'node:url';
+ 
+ const here     = path.dirname(url.fileURLToPath(import.meta.url));
+-const repoRoot = path.resolve(here, '..', '..', '..');
+ 
+ // THE MODULE UNDER TEST is an app .js file, which node reads as CommonJS
+ // because the app ships no package.json. It is copied to a scratch .mjs and
+@@ -73,12 +95,21 @@ function check(name, condition, detail) {
+ // REGION | Specimens
+ // -----------------------------------------------------------------------------
+ 
+-const specimens = [
+-    path.join(repoRoot, 'na-project-portal', '26-Projects', 'RB05__WestFarm', '30__TrueVision__AppContent',
+-              '10__StatementDocs', '01__PreApp__Statement', 'RB05_T01_S01__WestFarm__PreApplicationStatement__.md'),
+-    path.join(repoRoot, 'na-project-portal', '26-Projects', 'RB05__WestFarm', '30__TrueVision__AppContent',
+-              '10__StatementDocs', '01__PreApp__Statement', 'RB05_T01_N01__WestFarm__ProjectNotes__.md')
+-];
++// THE SPECIMEN | ValeVision's committed fixture statement, and its CRLF twin
++// ValeVision has no statement of its own yet, so the specimen is the fixture
++// beside this file. It is written into the scratch folder twice - with LF
++// line ends and with CRLF - whatever line ends this checkout gave it, so a
++// Windows checkout and any other prove the same two files (K1 DR-37 item 1).
++const FIXTURE    = path.join(here, 'TestEnv__StatementFixtures', 'TestEnv__StatementFixture__DesignStatement__.md');
++const FIXTURE_LF = fs.readFileSync(FIXTURE, 'utf8').replace(/\r\n/g, '\n');
++const specimens  = [
++    [ 'TestEnv__StatementFixture__DesignStatement__.md',       FIXTURE_LF ],
++    [ 'TestEnv__StatementFixture__DesignStatement__CRLF__.md', FIXTURE_LF.replace(/\n/g, '\r\n') ]
++].map(([ name, text ]) => {
++    const file = path.join(SCRATCH, name);
++    fs.writeFileSync(file, text, 'utf8');
++    return file;
++});
+ 
+ // SYNTHETIC CASES | The shapes the real files do not happen to contain
+ const synthetic = [
+@@ -175,5 +206,45 @@ for (const file of specimens) {
+ 
+ // endregion -------------------------------------------------------------------
+ 
++
++// -----------------------------------------------------------------------------
++// REGION | CRLF Twins (ValeVision, K1 DR-37 item 1)
++// -----------------------------------------------------------------------------
++
++// A file checked out with CRLF line ends must cut into the same blocks as
++// its LF twin, with the same words in them, and still join back byte for
++// byte. The words are the derived fields - Text, Html, Body, Head, Rows,
++// Items - and none of them may carry a CR: the CR stays in Lines only.
++function Shape(blocks) {
++    return blocks.map((block) => JSON.stringify([ block.Kind, block.Lines.length, block.Text, block.Html, block.Level,
++                                                  block.Body, block.Head, block.Align, block.Rows, block.Items, block.Info ]));
++}
++function Derived(blocks) {
++    return JSON.stringify(blocks.map((block) => Object.assign({}, block, { Lines : null })));
++}
++
++console.log('\nCRLF twins');
++for (const [ name, text ] of synthetic.concat([ [ 'the fixture statement', FIXTURE_LF ] ])) {
++    if (text.indexOf('\n') === -1) continue;                                // <-- One line: there is no line end to twin
++    const crlf   = text.replace(/\n/g, '\r\n');
++    const blocks = Na__LeStmtMd__Tokenise(crlf);
++    const lf     = Shape(Na__LeStmtMd__Tokenise(text));
++    const twin   = Shape(blocks);
++    const differ = twin.findIndex((one, at) => one !== lf[at]);
++    check(name + ' (CRLF) - byte for byte', Na__LeStmtMd__Join(blocks) === crlf);
++    check(name + ' (CRLF) - the same ' + twin.length + ' blocks as LF', twin.length === lf.length && differ === -1,
++          differ === -1 ? (twin.length + ' vs ' + lf.length + ' blocks') : ('block ' + differ + ': ' + twin[differ] + '\n        LF: ' + lf[differ]));
++    check(name + ' (CRLF) - no CR outside Lines', Derived(blocks).indexOf('\\r') === -1);
++}
++
++const MIXED = '# Head\r\n\r\nOne line.\nTwo lines.\r\n\r\n| A | B |\n| --- | --- |\r\n| 1 | 2 |\n';
++const mixed = Na__LeStmtMd__Tokenise(MIXED);
++check('a file mixing both line ends - byte for byte, heading and table found',
++      Na__LeStmtMd__Join(mixed) === MIXED && mixed[0].Kind === 'heading' && mixed.some((block) => block.Kind === 'table'),
++      mixed.map((block) => block.Kind).join(','));
++
++// endregion -------------------------------------------------------------------
++
++fs.rmSync(SCRATCH, { recursive : true, force : true });
+ console.log('\n' + (failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED') + '\n');
+ process.exit(failures === 0 ? 0 : 1);

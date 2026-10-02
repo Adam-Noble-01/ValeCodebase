@@ -38,6 +38,11 @@
 //   starting at the Shapes setup's TransparentEdgeOpacity. A gradient keeps
 //   its own alpha. Both sliders are one undo step per drag, like the
 //   gradient's.
+// - DRAW AT SCALE, the first control, is the drawing tools' own switch and
+//   never the selected shape's: on, the sizes typed into the Measurements box
+//   while the Draw or Rectangle tool is up are real sizes at the drawing's
+//   scale (Na__LayoutEditor__DrawingScale__), which its label quotes; off,
+//   they are paper millimetres. It shows and works whatever is selected.
 //
 // INTEGRATION:
 // - Registered by the mode controller in the right column.
@@ -45,48 +50,85 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 51 Na__LayoutEditor__Panel__Dimensions__ (pattern)
-// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.8 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5, on this app's
+//                   Na__LayoutEditor__Panel__Dimensions__ pattern); TrueVision3D took it for its
+//                   v2.21.0 (10-Sep-2026) and grew it to 1.9.0, while this app's copy came back hunk by
+//                   hunk to its 1.8.2 (TrueVision's 1.8.1 and 1.8.2 in v2.71.4, without Draw at scale
+//                   or the hatch block); since ported back whole from TrueVision3D 1.9.0 (HEAD b2aa9151)
+// - Source version: 1.9.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - whole: Draw at scale (1.6.0,
+//                   v2.40.0, once recorded as skipped in this app's ledger), the hatch
+//                   block (v2.90.0, unversioned in this log) and its Pattern line pt, Pattern colour
+//                   and Standard (1.9.0, v2.126.0). Releases Adam has not confirmed in TrueVision are
+//                   named in the Port Record (DR-01 (c)).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.9.0
+// - The hatch block gains Pattern line pt and Pattern colour, under Pattern
+//   deg, and a Standard button that shows once either is set. The boxes show
+//   what the hatch is drawn with: the pattern's standard (its own stroke at
+//   the scale in use; its own ink, else the shape's edge colour) until a value
+//   is set, which is then stored on the shape as Hatch__StrokePt (printed
+//   points, not scaled with the pattern) and Hatch__Colour. Choosing another
+//   pattern clears both, so each pattern starts from its own standards. The
+//   colour box opens the Colour Palette like every other colour field.
+//
+// 21-Sep-2026 - Version 1.8.2
+// - Pictures (Sheet Images) are left out of what this panel reads and edits:
+//   a picture has no edge, fill or hatch, and its settings are the Images
+//   panel's.
+//
+// 21-Sep-2026 - Version 1.8.1
+// - Edges off with SEVERAL vectors selected takes the edges off and nothing
+//   else. It used to write a fill as well, so that no shape was left with
+//   nothing to show - but one fill colour for all of them, the new-shape
+//   default, which repainted every selected shape in it: select a floor's
+//   coloured rooms and a plain line, untick Edges, and every room came out
+//   the same blue. A shape with no fill of its own now keeps its edges, which
+//   the normaliser has always guaranteed. One vector selected is unchanged.
+//
 // 17-Sep-2026 - Version 1.8.0
 // - Several selected: the panel reads the first vector and writes all of them,
 //   the fill, gradient and dashed-edge rows included. Open or closed stays a
 //   single-selection edit - it is geometry, not style.
-// - Ported from TrueVision3D v2.57.0.
+//
+// 14-Sep-2026 - Version 1.7.0
+// - Dashed edges, the toggle after Edge opacity: off by default, and opening
+//   it brings up the pattern (dashed, dotted, dash-dot, hidden), the scale
+//   and the millimetre section lengths from Na__LayoutEditor__LineStyleTool__.
+//   It sits with the other edge rows, so a two-point centre line can take it,
+//   and it goes away while the edges are off.
 //
 // 14-Sep-2026 - Version 1.6.0
-// - Dashed edges, the toggle after Edge opacity: off by default, and opening
-//   a block for dashed / dotted / dash-dot (centre) / hidden, with scale and
-//   paper-millimetre section lengths. Shown for two-point lines (centre
-//   lines). Hidden while Edges are off. Owned by Na__LayoutEditor__LineStyleTool__.
-// - Ported from TrueVision3D (Panel__Shapes__ 1.7.0). Draw-at-scale is not
-//   carried: this panel has no such row.
+// - Draw at scale, the first control: the Draw and Rectangle tools' atScale
+//   setting, quoting the sheet's scale in its label. It never edits a shape.
 //
 // 14-Sep-2026 - Version 1.5.0
-// - Box select: with several items selected the note says how many, and that
-//   these are the settings for new shapes until one shape is selected on its
-//   own.
-// - Ported from TrueVision3D v2.34.0.
+// - With several items selected the note says how many, and that these are the
+//   settings for new shapes until one shape is selected on its own.
 //
 // 14-Sep-2026 - Version 1.4.0
 // - Fill opacity (under Fill colour, while there is a fill) and Transparent
 //   edges with its Edge opacity slider (under Edge pt, while the edges are on).
 //   The sliders redraw silently as they move and announce once on release.
-// - Ported from TrueVision3D v2.35.0.
 //
 // 13-Sep-2026 - Version 1.3.0
-// - The Gradient toggle and its rows, from Na__LayoutEditor__GradientTool__, last
-//   in the list after the fills and Closed. A gradient replaces the solid fill
-//   and counts as the fill for the either-or rule. Its sliders redraw the shape
-//   silently while they move and announce once on release, so a whole drag is
-//   one undo step. Ported from TrueVision; below the header this file is now
-//   TrueVision's line for line.
+// - The Gradient toggle and its rows, from Na__LayoutEditor__GradientTool__. A
+//   gradient replaces the solid fill and counts as the fill for the either-or
+//   rule. Its sliders redraw the shape silently while they move and announce
+//   once on release, so a whole drag is one undo step.
+// - The gradient rows sit last, after the fills and Closed (Adam's call at
+//   sign-off), so opening the block moves no other control.
+//
+// 12-Sep-2026 - Version 1.2.0
+// - The draw-tool and axis-lock instruction paragraphs are gone from the
+//   panel body; they took more height than the controls they explained.
 //
 // 10-Sep-2026 - Version 1.1.0
 // - The Edges toggle, the either-or rule that keeps a shape visible, and
@@ -105,11 +147,15 @@
     // MODULE IMPORTS | Config, Model, Tools, Surface, Gradient Tool and Panel Host
     // ------------------------------------------------------------
     import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel, Na__LeCfg__GetLineweightSetup, Na__LeCfg__GetShapeSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeHatch__Get, Na__LeHatch__GetPacks, Na__LeHatch__ClampScale, Na__LeHatch__ClampRotation, Na__LeHatch__ClampStrokePt, Na__LeHatch__CleanColour, Na__LeHatch__StandardStrokePt, Na__LeHatch__StandardColour } from '../36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js';
     import { Na__LeModel__GetActiveSheet, Na__LeModel__GetSelection, Na__LeModel__GetSelectionItems, Na__LeModel__UpdateShape } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeTools__GetShapeDefaults, Na__LeTools__SetShapeDefaults } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
     import { Na__LeSurface__Refresh } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeGrad__BuildRows, Na__LeGrad__RefreshRows, Na__LeGrad__RegisterControls } from '../35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js';
-    import { Na__LeDash__BuildRows, Na__LeDash__RefreshRows, Na__LeDash__RegisterControls } from '../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
+    import { Na__LeDash__BuildRows, Na__LeDash__RefreshRows, Na__LeDash__RegisterControls } from '../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js';
+    // @delegate: ../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
+    import { Na__LeDrawScale__SheetDenominator, Na__LeDrawScale__Label } from '../07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js';
+    import { Na__LeMeasure__Refresh } from '../30__System__SheetTools/Na__LayoutEditor__Measurements__.js';
     import {
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
@@ -118,6 +164,9 @@
         Na__LePanels__ApplyToSelection,
         Na__LePanels__Row,
         Na__LePanels__Input,
+        Na__LePanels__Select,
+        Na__LePanels__FillSelect,
+        Na__LePanels__Button,
         Na__LePanels__Note,
         Na__LePanels__SliderRow,
         Na__LePanels__ShowSlider
@@ -144,7 +193,7 @@
         const selection = Na__LeModel__GetSelection();
         if (!sheet || !selection || selection.kind !== 'shape') return null;
         const item = sheet.Sheet__Shapes.find((s) => s.Shape__Id === selection.id) || null;
-        return item ? { sheet : sheet, item : item } : null;
+        return (item && !item.Shape__Image) ? { sheet : sheet, item : item } : null;   // <-- A picture is the Images panel's: it has no edge or fill to set here
     }
     // ------------------------------------------------------------
 
@@ -159,12 +208,25 @@
     // ------------------------------------------------------------
     function Na__LePanelShapes__Many() {
         const sheet = Na__LeModel__GetActiveSheet();
-        const items = Na__LePanels__SelectedOfKind(sheet, 'shape');
+        const shapes = sheet ? (sheet.Sheet__Shapes || []) : [];
+        const items  = Na__LePanels__SelectedOfKind(sheet, 'shape').filter((entry) => { const s = shapes.find((x) => x.Shape__Id === entry.id); return !!s && !s.Shape__Image; });   // <-- Pictures in the selection are not vectors to restyle
         if (!items.length) return null;
-        const item = (sheet.Sheet__Shapes || []).find((s) => s.Shape__Id === items[0].id) || null;
+        const item = shapes.find((s) => s.Shape__Id === items[0].id) || null;
         return item ? { sheet : sheet, item : item, count : items.length } : null;
     }
     function Na__LePanelShapes__Reading() { return Na__LePanelShapes__Selected() || Na__LePanelShapes__Many(); }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Draw at Scale Label, Quoting the Sheet's Scale
+    // ------------------------------------------------------------
+    // Off every viewport a typed size is drawn at the sheet's scale; over a
+    // viewport at another scale it takes that viewport's, as the title says.
+    // ------------------------------------------------------------
+    function Na__LePanelShapes__AtScaleCaption() {
+        const scale = Na__LeDrawScale__Label(Na__LeDrawScale__SheetDenominator(Na__LeModel__GetActiveSheet()));
+        return Na__LeCfg__FormatLabel('ShapeAtScale', 'Draw at scale ({scale})', { scale : scale });
+    }
     // ------------------------------------------------------------
 
 
@@ -175,6 +237,11 @@
         const note = Na__LePanels__Note('');
         note.setAttribute('data-na-block', 'note');
         body.appendChild(note);
+        // DRAW AT SCALE | First, because it decides what every size typed while
+        // drawing means; a setting of the drawing tools, shown whatever is selected
+        const atScale = Na__LePanels__Row(Na__LePanelShapes__AtScaleCaption(), Na__LePanels__Input('checkbox', 'shape-at-scale'), 'na-le-row--toggle');
+        atScale.title = Na__LeCfg__GetLabel('ShapeAtScaleTitle', "On: sizes typed into the Measurements box are real sizes at the drawing's scale - the scale of the viewport under the first point, or the sheet's elsewhere. Off: they are paper millimetres.");
+        body.appendChild(atScale);
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeStroked', 'Edges'), Na__LePanels__Input('checkbox', 'shape-stroked')));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeStroke', 'Edge colour'), Na__LePanels__Input('color', 'shape-stroke')));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeStrokePt', 'Edge pt'), Na__LePanels__Input('number', 'shape-pt', { min : lw.minPt, max : lw.maxPt, step : lw.stepPt })));
@@ -194,6 +261,55 @@
         // no other control out from under the pointer. Dashed edges open among
         // the edge rows, because a two-point centre line has no fill.
         Na__LeGrad__BuildRows(body);
+        // THE HATCH GOES LAST OF ALL, after the gradient. Adam: 'add a toggle
+        // that's default off, but within vectors at the bottom, which can switch
+        // on patterns to draw over the top of the fill on that vector, just like
+        // how layout works in SketchUp.' Off, the block is one row; ticking it
+        // opens the three controls under it and moves nothing above it.
+        const hatchRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatch', 'Hatch'), Na__LePanels__Input('checkbox', 'shape-hatch-on'), 'na-le-row--toggle');
+        hatchRow.title = Na__LeCfg__GetLabel('ShapeHatchTitle', 'A repeating pattern over this shape, drawn above its fill and below its own outline. Paper size: a tile prints the same however the sheet is scaled.');
+        body.appendChild(hatchRow);
+        const hatchPattern = Na__LePanels__Select('shape-hatch-pattern', [], '');
+        const hatchPatternRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatchPattern', 'Pattern'), hatchPattern);
+        hatchPatternRow.setAttribute('data-na-block', 'shape-hatch-pattern-row');
+        body.appendChild(hatchPatternRow);
+        const hatchScale = Na__LePanels__Input('number', 'shape-hatch-scale', { min : 0.1, max : 10, step : 0.05 });
+        hatchScale.title = Na__LeCfg__GetLabel('ShapeHatchScaleTitle', 'How large the pattern draws on the sheet. 1 is the size it was drawn at.');
+        const hatchScaleRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatchScale', 'Pattern scale'), hatchScale);
+        hatchScaleRow.setAttribute('data-na-block', 'shape-hatch-scale-row');
+        body.appendChild(hatchScaleRow);
+        const hatchRot = Na__LePanels__Input('number', 'shape-hatch-rotation', { min : 0, max : 345, step : 15 });
+        hatchRot.title = Na__LeCfg__GetLabel('ShapeHatchRotationTitle', 'Turns the whole tiled field, not each mark.');
+        const hatchRotRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatchRotation', 'Pattern deg'), hatchRot);
+        hatchRotRow.setAttribute('data-na-block', 'shape-hatch-rotation-row');
+        body.appendChild(hatchRotRow);
+        // THE HATCH'S OWN LINE WEIGHT AND LINE COLOUR. Adam: 'A line thickness
+        // control for the pattern. A line colour for the pattern ... Pull the
+        // standard ones in for when you first load that, but then have controls
+        // to be able to modify it.' Both boxes always show what the hatch is
+        // DRAWN with - the pattern's standard until one is set, the set value
+        // after - and Standard, which only shows once one is set, puts both
+        // back. The weight is printed points, like Edge pt above it.
+        const hatchPt = Na__LePanels__Input('number', 'shape-hatch-pt', { min : lw.minPt, max : lw.maxPt, step : lw.stepPt });
+        hatchPt.title = Na__LeCfg__GetLabel('ShapeHatchPtTitle', "The printed weight of the pattern's lines, in points. It starts at the pattern's standard, which grows with the pattern scale; a weight typed here stays as typed at any scale. Empty the box to go back to the standard.");
+        const hatchPtRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatchPt', 'Pattern line pt'), hatchPt);
+        hatchPtRow.setAttribute('data-na-block', 'shape-hatch-pt-row');
+        body.appendChild(hatchPtRow);
+        const hatchColour = Na__LePanels__Input('color', 'shape-hatch-colour');
+        hatchColour.title = Na__LeCfg__GetLabel('ShapeHatchColourTitle', "The colour of the pattern's lines. It starts at the pattern's standard: its own ink if it has one, else this shape's edge colour.");
+        const hatchColourRow = Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeHatchColour', 'Pattern colour'), hatchColour);
+        hatchColourRow.setAttribute('data-na-block', 'shape-hatch-colour-row');
+        body.appendChild(hatchColourRow);
+        const hatchStandard = document.createElement('div');
+        hatchStandard.className = 'na-le-bar';
+        hatchStandard.setAttribute('data-na-block', 'shape-hatch-standard-row');
+        const hatchStandardBtn = Na__LePanels__Button(Na__LeCfg__GetLabel('ShapeHatchStandard', 'Standard line and colour'), 'shape-hatch-standard');
+        hatchStandardBtn.title = Na__LeCfg__GetLabel('ShapeHatchStandardTitle', "Put the pattern's line weight and colour back to its standard.");
+        hatchStandard.appendChild(hatchStandardBtn);
+        body.appendChild(hatchStandard);
+        const hatchNote = Na__LePanels__Note('');
+        hatchNote.setAttribute('data-na-block', 'shape-hatch-note');
+        body.appendChild(hatchNote);
         const either = Na__LePanels__Note(Na__LeCfg__GetLabel('ShapeEitherNote', 'Edges and fill are either or: switching one off switches the other on, so a shape always shows.'));
         either.setAttribute('data-na-block', 'either');
         body.appendChild(either);
@@ -218,6 +334,36 @@
         const d = Na__LeTools__GetShapeDefaults();
         if (selected) return { on : !!selected.item.Shape__Gradient, gradient : selected.item.Shape__Gradient || d.gradient };
         return { on : d.gradientOn === true, gradient : d.gradient };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Hatch in Play: the Selected Shape's, or the Defaults'
+    // ------------------------------------------------------------
+    // Returns { on, hatch }. hatch is a record even while on is false - the
+    // defaults keep their settings through the toggle - so switching a shape's
+    // hatch back on restores the pattern it had rather than starting blank.
+    //
+    // A SHAPE'S HATCH IS ON WHEN IT NAMES A PATTERN. There is no separate stored
+    // flag: the record layer drops Shape__Hatch entirely unless a pattern is
+    // named, so "on with nothing chosen" is not a state a saved shape can be in.
+    // ------------------------------------------------------------
+    function Na__LePanelShapes__Hatch() {
+        const selected = Na__LePanelShapes__Reading();
+        const d = Na__LeTools__GetShapeDefaults();
+        const fallback = d.hatch || { Hatch__PatternKey : '', Hatch__Scale : 1, Hatch__RotationDeg : 0 };
+        if (selected) return { on : !!selected.item.Shape__Hatch, hatch : selected.item.Shape__Hatch || fallback };
+        return { on : d.hatchOn === true, hatch : fallback };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Write One Field of the Hatch, Merged
+    // ------------------------------------------------------------
+    function Na__LePanelShapes__ApplyHatch(changes) {
+        const now  = Na__LePanelShapes__Hatch().hatch;
+        const next = Object.assign({}, now, changes);
+        Na__LePanelShapes__Apply({ hatch : next }, { hatchOn : !!next.Hatch__PatternKey, hatch : next });
     }
     // ------------------------------------------------------------
 
@@ -254,10 +400,52 @@
         set('shape-stroke', hex(values.strokeColour, '#172b3a'));
         set('shape-pt', values.strokePt);
         set('shape-fill', hex(values.fillColour, '#e4e8ec'));
+        el('shape-at-scale').checked = d.atScale !== false;                  // <-- The drawing tools' setting, never the selected shape's
+        el('shape-at-scale').parentNode.querySelector('.na-le-row__label').textContent = Na__LePanelShapes__AtScaleCaption();
         el('shape-stroked').checked = values.stroked;
         el('shape-filled').checked = values.filled;
         el('shape-closed').checked = values.closed;
         el('shape-closed').parentNode.hidden  = !selected;
+
+        // THE HATCH BLOCK. A hatch needs an enclosed shape, so it follows the
+        // same canFill rule the solid fill does - a two-point line has nothing
+        // to hatch. Its three controls are only there once the toggle is on.
+        const hatchState = Na__LePanelShapes__Hatch();
+        const hatchOn    = hatchState.on && canFill;
+        el('shape-hatch-on').checked = hatchOn;
+        el('shape-hatch-on').parentNode.hidden = !canFill;
+        [ 'shape-hatch-pattern-row', 'shape-hatch-scale-row', 'shape-hatch-rotation-row', 'shape-hatch-pt-row', 'shape-hatch-colour-row', 'shape-hatch-standard-row' ]
+            .forEach((block) => { const row = body.querySelector('[data-na-block="' + block + '"]'); if (row) row.hidden = !hatchOn; });
+
+        const hatchNote = body.querySelector('[data-na-block="shape-hatch-note"]');
+        if (hatchNote) {
+            const missing = hatchOn && hatchState.hatch.Hatch__PatternKey && !Na__LeHatch__Get(hatchState.hatch.Hatch__PatternKey);
+            hatchNote.textContent = missing
+                ? Na__LeCfg__GetLabel('ShapeHatchMissing', 'This shape names a pattern the library has not got. Its fill and outline are unchanged; choose another pattern to replace it.')
+                : '';
+            hatchNote.hidden = !hatchNote.textContent;
+        }
+
+        if (hatchOn) {
+            const options = [ { value : '', label : Na__LeCfg__GetLabel('ShapeHatchNone', 'None') } ];
+            Na__LeHatch__GetPacks().forEach((pack) => {
+                pack.Pack__Patterns.forEach((pattern) => options.push({ value : pattern.Pattern__Key, label : pattern.Pattern__Label + '  (' + pack.Pack__Label + ')' }));
+            });
+            Na__LePanels__FillSelect(el('shape-hatch-pattern'), options, hatchState.hatch.Hatch__PatternKey || '');
+            set('shape-hatch-scale',    Number.isFinite(hatchState.hatch.Hatch__Scale) ? hatchState.hatch.Hatch__Scale : 1);
+            set('shape-hatch-rotation', Number.isFinite(hatchState.hatch.Hatch__RotationDeg) ? hatchState.hatch.Hatch__RotationDeg : 0);
+            // WHAT THE HATCH IS DRAWN WITH: its own weight and colour once set,
+            // the pattern's standard until then - the standard weight quoted at
+            // the scale in use, the standard colour against THIS shape's edges.
+            const hatchPattern  = Na__LeHatch__Get(hatchState.hatch.Hatch__PatternKey);
+            const ownPt         = Na__LeHatch__ClampStrokePt(hatchState.hatch.Hatch__StrokePt);
+            const ownColour     = Na__LeHatch__CleanColour(hatchState.hatch.Hatch__Colour);
+            const standardPt    = Na__LeHatch__StandardStrokePt(hatchPattern, hatchState.hatch.Hatch__Scale);
+            set('shape-hatch-pt',     ownPt !== null ? ownPt : (standardPt !== null ? standardPt : ''));
+            set('shape-hatch-colour', hex(ownColour || Na__LeHatch__StandardColour(hatchPattern, values.strokeColour), '#172b3a'));
+            const standardRow = body.querySelector('[data-na-block="shape-hatch-standard-row"]');
+            if (standardRow) standardRow.hidden = (ownPt === null && !ownColour);   // <-- Nothing set, nothing to put back
+        }
         el('shape-stroked').parentNode.hidden = !canFill;
         el('shape-filled').parentNode.hidden  = !canFill;
         el('shape-stroke').parentNode.hidden  = !values.stroked;
@@ -358,10 +546,75 @@
         Na__LePanels__OnControl('change', 'shape-stroked', (e, el) => {
             if (el.checked) { Na__LePanelShapes__Apply({ stroked : true }, { stroked : true }); return; }
             if (Na__LePanelShapes__Gradient().on) { Na__LePanelShapes__Apply({ stroked : false }, { stroked : false }); return; }   // <-- The gradient is the fill: a gradient alone is the fade
+            // SEVERAL SELECTED: the edges come off and nothing else changes. The
+            // fill written below is ONE colour - the new-shape default, as no one
+            // shape speaks for the rest - so it used to repaint every selected
+            // shape in it, a plan's coloured rooms included. A shape with no fill
+            // of its own keeps its edges instead: the normaliser never lets one
+            // go invisible.
+            if (!Na__LePanelShapes__Selected() && Na__LePanels__ApplyToSelection(Na__LeModel__GetActiveSheet(), 'shape', { stroked : false })) return;
             const colour = Na__LePanelShapes__FillColour();
             Na__LePanelShapes__Apply({ stroked : false, fillColour : colour }, { stroked : false, filled : true, fillColour : colour });   // <-- No edges left, so the fill comes on
         });
         Na__LePanels__OnControl('change', 'shape-closed', (e, el) => Na__LePanelShapes__Apply({ closed : el.checked }, null));
+        // THE HATCH. Switching it on with nothing chosen yet picks the first
+        // pattern in the library, because an empty dropdown under a ticked box
+        // reads as broken; switching it off clears the record entirely.
+        Na__LePanels__OnControl('change', 'shape-hatch-on', (e, el) => {
+            if (!el.checked) { Na__LePanelShapes__Apply({ hatch : null }, { hatchOn : false }); return; }
+            const now = Na__LePanelShapes__Hatch().hatch;
+            let key = now.Hatch__PatternKey;
+            if (!key || !Na__LeHatch__Get(key)) {
+                const packs = Na__LeHatch__GetPacks();
+                const first = packs.length && packs[0].Pack__Patterns.length ? packs[0].Pack__Patterns[0] : null;
+                key = first ? first.Pattern__Key : '';
+            }
+            if (!key) { Na__LePanels__Refresh(Na__LePanelShapes__ID); return; }   // <-- An empty library: nothing to switch on
+            Na__LePanelShapes__ApplyHatch({ Hatch__PatternKey : key });
+        });
+        // ANOTHER PATTERN BRINGS ITS OWN STANDARDS IN. A line weight set for brick
+        // diagonals is the wrong weight for a concrete stipple, so choosing a
+        // pattern clears the weight and colour set on the last one ('Pull the
+        // standard ones in for when you first load that'). Scale and rotation
+        // stay: they are how the hatch sits on THIS shape, not how it is drawn.
+        Na__LePanels__OnControl('change', 'shape-hatch-pattern', (e, el) => {
+            if (!el.value) { Na__LePanelShapes__Apply({ hatch : null }, { hatchOn : false }); return; }
+            Na__LePanelShapes__ApplyHatch({ Hatch__PatternKey : el.value, Hatch__StrokePt : null, Hatch__Colour : null });
+        });
+        // THE HATCH'S OWN LINE WEIGHT AND COLOUR. An emptied weight box clamps to
+        // null, which the record layer drops - so it goes back to the standard
+        // rather than to a weight of nothing. A typed weight is held to the
+        // editor's lineweight range, the one Edge pt works in.
+        Na__LePanels__OnControl('change', 'shape-hatch-pt', (e, el) => {
+            const lw = Na__LeCfg__GetLineweightSetup();
+            const pt = Na__LeHatch__ClampStrokePt(el.value);
+            Na__LePanelShapes__ApplyHatch({ Hatch__StrokePt : pt === null ? null : Math.min(lw.maxPt, Math.max(lw.minPt, pt)) });
+        });
+        Na__LePanels__OnControl('change', 'shape-hatch-colour', (e, el) => {
+            Na__LePanelShapes__ApplyHatch({ Hatch__Colour : Na__LeHatch__CleanColour(el.value) });
+        });
+        Na__LePanels__OnControl('click', 'shape-hatch-standard', () => {
+            Na__LePanelShapes__ApplyHatch({ Hatch__StrokePt : null, Hatch__Colour : null });
+        });
+        Na__LePanels__OnControl('change', 'shape-hatch-scale', (e, el) => {
+            const pattern = Na__LeHatch__Get(Na__LePanelShapes__Hatch().hatch.Hatch__PatternKey);
+            Na__LePanelShapes__ApplyHatch({ Hatch__Scale : Na__LeHatch__ClampScale(pattern, el.value) });
+        });
+        Na__LePanels__OnControl('change', 'shape-hatch-rotation', (e, el) => {
+            Na__LePanelShapes__ApplyHatch({ Hatch__RotationDeg : Na__LeHatch__ClampRotation(el.value) });
+        });
+        const hatchCommit = (event, el) => { if (event.key === 'Enter') { event.preventDefault(); el.blur(); } };
+        Na__LePanels__OnControl('keydown', 'shape-hatch-scale',    hatchCommit);
+        Na__LePanels__OnControl('keydown', 'shape-hatch-rotation', hatchCommit);
+        Na__LePanels__OnControl('keydown', 'shape-hatch-pt',       hatchCommit);
+
+        // DRAW AT SCALE | A setting of the drawing tools, so it goes to the defaults
+        // even with a shape selected, and the Measurements box reads it at once
+        Na__LePanels__OnControl('change', 'shape-at-scale', (e, el) => {
+            Na__LeTools__SetShapeDefaults({ atScale : el.checked });
+            Na__LePanels__Refresh(Na__LePanelShapes__ID);
+            Na__LeMeasure__Refresh();
+        });
 
         // OPACITY | Transparent edges starts the edges at the configured see-through
         // and makes them solid again when unticked; the sliders are live while

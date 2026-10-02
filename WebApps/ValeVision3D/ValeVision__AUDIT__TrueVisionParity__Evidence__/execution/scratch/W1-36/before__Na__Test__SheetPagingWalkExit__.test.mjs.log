@@ -1,0 +1,39 @@
+﻿TrueVision3D - Page Up / Page Down on a drawing, and leaving Walk
+
+  Page Up and Page Down on a drawing
+  PASS  the shipped key map binds them
+  FAIL  Page Down asks for the drawing after this one, and the stage cannot scroll
+        got  [[],false]
+        want [["undefined:1"],true]
+  FAIL  Page Up asks for the drawing before this one
+        got  [[],false]
+        want [["undefined:-1"],true]
+  FAIL  a held Page Down is taken but asks nothing more
+        got  [[],false]
+        want [[],true]
+  PASS  Page Down in a text box stays the text box's
+  PASS  Page Down in a list stays the list's
+  FAIL  Page Down from a ticked box turns the drawing (a tick box has no use for it)
+        got  [[],false]
+        want [["undefined:1"],true]
+  PASS  with Ctrl held it is not the binding (Exact)
+  FAIL  the built-in fallback key map pages too
+        got  [[],false]
+        want [["undefined:1"],true]
+  PASS  detached with the drawing tab, it hears nothing
+
+  Leaving Walk and Fly
+  PASS  the Layout Editor opening while walking: the whole exit, and Orbit lit
+  PASS  the Layout Editor opening while flying: the same
+  PASS  the Layout Editor opening in Orbit changes no mode
+  PASS  a picture rendered while somebody walks: Walk kept, toolbar untouched
+  PASS  and the culling comes back as it was
+  PASS  ReturnToOrbit says whether it left anything
+
+  The continuous render asked for by Walk and Fly
+  PASS  Walk asks for continuous frames, and lets them go on the way out
+  FAIL  Fly the same
+        got  {"during":["fly-mode"],"after":["fly-mode"]}
+        want {"during":["fly-mode"],"after":[]}
+
+  6 check(s) FAILED

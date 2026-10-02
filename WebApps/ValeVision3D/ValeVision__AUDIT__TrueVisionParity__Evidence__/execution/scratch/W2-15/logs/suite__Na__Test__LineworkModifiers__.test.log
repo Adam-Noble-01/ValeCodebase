@@ -1,0 +1,69 @@
+﻿ValeVision3D - Linework Modifiers (Model Layers rows, base image widths)
+
+  The Model Layers config
+  PASS  the config is Meta 1.2.0 reading SSOT 2.4.0
+  PASS  a linework-modifiers group sits between Annotation and Scene Context
+  PASS  the group is listed always (Group__AlwaysShow)
+  PASS  Fine Detail: tags 76 and 77, weight 0.50, dark grey, solid
+  PASS  Very Fine Detail: tags 78 and 79, weight 0.25, mid grey, solid
+  PASS  the group holds exactly those two rows
+  PASS  every folder-50 modifier tag is listed under the Model Layers row of its OwnerKey
+  PASS  the folder-50 fallbacks equal the shipped modifier tags
+  PASS  no app-token literal from the other app in the config
+  PASS  ValeVision keeps its coarse building rows and its legacy group
+  PASS  the storey fallback prefix is ValeVision__MainBuildingModel__ and names real rows
+
+  The fixture GLB
+  PASS  three strips the ":" and suffixes duplicates, as the app loads them
+
+  Vectors and base image agree
+  PASS  every fixture edge resolves to the same owner in the StageSampler and in LineworkSettings
+  PASS  the five detail nodes resolve, the four ordinary ones do not
+
+  ModifierRuleFor
+  PASS  longest prefix wins whatever the list order
+  PASS  a prefix only - never a substring further in
+  PASS  no name, no list or an empty tag matches nothing
+
+  Unchanged without modifiers
+  PASS  the loader widths stand until something applies
+  PASS  override alone (the 1.1.0 call): every linework edge at 3 px on its own material, the grid untouched
+  PASS  an empty rule list draws exactly the same
+  PASS  a null rule list draws exactly the same
+  PASS  clearing hands every edge its own base back
+  PASS  a model with no 76-79 tag: rules on, every material, width, colour and visibility identical
+
+  Every modifier row on
+  PASS  Fine Detail edges draw at 3 x 0.50 in dark grey with vertex colours off
+  PASS  Very Fine Detail edges draw at 3 x 0.25 in mid grey
+  PASS  each detail node is on a material of its own, never its source
+  PASS  the ordinary edge sharing a material with a detail edge keeps 3 px and its own colour
+  PASS  every ordinary edge stays at 3 px on its own material
+  PASS  the cloned material keeps the loader depth-bias hook and its program key
+  PASS  the grid is untouched, modifier-looking name and all
+
+  Export scales and the user factor
+  PASS  export scale 2: detail 3 x 0.50 x 2, ordinary 3 x 2, applied twice without compounding
+  PASS  re-applying re-uses the cached materials
+  PASS  user factor 1.5 multiplies a detail edge like any edge (3 x 0.25 x 2 x 1.5)
+  PASS  scales back to 1: the render widths again
+  PASS  the render over: every node back on its own material at its own base width
+
+  A modifier row switched off
+  PASS  Fine Detail off: its three nodes are out of the picture
+  PASS  Very Fine Detail still draws at 3 x 0.25
+  PASS  every ordinary edge still draws at 3 px
+  PASS  a re-apply keeps them out, and nothing hidden comes back
+  PASS  both rows off: every detail node is out
+  PASS  clearing puts every node back exactly: own material, own base width, own visibility
+  PASS  a node hidden before the render stays hidden
+
+  Rules without an override
+  PASS  no override, no rules: nothing swapped, hidden or restyled
+  PASS  a rule with no hex: own colour and vertex colours kept, width 4 x 0.5
+  PASS  a rule with no usable weight draws at the full override
+  PASS  and clearing restores it
+
+  46 checks
+
+  PASS - every check passed.

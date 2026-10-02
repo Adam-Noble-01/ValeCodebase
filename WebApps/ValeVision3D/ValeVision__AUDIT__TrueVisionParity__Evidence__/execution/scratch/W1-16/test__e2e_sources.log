@@ -1,0 +1,88 @@
+W1-16 - Sheet Images render set at its browser URLs
+
+  pages, config readable
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: CDN, then GitHub Pages
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  Paint pushes one picture primitive: missing, captioned, bronze frame, soft shadow
+  PASS  the Painter draws it as the pale placeholder with its name and the frame rule
+  PASS  Pdf prepares the sheet and reports the missing picture, never rejecting
+  PASS  Encode takes a PNG and refuses a PDF and a 200 MB file
+
+  pages, config 404
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: CDN, then GitHub Pages
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  pages, config network
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: CDN, then GitHub Pages
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  pages, config html
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: CDN, then GitHub Pages
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  flask, config readable
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: the Flask copy, then the CDN
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+
+  flask, config 404
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: the Flask copy, then the CDN
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  flask, config network
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: the Flask copy, then the CDN
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  flask, config html
+  PASS  the config was asked for once
+  PASS  Pages base: this app's
+  PASS  every reader answers as with the shipped config (each fallback equals it)
+  PASS  the picture was looked for in TrueVision's order: the Flask copy, then the CDN
+  PASS  no Noble Architecture address built or fetched (this app's CDN only)
+  PASS  loading, then missing, never a blob
+  PASS  warnings carry [ValeVision3D LayoutEditor], none TrueVision's
+  PASS  the config warning says the built-in settings are used
+
+  control: TrueVision's own Setup (pin b2aa9151), live site, config unreadable
+  PASS  the Noble Architecture check bites: TrueVision's fallback sends the live site to its own website
+
+67 passed

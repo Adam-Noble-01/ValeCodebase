@@ -1,0 +1,3533 @@
+{
+ "rows": [
+  {
+   "tv": "02__Src__AppModules/01__AppCore/Na__AppLoader__ProjectDataLoader__.js",
+   "system": "01__AppCore",
+   "lines": 1,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "TV placeholder file (S12-F44)"
+  },
+  {
+   "tv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+   "system": "03__AppUtils",
+   "lines": 237,
+   "ext": ".js",
+   "gained_by": [
+    "W1-29"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+   "system": "03__AppUtils",
+   "lines": 447,
+   "ext": ".js",
+   "gained_by": [
+    "W0-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js",
+   "system": "05__RenderPipeline",
+   "lines": 170,
+   "ext": ".js",
+   "gained_by": [
+    "W1-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js",
+   "system": "05__RenderPipeline",
+   "lines": 333,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-1: VV dual engine 05/01__Engine__PureEngine + 02__Engine__MaxEngine"
+  },
+  {
+   "tv": "02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js",
+   "system": "07__Scene__EnvironmentEffects",
+   "lines": 197,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js",
+   "system": "10__NavigationAndCameras",
+   "lines": 354,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "Twin kept apart: VV 03 Na__AppUtils__ValeVision__HotkeyHandler__ (DR-33)"
+  },
+  {
+   "tv": "02__Src__AppModules/11__CameraUtils/Na__UiFeature__ViewModeFov__DevControls.js",
+   "system": "11__CameraUtils",
+   "lines": 360,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__InstanceConsolidation__.js",
+   "system": "15__ModelLoader",
+   "lines": 226,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__LineworkColours__.js",
+   "system": "15__ModelLoader",
+   "lines": 334,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Visibility__StateCapture.js",
+   "system": "21__System__PresentationMode",
+   "lines": 196,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js",
+   "system": "25__System__3dObject__InteractionSystem",
+   "lines": 107,
+   "ext": ".js",
+   "gained_by": [
+    "W1-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/3dObject__IsolateBuildingStoreys__SystemLogic__.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 207,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 602,
+   "ext": ".js",
+   "gained_by": [
+    "W1-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__DevMenu__LocalhostOnly.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 48,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelGroupSelector.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 325,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-09: no Design Phase menu in VV"
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelGroupTransitionOverlay__.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 127,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-09: no Design Phase menu in VV"
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__StoreyIsolate__Controls.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 248,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__StoreyView__Controls.js",
+   "system": "26__System__ToggleModelElements",
+   "lines": 299,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__AppConfig__.json",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 76,
+   "ext": ".json",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Gesture__RightClickGuard__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 315,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Picking__HitResolver__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 318,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__DoorInteraction__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 211,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__ModelVisibility__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 621,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 157,
+   "ext": ".css",
+   "gained_by": [
+    "W4-11"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__SystemLogic__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 437,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DR-44: TV 3D right-click menu not ported (renderer and styles only, W4-11)"
+  },
+  {
+   "tv": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+   "system": "27__System__ContextMenuSystem",
+   "lines": 394,
+   "ext": ".js",
+   "gained_by": [
+    "W4-11"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js",
+   "system": "40__System__DrawingViewCore",
+   "lines": 486,
+   "ext": ".js",
+   "gained_by": [
+    "W1-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js",
+   "system": "40__System__DrawingViewCore",
+   "lines": 491,
+   "ext": ".js",
+   "gained_by": [
+    "W1-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js",
+   "system": "40__System__DrawingViewCore",
+   "lines": 246,
+   "ext": ".js",
+   "gained_by": [
+    "W1-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js",
+   "system": "40__System__DrawingViewCore",
+   "lines": 156,
+   "ext": ".js",
+   "gained_by": [
+    "W1-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js",
+   "system": "40__System__DrawingViewCore",
+   "lines": 738,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-1: VV keeps 05 2dProfileLines + LineworkSettings (K2 s.7)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapGeometry__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 601,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 372,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__ConfigState__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 298,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 712,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__AppConfig__.json",
+   "system": "41__System__SectionCutEngine",
+   "lines": 22,
+   "ext": ".json",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 342,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js",
+   "system": "41__System__SectionCutEngine",
+   "lines": 291,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "DIV-2: TV cut engine; VV keeps 41__System__CrossSectionView (DR-26, DR-41)"
+  },
+  {
+   "tv": "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js",
+   "system": "42__System__FloorPlanViews",
+   "lines": 227,
+   "ext": ".js",
+   "gained_by": [
+    "W1-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+   "system": "42__System__FloorPlanViews",
+   "lines": 337,
+   "ext": ".js",
+   "gained_by": [
+    "W1-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js",
+   "system": "45__System__ElevationViews",
+   "lines": 176,
+   "ext": ".js",
+   "gained_by": [
+    "W1-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js",
+   "system": "45__System__ElevationViews",
+   "lines": 288,
+   "ext": ".js",
+   "gained_by": [
+    "W1-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json",
+   "system": "47__System__DrawingPlanes",
+   "lines": 76,
+   "ext": ".json",
+   "gained_by": [
+    "W2-40"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 382,
+   "ext": ".js",
+   "gained_by": [
+    "W2-40"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 356,
+   "ext": ".js",
+   "gained_by": [
+    "W2-40"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 397,
+   "ext": ".js",
+   "gained_by": [
+    "W2-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 824,
+   "ext": ".js",
+   "gained_by": [
+    "W2-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 411,
+   "ext": ".js",
+   "gained_by": [
+    "W2-40"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 828,
+   "ext": ".js",
+   "gained_by": [
+    "W2-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js",
+   "system": "47__System__DrawingPlanes",
+   "lines": 551,
+   "ext": ".js",
+   "gained_by": [
+    "W2-40"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css",
+   "system": "47__System__DrawingPlanes",
+   "lines": 142,
+   "ext": ".css",
+   "gained_by": [
+    "W2-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js",
+   "system": "48__System__CrossSectionViews",
+   "lines": 198,
+   "ext": ".js",
+   "gained_by": [
+    "W2-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 44,
+   "ext": ".json",
+   "gained_by": [
+    "W1-09"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 263,
+   "ext": ".js",
+   "gained_by": [
+    "W1-09"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 314,
+   "ext": ".js",
+   "gained_by": [
+    "W2-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 402,
+   "ext": ".js",
+   "gained_by": [
+    "W1-09"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 189,
+   "ext": ".js",
+   "gained_by": [
+    "W1-09"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 631,
+   "ext": ".js",
+   "gained_by": [
+    "W2-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 253,
+   "ext": ".js",
+   "gained_by": [
+    "W1-09"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css",
+   "system": "49__System__ElevationDepthFog",
+   "lines": 107,
+   "ext": ".css",
+   "gained_by": [
+    "W2-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js",
+   "system": "50__System__ProjectedLinework",
+   "lines": 807,
+   "ext": ".js",
+   "gained_by": [
+    "W2-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js",
+   "system": "50__System__ProjectedLinework",
+   "lines": 308,
+   "ext": ".js",
+   "gained_by": [
+    "W2-43"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js",
+   "system": "50__System__ProjectedLinework",
+   "lines": 320,
+   "ext": ".js",
+   "gained_by": [
+    "W2-43"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js",
+   "system": "51 LE/07__Core__SheetData",
+   "lines": 292,
+   "ext": ".js",
+   "gained_by": [
+    "W1-20"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js",
+   "system": "51 LE/07__Core__SheetData",
+   "lines": 178,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js",
+   "system": "51 LE/07__Core__SheetData",
+   "lines": 308,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js",
+   "system": "51 LE/10__Core__SheetSurface",
+   "lines": 479,
+   "ext": ".js",
+   "gained_by": [
+    "W1-22"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js",
+   "system": "51 LE/15__Core__Markup",
+   "lines": 102,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js",
+   "system": "51 LE/15__Core__Markup",
+   "lines": 205,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+   "system": "51 LE/15__Core__Markup",
+   "lines": 385,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 305,
+   "ext": ".js",
+   "gained_by": [
+    "W2-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 459,
+   "ext": ".js",
+   "gained_by": [
+    "W2-11"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 240,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 145,
+   "ext": ".js",
+   "gained_by": [
+    "W2-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 633,
+   "ext": ".js",
+   "gained_by": [
+    "W2-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js",
+   "system": "51 LE/20__System__Viewports",
+   "lines": 313,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js",
+   "system": "51 LE/21__System__SitePlanData",
+   "lines": 366,
+   "ext": ".js",
+   "gained_by": [
+    "W2-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js",
+   "system": "51 LE/21__System__SitePlanData",
+   "lines": 802,
+   "ext": ".js",
+   "gained_by": [
+    "W2-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js",
+   "system": "51 LE/25__System__RenderStyles",
+   "lines": 439,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json",
+   "system": "51 LE/25__System__RenderStyles",
+   "lines": 65,
+   "ext": ".json",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+   "system": "51 LE/26__System__DraftMode",
+   "lines": 311,
+   "ext": ".js",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json",
+   "system": "51 LE/26__System__DraftMode",
+   "lines": 32,
+   "ext": ".json",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js",
+   "system": "51 LE/26__System__DraftMode",
+   "lines": 107,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css",
+   "system": "51 LE/26__System__DraftMode",
+   "lines": 199,
+   "ext": ".css",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+   "system": "51 LE/27__System__DrawingGrid",
+   "lines": 669,
+   "ext": ".js",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json",
+   "system": "51 LE/27__System__DrawingGrid",
+   "lines": 89,
+   "ext": ".json",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js",
+   "system": "51 LE/27__System__DrawingGrid",
+   "lines": 383,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js",
+   "system": "51 LE/27__System__DrawingGrid",
+   "lines": 247,
+   "ext": ".js",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css",
+   "system": "51 LE/27__System__DrawingGrid",
+   "lines": 63,
+   "ext": ".css",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 707,
+   "ext": ".js",
+   "gained_by": [
+    "W2-25"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 34,
+   "ext": ".json",
+   "gained_by": [
+    "W2-25"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 309,
+   "ext": ".js",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 79,
+   "ext": ".json",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 219,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 157,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 330,
+   "ext": ".js",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 296,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 265,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 350,
+   "ext": ".js",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 159,
+   "ext": ".js",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 657,
+   "ext": ".js",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 565,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 337,
+   "ext": ".js",
+   "gained_by": [
+    "W2-42"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 432,
+   "ext": ".css",
+   "gained_by": [
+    "W2-19"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js",
+   "system": "51 LE/28__System__ObjectSnap",
+   "lines": 638,
+   "ext": ".js",
+   "gained_by": [
+    "W2-25"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js",
+   "system": "51 LE/30__System__SheetTools",
+   "lines": 195,
+   "ext": ".js",
+   "gained_by": [
+    "W2-21"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js",
+   "system": "51 LE/30__System__SheetTools",
+   "lines": 494,
+   "ext": ".js",
+   "gained_by": [
+    "W3-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js",
+   "system": "51 LE/30__System__SheetTools",
+   "lines": 122,
+   "ext": ".js",
+   "gained_by": [
+    "W2-20"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js",
+   "system": "51 LE/30__System__SheetTools",
+   "lines": 305,
+   "ext": ".js",
+   "gained_by": [
+    "W2-21"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json",
+   "system": "51 LE/31__System__DocumentKeys",
+   "lines": 73,
+   "ext": ".json",
+   "gained_by": [
+    "W1-30"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js",
+   "system": "51 LE/31__System__DocumentKeys",
+   "lines": 384,
+   "ext": ".js",
+   "gained_by": [
+    "W1-30"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+   "system": "51 LE/32__System__OrthoMode",
+   "lines": 230,
+   "ext": ".js",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json",
+   "system": "51 LE/32__System__OrthoMode",
+   "lines": 28,
+   "ext": ".json",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js",
+   "system": "51 LE/32__System__OrthoMode",
+   "lines": 180,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+   "system": "51 LE/33__System__DrawingAxes",
+   "lines": 550,
+   "ext": ".js",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json",
+   "system": "51 LE/33__System__DrawingAxes",
+   "lines": 43,
+   "ext": ".json",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css",
+   "system": "51 LE/33__System__DrawingAxes",
+   "lines": 87,
+   "ext": ".css",
+   "gained_by": [
+    "W2-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js",
+   "system": "51 LE/36__System__HatchPatternTools",
+   "lines": 997,
+   "ext": ".js",
+   "gained_by": [
+    "W1-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js",
+   "system": "51 LE/36__System__HatchPatternTools",
+   "lines": 456,
+   "ext": ".js",
+   "gained_by": [
+    "W2-29"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css",
+   "system": "51 LE/36__System__HatchPatternTools",
+   "lines": 27,
+   "ext": ".css",
+   "gained_by": [
+    "W1-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 424,
+   "ext": ".js",
+   "gained_by": [
+    "W2-41"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 77,
+   "ext": ".css",
+   "gained_by": [
+    "W2-41"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 709,
+   "ext": ".js",
+   "gained_by": [
+    "W2-41"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 470,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 690,
+   "ext": ".js",
+   "gained_by": [
+    "W2-41"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 549,
+   "ext": ".js",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 353,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 208,
+   "ext": ".json",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 389,
+   "ext": ".js",
+   "gained_by": [
+    "W1-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 684,
+   "ext": ".js",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 382,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 419,
+   "ext": ".js",
+   "gained_by": [
+    "W2-41"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 480,
+   "ext": ".js",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 218,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 153,
+   "ext": ".js",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 296,
+   "ext": ".js",
+   "gained_by": [
+    "W2-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 504,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js",
+   "system": "51 LE/37__System__VectorTools",
+   "lines": 380,
+   "ext": ".js",
+   "gained_by": [
+    "W2-28"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js",
+   "system": "51 LE/40__Ui__Panels",
+   "lines": 240,
+   "ext": ".js",
+   "gained_by": [
+    "W2-14"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 346,
+   "ext": ".js",
+   "gained_by": [
+    "W2-32"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 518,
+   "ext": ".js",
+   "gained_by": [
+    "W3-11"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 268,
+   "ext": ".js",
+   "gained_by": [
+    "W2-22"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 510,
+   "ext": ".js",
+   "gained_by": [
+    "W2-32"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 511,
+   "ext": ".js",
+   "gained_by": [
+    "W3-11"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 1045,
+   "ext": ".js",
+   "gained_by": [
+    "W2-30"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 365,
+   "ext": ".js",
+   "gained_by": [
+    "W2-31"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js",
+   "system": "51 LE/50__Feature__Specification",
+   "lines": 303,
+   "ext": ".js",
+   "gained_by": [
+    "W2-32"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 377,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__DeleteDialog__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 64,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 688,
+   "ext": ".js",
+   "gained_by": [
+    "W4-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 171,
+   "ext": ".js",
+   "gained_by": [
+    "W4-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 196,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 113,
+   "ext": ".js",
+   "gained_by": [
+    "W1-13"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 846,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 204,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 425,
+   "ext": ".js",
+   "gained_by": [
+    "W4-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Styles__DrawingRegister__.css",
+   "system": "51 LE/51__Feature__DrawingRegister",
+   "lines": 575,
+   "ext": ".css",
+   "gained_by": [
+    "W4-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 1195,
+   "ext": ".js",
+   "gained_by": [
+    "W4-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 361,
+   "ext": ".js",
+   "gained_by": [
+    "W4-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 434,
+   "ext": ".js",
+   "gained_by": [
+    "W4-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 352,
+   "ext": ".js",
+   "gained_by": [
+    "W4-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 245,
+   "ext": ".js",
+   "gained_by": [
+    "W2-30"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 474,
+   "ext": ".js",
+   "gained_by": [
+    "W4-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 421,
+   "ext": ".js",
+   "gained_by": [
+    "W4-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 397,
+   "ext": ".js",
+   "gained_by": [
+    "W4-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 287,
+   "ext": ".js",
+   "gained_by": [
+    "W4-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 501,
+   "ext": ".js",
+   "gained_by": [
+    "W4-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 407,
+   "ext": ".js",
+   "gained_by": [
+    "W4-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 1039,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 683,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 724,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 839,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 323,
+   "ext": ".js",
+   "gained_by": [
+    "W4-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 570,
+   "ext": ".js",
+   "gained_by": [
+    "W4-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 178,
+   "ext": ".js",
+   "gained_by": [
+    "W4-06"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 449,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 349,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 312,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 401,
+   "ext": ".js",
+   "gained_by": [
+    "W4-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 1049,
+   "ext": ".css",
+   "gained_by": [
+    "W4-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 1330,
+   "ext": ".css",
+   "gained_by": [
+    "W4-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 191,
+   "ext": ".json",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Contents__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 248,
+   "ext": ".js",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 579,
+   "ext": ".js",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__Live__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 140,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Finishes__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 644,
+   "ext": ".js",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Footer__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 311,
+   "ext": ".js",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Header__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 324,
+   "ext": ".js",
+   "gained_by": [
+    "W4-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Registry__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 818,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js",
+   "system": "51 LE/52__Feature__StatementWriter",
+   "lines": 323,
+   "ext": ".js",
+   "gained_by": [
+    "W4-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json",
+   "system": "51 LE/53__Feature__ProjectQrCode",
+   "lines": 47,
+   "ext": ".json",
+   "gained_by": [
+    "W1-15",
+    "W5-05"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js",
+   "system": "51 LE/53__Feature__ProjectQrCode",
+   "lines": 863,
+   "ext": ".js",
+   "gained_by": [
+    "W1-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js",
+   "system": "51 LE/53__Feature__ProjectQrCode",
+   "lines": 226,
+   "ext": ".js",
+   "gained_by": [
+    "W1-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js",
+   "system": "51 LE/53__Feature__ProjectQrCode",
+   "lines": 196,
+   "ext": ".js",
+   "gained_by": [
+    "W1-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js",
+   "system": "51 LE/53__Feature__ProjectQrCode",
+   "lines": 397,
+   "ext": ".js",
+   "gained_by": [
+    "W1-15"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 309,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 196,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 122,
+   "ext": ".json",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 525,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 389,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 472,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 259,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 382,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 118,
+   "ext": ".js",
+   "gained_by": [
+    "W3-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 172,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 229,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 112,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 464,
+   "ext": ".js",
+   "gained_by": [
+    "W3-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 212,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 304,
+   "ext": ".js",
+   "gained_by": [
+    "W1-16"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 208,
+   "ext": ".js",
+   "gained_by": [
+    "W3-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css",
+   "system": "51 LE/54__Feature__SheetImages",
+   "lines": 236,
+   "ext": ".css",
+   "gained_by": [
+    "W3-18"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js",
+   "system": "51 LE/57__Feature__ScrapbookParametric",
+   "lines": 668,
+   "ext": ".js",
+   "gained_by": [
+    "W3-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js",
+   "system": "51 LE/57__Feature__ScrapbookParametric",
+   "lines": 990,
+   "ext": ".js",
+   "gained_by": [
+    "W2-38"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js",
+   "system": "51 LE/57__Feature__ScrapbookParametric",
+   "lines": 810,
+   "ext": ".js",
+   "gained_by": [
+    "W2-38"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js",
+   "system": "51 LE/57__Feature__ScrapbookParametric",
+   "lines": 442,
+   "ext": ".js",
+   "gained_by": [
+    "W2-39"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js",
+   "system": "51 LE/57__Feature__ScrapbookParametric",
+   "lines": 894,
+   "ext": ".js",
+   "gained_by": [
+    "W2-39"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js",
+   "system": "51 LE/58__Feature__ScrapbookSpecification",
+   "lines": 797,
+   "ext": ".js",
+   "gained_by": [
+    "W2-35"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js",
+   "system": "51 LE/58__Feature__ScrapbookSpecification",
+   "lines": 446,
+   "ext": ".js",
+   "gained_by": [
+    "W2-35"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json",
+   "system": "51 LE/58__Feature__ScrapbookSpecification",
+   "lines": 89,
+   "ext": ".json",
+   "gained_by": [
+    "W2-35"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js",
+   "system": "51 LE/58__Feature__ScrapbookSpecification",
+   "lines": 469,
+   "ext": ".js",
+   "gained_by": [
+    "W2-35"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css",
+   "system": "51 LE/58__Feature__ScrapbookSpecification",
+   "lines": 419,
+   "ext": ".css",
+   "gained_by": [
+    "W2-35"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 849,
+   "ext": ".js",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 158,
+   "ext": ".json",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 566,
+   "ext": ".js",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 315,
+   "ext": ".js",
+   "gained_by": [
+    "W3-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 204,
+   "ext": ".js",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 231,
+   "ext": ".js",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 492,
+   "ext": ".js",
+   "gained_by": [
+    "W3-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 309,
+   "ext": ".js",
+   "gained_by": [
+    "W1-27"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 871,
+   "ext": ".js",
+   "gained_by": [
+    "W3-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css",
+   "system": "51 LE/59__Feature__FloorAreas",
+   "lines": 227,
+   "ext": ".css",
+   "gained_by": [
+    "W3-10"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js",
+   "system": "51 LE/60__Feature__PdfExport",
+   "lines": 250,
+   "ext": ".js",
+   "gained_by": [
+    "W1-25"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 707,
+   "ext": ".js",
+   "gained_by": [
+    "W4-07"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 54,
+   "ext": ".json",
+   "gained_by": [
+    "W4-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 285,
+   "ext": ".js",
+   "gained_by": [
+    "W4-07"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 340,
+   "ext": ".js",
+   "gained_by": [
+    "W4-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 479,
+   "ext": ".js",
+   "gained_by": [
+    "W4-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 282,
+   "ext": ".js",
+   "gained_by": [
+    "W4-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js",
+   "system": "51 LE/65__Feature__DocumentPublishing",
+   "lines": 457,
+   "ext": ".js",
+   "gained_by": [
+    "W4-03"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 454,
+   "ext": ".js",
+   "gained_by": [
+    "W4-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 61,
+   "ext": ".json",
+   "gained_by": [
+    "W4-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 418,
+   "ext": ".js",
+   "gained_by": [
+    "W4-07"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 487,
+   "ext": ".js",
+   "gained_by": [
+    "W4-07"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 364,
+   "ext": ".js",
+   "gained_by": [
+    "W4-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Styles__Share__.css",
+   "system": "51 LE/66__Feature__DocumentSharing",
+   "lines": 220,
+   "ext": ".css",
+   "gained_by": [
+    "W4-08"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Config__.json",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 133,
+   "ext": ".json",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 621,
+   "ext": ".js",
+   "gained_by": [
+    "W4-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Elements__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 653,
+   "ext": ".js",
+   "gained_by": [
+    "W4-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 596,
+   "ext": ".js",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Paint__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 522,
+   "ext": ".js",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Sheet__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 298,
+   "ext": ".js",
+   "gained_by": [
+    "W4-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Styles__Main__.css",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 123,
+   "ext": ".css",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Unpublished__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 226,
+   "ext": ".js",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 340,
+   "ext": ".js",
+   "gained_by": [
+    "W4-17"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Viewports__.js",
+   "system": "52__System__Layout__PublishedDocuments",
+   "lines": 426,
+   "ext": ".js",
+   "gained_by": [
+    "W4-02"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json",
+   "system": "53__Data__Layout__PublishedSchema",
+   "lines": 189,
+   "ext": ".json",
+   "gained_by": [
+    "W4-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js",
+   "system": "53__Data__Layout__PublishedSchema",
+   "lines": 678,
+   "ext": ".js",
+   "gained_by": [
+    "W4-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js",
+   "system": "53__Data__Layout__PublishedSchema",
+   "lines": 172,
+   "ext": ".js",
+   "gained_by": [
+    "W4-01"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js",
+   "system": "54__Feature__ColourPalette",
+   "lines": 88,
+   "ext": ".js",
+   "gained_by": [
+    "W1-37"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json",
+   "system": "54__Feature__ColourPalette",
+   "lines": 196,
+   "ext": ".json",
+   "gained_by": [
+    "W1-37"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js",
+   "system": "54__Feature__ColourPalette",
+   "lines": 448,
+   "ext": ".js",
+   "gained_by": [
+    "W1-37"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js",
+   "system": "54__Feature__ColourPalette",
+   "lines": 733,
+   "ext": ".js",
+   "gained_by": [
+    "W1-37"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css",
+   "system": "54__Feature__ColourPalette",
+   "lines": 205,
+   "ext": ".css",
+   "gained_by": [
+    "W1-37"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__.js",
+   "system": "55__Feature__SpellCheck",
+   "lines": 99,
+   "ext": ".js",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Config__.json",
+   "system": "55__Feature__SpellCheck",
+   "lines": 46,
+   "ext": ".json",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js",
+   "system": "55__Feature__SpellCheck",
+   "lines": 556,
+   "ext": ".js",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Field__.js",
+   "system": "55__Feature__SpellCheck",
+   "lines": 630,
+   "ext": ".js",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css",
+   "system": "55__Feature__SpellCheck",
+   "lines": 115,
+   "ext": ".css",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js",
+   "system": "55__Feature__SpellCheck",
+   "lines": 211,
+   "ext": ".js",
+   "gained_by": [
+    "W2-34"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__Chromium__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 224,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__GenericManual__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 224,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__InstalledStandalone__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 160,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__IosNonSafari__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 212,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__IosSafari__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 171,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__MacSafari__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 147,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__InstallController__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 393,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Manifest__Builder__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 384,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__PlatformDetector__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 343,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 278,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__PromptUi__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 450,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 1196,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 370,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__SessionState__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 419,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Url__Constructor__.js",
+   "system": "62__Feature__AppInstallability",
+   "lines": 258,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (K2 TF-T46, DR-07)"
+  },
+  {
+   "tv": "02__Src__AppModules/70__System__DevTools/Na__UiFeature__AssetCullDistance__DevControls.js",
+   "system": "70__System__DevTools",
+   "lines": 368,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__CacheAndStorage__Controls.js",
+   "system": "70__System__DevTools",
+   "lines": 417,
+   "ext": ".js",
+   "gained_by": [
+    "W5-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "02__Src__AppModules/75__System__UserInstructionsSystem/Na__UiFeature__Styles__UserInstructions__.css",
+   "system": "75__System__UserInstructionsSystem",
+   "lines": 483,
+   "ext": ".css",
+   "gained_by": [],
+   "gained": false,
+   "reason": "Not ported for drawing parity (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/75__System__UserInstructionsSystem/Na__UiFeature__UserInstructions__MenuItem.js",
+   "system": "75__System__UserInstructionsSystem",
+   "lines": 64,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "Not ported for drawing parity (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/75__System__UserInstructionsSystem/Na__UserInstructions__SystemLogic.js",
+   "system": "75__System__UserInstructionsSystem",
+   "lines": 265,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "Not ported for drawing parity (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__FullscreenMode__Prompt.js",
+   "system": "76__System__FullscreenMode",
+   "lines": 307,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV keeps 60__Feature__FullScreenMode (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__FullscreenMode__SystemLogic.js",
+   "system": "76__System__FullscreenMode",
+   "lines": 282,
+   "ext": ".js",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV keeps 60__Feature__FullScreenMode (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__Styles__FullscreenMode__.css",
+   "system": "76__System__FullscreenMode",
+   "lines": 326,
+   "ext": ".css",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV keeps 60__Feature__FullScreenMode (DR-44)"
+  },
+  {
+   "tv": "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+   "system": "80__CloudflareIntegration",
+   "lines": 1221,
+   "ext": ".js",
+   "gained_by": [
+    "W0-12"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "03__Style__AppStylesheets/Na__UiFeature__Styles__DevMenu__CacheAndStorage__.css",
+   "system": "03__Style__AppStylesheets",
+   "lines": 87,
+   "ext": ".css",
+   "gained_by": [
+    "W5-04"
+   ],
+   "gained": true,
+   "reason": ""
+  },
+  {
+   "tv": "03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css",
+   "system": "03__Style__AppStylesheets",
+   "lines": 447,
+   "ext": ".css",
+   "gained_by": [],
+   "gained": false,
+   "reason": "VV uses the shared Whitecardopedia PWA (DR-07)"
+  },
+  {
+   "tv": "03__Style__AppStylesheets/Na__UiFeature__Styles__SceneInspector__.css",
+   "system": "03__Style__AppStylesheets",
+   "lines": 272,
+   "ext": ".css",
+   "gained_by": [],
+   "gained": false,
+   "reason": "FR-24 optional split, not recommended (DR-44, W5-04 on request)"
+  }
+ ],
+ "by_system": {
+  "01__AppCore": {
+   "not_gained_reasoned": 1
+  },
+  "03__AppUtils": {
+   "gained": 2
+  },
+  "05__RenderPipeline": {
+   "gained": 1,
+   "not_gained_reasoned": 1
+  },
+  "07__Scene__EnvironmentEffects": {
+   "not_gained_unowned": 1
+  },
+  "10__NavigationAndCameras": {
+   "not_gained_reasoned": 1
+  },
+  "11__CameraUtils": {
+   "not_gained_unowned": 1
+  },
+  "15__ModelLoader": {
+   "not_gained_unowned": 2
+  },
+  "21__System__PresentationMode": {
+   "not_gained_unowned": 1
+  },
+  "25__System__3dObject__InteractionSystem": {
+   "gained": 1
+  },
+  "26__System__ToggleModelElements": {
+   "not_gained_unowned": 4,
+   "gained": 1,
+   "not_gained_reasoned": 2
+  },
+  "27__System__ContextMenuSystem": {
+   "not_gained_reasoned": 6,
+   "gained": 2
+  },
+  "40__System__DrawingViewCore": {
+   "gained": 4,
+   "not_gained_reasoned": 1
+  },
+  "41__System__SectionCutEngine": {
+   "not_gained_reasoned": 7
+  },
+  "42__System__FloorPlanViews": {
+   "gained": 2
+  },
+  "45__System__ElevationViews": {
+   "gained": 2
+  },
+  "47__System__DrawingPlanes": {
+   "gained": 9
+  },
+  "48__System__CrossSectionViews": {
+   "gained": 1
+  },
+  "49__System__ElevationDepthFog": {
+   "gained": 8
+  },
+  "50__System__ProjectedLinework": {
+   "gained": 3
+  },
+  "51 LE/07__Core__SheetData": {
+   "gained": 3
+  },
+  "51 LE/10__Core__SheetSurface": {
+   "gained": 1
+  },
+  "51 LE/15__Core__Markup": {
+   "gained": 3
+  },
+  "51 LE/20__System__Viewports": {
+   "gained": 6
+  },
+  "51 LE/21__System__SitePlanData": {
+   "gained": 2
+  },
+  "51 LE/25__System__RenderStyles": {
+   "gained": 2
+  },
+  "51 LE/26__System__DraftMode": {
+   "gained": 4
+  },
+  "51 LE/27__System__DrawingGrid": {
+   "gained": 5
+  },
+  "51 LE/28__System__ObjectSnap": {
+   "gained": 16
+  },
+  "51 LE/30__System__SheetTools": {
+   "gained": 4
+  },
+  "51 LE/31__System__DocumentKeys": {
+   "gained": 2
+  },
+  "51 LE/32__System__OrthoMode": {
+   "gained": 3
+  },
+  "51 LE/33__System__DrawingAxes": {
+   "gained": 3
+  },
+  "51 LE/36__System__HatchPatternTools": {
+   "gained": 3
+  },
+  "51 LE/37__System__VectorTools": {
+   "gained": 18
+  },
+  "51 LE/40__Ui__Panels": {
+   "gained": 1
+  },
+  "51 LE/50__Feature__Specification": {
+   "gained": 8
+  },
+  "51 LE/51__Feature__DrawingRegister": {
+   "gained": 10
+  },
+  "51 LE/52__Feature__StatementWriter": {
+   "gained": 33
+  },
+  "51 LE/53__Feature__ProjectQrCode": {
+   "gained": 5
+  },
+  "51 LE/54__Feature__SheetImages": {
+   "gained": 17
+  },
+  "51 LE/57__Feature__ScrapbookParametric": {
+   "gained": 5
+  },
+  "51 LE/58__Feature__ScrapbookSpecification": {
+   "gained": 5
+  },
+  "51 LE/59__Feature__FloorAreas": {
+   "gained": 10
+  },
+  "51 LE/60__Feature__PdfExport": {
+   "gained": 1
+  },
+  "51 LE/65__Feature__DocumentPublishing": {
+   "gained": 7
+  },
+  "51 LE/66__Feature__DocumentSharing": {
+   "gained": 6
+  },
+  "52__System__Layout__PublishedDocuments": {
+   "gained": 10
+  },
+  "53__Data__Layout__PublishedSchema": {
+   "gained": 3
+  },
+  "54__Feature__ColourPalette": {
+   "gained": 5
+  },
+  "55__Feature__SpellCheck": {
+   "gained": 6
+  },
+  "62__Feature__AppInstallability": {
+   "not_gained_reasoned": 15
+  },
+  "70__System__DevTools": {
+   "not_gained_unowned": 1,
+   "gained": 1
+  },
+  "75__System__UserInstructionsSystem": {
+   "not_gained_reasoned": 3
+  },
+  "76__System__FullscreenMode": {
+   "not_gained_reasoned": 3
+  },
+  "80__CloudflareIntegration": {
+   "gained": 1
+  },
+  "03__Style__AppStylesheets": {
+   "gained": 1,
+   "not_gained_reasoned": 2
+  }
+ },
+ "lines_by_system": {
+  "01__AppCore": {
+   "not_gained_reasoned": 1
+  },
+  "03__AppUtils": {
+   "gained": 684
+  },
+  "05__RenderPipeline": {
+   "gained": 170,
+   "not_gained_reasoned": 333
+  },
+  "07__Scene__EnvironmentEffects": {
+   "not_gained_unowned": 197
+  },
+  "10__NavigationAndCameras": {
+   "not_gained_reasoned": 354
+  },
+  "11__CameraUtils": {
+   "not_gained_unowned": 360
+  },
+  "15__ModelLoader": {
+   "not_gained_unowned": 560
+  },
+  "21__System__PresentationMode": {
+   "not_gained_unowned": 196
+  },
+  "25__System__3dObject__InteractionSystem": {
+   "gained": 107
+  },
+  "26__System__ToggleModelElements": {
+   "not_gained_unowned": 802,
+   "gained": 602,
+   "not_gained_reasoned": 452
+  },
+  "27__System__ContextMenuSystem": {
+   "not_gained_reasoned": 1978,
+   "gained": 551
+  },
+  "40__System__DrawingViewCore": {
+   "gained": 1379,
+   "not_gained_reasoned": 738
+  },
+  "41__System__SectionCutEngine": {
+   "not_gained_reasoned": 2638
+  },
+  "42__System__FloorPlanViews": {
+   "gained": 564
+  },
+  "45__System__ElevationViews": {
+   "gained": 464
+  },
+  "47__System__DrawingPlanes": {
+   "gained": 3967
+  },
+  "48__System__CrossSectionViews": {
+   "gained": 198
+  },
+  "49__System__ElevationDepthFog": {
+   "gained": 2203
+  },
+  "50__System__ProjectedLinework": {
+   "gained": 1435
+  },
+  "51 LE/07__Core__SheetData": {
+   "gained": 778
+  },
+  "51 LE/10__Core__SheetSurface": {
+   "gained": 479
+  },
+  "51 LE/15__Core__Markup": {
+   "gained": 692
+  },
+  "51 LE/20__System__Viewports": {
+   "gained": 2095
+  },
+  "51 LE/21__System__SitePlanData": {
+   "gained": 1168
+  },
+  "51 LE/25__System__RenderStyles": {
+   "gained": 504
+  },
+  "51 LE/26__System__DraftMode": {
+   "gained": 649
+  },
+  "51 LE/27__System__DrawingGrid": {
+   "gained": 1451
+  },
+  "51 LE/28__System__ObjectSnap": {
+   "gained": 5534
+  },
+  "51 LE/30__System__SheetTools": {
+   "gained": 1116
+  },
+  "51 LE/31__System__DocumentKeys": {
+   "gained": 457
+  },
+  "51 LE/32__System__OrthoMode": {
+   "gained": 438
+  },
+  "51 LE/33__System__DrawingAxes": {
+   "gained": 680
+  },
+  "51 LE/36__System__HatchPatternTools": {
+   "gained": 1480
+  },
+  "51 LE/37__System__VectorTools": {
+   "gained": 7385
+  },
+  "51 LE/40__Ui__Panels": {
+   "gained": 240
+  },
+  "51 LE/50__Feature__Specification": {
+   "gained": 3866
+  },
+  "51 LE/51__Feature__DrawingRegister": {
+   "gained": 3659
+  },
+  "51 LE/52__Feature__StatementWriter": {
+   "gained": 16898
+  },
+  "51 LE/53__Feature__ProjectQrCode": {
+   "gained": 1729
+  },
+  "51 LE/54__Feature__SheetImages": {
+   "gained": 4709
+  },
+  "51 LE/57__Feature__ScrapbookParametric": {
+   "gained": 3804
+  },
+  "51 LE/58__Feature__ScrapbookSpecification": {
+   "gained": 2220
+  },
+  "51 LE/59__Feature__FloorAreas": {
+   "gained": 4222
+  },
+  "51 LE/60__Feature__PdfExport": {
+   "gained": 250
+  },
+  "51 LE/65__Feature__DocumentPublishing": {
+   "gained": 2604
+  },
+  "51 LE/66__Feature__DocumentSharing": {
+   "gained": 2004
+  },
+  "52__System__Layout__PublishedDocuments": {
+   "gained": 3938
+  },
+  "53__Data__Layout__PublishedSchema": {
+   "gained": 1039
+  },
+  "54__Feature__ColourPalette": {
+   "gained": 1670
+  },
+  "55__Feature__SpellCheck": {
+   "gained": 1657
+  },
+  "62__Feature__AppInstallability": {
+   "not_gained_reasoned": 5229
+  },
+  "70__System__DevTools": {
+   "not_gained_unowned": 368,
+   "gained": 417
+  },
+  "75__System__UserInstructionsSystem": {
+   "not_gained_reasoned": 812
+  },
+  "76__System__FullscreenMode": {
+   "not_gained_reasoned": 915
+  },
+  "80__CloudflareIntegration": {
+   "gained": 1221
+  },
+  "03__Style__AppStylesheets": {
+   "gained": 87,
+   "not_gained_reasoned": 719
+  }
+ }
+}

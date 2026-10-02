@@ -1,0 +1,660 @@
+{
+ "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js": {
+  "sha1": "f68f51fbbf20eeb0982f8b8d237e64c0996a8a8b",
+  "bytes": 102142,
+  "crlf": 1619,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json": {
+  "sha1": "4336f0f9ef1659ca1cb340adbe230fc1591eef4e",
+  "bytes": 34083,
+  "crlf": 404,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js": {
+  "sha1": "3fcd47cc778f46899f83eafa47d39e170a7c694d",
+  "bytes": 12498,
+  "crlf": 0,
+  "lf_only": 287,
+  "bom": false
+ },
+ "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js": {
+  "sha1": "02d48edbf975ca109581689b2055c1b62b75293a",
+  "bytes": 17774,
+  "crlf": 345,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js": {
+  "sha1": "de6862f4dd989db2acb533c4904dbdf6fa0e4cbb",
+  "bytes": 24166,
+  "crlf": 0,
+  "lf_only": 443,
+  "bom": false
+ },
+ "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js": {
+  "sha1": "cea1944e56045cf7984a9443e0ca8c9ced163e93",
+  "bytes": 87319,
+  "crlf": 1560,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js": {
+  "sha1": "7ac5f1975a97885c826ac036dd8a53b0eae47e5b",
+  "bytes": 21618,
+  "crlf": 0,
+  "lf_only": 476,
+  "bom": false
+ },
+ "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js": {
+  "sha1": "711e3bfa5928b59b4ddc48d3bd1aa9690bdb5ec3",
+  "bytes": 51608,
+  "crlf": 990,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__FrameRenderer.js": {
+  "sha1": "10f8bf7eec3491e1a4e37a7ea07370c3bb91a770",
+  "bytes": 28885,
+  "crlf": 0,
+  "lf_only": 533,
+  "bom": false
+ },
+ "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Thumbnails.js": {
+  "sha1": "f8bd3d64ca21125296703ece0bd10460b2e231cd",
+  "bytes": 29099,
+  "crlf": 0,
+  "lf_only": 576,
+  "bom": false
+ },
+ "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js": {
+  "sha1": "558fb646900b19318268cbdef301c8cf90df0500",
+  "bytes": 65555,
+  "crlf": 1126,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js": {
+  "sha1": "f04f12eb1e56873c3e79b59a1bfab5f07fe42820",
+  "bytes": 10553,
+  "crlf": 217,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ActiveView__.js": {
+  "sha1": "5e6f0cb3a336c5c39a1e80f20f26149fda26cdf9",
+  "bytes": 20070,
+  "crlf": 0,
+  "lf_only": 432,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js": {
+  "sha1": "e0274472f0d0b24ae0c7a5fb4354d7d1a28e3081",
+  "bytes": 28409,
+  "crlf": 534,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js": {
+  "sha1": "9f777984c9bfab25231c4b56f7b396f29bf6a2bd",
+  "bytes": 16699,
+  "crlf": 0,
+  "lf_only": 309,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js": {
+  "sha1": "c1b72c31ed35e427dc2a322b767638f18230c64c",
+  "bytes": 12627,
+  "crlf": 0,
+  "lf_only": 270,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js": {
+  "sha1": "8067d36b035576cd46d544082f177812638eae54",
+  "bytes": 19378,
+  "crlf": 0,
+  "lf_only": 423,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Navigation__.js": {
+  "sha1": "149cd6d6281e13dd1e040da862e25f724b5c1235",
+  "bytes": 23290,
+  "crlf": 0,
+  "lf_only": 493,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js": {
+  "sha1": "770303c390b695be3685b3a6581b8ebeb39a2e25",
+  "bytes": 20259,
+  "crlf": 0,
+  "lf_only": 398,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js": {
+  "sha1": "76d43021b9958b00fb9912c3939284e3dcf809c8",
+  "bytes": 6897,
+  "crlf": 0,
+  "lf_only": 143,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css": {
+  "sha1": "e1bf166127ab3da161eede3a8f289f1b7f1215d2",
+  "bytes": 5630,
+  "crlf": 0,
+  "lf_only": 142,
+  "bom": false
+ },
+ "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js": {
+  "sha1": "fcc394c44b914a550ef2fac6058bfe9b5854c3ac",
+  "bytes": 12442,
+  "crlf": 0,
+  "lf_only": 253,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js": {
+  "sha1": "e23eab78d74a06ebc8576d038491f21377c744fd",
+  "bytes": 18192,
+  "crlf": 0,
+  "lf_only": 352,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js": {
+  "sha1": "65acb26e1f28fe644590895ae4a3821361cf84f6",
+  "bytes": 41222,
+  "crlf": 0,
+  "lf_only": 849,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js": {
+  "sha1": "6fc0993ddfd46c64f99a9f640f86945e450b5d8a",
+  "bytes": 18375,
+  "crlf": 0,
+  "lf_only": 392,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Framing__.js": {
+  "sha1": "7037a2450dc93d3a2b555170aede9dc40fccfd03",
+  "bytes": 11876,
+  "crlf": 0,
+  "lf_only": 235,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js": {
+  "sha1": "0ee95d2a7c83f9c035a01eb8c4a44d6dd53e2820",
+  "bytes": 39626,
+  "crlf": 0,
+  "lf_only": 818,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js": {
+  "sha1": "973e03ce77cfb1af79a30cd312ea78f00a169faf",
+  "bytes": 18164,
+  "crlf": 0,
+  "lf_only": 390,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js": {
+  "sha1": "17de6430ff116f3b23434f85e80eb4cd6a29717f",
+  "bytes": 31253,
+  "crlf": 0,
+  "lf_only": 666,
+  "bom": false
+ },
+ "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js": {
+  "sha1": "6000cf4bdfcf5ff0c18464c384b086c68b591f7c",
+  "bytes": 16610,
+  "crlf": 0,
+  "lf_only": 341,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js": {
+  "sha1": "3d04d78fae48835b9f9452a795a600f26c2bf458",
+  "bytes": 25277,
+  "crlf": 0,
+  "lf_only": 498,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js": {
+  "sha1": "256af0c0ce682a8629c7097b06e04acffd866089",
+  "bytes": 30536,
+  "crlf": 0,
+  "lf_only": 672,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js": {
+  "sha1": "614905e4a4eb9d07e4ca625edd97c5fe9bba0ab9",
+  "bytes": 9018,
+  "crlf": 0,
+  "lf_only": 213,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js": {
+  "sha1": "2468a4df4a287aa0911ef6dc551ca9835c06d23b",
+  "bytes": 22580,
+  "crlf": 0,
+  "lf_only": 496,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js": {
+  "sha1": "02aa285cc4a789ca7d211e68f2a746aaddbac8c3",
+  "bytes": 20780,
+  "crlf": 0,
+  "lf_only": 436,
+  "bom": false
+ },
+ "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js": {
+  "sha1": "8609c800a1d90ad2c79e562018cd3d40905755b6",
+  "bytes": 28187,
+  "crlf": 0,
+  "lf_only": 614,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js": {
+  "sha1": "c24064bb2ef5f42625acbf0ee0aec6560975973e",
+  "bytes": 22804,
+  "crlf": 0,
+  "lf_only": 509,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js": {
+  "sha1": "aba0275a7c8936b2d700a655d759dc24f0f7ffcf",
+  "bytes": 19469,
+  "crlf": 0,
+  "lf_only": 445,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js": {
+  "sha1": "64f8c868c16c3d85e1003539247a8c5b9a495b98",
+  "bytes": 12160,
+  "crlf": 0,
+  "lf_only": 273,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js": {
+  "sha1": "7cf3cb4820bde5b9e7984dcd8f9388b3ebcfeab2",
+  "bytes": 13901,
+  "crlf": 0,
+  "lf_only": 324,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js": {
+  "sha1": "091b7e08b259851516d25ad42850bb0bf5626958",
+  "bytes": 38919,
+  "crlf": 0,
+  "lf_only": 842,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Grid__.js": {
+  "sha1": "4fd39026b7a1783515b5b18167e2228f2a63e65f",
+  "bytes": 25942,
+  "crlf": 0,
+  "lf_only": 511,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js": {
+  "sha1": "d50fbdb66f6a3b93455b7390a7a2a9c33d305c7b",
+  "bytes": 8854,
+  "crlf": 0,
+  "lf_only": 209,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js": {
+  "sha1": "651889417fd345f7d32964f2bcc8fa18ecd935e5",
+  "bytes": 19026,
+  "crlf": 0,
+  "lf_only": 435,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js": {
+  "sha1": "27b133a84754fa81da4f5d6884048f4c60f3093d",
+  "bytes": 33722,
+  "crlf": 0,
+  "lf_only": 698,
+  "bom": false
+ },
+ "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js": {
+  "sha1": "6436aac3ee853916959b7c8e3e2fa1ac71ab368a",
+  "bytes": 25884,
+  "crlf": 0,
+  "lf_only": 585,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ConfigState__.js": {
+  "sha1": "b075703e30d688ececdedf12b38cb9a56f20b29c",
+  "bytes": 25941,
+  "crlf": 0,
+  "lf_only": 490,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js": {
+  "sha1": "db977188317aa543867aec6fb0589562ad964ea6",
+  "bytes": 46109,
+  "crlf": 0,
+  "lf_only": 940,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js": {
+  "sha1": "9a8fbbe369054e07c80ce47dc5770b4eb241833c",
+  "bytes": 26815,
+  "crlf": 0,
+  "lf_only": 587,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js": {
+  "sha1": "d20c78fded609b5b6662653e3d9c232cea791962",
+  "bytes": 15099,
+  "crlf": 0,
+  "lf_only": 323,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Framing__.js": {
+  "sha1": "523292736485f9b74f1f4a1fa5db9cedc155fd4a",
+  "bytes": 15875,
+  "crlf": 0,
+  "lf_only": 314,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js": {
+  "sha1": "fc2c9039c6dd1970bbf34aa8c9f9ca6b19e88ba1",
+  "bytes": 44115,
+  "crlf": 0,
+  "lf_only": 901,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__OrthoCamera__.js": {
+  "sha1": "5e67a84ad1c76ff117567ddca06bd2fd3e19d2af",
+  "bytes": 20828,
+  "crlf": 0,
+  "lf_only": 434,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js": {
+  "sha1": "752d5a040e46ac489e4e0bff583e555630d786f8",
+  "bytes": 20552,
+  "crlf": 0,
+  "lf_only": 438,
+  "bom": false
+ },
+ "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js": {
+  "sha1": "a53a11c4c79b599dca7f425d20eeda939fcfab99",
+  "bytes": 39555,
+  "crlf": 0,
+  "lf_only": 829,
+  "bom": false
+ },
+ "02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js": {
+  "sha1": "f5043da58dd9a901092540b6b61e1469448e2b34",
+  "bytes": 29825,
+  "crlf": 533,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js": {
+  "sha1": "7b59a3ad63daebf25790d4df9a3e9b4b659f8e0c",
+  "bytes": 19540,
+  "crlf": 376,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js": {
+  "sha1": "d983e0d9ee7f0890731786c9d8a9358b8798020f",
+  "bytes": 12781,
+  "crlf": 249,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js": {
+  "sha1": "9d6872a1d7e0243029da9c237581f864fab2c18b",
+  "bytes": 24650,
+  "crlf": 492,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js": {
+  "sha1": "17dd7983b22d0b9d1eb556718847b49371b2405d",
+  "bytes": 5396,
+  "crlf": 0,
+  "lf_only": 123,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js": {
+  "sha1": "b7d152dc39f9738d895281b9402f0050ec62fb0e",
+  "bytes": 12683,
+  "crlf": 0,
+  "lf_only": 252,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js": {
+  "sha1": "dcb3d03ef025d5756818a5290df43687dbb8248a",
+  "bytes": 32977,
+  "crlf": 640,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js": {
+  "sha1": "83f7d69d1d9534ca4fe6a12a59c85433f8ced3da",
+  "bytes": 35678,
+  "crlf": 722,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js": {
+  "sha1": "81103169bb2d2a35cefbbd74a4ab00bafb411b90",
+  "bytes": 20419,
+  "crlf": 0,
+  "lf_only": 430,
+  "bom": false
+ },
+ "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js": {
+  "sha1": "9343dd694bd3923a2f931ef1b963a3c4e1ae29e0",
+  "bytes": 20916,
+  "crlf": 430,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js": {
+  "sha1": "bbad7df79a78e8e4973556c1b7d5e9ce9dd9aad9",
+  "bytes": 43823,
+  "crlf": 758,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js": {
+  "sha1": "439dcedd1960533714a26a6048d5d40bb8aabead",
+  "bytes": 58779,
+  "crlf": 906,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js": {
+  "sha1": "d64d7527c013df9a9c01e79982c21c024c6f0e66",
+  "bytes": 10091,
+  "crlf": 0,
+  "lf_only": 225,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js": {
+  "sha1": "3e9ac8c43e039cb9cc07200a5084a9b2aa19c2ed",
+  "bytes": 23980,
+  "crlf": 437,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js": {
+  "sha1": "5d4774b8d94838ad1baa7cb52f10c9b5da626ba9",
+  "bytes": 19017,
+  "crlf": 346,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js": {
+  "sha1": "943e70ff03b7cb445b74f20f831f9ce991759b1d",
+  "bytes": 29870,
+  "crlf": 609,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js": {
+  "sha1": "5289b65bce0c023186795603e94fdcac50e376d4",
+  "bytes": 17216,
+  "crlf": 336,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js": {
+  "sha1": "3dd8f61d93c62ed6f543721100e47933db84a2c2",
+  "bytes": 12521,
+  "crlf": 243,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js": {
+  "sha1": "f17ca08e4c72243d7f69f187253ce3ef41f42e29",
+  "bytes": 19855,
+  "crlf": 346,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js": {
+  "sha1": "3c71bab9cf7f3bc94151c804166b29dc59d44c09",
+  "bytes": 51866,
+  "crlf": 836,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js": {
+  "sha1": "22e64d69ac670406b68b27fe3e9c2de0d021f237",
+  "bytes": 36898,
+  "crlf": 652,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js": {
+  "sha1": "0d0e513af35c0fff8f644da5b0453f5332eec5e9",
+  "bytes": 47391,
+  "crlf": 831,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js": {
+  "sha1": "0382757599b4c15dde02292a80cb49e74ac889c7",
+  "bytes": 18584,
+  "crlf": 350,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js": {
+  "sha1": "d91601fe08181135ea2a63277c0dd852610f64f3",
+  "bytes": 38650,
+  "crlf": 639,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js": {
+  "sha1": "bc9f5693004ba5a9e3571664b3d9c5961a5f59c2",
+  "bytes": 14490,
+  "crlf": 229,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js": {
+  "sha1": "985f2dbc7c9dae94c5b448146bb2c2dcd368880e",
+  "bytes": 20443,
+  "crlf": 393,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js": {
+  "sha1": "9637ffe595eb16615db29e9c3f6ad116b6c4bcaa",
+  "bytes": 14453,
+  "crlf": 240,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js": {
+  "sha1": "bd673ce474dd5ebffe2f47865ba75510c3f5c892",
+  "bytes": 30378,
+  "crlf": 449,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js": {
+  "sha1": "76128c12abc38e03b305de0beed357631ff68177",
+  "bytes": 15179,
+  "crlf": 308,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js": {
+  "sha1": "6c4d40a2e295d3adb5811f8cdf7bd6ce835fe3b7",
+  "bytes": 9924,
+  "crlf": 194,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js": {
+  "sha1": "fae5b959525601c1ce55af1628542f05b36e7ce9",
+  "bytes": 33838,
+  "crlf": 581,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js": {
+  "sha1": "1d1b7a46ac277f6a04acb47a5f1eca25b35d2f99",
+  "bytes": 31019,
+  "crlf": 563,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js": {
+  "sha1": "7fd2e460922d68bd78dff5f24a8e2d0295e0ed2c",
+  "bytes": 20089,
+  "crlf": 308,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js": {
+  "sha1": "bf9d7292807a2b29cd87ff55b69a7edcdfee0b13",
+  "bytes": 24510,
+  "crlf": 454,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json": {
+  "sha1": "6eb9dade64f774881fe3de3a34ec5b2d23741ac4",
+  "bytes": 18702,
+  "crlf": 209,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js": {
+  "sha1": "aaf4853302d7ed8cc96ac6ec4d290d6795de4e72",
+  "bytes": 19928,
+  "crlf": 339,
+  "lf_only": 0,
+  "bom": false
+ },
+ "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css": {
+  "sha1": "4a8a883f7e14b5b2bc7e399a0716d1e704dc0fce",
+  "bytes": 5961,
+  "crlf": 113,
+  "lf_only": 0,
+  "bom": false
+ },
+ "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs": {
+  "sha1": "7b9592dd175cd1c3bba3848593feb3795cc55ee4",
+  "bytes": 8690,
+  "crlf": 127,
+  "lf_only": 0,
+  "bom": false
+ },
+ "index.html": {
+  "sha1": "59e529622be19a522b4a21ba2bb6753715e7644a",
+  "bytes": 173363,
+  "crlf": 2347,
+  "lf_only": 0,
+  "bom": false
+ }
+}

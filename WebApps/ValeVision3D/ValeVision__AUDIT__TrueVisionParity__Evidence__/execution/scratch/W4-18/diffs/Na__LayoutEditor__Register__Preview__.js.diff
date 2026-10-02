@@ -1,0 +1,19 @@
+--- TV b2aa9151/Na__LayoutEditor__Register__Preview__.js
++++ VV/Na__LayoutEditor__Register__Preview__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - DRAWING REGISTER PDF PREVIEW
++// VALEVISION3D - LAYOUT EDITOR - DRAWING REGISTER PDF PREVIEW
+@@ -33,2 +33,11 @@
+-// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the register tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js
++// - Source version: 1.1.0 (TrueVision3D v2.69.0, 19-Sep-2026; unchanged since; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
++//                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - PDF.js is this app's own vendored copy, 04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174
++//     (W0-16), named by the config's PdfJsScriptPath / PdfJsWorkerPath (W0-15, K2 TF-R07): the code is
++//     TrueVision's, and DESCRIPTION's "PlanVision's" PDF.js is TrueVision's source of the same library.
++// - Back-port     : none (the vendor path is a config value; offered to TrueVision as K2 TF-R07).

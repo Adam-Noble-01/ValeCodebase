@@ -1,0 +1,31 @@
+﻿W1-touched paths: 137; in a W1 edits list: 115; outside every W1 edits list: 22
+  of which NEW files: 22; EXISTING files: 0
+
+== EXISTING files outside every W1 edits list ==
+
+== NEW files outside every W1 edits list ==
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/HatchPack__Index__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BlockCoursing__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Blockwork__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BrickCoursing__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Brickwork__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__CladdingBoards__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Concrete__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Earth__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Hardcore__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationQuilt__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationRigid__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Metal__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__RoofTilesPlain__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__ScreedAndRender__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__TimberGrain__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/HatchPack__Index__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Grassland__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Gravel__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__MixedWoodland__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__PondsAndLakes__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__RoughGrassland__.json  vv_target of -  strict W1 records: -
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs  vv_target of -  strict W1 records: W1-32
+
+== declared edits of run packages that are not dirty-in-W1 (unchanged or never written) ==
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css  <- W1-17

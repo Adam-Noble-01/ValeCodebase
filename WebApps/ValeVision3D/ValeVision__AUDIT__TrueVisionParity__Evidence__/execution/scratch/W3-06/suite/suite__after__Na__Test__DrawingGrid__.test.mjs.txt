@@ -1,0 +1,70 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs
+exit 0
+
+ValeVision3D - the drawing grid and the title block snap points
+
+  The grid's settings and arithmetic (the real state module)
+  PASS  LayOut's settings, Adam's template: hidden, not snapping, points, 10 mm in 10, on top, not clipped
+  PASS  the minor spacing and the snap step are 1 mm
+  PASS  the nearest grid point rounds each axis on its own
+  PASS  a grid point far off is still the nearest (no radius)
+  PASS  floating-point dust is cleaned (0.1 mm step x 3 is 0.3)
+  PASS  SnapPoint leaves the point alone while Grid Snap is off
+  PASS  SnapPoint puts it on the grid while Grid Snap is on
+  PASS  Show and Snap are separate switches (LayOut's pair)
+  PASS  unusable values are dropped, not stored
+  PASS  a spacing out of range is held to it; subdivisions are whole
+  PASS  Minor Grid unticked: points snap to the major spacing
+  PASS  Minor Grid ticked again: 10 in 2 snaps every 5 mm
+  PASS  remembered in this browser
+  PASS  Reset puts the settings back and keeps both switches as they were
+
+  The snap: objects first, the grid everywhere else (the real Object Snap units)
+  PASS  Grid Snap off, nothing near: the point is its own
+  PASS  Grid Snap on, nothing near: the nearest grid point
+  PASS  Grid Snap on, a vector's end within reach: the END wins over the grid
+  PASS  ...and its midpoint
+  PASS  { grid : false } asks for the objects alone
+  PASS  ...and a caller still written for the old tone argument is answered the same
+  PASS  Object Snap off (F3): the grid still snaps, and the vector's end no longer does
+  PASS  Find itself stays object-only
+
+  The sheet's own paper snaps: border, title block, notes margin
+  PASS  the border's four corners
+  PASS  the title block strip's top corners (Adam's lower circles)
+  PASS  the notes margin divider meets the border and the title block (his middle circles)
+  PASS  every cell divider's two ends and its middle
+  PASS  the middle of each side of the border
+  PASS  the strip's foot is the border's foot: one point, not two
+  PASS  a fill-only rectangle, a text run and a QR symbol offer nothing
+  PASS  kept per chrome build: the same list, not worked out again
+  PASS  a line drawn from the title block's top-left corner starts exactly on it
+  PASS  the notes margin's top end, over the grid point beside it
+  PASS  an off-grid cell divider still snaps exactly (97.37 mm)
+  PASS  SheetChrome false offers none of it
+  PASS  only the sheet on screen has chrome to offer
+
+  A move lands the point it was picked up from on the grid (the real grid moves unit)
+  PASS  text pressed near its anchor is carried by the anchor
+  PASS  ...pressed away from it, by the point pressed
+  PASS  the anchor lands on the grid: a 5.4 mm drag right becomes 5.7
+  PASS  Object Snap off: no inference, the point pressed is carried
+  PASS  a vector pressed near an edge midpoint is carried by the midpoint
+  PASS  a FILLED vector pressed near its middle is carried by its centre
+  PASS  a whole vector drag is left to its own snap unless an arrow holds it
+  PASS  ...held by an arrow key, it steps the grid instead (the corner lands on it)
+  PASS  a vertex, a tip and a dimension end snap elsewhere: untouched here
+  PASS  a crop handle is carried by itself: the right edge lands on 125 mm
+  PASS  a frame moved plain is carried by its corner when pressed near it
+  PASS  a frame carried by a point of its linework is left to its own solver
+  PASS  a set with no object snap in reach: its corner lands on the grid, the held axis kept
+  PASS  ...pressed far from any of its points, by the point pressed
+  PASS  with Grid Snap off every move is exactly as it was
+
+  F6 and F7 (the real key map module and the shipped JSON)
+  PASS  the shipped key map: F6 is Show Grid, F7 is Grid Snap (Adam's LayOut keys)
+  PASS  with Ctrl held they are not the binding (Exact)
+  PASS  F3 is still object snap
+  PASS  the built-in fallback binds them too
+
+  Every check passed.

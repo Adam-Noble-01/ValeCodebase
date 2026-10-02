@@ -1,0 +1,20 @@
+# 25-Jun-2026 - Version 1.0.0
+# - Initial release: creds/client, head/list/upload, content-type map,
+#   masterConfig reader, master-index read/upsert/write (R2 + GH copy).
+#
+# 01-Oct-2026 - Version 1.0.1
+# - na_list_top_level_keys: Delimiter '/' listing that follows continuation
+#   tokens and never returns a key in a sub-folder; it raises on a listing
+#   error so a purge acts on a complete list or not at all (ValeVision W0-07,
+#   DR-06).
+# - na_load_editor_owned_keys, na_fetch_r2_json, na_merge_editor_owned_keys,
+#   na_write_json_document_atomic and na_upload_project_json_preserving_editor_keys:
+#   one project.json upload for the sync and the audit tool that keeps R2's
+#   copy of every ProjectData__EditorOwnedKeys key (read from the ValeVision3D
+#   app config, never copied here), runs the caller's transform on the merged
+#   document, writes it locally (temp file + replace, the file's own line
+#   endings) and uploads it no-cache. It fails closed: no upload when the list,
+#   the local file or R2's copy cannot be read, or when the list names a
+#   pipeline key.
+#
+# =============================================================================

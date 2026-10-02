@@ -1,0 +1,9 @@
+{
+  "created_dirs": [
+    "01__AppAssets__ValeVision/06__AppAssets__TitleBlocks",
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0",
+    "04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1",
+    "04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174",
+    "04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build"
+  ]
+}

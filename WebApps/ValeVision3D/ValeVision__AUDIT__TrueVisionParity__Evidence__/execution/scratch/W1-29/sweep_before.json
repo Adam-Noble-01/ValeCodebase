@@ -1,0 +1,8238 @@
+{
+ "label": "before",
+ "handler": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D\\ValeVision__AUDIT__TrueVisionParity__Evidence__\\execution\\scratch\\W1-29\\preimage\\Na__AppUtils__ValeVision__HotkeyHandler__.js",
+ "fetched": [
+  {
+   "request": "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json",
+   "found": true
+  }
+ ],
+ "keydownListeners": 1,
+ "sweep": {
+  "no reader (before the editor loads)": {
+   "scopeReads": "model",
+   "presses": {
+    "nothing | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    }
+   }
+  },
+  "model": {
+   "scopeReads": "model",
+   "presses": {
+    "nothing | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    }
+   }
+  },
+  "sheet": {
+   "scopeReads": "sheet",
+   "presses": {
+    "nothing | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    }
+   }
+  },
+  "document": {
+   "scopeReads": "document",
+   "presses": {
+    "nothing | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    }
+   }
+  },
+  "reader throws": {
+   "scopeReads": "model",
+   "presses": {
+    "nothing | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "nothing | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "nothing | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "nothing | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "body | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "body | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "body | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "contenteditable | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "contenteditable | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "contenteditable | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input text | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "input checkbox | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "textarea | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | b": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | t": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | T": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | y": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | v": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | PageDown": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 1": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 2": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 3": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 4": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 5": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 6": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 7": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 8": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 9": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | F+altKey+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | d": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | D": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | o": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Delete": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Escape": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "select | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | R": {
+     "fired": [
+      "ResetView"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | b": {
+     "fired": [
+      "SetOrbitMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | t": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | T": {
+     "fired": [
+      "SetWalkMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | y": {
+     "fired": [
+      "SetFlyMode"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | v": {
+     "fired": [
+      "ToggleViewsPanel"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageUp": {
+     "fired": [
+      "NextScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | PageDown": {
+     "fired": [
+      "PrevScene"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 1": {
+     "fired": [
+      "GoToScene1"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 2": {
+     "fired": [
+      "GoToScene2"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 3": {
+     "fired": [
+      "GoToScene3"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 4": {
+     "fired": [
+      "GoToScene4"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 5": {
+     "fired": [
+      "GoToScene5"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 6": {
+     "fired": [
+      "GoToScene6"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 7": {
+     "fired": [
+      "GoToScene7"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 8": {
+     "fired": [
+      "GoToScene8"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 9": {
+     "fired": [
+      "GoToScene9"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | 0": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Backspace+altKey": {
+     "fired": [
+      "NavigateBack"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | Backspace": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | F+altKey+shiftKey": {
+     "fired": [
+      "ToggleFogAndBarrier"
+     ],
+     "prevented": true,
+     "warned": false
+    },
+    "button | f": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | d": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | D": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | o": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Delete": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | Escape": {
+     "fired": [],
+     "prevented": true,
+     "warned": true
+    },
+    "button | ArrowUp": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Alt+altKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Shift+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | z+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | x": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | r+ctrlKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | R+shiftKey": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button |  ": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    },
+    "button | Enter": {
+     "fired": [],
+     "prevented": false,
+     "warned": false
+    }
+   }
+  }
+ }
+}

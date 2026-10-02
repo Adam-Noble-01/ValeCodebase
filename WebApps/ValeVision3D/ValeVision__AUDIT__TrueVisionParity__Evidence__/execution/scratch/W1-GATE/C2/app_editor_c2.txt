@@ -1,0 +1,26 @@
+step scene-ready {}
+step tab strip {"drawingsTab":true,"tabs":["3D Model","Drawings▾","Specification"]}
+step drawings menu {"rows":[{"text":"D01 - Elevations","title":"D01","cls":"na-le-tabs__menu-row"},{"text":"D02 - Drawing 2","title":"D02","cls":"na-le-tabs__menu-row"},{"text":"+ New sheet","title":"New sheet","cls":"na-le-tabs__menu-row na-le-tabs__menu-row--add"}]}
+step editor open {}
+step editor snapshot {"activeTab":"Drawings▾","paper":true,"stack":1,"frames":2,"documentIdLabel":true,"revisionPrefix":true,"chromeTextSample":"NORTH ELEVATION   1:50 | EAST ELEVATION   1:50 | CLIENT | SITE ADDRESS | DRAWING TITLE | Elevations | DOCUMENT ID | 57994_D01 | REV | Revision A | SCALE | 1:50 @ ISO A2 | DATE | 02 Oct 2026 | DRAWN BY | Vale Garden Houses | STATUS | 5,555 mm | 2,455 mm","unsavedFlag":"functio
+step page down {"before":{"documentId":"57994_D01","title":"Elevations","focus":"BODY.na-presentation-mode-active"},"after":{"documentId":"57994_D02","title":"Drawing 2","focus":"BODY.na-presentation-mode-active"},"openRowsInMenu":[],"title":"ValeVision3D"}
+boot /ValeVision3D/index.html?project=2026/57994__Harris__Scheme-02
+requests: 674; 2xx/3xx 643; 4xx/5xx 0; aborted 31
+  aborted (off-machine) GET www.noble-architecture.com  x7
+  aborted (off-machine) GET cdn.noble-architecture.com  x21
+  aborted (off-machine) GET adam-noble-01.github.io  x1
+  aborted (off-machine) GET whitecardopedia-editor-api.adam-fb3.workers.dev  x2
+console: 113 line(s); page errors (uncaught) 0; console errors 37; warnings 27
+  error x31: Failed to load resource: net::ERR_FAILED
+  error x1: [ValeVision3D] Failed to load OrbitHelperCube: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__Versio
+  error x1: [ValeVision3D] Failed to load Mesh for MainBuildingModel__Existing: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Li
+  error x1: [ValeVision3D] Failed to load Mesh for MainBuildingModel__Proposed: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Li
+  error x1: [ValeVision3D] Failed to load Mesh for LandscapeEnvironment: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__Thir
+  error x1: [ValeVision3D] Failed to load Linework for MainBuildingModel__Existing: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04
+  error x1: [ValeVision3D] Failed to load Linework for MainBuildingModel__Proposed: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04

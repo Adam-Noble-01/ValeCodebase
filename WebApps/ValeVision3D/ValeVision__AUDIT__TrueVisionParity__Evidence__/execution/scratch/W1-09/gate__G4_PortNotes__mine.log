@@ -1,0 +1,25 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 6 named file(s) - 5 PORT NOTE(s), 5 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  PENDING  6 release placeholder(s) in 5 file(s), for the wave's Parity Scribe: W1-09 x6
+      02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js:34  {{VVREL:W1-09}}
+      02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js:65  {{VVREL:W1-09}}
+      02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js:53  {{VVREL:W1-09}}
+      02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js:86  {{VVREL:W1-09}}
+      02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js:103  {{VVREL:W1-09}}
+      80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs:34  {{VVREL:W1-09}}
+
+  WATERMARK  TrueVision D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode at b2aa9151 (git)
+  The TrueVision DEVELOPMENT LOG entries dated after this app's newest log entry (the S11 c.1 rule; same-day entries are not flagged):
+    02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js
+        this app 20-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js
+        this app 20-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js
+        this app 20-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js
+        this app 21-Sep-2026 | TrueVision 1.0.0 | after: -
+
+  RESULT: PASS (0 fail, 0 warn, 6 pending)

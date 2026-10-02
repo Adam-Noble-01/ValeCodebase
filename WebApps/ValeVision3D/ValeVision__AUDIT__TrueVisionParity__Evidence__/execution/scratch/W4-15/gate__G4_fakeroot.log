@@ -1,0 +1,70 @@
+﻿=== case A (sheets alone) Na__Verify__ParityNaming__.mjs exit 1
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s); 2 folders against the registry; 2 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css  stylesheet-home  (K2 S5, R3 C.2 (b))
+        no home: add it to Na__LeLoad__STYLESHEETS in TrueVision's CSS-index order, or have its module link it
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css  stylesheet-home  (K2 S5, R3 C.2 (b))
+        no home: add it to Na__LeLoad__STYLESHEETS in TrueVision's CSS-index order, or have its module link it
+
+  RESULT: FAIL (2 fail, 0 warn)
+=== case A (sheets alone) Na__Verify__PortNotes__.mjs exit 0
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s) - 2 PORT NOTE(s), 0 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css
+      WARN  :20    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D left it at v2" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the releases that made it (R6 OC-07 form).]
+
+  PENDING  2 release placeholder(s) in 2 file(s), for the wave's Parity Scribe: W4-15 x2
+
+  RESULT: PASS (0 fail, 1 warn, 2 pending)
+=== case B (TV's Page link loop) Na__Verify__ParityNaming__.mjs exit 1
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s); 2 folders against the registry; 2 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css  stylesheet-home  (K2 S5, R3 C.2 (b))
+        no home: add it to Na__LeLoad__STYLESHEETS in TrueVision's CSS-index order, or have its module link it
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css  stylesheet-home  (K2 S5, R3 C.2 (b))
+        no home: add it to Na__LeLoad__STYLESHEETS in TrueVision's CSS-index order, or have its module link it
+
+  RESULT: FAIL (2 fail, 0 warn)
+=== case B (TV's Page link loop) Na__Verify__PortNotes__.mjs exit 0
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s) - 2 PORT NOTE(s), 0 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css
+      WARN  :20    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D left it at v2" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the releases that made it (R6 OC-07 form).]
+
+  PENDING  2 release placeholder(s) in 2 file(s), for the wave's Parity Scribe: W4-15 x2
+
+  RESULT: PASS (0 fail, 1 warn, 2 pending)
+=== case C (literal new URL per sheet) Na__Verify__ParityNaming__.mjs exit 0
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s); 2 folders against the registry; 2 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  RESULT: PASS (0 fail, 0 warn)
+=== case C (literal new URL per sheet) Na__Verify__PortNotes__.mjs exit 0
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W4-15\fakeroot
+  checked  : 2 named file(s) - 2 PORT NOTE(s), 0 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css
+      WARN  :20    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D left it at v2" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the releases that made it (R6 OC-07 form).]
+
+  PENDING  2 release placeholder(s) in 2 file(s), for the wave's Parity Scribe: W4-15 x2
+
+  RESULT: PASS (0 fail, 1 warn, 2 pending)

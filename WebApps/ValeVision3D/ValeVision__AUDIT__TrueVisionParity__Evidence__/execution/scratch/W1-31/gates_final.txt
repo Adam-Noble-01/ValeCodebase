@@ -1,0 +1,49 @@
+W1-31 final gates, 01-Oct-2026 23:53
+== G1
+  [1] app graph      : 522 modules from 1 entry point(s), 0 failure(s)
+  [2] import targets : 110 modules from 10 map target(s), 1 failure(s)
+  PASS - every reachable import specifier resolves to a file on disk,
+exit 0
+== G2
+  files checked : 453
+  loader facade : 35 editor name(s) reached through mode, model, spec, config, viewport3d, pdf in 4 file(s)
+  PASS - every named import resolves to a real export,
+         and every editor name the loader facade calls is exported.
+exit 0
+  Every self-test case passed (4).
+== G4 naming (tree)
+  checked  : 530 shipped files (02__Src__AppModules, 03__Style__AppStylesheets, the root pages) and 36 test-folder files (banner only); 65 folders against the registry; 11 Layout Editor stylesheets
+  RESULT: PASS (0 fail, 0 warn)
+exit 0
+== G4 port notes (tree)
+  checked  : 562 files in 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment and index.html - 338 PORT NOTE(s), 440 DEVELOPMENT LOG(s)
+  PENDING  82 release placeholder(s) in 70 file(s), for the wave's Parity Scribe: W1-01 x8, W1-02 x2, W1-03 x4, W1-04 x3, W1-05 x3, W1-06 x9, W1-08 x6, W1-09 x6, W1-11 x2, W1-12 x5, W1-13 x10, W1-14 x7, W1-16 x7, W1-17 x1, W1-29 x3, W1-30 x1, W1-31 x5
+  RESULT: PASS (0 fail, 133 warn, 82 pending)
+exit 0
+== G4 port notes (my files)
+  checked  : 3 named file(s) - 3 PORT NOTE(s), 3 DEVELOPMENT LOG(s)
+  PENDING  5 release placeholder(s) in 3 file(s), for the wave's Parity Scribe: W1-31 x5
+  RESULT: PASS (0 fail, 0 warn, 5 pending)
+exit 0
+== G5 LoaderFacade
+  PASS - every check passed (116).
+exit 0
+== LoaderStylesheets
+  Every check passed.
+exit 0
+== G3
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+RESULT: PASS (0 fail, 1 warn)
+exit 0
+== node --check
+OK 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+OK 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js
+OK 80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs
+== sha1 / bytes
+8c0200047de71ea1225780992be2e0e9ef2a201e *02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+120e4e52d5e292ca4b5f653541a72a228df79cd6 *02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js
+2ecf7abf32e17fd43ae3f7bb8531e37620acc070 *80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs
+ 59903 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+ 13144 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js
+ 74795 80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs
+147842 total

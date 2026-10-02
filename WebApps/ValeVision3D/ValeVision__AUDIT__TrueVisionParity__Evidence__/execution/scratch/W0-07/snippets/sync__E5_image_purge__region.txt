@@ -1,0 +1,45 @@
+def na_purge_stale_r2_images(s3_client, bucket: str, r2_prefix: str, keep_names: set, report: SyncReport) -> int:
+    """Delete image objects (.png/.jpg/.jpeg/.webp) stored directly under
+    r2_prefix that are no longer present locally so old date-stamped scenes +
+    thumbnails do not linger on R2. project.json and .glb files are never
+    touched (extension-gated).
+
+    Top level only: the shared lib lists with Delimiter '/' and follows
+    continuation tokens past 1,000 keys, so nothing in a sub-folder -
+    PresentationMode/Thumbnails/, LayoutEditor/Snapshots/,
+    05__Layout__DrawingDocs__Images/, 06__Layout__PublishedDocuments/,
+    10__StatementDocs/ or any folder added later - is ever a candidate. The
+    whole listing is read before anything is deleted; a failed listing or an
+    empty local image set deletes nothing."""
+    label      = 'Purge Stale R2 Images'
+    image_exts = ('.png', '.jpg', '.jpeg', '.webp')
+    purged     = 0
+    failed     = 0
+
+    if not keep_names:
+        report.add_step(label, True, 'Skipped: the local project folder holds no image, so nothing on R2 was treated as stale.')
+        return 0                                      # <-- An empty local folder is never an instruction to empty R2
+
+    try:
+        import AutomationUtil__R2Common__Lib__ as r2lib       # @delegate: ./AutomationUtil__R2Common__Lib__.py
+        keys = r2lib.na_list_top_level_keys(s3_client, bucket, f"{r2_prefix}/")
+    except Exception as exc:
+        report.add_step(label, False, f'Image purge failed (non-fatal, nothing deleted): {exc}')  # <-- Best-effort; never fail the sync
+        return 0
+
+    for key in keys:
+        name = key.rsplit('/', 1)[-1]
+        if name.lower().endswith(image_exts) and name not in keep_names:
+            try:
+                s3_client.delete_object(Bucket=bucket, Key=key)
+                purged += 1
+            except Exception:
+                failed += 1
+
+    if failed:
+        report.add_step(label, False, f'Purged {purged} stale image(s) from R2 under {r2_prefix}/; {failed} delete(s) failed (non-fatal).')
+    elif purged:
+        report.add_step(label, True, f'Purged {purged} stale top-level image(s) from R2 under {r2_prefix}/.')
+    return purged
+
+

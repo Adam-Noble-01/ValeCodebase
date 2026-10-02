@@ -1,0 +1,49 @@
+﻿W1-08 check - LIVE tree
+  PASS  A1 the data module exports TrueVision 1.1.0's 32 names plus ValeVision's STYLE_KEYS, nothing else
+  PASS  A2 GetStoreyLevel, IsStoreyLevelSet, GetStoreyLevelChoices and SetStoreyLevel are exported functions
+  PASS  A3 STOREY_CHANGED_EVENT is na-floorplan-storey-changed
+  PASS  A4 every name this app's 9 importers use is still exported
+  PASS  A5 every name the old module exported is still exported (nothing removed)
+  PASS  A6 ConfigState exports TrueVision 1.1.0's 12 names
+  PASS  A7 StoreyLevel exports its 12 names and StoreyRow Build and Refresh
+  PASS  G1 before the config loads the storeys are the built-in five, and not kept
+  PASS  G2 the config loads (FloorPlanViews__Enabled) and its storey setup is made once and kept
+  PASS  G3 the shipped storeys equal the built-in fallback
+  PASS  G4 the six storey labels come from the shipped config
+  PASS  G5 this app's own labels survive (Ground Floor Plan quick action, Styles, Exclusions, Bake)
+  PASS  B1 CreatePlan(presentationConfig, {}) adds the plan to LayoutEditor__DrawingsData__FloorPlans
+  PASS  B2 ... and leaves the presentation object exactly as it was (no new keys)
+  PASS  B3 the new plan is FloorPlan_004, fifth in the array, named from the config's format
+  PASS  B4 a new plan carries no storey key (absent = still a guess)
+  PASS  B5 the other readers ignore a presentation object too: GetFloorPlans / GetPlanById / NextPlanId read the drawings block
+  PASS  B6 DeletePlan(presentationConfig, id) removes it from the drawings block and nothing from the presentation
+  PASS  B7 a block handed in as the first argument is not read (TrueVision's convention: records always from the live block)
+  PASS  C1 GetStoreyLevel on "Roof Plan" (cut 6000) answers roof, from its name, guessed
+  PASS  C2 ... and writes nothing: the record and the whole drawings block are byte-identical
+  PASS  C3 IsStoreyLevelSet is false for a guess
+  PASS  C4 GetStoreyLevelChoices offers the five in Adam's order
+  PASS  C5 SetStoreyLevel stores the key and dispatches na-floorplan-storey-changed with { planId, key }
+  PASS  C6 a chosen storey beats the name, and IsStoreyLevelSet says so
+  PASS  C7 setting what is held, or a key that names no storey, changes nothing and announces nothing
+  PASS  C8 a key is matched whatever its case or padding
+  PASS  C9 nothing hands the plan back to the guess: the key is deleted (absent, never '') and announced with key ''
+  PASS  C10 an unchosen plan follows its cut: 1200 ground, 4000 first, from its height
+  PASS  C11 GetStoreyLevel of nothing is null and SetStoreyLevel of nothing is false
+  PASS  D1 STYLE_KEYS is exported: the five style keys, frozen
+  PASS  D2 FloorPlan__Dimensions is seeded empty on read, and an existing list is kept
+  PASS  D3 ... and on a new plan
+  PASS  D4 SetExcludeTokens trims and drops empties; null restores the default; GetExcludeTokens hands back a copy
+  PASS  E1 every call shape this app uses answers the same through the old and the new module
+  PASS  E2 the presentation objects come out the same (the scene link is written either way)
+  PASS  E3 the saved records differ only by the old module's default-valued Styles / null slots written on read (key order aside: a key written later sits later)
+  PASS  E4 (recorded) a never-styled record: old module wrote FloorPlan__Styles on read, new leaves it until GetStyles
+  PASS  E5 no save was attempted by any of it (no Worker or local write)
+  PASS  F1 the row: a label for the select, five options, the storey shown
+  PASS  F2 a guess from the name says so, with Confirm
+  PASS  F3 a guess from the height names the cut
+  PASS  F4 a pick writes the record, then tells the editor, and the words go
+  PASS  F5 Confirm stores the guess as the choice
+  PASS  F6 Confirm on a chosen storey does nothing
+  PASS  F7 Refresh re-reads the plan (back to the guess); Refresh of anything else is false
+
+  PASS - 46 checks passed.

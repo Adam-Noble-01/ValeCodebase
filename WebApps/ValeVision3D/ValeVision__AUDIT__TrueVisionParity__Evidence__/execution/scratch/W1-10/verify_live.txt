@@ -1,0 +1,13 @@
+﻿02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js    live == candidate: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js        live == candidate: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js live == candidate: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css live == candidate: True
+80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html               live == candidate: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json     live == candidate: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js    reverse seams == TrueVision at b2aa9151: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js        reverse seams == TrueVision at b2aa9151: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js reverse seams == TrueVision at b2aa9151: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css reverse seams == TrueVision at b2aa9151: True
+80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html               reverse seams == TrueVision at b2aa9151: True
+02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json     union rules: OK
+verify: 0 problem(s)

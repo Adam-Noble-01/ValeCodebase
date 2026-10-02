@@ -44,19 +44,31 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__EdgeStyles__.js (1.0.0)
-// - Ported on     : 13-Sep-2026 for ValeVision3D v2.30.0
-// - Parity        : verbatim below the header
-// - Divergences   : Console prefix and this header only. The config JSON beside
-//                   it is verbatim too. What differs is the model layer config:
-//                   its keys are ValeVision__, and beside TrueVision's rows it
-//                   keeps the coarse categories an older ValeVision export loads,
-//                   styled as structure.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js
+// - Source version: 1.1.0 (TrueVision3D v2.49.0, 14-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was TrueVision's 1.0.0 (ValeVision3D v2.30.0). 1.1.0 and the unlogged later work (the
+//                   accent colours, Weight__Max 10.00, the per-viewport Line scale on any dashed category and
+//                   the site plan FillHex, git 55014c6a) come across under DR-01 (c); none is recorded as tried
+//                   by Adam in TrueVision.
+// - Parity        : adapted (app token only)
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - SITEPLAN_PREFIX is 'ValeVision__SitePlan__' (K2 K3): the site plan store renames the exporter's
+//     TrueVision__SitePlan__ stems to this app's token as it reads them (W2-14). Dormant with site plans
+//     (DR-08 (B)).
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.1.0
+// - Site plan categories (TrueVision__SitePlan__...) take their default style from
+//   the site plan data: the export's colour as the palette alias of the same hex,
+//   its line type, and its weight in millimetres as a factor on the configured
+//   viewport lineweight. The palette gains red, green and blue, the SSOT's site
+//   plan accents, and the weight ceiling rises to 6.00 so a 0.50 mm line prints true.
+//
 // 12-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -75,6 +87,8 @@
     // this module decides what that means.
     // ------------------------------------------------------------
     import { Na__LeModelLayers__EdgeDefault, Na__LeModelLayers__Ready, Na__LeModelLayers__IsLoaded } from './Na__LayoutEditor__ModelLayers__.js';
+    import { Na__LeCfg__GetLineweightSetup, Na__LeCfg__PtToMm } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__SpStore__GetLayers } from '../21__System__SitePlanData/Na__SitePlan__Store__.js';   // <-- Site plan layers carry their own default style
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -89,6 +103,7 @@
     const Na__LeEdge__ConfigUrl = new URL('./Na__LayoutEditor__EdgeStyles__Config__.json', import.meta.url);
     const Na__LeEdge__FIELD     = 'Viewport__ProjectedEdges';
     const Na__LeEdge__CAT_FIELD = 'Edges__Categories';
+    const Na__LeEdge__SITEPLAN_PREFIX = 'ValeVision__SitePlan__';               // <-- Site plan layer keys: their style comes with the data
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | The Fetched Config
@@ -108,14 +123,19 @@
         { alias : 'soft-black', label : 'Soft Black', hex : '#333333' },
         { alias : 'dark-grey',  label : 'Dark Grey',  hex : '#666666' },
         { alias : 'mid-grey',   label : 'Mid Grey',   hex : '#999999' },
-        { alias : 'light-grey', label : 'Light Grey', hex : '#D9D9D9' }
+        { alias : 'light-grey', label : 'Light Grey', hex : '#D9D9D9' },
+        { alias : 'red',        label : 'Red',        hex : '#E53935' },
+        { alias : 'green',      label : 'Green',      hex : '#43A047' },
+        { alias : 'new-planting-green', label : 'New Planting Green', hex : '#69B36C' },
+        { alias : 'dark-blue', label : 'Dark Blue', hex : '#154D8A' },
+        { alias : 'blue',       label : 'Blue',       hex : '#1E88E5' }
     ];
     const Na__LeEdge__FALLBACK_TYPES = [
         { alias : 'solid',  label : 'Solid',  patternMm : [] },
         { alias : 'dashed', label : 'Dashed', patternMm : [ 2.5, 1.5 ] },
         { alias : 'centre', label : 'Centre', patternMm : [ 8.0, 2.0, 2.0, 2.0 ] }
     ];
-    const Na__LeEdge__FALLBACK_WEIGHT  = { min : 0.10, max : 3.00, step : 0.05, decimals : 2, default : 1.00 };
+    const Na__LeEdge__FALLBACK_WEIGHT  = { min : 0.10, max : 6.00, step : 0.05, decimals : 2, default : 1.00 };
     const Na__LeEdge__FALLBACK_CLASSES = [ 'visible', 'hidden', 'authored' ];
     const Na__LeEdge__FALLBACK_STYLE   = { weight : 1.00, colour : 'black', lineType : 'solid' };
     // ------------------------------------------------------------
@@ -330,16 +350,63 @@
 // REGION | The Per-Viewport Record
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | The Palette Alias With This Hex (null When None)
+    // ------------------------------------------------------------
+    function Na__LeEdge__AliasForHex(hex) {
+        if (typeof hex !== 'string') return null;
+        const wanted = hex.trim().toUpperCase();
+        const match  = Na__LeEdge__Colours().find((entry) => String(entry.hex).toUpperCase() === wanted);
+        return match ? match.alias : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Site Plan Category's Default: the Style Its Export Carries
+    // ------------------------------------------------------------
+    // Site plan layers are not in the Model Layers config: their style travels
+    // with the data, resolved from the SSOT at export. The weight in millimetres
+    // becomes a factor on the configured viewport lineweight, so at that master a
+    // 0.50 mm red line prints 0.50 mm, and a sheet that raises its master raises
+    // the site plan with everything else. The colour is the palette alias of the
+    // same hex. Null for any other key, and before the site plan data has loaded.
+    // ------------------------------------------------------------
+    function Na__LeEdge__SitePlanDefault(categoryKey) {
+        if (typeof categoryKey !== 'string' || categoryKey.indexOf(Na__LeEdge__SITEPLAN_PREFIX) !== 0) return null;
+        const layer = Na__SpStore__GetLayers().find((entry) => entry.Layer__CategoryKey === categoryKey);
+        if (!layer) return null;
+        const style  = layer.Layer__Style || {};
+        const master = Na__LeCfg__PtToMm(Na__LeCfg__GetLineweightSetup().viewportPt);
+        const fall   = Na__LeEdge__Fallback();
+        return {
+            weight    : (Number.isFinite(style.LineWeightMm) && master > 0) ? style.LineWeightMm / master : fall.weight,
+            colour    : Na__LeEdge__AliasForHex(style.LineHex) || fall.colour,
+            lineType  : Na__LeEdge__IsLineType(style.LineType) ? style.LineType : fall.lineType,
+            // THE DASH SCALE IS A PROPERTY OF THE LAYER, not of the line type.
+            // Adam, on the Proposed Alterations outline: 'the line could be
+            // mistaken as a solid line in certain sections... I'm not talking
+            // about the line thickness. I'm talking about the line dash space
+            // scaling needs to be smaller.' A 2.5 mm dash with a 1.5 mm gap is
+            // right on a 1:50 plan and closes up on a site plan, so the SSOT
+            // gives that one tag a 0.5 and every other dashed line is untouched.
+            dashScale : (Number.isFinite(style.LineDashScale) && style.LineDashScale > 0) ? style.LineDashScale : 1
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Config Default for One Category
     // ------------------------------------------------------------
     function Na__LeEdge__Default(categoryKey) {
+        const sitePlan = Na__LeEdge__SitePlanDefault(categoryKey);
+        if (sitePlan) return sitePlan;
         const fromMap = Na__LeModelLayers__EdgeDefault(categoryKey);
         const fall    = Na__LeEdge__Fallback();
-        if (!fromMap) return { weight : fall.weight, colour : fall.colour, lineType : fall.lineType };
+        if (!fromMap) return { weight : fall.weight, colour : fall.colour, lineType : fall.lineType, dashScale : 1 };
         return {
-            weight   : Number.isFinite(fromMap.weight) ? fromMap.weight : fall.weight,
-            colour   : fromMap.colour   || fall.colour,
-            lineType : fromMap.lineType || fall.lineType
+            weight    : Number.isFinite(fromMap.weight) ? fromMap.weight : fall.weight,
+            colour    : fromMap.colour   || fall.colour,
+            lineType  : fromMap.lineType || fall.lineType,
+            dashScale : 1                                                        // <-- Only a site plan layer carries one; a model category draws its line type as configured
         };
     }
     // ------------------------------------------------------------
@@ -360,6 +427,14 @@
     // ------------------------------------------------------------
     // Returns { weight, colour, lineType, hex, patternMm, overridden }.
     // ------------------------------------------------------------
+    // Fill overrides share the category record with line styles. The exported
+    // material colour is the default; no separate fill palette needs maintaining.
+    function Na__LeEdge__FillHex(viewport, categoryKey, fallback = null) {
+        const stored = Na__LeEdge__Stored(viewport);
+        const value = stored && stored[categoryKey] && stored[categoryKey].Category__FillHex;
+        return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value.toUpperCase() : fallback;
+    }
+
     function Na__LeEdge__Effective(viewport, categoryKey) {
         const base   = Na__LeEdge__Default(categoryKey);
         const stored = Na__LeEdge__Stored(viewport);
@@ -368,7 +443,7 @@
         let weight   = base.weight;
         let colour   = base.colour;
         let lineType = base.lineType;
-        let touched  = false;
+        let touched  = Na__LeEdge__FillHex(viewport, categoryKey) !== null;
 
         if (entry && typeof entry === 'object') {
             if (Number.isFinite(entry['Category__EdgeWeightFactor'])) { weight   = entry['Category__EdgeWeightFactor']; touched = true; }
@@ -376,12 +451,22 @@
             if (typeof entry['Category__EdgeLineType'] === 'string')  { lineType = entry['Category__EdgeLineType'];     touched = true; }
         }
 
+        // THE DASH SCALE SURVIVES A RESTYLE. It belongs to the layer, so picking
+        // a different line type by hand gives THAT type at this layer's dash
+        // scale rather than quietly returning the drawing to full-size dashes.
+        const overrideScale = entry && entry.Category__LineTypeScale;
+        const hasScale = Number.isFinite(overrideScale) && overrideScale > 0;
+        const scale = hasScale ? Math.max(0.1, Math.min(10, overrideScale)) :
+            (Number.isFinite(base.dashScale) && base.dashScale > 0 ? base.dashScale : 1);
+        if (hasScale) touched = true;
+        const pattern = Na__LeEdge__Pattern(lineType);
         return {
             weight     : Na__LeEdge__ClampWeight(weight),
             colour     : colour,
             lineType   : lineType,
             hex        : Na__LeEdge__Hex(colour),
-            patternMm  : Na__LeEdge__Pattern(lineType),
+            dashScale  : scale,
+            patternMm  : (scale === 1 || pattern.length === 0) ? pattern : pattern.map((mm) => mm * scale),
             overridden : touched
         };
     }
@@ -395,7 +480,7 @@
     // changed replaced - which is what keeps a stored entry self-describing
     // rather than a scattering of single fields.
     //
-    // part is 'weight' | 'colour' | 'lineType'.
+    // part is 'weight' | 'colour' | 'lineType' | 'dashScale' | 'fill'.
     // ------------------------------------------------------------
     function Na__LeEdge__Patch(viewport, categoryKey, label, part, value) {
         const now = Na__LeEdge__Effective(viewport, categoryKey);
@@ -411,6 +496,17 @@
             'Category__EdgeColour'       : next.colour,
             'Category__EdgeLineType'     : next.lineType
         };
+        const held = Na__LeEdge__Stored(viewport);
+        const heldScale = held && held[categoryKey] && held[categoryKey].Category__LineTypeScale;
+        if (Number.isFinite(heldScale) && heldScale > 0) patch[categoryKey].Category__LineTypeScale = heldScale;
+        if (part === 'dashScale' && Number.isFinite(Number(value)) && Number(value) > 0) {
+            patch[categoryKey].Category__LineTypeScale = Math.max(0.1, Math.min(10, Number(value)));
+        }
+        const heldFill = Na__LeEdge__FillHex(viewport, categoryKey);
+        if (heldFill) patch[categoryKey].Category__FillHex = heldFill;
+        if (part === 'fill' && /^#[0-9a-f]{6}$/i.test(String(value))) {
+            patch[categoryKey].Category__FillHex = String(value).toUpperCase();
+        }
         return patch;
     }
     // ------------------------------------------------------------
@@ -441,7 +537,7 @@
         if (keys.length === 0) return '';
         return keys.map((key) => {
             const entry = stored[key] || {};
-            return key + ':' + entry['Category__EdgeWeightFactor'] + ':' + entry['Category__EdgeColour'] + ':' + entry['Category__EdgeLineType'];
+            return key + ':' + entry['Category__EdgeWeightFactor'] + ':' + entry['Category__EdgeColour'] + ':' + entry['Category__EdgeLineType'] + ':' + (Na__LeEdge__FillHex(viewport, key) || '') + ':' + (entry.Category__LineTypeScale || '');
         }).join('|');
     }
     // ------------------------------------------------------------
@@ -481,6 +577,7 @@
         Na__LeEdge__ClampWeight,
         Na__LeEdge__Default,
         Na__LeEdge__Effective,
+        Na__LeEdge__FillHex,
         Na__LeEdge__Patch,
         Na__LeEdge__ResetPatch,
         Na__LeEdge__Token,

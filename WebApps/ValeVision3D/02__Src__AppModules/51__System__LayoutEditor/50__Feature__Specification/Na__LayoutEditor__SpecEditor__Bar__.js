@@ -29,26 +29,50 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : n/a
-// - Back-port     : the same split applies to TrueVision's copy.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js
+// - Source version: 1.3.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151). TrueVision's file
+//                   at the pin is 1.4.0; its one 1.4.0 change, the Share button in Read (v2.166.0),
+//                   is left out and comes with the document-sharing port (DR-05; D-S06b-07 (a)).
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - taken whole. This app's copy
+//                   before it was its 1.2.0 (19-Sep-2026): the unit this app split out of
+//                   Na__LayoutEditor__SpecEditor__.js first (15-Sep-2026, v2.47.0; TrueVision
+//                   took the same split), with TrueVision's Reload buttons (1.1.0) and tab-label
+//                   chips (1.2.0). NOT tried by Adam in TrueVision (DR-01 (c)).
+// - Parity        : adapted
+// - Divergences   :
+//   - The project code the summary shows and the document number defaults to is
+//     Na__DrawData__GetDocumentCode() (the loaded project's own code, DR-11), where TrueVision
+//     reads Na__DrawData__GetProjectCode(): here that is the ?project= token, which can be a
+//     folder id such as 2026/3047__Doous and defaulted the number to 2026/3047__Doous_SPEC.
+//     The same seam as Na__LayoutEditor__SpecPdf__ and Na__LayoutEditor__SpecDocument__.
+//   - No Share button yet (TrueVision 1.4.0; see Source version).
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : the document-code accessor in place of the ?project= code, offered with
+//                   SpecPdf's.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Sep-2026 - Version 1.3.0
+// - The status says how the specification stands against its LOCAL FILE
+//   first and the cloud second, as the Statement Writer's does (the lockstep,
+//   Na__LayoutEditor__SpecData__Lockstep__): "Out of step with the file"
+//   while the question is up, "Unsaved changes" until the autosave has
+//   written the file, then "Saved to file, not synced" until Save Sheets or
+//   Sync. Its hover says when the file on disk last changed. Where the
+//   lockstep is off the wording is as it was.
+// - An alert above the groups while the question stands.
+//
 // 19-Sep-2026 - Version 1.2.0
 // - A go-to chip names its sheet as the tab does (Na__LeModel__GetTabLabel,
-//   "D03 - Elevations"), since a sheet's name alone no longer carries a number.
-//   Ported from TrueVision3D v2.70.0.
+//   "D03 - 3D Images"). The sheet's name alone no longer carries a number.
 //
 // 18-Sep-2026 - Version 1.1.0
-// - Ported from TrueVision3D: the Reload R2 and Reload Local buttons beside
-//   Retry and Sync - a fast, explicit re-read of either copy, for when a
-//   file changed outside this browser (another session, or an LLM editing
-//   the file on disk) and a hard refresh was previously the only way to
-//   catch up. Reload Local is built only when CanReloadLocal (localhost)
-//   says the local Flask copy exists.
+// - Added the Reload R2 and Reload Local buttons beside Retry and Sync: a
+//   fast, explicit re-read of either copy, for when a file changed outside
+//   this browser (another session, or an LLM editing the file on disk) and a
+//   hard refresh was previously the only way to catch up. Reload Local is
+//   built only when CanReloadLocal (localhost) says the local copy exists.
 //
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecEditor__.js; the code moved verbatim.
@@ -76,8 +100,9 @@
         Na__LeSpec__CanReloadCloud,
         Na__LeSpec__CanReloadLocal
     } from './Na__LayoutEditor__SpecData__.js';
-    import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
-    import { Na__LeModel__GetTabLabel } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';   // <-- A sheet is named as its tab names it
+    import { Na__DrawData__GetDocumentCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';   // <-- The project's own code (ValeVision, DR-11): this app's ?project= can be a folder id
+    import { Na__LeModel__GetTabLabel } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';   // <-- A chip names a sheet as its tab does ("D03 - 3D Images")
+    import { Na__LeStmtLock__When } from '../52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js';   // <-- A time said as the statement's status says it
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Specification Editor Units: State and Small Builders
@@ -167,13 +192,13 @@
         number.setAttribute('aria-label', L('SpecDocNumberLabel', 'Document number'));
         number.title = L('SpecDocNumberTitle', 'The specification’s own number, the way each sheet carries a Drawing No. Left blank it follows the project code.');
         number.disabled = !Na__LeSpecEd__Editable;
-        issue.appendChild(number);
         issue.appendChild(Na__LeSpecEd__El('span', 'na-le-spec__issue-label', L('SpecDocRevisionShort', 'Rev')));
         const revision = Na__LeSpecEd__Field('input', 'na-le-spec__issue-field na-le-spec__issue-field--rev', 'spec-revision', null);
         revision.type = 'text';
         revision.setAttribute('aria-label', L('SpecDocRevisionLabel', 'Specification revision'));
         revision.title = L('SpecDocRevisionTitle', 'The revision this specification is issued at. It prints on the document and names the downloaded file.');
         revision.disabled = !Na__LeSpecEd__Editable;
+        issue.insertBefore(number, issue.firstChild);
         issue.appendChild(revision);
         bar.appendChild(issue);
 
@@ -181,7 +206,8 @@
         pages.setAttribute('data-na-spec-bar', 'pages');
         pages.setAttribute('data-na-spec-only', Na__LeSpecEd__VIEW_READ);
         bar.appendChild(pages);
-        bar.appendChild(Na__LeSpecEd__Button(L('SpecDownload', 'Download'), 'download', L('SpecDownloadTitle', 'Download the specification as a PDF, named after its number, revision and today’s date')));
+        const download = Na__LeSpecEd__Button(L('SpecDownload', 'Download'), 'download', L('SpecDownloadTitle', 'Download the specification as a PDF, named after its number, revision and today’s date'));
+        bar.appendChild(download);
         const print = Na__LeSpecEd__Button(L('SpecPrint', 'Print'), 'print', L('SpecPrintTitle', 'Print the specification on A4 paper, or choose Save as PDF in the print dialog'));
         print.setAttribute('data-na-spec-only', Na__LeSpecEd__VIEW_READ);
         bar.appendChild(print);
@@ -189,7 +215,7 @@
         status.setAttribute('data-na-spec-bar', 'status');
         bar.appendChild(status);
         if (Na__LeSpecEd__Editable) {
-            bar.appendChild(Na__LeSpecEd__Button(L('SpecReloadCloud', 'Reload R2'), 'reload-cloud', L('SpecReloadCloudBtnTitle', 'Force-reload the specification from the cloud copy, in case it changed since this browser last read it. Asks first if this browser has unsynced changes.')));
+            bar.appendChild(Na__LeSpecEd__Button(L('SpecReloadCloud', 'Reload R2'), 'reload-cloud', L('SpecReloadCloudBtnTitle', 'Force-reload the specification from the cloud copy on R2, in case it changed since this browser last read it. Asks first if this browser has unsynced changes.')));
             if (Na__LeSpec__CanReloadLocal()) {
                 bar.appendChild(Na__LeSpecEd__Button(L('SpecReloadLocal', 'Reload Local'), 'reload-local', L('SpecReloadLocalBtnTitle', 'Force-reload the specification from the local file on disk, in case it changed since this browser last read it - for example an edit made outside the browser. Asks first if this browser has unsynced changes.')));
             }
@@ -206,24 +232,33 @@
         if (!Na__LeSpecEd__Bar) return;
         const L     = Na__LeCfg__GetLabel;
         const state = Na__LeSpec__GetState();
-        const code  = Na__DrawData__GetProjectCode();
+        const code  = Na__DrawData__GetDocumentCode();                    // <-- ValeVision seam (DR-11): the project's own code, never the ?project= folder id
         const notes = Na__LeSpec__ListNotes().length;
         const groups = Na__LeSpec__GetGroups().length;
 
         const summary = Na__LeSpecEd__Bar.querySelector('[data-na-spec-bar="summary"]');
         summary.textContent = [ code || '', state.loaded ? Na__LeSpecEd__Count(notes, 'SpecNotesOne', '{count} note', 'SpecNotesMany', '{count} notes') + ' ' + Na__LeSpecEd__Count(groups, 'SpecInGroupsOne', 'in {count} group', 'SpecInGroupsMany', 'in {count} groups') : '' ].filter(Boolean).join(' · ');
 
+        // THE STATUS | The file on disk first, the cloud second: they are
+        // different questions, and the file is the one an agent writes.
+        const onDisk = state.lockstep && state.fileKnown;
         let text, flag;
-        if (state.syncing)                                  { text = L('SpecStatusSyncing', 'Syncing...'); flag = 'syncing'; }
+        if (state.conflict)                                 { text = L('SpecStatusOutOfStep', 'Out of step with the file'); flag = 'failed'; }
+        else if (state.syncing)                             { text = L('SpecStatusSyncing', 'Syncing...'); flag = 'syncing'; }
         else if (!state.loaded)                             { text = L('SpecStatusLoading', 'Loading...'); flag = 'loading'; }
+        else if (state.savingLocal)                         { text = L('SpecStatusSavingLocal', 'Saving...'); flag = 'syncing'; }
         else if (state.status === Na__LeSpec__STATUS_FAILED) { text = L('SpecStatusFailed', 'Cloud copy could not be read'); flag = 'failed'; }
-        else if (state.dirty)                               { text = L('SpecStatusDirty', 'Unsynced - kept in this browser'); flag = 'dirty'; }
+        else if (onDisk && !state.inStepWithFile)           { text = L('SpecStatusUnsavedLocal', 'Unsaved changes'); flag = 'dirty'; }
+        else if (state.dirty)                               { text = onDisk ? L('SpecStatusSavedNotSynced', 'Saved to file, not synced') : L('SpecStatusDirty', 'Unsynced - kept in this browser'); flag = 'dirty'; }
         else if (state.status === Na__LeSpec__STATUS_NEW)   { text = L('SpecStatusNew', 'Not in the cloud yet'); flag = 'new'; }
         else if (state.lastSyncIso)                         { text = Na__LeCfg__FormatLabel('SpecStatusSynced', 'Synced {time}', { time : new Date(state.lastSyncIso).toLocaleTimeString() }); flag = 'synced'; }
         else                                                { text = state.editable ? L('SpecStatusClean', 'Up to date with the cloud') : L('SpecStatusReadOnly', 'Read-only'); flag = 'clean'; }
         const status = Na__LeSpecEd__Bar.querySelector('[data-na-spec-bar="status"]');
         status.textContent = text;
         status.setAttribute('data-state', flag);
+        status.title = onDisk
+            ? Na__LeCfg__FormatLabel('SpecStatusFileTitle', 'The specification file on disk was last changed {when}. It is watched while the drawing editor is open: a change made outside the app is asked about, never written over.', { when : Na__LeStmtLock__When(state.fileIso) })
+            : '';
 
         const each = (action, fn) => { const button = Na__LeSpecEd__Bar.querySelector('[data-na-spec="' + action + '"]'); if (button) fn(button); };
         const matching = Na__LeSpecEd__Usage ? Array.from(Na__LeSpecEd__Usage.matching.values()).reduce((sum, list) => sum + list.length, 0) : 0;
@@ -272,6 +307,9 @@
             alerts.appendChild(box);
         };
         if (!Na__LeSpecEd__Editable) add('info', L('SpecReadOnlyAlert', 'Read-only: the specification is written where authoring is enabled.'));
+        if (state.conflict) {
+            add('warn', L('SpecOutOfStepAlert', 'The specification and its file on disk are out of step. Nothing is saved or synced until you choose which copy to keep.'));
+        }
         if (state.status === Na__LeSpec__STATUS_FAILED) {
             add('warn', Na__LeCfg__FormatLabel('SpecFailedAlert', 'The cloud copy could not be read ({error}). Changes are kept in this browser, and Sync stays off until the cloud copy can be read.', { error : state.error || 'unknown' }),
                 Na__LeSpecEd__Editable ? [ Na__LeSpecEd__Button(L('SpecRetry', 'Retry'), 'retry', null, 'na-le-btn--small') ] : null);

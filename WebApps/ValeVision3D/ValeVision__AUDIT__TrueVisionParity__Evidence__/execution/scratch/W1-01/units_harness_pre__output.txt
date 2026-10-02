@@ -1,0 +1,5 @@
+﻿W1-01 unit harness - pre
+  PASS  ModelToggle keeps its six exports
+  PASS  pre-image lacks the three TrueVision names (what this package adds)
+
+2 passed, 0 failed

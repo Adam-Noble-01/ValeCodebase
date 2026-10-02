@@ -1,0 +1,155 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - SNAPPING
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__Snapping__.js
+// NAMESPACE  : Na__LeOsnap
+// MODULE     : Layout Editor - Snapping
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : For one wave, the old address of the object snap: a re-export of 28__System__ObjectSnap's search and switches for the tools not yet repointed
+// CREATED    : 10-Sep-2026
+//
+// DESCRIPTION:
+// - THE SNAPPING LIVES IN 28__System__ObjectSnap NOW, TrueVision's folder:
+//   the running modes (Endpoint, Midpoint, Intersection, Perpendicular,
+//   Centre, Nearest), the five targets, the SVG marker coloured by what it
+//   snapped to, the grid fallback and the controller with its echo. This
+//   file holds no snapping of its own any more.
+// - IT STAYS FOR ONE WAVE, as TrueVision's did for an hour, so the modules
+//   that still import it here keep linking while they wait for their own
+//   ports (K2 FR-14): HitResolution, PointerDrag, and the Dimension, Leader,
+//   Rectangle and Draw tools. Each takes TrueVision's file, which imports
+//   __Search__ itself, and W3-08 deletes this one (FR-15).
+// - ONLY __Search__ AND __State__, NEVER THE CONTROLLER. The controller
+//   (Na__LayoutEditor__ObjectSnap__.js) talks to the Measurements box for its
+//   "<Osnap on>" echo, and the Measurements box imports the Draw, Rectangle
+//   and Dimension tools, which import this file. Re-exporting Toggle or
+//   SetEnabled from here would close the cycle TrueVision's controller
+//   exists to prevent. F3, the toolbar and the right-click menu import the
+//   controller themselves.
+// - THE TONE NAMES ARE KEPT AS PLAIN STRINGS, so a caller that still passes
+//   one links and runs: __Search__'s Snap passes over a string fourth
+//   argument, and the marker's colour is now the TARGET's (purple linework,
+//   blue vector, orange text, red dimension, slate paper and grid), never the
+//   tool's. TrueVision declared the same three strings locally while its
+//   shim stood (Na__LayoutEditor__ObjectSnap__.js PORT NOTE).
+//
+// INTEGRATION:
+// - Imported by Na__LayoutEditor__SheetTools__HitResolution__,
+//   Na__LayoutEditor__SheetTools__PointerDrag__, Na__LayoutEditor__DimensionTool__,
+//   Na__LayoutEditor__LeaderTool__, Na__LayoutEditor__RectangleTool__ and
+//   Na__LayoutEditor__ShapeTool__ until each is repointed.
+// // @delegate: ../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js
+// // @delegate: ../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.3, port Phase 5); TrueVision3D
+//                   took it as its Snapping 1.0.0 and dissolved it into 28__System__ObjectSnap
+//                   at v2.129.0 (21-Sep-2026), keeping it as a re-export for an hour.
+// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}: the snapping itself went to
+//                   28__System__ObjectSnap (TrueVision's folder, read at b2aa9151) and this file
+//                   became the one-wave shim (K2 FR-14, ruling 3; R6 W2-19).
+// - Parity        : diverged (a ValeVision shim; TrueVision's copy no longer exists)
+// - Divergences   :
+//   - The whole file: TrueVision deleted its Snapping__ once its last importer was repointed.
+//     This one goes with W3-08 (K2 FR-15).
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 02-Oct-2026 - Version 2.0.0 ({{VVREL:W2-19}})
+// - A SHIM OVER 28__System__ObjectSnap. The index, the search, the marker and
+//   the switches are gone from here: Find, Snap, ShowMarker, HideMarker,
+//   Clear, IsEnabled, KIND_END and KIND_MID are re-exported from
+//   Na__LayoutEditor__ObjectSnap__Search__, CHANGED_EVENT from
+//   Na__LayoutEditor__ObjectSnap__State__ (the same event name and the same
+//   na-layouteditor-osnap storage key, so a choice made with F3 survives).
+// - TONE_VERTEX, TONE_DIMENSION and TONE_VIEWPORT stay as plain strings; the
+//   marker no longer reads them (its colour is what it snapped to).
+// - SetEnabled and Toggle are no longer here: the keyboard (F3), the toolbar
+//   and the right-click menu import them from the controller,
+//   Na__LayoutEditor__ObjectSnap__.js. The mode controller's Clear comes from
+//   __Search__.
+//
+// 13-Sep-2026 - Version 1.2.0
+// - Marker tones: Snap and ShowMarker take the tool that is snapping
+//   (TONE_VERTEX, TONE_DIMENSION, TONE_VIEWPORT) and add it to the marker's
+//   class, so the snap colour tells the tools apart. Left out, it is vertex.
+// - Ported from TrueVision3D v2.31.0 (its 1.3.0). TONE_VIEWPORT is defined and
+//   styled, ready for the viewport snap move, which is not ported yet.
+//
+// 13-Sep-2026 - Version 1.1.0
+// - The sheet's own vectors (every vertex and edge midpoint) and dimensions (both
+//   measured points) are snap candidates alongside the viewport linework,
+//   switchable with SheetObjects. A linear scan of the live records, so a vertex
+//   placed a moment ago is a candidate at once. Find and Snap take an exclusion
+//   so a dragged vertex or grip never snaps to itself. Ported from TrueVision.
+//
+// 10-Sep-2026 - Version 1.0.0
+// - Initial implementation: endpoint and midpoint snaps, marker, toggle.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | The Search and the Switches' Event (never the controller: see DESCRIPTION)
+    // ------------------------------------------------------------
+    import {
+        Na__LeOsnap__KIND_END,
+        Na__LeOsnap__KIND_MID,
+        Na__LeOsnap__IsEnabled,
+        Na__LeOsnap__Clear,
+        Na__LeOsnap__Find,
+        Na__LeOsnap__Snap,
+        Na__LeOsnap__ShowMarker,
+        Na__LeOsnap__HideMarker
+    } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js';
+    import { Na__LeOsnap__CHANGED_EVENT } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | The Old Tone Names, Kept So a Caller Still Passing One Links
+    // ------------------------------------------------------------
+    const Na__LeOsnap__TONE_VERTEX    = 'vertex';
+    const Na__LeOsnap__TONE_DIMENSION = 'dimension';
+    const Na__LeOsnap__TONE_VIEWPORT  = 'viewport';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Snapping API (the one-wave shim)
+    // ------------------------------------------------------------
+    export {
+        Na__LeOsnap__KIND_END,
+        Na__LeOsnap__KIND_MID,
+        Na__LeOsnap__TONE_VERTEX,
+        Na__LeOsnap__TONE_DIMENSION,
+        Na__LeOsnap__TONE_VIEWPORT,
+        Na__LeOsnap__CHANGED_EVENT,
+        Na__LeOsnap__IsEnabled,
+        Na__LeOsnap__Clear,
+        Na__LeOsnap__Find,
+        Na__LeOsnap__Snap,
+        Na__LeOsnap__ShowMarker,
+        Na__LeOsnap__HideMarker
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

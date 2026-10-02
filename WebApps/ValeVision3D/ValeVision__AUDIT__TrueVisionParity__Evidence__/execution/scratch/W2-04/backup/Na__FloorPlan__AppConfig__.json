@@ -1,0 +1,95 @@
+{
+    "FloorPlanViews__Description": "Configuration for the Floor Plan Views system - the developer-authored 2D plan cuts built on top of the section cut engine. Per-project floor plan definitions live in the project's own project.json, inside the LayoutEditor__DrawingsData block, which the SketchUp cloud sync never writes. All distance values are integer millimetres and are converted to Three.js units in code.",
+    "FloorPlanViews__Enabled": true,
+    "FloorPlanViews__Datum__Config": {
+        "FloorPlanViews__Datum__Description": "The floor datum slider. 0 is the universal ground floor level of the model. The cut itself is taken CutOffsetAboveDatumMm above the datum, which is why a plan set at datum 0 still shows walls in section rather than a bare slab.",
+        "FloorPlanViews__Datum__DefaultMm": 0,
+        "FloorPlanViews__Datum__MinMm": -5000,
+        "FloorPlanViews__Datum__MaxMm": 20000,
+        "FloorPlanViews__Datum__StepMm": 50,
+        "FloorPlanViews__Datum__CutOffsetAboveDatumMm": 1200,
+        "FloorPlanViews__Datum__CutOffsetMinMm": 100,
+        "FloorPlanViews__Datum__CutOffsetMaxMm": 3000,
+        "FloorPlanViews__Datum__ViewDepthDefaultMm": null
+    },
+    "FloorPlanViews__Camera__Config": {
+        "FloorPlanViews__Camera__Description": "Orthographic top-down camera for plan mode. The camera sits a short distance above the cut plane looking straight down. With an orthographic projection this distance does not affect scale, only the near plane, so it stays small deliberately.",
+        "FloorPlanViews__Camera__HeightAboveCutMm": 100,
+        "FloorPlanViews__Camera__NearMm": 10,
+        "FloorPlanViews__Camera__FarMm": 500000,
+        "FloorPlanViews__Camera__FramingMarginMm": 2000,
+        "FloorPlanViews__Camera__DefaultZoom": 1.0,
+        "FloorPlanViews__Camera__MinZoom": 0.1,
+        "FloorPlanViews__Camera__MaxZoom": 20.0
+    },
+    "FloorPlanViews__Navigation__Config": {
+        "FloorPlanViews__Navigation__Description": "Pan and zoom only. Plan mode locks rotation entirely: dragging moves the camera across the world X/Z ground plane, and the wheel or pinch changes orthographic zoom.",
+        "FloorPlanViews__Navigation__ZoomStepFactor": 1.12,
+        "FloorPlanViews__Navigation__InvertWheel": false,
+        "FloorPlanViews__Navigation__PanButton": 0,
+        "FloorPlanViews__Navigation__EnableTouchPan": true,
+        "FloorPlanViews__Navigation__EnableTouchPinchZoom": true
+    },
+    "FloorPlanViews__Transition__Config": {
+        "FloorPlanViews__Transition__Description": "Camera transitions. Moving between two plans is an instant flip by design - the views are drawing pages, and animating between two top-down orthographic views reads as jarring rather than pleasant. Entering and leaving plan mode keeps the eased 3D camera move.",
+        "FloorPlanViews__Transition__IntoPlanMs": 1400,
+        "FloorPlanViews__Transition__OutOfPlanMs": 1400,
+        "FloorPlanViews__Transition__BetweenPlansMs": 0,
+        "FloorPlanViews__Transition__Easing": "easeInOutCubic",
+        "FloorPlanViews__Transition__AnnotationFadeMs": 220
+    },
+    "FloorPlanViews__SceneGroup__Config": {
+        "FloorPlanViews__SceneGroup__Description": "Where a newly created floor plan scene is filed. The system looks for an existing group by name first, then by id. If neither is present it falls back to the first enabled group, which is normally Exterior 3D Views. A matched group that is switched off is switched on automatically, because a plan filed into a hidden group would never appear in the carousel.",
+        "FloorPlanViews__SceneGroup__TargetGroupName": "Floor Plans",
+        "FloorPlanViews__SceneGroup__TargetGroupId": "Group_004",
+        "FloorPlanViews__SceneGroup__AutoEnableTargetGroup": true
+    },
+    "FloorPlanViews__StoreyLevels__Config": {
+        "FloorPlanViews__StoreyLevels__Description": "The building storeys a floor plan can be assigned to, in the ORDER the Dev menu dropdown offers them - the common ones first. A plan record stores a storey's Level__Key (FloorPlan__StoreyLevel) only once somebody has chosen one; until then the storey is an educated guess, worked out afresh every time it is asked for, so it follows the plan as its cut is moved. The guess reads the plan's NAME first - any Level__NameContains entry found as whole words, the longest match winning, so 'Lower Ground Floor' is a basement - and then the CUT HEIGHT against each storey's band: Level__CutFromMm is inclusive, Level__CutBelowMm is not, null is no limit, and a storey with neither is never guessed from a height. Level__TitleText is what a drawing title says for that storey: the Layout Editor's parametric title writes 'PROPOSED GROUND FLOOR PLAN' from it. The built-in fallback in Na__FloorPlan__StoreyLevel__.js mirrors this list exactly, and its test fails when the two differ.",
+        "FloorPlanViews__StoreyLevels__GuessFromName": true,
+        "FloorPlanViews__StoreyLevels__Levels": [
+            { "Level__Key": "ground",   "Level__Label": "Ground floor",   "Level__TitleText": "Ground Floor Plan", "Level__CutFromMm": -1000, "Level__CutBelowMm": 2800,  "Level__NameContains": [ "ground" ] },
+            { "Level__Key": "first",    "Level__Label": "First floor",    "Level__TitleText": "First Floor Plan",  "Level__CutFromMm": 2800,  "Level__CutBelowMm": 5000,  "Level__NameContains": [ "first" ] },
+            { "Level__Key": "second",   "Level__Label": "Second floor",   "Level__TitleText": "Second Floor Plan", "Level__CutFromMm": 5000,  "Level__CutBelowMm": 6800,  "Level__NameContains": [ "second" ] },
+            { "Level__Key": "roof",     "Level__Label": "Roof plan",      "Level__TitleText": "Roof Plan",         "Level__CutFromMm": 6800,  "Level__CutBelowMm": null,  "Level__NameContains": [ "roof" ] },
+            { "Level__Key": "basement", "Level__Label": "Basement level", "Level__TitleText": "Basement Plan",     "Level__CutFromMm": null,  "Level__CutBelowMm": -1000, "Level__NameContains": [ "basement", "cellar", "lower ground" ] }
+        ]
+    },
+    "FloorPlanViews__Labels__Config": {
+        "FloorPlanViews__Labels__Description": "User-facing wording for the Dev menu floor plan editor. Floor plan names themselves are per-project and authored here by the developer.",
+        "FloorPlanViews__Labels__SectionTitle": "Floor Plans",
+        "FloorPlanViews__Labels__AddPlanLabel": "+ Add Floor Plan",
+        "FloorPlanViews__Labels__SeedFromStoreysLabel": "Seed From Model Storeys",
+        "FloorPlanViews__Labels__NewPlanNameFormat": "Floor Plan {index}",
+        "FloorPlanViews__Labels__DatumFieldLabel": "Floor level",
+        "FloorPlanViews__Labels__CutOffsetFieldLabel": "Cut above floor",
+        "FloorPlanViews__Labels__ViewDepthFieldLabel": "View depth",
+        "FloorPlanViews__Labels__ViewDepthPlaceholder": "Full",
+        "FloorPlanViews__Labels__PreviewLabel": "Preview",
+        "FloorPlanViews__Labels__ExitPreviewLabel": "Exit Preview",
+        "FloorPlanViews__Labels__AnnotateLabel": "Annotate",
+        "FloorPlanViews__Labels__ThumbnailLabel": "Save Thumbnail",
+        "FloorPlanViews__Labels__BakeThumbnailsLabel": "Bake Missing Thumbnails",
+        "FloorPlanViews__Labels__DeletePlanPrompt": "Delete the floor plan \"{name}\"? Its scene and annotations go with it.",
+        "FloorPlanViews__Labels__SaveLabel": "Save Floor Plans",
+        "FloorPlanViews__Labels__SavedMessage": "Floor plans saved to R2.",
+        "FloorPlanViews__Labels__SaveFailedMessage": "Floor plan save failed - see console.",
+        "FloorPlanViews__Labels__NoModelMessage": "Load a model before adding floor plans.",
+        "FloorPlanViews__Labels__NoStoreysMessage": "No named storeys detected in this model.",
+        "FloorPlanViews__Labels__StoreyFieldLabel": "Storey",
+        "FloorPlanViews__Labels__StoreyFieldHint": "Which building storey this is a plan of. A drawing title tied to this plan on a sheet reads it: PROPOSED GROUND FLOOR PLAN.",
+        "FloorPlanViews__Labels__StoreyGuessedFromHeight": "Guessed from the cut height ({cut} mm). Choose one to fix it.",
+        "FloorPlanViews__Labels__StoreyGuessedFromName": "Guessed from the plan's name. Choose one to fix it.",
+        "FloorPlanViews__Labels__StoreyConfirmLabel": "Confirm",
+        "FloorPlanViews__Labels__StoreyConfirmHint": "Keep this storey, wherever the cut is moved to.",
+        "FloorPlanViews__Labels__GroundFloorPlanLabel": "+ Add Ground Floor Plan",
+        "FloorPlanViews__Labels__GroundFloorPlanName": "Ground Floor Plan",
+        "FloorPlanViews__Labels__StylesTitle": "Styles",
+        "FloorPlanViews__Labels__StyleProjectedLineworkLabel": "Projected Linework",
+        "FloorPlanViews__Labels__StyleProfileLineworkLabel": "Profile Linework Effect",
+        "FloorPlanViews__Labels__StyleGlassOpaqueLabel": "Glass Transparency Off",
+        "FloorPlanViews__Labels__StyleWhitecardLabel": "Whitecard",
+        "FloorPlanViews__Labels__ExclusionsFieldLabel": "Exclude",
+        "FloorPlanViews__Labels__ExclusionsPlaceholder": "Default list"
+    }
+}

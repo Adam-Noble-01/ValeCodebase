@@ -1,0 +1,30 @@
+﻿OK    control: every file the candidate                              caught=False (log identical; contract pass/skip)
+OK    SnapshotRenderer new, every caller old (callers not moved)     caught=True  (log differs; contract FAILED)
+        DIFFERENT at event 35 of 288 / 315 (before vs candidate + Na__LayoutEditor__Viewport2d__Window__.js=before,Na__LayoutEditor__Viewport2d__Frame__.js=before,Na__LayoutEditor__Viewport2d__Linework__.js=before,Na__LayoutEdit
+        FAIL  C1 Viewport_001: described.modelSource.renderId reads null (no TypeError)  -> "TypeError: Cannot read properties of undefined (reading 'renderId')"
+        FAIL  C1 Viewport_001: modelSource has Resolve's shape exactly
+        FAIL  C1 Viewport_001: a new object each call; source, definition and window unchanged in shape  -> ["source","definition","window"]
+OK    SnapshotRenderer old, every caller new                         caught=True  (log differs; contract pass/skip)
+        DIFFERENT at event 35 of 288 / 315 (before vs candidate + Na__LayoutEditor__SnapshotRenderer__.js=before)
+OK    Viewport3d old (view window and stillWanted one slot early)    caught=True  (log differs; contract pass/skip)
+        DIFFERENT at event 35 of 288 / 298 (before vs candidate + Na__LayoutEditor__Viewport3d__.js=before)
+OK    Frame old (stillWanted in the design phase slot)               caught=True  (log differs; contract pass/skip)
+        DIFFERENT at event 99 of 288 / 305 (before vs candidate + Na__LayoutEditor__Viewport2d__Frame__.js=before)
+OK    Window old (Describe without modelSource)                      caught=True  (log differs; contract FAILED)
+        DIFFERENT at event 0 of 288 / 58 (before vs candidate + Na__LayoutEditor__Viewport2d__Window__.js=before)
+        FAIL  C1 Viewport_001: described.modelSource.renderId reads null (no TypeError)  -> "TypeError: Cannot read properties of undefined (reading 'renderId')"
+        FAIL  C1 Viewport_001: modelSource has Resolve's shape exactly
+        FAIL  C1 Viewport_001: a new object each call; source, definition and window unchanged in shape  -> ["source","definition","window"]
+OK    planted: depth fog guard removed                               caught=True  (log identical; contract FAILED)
+        FAIL  C3 Render2d: a depth fog source (eleventh slot) answers null, renders nothing and queues nothing  -> {"result":{"dataUrl":"data:image/png;w=400;h=300","widthPx":400,"heightPx":300},"renders":1}
+OK    planted: Describe modelSource null                             caught=True  (log differs; contract FAILED)
+        DIFFERENT at event 0 of 288 / 58 (before vs candidate + Na__LayoutEditor__Viewport2d__Window__.js=mutants/nullsource)
+        FAIL  C1 Viewport_001: described.modelSource.renderId reads null (no TypeError)  -> "TypeError: Cannot read properties of null (reading 'renderId')"
+        FAIL  C1 Viewport_001: modelSource has Resolve's shape exactly  -> null
+        FAIL  C1 Viewport_001: a new object each call; source, definition and window unchanged in shape  -> ["source","definition","window","modelSource"]
+OK    planted: Viewport3d passes stillWanted before the window       caught=True  (log differs; contract pass/skip)
+        DIFFERENT at event 35 of 288 / 298 (before vs candidate + Na__LayoutEditor__Viewport3d__.js=mutants/swapped3d)
+OK    planted: Frame passes stillWanted ninth again                  caught=True  (log differs; contract pass/skip)
+        DIFFERENT at event 99 of 288 / 305 (before vs candidate + Na__LayoutEditor__Viewport2d__Frame__.js=mutants/stillninth)
+
+10/10 cases as expected (control matches; every mutant caught)

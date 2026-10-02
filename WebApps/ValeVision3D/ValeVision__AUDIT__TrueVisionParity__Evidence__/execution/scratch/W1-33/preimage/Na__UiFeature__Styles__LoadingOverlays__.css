@@ -1,0 +1,344 @@
+/* =============================================================================
+ * VALEVISION3D - LOADING OVERLAY COMPONENT
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__LoadingOverlays__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Loading Overlay Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Loading screen overlay with Vale branded spinner animation
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Full-screen loading overlay that covers the canvas during initialization
+ * - Vale blue (#172b3a) spinning circle animation
+ * - Smooth fade-out animation when loading completes
+ * - High z-index to ensure visibility above all other elements
+ *
+ * =============================================================================
+ */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Loading Overlay Container
+ * ----------------------------------------------------------------------------- */
+
+    /* LOADING OVERLAY | Full-screen container */
+    /* ------------------------------------------------------------ */
+    .loading-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning over entire viewport */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        width                              : 100vw;                        /* <-- Full viewport width */
+        height                             : 100vh;                        /* <-- Full viewport height */
+        background-color                   : #ffffff;                      /* <-- White background matching scene */
+        display                            : flex;                         /* <-- Flexbox for centering */
+        flex-direction                     : column;                       /* <-- Stack vertically */
+        justify-content                    : center;                       /* <-- Center vertically */
+        align-items                        : center;                       /* <-- Center horizontally */
+        z-index                            : 9999;                         /* <-- Above all other elements */
+        opacity                            : 1;                            /* <-- Initially visible */
+        transition                         : opacity 0.5s ease-out;        /* <-- Smooth fade-out */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOADING OVERLAY HIDDEN STATE | Fade-out state */
+    /* ------------------------------------------------------------ */
+    .loading-overlay.hidden {
+        opacity                            : 0;                            /* <-- Transparent */
+        pointer-events                     : none;                         /* <-- Disable interaction */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Spinner Animation
+ * ----------------------------------------------------------------------------- */
+
+    /* SPINNER CONTAINER | Wrapper for spinner elements */
+    /* ------------------------------------------------------------ */
+    .loading-spinner {
+        width                              : 80px;                         /* <-- Spinner size */
+        height                             : 80px;                         /* <-- Spinner size */
+        position                           : relative;                     /* <-- Relative for absolute children */
+        margin-bottom                      : 24px;                         /* <-- Space below spinner */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* SPINNER CIRCLE | Animated spinning circle */
+    /* ------------------------------------------------------------ */
+    .loading-spinner::before {
+        content                            : '';                           /* <-- Required for pseudo-element */
+        display                            : block;                        /* <-- Block element */
+        width                              : 80px;                         /* <-- Circle size */
+        height                             : 80px;                         /* <-- Circle size */
+        border-radius                      : 50%;                          /* <-- Circular shape */
+        border                             : 6px solid #e0e0e0;            /* <-- Light gray background ring */
+        border-top-color                   : #172b3a;                      /* <-- Vale blue active segment */
+        animation                          : spinner-rotate 1s linear infinite;  /* <-- Continuous rotation */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* SPINNER ROTATION ANIMATION | Keyframes for spinning effect */
+    /* ------------------------------------------------------------ */
+    @keyframes spinner-rotate {
+        0% {
+            transform                      : rotate(0deg);                 /* <-- Start position */
+        }
+        100% {
+            transform                      : rotate(360deg);               /* <-- Full rotation */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Loading Text
+ * ----------------------------------------------------------------------------- */
+
+    /* LOADING TEXT | Status message below spinner */
+    /* ------------------------------------------------------------ */
+    .loading-text {
+        font-family                        : 'Open Sans', sans-serif;      /* <-- Vale standard font */
+        font-size                          : 16px;                         /* <-- Readable size */
+        font-weight                        : 400;                          /* <-- Regular weight */
+        color                              : #172b3a;                      /* <-- Vale blue text */
+        letter-spacing                     : 0.5px;                        /* <-- Slight letter spacing */
+        text-align                         : center;                       /* <-- Center text */
+        margin-top                         : 0;                            /* <-- Remove default margin */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Load Error State
+ * ----------------------------------------------------------------------------- */
+
+    /* LOAD ERROR CONTAINER | Replaces spinner when a fatal load error occurs */
+    /* ------------------------------------------------------------ */
+    .loading-overlay--error .loading-spinner {
+        display                            : none;                          /* <-- Hide spinner on error */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR ICON | Warning symbol */
+    /* ------------------------------------------------------------ */
+    .loading-error-icon {
+        font-size                          : 48px;                          /* <-- Large icon */
+        line-height                        : 1;                             /* <-- Tight leading */
+        margin-bottom                      : 20px;                          /* <-- Space below icon */
+        color                              : #b71c1c;                       /* <-- Dark red */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR MESSAGE | Descriptive error text */
+    /* ------------------------------------------------------------ */
+    .loading-error-message {
+        font-family                        : 'Open Sans', sans-serif;       /* <-- Vale standard font */
+        font-size                          : 15px;                          /* <-- Readable size */
+        font-weight                        : 400;                           /* <-- Regular weight */
+        color                              : #b71c1c;                       /* <-- Dark red */
+        text-align                         : center;                        /* <-- Center text */
+        max-width                          : 360px;                         /* <-- Prevent over-wide lines */
+        margin-bottom                      : 28px;                          /* <-- Space before button */
+        line-height                        : 1.5;                           /* <-- Comfortable reading */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR RETRY BUTTON | Reload page action */
+    /* ------------------------------------------------------------ */
+    .loading-error-retry-btn {
+        font-family                        : 'Open Sans', sans-serif;       /* <-- Vale standard font */
+        font-size                          : 14px;                          /* <-- Readable size */
+        font-weight                        : 600;                           /* <-- Semi-bold label */
+        color                              : #ffffff;                       /* <-- White label */
+        background-color                   : #172b3a;                       /* <-- Vale blue */
+        border                             : none;                          /* <-- No border */
+        border-radius                      : 4px;                           /* <-- Slightly rounded */
+        padding                            : 10px 28px;                     /* <-- Comfortable touch target */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        letter-spacing                     : 0.5px;                         /* <-- Slight tracking */
+        transition                         : background-color 0.2s ease;    /* <-- Hover transition */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR RETRY BUTTON HOVER STATE */
+    /* ------------------------------------------------------------ */
+    .loading-error-retry-btn:hover {
+        background-color                   : #243d50;                       /* <-- Slightly lighter Vale blue */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Layout View Loading Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT LOADING OVERLAY | Full-screen container (hidden by default) */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning over entire viewport */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        width                              : 100vw;                        /* <-- Full viewport width */
+        height                             : 100vh;                        /* <-- Full viewport height */
+        background-color                   : rgba(255, 255, 255, 0.92);    /* <-- Semi-transparent white */
+        display                            : none;                         /* <-- Hidden by default */
+        flex-direction                     : column;                       /* <-- Stack vertically */
+        justify-content                    : center;                       /* <-- Center vertically */
+        align-items                        : center;                       /* <-- Center horizontally */
+        z-index                            : 10000;                        /* <-- Above all other elements */
+        opacity                            : 0;                            /* <-- Start transparent for fade-in */
+        transition                         : opacity 0.35s ease-out;       /* <-- Smooth fade transition */
+        backdrop-filter                    : blur(4px);                    /* <-- Subtle blur behind overlay */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING OVERLAY VISIBLE STATE | Shown during layout export */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay--visible {
+        display                            : flex;                         /* <-- Enable flexbox layout */
+        opacity                            : 1;                            /* <-- Fully visible */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING OVERLAY OPAQUE STATE | Fully hide the working canvas */
+    /* ------------------------------------------------------------ */
+    /* A video export resizes the live renderer and paints hundreds of frames  */
+    /* through it. The default 92% white lets that flicker through, so video   */
+    /* renders opt into a solid backdrop with no blur.                         */
+    .na-layout-loading-overlay--opaque {
+        background-color                   : rgba(255, 255, 255, 1);       /* <-- Solid: nothing shows through */
+        backdrop-filter                    : none;                         /* <-- No need to blur what is hidden */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING OVERLAY FADE-OUT STATE | Dismissing overlay */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay--fade-out {
+        opacity                            : 0;                            /* <-- Fade to transparent */
+        pointer-events                     : none;                         /* <-- Disable interaction during fade */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING STATUS TEXT | Progress message below spinner */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay__status {
+        font-family                        : 'Open Sans', sans-serif;      /* <-- Vale standard font */
+        font-size                          : 16px;                         /* <-- Readable size */
+        font-weight                        : 400;                          /* <-- Regular weight */
+        color                              : #172b3a;                      /* <-- Vale blue text */
+        letter-spacing                     : 0.5px;                        /* <-- Slight letter spacing */
+        text-align                         : center;                       /* <-- Center text */
+        margin-top                         : 0;                            /* <-- Remove default margin */
+        transition                         : color 0.3s ease;              /* <-- Smooth color change on success */
+        white-space                        : pre-line;                     /* <-- A newline in the message becomes a second line */
+        line-height                        : 1.5;                          /* <-- Breathing room between step and detail */
+        max-width                          : 80vw;                         /* <-- Long filenames wrap rather than overflow */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING SUCCESS STATE | Green text on completion */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay__status--success {
+        color                              : #2a7d4f;                      /* <-- Green success color */
+        font-weight                        : 600;                          /* <-- Bold for emphasis */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING ERROR STATE | Red text on export failure */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay__status--error {
+        color                              : #b2372f;                      /* <-- Red error color */
+        font-weight                        : 600;                          /* <-- Bold for emphasis */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Layout Editor Return-to-Model Veil
+ * -----------------------------------------------------------------------------
+ * The veil over the way back from the drawings to the 3D model.
+ * Na__LayoutEditor__LoadingVeil__.js owns when it appears; this owns what it
+ * looks like. The way IN needs no veil of its own here - Na__LeLoadScreen
+ * already covers it, because ValeVision loads its editor lazily.
+ *
+ * ITS z-index IS THE POINT: 500 sits above the canvas and the editor host but
+ * BELOW the tab strip (999) and the header (1001), so the top bar unfolding is
+ * still watched over the top of it rather than hidden by the thing that is
+ * waiting for the camera.
+ *
+ * TWO CLASSES, NOT ONE. --visible switches display on, --shown fades opacity
+ * in. A single class cannot do both: display and opacity changing in the same
+ * frame skips the transition entirely, so the module commits the first, reads
+ * back a layout, then adds the second.
+ *
+ * It lives in this stylesheet, not the editor's lazily linked ones, because it
+ * is shown on the way OUT of the editor and must not depend on a sheet that is
+ * only linked once the editor has loaded.
+ * ----------------------------------------------------------------------------- */
+
+    /* VEIL | The Cover */
+    /* ------------------------------------------------------------ */
+    .na-le-veil {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : none;                         /* <-- Built lazily and still not shown until it is earned */
+        flex-direction                     : column;
+        justify-content                    : center;
+        align-items                        : center;
+        gap                                : 4px;
+        background-color                   : rgba(255, 255, 255, 0.94);
+        backdrop-filter                    : blur(3px);
+        z-index                            : 500;                          /* <-- Above the canvas, below the tabs (999) and the header (1001) */
+        opacity                            : 0;
+        transition                         : opacity 320ms ease-out;       /* <-- FADE_MS in the module matches this */
+    }
+
+    .na-le-veil--visible {
+        display                            : flex;
+    }
+
+    .na-le-veil--shown {
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* VEIL | The Words Under the Spinner */
+    /* ------------------------------------------------------------ */
+    .na-le-veil__text {
+        margin                             : 0;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 17px;
+        font-weight                        : 600;
+        color                              : #172b3a;
+        letter-spacing                     : 0.3px;
+        text-align                         : center;
+    }
+
+    /* The second line names the job actually being waited on, so the veil can */
+    /* be believed. It is empty until there is something true to put in it.    */
+    .na-le-veil__status {
+        margin                             : 0;
+        min-height                         : 1.2em;                        /* <-- Reserved, so the headline does not hop when the line changes */
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 13px;
+        font-weight                        : 400;
+        color                              : rgba(23, 43, 58, 0.62);
+        letter-spacing                     : 0.2px;
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

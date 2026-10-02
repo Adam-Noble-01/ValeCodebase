@@ -47,23 +47,44 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__StageSampler__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : adapted
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__StageSampler__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0 (13-Sep-2026) took TrueVision's owner table);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.98.0, 21-Sep-2026; read at b2aa9151) - the module log dates
+//                   1.2.0 20-Sep-2026; it shipped in the commits of v2.95.0 and v2.98.0 and no TrueVision
+//                   devlog entry names it. Its 1.1.0 is TrueVision3D v2.42.0 (posed door panels).
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim
 // - Divergences   :
-//   - Samples the live model root rather than a staged group; helper flags and names skipped; InstancedMesh expanded.
-//   - Exclusion tokens (D19); transparent materials as the non-occluding class instead of a Glazing element type.
-//   - Triangles clipped against the drawing cut plane and back plane; the section outline collected from the crossings.
-// - Back-port     : InstancedMesh expansion.
+//   - Banner reads ValeVision3D. (No console output in this file.)
+//   - The name-matching comment's example category reads ValeVision__MainBuildingModel__Existing
+//     (TrueVision__ in TrueVision): a runtime category key carries the app's token (K2 K3).
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
-// - BuildOwnerTable gives each collected instance's model category an id, and
-//   the section outline carries the category of the triangles it was cut from
-//   (SectionOwners, SectionOwnersLight). Ported from TrueVision3D (Edge Styles).
+// 20-Sep-2026 - Version 1.2.0
+// - Nested LineworkModifier tags (SSOT 76-79). A mesh whose own node name names
+//   one of them is collected under that tag's owner key instead of its parent
+//   category's, so a detail nested inside a Walls or Roofs group draws at its
+//   own weight while staying in its host's GLB, storey and toggle.
+// - The match is a PREFIX, not a split on '::'. The GlbBuilder writes the node
+//   name '<TagName>::<MaterialName>', and the first cut of this read the tag
+//   back with split('::')[0] - which never matched anything, because three.js
+//   runs node names through PropertyBinding.sanitizeNodeName on load and that
+//   strips [ ] . : / . Every modifier mesh silently inherited its parent's
+//   style, which read as the feature simply not working.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Posed door panels. Collect takes rules.posedMods, the door panels the
+//   Layout Editor has stood open for a plan read. A mesh below one keeps a COPY
+//   of its world matrix, because the doors are put back the moment the read
+//   ends and a reference would swing them shut again under the cached
+//   collection. The result names the posed panels it took meshes from
+//   (PosedModsDrawn), so a door left out of the drawing draws no swing.
+//   Without posedMods nothing changes.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -89,7 +110,8 @@
     } from './Na__ProjectedLinework__SoupBuilder__.js';
     import {
         Na__PlCfg__GetSkipObjectNames,
-        Na__PlCfg__GetModelSetup
+        Na__PlCfg__GetModelSetup,
+        Na__PlCfg__GetLineworkModifiers
     } from './Na__ProjectedLinework__ConfigAccess__.js';
     // ------------------------------------------------------------
 
@@ -136,9 +158,9 @@
     // name has to match it. Substrings are right for the tokens a drawing record
     // carries, which are written by hand and meant loosely ("furniture"). They
     // are wrong for anything naming a model category in full, because the
-    // category names nest: "ValeVision__MainBuildingModel__Proposed" is a
-    // substring of "ValeVision__MainBuildingModel__ProposedDoors", and a viewport
-    // asking to hide the proposal would lose its doors as well. The Layout
+    // category names nest: "ValeVision__MainBuildingModel__Existing" is a
+    // substring of nine longer keys, and a viewport asking to hide the existing
+    // building would lose its walls, roofs and windows as well. The Layout
     // Editor's Model Layers panel emits '=' tokens for that reason.
     function Na__PlSampler__NameMatches(name, tokens) {
         if (!name || !tokens || tokens.length === 0) return false;
@@ -186,6 +208,45 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Nested LineworkModifier Owner for One Mesh, or Null
+    // ------------------------------------------------------------
+    // A LineworkModifier tag (SSOT 76-79) nested inside a category group never
+    // gets its own THREE.Group - the GlbBuilder writes its geometry into the
+    // SAME GLB as its parent, under a glTF node name of its own
+    // ('OwnTagName::MaterialName'). So the override is read off the mesh's OWN
+    // name, not the category carried down the stack: a match here says "style
+    // this mesh's edges as the modifier, not as the wall it lives inside" -
+    // nothing else about the mesh (its visibility, storey or toggle) changes,
+    // because those all still follow entry.category, untouched.
+    // ------------------------------------------------------------
+    function Na__PlSampler__ModifierOwnerFor(object3d, modifiers) {
+        if (!modifiers || modifiers.length === 0) return null;
+        const name = object3d && object3d.name;
+        if (typeof name !== 'string' || name.length === 0) return null;
+
+        // THE '::' DOES NOT SURVIVE THE LOADER. The GlbBuilder names a mesh node
+        // '<TagName>::<MaterialName>', but three.js puts every node name through
+        // PropertyBinding.sanitizeNodeName, which strips [ ] . : / - so what
+        // arrives here is '<TagName><MaterialName>', run together with nothing
+        // between them ('...__Walls::Default' loads as '...__WallsDefault').
+        // Splitting on '::' therefore matched nothing and every modifier mesh
+        // silently inherited its parent category's style. The tag name is still
+        // the LEADING run of the name, so that is what is matched, longest-first
+        // so a tag that happens to prefix another cannot win on list order.
+        const ownTag = name.split('::')[0];
+        let   best   = null;
+        for (let i = 0; i < modifiers.length; i++) {
+            const tagName = modifiers[i].TagName;
+            if (typeof tagName !== 'string' || tagName.length === 0) continue;
+            if (ownTag === tagName || name.indexOf(tagName) === 0) {
+                if (!best || tagName.length > best.TagName.length) best = modifiers[i];
+            }
+        }
+        return best ? best.OwnerKey : null;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Record One Instance of a Geometry
     // ------------------------------------------------------------
     function Na__PlSampler__PushInstance(list, mesh, matrixWorld, categoryName, rules) {
@@ -223,8 +284,8 @@
 
     // FUNCTION | Gather Every Instance the Drawing Should See
     // ------------------------------------------------------------
-    // rules: { excludeTokens, glassOpaque }
-    // Returns { Instances, Categories, SkippedCategories }. Walks the tree by
+    // rules: { excludeTokens, glassOpaque, posedMods }
+    // Returns { Instances, Categories, SkippedCategories, PosedModsDrawn }. Walks the tree by
     // hand rather than with traverse so a hidden subtree is skipped whole.
     // ------------------------------------------------------------
     function Na__PlSampler__Collect(modelRoot, rules) {
@@ -233,7 +294,8 @@
         const skipped   = [];
         if (!modelRoot) return { Instances : instances, Categories : seen, SkippedCategories : skipped };
 
-        const setup = Na__PlCfg__GetModelSetup();
+        const setup     = Na__PlCfg__GetModelSetup();
+        const modifiers = Na__PlCfg__GetLineworkModifiers();               // <-- Nested LineworkModifier tags (SSOT 76-79), checked per mesh below
         const walk  = {
             excludeTokens           : rules.excludeTokens || [],
             glassOpaque             : rules.glassOpaque === true,
@@ -241,6 +303,12 @@
             transparentOpacityBelow : setup.transparentOpacityBelow,
             skipNames               : Na__PlCfg__GetSkipObjectNames()
         };
+        // POSED DOOR PANELS | The Layout Editor stands doors open for a plan and
+        // puts them back as soon as this read ends, so every mesh below a posed
+        // panel keeps a COPY of its matrix: a reference would swing the door shut
+        // again under the cached collection.
+        const posedMods = (rules.posedMods instanceof Set && rules.posedMods.size > 0) ? rules.posedMods : null;
+        const drawnMods = posedMods ? new Set() : null;
 
         modelRoot.updateMatrixWorld(true);
 
@@ -251,7 +319,7 @@
             const name = category.name || '';
             if (Na__PlSampler__NameMatches(name, walk.excludeTokens)) { skipped.push(name); continue; }   // <-- D19: the drawing leaves this category out
             seen.push(name);
-            stack.push({ object : category, category : name });
+            stack.push({ object : category, category : name, posedMod : null });
         }
 
         while (stack.length > 0) {
@@ -259,27 +327,30 @@
             const object3d = entry.object;
             if (object3d.visible === false) continue;
             if (Na__PlSampler__IsHelper(object3d, walk.skipNames)) continue;
+            const posedMod = (posedMods && posedMods.has(object3d)) ? object3d : entry.posedMod;
 
             if (object3d.isMesh === true && object3d.geometry && object3d.geometry.attributes &&
                 object3d.geometry.attributes.position && object3d.geometry.attributes.position.count >= 3) {
 
+                const styleOwner = Na__PlSampler__ModifierOwnerFor(object3d, modifiers) || entry.category;   // <-- A nested modifier tag styles differently; it still lives in entry.category's GLB
                 if (object3d.isInstancedMesh === true) {
                     const count = object3d.count || 0;
                     for (let k = 0; k < count; k++) {
                         object3d.getMatrixAt(k, Na__PlSampler__InstanceMatrix);
                         const world = new THREE.Matrix4().multiplyMatrices(object3d.matrixWorld, Na__PlSampler__InstanceMatrix);
-                        Na__PlSampler__PushInstance(instances, object3d, world, entry.category, walk);
+                        Na__PlSampler__PushInstance(instances, object3d, world, styleOwner, walk);
                     }
                 } else {
-                    Na__PlSampler__PushInstance(instances, object3d, object3d.matrixWorld, entry.category, walk);
+                    Na__PlSampler__PushInstance(instances, object3d, posedMod ? object3d.matrixWorld.clone() : object3d.matrixWorld, styleOwner, walk);
                 }
+                if (posedMod) drawnMods.add(posedMod);
             }
 
             const children = object3d.children;
-            for (let c = 0; c < children.length; c++) stack.push({ object : children[c], category : entry.category });
+            for (let c = 0; c < children.length; c++) stack.push({ object : children[c], category : entry.category, posedMod : posedMod || null });
         }
 
-        return { Instances : instances, Categories : seen, SkippedCategories : skipped };
+        return { Instances : instances, Categories : seen, SkippedCategories : skipped, PosedModsDrawn : drawnMods };
     }
     // ------------------------------------------------------------
 
@@ -528,7 +599,8 @@
         Na__PlSampler__Collect,
         Na__PlSampler__Sample,
         Na__PlSampler__CountTriangles,
-        Na__PlSampler__NameMatches
+        Na__PlSampler__NameMatches,
+        Na__PlSampler__ModifierOwnerFor
     };
     // ------------------------------------------------------------
 

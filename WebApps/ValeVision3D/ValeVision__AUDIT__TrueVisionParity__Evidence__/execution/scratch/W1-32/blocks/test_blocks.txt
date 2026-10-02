@@ -1,0 +1,344 @@
+@@@@ tst_01_banner OLD
+// TRUEVISION3D - TEST - THE DOCUMENT KEYS AND THE KEY SCOPE
+@@@@ tst_01_banner NEW
+// VALEVISION3D - TEST - THE DOCUMENT KEYS AND THE KEY SCOPE
+@@@@ tst_02_desc3d OLD
+// - THE 3D HOTKEYS (Na__Hotkeys__Manager): R resets the view on the 3D Model
+//   tab and nowhere else, and never while anything editable has the focus -
+//   the statement page, or a plan annotation label on the 3D tab itself.
+@@@@ tst_02_desc3d NEW
+// - THE 3D HOTKEYS (Na__AppUtils__ValeVision__HotkeyHandler__): R resets the
+//   view on the 3D Model tab and nowhere else, and never while anything
+//   editable has the focus - the statement page, or a plan annotation label
+//   on the 3D tab itself.
+@@@@ tst_03_portnote OLD
+//   Exit 0 = every check passed. Exit 1 = at least one did not.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+@@@@ tst_03_portnote NEW
+//   Exit 0 = every check passed. Exit 1 = at least one did not.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs
+// - Source version: 1.0.0 (TrueVision3D v2.110.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-32}}, with the mode controller's wiring
+//                   of the key scope and the documents' keyboard
+// - Parity        : adapted - TrueVision's 44 checks, its 3D section run against this app's own handler
+// - Divergences   :
+//   - Banner and the printed title read ValeVision3D.
+//   - The 3D section loads 03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, this app's own
+//     handler (DR-33), where TrueVision loads 10__NavigationAndCameras/Na__Hotkeys__Manager.js. Its
+//     Initialize takes the callbacks and fetches its dictionary itself, so fetch answers from the
+//     tree under test and the listener is looked for once the read has settled; the callbacks carry
+//     ValeVision__ action names.
+//   - ValeVision checks follow TrueVision's, each marked VV: the rest of the 3D keys and the
+//     dictionary's documentation rows; the mode controller's hand-over of its reader, read out of the
+//     shipped file; and the documents' keyboard on the real files under that reader.
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+@@@@ tst_04_fsimport OLD
+import { readFileSync, writeFileSync } from 'node:fs';
+@@@@ tst_04_fsimport NEW
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+@@@@ tst_05_diskfetch OLD
+    const SRC        = resolve(SCRIPT_DIR, '..', '02__Src__AppModules');
+@@@@ tst_05_diskfetch NEW
+    const SRC        = resolve(SCRIPT_DIR, '..', '02__Src__AppModules');
+
+    // VV: THE 3D HANDLER READS ITS OWN DICTIONARY. This app's handler is not
+    // handed its key file, as TrueVision's Manager is: Initialize fetches it by
+    // a page-relative path. fetch answers from the tree under test until the
+    // documents' section puts its own in, and settle() lets the read finish
+    // before the listener is looked for.
+    const diskFetch = async (input) => {
+        const request = String(input);
+        const at      = request.indexOf('02__Src__AppModules/');
+        const file    = at === -1 ? null : resolve(SRC, request.slice(at + '02__Src__AppModules/'.length).split('?')[0]);
+        let text = null;
+        try { text = file ? readFileSync(file, 'utf8') : null; } catch (error) { text = null; }
+        return text === null ? { ok : false, status : 404, json : async () => { throw new Error('404'); } }
+                             : { ok : true,  status : 200, json : async () => JSON.parse(text) };
+    };
+    globalThis.fetch = diskFetch;
+    const settle = () => new Promise((done) => setTimeout(done, 50));
+@@@@ tst_06_hotkeysload OLD
+    const Hotkeys = await load('10__NavigationAndCameras/Na__Hotkeys__Manager.js', 'Hotkeys');
+@@@@ tst_06_hotkeysload NEW
+    const Hotkeys = await load('03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js', 'Hotkeys');   // <-- VV: this app's own 3D handler (DR-33)
+@@@@ tst_07_title OLD
+    console.log('TrueVision3D - the documents\' keyboard and the key scope');
+@@@@ tst_07_title NEW
+    console.log('ValeVision3D - the documents\' keyboard and the key scope');
+@@@@ tst_08_init3d OLD
+    const ran = [];
+    Hotkeys.Na__Hotkeys__Initialize(
+        { TrueVision__NavMode__ResetView : () => ran.push('reset'), TrueVision__NavMode__SetWalkMode : () => ran.push('walk'), TrueVision__PresentationMode__GoToScene1 : () => ran.push('scene1') },
+        JSON.parse(readFileSync(resolve(SRC, '02__AppData/Na__Hotkeys__3dModelTab__.json'), 'utf8'))
+    );
+    const hotkeyListener = listeners.find((entry) => entry.type === 'keydown' && !entry.capture);
+@@@@ tst_08_init3d NEW
+    const ran = [];
+    Hotkeys.Na__ValeVision__HotkeyHandler__Initialize(                         // <-- VV: handed the callbacks only; it reads 02__AppData/Na__Hotkeys__3dModelTab__.json itself
+        { ValeVision__NavMode__ResetView : () => ran.push('reset'), ValeVision__NavMode__SetWalkMode : () => ran.push('walk'), ValeVision__PresentationMode__GoToScene1 : () => ran.push('scene1') }
+    );
+    await settle();                                                            // <-- VV: the listener goes on once the dictionary has been read
+    const hotkeyListener = listeners.find((entry) => entry.type === 'keydown' && !entry.capture);
+    if (!hotkeyListener) { console.log('  FAIL  VV: the 3D handler never listened - its dictionary could not be read'); process.exit(1); }
+@@@@ tst_09_vvchecks OLD
+    check('Q with the focus on a button is the binding', pressQ(BUTTON), [ [ 'q' ], true ]);
+
+// endregion -------------------------------------------------------------------
+@@@@ tst_09_vvchecks NEW
+    check('Q with the focus on a button is the binding', pressQ(BUTTON), [ [ 'q' ], true ]);
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | ValeVision Checks (VV)
+// -----------------------------------------------------------------------------
+//
+// Three blocks this app adds after TrueVision's checks, each check marked VV:
+//   1. the rest of its 3D keys, the dictionary's documentation rows, and a
+//      page whose editor has not loaded - this app's own handler (DR-33);
+//   2. the mode controller's hand-over: its imports, the reader it gives the
+//      key scope - read out of the shipped file and run on every view - and
+//      the documents' keyboard it waits on and starts;
+//   3. the documents' keyboard on the real files - the module at its path,
+//      this app's KeyScope, the shipped key map - under that reader.
+// -----------------------------------------------------------------------------
+
+    const VV_HANDLER = '03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js';
+    const VV_SCOPE   = '03__AppUtils/Na__AppUtils__KeyScope__.js';
+    const VV_DOCKEYS = '51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js';
+    const VV_KEYMAP  = '51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json';
+    const VV_MODE    = '51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js';
+    const BUILT_IN   = [ 'Doc__Save', 'Doc__ToggleSource', 'Doc__ToggleMono' ];
+    globalThis.fetch = diskFetch;                                               // <-- TrueVision's last section put its own in
+
+    // HELPER | A function's whole text, braces matched, out of a module's code
+    function FunctionText(code, name) {
+        const at = code.indexOf('function ' + name + '(');
+        if (at === -1) return null;
+        let depth = 0;
+        for (let index = code.indexOf('{', at); index !== -1 && index < code.length; index++) {
+            if (code[index] === '{') depth++;
+            else if (code[index] === '}') { depth--; if (depth === 0) return code.slice(at, index + 1); }
+        }
+        return null;
+    }
+
+    // VV 1 | THE REST OF THE 3D KEYS, THE DOCUMENTATION ROWS, AND A PAGE BEFORE THE EDITOR LOADS
+    // ------------------------------------------------------------
+    console.log('\n  VV: the rest of the 3D keys, the documentation rows, and a page before the editor loads');
+    check('VV: T on the 3D Model tab enters Walk and takes the key', press3d('model', BODY, 't'), [ [ 'walk' ], true ]);
+    const allKeys = {
+        ValeVision__NavMode__ResetView                 : () => ran.push('reset'),
+        ValeVision__NavMode__SetOrbitMode              : () => ran.push('orbit'),
+        ValeVision__NavMode__SetWalkMode               : () => ran.push('walk'),
+        ValeVision__NavMode__SetFlyMode                : () => ran.push('fly'),
+        ValeVision__PresentationMode__ToggleViewsPanel : () => ran.push('carousel'),
+        ValeVision__PresentationMode__NextScene        : () => ran.push('next'),
+        ValeVision__PresentationMode__PrevScene        : () => ran.push('previous')
+    };
+    for (let index = 1; index <= 9; index++) allKeys['ValeVision__PresentationMode__GoToScene' + index] = () => ran.push('scene' + index);
+    const AllHotkeys = await load(VV_HANDLER, 'HotkeysAll');
+    const beforeAll  = listeners.length;
+    AllHotkeys.Na__ValeVision__HotkeyHandler__Initialize(allKeys);
+    await settle();
+    const allListener = listeners.slice(beforeAll).find((entry) => entry.type === 'keydown' && !entry.capture);
+    check('VV: a handler given every 3D action reads its dictionary and listens', !!allListener, true);
+    const pressAll = (scope, focus, name) => {
+        liveScope = scope;
+        document.activeElement = focus;
+        ran.length = 0;
+        const event = key(name, { target : focus });
+        if (allListener) allListener.fn(event);
+        return [ ran.slice(), event.prevented ];
+    };
+    check('VV: B, Y and V on the 3D Model tab still answer',
+        [ 'b', 'y', 'v' ].map((name) => pressAll('model', BODY, name)), [ [ [ 'orbit' ], true ], [ [ 'fly' ], true ], [ [ 'carousel' ], true ] ]);
+    const VIEW_KEYS = [ 't', 'r', 'v', 'b', 'y', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'PageUp', 'PageDown' ];
+    check('VV: T, R, V, B, Y, 1-9, Page Up and Page Down on a drawing tab leave the hidden camera, Walk and the carousel alone',
+        VIEW_KEYS.map((name) => pressAll('sheet', BODY, name)).filter(([ fired, prevented ]) => fired.length || prevented).length, 0);
+    check('VV: and on a document tab',
+        VIEW_KEYS.map((name) => pressAll('document', BODY, name)).filter(([ fired, prevented ]) => fired.length || prevented).length, 0);
+    const warned   = [];
+    const keepWarn = console.warn;
+    console.warn = (...args) => warned.push(args.map(String).join(' '));
+    const docRows = [ 'd', 'o', 'Delete', 'Escape' ].map((name) => pressAll('model', BODY, name));
+    console.warn = keepWarn;
+    check('VV: D, O, Delete and Escape on the 3D tab are documentation rows - no action, the key left to the page, no "No callback"',
+        [ docRows, warned.some((line) => line.includes('No callback')) ], [ [ [ [], false ], [ [], false ], [ [], false ], [ [], false ] ], false ]);
+
+    // A fresh page: its own key scope and its own handler, no reader handed over yet.
+    const freshScopeFile = join(tmpdir(), 'Na__Test__DocumentKeys__ScopeFresh__.mjs');
+    writeFileSync(freshScopeFile, strip(VV_SCOPE), 'utf8');
+    const freshScopeUrl = pathToFileURL(freshScopeFile).href;
+    const FreshScope    = await import(freshScopeUrl);
+    const freshFile     = join(tmpdir(), 'Na__Test__DocumentKeys__HotkeysFresh__.mjs');
+    writeFileSync(freshFile, "import { Na__KeyScope__MODEL, Na__KeyScope__SHEET, Na__KeyScope__DOCUMENT, Na__KeyScope__Is, Na__KeyScope__IsTypingTarget } from '" + freshScopeUrl + "';\n" + strip(VV_HANDLER), 'utf8');
+    const FreshHotkeys  = await import(pathToFileURL(freshFile).href + '?v=' + Math.random().toString(36).slice(2));
+    const beforeFresh   = listeners.length;
+    FreshHotkeys.Na__ValeVision__HotkeyHandler__Initialize(allKeys);
+    await settle();
+    const freshListener = listeners.slice(beforeFresh).find((entry) => entry.type === 'keydown' && !entry.capture);
+    const freshPress    = (name) => { ran.length = 0; document.activeElement = BODY; const event = key(name); if (freshListener) freshListener.fn(event); return [ ran.slice(), event.prevented ]; };
+    check('VV: before the editor hands its reader over the scope reads as the 3D model\'s, and R and T answer',
+        [ FreshScope.Na__KeyScope__Get(), freshPress('r'), freshPress('t') ], [ 'model', [ [ 'reset' ], true ], [ [ 'walk' ], true ] ]);
+
+    // VV 2 | THE MODE CONTROLLER'S HAND-OVER
+    // ------------------------------------------------------------
+    // Read out of the shipped file: whole comment lines and the house's
+    // trailing "// <--" notes are dropped first, so a call left only in a
+    // comment cannot pass.
+    console.log('\n  VV: the mode controller\'s hand-over');
+    const modeCode = readFileSync(resolve(SRC, VV_MODE), 'utf8').replace(/\r\n?/g, '\n').split('\n')
+        .filter((line) => !/^\s*\/\//.test(line)).map((line) => line.replace(/\s+\/\/ <--.*$/, '')).join('\n');
+    const modeDir  = resolve(SRC, VV_MODE, '..');
+    const importOf = (from) => {
+        const found = modeCode.match(new RegExp('import\\s*\\{([^}]*)\\}\\s*from\\s*\'' + from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\''));
+        return found ? found[1].split(',').map((name) => name.trim()).filter(Boolean).sort() : null;
+    };
+    check('VV: the mode controller imports the key scope and the documents\' keyboard at TrueVision\'s paths, and both files are there',
+        [ importOf('../../03__AppUtils/Na__AppUtils__KeyScope__.js'), importOf('../31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js'),
+          existsSync(resolve(modeDir, '../../03__AppUtils/Na__AppUtils__KeyScope__.js')), existsSync(resolve(modeDir, '../31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js')) ],
+        [ [ 'Na__KeyScope__DOCUMENT', 'Na__KeyScope__Follow', 'Na__KeyScope__MODEL', 'Na__KeyScope__SHEET' ], [ 'Na__LeDocKeys__Initialize', 'Na__LeDocKeys__Ready' ], true, true ]);
+    const initText  = FunctionText(modeCode, 'Na__LeMode__Initialize') || '';
+    const atFollow  = initText.indexOf('Na__KeyScope__Follow(Na__LeMode__KeyScope)');
+    const atAll     = initText.indexOf('Promise.all(');
+    const atThen    = atAll === -1 ? -1 : initText.indexOf('.then(', atAll);
+    const atStart   = initText.indexOf('Na__LeDocKeys__Initialize()');
+    const readyList = (initText.match(/Promise\.all\(\s*\[([^\]]*)\]/) || [])[1] || '';
+    check('VV: it hands its reader to the key scope at initialisation, before anything is waited on', [ atFollow !== -1, atAll !== -1, atFollow < atAll ], [ true, true, true ]);
+    check('VV: it waits on the documents\' key map with the other configs', /\bNa__LeDocKeys__Ready\(\)/.test(readyList), true);
+    check('VV: and starts the documents\' keyboard once the editor is ready', [ atStart !== -1, atThen !== -1, atStart > atThen ], [ true, true, true ]);
+    const views = {};
+    for (const found of modeCode.matchAll(/const\s+(Na__LeMode__VIEW_[A-Z]+)\s*=\s*'([^']*)'/g)) views[found[1]] = found[2];
+    check('VV: its view names are TrueVision\'s', views,
+        { Na__LeMode__VIEW_SHEET : 'sheet', Na__LeMode__VIEW_REGISTER : 'register', Na__LeMode__VIEW_SPEC : 'spec', Na__LeMode__VIEW_STATEMENT : 'statement' });
+    const readerText = FunctionText(modeCode, 'Na__LeMode__KeyScope');
+    check('VV: the reader is in the file', typeof readerText === 'string' && readerText.length > 0, true);
+    if (!readerText) { console.log('\n  ' + failures + ' check(s) FAILED (no reader to run)'); process.exit(1); }
+    // The reader is run as the file has it, its state held in a closure the
+    // test sets: whether the editor is open, and which view is up.
+    const makeReader = (constants, state) => new Function('Na__KeyScope__MODEL', 'Na__KeyScope__SHEET', 'Na__KeyScope__DOCUMENT', 'Na__LeMode__VIEW_SHEET', 'state',
+        'let Na__LeMode__Active = false, Na__LeMode__View = null;\n' + readerText +
+        '\nreturn function () { Na__LeMode__Active = state.active; Na__LeMode__View = state.view; return Na__LeMode__KeyScope(); };')(
+        constants.Na__KeyScope__MODEL, constants.Na__KeyScope__SHEET, constants.Na__KeyScope__DOCUMENT, views.Na__LeMode__VIEW_SHEET, state);
+    const modeState  = { active : false, view : views.Na__LeMode__VIEW_SHEET };
+    const modeReader = makeReader(Scope, modeState);
+    const readAs     = (active, view) => { modeState.active = active; modeState.view = view; return modeReader(); };
+    check('VV: its reader - the editor shut is the 3D model\'s; a drawing tab the sheet\'s; the specification, the register and the statements the documents\'',
+        [ readAs(false, 'sheet'), readAs(false, 'spec'), readAs(true, 'sheet'), readAs(true, 'spec'), readAs(true, 'register'), readAs(true, 'statement') ],
+        [ 'model', 'model', 'sheet', 'document', 'document', 'document' ]);
+    check('VV: the key scope takes it', Scope.Na__KeyScope__Follow(modeReader), true);
+    const pressEditor = (active, view, focus, name) => {
+        modeState.active = active; modeState.view = view;
+        document.activeElement = focus;
+        ran.length = 0;
+        const event = key(name, { target : focus });
+        allListener.fn(event);
+        return [ ran.slice(), event.prevented ];
+    };
+    check('VV: under it, R resets the view while the editor is shut',            pressEditor(false, 'sheet', BODY, 'r'), [ [ 'reset' ], true ]);
+    check('VV: T, R and V on a drawing tab reach nothing in the 3D view',       [ 't', 'r', 'v' ].map((name) => pressEditor(true, 'sheet', BODY, name)), [ [ [], false ], [ [], false ], [ [], false ] ]);
+    check('VV: and R typed into the Project Specification is a letter',          pressEditor(true, 'spec', FIELD, 'r'), [ [], false ]);
+
+    // VV 3 | THE DOCUMENTS' KEYBOARD ON THE REAL FILES, UNDER THE MODE CONTROLLER'S READER
+    // ------------------------------------------------------------
+    console.log('\n  VV: the documents\' keyboard on the real files');
+    let RealDoc = null, RealScope = null, linkError = null;
+    try { RealDoc = await import(pathToFileURL(resolve(SRC, VV_DOCKEYS)).href); RealScope = await import(pathToFileURL(resolve(SRC, VV_SCOPE)).href); }
+    catch (error) { linkError = String(error && error.message || error); }
+    check('VV: the module at its real path links against this app\'s KeyScope', linkError, null);
+    check('VV: and exports TrueVision\'s ten names', RealDoc ? Object.keys(RealDoc).sort() : null,
+        [ 'Na__LeDocKeys__GetBindings', 'Na__LeDocKeys__Held', 'Na__LeDocKeys__Initialize', 'Na__LeDocKeys__KeyLabel', 'Na__LeDocKeys__Match',
+          'Na__LeDocKeys__OnKeyDown', 'Na__LeDocKeys__Ready', 'Na__LeDocKeys__Register', 'Na__LeDocKeys__TypesCharacter', 'Na__LeDocKeys__Unregister' ]);
+    if (!RealDoc || !RealScope) { console.log('\n  ' + failures + ' check(s) FAILED (the module did not link)'); process.exit(1); }
+
+    const asked = [];
+    globalThis.fetch = async (url, options) => {
+        asked.push({ url : String(url), cache : options && options.cache });
+        const path = fileURLToPath(String(url));
+        if (!existsSync(path)) return { ok : false, status : 404, json : async () => { throw new Error('404'); } };
+        return { ok : true, status : 200, json : async () => JSON.parse(readFileSync(path, 'utf8')) };
+    };
+    const loaded = await RealDoc.Na__LeDocKeys__Ready();
+    const again  = await RealDoc.Na__LeDocKeys__Ready();
+    check('VV: Ready() reads the key map beside the module once, uncached, and answers the same each time',
+        [ asked.length, asked.length ? asked[0].url.endsWith('/02__Src__AppModules/' + VV_KEYMAP) : false, asked.length ? asked[0].cache : null, !!loaded && loaded === again ],
+        [ 1, true, 'no-store', true ]);
+    const shipped     = JSON.parse(readFileSync(resolve(SRC, VV_KEYMAP), 'utf8'));
+    const shippedList = shipped.LayoutEditor__DocumentKeys__Bindings.Bindings__List;
+    check('VV: GetBindings() is then the shipped key map - Save, the raw markdown, Lucida Console - with Command counted as Ctrl',
+        [ JSON.stringify(RealDoc.Na__LeDocKeys__GetBindings()) === JSON.stringify(shippedList), shippedList.map((binding) => binding.Action), shipped.LayoutEditor__DocumentKeys__Setup.Setup__MetaIsCtrl ],
+        [ true, BUILT_IN, true ]);
+
+    const unavailable = [];
+    const keepWarn2   = console.warn;
+    console.warn = (...args) => unavailable.push(String(args[0]));
+    let rejected = false;
+    const Missing = await load(VV_DOCKEYS, 'Missing');
+    globalThis.fetch = async () => ({ ok : false, status : 404, json : async () => { throw new Error('404'); } });
+    const missing = await Missing.Na__LeDocKeys__Ready().catch(() => { rejected = true; });
+    const Offline = await load(VV_DOCKEYS, 'Offline');
+    globalThis.fetch = async () => { throw new TypeError('Failed to fetch'); };
+    const offline = await Offline.Na__LeDocKeys__Ready().catch(() => { rejected = true; });
+    console.warn = keepWarn2;
+    globalThis.fetch = diskFetch;
+    check('VV: a key map that is missing or out of reach never rejects, leaves the built-in bindings, and says so under this app\'s prefix',
+        [ rejected, missing, offline, Missing.Na__LeDocKeys__GetBindings().map((binding) => binding.Action), Offline.Na__LeDocKeys__GetBindings().map((binding) => binding.Action), unavailable ],
+        [ false, null, null, BUILT_IN, BUILT_IN,
+          [ '[ValeVision3D LayoutEditor] Document key map unavailable - the built-in bindings are used.', '[ValeVision3D LayoutEditor] Document key map unavailable - the built-in bindings are used.' ] ]);
+
+    // The real module, under the mode controller's own reader on the real KeyScope.
+    const realState = { active : false, view : views.Na__LeMode__VIEW_SHEET };
+    check('VV: the real key scope takes the mode controller\'s reader', RealScope.Na__KeyScope__Follow(makeReader(RealScope, realState)), true);
+    RealDoc.Na__LeDocKeys__Initialize();
+    const realListener = listeners.find((entry) => entry.type === 'keydown' && entry.capture && entry.fn === RealDoc.Na__LeDocKeys__OnKeyDown);
+    check('VV: the documents\' keyboard listens on the window in the capture phase, once', [ !!realListener, RealDoc.Na__LeDocKeys__Initialize() ], [ true, false ]);
+    // The editor's own Ctrl+S (the mode controller's OnSaveKey, a document
+    // capture listener) hears only what the documents' keyboard let through.
+    const editor     = [];
+    const editorSave = (event) => { if (event.repeat || event.defaultPrevented) return; if ((event.key === 's' || event.key === 'S') && event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); editor.push('save'); } };
+    const pressReal  = (active, view, name, o) => {
+        realState.active = active; realState.view = view;
+        editor.length = 0;
+        const event = key(name, o);
+        realListener.fn(event);
+        if (!event.stopped) editorSave(event);
+        return [ editor.slice(), event.prevented, event.stopped ];
+    };
+    check('VV: on the Project Specification a letter typed into a field or a text area is a letter, and with nothing focused it is left alone',
+        [ pressReal(true, 'spec', 'r', { target : FIELD }), pressReal(true, 'spec', 'b', { target : AREA }), pressReal(true, 'spec', 't', { target : BODY }) ],
+        [ [ [], false, false ], [ [], false, false ], [ [], false, false ] ]);
+    check('VV: on the Project Specification Ctrl+S goes on to the editor\'s save', pressReal(true, 'spec', 's', { ctrl : true, target : FIELD }), [ [ 'save' ], true, false ]);
+    const failedWith = [];
+    const keepError  = console.error;
+    console.error = (...args) => failedWith.push(String(args[0]));
+    RealDoc.Na__LeDocKeys__Register('failing', { isShowing : () => realState.view === 'statement', actions : { Doc__ToggleMono : () => { throw new Error('boom'); } } });
+    const failing = pressReal(true, 'statement', '.', { ctrl : true });
+    console.error = keepError;
+    RealDoc.Na__LeDocKeys__Unregister('failing');
+    check('VV: an answer that fails is reported under this app\'s prefix, and the key is kept', [ failedWith, failing ],
+        [ [ '[ValeVision3D LayoutEditor] Document key Doc__ToggleMono failed:' ], [ [], true, true ] ]);
+    const docSaves = [];
+    RealDoc.Na__LeDocKeys__Register('register', { isShowing : () => realState.view === 'register', actions : { Doc__Save : () => { docSaves.push('register'); } } });
+    const pressRegister = (view, name, o) => { docSaves.length = 0; return [ docSaves ].concat(pressReal(true, view, name, o)).map((part) => Array.isArray(part) ? part.slice() : part); };
+    check('VV: a document that answers Ctrl+S saves itself, and the editor never hears it', pressRegister('register', 's', { ctrl : true }), [ [ 'register' ], [], true, true ]);
+    check('VV: a held key acts once, and Command counts as Ctrl',
+        [ pressRegister('register', 's', { ctrl : true, repeat : true }), pressRegister('register', 's', { meta : true }) ],
+        [ [ [], [], true, true ], [ [ 'register' ], [], true, true ] ]);
+    check('VV: the same Ctrl+S on a drawing tab is left to the drawing', pressRegister('sheet', 's', { ctrl : true }), [ [], [ 'save' ], true, false ]);
+    RealDoc.Na__LeDocKeys__Unregister('register');
+
+// endregion -------------------------------------------------------------------
+@@@@ END

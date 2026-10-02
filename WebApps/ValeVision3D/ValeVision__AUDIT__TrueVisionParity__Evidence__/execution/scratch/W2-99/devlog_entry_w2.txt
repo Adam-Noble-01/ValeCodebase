@@ -1,0 +1,331 @@
+# ---------------------------------------------------------
+## ValeVision3D v2.71.4 - 02-Oct-2026 - Every Drawing Gets Its Plane and Its Depth Fog, Plans Draw Their Doors, Object Snap Finds What It Snaps To, and the Specification Keeps Step With Its File
+### Ported from TrueVision3D in part, read at b2aa9151: v2.24.0, v2.25.0, v2.27.0, v2.28.0, v2.30.2, v2.31.0, v2.32.0, v2.36.0, v2.37.0, v2.40.0 to v2.42.0, v2.48.0, v2.48.1, v2.49.0, v2.55.0, v2.57.0, v2.58.2, v2.65.0, v2.75.0, v2.80.0, v2.82.0, v2.84.0, v2.86.0, v2.87.0, v2.89.0 to v2.91.0, v2.93.0, v2.94.0, v2.96.0, v2.98.0, v2.100.0 to v2.102.0, v2.104.0 to v2.109.0, v2.111.0, v2.113.0, v2.114.0, v2.116.0 to v2.120.0, v2.122.0 to v2.124.0, v2.126.0 to v2.132.0, v2.134.0, v2.137.0 to v2.144.0, v2.147.0, v2.149.0 to v2.153.0, v2.155.0, v2.157.0, v2.159.0, v2.160.0, v2.163.0 and v2.164.0, and nine changes TrueVision never logged (Adam-confirmed in TV: v2.27.0, v2.37.0 and v2.153.0; v2.49.0, v2.91.0, v2.104.0, v2.116.0 and v2.150.0 used or tried by him in part; none of the others)
+
+**Overview**
+- Wave 2 of the TrueVision parity programme: the drawing subsystems. All 43 packages ran unattended on the plan's
+  defaults - 42 done and 1 partial (W2-14, whose one open item, the site plan composites test, passes 151 of 151 since
+  W2-16 landed; the gate recommends accepting it as done). Adam has answered none of DR-01 to DR-44, so each ran on its
+  default (D41 to D91 in section 2A of `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`).
+- WHAT A VALE AUTHOR WILL NOTICE. In the 3D tab's Dev Tools the Floor Plans and Elevations menus are TrueVision's 2.x
+  rebuild: no Save buttons, an edit is kept by the green Update (which asks), Revert, a draft per row; a Cross Sections
+  item; and every plan and elevation has a Drawing Plane you can show, drag and snap. An elevation can carry depth fog
+  (off unless switched on). On a sheet, plan viewports draw their doors open with swings and elevations draw them shut;
+  the snap marker's colour says what it found and object snap gains Intersection, Perpendicular, Centre and the paper's
+  own edges; a grip's colour says where its point stands; Ctrl+V lands a copy exactly on its original's place, on this
+  sheet or another (DR-40 item 1); the left column gains the Specification tab; the Properties tab ends with the
+  Patterns library; the Text panel edits several text items at once; the Render Composites Enhance Whitecard weight
+  reads in %. On localhost the specification keeps step with its file `ValeVision__DrawingNotes__.json`.
+- GROUNDWORK THAT CHANGES NOTHING YET: the drafting aids (Draft, Drawing Grid, Ortho, Drawing Axes), the vector tools and
+  Booleans, the move anchor and the viewport carry (DR-40 items 9 and 10, held), the Measurements box's new readings,
+  the note-regions tool and the Leaderless Notes panel, the layer menu and the two hover tooltips, the Cabinet Infill,
+  Project QR and Site Plan Legend elements, and the site plan client (dormant, DR-08 (B)) and design phases (dormant,
+  DR-09 (a)).
+- One version for the wave, the next patch step after v2.71.3 (D85, Adam's patch-bump rule). Every module log line and
+  PORT NOTE the wave wrote now names v2.71.4.
+
+**Drawing planes, the rebuilt Dev menus and the Cross Sections placeholder** (W2-40, W2-01, W2-04, W2-05)
+- DRAWING PLANES (`47__System__DrawingPlanes`, TrueVision v2.82.0 and v2.84.0, whole): the five core leaves and their
+  config byte for byte (W2-40), then the overlay, the grip, the Dev controls and their stylesheet, started from
+  index.html at TrueVision's places (W2-01). A plane spans the building plus its overshoot, from the building and ground
+  tokens; on 90 of the 91 Vale projects with models the tokens already match, and `2026/60834__Clough` (an older
+  single-bucket export) sizes its planes from the whole model until it is re-exported.
+- THE FLOOR PLANS AND ELEVATIONS DEV MENUS 2.x (W2-04, W2-05): TrueVision's editors and row builders whole (2.0.0 and
+  2.1.0) - drafts with Update and Revert, a leave prompt, + in the head, Delete below a rule, auto names that follow the
+  project's north, the plane rows (Show plane, Aim at face, Move to face), the storey row and the elevation's Fog block.
+  ValeVision's own features ride as seams: the section adapter (DIV-2), the Ground Floor quick action ("+ Ground
+  Floor", D11), the Styles and Exclusions rows under each row's Advanced fold (D33), the thumbnail bake on add, seed and
+  Update with Bake Missing Thumbnails, bake-before-save on Update (D20), and an elevation filed into Cross Sections
+  when Update keeps the Section type (D28). Pick Face, Re-pick and the gizmo drag are gone: Drawing Planes does those
+  jobs, as in TrueVision; the elevation data module's two ValeVision-only setters retired with the old editor (D89),
+  and elevations now trim their exclusion tokens as plans do (OC-11).
+- CROSS SECTIONS (`48__System__CrossSectionViews`, TrueVision's 0.1.0 placeholder, DR-26): its Dev Tools item and init,
+  after ValeVision's own Cross Section Tool ids were renamed `naCrossSectionToolDev*`.
+
+**Elevation depth fog: on screen, in exports and on sheets** (W2-02, W2-03, W2-12, W2-15)
+- THE FOG LAYER (`49__System__ElevationDepthFog`, TrueVision v2.94.0): the render layer, the Dev row and its sheet. An
+  elevation with fog on fades its surfaces, edges and profile lines behind the plane into the paper; a section's poche
+  stays solid; the projected linework stays crisp above it. The section caps' depth pre-pass goes through the section
+  adapter (DIV-2), which completes its six calls (Serialize, Apply, the outline width get and set, SetModelRoot and
+  RenderDepthInto; W2-02).
+- ValeVision draws its drawings through the composer (DIV-1), so the fog sits in the render preset's frame and the tiled
+  image exporter's tiles as a position, not as TrueVision's code: a fogged elevation exports fogged, the section overlay
+  once.
+- ON SHEETS (DR-15 sheets (a)): the Viewport2d__DepthFog leaf, the Render Composites "Depth Fog" row (on by default),
+  and TrueVision's renderFrame route in the tiled renderer, opt-in and for the fog image only (W2-12, reversing
+  TrueVision's own note that the route was not worth carrying back); the snapshot renderer borrows the elevation's fog
+  for that image and hands it back (W2-15). The sheet PDF's fog layer waits for W3-16.
+
+**Projected linework at TrueVision's head; plan doors and storeys** (W2-43, W2-06, W2-11, W2-13, W2-16)
+- FOLDER 50 IS TRUEVISION'S (W2-43, W2-06): FlushJoins 1.1.0 and Storeys 1.0.0 new, and every other module of the
+  folder whole at the pin - the 3D-matching rules of v2.37.0 (seams occlude, joins between wall pieces stop drawing),
+  posed doors (DoorPose 1.3.0), one storey per plan, nested linework-modifier owners and the modelling tolerance of
+  v2.159.0. The config's BuildToken is ValeVision's own, `2026-10-02-tv-parity` (DR-31 (4)).
+- RE-BAKE REMINDER (DR-31, Adam's checklist): the new BuildToken makes every baked linework asset - on R2 and in each
+  browser's IndexedDB - read stale once. Until each live project is re-baked on localhost (Dev > Bake All to R2, or an
+  Update in the Floor Plans and Elevations menus), viewers compute linework on their own devices on first open.
+  Existing elevations visibly lose their flush-join lines - intended (DR-31 (1)). After the move to the OVH server the
+  bake writes wherever the live store is then; the token forces the re-bake either way.
+- PLAN DOORS (DR-16 (a) with door module 1.8.0): PlanDoors 1.3.0 (W2-11) and the viewport units (W2-16) draw a plan's
+  doors open with their swings, an elevation's and a section's shut, and a plan guessed or picked as the roof hides its
+  swings; the 3D view's doors never move. Closing a door with a click, the Doors row and Hide swings' control arrive
+  with W3-03 and W3-15. Every Doous plan and elevation linework is re-projected once (their record hashes change).
+- LINEWORK MODIFIERS (DR-31 (3)): the nested 76-79 LineworkModifier rules ride ValeVision's LineworkSettings
+  (SetLineworkBaseOverride's second argument, W2-13) into the base image and the vectors; no Vale GLB carries the tags
+  yet, so nothing changes until a model is exported with them. The Model Layers config gains the linework-modifiers
+  group with ValeVision__ owner keys.
+
+**The viewport units and the snapshot renderer are TrueVision's** (W2-16, W2-15, W2-10, W2-09, W2-17, W2-14)
+- VIEWPORT2D 1.16.0, ITS FRAME, LINEWORK AND WINDOW, VIEWPORT3D 1.8.1, VIEWPORTIDENTITY 1.1.0, EDGESTYLES 1.1.0,
+  MODELLAYERS 1.4.0 AND THE MODEL LAYERS PANEL whole (W2-16), with Model Source (dormant, DR-09 (a): every viewport reads
+  the live model) and the site plan painter (dormant, DR-08 (B)) closing their import cycle in one step. The mode
+  controller registers both at TrueVision's sites. Model Layers shows TrueVision's Fill and Line scale columns.
+- SNAPSHOTRENDERER 1.8.0 takes every TrueVision hunk from 1.6.0 to 1.13.0 under DIV-1 (W2-15): design phases (dormant),
+  door poses and storeys, the fog image, Enhance strength and the modifier rules; the Cross Sections outline width now
+  survives a sheet render; with Context Layer off, a model exported split by tag hides its whole existing building, as
+  TrueVision's does (3047__Doous has no such categories).
+- ENHANCE WHITECARD STRENGTH (W2-09, W2-36): Enhance 1.1.0 and Render Composites 1.3.0 whole; the weight is a percent,
+  100 by default, so no existing sheet or snapshot changes. VIEWPORT TITLES (W2-10): ViewportTitleText 1.1.0 can name
+  a plan's storey (PROPOSED GROUND FLOOR PLAN) once a plan has one. The Layout Editor Dev menu's bake names only the
+  live design phase's drawings - today every drawing (W2-17).
+- SITE PLANS, DORMANT (DR-08 (B), W2-14): the GLB parser, the store over the transport facade (ValeVision__SitePlan__
+  stems, store folders under the project's own folder, TODO(OVH-MIGRATION) on its remote candidates) and the composites
+  panel. A Vale project shows nothing of them: `LayoutEditor__Sheet__SitePlanDrawingsEnabled` is false.
+
+**Object snap, grips, the context menu and the clipboard** (W2-42, W2-19, W2-24, W2-20, W2-21, W2-23, W2-26)
+- OBJECT SNAP (`LE/28__System__ObjectSnap`, TrueVision v2.129.0 on): the leaves (W2-42), then the switch-over (W2-19) -
+  Search, Moves, GridMoves, the controller, the menu and the stylesheet whole. The snap marker is coloured by what it
+  found, not by the tool (DR-40 item 2): orange now means text. End, Midpoint, Intersection, Perpendicular and Centre are
+  on, Nearest off, and the paper's border, title block and margin offer points. `Na__LayoutEditor__Snapping__` is a
+  one-wave shim until W3-08 retires it; the toolbar's Snap stays a plain toggle until W5-01's split button.
+- THE DRAWING TOOLS (W2-26): Dimension 1.12.0 (with v2.152.0's create hunk, logged here as 1.13.0), Rectangle 1.4.0,
+  Text 1.4.0 and Leader 1.2.0 whole: they snap through object snap, a dimension's end can snap Perpendicular from its
+  first point, and new dimensions carry Measure at scale, Round up, Line pt, Dashed and the extension-line settings.
+- GRIPS 1.12.0 (W2-24): a grip says where its point stands - green on the drawing, a ring on a line, blue on nothing,
+  red in hand; the rubber band and box are 2 px at any zoom.
+- THE CONTEXT MENU 1.1.0 (W2-20) with flyouts and hints; the hover tooltip (inert until W3-03).
+- THE CLIPBOARD AND THE SELECTION UNITS (W2-21): ItemClipboard 1.7.0, EditScope 1.4.0, SelectionSet, SelectionBox and
+  Eyedropper whole. Ctrl+V lands exactly on the original, on this sheet or another, on a layer of the same name (DR-40
+  item 1, adopted; ValeVision used to step a copy clear and keep it on the paper); Ctrl+D still steps a duplicate
+  clear; the menu reads Cut, Copy and Duplicate selection; the eyedropper carries round-up, line weight and dash.
+- THE MEASUREMENTS BOX 1.10.0 (W2-23) and its Say echo line; its new readings wait for the SheetTools hub (W3-03).
+
+**The specification keeps step with its file; spell check; the Specification tab** (W2-30, W2-31, W2-33, W2-34, W2-35, W2-32, W2-22)
+- THE LOCKSTEP (TrueVision v2.144.0 and v2.163.0; W2-30, W2-31): the specification's data units whole over the
+  transport facade - on localhost an edit is written to `ValeVision__DrawingNotes__.json` 4 s after typing stops, after
+  a look at the file; if the file changed meanwhile, the question card "Keep the app's copy / Load the file" rises and
+  the bar reads "Out of step with the file". R2 is still written only by Sync or Save Sheets. The bar is TrueVision's
+  1.3.0 with the project's document code (3047 and 3047_SPEC, OC-09); its 1.4.0 Share button waits for W4-08.
+  ValeVision's own notes client, `Na__AppUtils__R2DrawingNotes__`, had no importer left and is retired (W2-33).
+- SPELL CHECK (`55__Feature__SpellCheck`, W2-34) with the Vale dictionary (DR-20): words are checked against
+  `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json` and Add to Dictionary writes through the local server's
+  `/api/valevision/user-config/spellings`; off localhost the dictionary is read-only.
+- THE SPECIFICATION TAB (`LE/58__Feature__ScrapbookSpecification`, W2-35): the left column reads Document Preferences
+  and Specification; a row drags onto a sheet; F2 rewords a note beside the drawing.
+- THE NOTES MARGIN (W2-32): SpecMargin 1.5.0 plans the margin and overspill regions in one pass; a typed heading too wide
+  for the column now wraps (TrueVision's 1.4.0); MarginGrip 1.3.0 without 1.1.0's automatic-Move term (DR-40 item 7,
+  held for W3-03). The Leaderless Notes panel and the region tool (W2-22) land inert for W3-11 and W3-03.
+
+**Panels and the parametric scrapbook** (W2-36, W2-29, W2-37, W2-38, W2-39)
+- PANELS (W2-36): with several text items selected the Text panel shows the first one's size and says "Editing 3
+  selected text items: a change here goes to all of them."; unticking Edges with several vectors takes their edges off
+  and nothing else; a hidden layer's Off reads in the same faint red as Unlock; Floor Areas and Images layers are named.
+- THE PATTERNS PANEL (W2-29, OC-07): the hatch library at the foot of the Properties tab - Construction Materials, then
+  the Site Plan pack; the editor waits for the library with its other configs. Its per-layer site plan rows stay out
+  of sight while site plans are dormant.
+- THE PARAMETRIC SCRAPBOOK ENGINE 1.7.0 AND ITS CORE TYPES (W2-37): the scale bar can stand under the drawing's far
+  corner with its own double arrow, a title's underline ends 5 mm past its words, elements have a base point and
+  corner grips, and a tile drag can hold and snap. The Cabinet Infill, the Project QR element (off, DR-12) and the Site
+  Plan Legend (dormant) land inert (W2-38, W2-39); their config blocks and tiles come with W3-14.
+
+**The render loop and the 2D outline** (W2-07, W2-08)
+- ProgressiveRefine 1.0.3 whole and the render loop's guards (TrueVision v2.58.2): a thrown frame is reported and the
+  loop carries on, a stalled refinement restarts after 2.5 s, a held engine stands the refiner down, and a part-finished
+  run left with nothing scheduled is restarted after 1 s.
+- The main config's 2D outline keys follow TrueVision v2.27.0: Drawing2dEdgeWidth is gone (the drawing views read the
+  drawing config's 1.0, unchanged) and the bake width is the profileLinework weight; ValeVision's 2D outline colour
+  and threshold are kept.
+
+**Inert groundwork** (W2-18, W2-25, W2-27, W2-28, W2-41 and the parts above)
+- THE DRAFTING AIDS (LE/26, 27, 32, 33; W2-18): Draft mode, the Drawing Grid with its panel (TrueVision's defaults,
+  DR-40 item 5), Ortho and Drawing Axes, their configs and stylesheets; nothing switches them on until W3-05.
+- THE VECTOR TOOLS AND BOOLEANS (LE/37; W2-27, W2-28, W2-41): the state, setup, geometry, offset and Boolean leaves,
+  the Circle, Arc, Trim, Join, Offset and Boolean tools, the adapter, the panel and its stylesheet; W3-07 switches them
+  on. New circles, arcs and rectangles ignore the panel's hatch, as in TrueVision (DR-37 (3)).
+- THE MOVE ANCHOR AND THE VIEWPORT CARRY (W2-25; DR-40 items 10 and 9, held): both modules and the carry rules land with
+  nothing importing them.
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S THROUGHOUT (DIV-4): the specification's lockstep and the site plan store reach storage
+  only through the facade at TrueVision's paths; the spell-check dictionary writes through the Whitecardopedia local
+  server's blueprint (DR-28 (A)). No TrueVision client, route or portal key was copied (gate G6: 0 hits).
+- Kept seams, each in its file's PORT NOTE: the section adapter and the composer route (DIV-1, DIV-2); the Dev menus'
+  ground-floor action, style rows, thumbnail bake, bake-before-save and section filing (D11, D33, D20, D28); folder 50's
+  BuildToken and owner keys; ValeVision__SitePlan__ stems; the document code in the specification bar; MarginGrip's
+  held term; the Vale dictionary path and server name; Model Layers' coarse Existing and Proposed rows; the snapping
+  shim; the Layout Editor's lazy loader, which now binds Model Source as a seventh editor part (DR-24 (a)).
+- Hunk replays where ValeVision keeps its own file: the loading sequence (1.7.3), the elevation mode controller
+  (1.1.3), the render preset (1.4.0), the tiled renderer (1.6.0), the snapshot renderer (1.8.0), the Layout Editor mode
+  controller (1.18.5 to 1.18.9), the Paper sheet, the Shapes and Layers panels, the toolbar (1.9.5), the keyboard and
+  context menu units, the Dev menu (1.4.2) and the loader (1.1.5 to 1.1.7).
+- Identity: no Noble Architecture content reaches a Vale user. TrueVision's project names stay only inside verbatim
+  code comments and test fixtures (DR-43); the Project Portal block's words wait for Adam's Vale wording (W3-14).
+
+**Not ported, and why**
+- The four gesture changes (DR-40 items 7-10) stay held: the move anchor and the viewport carry are not imported, and
+  MarginGrip's automatic-Move term is out until W3-03.
+- The PDF exporter's fog layer, site fills and file name (W3-16, OC-13); the panels' Ref switch, ViewportLink 1.5.x and
+  the Layers panel's Ref half (W3-13); the Dimensions and Shapes panels' new rows (W3-12); the scrapbook panel 1.8.0 and
+  its config blocks (W3-14); the SheetTools hub (W3-03); SpecEditor Bar 1.4.0's Share (W4-08).
+- THE SHARED SERVICE WORKER. This release adds 75 modules (folders 47, 48 and 55, LE/21, LE/28, LE/33 and LE/58 new;
+  more in 49, 50, LE/20, LE/26, LE/27, LE/30, LE/32, LE/36, LE/37, LE/40, LE/50, LE/52 and LE/57), ten configuration
+  files and ten stylesheets, removes one (R2DrawingNotes), grows the app graph from 554 to 610 modules, and adds these
+  exports to existing modules: the section adapter +6, Cross Sections' RenderDepthInto, LineworkSettings'
+  ModifierRuleFor, folder 50's ConfigAccess +2 and StageSampler +1, ViewportTitleText +7, EditScope +5, ItemClipboard
+  +2, Measurements' Say, Grips' RegisterShapeProvider, SpecMargin's PlanAll, the parametric engine and types +10, the
+  viewport units' and the specification units' new names; it removes the snapping unit's SetEnabled and Toggle, two
+  elevation data setters and two tiled-renderer names. So a warm client holding a mix of old and new files can fail to
+  start (the old elevation editor with the new data module; the old Cross Sections logic with the new adapter; a
+  pre-v2.71.2 Invalidation with the new loading sequence), fail to link the editor (an old keyboard, toolbar or context
+  menu with the new snapping shim; an old EditScope with the new clipboard; old viewport units with the new Viewport2d;
+  an old specification barrel with the new lockstep), or draw the grips wrong (the new Paper sheet with the old Grips)
+  for that one load. The token is still Adam's call; it was not bumped ('2026-09-18-1'). W0-08's prepared package is
+  superseded by the move to the OVH server; if the shared worker still fronts ValeVision when this is deployed, deploy
+  only with one consolidated token bump, and W6-02 (or its OVH successor) adds the new folders to the precache.
+
+**Held, partial and not run**
+- W2-14 PARTIAL at its return: everything it lists landed; its open item, Na__Test__SitePlanComposites__, passes 151 of
+  151 since W2-16 landed (gate item 4.2 recommends accepting it as done).
+- Three new tests exit 1 on this tree, by design: Na__Test__ScrapbookCabinetInfill__, Na__Test__ScrapbookProjectQr__
+  (W2-38) and Na__Test__ScrapbookSiteLegend__ (W2-39) read config blocks that W3-14 brings; on staged configs they pass
+  74 of 74, 73 of 73 and 56 of 56 (gate item 4.1).
+- Outside their lists, declared and for ratification (gate item 4.3): the AppConfig parity test's allow-list rows
+  (W2-14 two, W2-36 three) and the loader test's seventh editor part (W2-17).
+- No package of the wave is held or prepared-only, and nothing was staged for Adam.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: v2.27.0 (Edge Styles, signed off 13-Sep-2026; here only the main config's 2D outline keys), v2.37.0 (the
+  flush-join rules, signed off 14-Sep-2026, "That works great"; only the ValeVision port had been parked) and v2.153.0
+  (box select, confirmed 23-Sep-2026; here only SelectionBox's description - the behaviour is W3-03's).
+- USED OR TRIED BY ADAM IN PART, NO SIGN-OFF LINE: v2.49.0 (site plan viewports, recorded by the audit's S11 verifier;
+  dormant here), v2.91.0 (he used the Specification tab before asking for v2.144.0), v2.104.0 (Floor Areas; here only
+  the custom scrapbook's room hunk, a Layers label and the Rectangle tool's area), v2.116.0 (Sheet Images; here only the
+  grips' shape provider and the panels' picture rules) and v2.150.0 (the Boolean tools: "It works INCREDIBLE!",
+  recorded in v2.151.0, while its own status line still reads not tried).
+- NOT CONFIRMED - TrueVision's own entry says not tried by Adam, awaiting his test, or that the ValeVision port waits
+  for his sign-off: v2.36.0, v2.40.0, v2.41.0, v2.42.0, v2.48.1, v2.82.0, v2.84.0, v2.86.0, v2.87.0, v2.89.0, v2.93.0,
+  v2.94.0, v2.96.0, v2.98.0, v2.100.0, v2.101.0, v2.105.0, v2.107.0, v2.108.0, v2.109.0, v2.111.0, v2.113.0, v2.114.0,
+  v2.117.0, v2.118.0, v2.119.0, v2.120.0, v2.122.0, v2.123.0, v2.124.0, v2.126.0, v2.127.0, v2.128.0, v2.129.0,
+  v2.130.0, v2.131.0, v2.132.0, v2.134.0, v2.137.0, v2.138.0, v2.139.0, v2.140.0, v2.141.0, v2.142.0, v2.143.0,
+  v2.144.0, v2.147.0, v2.151.0, v2.152.0, v2.157.0, v2.163.0 and v2.164.0.
+- NOT CONFIRMED - no record either way: v2.24.0 (the section adapter's names), v2.28.0 and v2.31.0 (the viewport snap
+  move's first two versions), v2.30.2, v2.32.0 (design phases, dormant), v2.48.0 (verified by the session on PS01),
+  v2.55.0 (the site plan painter's split), v2.57.0, v2.58.2 (TrueVision's agent verified it on PS01), v2.65.0, v2.75.0,
+  v2.80.0 (the identity config's Phase block; the release was ported in v2.67.0), v2.90.0, v2.102.0, v2.106.0,
+  v2.149.0, v2.159.0 (proved by TrueVision's agent), v2.160.0, v2.155.0's parts here (Phase 0's moved paths in the
+  Patterns panel and the Project QR element; its confirmed part, the PDF exporter fix, came in v2.71.2), and the nine
+  changes TrueVision never logged: the nested LineworkModifier rules and owners (commits 62dade1c and 6076ec10,
+  20-21 Sep-2026); the site plan store's two stores (Store 1.1.0, 20-Sep-2026); Grips 1.12.0, CabinetInfill 1.2.0 and
+  the Specification Scrapbook's panel, config and stylesheet 1.2.0 (commit a2e0a836, 22-Sep-2026); SpecLinks 1.1.0's
+  broken-link resolver (18-Sep-2026); EdgeStyles' line scale on any dashed category, FillHex and the Model Layers
+  panel's two columns (commit 55014c6a, 29-Sep-2026); ItemClipboard 1.3.0 (commit 32767407, with v2.75.0); and the
+  hover tooltip 1.0.0 (commit 4f6bb9ef, with v2.65.0).
+- HELD: v2.78.0's MarginGrip 1.1.0 line (the automatic Move, DR-40 item 7) - its log entry is in, the term is not.
+- HEADERS AND NUMBERS ONLY: v2.25.0 (the tiled renderer's callback route, taken as a design for the fog image) and
+  v2.161.0 (per-scene lighting, ValeVision's own; Viewport3d 1.8.1 and the snapshot renderer carry its version line).
+
+**Verified** (W2-99, fresh runs on the wave's final tree, after the placeholders were resolved and again after these records were written)
+- Na__Verify__ModuleGraph__ PASS: 610 modules from 1 entry point, 0 failures (554 at v2.71.3). Import-map targets 110,
+  the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 544 files (470 at v2.71.3), and the 39 names the lazy loader's facade calls all exported
+  (modelSource is new).
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning); raw, its 55 retired folder names
+  are all inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings (645 shipped files, 74 test-folder files, 76 folders against
+  the registry, 18 Layout Editor stylesheets). Na__Verify__PortNotes__ PASS: 715 files, 480 PORT NOTEs, 566 logs; 0
+  fail; 105 warnings (80 on the 01-Oct-2026 baseline, 25 TrueVision logs and unversioned sheets kept verbatim, declared
+  by design); no placeholder pending; `--scribe` PASS.
+- Na__Verify__UiParity__ (report, at the working tree and at the pin): 0 of 7 checks fail - the fold, the strip, the
+  veil, the panels stylesheet, the stylesheet order (Spell Check after Boot, in order) and the motion rules pass; the
+  service-worker token warning stands (it predates 19 ValeVision releases). With every check blocking it passes.
+- 54 tests, 51 exit 0 and 3 exit 1 (the three scrapbook element tests above). New and passing: DrawingPlanes (47),
+  EnhanceWhitecardStrength (24), FlushJoins (8), HideSwings (47), LayerMenu (76), LeaderlessNotes (51),
+  LineworkModifiers (46), NoteRegions (53), ObjectSnap (89), PaintedOnThePoint (116), SitePlanComposites (151),
+  SitePlanFaces (9, one skip: no site plan data on this PC), SitePlanStore (44), SpecInlineEdit (51), SpecLockstep (63),
+  SpellCheckDictionary (52), StatementLockstep (28) and StoreyBand (54); ViewportTitleText (48), LoaderFacade (118),
+  AppConfigParity, ScrapbookDrawingTitle and ScrapbookScaleBar updated and passing; the other 28 unchanged and passing. The
+  verifiers' self-tests pass (19, 16, 19 and 4 cases); AppConfigParity passes with --strict (71 differences, every one
+  a listed seam).
+- The integrator's gate (12:36-12:46, on the tree before the comment-only placeholder pass) also linked and evaluated
+  349 of 349 programme-touched modules in a real browser with 0 failures, booted the real editor read-only on
+  2026/57994__Harris__Scheme-02 (the scene ready, D01 open, Page Down to D02) with no uncaught error and no 4xx or 5xx,
+  and proved every changed file belongs to a package's record; it made no fix.
+- NOT EXERCISED: the app by eye. Adam's Wave 2 checklist (audit section F.5.4) and the items the packages deferred go to
+  the orchestrator's smoke test, on a copy of a project, never saving a live one: a Drawing Plane switched on from the
+  Floor Plans and Elevations Dev menus on 3047__Doous, its drag and Escape; the elevation depth fog on screen, in an
+  image export and on a sheet viewport; the Cross Sections Dev item; doors open in plan viewports and shut in
+  elevations; the snap markers' colours, the Measurements box, the grips and the context menu; Ctrl+C and Ctrl+V on
+  one sheet and another; the Patterns section and the Specification tab; the lockstep card and the bar's statuses
+  after a hand edit of the notes file; Spell Check in Edge; the Text panel with several items; Enhance Whitecard at
+  40%; the scale bar to the right and the 5 mm underline; and a re-bake of linework (DR-31). No deploy, no token bump,
+  no live sync.
+
+**Known, accepted**
+- RE-BAKE BEFORE THE NEXT PUBLISH (DR-31 (4)): until a live project is re-baked, its viewers compute linework themselves
+  on first open, and its elevations lose their flush-join lines.
+- THE SHEET PDF has no fog layer yet (W3-16) and its file name still lacks the project code until W3-16 (OC-13).
+- `Na__LayoutEditor__SnapshotRenderer__.js:135` still says "TrueVision has no per-scene lighting" (both apps have it
+  since v2.71.0 and TrueVision's v2.161.0): a header line the audit's WP-S04a-12 asks to fix and no later package owns.
+  W6-01's sweep.
+- The specification on localhost now follows its file: set `LayoutEditor__Specification__LockstepEnabled` false to go
+  back to the last save winning. Save Sheets with the question open skips the specification without a toast until
+  W5-01; Reload R2 is off away from localhost.
+- Until W3-05, Draft, Grid, Ortho and Axes have no key or button; until W3-03 the move anchor and the carry are absent
+  and the Measurements box reads only what ValeVision's sheet tools hand it today.
+- `Na__ProjectedLinework__ConfigAccess__.js` keeps TrueVision's mis-titled heading "Get the Model Sampling Setup" above
+  GetAnnotationSetup (verbatim; queued for the TrueVision lane).
+- The specification's config wording and two descriptions still say Save Sheets "takes it to the cloud (R2)"; they
+  follow whatever replaces the cloud sync on the OVH server.
+- The folder-number registry's ValeVision column still reads "-" for the folders this release created (47, 48, 55, and
+  LE/21, 28, 33, 52, 58); its LE/52 note names W4 although W2-30 created the folder. It is not a scribe file: the
+  orchestrator fills it, as it did for v2.71.3's two.
+- RECORDS HYGIENE FOR W6-01 (comments only; nothing breaks): the 49 render layer's PORT NOTE still says nothing
+  calls RenderLayerFrame (the snapshot renderer does since W2-15); RenderComposites' header and its config's
+  Meta__WhyWeightsHere still name the main config's Drawing2dEdgeWidth, which W2-08 removed; the Cross Sections
+  README's file table predates W2-02; FacePick's and GizmoGrip's PORT NOTEs still say TrueVision has neither
+  (both apps hold both, unused); SpecData__Transport's PORT NOTE names the retired R2DrawingNotes as history.
+- `Meta__Author : "Adam Noble - Noble Architecture"` stays in the Spell Check config as in several earlier configs (never
+  rendered; DR-43 hygiene for W6-01).
+- TrueVision's test design leaves stub modules `Na__Test__<name>__*.mjs` in the OS temp folder; Adam may delete them. The
+  audit's `execution/scratch/` holds TrueVision text and must stay out of any commit.
+
+**Files**
+- NEW in `02__Src__AppModules/`: the folders `47__System__DrawingPlanes/` (nine files), `48__System__CrossSectionViews/`
+  and `55__Feature__SpellCheck/` (seven files with a README); in 49 the render layer, Dev row and stylesheet; in 50
+  DoorPose, FlushJoins and Storeys; in 51__System__LayoutEditor the folders `21__System__SitePlanData/`,
+  `28__System__ObjectSnap/` (16 files), `33__System__DrawingAxes/`, `52__Feature__StatementWriter/01__Core__Data/` and
+  `58__Feature__ScrapbookSpecification/`, and new files in 20 (ModelSource, PlanDoors, Viewport2d__DepthFog,
+  Viewport2d__SitePlan), 26, 27, 30 (LayerMenu and the two tooltips), 32, 36 (the Patterns panel and stylesheet), 37
+  (17 files), 40 (the site plan composites panel), 50 (six files) and 57 (four element files). In
+  `80__Testing__PrototypeEnvironment/`: 21 tests, the object snap bundle, the spell-check field page and the site plan
+  composites proof page.
+- CHANGED: `01__AppCore/Na__AppFlow__LoadingSequence.js` 1.7.3; the main config; ProgressiveRefine 1.0.3 and
+  LineworkSettings 1.2.0; the tiled renderer 1.6.0; RenderPreset 1.4.0, SectionAdapter 1.3.0 and ThumbnailBake 1.0.3;
+  the Cross Sections logic and Dev controls; the Floor Plans editor, rows, config and Dev sheet; the Elevations editor,
+  rows, config, Dev sheet, mode controller 1.1.3 and data module; folder 50's twelve modules and its config; in
+  51__System__LayoutEditor the loader 1.1.7, the AppConfig, the mode controller 1.18.9, the Paper sheet, the viewport
+  units and configs, the render styles (Enhance, EdgeStyles, ModelLayers, RenderComposites and SnapshotRenderer 1.8.0
+  with their configs), twelve SheetTools units, the four drawing tools, six panels and the toolbar 1.9.5, twelve
+  specification files, TileDrag, ScrapbookCustom, eight parametric scrapbook files and the Dev menu 1.4.2;
+  index.html; `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`; the ScrapbookDrawingTitle, ScrapbookScaleBar,
+  ViewportTitleText, AppConfigParity and LoaderFacade tests; the parity ledger (section 3.10 and the rows the wave
+  changed); the PLAN (two dated notes).
+- DELETED: `03__AppUtils/Na__AppUtils__R2DrawingNotes__.js` (W2-33; a backup is in the package's scratch).
+- Nothing outside this app was written: no Whitecardopedia file, no worker, no shared service worker, no staged
+  package.
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W2.md`. Nothing is committed: Adam commits from the wave's path list, staging only those
+  paths.
+
+**Not yet confirmed by Adam.**

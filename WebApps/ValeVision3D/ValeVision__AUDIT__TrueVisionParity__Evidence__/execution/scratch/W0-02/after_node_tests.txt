@@ -1,0 +1,7 @@
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs ::   PASS - every check passed.
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs :: All checks passed.
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs ::   PASS - every check passed.
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs ::   PASS - the scale bar draws the house bar and holds its rules.
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs :: ALL CHECKS PASSED
+exit=0 80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs ::   PASS - every check passed.
+NODE TESTS: 6/6

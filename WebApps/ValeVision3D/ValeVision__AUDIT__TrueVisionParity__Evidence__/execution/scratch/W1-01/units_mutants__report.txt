@@ -1,0 +1,6 @@
+CAUGHT 1 the exact-key setter dispatches the visibility event         1 failing  e.g. FAIL  ...silently: no visibility event and no frame request (a render puts it straight back)  -- [{"type":"na-model-visibility-changed","detail":{"cat
+CAUGHT 2 BuildButtons clears the map in place                         1 failing  e.g. FAIL  the next rebuild leaves the map a token was given untouched (BuildButtons replaces, never clears in place)  -- 2 vs 1
+CAUGHT 3 RestoreRegistry ignores the generation                       2 failing  e.g. FAIL  RestoreRegistry after that rebuild answers false and keeps the rebuilt registry
+CAUGHT 4 the toggle no longer dispatches na-model-visibility-changed  2 failing  e.g. FAIL  a dev toggle click still dispatches na-model-visibility-changed (linework and snapshot fingerprints refresh)  -- [{"type":"na-request-render","d
+CAUGHT 5 a borrow leaves the dev buttons attached                     1 failing  e.g. FAIL  ApplySceneLayerVisibility acts on the phase too, buttons untouched
+5/5 planted faults caught

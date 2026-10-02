@@ -1,10 +1,10 @@
 // =============================================================================
-// VALEVISION3D - IMAGE EXPORT - STATIC TILED EXPORT RENDERER
+// VALEVISION3D - IMAGE EXPORT - STATIC EXPORT TILED RENDERER
 // =============================================================================
 //
 // FILE       : Na__ImageExport__StaticExport__TiledRenderer.js
 // NAMESPACE  : Na__StaticExport
-// MODULE     : Static Tiled Export Renderer
+// MODULE     : Image Export - Static Export Tiled Renderer
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Dedicated high-resolution static export path, isolated from the
 //              realtime viewport engine. Renders the export image as a grid of
@@ -38,7 +38,43 @@
 //   oversized canvas fails loudly instead of encoding an empty PNG.
 // - WebGL context loss is detected between tiles and surfaces as a thrown
 //   error instead of a blank download.
+// - A 2D drawing's depth fog (1.5.0) is laid over each tile's finished
+//   picture through the drawing's export overrides, before the tile's
+//   section overlay, so an exported elevation fades into the paper as it
+//   does on screen.
+// - AN OPTIONAL FRAME ROUTINE (1.6.0), renderFrame(camera), draws each tile
+//   in place of the composer: TrueVision's callback route, here for one
+//   caller only - a sheet viewport's depth fog image, the fog alone on a
+//   transparent ground (Na__ElevFog__RenderLayerFrame), which has to
+//   register with the composer-drawn picture pixel for pixel. Every buffer
+//   is still sized and every scale still set as for the picture; only the
+//   drawing step changes, and the routine owns the whole frame (no depth
+//   fog call, no section overlay). Without the option every call renders
+//   exactly as before: the underlay and every image export stay on the
+//   composer route (DIV-1).
 // - All mutated renderer / composer / camera state is restored in finally.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 08-Jul-2026)
+// - Twin          : TrueVision3D 02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js
+//                   2.1.0 (read at b2aa9151), rebuilt in TrueVision from this file's 1.2.0
+// - Parity        : diverged (the same tile plan, gutter, sub-frustum and restore discipline; every tile of a
+//                   picture here goes through the live EffectComposer, DIV-1)
+// - Divergences   :
+//   - A 2D drawing brings its camera, profile normals, frustum and (1.5.0) depth fog in the render preset's
+//     export overrides, and its picture goes through the composer. TrueVision's renderFrame callback route
+//     is here from 1.6.0 as an opt-in for a sheet viewport's fog image only (DR-15 sheets (a), D-S04a-05 (a)),
+//     knowingly reversing TrueVision's note that the route is not worth carrying back. On it the composer
+//     draws nothing but is still sized as for the picture (TrueVision drops it on that route), the frame
+//     routine draws the whole frame, and with several samples it draws into the supersampler's own sample
+//     target, as TrueVision's does.
+//   - Linework export scales, the vertical perspective correction shear and the Fog Plane per-tile refresh are
+//     this app's own systems.
+//   - The banner, the MODULE line and the tile planner re-exports are TrueVision's (1.5.0, R6 F.8 C26); the
+//     rest of TrueVision's header and its log are not taken: this file is not a whole-file port.
+// - Back-port     : none from this release.
 //
 // -----------------------------------------------------------------------------
 //
@@ -89,6 +125,30 @@
 //   shows of a zoomed or slid picture at the frame's own resolution. 3D only;
 //   without the option every call renders exactly as before.
 // - Ported from TrueVision3D 2.1.0 (v2.50.0).
+//
+// 02-Oct-2026 - Version 1.5.0 (v2.71.4)
+// - DEPTH FOG PER TILE. When a 2D drawing's export overrides carry
+//   renderDepthFog (the render preset's, from this release), each tile calls
+//   it with the tile camera after the composer - or the supersampler's
+//   average - and before the section overlay: the order the screen draws
+//   in, so the fog fades surfaces and linework and a poche stays solid. Fog
+//   only; the section overlay is still drawn once per tile, here. A 3D
+//   export, and a drawing without fog, render exactly as before.
+// - TrueVision's banner and MODULE text, and its re-export of the tile
+//   planner's ClampToDeviceLimits and IsIosDevice in place of the two
+//   Na__StaticExport__ wrappers nothing imported (R6 F.8 C26, K2 X1).
+//
+// 02-Oct-2026 - Version 1.6.0 (v2.71.4)
+// - THE FRAME ROUTINE ROUTE, OPT-IN. renderFrame(camera), when given, draws
+//   each tile in place of the composer: TrueVision's callback route, which
+//   its own note called not worth carrying back before a sheet had a fog
+//   image. Here it serves that image alone - the fog on a transparent
+//   ground through the same tiles, sizes and jitter as the picture, so the
+//   two register pixel for pixel (DR-15 sheets (a), D-S04a-05 (a)). The
+//   routine owns the frame: no depth fog call and no section overlay are
+//   added on this route, and with several samples it draws into the
+//   supersampler's own sample target, encoded to sRGB on present. Without
+//   renderFrame every call renders exactly as before.
 //
 // =============================================================================
 
@@ -162,28 +222,9 @@
     // renderer and the Export Render Layers structural renderer produce
     // identical sub-frustums, gutters and pixel registration.
     // @delegate: ./Na__ImageExport__StaticExport__TilePlan__.js
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Clamp Requested Export Dimensions to Device Limits
-    // ------------------------------------------------------------
-    // Preserved as a public export for existing consumers; the maths
-    // itself lives in the shared tile planner.
-    // ------------------------------------------------------------
-    function Na__StaticExport__ClampToDeviceLimits(targetWidth, targetHeight) {
-        return Na__TilePlan__ClampToDeviceLimits(targetWidth, targetHeight);
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Detect iOS / iPadOS Devices
-    // ------------------------------------------------------------
-    // Preserved as a public export for existing consumers; the detection
-    // itself lives in the shared tile planner.
-    // ------------------------------------------------------------
-    function Na__StaticExport__IsIosDevice() {
-        return Na__TilePlan__IsIosDevice();
-    }
+    // The planner's ClampToDeviceLimits and IsIosDevice are re-exported from
+    // this module under their own names (Module Exports), as TrueVision's
+    // copy of this file re-exports them (K2 X1).
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -259,6 +300,11 @@
     //   camera                 {THREE.PerspectiveCamera}  Main 3D camera
     //   getRenderPipelineState {Function}  Pipeline state getter (composer + resize/pre-pass helpers)
     //   elevationOverrides     {object|null}  2D ortho export overrides, or null for 3D mode
+    //   renderFrame            {Function|null}  Optional (1.6.0): draws ONE frame through the tile camera it
+    //                          is handed (the overrides' camera for a 2D drawing), in place of the composer -
+    //                          TrueVision's callback route, used only for a sheet viewport's depth fog image.
+    //                          Given, the routine owns the frame: no depth fog call and no section overlay
+    //                          are added. Omitted, the composer route, exactly as before
     //   targetWidth            {number}  Requested output width in pixels
     //   targetHeight           {number}  Requested output height in pixels
     //   antiAliasSamples       {number}  1 (off), 2, 4, 8 or 16 - see the tile loop
@@ -275,6 +321,7 @@
         const {
             renderer, scene, camera, getRenderPipelineState,
             elevationOverrides = null,
+            renderFrame = null,
             targetWidth, targetHeight,
             antiAliasSamples = 1,
             viewWindow = null,
@@ -282,6 +329,7 @@
         } = options;
 
         const progress = (typeof onProgress === 'function') ? onProgress : () => {};
+        const useCallback = (typeof renderFrame === 'function');      // <-- Opt-in (1.6.0): the caller's frame routine draws each tile
 
         // CLAMP | Fit requested dimensions to platform canvas limits
         // ------------------------------------------------------------
@@ -338,7 +386,21 @@
         // technique adds essentially nothing to the peak framebuffer memory,
         // which is the exact constraint that shaped this exporter.
         // ------------------------------------------------------------
-        const supersampler = composer
+        // THE FRAME ROUTINE ROUTE (1.6.0) needs a sample target of its own to
+        // draw each sample into - the composer's read buffer is not in play -
+        // and the sRGB transfer applied on the way out, because three never
+        // applies it to a render target. TrueVision's TARGET ROUTE exactly.
+        // ------------------------------------------------------------
+        const supersampler = useCallback
+            ? Na__Supersampler__Create({
+                renderer,
+                width        : fbW,
+                height       : fbH,
+                samples      : Na__Supersampler__ResolveSampleCount(antiAliasSamples),
+                sampleTarget : true,                                 // <-- The frame routine's canvas stand-in, per sample
+                encodeSrgb   : true                                  // <-- Applied on present, as the canvas would have it
+            })
+            : composer
             ? Na__Supersampler__Create({
                 renderer,
                 width   : fbW,                                       // <-- One tile's framebuffer, not the output image
@@ -455,7 +517,7 @@
             // smoother at once; those only feel like opposites when blur is the
             // only tool on offer.
             // ------------------------------------------------------------
-            if (supersampler) {
+            if (supersampler && !useCallback) {                      // <-- The frame routine route leaves both alone: neither draws on it
                 composer.renderToScreen = false;
                 if (fxaaPass) fxaaPass.enabled = false;
             }
@@ -514,6 +576,46 @@
             }
             // ------------------------------------------------------------
 
+            // HELPER FUNCTION | Draw One Tile Through the Caller's Frame Routine
+            // ------------------------------------------------------------
+            // TrueVision's callback route (its DrawTile), opt-in (1.6.0). The
+            // routine draws the whole frame into whatever target is bound: the
+            // canvas for one sample, the supersampler's sample target for each
+            // of several, averaged and presented onto the canvas as the
+            // composer route's are. Jitter, shadow-map reuse and the projection
+            // restore are the composer route's exactly, so the image registers
+            // with the picture drawn through the same tiles. The canvas is bound
+            // again before the present, and on the error path too (TrueVision
+            // unbinds in its finally, which this file's restore does not).
+            // ------------------------------------------------------------
+            function renderCallbackTile() {
+                if (!supersampler) {
+                    renderer.setRenderTarget(null);                  // <-- The canvas
+                    renderFrame(activeCamera);
+                    return;
+                }
+
+                supersampler.captureBaseProjection(activeCamera);
+
+                try {
+                    for (let i = 0; i < supersampler.sampleCount; i++) {
+                        if (i === 1) shadowMap.autoUpdate = false;   // <-- Keep the maps the first sample drew
+
+                        supersampler.applyJitter(activeCamera, i);
+                        supersampler.beginSample();                  // <-- The frame's canvas stand-in
+                        renderFrame(activeCamera);
+                        supersampler.accumulateSample(i);
+                    }
+                } finally {
+                    shadowMap.autoUpdate = savedShadowAuto;
+                    supersampler.restoreProjection(activeCamera);    // <-- Unjittered for the next tile
+                    renderer.setRenderTarget(null);                  // <-- Never leave the sample target bound: it is freed with the supersampler
+                }
+
+                supersampler.present();                              // <-- The averaged tile onto the canvas
+            }
+            // ------------------------------------------------------------
+
             // TILE LOOP | Render each sub-frustum and composite into output
             // ------------------------------------------------------------
             const totalTiles = tilePlan.totalTiles;
@@ -548,7 +650,9 @@
                     // RENDER | Same per-frame sequence as the realtime loop, run once
                     // per supersample because every line of it reads the camera
                     // projection - which the jitter has just moved.
-                    if (composer) {
+                    if (useCallback) {
+                        renderCallbackTile();                        // <-- The caller's frame routine (1.6.0); the composer draws nothing
+                    } else if (composer) {
                         if (supersampler) {
                             renderSupersampledTile();
                         } else {
@@ -558,12 +662,25 @@
                         renderer.render(scene, activeCamera);        // <-- Direct render fallback (no pipeline)
                     }
 
+                    // DEPTH FOG | A 2D drawing's own fog over this tile's finished
+                    // picture, through the tile's sub-frustum, BEFORE the cut fills
+                    // so a poche stays solid - the order the screen draws in. Fog
+                    // ONLY: the section overlay below is still drawn once, here.
+                    // After the average, as the overlay is: the fog reads this
+                    // tile's depth itself and lands on the canvas.
+                    // Never on the frame routine route: that routine owns the frame.
+                    if (!useCallback && isElevationMode && typeof elevationOverrides.renderDepthFog === 'function') {
+                        elevationOverrides.renderDepthFog(activeCamera);
+                    }
+
                     // CROSS SECTION OVERLAY | Caps + profile lines on this tile's
                     // sub-frustum, drawn onto the composited buffer before readback.
                     // AFTER the average, never inside it: these are drawn with the
                     // canvas's own anti-aliasing, exactly as the realtime loop draws
-                    // them after the composer.
-                    if (sectionOverlayRenderer) {
+                    // them after the composer. Never on the frame routine route:
+                    // a sheet's fog image is the fog alone, and a poche printed on
+                    // it would cover the vectors it is laid over.
+                    if (sectionOverlayRenderer && !useCallback) {
                         sectionOverlayRenderer(activeCamera);
                     }
 
@@ -668,8 +785,8 @@
     // ------------------------------------------------------------
     export {
         Na__StaticExport__RenderToCanvas,
-        Na__StaticExport__ClampToDeviceLimits,
-        Na__StaticExport__IsIosDevice
+        Na__TilePlan__ClampToDeviceLimits,
+        Na__TilePlan__IsIosDevice
     };
     // ------------------------------------------------------------
 

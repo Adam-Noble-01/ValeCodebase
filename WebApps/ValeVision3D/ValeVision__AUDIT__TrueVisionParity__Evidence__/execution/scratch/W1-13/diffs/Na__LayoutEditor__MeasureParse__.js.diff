@@ -1,0 +1,18 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js
++++ VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - MEASUREMENT PARSING
++// VALEVISION3D - LAYOUT EDITOR - MEASUREMENT PARSING
+@@ -39,0 +40,12 @@
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js
++// - Source version: 1.1.0 (TrueVision3D v2.119.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-13}}, the whole file. This app's copy before it
++//                   was 1.0.0, ported from TrueVision3D v2.46.0 on 14-Sep-2026 (ValeVision3D v2.35.0).
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
++//
++// -----------------------------------------------------------------------------
++//

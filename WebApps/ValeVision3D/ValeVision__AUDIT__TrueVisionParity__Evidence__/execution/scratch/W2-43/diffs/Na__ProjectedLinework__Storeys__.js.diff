@@ -1,0 +1,32 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - STOREYS
++// VALEVISION3D - PROJECTED LINEWORK - STOREYS
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__Storeys__.js
+@@ -49,9 +49,19 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a - authored in TrueVision3D
+-// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off (rides with the
+-//                   pending plan doors port).
++// - Ported from   : TrueVision3D 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js
++// - Source version: 1.0.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with FlushJoins, ahead of the rest of folder
++//                   50 (W2-06). TrueVision's own note held it for the plan doors port, on Adam's sign-off; it
++//                   comes across under DR-01 (c) and DR-16 (a), and v2.105.0 is named as not yet confirmed by
++//                   Adam in TrueVision.
++// - Parity        : verbatim, and inert: nothing imports it until DoorPose, Projector 1.5.0 and CpuBackend
++//                   1.4.0 arrive with W2-06. Its Storey__<Key>__<Element> match is unanchored, so the storey
++//                   categories this app's model loader already builds (Na__ModelLoader__MultiModel.js) match
++//                   as they stand.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //

@@ -30,34 +30,45 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__StyleRows__.js (toggle set);
-//                   1.6.0 and 1.6.1 from TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Styles__.js
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5); 1.6.0 and 1.6.1 on 13-Sep-2026 for v2.28.0
-// - Parity        : verbatim below the header from 1.6.0
-// - Divergences   : Header only.
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from ValeVision3D
+//                   40__System__DrawingViewCore/Na__DrawView__StyleRows__.js's toggle set); TrueVision3D
+//                   took it for v2.21.0 (10-Sep-2026) and authored 1.6.0 and 1.6.1, which came back on
+//                   13-Sep-2026 (v2.28.0); since ported back whole from TrueVision3D 1.7.0 (HEAD b2aa9151)
+// - Source version: 1.7.0 (TrueVision3D v2.93.0, 20-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This
+//                   app's own 1.6.1 lacked 1.7.0 only: the percent weight kind's % suffix and its hover
+//                   text (Enhance Whitecard's strength, whose row is already in this app's Render
+//                   Composites config).
+// - Parity        : verbatim (the code is TrueVision 1.7.0's; the banner and this note are the only
+//                   differences)
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.7.0
+// - A weight whose kind is 'percent' reads as a percentage: Enhance Whitecard
+//   is the first, and its number is how much of the levels and sharpen pass to
+//   apply rather than a line width.
+//
 // 13-Sep-2026 - Version 1.6.1
 // - The Section Outline weight lines up with the weights above and below it:
 //   its row keeps an empty slot where a checkbox would be. Base Image gains a
 //   weight from the config - how thick the model's own edges draw in the picture.
-//   Ported from TrueVision3D 13-Sep-2026.
 //
-// 13-Sep-2026 - Version 1.6.0
+// 12-Sep-2026 - Version 1.6.0
 // - The toggle list comes from the Render Composites config, and an Advanced
 //   fold reveals a line weight per composite: Projected Linework and Hidden
 //   Lines as factors of the sheet master, Profile Linework and Section Outline
-//   in buffer pixels. The 2D profile edge width that was one global number in
-//   the main app config is now the Profile Linework weight here, overridable
-//   per viewport. Authored in TrueVision3D 12-Sep-2026, ported 13-Sep-2026.
+//   in buffer pixels. The 2D profile edge width that used to be one global
+//   number in the main app config is now the Profile Linework weight here,
+//   overridable per viewport.
 //
 // 12-Sep-2026 - Version 1.5.0
 // - A force render button, scoped by the selection: the selected viewport
 //   when there is one, every viewport on the sheet when there is not.
-//   Ported from TrueVision3D 12-Sep-2026.
 //
 // 12-Sep-2026 - Version 1.4.0
 // - Moved to the left column, under Drawing Layers. It belongs with the
@@ -138,8 +149,24 @@
 
     // HELPER FUNCTION | The Unit a Weight Is Measured In, for Its Suffix
     // ------------------------------------------------------------
+    // Three units for three kinds of number in one column. Without them a
+    // reader has no way to tell a width from a multiplier from a dial except by
+    // hovering, and the three want reading at a glance.
+    // ------------------------------------------------------------
     function Na__LePanelStyles__Unit(kind) {
-        return kind === 'pixels' ? 'px' : '×';                               // <-- A multiplication sign: "times the master"
+        if (kind === 'pixels')  return 'px';
+        if (kind === 'percent') return '%';
+        return '×';                                                          // <-- A multiplication sign: "times the master"
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | What a Weight Box Says When Hovered
+    // ------------------------------------------------------------
+    function Na__LePanelStyles__Hint(kind) {
+        if (kind === 'pixels')  return Na__LeCfg__GetLabel('CompositeWeightPixelsHint',  'Line width in render pixels');
+        if (kind === 'percent') return Na__LeCfg__GetLabel('CompositeWeightPercentHint', 'How much of the effect to apply: 0 is none of it, 100 is all of it');
+        return Na__LeCfg__GetLabel('CompositeWeightFactorHint', 'Multiplier on the sheet viewport lineweight');
     }
     // ------------------------------------------------------------
 
@@ -153,9 +180,7 @@
         const input = Na__LePanels__Input('number', 'style-weight', { min : row.weight.min, max : row.weight.max, step : row.weight.step });
         input.classList.add('na-le-adv-weight');
         input.setAttribute('data-na-role', row.key);
-        input.title = row.weight.kind === 'pixels'
-            ? Na__LeCfg__GetLabel('CompositeWeightPixelsHint', 'Line width in render pixels')
-            : Na__LeCfg__GetLabel('CompositeWeightFactorHint', 'Multiplier on the sheet viewport lineweight');
+        input.title = Na__LePanelStyles__Hint(row.weight.kind);
         cluster.appendChild(input);
 
         const unit = document.createElement('span');

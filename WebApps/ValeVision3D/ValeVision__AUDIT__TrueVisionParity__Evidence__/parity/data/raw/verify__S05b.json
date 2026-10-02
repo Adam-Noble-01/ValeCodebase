@@ -1,0 +1,619 @@
+{
+ "slice_id": "S05b",
+ "claims_checked": 117,
+ "confirmed_ids": [
+  "S05b-F01",
+  "S05b-F02",
+  "S05b-F03",
+  "S05b-F04",
+  "S05b-F07",
+  "S05b-F15",
+  "S05b-F16",
+  "S05b-F17",
+  "S05b-F20",
+  "S05b-F39",
+  "S05b-F40",
+  "S05b-F46",
+  "S05b-F47",
+  "S05b-F48",
+  "S05b-F49",
+  "S05b-F50",
+  "S05b-F51",
+  "S05b-F53",
+  "S05b-F54",
+  "S05b-F55",
+  "S05b-F57",
+  "S05b-F58"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S05b-F05",
+   "field": "recommendation",
+   "new_value": "Decide together with D-S04a-01 (D-S05b-V02). If VV takes S04a's recommended dormant, verbatim site plan port (WP-S04a-10 lists HatchPatterns + Patterns panel + 05__SitePlanHatches), port Panel__Patterns 1.1.0 VERBATIM below a VV header (Na__SitePlan__Store__ and Na__LeModel__IsSitePlanViewport then exist). Only if VV takes no site plans: per D-S05b-02 (a) port a library-only panel - drop the SpStore import (:92), IsSitePlanViewport (:72) and the per-layer rows, keep section id 'patterns', record the seam in the PORT NOTE. Lands in WP-S05b-V2 with the ModeController Hatch Ready / registration hunks.",
+   "reason": "S04a recommends porting the site plan client dormant and verbatim (D-S04a-01 B, WP-S04a-10 includes the Patterns panel and site pack); the adapted panel would be re-ported a release later."
+  },
+  {
+   "id": "S05b-F06",
+   "field": "recommendation",
+   "new_value": "Ship the root index (Construction first, so Brickwork stays the default) and 02__ConstructionMaterialHatches verbatim in WP-S05b-01. Ship 05__SitePlanHatches (listed second) only if D-S04a-01 adopts site plans (dormant port) or Adam wants the OS hatches on hand-drawn vectors (D-S05b-V02). Never copy the two OS_Symbol PNGs: nothing fetches them (only HatchPatterns:152 and the site patterns' Meta__SourceReference mention them) and VV's GitHub Pages _config.yml would publish the 2.5 MB.",
+   "reason": "Pack choice is coupled to D-S04a-01; live host verified as GitHub Pages publishing every tracked file."
+  },
+  {
+   "id": "S05b-F08",
+   "field": "detail",
+   "new_value": "TV 28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js:110 imports Na__LeVecCurve__KIND_CIRCLE and Na__LeVecCurve__Describe from 37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js. If the ObjectSnap port (S04b) lands in VV before Curves exists, the static import fails and the whole Layout Editor stops loading (and Na__Verify__Exports__, which checks every module, fails at once). TV's plan says the two folders must go into the same commit (PLAN__VectorTools:260-262). Curves is one of FOUR outside-folder imports of Sources (:105-110) that VV lacks: also ShapeGeometry Na__LeShapeGeo__Rings / Na__LeShapeGeo__EdgePairs (TV ShapeGeometry 1.9.0 holes; whole file in S03b WP-06, additive exports in S04b WP-02), SheetModel Na__LeModel__IsLayerSelectable (S04b WP-02 / S05b WP-02) and SheetSurface Na__LeSurface__GetSheetChrome (SheetSurface 1.9.0). All four must exist before the ObjectSnap folder lands.",
+   "reason": "Verified Sources imports at TV :105-110 and absence in VV (grep of function definitions): Curves alone does not make the ObjectSnap folder loadable."
+  },
+  {
+   "id": "S05b-F08",
+   "field": "recommendation",
+   "new_value": "Land Curves (pure leaf) in WP-S05b-01 or S04b WP-01, whichever is first, before any ObjectSnap work; make the ShapeGeometry holes exports (S03b WP-06 or S04b WP-02), IsLayerSelectable and GetSheetChrome explicit prerequisites of the ObjectSnap folder; gate every batch on Na__Verify__Exports__ exit 0. Never rename Curves or its two exports.",
+   "reason": "The trap includes three more prerequisites owned by other slices."
+  },
+  {
+   "id": "S05b-F09",
+   "field": "recommendation",
+   "new_value": "Split. WP-S05b-V3 lands Preview, Targets, CircleTool, ArcTool, TrimTool, JoinTool, OffsetTool, BooleanTool and the adapter verbatim and INERT (nothing imports them) once their imports resolve: ObjectSnap Search (S04b), OrthoMode State, ViewportRotation, PaintOrder (WP-S05b-02 / S03b WP-02), SheetModel AddGroupMember / AnnounceShapes / IsLayerSelectable and InsertShape afterId (S03b WP-03/04), ShapeGeometry Rings (S03b WP-06). WP-S05b-V4 switches them on in ONE release with S05a WP-08 (hub whole, incl. dispatch and the v2.150 holes code), S05a WP-05 (keys), WP-03 (ContextMenu flyouts) and WP-07 (Measurements). Do not add dispatch hunks to VV's old hubs.",
+   "reason": "S05a WP-08 ports the hub files whole (they already carry the dispatch) and imports the adapter, so the units must land first and the hunks would be overwritten."
+  },
+  {
+   "id": "S05b-F10",
+   "field": "recommendation",
+   "new_value": "Port Panel__VectorTools and Styles__VectorTools verbatim in WP-S05b-V3 (inert). Register it (Na__LePanelVec__Register straight after Na__LePanelShapes__Register in VV ModeController :429) only in WP-S05b-V4, the same release as S05a WP-08 - before the hub dispatch exists VV SetTool (SheetTools__ToolState__.js:215) maps every vector tool name to Select. No VV loader STYLESHEETS change: the panel self-links its CSS (:374-377); the --na-le-* tokens it and Styles__Patterns use are undefined in both apps, so the fallbacks render identically.",
+   "reason": "Verified VV SetTool maps unknown tools to Select; registration must ship with the dispatch."
+  },
+  {
+   "id": "S05b-F11",
+   "field": "recommendation",
+   "new_value": "Port verbatim (header only) in WP-S05b-01 unless S03b WP-02 or S04b WP-01 has already landed it (whichever is first; the others skip). It unblocks GradientTool 1.1.0 (WP-S05b-V1), ShapeGeometry 1.9.0 and SheetChrome / SheetRecords (S03b WP-03 / WP-06).",
+   "reason": "ShapeRings is claimed by three slices (S03b WP-02, S04b WP-01, S05b WP-01)."
+  },
+  {
+   "id": "S05b-F12",
+   "field": "recommendation",
+   "new_value": "Leaf in WP-S05b-01 or S03b WP-02 (whichever lands first) with Na__Test__DimensionRoundUp__ (21 checks). The record keys, model options, MarkupBridge FormatDimension, ToolState / ToolSetup and the panel row come with their owners' whole-file ports: S03b WP-03 (SheetRecords, TextAndDimensions), S03b WP-07 (MarkupBridge 1.18.0+), S05a WP-04 / WP-08 (ToolSetup, ToolState), S05a WP-06 (Eyedropper 1.9.0), S06a WP-07 (Panel__Dimensions 1.6.0+), WP-S05b-07 (DimensionTool 1.12.0).",
+   "reason": "The refuted WP-03/04/05 hunks are whole-file ports in other slices (owner map, report section h)."
+  },
+  {
+   "id": "S05b-F13",
+   "field": "vv_adaptation",
+   "new_value": "Header only (log the v2.152 hunk as 1.13.0 per D-S05b-06). No interim swap to VV Snapping: TV DimensionTool:179 imports Na__LeOsnap__TARGET_DIMENSION, which VV 30__System__SheetTools/Na__LayoutEditor__Snapping__.js (exports :437-452) does not export, so the static import would blank the editor. Land after the ObjectSnap folder, DrawingGrid State and OrthoMode State.",
+   "reason": "VV Snapping export list verified: no TARGET_* constants."
+  },
+  {
+   "id": "S05b-F13",
+   "field": "recommendation",
+   "new_value": "Take TV's body verbatim in WP-S05b-07 once the ObjectSnap folder (S04b), DrawingGrid / OrthoMode State (WP-S05b-02) and the dimension record keys and create options (S03b WP-03) exist; S04b WP-07 only verifies it. VV header logs 1.13.0 for v2.152.",
+   "reason": "Referenced refuted WP-05; record keys belong to S03b WP-03."
+  },
+  {
+   "id": "S05b-F14",
+   "field": "vv_adaptation",
+   "new_value": "Header only. No interim swap to VV Snapping: TV ShapeTool:148 imports Na__LeOsnap__TARGET_SHAPE (absent from VV Snapping). Its import of the 37 adapter (:152) loads the whole 37 folder, so ShapeTool 1.10.0 lands in the switch-on release.",
+   "reason": "VV Snapping lacks TARGET_SHAPE; adapter import pulls all 37 units."
+  },
+  {
+   "id": "S05b-F14",
+   "field": "recommendation",
+   "new_value": "Port the body verbatim in WP-S05b-V4, after WP-S05b-V3 has landed the 37 units and S04b the ObjectSnap folder, in the same release as S05a WP-08.",
+   "reason": "WP-08 refuted and replaced by V3/V4."
+  },
+  {
+   "id": "S05b-F18",
+   "field": "recommendation",
+   "new_value": "Port verbatim (header + console prefix) in WP-S05b-V1, after ShapeRings and before S03b WP-06 (SheetChrome 1.14.0 calls Na__LeGrad__DrawPdf with the holes argument). S03b WP-06 lists GradientTool as a hot file - S05b owns it (D-S05b-V01).",
+   "reason": "Ownership overlap with S03b WP-06; WP-04 refuted."
+  },
+  {
+   "id": "S05b-F19",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S05b-V1 now; it must precede S06a WP-07 (Panel__Dimensions 1.7.0 passes { prefix : 'dim' }, which VV 1.0.0 ignores - it would build a second set of shape-dash controls in the Dimensions panel). Fix TV's stale PORT NOTE via WP-S05b-11.",
+   "reason": "WP-04 refuted; Panel__Dimensions is S06a WP-07."
+  },
+  {
+   "id": "S05b-F21",
+   "field": "detail",
+   "new_value": "17 code hunks (+183/-10). VV lacks the hatch deck in Push and hatch-as-fill in Hit (v2.90, unlogged in the module), Shape__Qr painting (1.6.0/1.8.0), Shape__Image pictures (1.7.0), holes (1.9.0: Holes, Rings, EdgePairs, EdgeEnd, HolesAfterInsert, RemoveVertices, ring-aware Segments/Contains/ClosestOnEdge/Push), Shape__Area as fill. TV statically imports SheetChrome PushQr, 53 ProjectQr Symbol and 54 SheetImages Paint (TV:120-125). The 54 import is a TRANSPORT dependency: SheetImages__Paint__ imports __Source__, which imports ../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js (TV's na-truevision-api client, DIV-4) and 03__AppUtils/Na__AppUtils__ProjectLoader.js; ProjectQr Symbol imports ProjectLink (the NA Project Portal URL). VV has no 80__CloudflareIntegration. ShapeGeometry is also a whole-file port in S03b WP-06, and its holes exports are a prerequisite of the ObjectSnap folder (S04b WP-02).",
+   "reason": "Traced TV 54 Paint -> Source imports; verbatim ShapeGeometry would pull TV's worker client into VV."
+  },
+  {
+   "id": "S05b-F21",
+   "field": "vv_adaptation",
+   "new_value": "Until S07a lands 53/54 with a VV transport adapter for SheetImages Source (VV's own worker / Flask, never TV's ApiClient): two documented seams - no PushQr / ProjectQr / SheetImages imports and no Shape__Qr / Shape__Image branches in Push and Hit - recorded in the PORT NOTE. Holes, the hatch deck and Area-as-fill go in verbatim.",
+   "reason": "DIV-4: VV must keep its own worker."
+  },
+  {
+   "id": "S05b-F21",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-06 (whole file, with the seams above per D-S05b-03); S05b's hunk list is its acceptance check. Never block hatch / holes on 53/54.",
+   "reason": "Ownership overlap; WP-04 refuted."
+  },
+  {
+   "id": "S05b-F22",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-06 (DimensionGeometry 1.6.0 whole, verbatim); it has no new imports and is backward compatible, so it may land any time. VV header records the version mapping (VV 1.2.0 = TV 1.3.0-1.5.1).",
+   "reason": "Whole-file port planned in S03b WP-06; WP-04 refuted."
+  },
+  {
+   "id": "S05b-F23",
+   "field": "recommendation",
+   "new_value": "Owner S06a. The 1.8.1 several-selected Edges-off fix is a one-line, dependency-free hunk already planned in S06a WP-01 (VV PanelHost:542 exports ApplyToSelection; VV Panel__Shapes:358-363 lacks the TV :546 early return) - land it first, it fixes a live VV bug. The whole 1.9.0 body (Draw at scale, Hatch block) is S06a WP-07 once HatchPatterns (WP-S05b-01), Shape__Hatch records (S03b WP-03), ToolState defaults (S05a WP-08) and Eyedropper traits (S05a WP-06) exist.",
+   "reason": "Panel__Shapes is ported by S06a WP-01/WP-07; WP-06 refuted."
+  },
+  {
+   "id": "S05b-F24",
+   "field": "recommendation",
+   "new_value": "Owner S06a WP-07 (Panel__Dimensions 1.7.0 whole) after S03b WP-03 (record keys), S03b WP-07 (MarkupBridge SheetDimensionPt), WP-S05b-V1 (LineStyleTool 1.1.0), S06a WP-02 (PanelHost LinkedPairRow / ShowLink + Linked Pair CSS) and S05a WP-06 (Eyedropper traits). WP-S05b-07 (DimensionTool create fields) should land before or with it, or new dimensions ignore the panel's settings for new dimensions.",
+   "reason": "WP-05 refuted; S06a WP-07 is the whole-file owner."
+  },
+  {
+   "id": "S05b-F25",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-03 (SheetRecords and SheetModel__Shapes whole); S05b's list is the acceptance check: the three normalisers and the create / update options, and a sheet saved before the change re-saves byte-identical.",
+   "reason": "WP-03 refuted; whole-file port in S03b WP-03."
+  },
+  {
+   "id": "S05b-F26",
+   "field": "recommendation",
+   "new_value": "Owners: S03b WP-03 (NormaliseDimension rules, SheetModel__TextAndDimensions create / patch keys), S03b WP-07 (MarkupBridge DimensionValueMm via Na__LeDrawScale__DimensionDenominator - VV DrawingScale already exports it; S03b WP-01 offers this as an early bridge), S05a WP-08 (ToolState stops hardcoding atScale).",
+   "reason": "WP-03/04 refuted; verified VV DrawingScale exports DimensionDenominator."
+  },
+  {
+   "id": "S05b-F27",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-03 / WP-04 (SheetModel__Groups AddGroupMember, SheetModel__Shapes AnnounceShapes and InsertShape afterId, facade re-exports); IsLayerSelectable via S04b WP-02 or WP-S05b-02 if the reference-layers work is late (3-line body, TV Layers:374-377). All must precede WP-S05b-V3.",
+   "reason": "WP-03 refuted; S03b/S04b own these files."
+  },
+  {
+   "id": "S05b-F28",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-06 (SheetChrome 1.14.0 whole; PushQr / picture primitives with S07a). It needs HatchPatterns (WP-S05b-01), ShapeRings and GradientTool 1.1.0 (WP-S05b-V1) first.",
+   "reason": "WP-04 refuted; S03b WP-06 ports SheetChrome whole."
+  },
+  {
+   "id": "S05b-F29",
+   "field": "recommendation",
+   "new_value": "Owner S03b WP-07 (MarkupBridge 1.20.0 whole, with PaintOrder and the Floor Areas seam). It needs DimensionRounding, DimensionGeometry 1.6.0 and LineStyleTool PatternMm first; S05b's hunk list is its acceptance check.",
+   "reason": "WP-04 refuted; S03b WP-07 ports MarkupBridge whole."
+  },
+  {
+   "id": "S05b-F30",
+   "field": "detail",
+   "new_value": "TV wiring: SheetTools__State:121/144 (TOOLS += Na__LeVec__TOOLS); ToolState:133/135/266/316/325/327/344 (Cancel, KeepsContainer, Arm, IsDrawTool, DrawInsideOpenGroup); PointerPress:195/591; PointerDrag:405/450/834/869; Keyboard:246/431-437/481/564/650-655/732/848/854 (ToolForAction, CommandForAction, RunCommand, situations, StepBack, TakesAxis, SwallowsArrows); ContextMenu:206/303/401/522; SheetTools:489-490/673-676 (Measurements context, SetSpeaker); Measurements 1.9.0 :413/:557-564/:615/:798-799 (vector branch, TypingExtras d/s/r). Also: SheetTools:488 imports Na__LeMeasure__Say and :676 wires SetSpeaker to it - VV Measurements 1.4.0 has no Say (TV 1.6.0); and the adapter's menu rows are submenu flyouts (VectorTools__:644/:652) that VV ContextMenu 1.0.0 cannot show. All eight files are S05a whole-file ports (WP-07 Measurements, WP-08 hub) that already contain this dispatch.",
+   "reason": "Two prerequisites were missed; the files are whole-file ports in S05a."
+  },
+  {
+   "id": "S05b-F30",
+   "field": "recommendation",
+   "new_value": "Do not hunk VV's old hubs. The dispatch arrives with S05a WP-08 (State 1.8.0, ToolState 1.7.0, PointerPress 1.10.0, PointerDrag 1.19.0, Keyboard 1.18.0, SheetTools 1.39.0, SheetTools__ContextMenu 1.7.0 whole) and S05a WP-07 (Measurements 1.10.0); S05b supplies the 37 units first (WP-S05b-V3) and proves the result with Na__Test__VectorBooleans__ keyboard checks in WP-S05b-V4.",
+   "reason": "WP-08 refuted; ownership with S05a."
+  },
+  {
+   "id": "S05b-F31",
+   "field": "recommendation",
+   "new_value": "Owner S05a: SelectionBox 1.7.0 in S05a WP-06; PointerPress 1.10.0, Keyboard 1.18.0, SheetTools__ContextMenu 1.7.0 and HitResolution 1.11.0 in S05a WP-08 (each already carries the v2.150 holes code); ObjectSnap Sources 1.2.0 in S04b. Release gate: S05a WP-08 ships in the same VV release as the Boolean tools (WP-S05b-V4) - never expose Booleans without it.",
+   "reason": "WP-09 refuted; all five files are S05a whole-file ports."
+  },
+  {
+   "id": "S05b-F32",
+   "field": "recommendation",
+   "new_value": "Owner S05a WP-06 (Eyedropper 1.9.0 + v2.152 whole), which carries all seven trait rows (TV :299-304, :322); land it before S06a WP-07 so several-selected panel edits carry hatch and dimension styles.",
+   "reason": "WP-05/06 refuted; S05a WP-06 owns Eyedropper."
+  },
+  {
+   "id": "S05b-F33",
+   "field": "recommendation",
+   "new_value": "WP-S05b-V2: Na__LeHatch__Ready in the ready Promise.all (VV :828), Na__LePanelPatterns__Register after the Scrapbook registrations, 'patterns' in AccordionSections. WP-S05b-V4: Na__LePanelVec__Register straight after Na__LePanelShapes__Register and Na__LeVec__Initialize after Na__LeHist__Initialize, in the switch-on release. ModeController is S03a's file; S03a defers these hunks to the feature ports (S03a report lines 503, 506), so serialise with S03a.",
+   "reason": "WP-06/08 refuted and replaced by V2/V4."
+  },
+  {
+   "id": "S05b-F34",
+   "field": "tv_version",
+   "new_value": "1.24.0 (Circle/Arc added in 1.21.0)",
+   "reason": "TV Toolbar header log tops at 1.24.0 (29-Sep-2026); 1.21.0 is the version that added Circle/Arc."
+  },
+  {
+   "id": "S05b-F34",
+   "field": "recommendation",
+   "new_value": "Owner S06a (WP-10 ports Toolbar 1.24.0 whole; WP-03 its subtractive phase). If S06a WP-10 is not in the switch-on release, WP-S05b-V4 applies only the Circle / Arc hunk (TV :207-208 imports, :446-447 buttons) in that release - never before the hub dispatch, or the buttons pick Select (VV ToolState:215).",
+   "reason": "Toolbar ownership with S06a; WP-08 refuted."
+  },
+  {
+   "id": "S05b-F35",
+   "field": "recommendation",
+   "new_value": "Owner S05a WP-05 (git mv Na__LayoutEditor__KeyMappings__.json -> Na__Hotkeys__DrawingTabs__.json with TV's content, ConfigState__KeyMap 1.11.0 incl. When context and the fallback rows); the rows stay inert until the hub (S05a WP-08) and the 37 units (WP-S05b-V3) exist. Only KeyMap:63 loads the file by name in VV; the other five references are prose. No new clash with VV's own rows or with VV's global 3D hotkey dictionary (02__AppData/Na__ValeVision__HotkeysDictionary__.json: plain R, B, T, Y, V, D, O and Alt+Shift+F).",
+   "reason": "WP-08 refuted; key map is S05a WP-05; global hotkeys checked."
+  },
+  {
+   "id": "S05b-F36",
+   "field": "detail",
+   "new_value": "VV AppConfig lacks Dimensions DefaultAtScale, DefaultExtensionMm, ExtensionNote, DefaultRoundUp, RoundUpStepMm, RoundUpMarker, RoundUpNote; Shapes DefaultAtScale, AtScaleNote; labels DimAtScale(+Title), DimAtSheetScale, DimPaperMeasure, DimRoundUp(+Title), DimRoundedShown, ShapeAtScale(+Title), 15 ShapeHatch* labels (ShapeHatch, -Colour, -ColourTitle, -Missing, -None, -Pattern, -Pt, -PtTitle, -Rotation, -RotationTitle, -Scale, -ScaleTitle, -Standard, -StandardTitle, -Title), 9 Patterns* labels; AccordionSections lacks 'patterns' (TV :282 vs VV :231). ConfigState__ToolSetup VV 1.0.0 vs TV 1.5.0. ToolState defaults: VV hardcodes atScale true (:153, :162) and has no hatchOn/hatch, roundUp, linePt, dashOn/dash, extension defaults (TV ToolState:219-223, :232-235).",
+   "reason": "Recount of TV-only ShapeHatch* keys gives 15, not 13."
+  },
+  {
+   "id": "S05b-F36",
+   "field": "recommendation",
+   "new_value": "Owners: ConfigState__ToolSetup readers and the Dimensions / Shapes config keys - S05a WP-04; ToolState defaults - S05a WP-08 (ToolState 1.7.0 + v2.152 whole); Dim* / ShapeHatch* labels - S06a WP-07; Patterns* labels and 'patterns' in AccordionSections - WP-S05b-V2. Keep VV's correct Measure* label placement (S05b-F53).",
+   "reason": "WP-03 refuted; config ownership spread across S05a, S06a and V2."
+  },
+  {
+   "id": "S05b-F37",
+   "field": "recommendation",
+   "new_value": "Owner S06a WP-02 (PanelHost 1.6.0 and Styles__Panels whole, incl. LinkedPairRow / ShowLink and the Linked Pair region); VV's loader already links Styles__Panels__.css.",
+   "reason": "WP-05 refuted; S06a WP-02 ports both files whole."
+  },
+  {
+   "id": "S05b-F38",
+   "field": "detail",
+   "new_value": "DimensionTool, ShapeTool, RectangleTool, LeaderTool and all six 37 tools import 28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js (Snap(sheet, point, exclude, options) with options.from for Perpendicular; ShowMarker with target; KIND_END, TARGET_SHAPE/DIMENSION). VV tools import VV-only 30__System__SheetTools/Na__LayoutEditor__Snapping__.js (Snap(..., tone)). TV Snap still accepts a legacy tone string and VV Snap treats an object tone as the vertex tone, BUT VV Snapping exports no TARGET_DIMENSION / TARGET_SHAPE (exports :437-452), so an interim import swap is possible only for RectangleTool, LeaderTool and the six 37 tools - not for DimensionTool (:179) or ShapeTool (:148).",
+   "reason": "VV Snapping export list verified."
+  },
+  {
+   "id": "S05b-F38",
+   "field": "recommendation",
+   "new_value": "Sequence WP-S05b-07 after the ObjectSnap folder (S04b) and swap the drawing-tool imports in the same commit; no interim swap for DimensionTool or ShapeTool. S04b WP-07 (same five files) becomes verify-only (D-S05b-V01).",
+   "reason": "Interim swap impossible for two tools; S04b WP-07 overlaps."
+  },
+  {
+   "id": "S05b-F41",
+   "field": "evidence",
+   "new_value": "TV HatchPatterns:108-111; WCP/server.py:871-888 (/ValeVision3D/<path:filename>); VV ScrapbookCustom__Transport__:81; VV ledger:522 (no PWA worker). Live host verified: D:/10_CoreLib__ValeCodebase/_config.yml 2.0.0 publishes every tracked file not excluded (exclude list: markdown, tooling, tests, archives, email templates); production base https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/ (VV 63__Feature__AppNotificationEmail GenerateEmail Logic:37; 03__AppUtils/Na__AppUtils__ProjectLoader.js:93).",
+   "reason": "Closes the survey's unverified live-host item."
+  },
+  {
+   "id": "S05b-F41",
+   "field": "recommendation",
+   "new_value": "No action on WCP/CloudflareWorker or WCP/server.py. A tracked WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/ publishes on GitHub Pages with no _config.yml change; do not add it to the exclude list, and do not copy the two OS_Symbol PNGs (they would publish too).",
+   "reason": "Live host behaviour verified."
+  },
+  {
+   "id": "S05b-F42",
+   "field": "recommendation",
+   "new_value": "Port in WP-S05b-10. Its pure-module part runs after WP-S05b-01; its key part needs S05a WP-05 (the key file renamed to Na__Hotkeys__DrawingTabs__.json, read by name at :399, and KeyMap 1.11.0 with only the prefix import, :396). Header text only.",
+   "reason": "Key-file rename and KeyMap port are S05a WP-05."
+  },
+  {
+   "id": "S05b-F43",
+   "field": "recommendation",
+   "new_value": "Port in WP-S05b-10 after WP-S05b-V4 and S05a WP-05 / WP-08: it loads the shipped SheetTools__State and SheetTools__Keyboard and the renamed key file (:614-615), so it passes only on TV's hub files. Header text only once the key file is renamed.",
+   "reason": "Depends on S05a hub and key ports, not on the refuted WP-08/09."
+  },
+  {
+   "id": "S05b-F44",
+   "field": "recommendation",
+   "new_value": "Port in WP-S05b-10 as the single owner (S03b WP-03/06 and S06a WP-07 also list it - they should cite it as acceptance only). If D-S05b-V02 resolves to the dormant site plan port, port it verbatim; otherwise guard the site plan pack (:90, :109-111, :158-160, :353-354) and NormaliseSitePlanHatches (:402) checks and list the adaptation at the top of the test.",
+   "reason": "Test is triple-claimed; adaptation depends on D-S04a-01."
+  },
+  {
+   "id": "S05b-F45",
+   "field": "recommendation",
+   "new_value": "Port with whichever package lands DimensionRounding first (WP-S05b-01 or S03b WP-02); S06a WP-07 cites it as acceptance only. Header text only.",
+   "reason": "Test is claimed by S03b WP-02 and S06a WP-07 too."
+  },
+  {
+   "id": "S05b-F52",
+   "field": "detail",
+   "new_value": "TV: a plain vector's menu has 'Vector tools >' (pick up a tool, Split here); a closed vector also 'Boolean tools >'; several selected closed shapes get a 'Boolean' row with key hints; a holed shape greys 'Open shape'. Measurements box reads Radius/Bulge/Angle/Distance, accepts d/s/r only for these tools, and shows one-line speaker messages. Previews: red goes, blue arrives, heavy blue held, purple fence. VV has none. The '>' rows are submenu flyouts and the key hints are row hints (TV VectorTools__:644, :652); VV ContextMenu 1.0.0 has no submenu or hint support (it renders label and calls onSelect, :96-103), and the speaker line needs Measurements Say (TV 1.6.0), absent in VV 1.4.0.",
+   "reason": "Missed ContextMenu 1.1.0 and Measurements Say prerequisites."
+  },
+  {
+   "id": "S05b-F52",
+   "field": "recommendation",
+   "new_value": "Comes with the switch-on release (WP-S05b-V4) together with S05a WP-03 (ContextMenu 1.1.0 flyouts), WP-07 (Measurements 1.10.0) and WP-08 (SheetTools__ContextMenu 1.7.0, SheetTools 1.39.0); acceptance script per TV PLAN section 7.",
+   "reason": "Owners and prerequisites corrected."
+  },
+  {
+   "id": "S05b-F56",
+   "field": "detail",
+   "new_value": "ShapeTool 1.7.0 and RectangleTool 1.3.0 forward defaults.area and defaults.layerId to CreateShape (measured rooms on the Floor Areas layer), and RectangleTool 1.4.0 hands corners to defaults.land (Note Region tool). VV CreateShape honours opts.layerId (VV SheetModel__Shapes:116-122) and ignores opts.area; nothing in VV sets d.layerId, d.area or d.land (only TV's Area and Region tools do), so layerId arrives null, the vector layer is used, and verbatim bodies change nothing in VV.",
+   "reason": "The survey said VV CreateShape ignores unknown options; it actually honours layerId - conclusion (inert) unchanged."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S05b-V01",
+   "category": "wiring",
+   "title": "Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole",
+   "detail": "S05b WP-03/04/05/06/08/09 apply anchored TV hunks to files other slices port WHOLE: SheetRecords, SheetModel__Shapes/Groups/TextAndDimensions and the facade (S03b WP-03/04); SheetChrome, ShapeGeometry, DimensionGeometry (S03b WP-06); MarkupBridge (S03b WP-07); ToolState and the hub State/PointerPress/PointerDrag/Keyboard/SheetTools/SheetTools__ContextMenu/HitResolution (S05a WP-08); Eyedropper, SelectionBox, EditScope (S05a WP-06); Measurements (S05a WP-07); KeyMap + key JSON incl. the rename (S05a WP-05); ToolSetup + AppConfig keys (S05a WP-04); PanelHost + Styles__Panels (S06a WP-02); Panel__Shapes / Panel__Dimensions (S06a WP-07, 1.8.1 fix in WP-01); Toolbar (S06a WP-10). Leaves are claimed two or three times: ShapeRings (S03b WP-02, S04b WP-01, S05b WP-01), DimensionRounding (S03b WP-02, S05b WP-01), Curves (S04b WP-01, S05b WP-01); the five drawing tools by S04b WP-07 and S05b WP-07; tests DimensionRoundUp / HatchLineControls by S03b, S06a and S05b. Dependency inversions: S03b WP-03 (TV SheetRecords:396 imports HatchPatterns) and WP-06 (TV SheetChrome:191 imports HatchPatterns and calls GradientTool DrawPdf with holes) need WP-S05b-01/V1 first; S05a WP-08 needs the whole 37 folder first (TV ToolState:133, PointerPress:195, PointerDrag:405, Keyboard:246, SheetTools:489, SheetTools__ContextMenu:206 import the adapter, which imports every unit); S06a WP-10 (Toolbar:207-208) needs 37 State/Setup; S06a WP-07 needs LineStyleTool 1.1.0; the ObjectSnap folder needs Curves and ShapeGeometry Rings/EdgePairs.",
+   "recommendation": "Adopt the owner map in report section (h) (decision D-S05b-V01): whole-file owners edit their files; S05b keeps LE/35, LE/36, LE/37, the app-root 52 library, its four Node suites and the ModeController hatch / vector hunks; S05b's old hunk lists become the owners' acceptance checklists; follow the integrated order in section h3. A bridge hunk is allowed only inside the owning package's file lock.",
+   "action": "needs_decision",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/"
+   ],
+   "evidence": "S03b report WP-S03b-02/03/04/06/07 (lines 621-692, GradientTool listed as WP-06 hot file); S04b WP-S04b-01/02/07 (lines 603-609); S05a WP-S05a-03..08 (lines 343-379) and its d.1 row for 37 (line 223); S06a WP-S06a-01/02/07/10 (lines 585-747); S03a lines 503/506 (ModeController hunks deferred to the feature ports); TV import lines as cited.",
+   "est_lines": 0
+  },
+  {
+   "id": "S05b-V02",
+   "category": "wiring",
+   "title": "Vector-tool menus and the speaker line need ContextMenu 1.1.0 flyouts and Measurements Say (missed prerequisites)",
+   "detail": "The adapter builds its right-click rows as submenu flyouts ('Vector tools >' TV VectorTools__:652, 'Boolean tools >' :644) and the several-selected Boolean row carries key hints. VV 30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js is 1.0.0 with no submenu support (0 occurrences; it renders item.label and calls item.onSelect, :96-103), so those rows would be dead buttons; TV ContextMenu 1.1.0 (21-Sep, Layer row flyouts) added flyouts and hints. Separately TV SheetTools__.js:488 imports Na__LeMeasure__Say and :676 wires Na__LeVec__SetSpeaker to it; VV Measurements 1.4.0 has no Say (TV 1.6.0, v2.113), so a TV hub would fail Na__Verify__Exports__ without Measurements 1.6.0+.",
+   "recommendation": "Make S05a WP-03 (ContextMenu 1.1.0) and S05a WP-07 (Measurements 1.10.0) explicit prerequisites of the switch-on release WP-S05b-V4. Acceptance: right-clicking a plain vector shows 'Vector tools >' opening a flyout; a refused trim shows its line above the Measurements box.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js"
+   ],
+   "tv_version": "ContextMenu 1.1.0 / Measurements 1.10.0",
+   "vv_version": "ContextMenu 1.0.0 / Measurements 1.4.0",
+   "evidence": "grep -c submenu: VV ContextMenu 0, TV 12; TV ContextMenu log 1.1.0 (:50-62); TV SheetTools:488, :676; TV Measurements:1176 (Say) and log 1.6.0 (:125); VV Measurements log tops at 1.4.0 (:72).",
+   "est_lines": 0,
+   "depends_on": [
+    "S05b-V01"
+   ]
+  },
+  {
+   "id": "S05b-V03",
+   "category": "wiring",
+   "title": "Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreachable files",
+   "detail": "VV SheetTools__ToolState__.js:215 maps an unknown tool name to Select, so a Vector Tools panel or Circle / Arc button wired before the hub dispatch (S05a WP-08) silently picks Select. Conversely TV ShapeTool:152 and the TV hub files import the adapter Na__LayoutEditor__VectorTools__.js, which imports all eight units (and through them ObjectSnap Search, OrthoMode State, ViewportRotation, PaintOrder, SheetModel AddGroupMember / AnnounceShapes / IsLayerSelectable, ShapeGeometry Rings), so landing any of them loads the whole folder. VV's Na__Verify__Exports__ checks every module under 02__Src__AppModules ('With no arguments it checks every module'), so 'inert' landing is only possible once a unit's imports resolve. Baseline 01-Oct-2026: Exports PASS (415 files); ModuleGraph PASS (517 modules from 1 entry, follows dynamic import(), 1 known vendor issue).",
+   "recommendation": "Land the units inert in WP-S05b-V3 after their imports resolve; register the panel, add the toolbar buttons and land ShapeTool 1.10.0 only in WP-S05b-V4, the same release as S05a WP-08; run both verifiers after every batch.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js",
+    "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs"
+   ],
+   "evidence": "VV ToolState:214-216; TV ShapeTool:152; TV adapter import list (all units); VV Na__Verify__Exports__.mjs header; verifier runs in VV (read-only).",
+   "est_lines": 0,
+   "depends_on": [
+    "S05b-V01"
+   ]
+  },
+  {
+   "id": "S05b-V04",
+   "category": "test",
+   "title": "Three more TV suites load this slice's files; two suites are claimed by three slices",
+   "detail": "Na__Test__OrthoMode__.test.mjs loads the shipped 35/ShapeTool (:225), 35/DimensionTool (:272) and 15/DimensionGeometry (:270) with stubbed imports (owned by S04b; passes on VV only once WP-S05b-07 and ShapeTool 1.10.0 land); Na__Test__ObjectSnap__.test.mjs loads 37/VectorTools__Curves__ (:161; needs WP-S05b-01); Na__Test__ScrapbookProjectQr__.test.mjs loads ShapeGeometry (:374; S07a). Na__Test__DimensionRoundUp__ is also listed by S03b WP-02 and S06a WP-07; Na__Test__HatchLineControls__ by S03b WP-03/06 and S06a WP-07.",
+   "recommendation": "Schedule the S04b OrthoMode suite after WP-S05b-07 / V4 and the ObjectSnap suite after WP-S05b-01; give DimensionRoundUp and HatchLineControls one owner (WP-S05b-10, or the package that lands the leaf) and let the others cite them as acceptance.",
+   "action": "port_test",
+   "severity": "low",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs"
+   ],
+   "vv_paths": [],
+   "evidence": "grep of TV 80__Testing__PrototypeEnvironment for 35/36/37/ShapeGeometry/DimensionGeometry paths; S03b WP-02/03/06, S06a WP-07 test lists.",
+   "est_lines": 0
+  },
+  {
+   "id": "S05b-V05",
+   "category": "tooling",
+   "title": "Vendored Clipper2 index notes go stale when the Boolean leaf lands",
+   "detail": "VV 04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__ImportMap__Index__.json says no ValeVision3D module calls clipper2-js directly (coordinatedSetNote :6, usedBy :32); TV's index says the same (:35). From WP-S05b-01, VectorTools__Boolean__.js:81 imports clipper2-js by relative path (the same file the import map names - content equal to TV after CR removal), and its correctness rests on 0.9.0's flat execute with PolyTree, InflatePaths and InvalidRect64 avoided (TV PLAN__VectorTools section 10), so a future upgrade of the coordinated set must re-run Na__Test__VectorBooleans__.",
+   "recommendation": "In WP-S05b-01 update VV's index notes (usedBy names 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js; coordinatedSetNote adds that upgrading clipper2-js requires Na__Test__VectorBooleans__); send the same note to TV via WP-S05b-11.",
+   "action": "fix_ledger",
+   "severity": "low",
+   "tv_paths": [
+    "04__Lib__ThirdParty__VersionLocked/TrueVision__Dependencies__ImportMap__Index__.json"
+   ],
+   "vv_paths": [
+    "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__ImportMap__Index__.json"
+   ],
+   "evidence": "VV index :6, :28-32; TV index :7, :31-35; md5 of fesm2020/clipper2-js.mjs equal after CR removal in both apps.",
+   "est_lines": 4,
+   "depends_on": [
+    "S05b-F07"
+   ]
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S05b-V01",
+   "question": "Who edits each shared hot file? S05b's hunk-level packages (old WP-03/04/05/06/08/09) touch SheetRecords, the SheetModel units, SheetChrome, ShapeGeometry, DimensionGeometry, MarkupBridge, ToolState, the sheet-tools hub, Eyedropper, SelectionBox, KeyMap, Measurements, PanelHost, Styles__Panels, Panel__Shapes, Panel__Dimensions and Toolbar - each of which S03b, S05a or S06a ports whole.",
+   "options": "(a) whole-file owners win (owner map in the S05b report section h); S05b keeps LE/35, LE/36, LE/37, the 52 library, its tests and the ModeController hatch / vector hunks, and its hunk lists become acceptance checklists; (b) S05b lands its hunks first as declared bridges and the whole-file ports re-take the files later.",
+   "recommendation": "(a). Two agents must never edit one file in parallel; allow a bridge only inside the owning package's file lock and only when that package is more than one release away.",
+   "blocks": [
+    "WP-S05b-V1",
+    "WP-S05b-V2",
+    "WP-S05b-V3",
+    "WP-S05b-V4",
+    "WP-S05b-07"
+   ]
+  },
+  {
+   "id": "D-S05b-V02",
+   "question": "Resolve D-S05b-01 (which hatch packs) and D-S05b-02 (Patterns panel form) together with D-S04a-01 (site plans in ValeVision).",
+   "options": "(a) D-S04a-01 = dormant verbatim site plan port: Panel__Patterns verbatim, Site Plan pack listed after Construction, Na__Test__HatchLineControls__ verbatim; (b) no site plans: D-S05b-01 (a) Construction only + D-S05b-02 (a) library-only adapted panel, test guarded.",
+   "recommendation": "Decide D-S04a-01 first, then apply (a) or (b) once; never ship the adapted panel and re-port it verbatim a release later.",
+   "blocks": [
+    "WP-S05b-01",
+    "WP-S05b-V2",
+    "WP-S05b-10"
+   ]
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S05b-03",
+   "reason": "Every file is ported whole elsewhere: SheetRecords, SheetModel__Shapes/Groups/TextAndDimensions and the facade (S03b WP-03/04), ToolState (S05a WP-08), ConfigState__ToolSetup and AppConfig dimension/shape keys (S05a WP-04), Dim*/ShapeHatch* labels (S06a WP-07). Keep its scope as the acceptance checklist of those packages (D-S05b-V01)."
+  },
+  {
+   "id": "WP-S05b-04",
+   "reason": "SheetChrome, ShapeGeometry and DimensionGeometry are S03b WP-06 whole-file ports and MarkupBridge is S03b WP-07 (its AtScale line also S03b WP-01's bridge). The S05b-owned GradientTool 1.1.0 and LineStyleTool 1.1.0 move to WP-S05b-V1."
+  },
+  {
+   "id": "WP-S05b-05",
+   "reason": "Panel__Dimensions is S06a WP-07 (whole), PanelHost and Styles__Panels S06a WP-02 (whole), Eyedropper traits S05a WP-06 (Eyedropper 1.9.0 + v2.152 whole); DimensionTool create fields come with WP-S05b-07's whole body (land it before or with S06a WP-07)."
+  },
+  {
+   "id": "WP-S05b-06",
+   "reason": "Panel__Shapes 1.9.0 is S06a WP-07 (1.8.1 fix in S06a WP-01), the Eyedropper hatch trait S05a WP-06, labels S06a WP-07. The S05b-owned remainder (Panel__Patterns and the ModeController Hatch Ready / Patterns registration / accordion hunks) is WP-S05b-V2."
+  },
+  {
+   "id": "WP-S05b-08",
+   "reason": "Mixes S05b-owned 37 units with anchored hunks into VV's OLD hubs (SheetTools__State, ToolState, PointerPress, PointerDrag, Keyboard, SheetTools__ContextMenu, SheetTools, Measurements, KeyMap) that S05a WP-05/07/08 replace whole with TV files already carrying the dispatch; also missed ContextMenu 1.1.0 flyouts (S05a WP-03) and Measurements Say (S05a WP-07). Replaced by WP-S05b-V3 (units inert) and WP-S05b-V4 (cross-slice switch-on release)."
+  },
+  {
+   "id": "WP-S05b-09",
+   "reason": "All five files are S05a whole-file ports (SelectionBox 1.7.0 in S05a WP-06; PointerPress 1.10.0, Keyboard 1.18.0, SheetTools__ContextMenu 1.7.0, HitResolution 1.11.0 in S05a WP-08), each already carrying the v2.150 holes code. Its rule survives as a release gate inside WP-S05b-V4."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S05b-V1",
+   "title": "GradientTool 1.1.0 and LineStyleTool 1.1.0 (S05b-owned drawing-tool leaves)",
+   "scope": "Verbatim TV bodies below VV headers for 35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js 1.1.0 (DrawPdf(doc, points, gradient, holes), even-odd clip for holed shapes; imports Na__LeRings__Spans) and Na__LayoutEditor__LineStyleTool__.js 1.1.0 (BuildRows / RefreshRows / RegisterControls take { prefix, dashedLabel, dashedTitle }); console prefix [ValeVision3D LayoutEditor]; full PORT NOTEs. Both config JSONs stay byte-identical.",
+   "depends_on": [
+    "WP-S05b-01"
+   ],
+   "size": "S",
+   "acceptance": [
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs exits 0",
+    "The Vectors panel's Dashed edges rows are unchanged (controls shape-dash..., the prefix defaults to 'shape')",
+    "A gradient on a shape without holes prints with the same PDF clip as before",
+    "Lands before S03b WP-06 (SheetChrome 1.14.0) and S06a WP-07 (Panel__Dimensions 1.7.0)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js"
+   ],
+   "hot_files": [],
+   "risk": "S03b WP-06 lists GradientTool as its hot file; D-S05b-V01 gives the file to S05b. Needs ShapeRings (S03b WP-02 or WP-S05b-01).",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S05b-V2",
+   "title": "Patterns panel and the hatch ready chain",
+   "scope": "36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js 1.1.0 - verbatim if D-S04a-01 adopts the dormant site plan port, else the library-only adaptation of D-S05b-02 (no SpStore import, no IsSitePlanViewport, no per-layer rows; seam in the PORT NOTE). ModeController hunks that S03a defers to this port: Na__LeHatch__Ready() in the ready Promise.all (VV :828); Na__LePanelPatterns__Register() after the Scrapbook registrations so it lands on the Properties tab; AppConfig 'patterns' in LayoutEditor__Panels__AccordionSections and the 9 Patterns* labels.",
+   "depends_on": [
+    "WP-S05b-01"
+   ],
+   "size": "S",
+   "acceptance": [
+    "The Patterns section appears on the Properties tab, hidden until the library loads, with the Construction tiles drawn in #333333",
+    "The first sheet paints only after Na__LeHatch__Ready resolves; a missing library leaves an empty, hidden section and no error",
+    "Lands no later than S06a WP-07 (the Vectors panel hatch block)",
+    "Na__Verify__Exports__ exits 0"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "risk": "ModeController is S03a's file and AppConfig is edited by many slices - serialise. Panel form blocked on D-S05b-V02.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S05b-V3",
+   "title": "The 37 interactive units, adapter and Vector Tools panel landed inert",
+   "scope": "Verbatim below VV headers: VectorTools__Preview__, __Targets__, __CircleTool__, __ArcTool__, __TrimTool__, __JoinTool__, __OffsetTool__, __BooleanTool__, the adapter Na__LayoutEditor__VectorTools__.js, Na__LayoutEditor__Panel__VectorTools__.js and Na__LayoutEditor__Styles__VectorTools__.css. No ModeController registration, no hub edit, ShapeTool unchanged - nothing imports them yet.",
+   "depends_on": [
+    "WP-S05b-01",
+    "WP-S05b-02"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Na__Verify__Exports__ exits 0 (it checks unreachable modules too)",
+    "Na__Verify__ModuleGraph__ result unchanged (the units are not reachable yet)",
+    "The editor behaves exactly as before",
+    "Header-stripped code diff of every file against TV is empty apart from console prefixes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/"
+   ],
+   "hot_files": [],
+   "risk": "Blocked until ObjectSnap Search (S04b), SheetModel AddGroupMember / AnnounceShapes / IsLayerSelectable / InsertShape afterId (S03b WP-03/04, S04b WP-02), ShapeGeometry Rings (S03b WP-06), OrthoMode State, ViewportRotation and PaintOrder resolve.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S05b-V4",
+   "title": "Vector tools and Booleans switched on (one cross-slice release)",
+   "scope": "In ONE VV release with S05a WP-03 (ContextMenu 1.1.0 flyouts), WP-05 (KeyMap 1.11.0, key file renamed, 13 vector / Boolean rows), WP-07 (Measurements 1.10.0) and WP-08 (hub whole, incl. dispatch and the v2.150 holes code): ShapeTool 1.10.0 verbatim; ModeController Na__LePanelVec__Register() straight after Na__LePanelShapes__Register() and Na__LeVec__Initialize() after Na__LeHist__Initialize(); Toolbar Circle / Arc hunk (TV :207-208, :446-447) unless S06a WP-10 ships in the same release.",
+   "depends_on": [
+    "WP-S05b-V3",
+    "WP-S05b-07"
+   ],
+   "size": "M",
+   "acceptance": [
+    "TV PLAN__VectorTools section 7 script passes in VV with writes blocked: C + two clicks + 750 Enter; 6s hexagon; four arc modes",
+    "T on the sheet is Text; inside a group T is Trim and the group stays open; Shift+T Extend; a three-line fence undoes in one Ctrl+Z",
+    "Three wall rectangles Shift+U into one outline; Subtract cuts a hole; Shift+O fills it; a capital U typed in a text box leaves shapes alone",
+    "Inserting a point on a holed outline keeps the hole; deleting two of its corners removes it; a click in a hole selects what is under it",
+    "Right-click a plain vector shows 'Vector tools >' opening a flyout",
+    "Na__Test__VectorTools__ 138/138 and Na__Test__VectorBooleans__ 148/148 against VV files; Na__Verify__Exports__ exits 0"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "risk": "Highest coordination risk: five packages from two slices must ship together; a partial release leaves buttons that pick Select (VV ToolState:215), dead flyout rows, or Booleans without holes-aware vertex edits.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorTools__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "Cross-slice ownership of every hot file this slice touches (S03a, S03b, S04a, S04b, S05a, S06a, S07a reports read for scope and dependencies)",
+  "Missed prerequisites: ContextMenu 1.1.0 submenu flyouts and Measurements Say for the vector tools",
+  "ShapeGeometry verbatim reaches TV's Cloudflare ApiClient through 54 SheetImages Paint -> Source (DIV-4)",
+  "ObjectSnap Sources needs ShapeGeometry Rings/EdgePairs, IsLayerSelectable and GetSheetChrome besides Curves",
+  "Interim VV Snapping swap impossible for DimensionTool and ShapeTool (TARGET_* not exported)",
+  "VV live host verified: GitHub Pages via ValeCodebase/_config.yml publishes the new 52 library folder unchanged",
+  "Reverse-export check: no VV-only export is dropped by the verbatim TV bodies in scope",
+  "VV global 3D hotkey dictionary checked: no new key clash",
+  "VV verifier baseline run read-only: Exports PASS 415 files, ModuleGraph PASS (1 known vendor issue)",
+  "Other TV suites that load this slice's files: OrthoMode, ObjectSnap, ScrapbookProjectQr",
+  "Coupling of the hatch-pack and Patterns-panel decisions to D-S04a-01"
+ ],
+ "notes": "The survey is accurate on facts. I re-checked every critical and high finding (23 of 23) and most medium and low ones against the source. None was refuted. All 'VV lacks' claims hold: grep of all VVM found no equivalent under another name, and every VV-side line in the 11 shared files is older TV code. Version, devlog and line citations matched, the live VV bug (v2.106 Edges-off) is real, and the TV hatch-default defect and the config label misplacement are confirmed. Corrections: (1) the interim swap to VV Snapping cannot work for DimensionTool or ShapeTool, because VV Snapping exports no TARGET_*; (2) the ObjectSnap load-order trap also needs ShapeGeometry Rings/EdgePairs, IsLayerSelectable and GetSheetChrome; (3) a verbatim ShapeGeometry pulls in TV's Cloudflare ApiClient through 54 SheetImages Source (DIV-4); (4) TV Toolbar is 1.24.0; there are 15 ShapeHatch labels; VV CreateShape honours layerId; (5) ContextMenu flyouts and Measurements Say were missing prerequisites. The material problem is planning: six of the eleven work packages patch hunks into files that S03b, S05a and S06a port whole, and two of those slices depend on this one (S03b SheetRecords/SheetChrome import HatchPatterns; the S05a hub imports the whole 37 folder). I refuted WP-03/04/05/06/08/09 as standalone packages, added V1-V4 and an owner map with an integrated order (report section h), and added decisions D-S05b-V01 (one owner per file) and D-S05b-V02 (hatch packs and Patterns panel follow D-S04a-01). Watch: the switch-on must be one release across S05a and S05b; Verify__Exports checks unreachable files, so inert landings need resolvable imports; tests DimensionRoundUp and HatchLineControls are claimed by three slices. Not verified: no in-app or Node test runs; the 37 unit bodies were not traced end to end."
+}

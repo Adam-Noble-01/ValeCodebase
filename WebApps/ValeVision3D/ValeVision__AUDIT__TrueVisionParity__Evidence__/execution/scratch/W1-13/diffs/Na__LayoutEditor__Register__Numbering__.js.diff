@@ -1,0 +1,17 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js
++++ VV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - DRAWING REGISTER NUMBERING
++// VALEVISION3D - LAYOUT EDITOR - DRAWING REGISTER NUMBERING
+@@ -25,2 +25,9 @@
+-// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the register tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js
++// - Source version: 1.0.1 (TrueVision3D v2.69.0, 19-Sep-2026, the first release whose log names the Drawing
++//                   Register; the file is unchanged since it was first committed that day; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-13}}, ahead of the rest of the Drawing Register:
++//                   the sheet model's renumber imports it
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.

@@ -1,0 +1,84 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+
+ValeVision3D - Spell Check dictionary
+
+  What a word is
+  PASS  words and their offsets, an apostrophe inside a word kept
+  PASS  a hyphen, a slash, a dot and an ampersand end a word
+  PASS  letters beyond English are letters (Schlüter, Øresund)
+  PASS  the word the caret is inside
+  PASS  the word the caret has just finished
+  PASS  no word where the caret is between two spaces
+  PASS  Add takes exactly the words the server takes, candidate for candidate
+  PASS  ...which are these
+
+  Matching (the shipped dictionary, read through the local server's route)
+  PASS  nothing is known before the dictionary is read
+  PASS  once read, it says so, once
+  PASS  the route says it can be written
+  PASS  ...so there is no reason to give
+  PASS  every shipped entry's words are known (338 entries, more words)
+  PASS  in any case
+  PASS  with 's and with ’s
+  PASS  with a plural s and a plural es
+  PASS  the words of an entry of several words
+  PASS  abbreviations in any case
+  PASS  what the dictionary does not have
+  PASS  an entry says which group holds it, and that the word IS the entry
+  PASS  a word that is part of an entry says so
+  PASS  the stretches a box leaves to the dictionary, on a specification line
+
+  Add and Remove (through the stubbed route)
+  PASS  Add sends one word, trimmed, and answers ok and changed
+  PASS  ...the answered dictionary is taken: the word is known
+  PASS  ...and the change is announced as added
+  PASS  ...in the app's own group
+  PASS  Remove takes it out again
+  PASS  two words never reach the server, and say why
+  PASS  a word the file has already: ok, not changed
+  PASS  a file broken by hand after it was read: Add says where, and is not switched off for when it is put right
+
+  Without the route
+  PASS  a Whitecardopedia server without the route: read from the file, and "restart"
+  PASS  ...and Add refuses without asking the server, saying to restart it
+  PASS  ...in the very sentence the word bar shows
+  PASS  a static server: read from the file, and "no-server"
+  PASS  the website never asks the route, and reads the file read-only
+
+  A file broken by a hand edit
+  PASS  the route's word is taken: read-only, "unreadable", nothing known, and the file not read again to fail the same way
+  PASS  the reason gives the line and column, and never says to restart a server that is fine
+  PASS  ...and Add refuses without asking the server, in the same sentence
+  PASS  the word bar over a broken file: Add shown but off, its hover text the line and column
+  PASS  ...and over a sound one: Add on, offering the word
+
+  ValeVision3D
+  PASS  the config names this app's dictionary and its route
+  PASS  ...and nothing it shows or describes names TrueVision or ProjectVision
+  PASS  the settings read are this app's
+  PASS  the Vale software words are known, and Noble Architecture's apps are not
+  PASS  a server whose /api/health names another app's server, without the route: "no-server", not "restart"
+  PASS  the Whitecardopedia server without the route: "restart", in this app's words
+  PASS  ...known by asking /api/health of the page's own origin
+  PASS  off localhost: the static file at 50__ValeVision__UserConfig is read, the route and /api/health never asked
+  PASS  ...read-only, saying so in this app's words
+  PASS  no config: the defaults are this app's dictionary and route, and the dictionary is writable through it
+  PASS  ...and the word bar's own fallback names the ValeVision dictionary
+  PASS  ...and the restart fallback names the Whitecardopedia local server
+
+  ALL PASSED
+
+
+--- stderr ---
+[ValeVision3D SpellCheck] ValeVision__UserSpellings__.json is not valid JSON: line 14, column 5 (Expecting ',' delimiter) - every word goes to the browser's own check until it is put right.
+[ValeVision3D SpellCheck] Config unavailable - its defaults are used. Error: HTTP 404
+    at Na__SpellCheck__LoadConfig (file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SpellCheckDictionary__11__.mjs?v=zjlqvcii0f:312:37)
+    at async file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SpellCheckDictionary__11__.mjs?v=zjlqvcii0f:431:23
+    at async file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs:334:1
+[ValeVision3D SpellCheck] Config unavailable - its defaults are used. Error: HTTP 404
+    at Na__SpellCheck__LoadConfig (file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SpellCheckDictionary__13__.mjs?v=yc1wfmuxmld:312:37)
+    at async file:///C:/Users/adamw/AppData/Local/Temp/Na__Test__SpellCheckDictionary__13__.mjs?v=yc1wfmuxmld:431:23
+    at async file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs:343:1

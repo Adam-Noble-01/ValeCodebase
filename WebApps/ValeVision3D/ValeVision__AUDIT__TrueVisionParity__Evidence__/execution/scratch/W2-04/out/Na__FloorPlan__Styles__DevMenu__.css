@@ -1,0 +1,192 @@
+/* ================================================================= */
+/* REGION  |  ValeVision3D - Floor Plan Dev Menu Styles             */
+/* ================================================================= */
+/*
+ * FILE    : Na__FloorPlan__Styles__DevMenu__.css
+ * MODULE  : Floor Plan Views - Dev Menu Editor
+ * AUTHOR  : Adam Noble - Noble Architecture
+ * CREATED : 31-Aug-2026
+ *
+ * Styles the localhost-only Floor Plans section of the Dev menu. The
+ * buttons, inputs and panel rows reuse the existing na-pm-dev and
+ * na-dropdown-menu classes; only the pieces with no existing equivalent
+ * are defined here - the plan row card, the floor datum slider and its
+ * cut-height readout, and the words under a guessed storey.
+ */
+/* ================================================================= */
+/*
+ * PORT NOTE:
+ * - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css
+ * - Source version: none of its own - the sheet as TrueVision3D v2.87.0 left it, with its Storey Dropdown
+ *                   region (20-Sep-2026, commit bef15277; read at b2aa9151)
+ * - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.2, whole; first ported 09-Sep-2026 for
+ *                   ValeVision3D v2.18.0 (port Phase 2)
+ * - Parity        : adapted
+ * - Divergences   :
+ *   - Banner reads ValeVision3D.
+ *   - The Style Toggles region at the end is this app's: the per-drawing style rows (D33), which
+ *     DR-32 keeps (.na-fp-dev__styles, .na-fp-dev__style); since {{VVREL:W2-04}} they sit under the
+ *     row's Advanced fold.
+ *   - The Ground Floor Quick Action region is this app's too: the Ground Floor Plan button beside
+ *     the panel head's + (.na-fp-dev__quick-add, D11, DR-32; added {{VVREL:W2-04}}).
+ * - Legacy        : TrueVision's copy of this sheet has no module version, so the Source version names
+ *                   the release and the commit instead.
+ * - Back-port     : none.
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Plan Row Card                                          */
+/* ----------------------------------------------------------------- */
+
+.na-fp-dev__row {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 6px;
+    padding                            : 9px 10px;
+    margin-bottom                      : 8px;
+    border                             : 1px solid rgba(0, 0, 0, 0.10);
+    border-left                        : 3px solid transparent;       /* <-- Reserved so the active state never shifts the card */
+    border-radius                      : 6px;
+    background-color                   : rgba(0, 0, 0, 0.02);
+}
+
+/* The plan currently previewed in the viewport */
+.na-fp-dev__row--active {
+    border-left-color                  : #2e7d4f;
+    background-color                   : rgba(46, 125, 79, 0.06);
+}
+
+.na-fp-dev__name {
+    width                              : 100%;
+    font-weight                        : 600;
+}
+
+.na-fp-dev__empty {
+    margin                             : 6px 0 10px;
+    font-size                          : 12px;
+    line-height                        : 1.45;
+    color                              : #6b6b6b;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Floor Datum Slider                                     */
+/* ----------------------------------------------------------------- */
+
+.na-fp-dev__slider-row {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 9px;
+}
+
+.na-fp-dev__slider {
+    flex                               : 1 1 auto;
+    min-width                          : 0;                           /* <-- Lets the flex child shrink inside the panel */
+    accent-color                       : #2e7d4f;
+    cursor                             : pointer;
+}
+
+/* Shows the floor level AND the resulting cut height together - they are
+   two different numbers and confusing them mis-authors the plan. */
+.na-fp-dev__readout {
+    flex                               : 0 0 auto;
+    min-width                          : 150px;
+    text-align                         : right;
+    font-family                        : ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+    font-size                          : 11px;
+    color                              : #4a4a4a;
+    white-space                        : nowrap;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Storey Dropdown                                        */
+/* ----------------------------------------------------------------- */
+
+/* The row itself is the scene editor's na-pm-dev__row. Only the words
+   under a guessed storey, and the Confirm button they carry, are new. */
+.na-fp-dev__storey-note {
+    display                            : flex;
+    align-items                        : center;
+    flex-wrap                          : wrap;
+    gap                                : 4px 8px;
+    margin                             : 4px 0 0;
+}
+
+/* A display set by a class outranks the browser's own rule for the hidden
+   attribute, so the words would stay up over a storey somebody has chosen. */
+.na-fp-dev__storey-note[hidden] {
+    display                            : none;
+}
+
+.na-fp-dev__storey-note .na-pm-dev__btn {
+    padding                            : 1px 8px;
+    font-size                          : 11px;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Narrow Dev Panels                                      */
+/* ----------------------------------------------------------------- */
+
+@media (max-width: 520px) {
+    /* Stack the slider above its readout rather than squeezing both. */
+    .na-fp-dev__slider-row {
+        flex-direction                 : column;
+        align-items                    : stretch;
+        gap                            : 4px;
+    }
+
+    .na-fp-dev__readout {
+        min-width                      : 0;
+        text-align                     : left;
+    }
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Style Toggles (ValeVision addition, D33)               */
+/* ----------------------------------------------------------------- */
+
+.na-fp-dev__styles {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 4px;
+}
+
+.na-fp-dev__style {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 6px;
+    font-size                          : 12px;
+    color                              : #172b3a;
+    cursor                             : pointer;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Ground Floor Quick Action (ValeVision addition, D11)   */
+/* ----------------------------------------------------------------- */
+
+/* Beside the panel head's square +, at the +'s height, so the head reads
+   as one line: the title, then the two ways to add a plan. */
+.na-draw-dev__panel-head .na-fp-dev__quick-add {
+    flex                               : 0 0 auto;
+    height                             : 26px;
+    padding                            : 0 8px;
+    line-height                        : 1;
+    white-space                        : nowrap;
+}
+
+/* endregion ------------------------------------------------------- */

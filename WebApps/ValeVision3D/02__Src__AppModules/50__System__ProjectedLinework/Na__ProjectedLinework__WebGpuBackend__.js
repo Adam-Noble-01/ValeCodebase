@@ -80,20 +80,23 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__WebGpuBackend__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026 (created 07-Aug-2026)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : verbatim
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__WebGpuBackend__.mjs of 07-Aug-2026;
+//                   the code is unchanged since; only TrueVision's comments differ);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.0.0 (TrueVision3D v2.21.0, 10-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim (a comment sync: the code was already identical)
 // - Divergences   :
-//   - Identifiers and console prefix only; three/webgpu and three-edge-projection/webgpu resolve through the ValeVision import map.
-// - Back-port     : none pending.
+//   - Banner and console prefix read ValeVision3D.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
 // 09-Sep-2026 - Version 1.0.0
 // - Ported from the Lantern Designer projection engine for port Phase 4;
-//   identifiers renamed to the ValeVision namespace and the header restyled.
+//   identifiers renamed to the TrueVision namespace and the header restyled.
 //   The body is kept as the Lantern Designer wrote it so the kernel stays
 //   diff-able against its source and the Diff harness remains meaningful.
 //
@@ -137,8 +140,12 @@ import * as THREE from 'three';
 
     // FUNCTION | Whether This Browser Could Possibly Run the GPU Path
     // ------------------------------------------------------------
-    // Only answers the cheap question. Whether a device can actually be acquired is
-    // settled by Warm, because asking costs a device request.
+    // Only answers the cheap, synchronous question: does the API exist at all.
+    // It is NOT a capability test and must not be used as one - navigator.gpu is
+    // present in every current Chromium build, including on machines where the
+    // adapter request goes on to fail outright or hand back a software
+    // rasteriser. Na__ProjectedLinework__WebGpuBackend__ProbeHardware answers the
+    // question that actually matters.
     export function Na__ProjectedLinework__WebGpuBackend__IsAvailable() {
         return !Na__ProjectedLinework__WebGpuBackend__Unusable &&
                (typeof navigator !== 'undefined') &&
@@ -153,23 +160,20 @@ import * as THREE from 'three';
     // rejects: a machine without a usable GPU is an ordinary condition, and every
     // caller's answer to it is the same.
     //
-    // IsAvailable above answers only the cheap question - does the API exist -
-    // and must not be used as a capability test. navigator.gpu is present in
-    // every current Chromium build, including on machines where the adapter
-    // request then fails outright or hands back a software rasteriser.
-    //
     // powerPreference 'high-performance' asks for the discrete card on a machine
-    // with both. IT IS CURRENTLY IGNORED ON WINDOWS (crbug 369219127) and
-    // Chromium says so in the console on every probe, so treat it as a hint that
-    // will start working rather than a guarantee that does. It costs nothing to
-    // ask, and on a single-GPU workstation the question does not arise.
+    // with both. IT IS CURRENTLY IGNORED ON WINDOWS (crbug 369219127) and Chromium
+    // says so in the console on every probe, so treat it as a hint that will start
+    // working rather than a guarantee that does. It costs nothing to ask, and on a
+    // single-GPU workstation the question does not arise; on a hybrid laptop the
+    // browser picks, and the worst case is the integrated chip - still a real
+    // adapter, still correct, just less of a win than the discrete one would be.
     //
     // A FALLBACK ADAPTER IS REPORTED AS NOT CAPABLE, and that is the important
-    // part. When no real GPU is reachable the browser may still return an adapter
-    // backed by a SOFTWARE rasteriser. It satisfies every API check, runs the
-    // compute shader correctly, and is SLOWER than the CPU backend it would be
-    // displacing - so accepting it would make the app choose the slow path while
-    // reporting that it had chosen the fast one.
+    // part of this function. When no real GPU is reachable the browser may still
+    // return an adapter backed by a SOFTWARE rasteriser. It satisfies every API
+    // check, runs the compute shader correctly, and is SLOWER than the CPU
+    // backend it would be displacing - so accepting it would make the app choose
+    // the slow path while reporting that it had chosen the fast one.
     export async function Na__ProjectedLinework__WebGpuBackend__ProbeHardware() {
         if (Na__ProjectedLinework__WebGpuBackend__Probe)   return Na__ProjectedLinework__WebGpuBackend__Probe;
         if (Na__ProjectedLinework__WebGpuBackend__Probing) return Na__ProjectedLinework__WebGpuBackend__Probing;
@@ -229,7 +233,7 @@ import * as THREE from 'three';
     // FUNCTION | The Cached Probe Result, or null If It Has Not Run
     // ------------------------------------------------------------
     // Synchronous, for the places that cannot await - the backend resolver on a
-    // render already in flight, and the Dev menu drawing its status line.
+    // render already in flight, and the dev menu drawing its status line.
     export function Na__ProjectedLinework__WebGpuBackend__GetProbe() {
         return Na__ProjectedLinework__WebGpuBackend__Probe;
     }

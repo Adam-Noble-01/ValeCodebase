@@ -1,0 +1,45 @@
+{
+ "generated": "02-Oct-2026 02:49",
+ "index": {
+  "R100": 81
+ },
+ "tv_modules": 542,
+ "appendix_d": {
+  "port_whole_rows": 62,
+  "blocked_before_swarm": 44,
+  "rows_matching_appendix_d": 62,
+  "rows_matching_prereq_json": 62,
+  "prereq_json_read": "C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\work_s11v\\prereq.json",
+  "appendix_d_rows_in_s11": 44,
+  "blocked_after_w0_02_missing_modules": 30
+ },
+ "takes": {
+  "vv_body": 4,
+  "infra": 2,
+  "hunks": 48,
+  "whole": 330,
+  "header": 8,
+  "reference": 5,
+  "convergence": 1
+ },
+ "whole_takes": 331,
+ "nodes": 331,
+ "levels": 20,
+ "cycles": [
+  [
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js"
+  ],
+  [
+   "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js"
+  ]
+ ],
+ "defects": 5,
+ "hunk_defects": 0,
+ "advisories": 1,
+ "transport_imports": 32,
+ "tv_bad": 0,
+ "vv0_bad": 0
+}

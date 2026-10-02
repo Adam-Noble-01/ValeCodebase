@@ -1,0 +1,637 @@
+{
+ "slice_id": "S07b",
+ "claims_checked": 80,
+ "confirmed_ids": [
+  "S07b-F02",
+  "S07b-F03",
+  "S07b-F06",
+  "S07b-F08",
+  "S07b-F09",
+  "S07b-F10",
+  "S07b-F11",
+  "S07b-F14",
+  "S07b-F16",
+  "S07b-F17",
+  "S07b-F19",
+  "S07b-F20",
+  "S07b-F21",
+  "S07b-F24",
+  "S07b-F25",
+  "S07b-F26",
+  "S07b-F27",
+  "S07b-F29",
+  "S07b-F30",
+  "S07b-F32",
+  "S07b-F37",
+  "S07b-F39",
+  "S07b-F40",
+  "S07b-F42",
+  "S07b-F43",
+  "S07b-F44",
+  "S07b-F46",
+  "S07b-F47",
+  "S07b-F49",
+  "S07b-F50",
+  "S07b-F51",
+  "S07b-F52",
+  "S07b-F53",
+  "S07b-F55",
+  "S07b-F56",
+  "S07b-F58"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S07b-F01",
+   "field": "detail",
+   "new_value": "TV's fifth Layout Editor tab (TabStrip 2.0.0, v2.158) is the Statement Writer: 33 files / 16,898 lines in LE/52__Feature__StatementWriter, a 451-line local-server API and 14 test files. VV has none of it, no ledger row, and no statement documents in any of its 97 2026 projects. The content layer (header, hub, footer, finishes) is NA/UK-planning specific. The feature is still changing (16 releases between 20 and 29 Sep, plus b884e290 on 30 Sep), but it is in Adam's live use: v2.169-v2.172 each open 'From Adam' about RB05's published statement on the live web viewer. Only v2.95, v2.165, v2.167 and v2.168 say 'NOT confirmed by Adam', and six more say 'NOT tried by Adam'.",
+   "reason": "Devlog re-read (verify_s07b/devlog_check.py). The survey's 'every TV release v2.95-v2.172 still says NOT confirmed by Adam' is wrong: v2.169-v2.172 are Adam's own live-use reports."
+  },
+  {
+   "id": "S07b-F01",
+   "field": "recommendation",
+   "new_value": "In scope as the identical engine and tab with Vale words and VV's own transport, gated by a new LayoutEditor__Statement__Enabled switch (default on). Schedule it last in the LE parity sequence, from a pinned TV commit, once Adam gives the go-ahead for Vale, the CRLF fix has landed (S07b-F10) and VV's sync purge is fixed (S07b-V01). The Lockstep leaf goes with WP-S06b-01 (S07b-F04).",
+   "reason": "There is no pending TV sign-off to wait for, since the feature is in live use. The VV sync purge is a new precondition, and the Lockstep leaf is owned by WP-S06b-01."
+  },
+  {
+   "id": "S07b-F04",
+   "field": "recommendation",
+   "new_value": "Port verbatim with Na__Test__StatementLockstep__.test.mjs (28 checks; re-run green on TV 01-Oct). It is owned by WP-S06b-01, whose STMT-01 row already ports this file and its test as a prerequisite of the Spec lockstep. WP-S07b-01 is withdrawn as a duplicate, and the Statement Writer packages depend on WP-S06b-01. No dependencies, no hot files.",
+   "reason": "S06b WP-S06b-01 (S06b report lines 595-609) creates the same file and test. Two packages would write it twice."
+  },
+  {
+   "id": "S07b-F05",
+   "field": "vv_adaptation",
+   "new_value": "storage prefixes Na__ValeVision__StatementDraft__/Discarded__; Vale STARTER (or from config); project name = folder name with the leading numeric code stripped (/^\\d+__/, not /^[A-Z]{2}\\d{2}__/); file-name {code} = the numeric prefix of the normalised folder or project.json projectCode (3047), never the raw ?project= value, which is '2026/3047__Doous' when Whitecardopedia launches VV (S07b-V02); folder id via NormalizeProjectFolderId(GetProjectCodeFromUrl()) or the GetProjectFolderFromUrl facade under D-S07b-10 (a); DrawView import 40->42; console prefix",
+   "reason": "NameFor (Data__ :833-842, :929-937) passes Na__DrawData__GetProjectCode() as {code}. In VV that is the raw ?project= folder id, which carries a year and a slash."
+  },
+  {
+   "id": "S07b-F07",
+   "field": "recommendation",
+   "new_value": "Decide D-S07b-10 first. Under (a), the same-name shims recommended by D-S09-04 and D-S07a-08, port this unit verbatim: it imports VV's Na__CfApi__* and Na__LocalMirror__* shims (WP-S09-06), whose statement functions are built on the new worker routes (S07b-F27) and Flask blueprint (S07b-F26) and return 404-honest local URLs (S07b-F29). Under (b), rewrite the body on Na__AppUtils__R2StatementDocs__ as originally proposed, keeping all 15 exports and their result shapes. Never build both.",
+   "reason": "S09 (D-S09-04, WP-S09-06) and S07a (D-S07a-08) plan same-name shims that include the statement CfApi/LocalMirror functions. S07b's rewrite would duplicate that transport."
+  },
+  {
+   "id": "S07b-F12",
+   "field": "vv_adaptation",
+   "new_value": "localStorage keys Na__TrueVision__StatementView__/Mono__/Last__ (:179-181) -> Na__ValeVision__; neutral Standard Sections title (:320); drop the static DrawingSchedule__Live__ import (:157) while VV has no Drawing Register (D-S07a-01 open; VV ledger TV v2.71.0 Document ID row), so the schedule has no Sync button; console prefix; the stylesheet self-injection (:824-834) works as-is",
+   "reason": "Whether VV gets a Drawing Register is Adam's open decision. Without a register, the Page's static Live import cannot link."
+  },
+  {
+   "id": "S07b-F13",
+   "field": "detail",
+   "new_value": "Editor__.js 1.4.0 (683; v2.95, v2.162, v2.165, v2.167, v2.168), Editor__Typing__.js 1.0.0 (570; v2.95) and Editor__Move__.js 1.1.0 (323; v2.162) make up the contenteditable page. Live markdown reflows through tokenise/render/serialise, and the caret is restored by character count. They also handle Ctrl+/ and Ctrl+. views, dropped pictures, the standard-section toggle and Move. Nothing in them is VV-specific beyond console prefixes. However, Editor__ (and Editor__Cards__) import Standard__Registry__, which imports TrueVisionHub__, which statically imports ProjectQr Symbol, Painter and ProjectLink. So the writing surface cannot load in VV before ProjectQrCode (WP-S07a-04), whatever D-S07b-06 decides. Typing and Move import nothing outside 02 and can land early.",
+   "reason": "Internal import graph (verify_s07b/internal_graph.py)."
+  },
+  {
+   "id": "S07b-F13",
+   "field": "recommendation",
+   "new_value": "Port Editor__Typing__ and Editor__Move__ verbatim in WP-S07b-05A (inert). Port Editor__ verbatim in WP-S07b-05C, together with the Registry, Hub, Cards, Publish and Page, after WP-S07a-04 and the keyboard prerequisite (S07b-F34).",
+   "reason": "The Editor's static import chain reaches ProjectQrCode, so it must land with the Registry."
+  },
+  {
+   "id": "S07b-F15",
+   "field": "recommendation",
+   "new_value": "Port verbatim after WP-S07b-11 ports 27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js 1.0.0 (394 lines, no imports, built-in layout defaults) and Na__ContextMenuSystem__Styles__.css (157 lines, only .na-context-menu* rules) at the TV path. Link the CSS explicitly in VV, through the loader STYLESHEETS (WP-S03a-07 pattern) or VV's CSS index, because TV gets it only from its app CSS index :103. The 3D right-click system (SystemLogic, RightClickGuard, HitResolver, Sections) is not needed.",
+   "reason": "No slice owns the leaf: S09 says 'port with 52 Statement' and S10 marks it optional. Its CSS is never self-injected."
+  },
+  {
+   "id": "S07b-F18",
+   "field": "recommendation",
+   "new_value": "Under D-S07b-10 (a), port both verbatim: their Na__CfApi__/Na__LocalMirror__ calls land on VV's same-name shims (WP-S09-06), built over the new worker routes and Flask blueprint. StatementFileLocation must return a 404-honest local URL (the blueprint GET, or /Whitecardopedia/Projects/..., never the catch-all route). Under (b), port_adapted through the Transport unit as originally proposed. Either way they land with the Registry and Page in WP-S07b-05C, after the VV sync purge fix (S07b-V01).",
+   "reason": "The transport choice is a cross-slice decision, and Publish imports the Registry and QR Symbol, so it cannot land on its own."
+  },
+  {
+   "id": "S07b-F22",
+   "field": "detail",
+   "new_value": "Registry (818 lines; 1.0-1.3 over v2.162/v2.167/v2.168), Contents 1.0.0 (248), Finishes 1.0.0 (644) and DrawingSchedule 1.0.0 (579) are string modules: markers, placement anchors, the expander, the sync API, the contents list, the finishes comparison and the schedule merge. Contents, Finishes and DrawingSchedule import nothing outside 02. Registry imports Render, Tokenise and all six section definitions, and its DEFINITIONS (:155-162) is a static list that includes the TrueVision hub. A config filter on DEFINITIONS would not remove the static import of TrueVisionHub__ (:140), so ProjectQrCode must exist in VV even if the hub is excluded. The Contents fallback (:77) names TrueVision's Statement Writer.",
+   "reason": "Import graph: Registry -> TrueVisionHub -> ProjectQr. A DEFINITIONS filter acts only at runtime."
+  },
+  {
+   "id": "S07b-F23",
+   "field": "detail",
+   "new_value": "Standard__DrawingSchedule__Live__.js 1.0.0 (140 lines; v2.167) reads Na__LeRegPdf__Rows from LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js, which is TV-only and also pulls Register__Data__ and 60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js (TV-only, 250 lines). It also reads the Specification's notes, document number and revision; all five SpecData exports exist in VV with the same signatures. When the Page imports it, it registers itself as the Drawing Schedule's Sync source. Whether VV gets a Drawing Register at all is Adam's open decision (VV ledger, TV v2.71.0 Document ID row; D-S07a-01).",
+   "reason": "The VV ledger records the register as undecided, and Register__Pdf's own TV-only dependencies were missing from the finding."
+  },
+  {
+   "id": "S07b-F23",
+   "field": "recommendation",
+   "new_value": "Port verbatim only after WP-S07a-03, and only if D-S07a-01 adopts the register. Until then the VV Page omits its static import (S07b-F12) and ModeController.OpenStatements omits Na__LeRegEd__Hide; by design the schedule then has no Sync button and stays hand-edited.",
+   "reason": "The register is gated on an open decision."
+  },
+  {
+   "id": "S07b-F28",
+   "field": "recommendation",
+   "new_value": "Build this only if D-S07b-10 chooses (b), per-document clients. Under (a), the same statement functions live in VV's same-name shims (WP-S09-06), and this module is not created: VVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js (IsConfigured, ProjectFileLocation, Read/WriteProjectFile, StatementFileLocation, Read/WriteStatementFile) and VVM/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js (WriteSiblingFile, StatementTree, WriteStatementFile, MakeStatementFolder, MoveStatement, DeleteStatement). Either way the worker routes (F27) and Flask blueprint (F26) are needed.",
+   "reason": "Cross-slice transport strategy (D-S09-04, D-S07a-08)."
+  },
+  {
+   "id": "S07b-F31",
+   "field": "recommendation",
+   "new_value": "If WP-S03a-01 (TV AppConfig + six ConfigState files with VV seams) lands first, it brings TV's LayoutEditor__Statement__Config, the StatementsTab labels and EditorSetup 1.6.0's GetStatementSetup with TV values. This item then reduces to setting the VV values: IndexFileName ValeVision__StatementDocs__.json, StylesheetUrl on VV's public origin (to verify), Html2CanvasScriptPath, plus the optional Enabled switch. Otherwise add the block, the two labels and GetStatementSetup (TV EditorSetup :170-230) here, and re-export it from ConfigState__. Never add them twice: AppConfig, EditorSetup and ConfigState are hot files.",
+   "reason": "Overlaps with WP-S03a-01 (Config foundation)."
+  },
+  {
+   "id": "S07b-F33",
+   "field": "recommendation",
+   "new_value": "The facade additions are already scoped by WP-S03a-05 (Loader 1.2) and WP-S09-03: Na__LeLoad__VIEW_STATEMENT, the CheckNames row and OpenStatements(options) via WithEditor, plus exports. The tab is scoped by WP-S03a-06 / WP-S10-04 (TabStrip 2.0.0). This slice supplies the statement names and the Enabled switch check and must not add them again in WP-S07b-08. The loader facade is also the entry point for shared statement links (S07b-V07).",
+   "reason": "Overlaps with packages owned by S03a, S09 and S10."
+  },
+  {
+   "id": "S07b-F34",
+   "field": "detail",
+   "new_value": "VV's global hotkey handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js 1.0.0) treats only input, textarea and select as typing (:53-56, :92). It calls preventDefault() on a match before dispatching (:96), and matches bare keys case-insensitively, without Shift. The dictionary (02__AppData/Na__ValeVision__HotkeysDictionary__.json) gives:\n- Swallowed bare keys: r, b, t, y, v, 1-9, PageUp and PageDown.\n- Also swallowed: d, o, Delete and Escape. These are documentation entries whose action ValeVision__DrawingMarkup__Contextual has no callback in index.html :1792-1809, so the key is still swallowed, with a console warning.\n- F is bound only as Alt+Shift+F (fog), and Backspace only as Alt+Backspace (history.back(), :182-188). Plain Backspace is NOT stolen.\nThe statement page is contenteditable and does not stop propagation at its root (TV relies on KeyScope + DocumentKeys, v2.110), so typing would lose those letters, digits, Delete and Escape, and Alt+Backspace would leave the app. The Page also imports DocumentKeys statically.",
+   "reason": "The dictionary has Backspace with AltKey true and F with Alt+Shift, and the d/o/Delete/Escape 'Contextual' entries also match and are preventDefault-ed. The survey's 'Backspace would navigate back' is wrong, and its key list was incomplete."
+  },
+  {
+   "id": "S07b-F34",
+   "field": "evidence",
+   "new_value": "VV HotkeyHandler :53-56, :92, :96; dictionary :180-189 (Backspace, AltKey true), :191-200 (F, Alt+Shift), :202-311 (D, O, Arrows, Alt, Shift, Ctrl+Z, Ctrl+Y, Ctrl+C/V, Delete, Escape 'Contextual'); VV index.html :1792-1809 callback map (no Contextual callback); TV Statement Page has no root stopPropagation (keys via DocumentKeys, Page :29-36, :167); TV devlog v2.110 :5496-5573.",
+   "reason": "Exact evidence for the corrected key list."
+  },
+  {
+   "id": "S07b-F34",
+   "field": "recommendation",
+   "new_value": "Before WP-S07b-05C ships, land KeyScope and the HotkeyHandler gate: one owner among WP-S03a-03 / WP-S05a-01 / WP-S09-05. VV's handler must act only in the model scope and use Na__KeyScope__IsTypingTarget, which counts contenteditable. Also land DocumentKeys 1.1.0 + Na__Hotkeys__DocumentTabs__.json (WP-S03a-09 / WP-S05a-02), and have the ModeController hand over the scope reader. Acceptance: typed r, b, t, y, v, d, o, 1, Delete and Escape stay in the statement, and Alt+Backspace does not navigate.",
+   "reason": "Owners already exist in other slices, and the acceptance must cover the corrected key list."
+  },
+  {
+   "id": "S07b-F35",
+   "field": "recommendation",
+   "new_value": "Port Statement Data before or with DocumentSharing (WP-S08-11). Never start Share__Open__ from VV's index.html. Because the editor is lazy, a shared link must itself trigger the load: add a boot-time check of the share parameter that imports nothing from the editor and calls the loader facade (OpenStatements / OpenSpecification / OpenRegister) when a link is present. Share__Open__ then runs inside the loaded editor (S07b-V07, coordinate with WP-S08-11 / WP-S09-12). If statements are ruled out of scope, DocumentSharing needs a statement-free VV adaptation (D-S07b-01).",
+   "reason": "'Start it through the loader once the editor has loaded' is circular for a shared link, because the link is what should load the editor (TV Share__Open__ :67-69, :276, :317-333)."
+  },
+  {
+   "id": "S07b-F36",
+   "field": "evidence",
+   "new_value": "Page imports :158; Publish imports :97 (not :111); TrueVisionHub imports Symbol, Painter and ProjectLink; Registry imports the Hub (:140), so the Editor and Cards reach QR too; ProjectQr Symbol baseUrl https://www.noble-architecture.com/q/ (:101) and indexUrl ../../../../../q/index.json (:103).",
+   "reason": "Line reference corrected and the transitive reach added."
+  },
+  {
+   "id": "S07b-F38",
+   "field": "recommendation",
+   "new_value": "Vendor TV's html2canvas.umd.js at the same path in VV and note it in Vale__Dependencies__VersionLock__README__.md. It is a classic script, not an import-map entry. WP-S09-10 also plans this vendor move 'when the Statement Writer lands': give it one owner.",
+   "reason": "Overlaps with WP-S09-10."
+  },
+  {
+   "id": "S07b-F41",
+   "field": "recommendation",
+   "new_value": "Owned by WP-S10-09 (Fonts: Open Sans Medium 500 with TV's two-source pattern); this slice depends on it rather than adding the face again in WP-S07b-04. Publish__Page__ copies these @font-face rules into published statements.",
+   "reason": "Overlaps with WP-S10-09."
+  },
+  {
+   "id": "S07b-F45",
+   "field": "detail",
+   "new_value": "Seven node suites copy the real modules into a scratch ES tree: Lockstep 28, RoundTrip, FigureTitle 32, Standard 47, Schedule 64, Finishes 59 and Publish 87 checks (1,907 lines). Five of them read the live RB05 statement, and on 01-Oct they fail 2, 1, 5, 1 and 3 checks respectively (re-run by the verifier, identical result). The causes are CRLF, edited content, and a stale hub-wording expectation at Standard :249. Standard, Schedule, Finishes and Publish also copy TV's ProjectLoader and simulate TV's address bar, and Standard copies the whole ProjectQrCode folder (S07b-V09). VV has no statement to read.",
+   "reason": "Standard has 47 checks (42 pass + 5 fail), not 45, and the suites' external copy lists were missing."
+  },
+  {
+   "id": "S07b-F48",
+   "field": "detail",
+   "new_value": "TV verifies every statement release with Na__Verify__Exports__.mjs (542 files at v2.172) and Na__Verify__ModuleGraph__.mjs; VV has both. The TV-graph closure from Statement__Page__.js is 274-276 files with 115-117 absent in VV. That number counts the feature's own 30 files and is dominated by TV PdfExporter 1.12.0's closure, which VV does not need, because the statement PDF only takes LoadLibrary and VV aliases its own EnsureJsPdf (S07b-F37). With CfApi/LocalMirror replaced, the prerequisite set VV actually needs is 17 TV-only files (7,001 lines): QR x4; Share__Button, Links and Manifest; PublishedSchema Paths and Version; PubDoc Urls; Publish__Transport; DocumentKeys; KeyScope; ContextMenu MenuRenderer; Register__Pdf, Register__Data and PdfFonts. Without the register's Live source it is 14 files (5,528 lines).",
+   "reason": "Recomputed (verify_s07b/closure.py, closure_vv.py). The survey's figure overstates the VV prerequisites by a factor of about 7."
+  },
+  {
+   "id": "S07b-F54",
+   "field": "detail",
+   "new_value": "Sixteen TV releases touched the feature between 20 and 29 Sep. Only v2.95, v2.165, v2.167 and v2.168 say 'NOT confirmed by Adam'; v2.97, v2.99, v2.110, v2.157, v2.162 and v2.163 say 'NOT tried by Adam'. v2.169-v2.172 were each prompted by Adam's own live use of RB05's published statement on the web viewer, so the feature is in production use. Commit b884e290 (30-Sep) changed hub words after the last devlog entry, without a version bump. Five of the seven TV suites are red on 01-Oct, mostly because they read the live RB05 file.",
+   "reason": "Devlog re-read: 'each marked NOT confirmed by Adam' was wrong."
+  },
+  {
+   "id": "S07b-F54",
+   "field": "recommendation",
+   "new_value": "Port from a pinned TV commit (HEAD b2aa9151 or later) once Adam gives the go-ahead for Vale. Do not wait for a separate 'confirmed' line: the feature is in his live use. Record the commit in each PORT NOTE and in the ledger, and port each file's HEAD version rather than its devlog version.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S07b-F57",
+   "field": "title",
+   "new_value": "No direct import of Sheet Images, Spell Check or Colour Palette; a transitive dependency on the Published Schema, Published Documents and Document Publishing through DocumentSharing",
+   "reason": "The page's static closure reaches 52, 53 and 65 through Share__Button__ and Share__Manifest__."
+  },
+  {
+   "id": "S07b-F57",
+   "field": "detail",
+   "new_value": "The 33 files import none of 54__Feature__SheetImages, 55__Feature__SpellCheck, 54__Feature__ColourPalette, 52__System__Layout__PublishedDocuments, 53__Data__Layout__PublishedSchema or 65__Feature__DocumentPublishing directly. For spelling they use the browser's own spellcheck (Editor :243, Cards :502). In TV, SheetImages and ColourPalette are reached only through TV PdfExporter 1.12.0, which VV does not need. But the Page's static Share__Button__ import reaches Share__Manifest__, which imports 53 Na__PublishedSchema__Paths__ (678) and __Version__ (172), 52 Na__PubDoc__Urls__ (340) and 65 Na__LayoutEditor__Publish__Transport__ (282). So the Statement page cannot link in VV until those exist.",
+   "reason": "Transitive closure from Statement__Page__.js (verify_s07b/closure_vv.py, chains.py)."
+  },
+  {
+   "id": "S07b-F57",
+   "field": "recommendation",
+   "new_value": "The 52/53/54/55/65 slices do not depend on this one and can go ahead independently. In the other direction, WP-S07b-05C depends on S08's WP-S08-07 (Published schema), WP-S08-08 (Published reader 52), WP-S08-09 (Publisher 65) and WP-S08-11 (Document sharing), or on agreed stubs, through Share__Button__ -> Share__Manifest__.",
+   "reason": "The dependency direction was missing."
+  },
+  {
+   "id": "S07b-F57",
+   "field": "action",
+   "new_value": "update_wiring",
+   "reason": "There is a real ordering dependency to schedule; no_action understated it."
+  },
+  {
+   "id": "S07b-F57",
+   "field": "severity",
+   "new_value": "medium",
+   "reason": "It blocks the page landing."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S07b-V01",
+   "category": "transport",
+   "title": "VV's project sync deletes every published statement picture from R2",
+   "detail": "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py na_purge_stale_r2_images (:659-680; called at :926 and :959 on every sync) lists VaApps/Projects/{folderId}/ with no Delimiter (first 1,000 keys, unpaginated). It then deletes every .png/.jpg/.jpeg/.webp whose bare file name is not a top-level image of the local project folder (na_collect_local_image_names :645-656 uses iterdir()). The statement layout in S07b-F30 puts every published picture under VaApps/Projects/{folderId}/10__StatementDocs/, so the next sync after a Publish would delete them all, and the web reader would show the broken pictures TV v2.171 fixed. Markdown, HTML and JSON survive because the purge is gated on extension. The local prune (:298-300) only touches top-level IMG* files, so local statement folders are safe. S08 found the same fault for published drawings (WP-S08-04).",
+   "recommendation": "Fix before the first VV statement Publish, through WP-S08-04: purge top-level keys only (Delimiter='/'), which protects 10__StatementDocs/ along with the other sub-folders, and add a 10__StatementDocs/ key to its dry-run acceptance. If WP-S08-04 chooses a skip-list instead, 10__StatementDocs/ and 00__* must be on it.",
+   "action": "build_vv_transport",
+   "severity": "critical",
+   "evidence": "Sync script :645-680 (purge logic), :926 and :959 (call sites), :921-924 (r2_prefix = VaApps/Projects/{full_year}/{folder}); S08 report lines 450-458 and WP-S08-04.",
+   "tv_paths": [],
+   "vv_paths": [
+    "WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py"
+   ],
+   "depends_on": [
+    "WP-S08-04"
+   ]
+  },
+  {
+   "id": "S07b-V02",
+   "category": "data_schema",
+   "title": "Statement file names would carry the raw ?project= folder id as {code}, slash included",
+   "detail": "Na__LeStmt__NameFor and Rename (Data__.js :833-842, :929-937) pass Na__LeStmt__ProjectCode || Na__DrawData__GetProjectCode() as {code}, and Na__LeStmtIdx__NameFor (Data__Index__.js :239-251) writes String(code) unsanitised into '{code}_T{tranche}_S{number}__{project}__{title}__.md'. VV's Na__DrawData__GetProjectCode() (42/Na__DrawView__ProjectData__.js :224-229) is the loading sequence's raw ?project= value (Na__AppFlow__LoadingSequence.js :672, :729). Whitecardopedia launches VV with ?project=<folderId> (61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js :36-54; ImageCarousel.jsx :92-95), e.g. '2026/3047__Doous'. A new VV statement would therefore be named '2026/3047__Doous_T01_S01__...md': the '/' makes it a nested path, which the segment pattern and fences would refuse. The same value also reaches the index's Project key and the published page's na-project-code meta (harmless). The survey's examples assume the code is '3047'. VV project.json has projectCode '3047', projectName 'Doous' and folderId '2026/3047__Doous'.",
+   "recommendation": "In the Data adaptation, use a VV code for {code}: the numeric prefix of the normalised folder (NormalizeProjectFolderId(...) last segment before '__' -> '3047') or project.json projectCode. Use the folder name minus that prefix for {project} ('Doous'). Follow the same rule D-S07a-03 settles for Vale Document IDs (13 codes are shared by scheme variants). Better: back-port a config-driven code/name derivation to TV (S07b-F51) so Data__ ports verbatim.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "Data__.js :833-842, :929-937; Data__Index__.js :239-251; VV ProjectData :224-229; LoadingSequence :672, :729; ValeVisionLinkRouting :52-54; WCP/Projects/2026/3047__Doous/project.json.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js"
+   ],
+   "vv_adaptation": "{code} from the folder's numeric prefix or project.json projectCode; {project} from the folder name minus the code",
+   "depends_on": [
+    "S07b-F05",
+    "D-S07a-03"
+   ]
+  },
+  {
+   "id": "S07b-V03",
+   "category": "decision",
+   "title": "Transport strategy conflicts across slices: per-document client vs same-name shims",
+   "detail": "S07b proposes a new per-document client (Na__AppUtils__R2StatementDocs__, F28) and a rewritten Transport unit (F07), with Cards, Publish and Publish__Images re-routed (F14, F18). Elsewhere:\n- S09 D-S09-04 (a) / WP-S09-06 proposes same-name VV shims for all 21 Na__CfApi__* names (including ReadStatementFile, StatementFileLocation and WriteStatementFile) and all 8 Na__LocalMirror__* names (including the six statement ones), plus Na__AppUtils__GetProjectFolderFromUrl/GetYearFromUrl.\n- S07a D-S07a-08 A proposes the same facade at TV's paths.\n- S08 adds the two ProjectLoader facades (wiring note 8) but a per-feature client for published documents (WP-S08-06).\nIf both approaches are built, VV gets two statement transports.",
+   "recommendation": "Decide D-S07b-10 before WP-S07b-03 and WP-S07b-05B. Recommended: (a), in line with D-S09-04 and D-S07a-08. Then:\n- Data__Transport__, Publish__ and Publish__Images__ port verbatim.\n- The statement functions of the VV CfApi/LocalMirror shims are built over the new worker routes (F27) and the Flask blueprint (F26).\n- StatementFileLocation returns a 404-honest local URL (blueprint GET or /Whitecardopedia/Projects/..., never the catch-all route, F29) that carries Last-Modified.\n- F28's module is not created.\n- Only Editor__Cards__ (hard-coded /api/truevision/statements/image) and Data__ (prefixes, starter, NA-code regex, {code}) stay adapted.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "S09 report :294, :314, :421 (D-S09-04), :446 (WP-S09-06), :595-602 and :652-659 (statement names in the shim list); S07a D-S07a-08 (:641); S08 :509 (wiring note 8), :616-620 (WP-S08-06).",
+   "tv_paths": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2StatementDocs__.js"
+   ],
+   "depends_on": [
+    "D-S09-04",
+    "D-S07a-08"
+   ]
+  },
+  {
+   "id": "S07b-V04",
+   "category": "transport",
+   "title": "Statement worker routes: store without caching and do not bump the shared build manifest per file",
+   "detail": "VV's CloudflareHandler__DrawingNotes__ stores with httpMetadata.cacheControl 'no-cache, max-age=0' and calls na_write_build_manifest on every POST (:120-140). That rewrites VaApps/Index/Na__BuildVersion__Manifest__.json with a new unix-time buildVersion (ProjectEditor handler :160-171). VV's ProjectLoader appends that buildVersion as ?v= to every project.json and GLB URL (Na__AppUtils__WithBuildToken :249-252, used at :407-408, :514, :519), so each bump makes every client re-download every project's models on its next load. A statement Publish writes dozens of pictures plus md, html and index; a handler copied from DrawingNotes would bump the global token dozens of times per Publish. Statement reads do not use the token.",
+   "recommendation": "In CloudflareHandler__StatementDocs__ (or the shim's worker routes): store the index, md and html with cacheControl 'no-cache, max-age=0', the DrawingNotes convention, so a re-publish shows at once. Store pictures with an explicit policy. Do not call na_write_build_manifest per write; at most once, on the index write that Publish makes last, or not at all. Add both rules to WP-S07b-03's acceptance.",
+   "action": "build_vv_transport",
+   "severity": "medium",
+   "evidence": "WCP/CloudflareWorker/src/handlers/CloudflareHandler__DrawingNotes__.js :120-140; CloudflareHandler__ProjectEditor__.js :160-171; VV ProjectLoader :56-66, :249-252, :407-408, :514-519.",
+   "tv_paths": [],
+   "vv_paths": [
+    "WCP/CloudflareWorker/src/handlers/CloudflareHandler__StatementDocs__.js",
+    "WCP/CloudflareWorker/src/index.js"
+   ],
+   "depends_on": [
+    "S07b-F27"
+   ]
+  },
+  {
+   "id": "S07b-V05",
+   "category": "wiring",
+   "title": "WP-05, WP-06 and WP-07 cannot land separately; the writing surface needs ProjectQrCode",
+   "detail": "Internal import graph (01-Oct):\n- Page__ imports Publish__ (07), Standard__Registry__ and Standard__DrawingSchedule__Live__ (09).\n- Editor__ and Editor__Cards__ import Standard__Registry__.\n- The Registry imports all six section modules, including TrueVisionHub__, which statically imports ProjectQr Symbol, Painter and ProjectLink.\n- Publish__ imports the Registry and ProjectQr Symbol.\nSo the original WP-S07b-05 (Page, Editor, Cards...) can neither link nor pass its acceptance before WP-06 and WP-07, and none of them can load before the ProjectQrCode port (WP-S07a-04). By contrast, 18 files have no external imports and can land early as inert modules: Data__Index, Images, the five Md modules, Editor__Move, Editor__Typing, Publish__Page, Contents, DrawingSchedule, Finishes, Header, Footer, the Config JSON and both CSS files.",
+   "recommendation": "Re-cut the packages:\n- WP-S07b-05A: the pure modules, landed inert.\n- WP-S07b-05B: Data, Transport, Reader and Manager, after the transport and config.\n- WP-S07b-05C: Registry, Hub, Editor, Cards, Figure, Pdf, Publish, Publish__Images and Page, in one landing after QR, sharing, keys and the menu renderer.\nRun Na__Verify__ModuleGraph__.mjs after each.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "Page__.js imports :126-167 (Publish :148, Registry :156, Live :157); Registry :140-143; Editor and Cards import the Registry; Publish :96-97; verify_s07b/internal_graph.py output.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter"
+   ],
+   "depends_on": [
+    "WP-S07a-04",
+    "WP-S08-11"
+   ]
+  },
+  {
+   "id": "S07b-V06",
+   "category": "missing_module",
+   "title": "Context-menu renderer leaf and its stylesheet have no owning WP",
+   "detail": "The Statement Page (:159) and Editor__Figure__ import Na__ContextMenu__Ui__Open and Na__ContextMenu__Ui__Close from 27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js. That file is 1.0.0, 394 lines and has no imports; layout defaults are built in and ApplyConfig is optional. Its CSS (Na__ContextMenuSystem__Styles__.css, 157 lines, only .na-context-menu* rules) reaches TV pages only through TV's app CSS index (:103). S09 marks 27 'port with 52 Statement' and S10 marks it optional (wrongly saying it has no LE use); no WP ports the leaf.",
+   "recommendation": "Own it here as WP-S07b-11: port the renderer and the CSS verbatim at the TV path (VALEVISION3D header, PORT NOTE), and link the CSS through the VV loader's STYLESHEETS (WP-S03a-07 pattern) or VV's CSS index. Do not port SystemLogic, RightClickGuard, HitResolver or the Sections; the 3D right-click menu is a separate decision (S09/S10).",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "evidence": "MenuRenderer :40-110 (constants, defaults, no imports), exports :386-391; TV CSS index :103; S09 :307; S10 :407, :487.",
+   "tv_paths": [
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css"
+   ],
+   "tv_version": "1.0.0",
+   "est_lines": 551,
+   "depends_on": []
+  },
+  {
+   "id": "S07b-V07",
+   "category": "wiring",
+   "title": "A shared statement link must itself load VV's lazy editor",
+   "detail": "TV starts Share__Open__ at boot (Index.html :904 import, :1738 call). Share__Open__ imports the ModeController directly (:67-69), reads the open parameter through Share__Links, waits for Na__LeMode__Ready and calls Na__LeMode__OpenStatements({statementId, view:'read'}) (:276, :283, :317-333). S07b-F35 says VV must start Share__Open__ 'through the loader once the editor has loaded', which is circular: in VV nothing loads the editor until a tab is pressed, so a reader opening a shared statement link would land on the 3D view.",
+   "recommendation": "VV needs a boot-time check of the share parameter that does not import the editor graph (a small leaf, or the loader facade). When a link is present, it calls the loader (Na__LeLoad__OpenStatements / OpenSpecification / OpenRegister, or one generic facade entry) to load the editor; Share__Open__ then runs inside the loaded editor. Own it in WP-S08-11 / WP-S09-12 (index wiring for 66 'via the loader facade'); S07b only supplies the statement entry point.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TV Index.html :904, :1734-1738; Share__Open__.js :67-89, :270-290, :317-341; VV Loader header (editor modules are only ever import()ed).",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js",
+    "Index.html"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "index.html"
+   ],
+   "depends_on": [
+    "WP-S08-11",
+    "WP-S09-12",
+    "WP-S03a-05"
+   ]
+  },
+  {
+   "id": "S07b-V08",
+   "category": "decision",
+   "title": "Cross-slice ownership overlaps in S07b's work packages",
+   "detail": "Several S07b items are already scoped by other slices' WPs and would be built twice:\n- Lockstep leaf: WP-S07b-01 vs WP-S06b-01 (STMT-01).\n- KeyScope + HotkeyHandler gate: WP-S03a-03, WP-S05a-01, WP-S09-05.\n- DocumentKeys: WP-S03a-09, WP-S05a-02.\n- Loader VIEW_STATEMENT/OpenStatements: WP-S03a-05, WP-S09-03 vs WP-S07b-08.\n- TabStrip 2.0.0 statements tab: WP-S03a-06, WP-S10-04 vs WP-S07b-08.\n- LayoutEditor__Statement__Config, labels and EditorSetup GetStatementSetup: WP-S03a-01 (whole TV config) vs WP-S07b-04.\n- Open Sans 500: WP-S10-09 vs WP-S07b-04.\n- html2canvas vendor: WP-S09-10 vs WP-S07b-04.\n- PdfExporter LoadLibrary: WP-S08-14 (re-sync to 1.12.0) / WP-S08-02 vs WP-S07b-04's alias.\n- Confirm-dialog back-port to TV: WP-S10-07 vs S07b-F42.\n- The ModeController statement hunk follows WP-S03a-12's per-feature template.",
+   "recommendation": "Assign one owner each:\n- Lockstep: WP-S06b-01.\n- KeyScope: one of the three keyboard WPs.\n- DocumentKeys: WP-S03a-09.\n- Loader facade: WP-S03a-05.\n- TabStrip: WP-S03a-06.\n- Config block: WP-S03a-01; WP-S07b-04 then sets only the VV statement values and the Enabled switch.\n- Fonts: WP-S10-09.\n- html2canvas: WP-S07b-04 or WP-S09-10, not both.\n- LoadLibrary: the alias only if WP-S08-14 has not landed.\nWP-S07b-08 keeps only the ModeController statement hunk (per WP-S03a-12), the share entry (S07b-V07) and the SW token. The S07b packages then depend on those owners.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "Work-package headings in S03a, S05a, S06b, S08, S09 and S10 (grep of the slice reports, 01-Oct).",
+   "tv_paths": [],
+   "vv_paths": [],
+   "depends_on": []
+  },
+  {
+   "id": "S07b-V09",
+   "category": "test",
+   "title": "VV node suites need the QR port, VV's ProjectLoader seam and a VV address bar",
+   "detail": "Four suites copy TV's 03__AppUtils/Na__AppUtils__ProjectLoader.js into their scratch tree and simulate TV's address bar: Standard, Schedule, Finishes, Publish (Standard :76-83: ?project=RB05&project-folder=RB05__WestFarm&year=26). The Standard suite also copies the whole 51__System__LayoutEditor/53__Feature__ProjectQrCode folder (:72) and checks the QR module size (:260-265). In VV these suites cannot run until the QR port exists and the ProjectLoader facade (or adaptation) is settled. Their address simulation must use VV's ?project=2026/3047__Doous. The Standard suite has 47 checks (42 pass + 5 fail on 01-Oct).",
+   "recommendation": "In WP-S07b-09: point the copy lists at VV paths (VV ProjectLoader with facades, VV QR folder), simulate a VV address, and sequence the Standard suite after WP-S07a-04. RoundTrip, FigureTitle and Lockstep need only feature files and can run as soon as WP-S07b-05A (and WP-S06b-01) lands.",
+   "action": "port_test",
+   "severity": "low",
+   "evidence": "Na__Test__StatementStandard__.test.mjs :66-83, :260-265; copy lists of Schedule, Finishes and Publish (each names 03__AppUtils/Na__AppUtils__ProjectLoader.js).",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementSchedule__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementPublish__.test.mjs"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment"
+   ],
+   "depends_on": [
+    "WP-S07a-04"
+   ]
+  },
+  {
+   "id": "S07b-V10",
+   "category": "test",
+   "title": "Off-localhost acceptance needs a port other than 8000/8090",
+   "detail": "WP-S07b-06's acceptance reads the Read view 'off localhost (*.localhost host)'. VV's Na__AppUtils__IsRunningOnLocalhost (ProjectLoader :303-307) returns true for port 8000 whatever the hostname (TV's for 8000 and 8090), and WCP Flask binds 127.0.0.1:8000 (server.py :74-75). A *.localhost host served by WCP Flask therefore still counts as localhost. TV proved its reader from 'reader.localhost:8864' (devlog v2.171 :106-110).",
+   "recommendation": "State the acceptance as 'served on a *.localhost host at a port other than 8000/8090 (e.g. reader.localhost:8864), with every non-read request aborted', in WP-S07b-05C and WP-S07b-09.",
+   "action": "port_test",
+   "severity": "low",
+   "evidence": "VV ProjectLoader :303-307; TV ProjectLoader :67-71; WCP server.py :74-75; TV devlog :106-110.",
+   "tv_paths": [],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "depends_on": []
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S07b-01",
+   "reason": "Duplicate. WP-S06b-01 already ports the same file (S06b row STMT-01) and Na__Test__StatementLockstep__ with it, so two packages would create the same file. Keep one owner (WP-S06b-01, the first consumer); the S07b packages depend on it."
+  },
+  {
+   "id": "WP-S07b-05",
+   "reason": "It cannot land or pass its acceptance alone. Page__ statically imports 07 Publish__ and the 09 Registry and DrawingSchedule__Live__. Editor__ and Editor__Cards__ import the 09 Registry, which imports TrueVisionHub__, which imports ProjectQrCode. Replaced by WP-S07b-05A, -05B and -05C."
+  },
+  {
+   "id": "WP-S07b-06",
+   "reason": "Publish__ imports the 09 Registry and the ProjectQr Symbol, and the Page (WP-05) imports Publish__, so this package can neither follow nor precede WP-05 on its own. Folded into WP-S07b-05C; Publish__Page__ moves to WP-S07b-05A."
+  },
+  {
+   "id": "WP-S07b-07",
+   "reason": "The Registry is imported by the Editor, Cards and Page (WP-05), so it cannot come after them. The pure section modules move to WP-S07b-05A; the Registry, Hub and Live source move to WP-S07b-05C."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S07b-05A",
+   "title": "Pure statement modules, landed inert",
+   "scope": "Port to the TV-identical paths under LE/52__Feature__StatementWriter the 18 files that import nothing needing QR, transport or config (about 8,760 lines):\n- 01: Data__Index (description string adapted) and Images.\n- 02: Md__Tokenise, Inline, Render, Serialise and Figure, with the D-S07b-02 CRLF decision applied.\n- 04: Editor__Move and Editor__Typing.\n- 07: Publish__Page (generator meta adapted).\n- 09: Contents (fallback adapted), DrawingSchedule, Finishes, Header (Vale defaults), Footer (Vale defaults) and the Config JSON (Vale words; hub per D-S07b-06).\n- 08: both stylesheets, verbatim.\nNothing imports them yet, so VV's module graph is unchanged. Each file gets a VALEVISION3D header, the [ValeVision3D] console prefix and a PORT NOTE naming the pinned TV commit.",
+   "depends_on": [
+    "D-S07b-02",
+    "D-S07b-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "node --check passes on every file",
+    "Na__Test__StatementRoundTrip__ and Na__Test__StatementFigureTitle__ pass in VV on a committed VV fixture and on its CRLF twin",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass, and nothing outside the feature imports these files yet",
+    "No 'Noble Architecture' or 'TrueVision' runtime string in Header, Footer, Contents, the Config JSON, Publish__Page or Data__Index (the hub id excepted if D-S07b-06 keeps it)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Contents__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Finishes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Header__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Footer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter (same 18 paths)"
+   ],
+   "hot_files": [],
+   "tests_to_port": [
+    "Na__Test__StatementRoundTrip__.test.mjs",
+    "Na__Test__StatementFigureTitle__.test.mjs"
+   ],
+   "risk": "Low: the code is inert. The tokeniser's CRLF behaviour depends on D-S07b-02."
+  },
+  {
+   "id": "WP-S07b-05B",
+   "title": "Statement data, transport binding, reader and manager",
+   "scope": "Port:\n- 01 Data__, adapted: Na__ValeVision__ storage prefixes, Vale starter, folder/name/{code} derivation per S07b-V02, 40->42 import.\n- 01 Data__Transport__: verbatim over VV's same-name CfApi/LocalMirror shims if D-S07b-10 (a); rewritten over Na__AppUtils__R2StatementDocs__ if (b).\n- 05 Reader__ and 03 Manager__.\nNothing outside the feature imports them yet.",
+   "depends_on": [
+    "WP-S07b-05A",
+    "WP-S06b-01",
+    "WP-S07b-03",
+    "WP-S07b-04",
+    "D-S07b-10"
+   ],
+   "size": "M",
+   "acceptance": [
+    "On a throwaway VV project through WCP Flask: create, rename, save and read back a statement. The file is named like 3047_T01_S01__Doous__<Title>__.md inside 10__StatementDocs/<NN>__<Title>/, with no '/' in the name.",
+    "A missing statement reads as missing, never as index.html",
+    "An outside edit of the .md is seen by the lockstep watch (Last-Modified flows through)",
+    "Na__Verify__Exports__.mjs passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js"
+   ],
+   "files_vv": [
+    "same four paths under VVM"
+   ],
+   "hot_files": [],
+   "tests_to_port": [
+    "Na__Test__StatementServer__.py (adapted, with WP-S07b-09)"
+   ],
+   "risk": "Blocked until D-S07b-10 is decided; building the wrong transport duplicates S09's shims."
+  },
+  {
+   "id": "WP-S07b-05C",
+   "title": "Standard registry, hub, writing surface, PDF, publish and the Statements page (one landing)",
+   "scope": "Port in one change, because static imports tie these files together:\n- 09: Registry and TrueVisionHub (per D-S07b-06).\n- 04: Editor, Editor__Cards (picture store via Transport or the LocalMirror shim) and Editor__Figure.\n- 06: Pdf.\n- 07: Publish and Publish__Images (verbatim under D-S07b-10 (a)).\n- 03: Page, adapted: Na__ValeVision__ keys, neutral Standard Sections title, and no DrawingSchedule__Live__ import unless the register exists.\n- 09: DrawingSchedule__Live__, only if WP-S07a-03 has landed and D-S07a-01 adopts the register.\nReplaces the refuted WP-S07b-05, -06 and -07.",
+   "depends_on": [
+    "WP-S07b-05B",
+    "WP-S07a-04",
+    "WP-S08-11",
+    "WP-S08-07",
+    "WP-S08-08",
+    "WP-S08-09",
+    "WP-S07b-11",
+    "WP-S03a-09",
+    "WP-S05a-01",
+    "WP-S07b-04",
+    "WP-S08-04",
+    "WP-S10-09"
+   ],
+   "size": "L",
+   "acceptance": [
+    "The Na__Test__StatementStandard__, __Schedule__, __Finishes__ and __Publish__ node suites pass on the VV fixture",
+    "Na__Test__StatementTyping__.html passes in a browser served by WCP Flask",
+    "In-app (Adam's checklist), on a throwaway VV project:\n- Create a statement.\n- Typed r, t, d, o, 1, Delete and Escape land in the text, and the 3D camera is untouched.\n- Ctrl+S writes the file.\n- Ctrl+/ and Ctrl+. each switch once.\n- An outside edit raises the lockstep sheet within one poll.\n- The PDF has zero extractable text.",
+    "Publish with worker writes faked: every linked picture is written at its link key under VaApps/Projects/{folderId}/10__StatementDocs/ with the correct content type, the index is stamped last, and the build manifest is not written per picture",
+    "A project sync run afterwards deletes no key under 10__StatementDocs/",
+    "The Read view is served from a *.localhost host on a port other than 8000/8090 and loads every picture from the CDN copies",
+    "Na__Verify__ModuleGraph__.mjs passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Registry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__Live__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js"
+   ],
+   "files_vv": [
+    "same paths under VVM (Live source only if the register exists)"
+   ],
+   "hot_files": [],
+   "tests_to_port": [
+    "Na__Test__StatementStandard__.test.mjs",
+    "Na__Test__StatementSchedule__.test.mjs",
+    "Na__Test__StatementFinishes__.test.mjs",
+    "Na__Test__StatementPublish__.test.mjs",
+    "Na__Test__StatementTyping__.html",
+    "Na__Test__StatementDomRoundTrip__.html",
+    "Na__Test__StatementFigure__.html",
+    "Na__Test__StatementTypography__.html",
+    "Na__Test__Reference__TyporaTheme__.css",
+    "Na__Test__StatementStandard__.html",
+    "Na__Test__StatementFinishes__.html"
+   ],
+   "risk": "The largest single landing in this slice; it cannot be split further without stubs. It needs QR, sharing (with 52/53/65), keyboards and the menu renderer from four other slices first."
+  },
+  {
+   "id": "WP-S07b-11",
+   "title": "Context-menu renderer leaf and stylesheet",
+   "scope": "Port 27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js (1.0.0, 394 lines, no imports) and Na__ContextMenuSystem__Styles__.css (157 lines) verbatim to VV at the TV path (VALEVISION3D header, PORT NOTE). Link the CSS through the VV loader's STYLESHEETS (WP-S03a-07 pattern) or VV's CSS index. Do not port SystemLogic, RightClickGuard, HitResolver or the Sections (the 3D right-click menu is a separate S09/S10 decision).",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "node --check passes and Na__Verify__Exports__.mjs passes",
+    "A harness calling Na__ContextMenu__Ui__Open with a title and two sections shows a styled menu that closes on an outside click and on Escape",
+    "No 3D right-click behaviour is added to VV"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+    "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js (STYLESHEETS) or 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "tests_to_port": [],
+   "risk": "Low."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S07b-10",
+   "question": "How does the VV Statement Writer reach R2 and the local server: same-name CfApi/LocalMirror shims, or its own per-document client?",
+   "options": "(a) Same-name VV shims (D-S09-04 (a), D-S07a-08 A): the statement functions of Na__CfApi__* and Na__LocalMirror__* are built over the new worker routes and the Flask blueprint, and Data__Transport__, Publish__ and Publish__Images__ port verbatim. (b) S07b's per-document client Na__AppUtils__R2StatementDocs__, with a rewritten Transport unit and re-routed Cards, Publish and Publish__Images (S07b-F07, F18, F28).",
+   "recommendation": "(a), to match the transport decisions of S09 and S07a and keep three more files identical to TV. Under either option keep:\n- VV's authenticated per-route worker (S07b-F50).\n- 404-honest local reads (S07b-F29).\n- No-cache storage and no per-write build-manifest bump (S07b-V04).\n- The sync-purge fix before the first Publish (S07b-V01).",
+   "blocks": [
+    "WP-S07b-03",
+    "WP-S07b-05B",
+    "WP-S07b-05C"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "VV project sync R2 purge (WCP/Tools__DevUtils sync script): not examined by the survey; it deletes published statement pictures",
+  "Whitecardopedia -> VV ?project= launch value (folderId with year) and its effect on statement file naming",
+  "Cross-slice transport strategy: S09 D-S09-04 / WP-S09-06, S07a D-S07a-08, S08 WP-S08-06",
+  "Feature-internal import graph and a work-package landing order that links",
+  "VV-relevant prerequisite closure: 17 TV-only files, 7,001 lines, replacing the TV-graph 115/47,730 figure",
+  "VV worker cache and build-manifest semantics for statement writes",
+  "Context-menu renderer ownership and CSS linking in VV",
+  "Share-link boot entry under VV's lazy loader",
+  "Node suites' external copy lists (ProjectQrCode folder, TV ProjectLoader, TV address simulation)",
+  "VV hotkey dictionary: Alt modifiers on Backspace and F; d/o/Delete/Escape Contextual entries",
+  "VV ledger's open Drawing Register decision and its effect on the Page's static Live import"
+ ],
+ "notes": "The survey is strong. Its scale, paths, versions, line references, test results and VV-absence claims held up against the files. I re-ran the 7 TV node suites and got identical results, and I reproduced the CRLF tokeniser defect directly. No finding is refuted outright.\n\nMaterial problems:\n- **Missed critical, S07b-V01.** VV's project sync purges every R2 image under VaApps/Projects/{folderId}/ that is not a top-level local image, so every published statement picture would vanish on the next sync. It needs WP-S08-04, scoped to protect 10__StatementDocs/.\n- **Missed high, S07b-V02.** `{code}` in statement file names would be '2026/3047__Doous', with a slash.\n- **Transport strategy conflict, D-S07b-10.** S07b's per-document client contradicts the same-name shim strategy of S09 (D-S09-04) and S07a (D-S07a-08); the planner must pick one before WP-03/05B.\n- **Work packages.**\n  - WP-01 duplicates WP-S06b-01.\n  - WP-05/06/07 cannot land separately: the Page imports 07 and 09, and the Editor and Cards reach ProjectQrCode through the Registry and Hub.\n  - I re-cut them as 05A (inert pure modules), 05B (data and transport binding) and 05C (one landing), and added WP-S07b-11 for the ownerless context-menu renderer.\n- **F34 overstated and understated.** Plain Backspace is not stolen (it is Alt+Backspace, and F is Alt+Shift+F), but d, o, Delete and Escape are swallowed too. The same leak affects VV's existing plan-annotation contenteditable editor today; this is outside the slice, so tell the keyboard slices (S03a/S05a/S09), which list only R, B, T, Y and the digits.\n- **F01/F54 framing.** The feature is in Adam's live use (v2.169-v2.172 are his reports), so the gate is a pinned commit plus his go-ahead for Vale, not a pending confirmation.\n- **F48/b.11 sizing.** The VV prerequisite set is 17 files / 7,001 lines, not 115 / 47,730.\n\nWatch for:\n- Several S07b items overlap other slices' packages (loader facade, TabStrip, config block, Open Sans 500, html2canvas, LoadLibrary, KeyScope, DocumentKeys); see S07b-V08 and assign single owners.\n- VV's get_project_path has no '..' fence, so the new blueprint must fence the project folder itself.\n- The Drawing Register is still an open Adam decision (D-S07a-01). Until it is made, the VV Page drops its static DrawingSchedule__Live__ import.\n\nReport edited in place, with an appended ## Verification section. Scripts are in scratchpad/parity/verify_s07b."
+}

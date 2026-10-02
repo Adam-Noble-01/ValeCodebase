@@ -12,8 +12,10 @@
 // DESCRIPTION:
 // - A left drag with the Select tool draws a selection box when it starts
 //   where there is nothing to move: bare paper, the grey stage, a locked
-//   viewport, anything at all in a read-only session - or anywhere with Alt
-//   held, for a sheet with no bare paper left to start from.
+//   viewport, a viewport the press would not move (not a grip, a door, the
+//   one being edited inside, or under the Move tool), anything at all in a
+//   read-only session - or anywhere with Alt held, for a sheet with no bare
+//   paper left to start from.
 // - THE DIRECTION DECIDES THE RULE, as in AutoCAD. Dragged to the RIGHT the box
 //   is a WINDOW: blue with a solid edge, and it takes only what lies wholly
 //   inside it. Dragged to the LEFT it is a CROSSING: green with a dashed edge,
@@ -27,12 +29,14 @@
 //                inside a filled shape does not take it either, so a background
 //                panel is not grabbed by boxing what sits on it.
 //     Text       its text box (turned with the text), or its leader.
-//     Dimension  its extension lines, its dimension line, its terminators or
-//                its value.
+//     Dimension  its extension lines, its dimension line, its terminators,
+//                its value, or the arc from a dragged value back to the line.
 //     Leader     its line, its endpoint, or its bubble or note.
 //   A window takes an item only when every one of those parts is inside it.
 // - Hidden layers, locked layers and locked viewports are never taken. Locked
 //   is background: lock a viewport and a box can start on it and sweep over it.
+//   Nor is anything on a REFERENCE layer (the Layers panel's Ref), which the
+//   pointer passes straight through.
 // - While the box is dragged, everything it would take is outlined in the
 //   box's colour, so the two rules can be told apart before the button comes up.
 // - Nothing here writes the selection. Release reports what the box took and
@@ -51,15 +55,40 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__SelectionBox__.js 1.0.0
-// - Ported on     : 14-Sep-2026
-// - Parity        : verbatim (header only)
-// - Divergences   : none - it reads only records both apps share
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js
+// - Source version: 1.7.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. TrueVision authored it
+//                   (14-Sep-2026); this app's copy was its 1.4.0 (17-Sep-2026), TrueVision's 1.4.0.
+//                   Taken up to 1.7.0: nothing on a reference layer is a candidate (1.5.0, v2.123.0), a
+//                   turned viewport is its turned outline (1.6.0, v2.138.0), a holed vector is each of
+//                   its rings (1.7.0, v2.150.0), a measured room counts as its inside; the description
+//                   as of v2.153.0 (box select, confirmed by Adam in TrueVision 23-Sep-2026; its
+//                   behaviour change is in PointerPress, W3-03). The others say "NOT tried by Adam";
+//                   ported under DR-01 (c).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Sep-2026 - Version 1.7.0
+// - A vector with holes (the vector tools' Boolean section) is each of its
+//   rings, closed (Na__LeShapeGeo__Rings), so a crossing box meets its real
+//   edges and no phantom edge from its outline to a hole.
+//
+// 21-Sep-2026 - Version 1.6.0
+// - A turned viewport (Viewport__RotationDeg) is its turned outline, so a
+//   window takes it only when it holds all four turned corners and a crossing
+//   takes it when it meets one of its turned edges.
+//
+// 21-Sep-2026 - Version 1.5.0
+// - Nothing on a REFERENCE layer (Layer__Selectable false) is a candidate,
+//   inside an open container or out of one: a box sweeps over a reference
+//   layer the way it sweeps over a locked viewport. TrueVision first; not
+//   yet in ValeVision.
+//
 // 17-Sep-2026 - Version 1.4.0
 // - A BOX DRAWN INSIDE A CONTAINER TAKES WHAT IS IN THAT CONTAINER. Candidates
 //   asks Na__LayoutEditor__EditScope__ first: inside a vector each vertex is a
@@ -70,22 +99,19 @@
 //   open container that never stretched into a box is the way out of it.
 //
 //
-// 15-Sep-2026 - Version 1.3.0
+// 14-Sep-2026 - Version 1.3.0
 // - A turned text item's box is its turned box (Na__LeMarkup__AnnotationCorners),
 //   so a window takes it once that box is inside, not the square round it, and
 //   its leader runs to the turned box's middle. Unturned text is unchanged.
-// - Ported from TrueVision3D v2.52.0 (SelectionBox 1.3.0).
 //
 // 14-Sep-2026 - Version 1.2.0
-// - A dimension whose value has been dragged off the line boxes the value's
-//   rotated box and the leader arc as well as the line, so a window or a
+// - A dimension whose value has been dragged off the line includes that
+//   value's box and the arc back to the dimension line, so a window or a
 //   crossing that covers the moved text takes the dimension.
-// - Ported from TrueVision3D (SelectionBox 1.2.0).
 //
 // 14-Sep-2026 - Version 1.1.0
 // - A dimension's terminator parts are boxed at Dimension__TickLengthMm, so a
 //   larger arrow is taken by a window or a crossing that covers it.
-// - Ported from TrueVision3D v2.43.0.
 //
 // 14-Sep-2026 - Version 1.0.0
 // - Initial implementation: window and crossing boxes, the touch rule for each
@@ -102,7 +128,7 @@
     // MODULE IMPORTS | Config, Model, Surface, Markup and Geometry
     // ------------------------------------------------------------
     import { Na__LeCfg__GetSelectionSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__IsLayerVisible, Na__LeModel__IsLayerLocked } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeModel__IsLayerVisible, Na__LeModel__IsLayerLocked, Na__LeModel__IsLayerSelectable } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__GetElements, Na__LeSurface__GetPixelsPerMm, Na__LeSurface__GetZoom } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import {
         Na__LeMarkup__AnnotationCorners,
@@ -114,9 +140,10 @@
         Na__LeMarkup__DimensionTextLayout
     } from '../15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeDimGeo__Terminator } from '../15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js';
-    import { Na__LeShapeGeo__Points } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
+    import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Rings } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LeLeadGeo__TYPE_BUBBLE, Na__LeLeadGeo__Layout, Na__LeLeadGeo__Circle, Na__LeLeadGeo__HasText } from '../15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js';
     import { Na__LeScope__BoxCandidates } from './Na__LayoutEditor__EditScope__.js';
+    import { Na__LeVpRot__Corners } from '../20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: a turned frame's four corners
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -136,8 +163,6 @@
     const Na__LeSelBox__BOX_CLASS      = 'na-le-select-box';
     const Na__LeSelBox__PREVIEW_CLASS  = 'na-le-select-preview';
     const Na__LeSelBox__DRAGGING_CLASS = 'na-le-dragging';
-    const Na__LeSelBox__CAP_HEIGHT     = 0.72;          // <-- As the markup bridge sets text: cap height and descent over the font size
-    const Na__LeSelBox__DESCENT        = 0.25;
     const Na__LeSelBox__LEADER_DOT_MM  = 0.5;           // <-- The dot on a text leader's tip, as the markup bridge draws it
     // ------------------------------------------------------------
 
@@ -286,7 +311,9 @@
     // ------------------------------------------------------------
     function Na__LeSelBox__ViewportParts(sheet, viewport) {
         const r = viewport.Viewport__FrameMm;
-        return r ? [ Na__LeSelBox__RectPart(r.X, r.Y, r.WidthMm, r.HeightMm, false) ] : [];
+        if (!r) return [];
+        if (!viewport.Viewport__RotationDeg) return [ Na__LeSelBox__RectPart(r.X, r.Y, r.WidthMm, r.HeightMm, false) ];
+        return [ { points : Na__LeVpRot__Corners(viewport).map((p) => [ p.x, p.y ]), closed : true, area : false } ];   // <-- A turned frame is its turned outline
     }
     // ------------------------------------------------------------
 
@@ -296,8 +323,20 @@
     function Na__LeSelBox__ShapeParts(sheet, shape) {
         const pts = Na__LeShapeGeo__Points(shape).map((p) => [ p[0], p[1] ]);
         if (!pts.length) return [];
+        // A HOLED VECTOR (the Boolean tools') is each of its rings, closed: a
+        // window takes it when it holds the outline, and a crossing when the
+        // box touches any ring's edge - never a phantom edge from the outline
+        // to a hole.
+        if (Array.isArray(shape.Shape__Holes) && shape.Shape__Holes.length > 0) {
+            return Na__LeShapeGeo__Rings(shape).map((ring) => ({ points : ring.map((p) => [ p[0], p[1] ]), closed : true, area : false }));
+        }
         const filled = !!shape.Shape__FillColour || !!shape.Shape__Gradient;       // <-- As the hit test reads a fill
-        return [ { points : pts, closed : pts.length > 2 && (shape.Shape__Closed === true || filled), area : false } ];
+        // A MEASURED ROOM COUNTS AS ITS INSIDE, so a box drawn within one
+        // picks it up - which is how a floor's worth of rooms is selected to
+        // be filed under a group in one gesture. A plain vector is still its
+        // edges alone: a box inside a big rectangle is nearly always somebody
+        // reaching for what is drawn on top of it.
+        return [ { points : pts, closed : pts.length > 2 && (shape.Shape__Closed === true || filled), area : !!shape.Shape__Area } ];
     }
     // ------------------------------------------------------------
 
@@ -384,6 +423,18 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Can a Box Take What Sits on This Layer
+    // ------------------------------------------------------------
+    // Not a hidden layer, not a locked one, and not a reference layer - the
+    // one the pointer passes straight through. An item's own lock (a
+    // viewport's) is its row's business, asked separately.
+    // ------------------------------------------------------------
+    function Na__LeSelBox__Takeable(sheet, layerId) {
+        return Na__LeModel__IsLayerVisible(sheet, layerId) && !Na__LeModel__IsLayerLocked(sheet, layerId) && Na__LeModel__IsLayerSelectable(sheet, layerId);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | One Item's Parts and Bounds, by Kind (null when it cannot be taken)
     // ------------------------------------------------------------
     // The same reading Candidates makes of a whole sheet, for one named item.
@@ -397,7 +448,7 @@
         if (!row) return null;
         const records = Array.isArray(sheet[row.list]) ? sheet[row.list] : [];
         const record  = records.find((candidate) => candidate && candidate[row.idKey] === item.id);
-        if (!record || !Na__LeModel__IsLayerVisible(sheet, record[row.layerKey]) || Na__LeModel__IsLayerLocked(sheet, record[row.layerKey])) return null;
+        if (!record || !Na__LeSelBox__Takeable(sheet, record[row.layerKey])) return null;
         if (row.ownLock && row.ownLock(record)) return null;
         const parts = row.parts(sheet, record).filter((part) => part && Array.isArray(part.points) && part.points.length > 0);
         return parts.length ? { parts : parts, bounds : Na__LeSelBox__BoundsOf(parts) } : null;
@@ -424,7 +475,7 @@
         Na__LeSelBox__KINDS.forEach((row) => {
             const records = Array.isArray(sheet[row.list]) ? sheet[row.list] : [];
             records.forEach((record) => {
-                if (!record || !Na__LeModel__IsLayerVisible(sheet, record[row.layerKey]) || Na__LeModel__IsLayerLocked(sheet, record[row.layerKey])) return;
+                if (!record || !Na__LeSelBox__Takeable(sheet, record[row.layerKey])) return;
                 if (row.ownLock && row.ownLock(record)) return;                     // <-- Locked is background: never taken
                 const parts = row.parts(sheet, record).filter((part) => part && Array.isArray(part.points) && part.points.length > 0);
                 if (parts.length) list.push({ kind : row.kind, id : record[row.idKey], parts : parts, bounds : Na__LeSelBox__BoundsOf(parts) });

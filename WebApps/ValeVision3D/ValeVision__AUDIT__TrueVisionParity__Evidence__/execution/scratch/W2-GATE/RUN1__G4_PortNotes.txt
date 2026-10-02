@@ -1,0 +1,212 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 715 files in 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment and index.html - 480 PORT NOTE(s), 566 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 71 still as recorded, 68 since rewritten (their full checks apply)
+
+  02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js
+      WARN  :37    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+      WARN  :55    log-order            24-Feb-2026 1.0.0 sits above 11-Jun-2026 1.1.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :59    log-order            11-Jun-2026 1.1.0 sits above 25-Jun-2026 1.2.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :65    log-order            version 1.2.0 sits above 1.3.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :70    log-order            version 1.3.0 sits above 1.3.1 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :77    log-order            version 1.3.1 sits above 1.4.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :89    log-order            25-Jun-2026 1.4.0 sits above 01-Oct-2026 1.4.1 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+  02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js
+      WARN  :39    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js
+      WARN  :55    log-order            10-Jun-2026 1.0.0 sits above 16-Sep-2026 1.0.2 (this log runs newest first)   [baseline 01-Oct-2026]
+  02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+      WARN  :146   log-order            16-Sep-2026 1.0.1 sits above 17-Sep-2026 1.0.3 (this log runs newest first, as TrueVision's do)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), lists 1.0.1 above 1.0.3 and 1.0.2 - TrueVision's own order, kept as written.]
+  02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js
+      WARN  :38    source-version-form  Source version "TrueVision's file has no version line or log; IsPaused as it has stood since TrueVision3D " lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this file has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+      WARN  :49    source-version-form  Source version "TrueVision 1.0.0 (27-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js
+      WARN  :46    log-order            16-Sep-2026 sits above 09-Sep-2026 (this log runs oldest first)   [baseline 01-Oct-2026]
+      WARN  :53    log-order            09-Sep-2026 sits above 10-Jun-2026 1.0.0 (this log runs oldest first)   [baseline 01-Oct-2026]
+  02__Src__AppModules/15__ModelLoader/Na__ModelLoader__ContentStamp__.js
+      WARN  :41    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js
+      WARN  :51    log-order            28-Sep-2026 1.5.0 sits above 09-Sep-2026 (this log runs oldest first)   [baseline 01-Oct-2026]
+      WARN  :58    log-order            09-Sep-2026 sits above 11-Jun-2026 1.0.0 (this log runs oldest first)   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js
+      WARN  :63    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js
+      WARN  :45    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
+      WARN  :61    source-version-form  Source version "TrueVision v2.19.0 scene editor (07-Sep-2026)" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js
+      WARN  :36    source-version-form  Source version "TrueVision v2.19.0 scene editor (07-Sep-2026)" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js
+      WARN  :55    source-version-form  Source version "TrueVision v2.19.0 scene editor (07-Sep-2026)" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js
+      WARN  :47    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css
+      WARN  :24    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js
+      WARN  :56    source-version-form  Source version "TrueVision v2.18.0 carousel (07-Sep-2026); that file was itself ported from this one on 21" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+      WARN  :95    log-order            11-Jun-2026 1.0.0 sits above 10-Jul-2026 1.1.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+      WARN  :98    log-order            10-Jul-2026 1.1.0 sits above 09-Sep-2026 1.2.0 (this log runs newest first, as TrueVision's do)   [baseline 01-Oct-2026]
+  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js
+      WARN  :44    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
+      WARN  :34    source-version-form  Source version "TrueVision's file has no version line; SetCategoryVisibleByKey as it has stood since TrueV" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this file has no module version (its log entries carry dates only), so the Source version names releases instead.]
+  02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+      WARN  :59    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+      WARN  :46    source-version-form  Source version "1.1.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupMount__.js
+      WARN  :51    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Navigation__.js
+      WARN  :44    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js
+      WARN  :39    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Framing__.js
+      WARN  :36    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js
+      WARN  :38    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js
+      WARN  :38    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css
+      WARN  :20    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.87.0 left it, with its Storey Dropdown regi" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Data__.js
+      WARN  :37    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js
+      WARN  :37    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__History__.js
+      WARN  :32    source-version-form  Source version "1.1.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js
+      WARN  :39    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js
+      WARN  :44    source-version-form  Source version "1.1.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css
+      WARN  :6     source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js
+      WARN  :51    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js
+      WARN  :41    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js
+      WARN  :30    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js
+      WARN  :40    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js
+      WARN  :38    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js
+      WARN  :38    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js
+      WARN  :43    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js
+      WARN  :29    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Grid__.js
+      WARN  :51    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__History__.js
+      WARN  :31    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js
+      WARN  :40    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Overlay__.js
+      WARN  :44    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js
+      WARN  :44    source-version-form  Source version "1.0.0 (31-Aug-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ConfigState__.js
+      WARN  :39    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Framing__.js
+      WARN  :43    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__OrthoCamera__.js
+      WARN  :41    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__PlaneGizmo__.js
+      WARN  :50    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__SceneLink__.js
+      WARN  :43    source-version-form  Source version "1.0.0 (07-Sep-2026)" lacks the TrueVision3D app version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css
+      WARN  :21    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.86.0 left it, with its Name, and Which Elev" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/46__System__NorthDirection/Na__North__Compass__.js
+      WARN  :43    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/46__System__NorthDirection/Na__North__ConfigState__.js
+      WARN  :33    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/46__System__NorthDirection/Na__North__PickTool__.js
+      WARN  :42    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/46__System__NorthDirection/Na__North__Styles__DevMenu__.css
+      WARN  :21    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css
+      WARN  :22    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.82.0 left it (20-Sep-2026, commit 66cdd175;" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css
+      WARN  :21    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.94.0 left it (20-Sep-2026, commit 62dade1c;" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js
+      WARN  :56    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+      WARN  :84    log-order            14-Sep-2026 1.3.0 sits above 19-Sep-2026 1.3.0 (this log runs newest first, as TrueVision's do)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34 (a)), gives 1.3.0 twice - 14-Sep-2026 (the selection set) and 19-Sep-2026 (the common fields), the second below the first - so its order and repeat findings print WARN until TrueVision renumbers its own log (WT-08). This app's 1.4.2 had renumbered its copy (W0-06).]
+      WARN  :88    log-duplicate        version 1.3.0 appears twice in the DEVELOPMENT LOG (also line 84)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34 (a)), gives 1.3.0 twice - 14-Sep-2026 (the selection set) and 19-Sep-2026 (the common fields), the second below the first - so its order and repeat findings print WARN until TrueVision renumbers its own log (WT-08). This app's 1.4.2 had renumbered its copy (W0-06).]
+  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+      WARN  :37    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.72.0 wrote it (19-Sep-2026; read at b2aa915" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: a stylesheet carries no module version, so the Source version names the release that wrote it.]
+  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+      WARN  :134   log-duplicate        version 1.12.0 appears twice in the DEVELOPMENT LOG (also line 123)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), names 1.12.0 twice (17-Sep-2026 and 14-Sep-2026) - TrueVision's own numbering, kept as written.]
+  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js
+      WARN  :41    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js
+      WARN  :55    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js
+      WARN  :94    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css
+      WARN  :32    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D v2.111.0 left" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the release that last changed it.]
+  02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css
+      WARN  :26    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D v2.129.0 left" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the release that last changed it.]
+  02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js
+      WARN  :88    log-order            version 1.0.0 sits above 1.1.0 (this log runs newest first, as TrueVision's do)   [legacy: the DEVELOPMENT LOG is TrueVision's verbatim (K2 H6, DR-34 (a)), and TrueVision's own log runs 1.0.0 above 1.1.0 (both 21-Sep-2026).]
+  02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css
+      WARN  :37    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D v2.149.0 left" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the release that last changed it.]
+  02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css
+      WARN  :31    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D v2.131.0 left" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the release that last changed it.]
+  02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js
+      WARN  :46    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css
+      WARN  :10    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D created it wi" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the change that created it (R6 OC-07).]
+  02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css
+      WARN  :25    source-version-form  Source version "none of its own - the sheet carries no version or log; taken as TrueVision3D v2.150.0 left" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so the Source version line names the release that last changed it (R6 OC-07).]
+  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css
+      WARN  :18    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.163.0 left it (29-Sep-2026; read at b2aa915" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release that left it instead.]
+  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css
+      WARN  :7     source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.147.0 left it (22-Sep-2026; read at b2aa915" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release that left it instead.]
+  02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js
+      WARN  :34    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js
+      WARN  :37    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js
+      WARN  :42    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css
+      WARN  :19    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js
+      WARN  :45    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js
+      WARN  :132   log-order            20-Sep-2026 1.3.0 sits above 21-Sep-2026 1.3.0 (this log runs newest first, as TrueVision's do)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), carries two 1.3.0 entries (20-Sep-2026 ViewLevel above 21-Sep-2026 linkable) - TrueVision's own numbering, kept as written.]
+      WARN  :138   log-duplicate        version 1.3.0 appears twice in the DEVELOPMENT LOG (also line 132)   [legacy: TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), carries two 1.3.0 entries (20-Sep-2026 ViewLevel above 21-Sep-2026 linkable) - TrueVision's own numbering, kept as written.]
+  02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js
+      WARN  :52    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js
+      WARN  :41    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js
+      WARN  :45    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js
+      WARN  :50    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css
+      WARN  :29    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.133.0 left it (21-Sep-2026, commit 7ab70638" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's copy of this sheet has no module version, so the Source version names the release and the commit instead.]
+  02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js
+      WARN  :23    log-order            11-Mar-2026 1.0.0 sits above 16-Sep-2026 1.2.0 (this log runs newest first)   [baseline 01-Oct-2026]
+  80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html
+      WARN  :10    source-version-form  Source version "none of its own - the page as TrueVision3D v2.20.0 left it (10-Sep-2026, commit e654e8f7, " lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: TrueVision's page has no version of its own, so the Source version names the release and the commit instead.]
+  80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs
+      WARN  :29    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py
+      WARN  :31    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  80__Testing__PrototypeEnvironment/Na__Test__ScrapbookServer__.py
+      WARN  :41    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [baseline 01-Oct-2026]
+  80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html
+      WARN  :20    source-version-form  Source version "none of its own - the page as TrueVision3D v2.155.0 left it (23-Sep-2026; v2.61.0 made it " lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: a test page carries no module version, so the Source version names the releases that wrote it.]
+
+  PENDING  228 release placeholder(s) in 202 file(s), for the wave's Parity Scribe: W2-01 x5, W2-02 x3, W2-03 x7, W2-04 x5, W2-05 x8, W2-06 x14, W2-07 x3, W2-09 x3, W2-10 x2, W2-11 x1, W2-12 x2, W2-13 x3, W2-14 x6, W2-15 x2, W2-16 x15, W2-17 x4, W2-18 x9, W2-19 x16, W2-20 x3, W2-21 x8, W2-22 x1, W2-23 x1, W2-24 x3, W2-25 x4, W2-26 x4, W2-27 x5, W2-28 x6, W2-29 x3, W2-30 x11, W2-31 x4, W2-32 x8, W2-34 x7, W2-35 x6, W2-36 x11, W2-37 x10, W2-38 x4, W2-39 x3, W2-40 x4, W2-41 x5, W2-42 x6, W2-43 x3
+
+  RESULT: PASS (0 fail, 105 warn, 228 pending)

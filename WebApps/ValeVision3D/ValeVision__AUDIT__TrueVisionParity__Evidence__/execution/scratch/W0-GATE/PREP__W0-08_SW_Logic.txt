@@ -1,0 +1,60 @@
+$ node prepared/W0-08/00__Tests__W0-08/Na__Test__PwaServiceWorkerLogic__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution)
+exit 0
+
+PASS  1.1 PWA_SW_VERSION_TOKEN is still the live token (no bump by W0-08)
+PASS  1.2 PWA_SW_ASSET_VERSION_TOKEN exists and equals it (the split renames no bucket)
+PASS  1.3 the header log carries the 1.0.17 entry marked NOT BUMPED
+PASS  2.1 install fetched every precache entry with cache:reload (and nothing else)
+PASS  2.2 the shell bucket is wpwa-shell-2026-09-18-1
+PASS  2.3 install called skipWaiting
+PASS  2.4 the 8 loader sheets and the 56/57 self-linked scrapbook sheets are precached
+PASS  2.5 the DistanceCulling entry points at 05__RenderPipeline/
+PASS  2.6 the stale 02__Engine__MaxEngine/ DistanceCulling entry is gone
+PASS  2.7 no precache entry is listed twice
+PASS  2.8 every precache entry exists under D:\10_CoreLib__ValeCodebase\WebApps (a dry-run install caches no 404)
+PASS  3.1 activate keeps all six current buckets (models included - it used to delete it)
+PASS  3.2 activate deletes every superseded owned bucket
+PASS  3.3 activate leaves foreign caches alone
+PASS  3.4 activate claims open clients
+PASS  3.5 (setup) the shell-bump simulation changed exactly the shell token
+PASS  3.6 after a shell bump the shell and data buckets of the old token are evicted
+PASS  3.7 after a shell bump thumbs, models, images and published survive (no model re-download)
+PASS  4.1 a CDN picture is answered by the worker (not passed through)
+PASS  4.2 a picture fetched twice from cdn.noble-architecture.com reaches the network once
+PASS  4.3 ... and the second answer comes from the images bucket
+PASS  4.4 a .png picture lands in the images bucket, not the shell bucket
+PASS  4.5 a picture named IMG01__... is a sheet picture, not a passed-through full image
+PASS  4.6 a same-origin repository copy (.jpg) uses the images bucket too
+PASS  4.7 a picture miss is fetched plainly (content-hashed: the browser copy is right)
+PASS  4.8 the images bucket is capped at 160 (LRU)
+PASS  4.9 ... and the oldest five were the ones dropped
+PASS  4.10 offline, a cached picture is still served
+PASS  5.1 hashed published files are served from the published bucket on a second visit
+PASS  5.2 a hashed .svg no longer lands in the shell bucket
+PASS  5.3 the published index is network-first with cache:no-store
+PASS  5.4 a re-published index is seen on the next load
+PASS  5.5 the index is kept in the published bucket (not the data bucket)
+PASS  5.6 offline, the last published index is served from the published bucket
+PASS  5.7 a published PDF passes straight through (never cached)
+PASS  5.8 the published bucket is capped at 240 (LRU)
+PASS  6.1 a changed LE stylesheet is served on the first load after the deploy (precached at install)
+PASS  6.2 ... straight from the shell bucket (the precache fetched it with cache:reload)
+PASS  6.3 ... and its background refresh revalidates with cache:no-cache
+PASS  6.4 stale-while-revalidate: the cached copy answers at once
+PASS  6.5 ... the background refresh lands the new file for the next load
+PASS  6.6 every stale-while-revalidate fetch carries cache:no-cache (TV SW 1.9.54)
+PASS  7.1 gallery thumbnails: stale-while-revalidate in wpwa-thumbs with a plain fetch (unchanged)
+PASS  7.2 full-resolution IMG##__ images still pass straight through
+PASS  7.3 project.json: network-first (no-store) in wpwa-data (unchanged)
+PASS  7.4 GLB models: network-first with grace into wpwa-models (unchanged)
+PASS  7.5 HTML: network-first (no-store) in the shell bucket (unchanged)
+PASS  7.6 HDRI: cache-first in the shell bucket (unchanged)
+PASS  7.7 a foreign origin is not touched
+PASS  7.8 the Whitecardopedia gallery still works offline (app.html, its stylesheet, project.json, thumbnails)
+PASS  7.9 localhost shell: every load asks the server (cache:no-cache) and gets the file as it is now (unchanged)
+PASS  7.10 localhost: a sheet picture is cache-first in the images bucket as well
+PASS  8.1 wpwa-clear-caches empties all six owned buckets and leaves foreign caches
+PASS  8.2 ... and acknowledges success
+
+54/54 checks passed  (logic: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-08\WebApps\Whitecardopedia\02__Src__AppModules\62__Feature__AppInstallability\Whitecardopedia__Pwa__ServiceWorker__Logic__.js)

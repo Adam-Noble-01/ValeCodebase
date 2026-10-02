@@ -1,0 +1,84 @@
+2c2
+< // TRUEVISION3D - LAYOUT EDITOR - STATEMENT DATA - TRANSPORT
+---
+> // VALEVISION3D - LAYOUT EDITOR - STATEMENT DATA - TRANSPORT
+14c14
+< //   data and goes through the sibling-file routes every other TrueVision
+---
+> //   data and goes through the sibling-file routes every other ValeVision
+49,53c49,74
+< // - Ported from   : n/a (TrueVision3D first, 20-Sep-2026). The shape follows
+< //                   Na__LayoutEditor__SpecData__Transport__, which is the
+< //                   module this app already trusts with a document on R2.
+< // - Back-port     : offer to ValeVision3D with the statement tab; this is the
+< //                   unit that would need its own bucket paths.
+---
+> // - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js
+> // - Source version: 1.1.0 (TrueVision3D v2.157.0, 23-Sep-2026; 1.0.0 v2.95.0; read at b2aa9151)
+> // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-06}}, inert (the Statement Writer lands
+> //                   switched off, K1 DR-10; only Na__LayoutEditor__Statement__Data__ imports it)
+> // - Parity        : adapted
+> // - Divergences   :
+> //   - Banner reads ValeVision3D, and DESCRIPTION names this app's documents. (No console output
+> //     in this file.)
+> //   - TRANSPORT (K1 DR-27 (A), D-S07b-10 (a)): the Na__CfApi__* and Na__LocalMirror__* names are
+> //     ValeVision's facade at TrueVision's paths (W0-12) - the statement folder
+> //     <project>/10__StatementDocs, the index ValeVision__StatementDocs__.json beside project.json,
+> //     and the Whitecardopedia server's /api/valevision/statements and
+> //     /api/projects/<folderId>/files routes (W0-19) - never TrueVision's client. Every read and
+> //     every local write is TrueVision's body.
+> //   - THE CLOUD COPIES ARE PLACEHOLDERS (OVH migration, 02-Oct-2026): WriteIndexCloud and
+> //     WriteStatementCloud keep TrueVision's names, parameters and result shape but write nothing
+> //     and answer { ok : false, error }, so Publish reports the cloud copy as not written.
+> //     TODO(OVH-MIGRATION): ValeVision's Flask service on the VPS takes both writes, same origin,
+> //     through the facade. Their two facade imports (Na__CfApi__WriteProjectFile and
+> //     Na__CfApi__WriteStatementFile) are left out.
+> //   - TODO(OVH-MIGRATION) notes mark the other cloud seams: UsesWorker, ReadIndexCloud, the CDN
+> //     reads in ReadIndex and ReadStatement, and ImageBase's CDN base.
+> //   - A missing file reads as missing, never as an index page: a repository URL is answered by
+> //     server.py's /Whitecardopedia/<path> route, a JSON 404 when nothing is there (R6 F.8 C30),
+> //     and the file it sends carries Last-Modified, which FetchText hands on as modifiedIso.
+> // - Back-port     : none (the facade is the seam).
+86d106
+<         Na__CfApi__WriteProjectFile,
+88,89c108
+<         Na__CfApi__ReadStatementFile,
+<         Na__CfApi__WriteStatementFile
+---
+>         Na__CfApi__ReadStatementFile
+111a131,134
+>     // TODO(OVH-MIGRATION): on the VPS the cloud copy is ValeVision's own
+>     // Flask service at the same origin. The facade's host test (W0-12) gives
+>     // way to a Flask-origin check there, and this answer follows it.
+>     // ------------------------------------------------------------
+203a227,228
+>         // TODO(OVH-MIGRATION): no CDN on the VPS - the facade's location answers the
+>         // Flask service's same-origin copy here.
+245,247c270,275
+<         const setup = Na__LeCfg__GetStatementSetup();
+<         if (!Na__CfApi__IsConfigured()) return { ok : false, error : 'Worker not configured' };
+<         return Na__CfApi__WriteProjectFile(setup.indexFileName, document);
+---
+>         // TODO(OVH-MIGRATION): ValeVision's Flask service on the VPS keeps the
+>         // published index (the index file's POST, same origin, through the
+>         // facade). Until it does nothing goes to R2 or a Worker: the answer
+>         // says so, and Publish reports it.
+>         void document;
+>         return { ok : false, error : 'the cloud copy is not written until ValeVision\'s own server takes over publishing (OVH migration) - the copy in the project folder is the only one' };
+254a283,284
+>         // TODO(OVH-MIGRATION): on the VPS this reads the Flask service's published
+>         // index through the facade.
+293a324,325
+>         // TODO(OVH-MIGRATION): no CDN on the VPS - the facade's location answers the
+>         // Flask service's same-origin copy here.
+336c368,372
+<         return Na__CfApi__WriteStatementFile(path, text, 'text/markdown; charset=utf-8');
+---
+>         // TODO(OVH-MIGRATION): ValeVision's Flask service on the VPS keeps the
+>         // published markdown (POST /api/valevision/statements/file, same origin,
+>         // through the facade). Until it does nothing goes to R2 or a Worker.
+>         void text;
+>         return { ok : false, error : 'the cloud copy is not written until ValeVision\'s own server takes over publishing (OVH migration) - the copy in the project folder is the only one' };
+353a390,391
+>         // TODO(OVH-MIGRATION): on the VPS the pictures hang off the Flask service's
+>         // same-origin copy, not a CDN; the facade's location will answer it.

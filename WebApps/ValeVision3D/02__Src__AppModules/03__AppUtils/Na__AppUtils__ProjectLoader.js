@@ -12,12 +12,42 @@
 // DESCRIPTION:
 // - Detects localhost vs production environment for API routing.
 // - Extracts and normalises the ?project= query parameter from the URL.
+// - Answers the project's folder and 4-digit year (TrueVision's
+//   Na__AppUtils__GetProjectFolderFromUrl / Na__AppUtils__GetYearFromUrl)
+//   from the master-index entry the URL names, or null - never a guess.
 // - Fetches project.json from either the local Flask API or GH Pages CDN.
 // - Normalises all four historical project.json model URL formats into a
 //   flat array of GLB URLs for the model loader.
 // - Promise-memoises the fetch result per project code so a second call
 //   (e.g. from the fog system) reuses the first settled promise rather than
 //   issuing a duplicate network request.
+// - Resolves project assets R2-first; the fallback is GH Pages on the live
+//   site and the repository copy the Flask server serves on localhost.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : TrueVision3D 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js - two exported
+//                   names (Na__AppUtils__GetProjectFolderFromUrl, Na__AppUtils__GetYearFromUrl) and the localhost
+//                   repository fallback of Na__AppUtils__ResolveAssetUrl; the rest of the file is ValeVision's own
+// - Source version: 2.0.1 (TrueVision3D v2.139.1, 21-Sep-2026; read at HEAD b2aa9151)
+// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.1
+// - Parity        : diverged (DIV-4: the same file, MODULE line and exported names; ValeVision's project
+//                   identity, storage layout and fetch path)
+// - Divergences   :
+//   - GetProjectFolderFromUrl / GetYearFromUrl answer from the master-index entry the ?project= token names
+//     (TrueVision reads ?project-folder= and ?year= only); ?project-folder= and ?year= are still honoured. Null
+//     until the index has settled and for a token it does not know: never project.json's folderId (missing or
+//     wrong in 64 of 155 local projects, 01-Oct-2026) and never the legacy "2026/<code>" guess.
+//   - The year has four digits, the first segment of a ValeVision folderId ("2026"); TrueVision answers two and
+//     defaults to "26". A TrueVision-style ?year=26 reads as "2026"; any other malformed ?year= gives null.
+//   - A folder is answered only together with its year, so a caller's year + '/' + folder is always a whole
+//     folderId (TrueVision's callers build their keys that way).
+//   - ResolveAssetUrl keeps ValeVision's R2 / GH Pages pair and its master-index images gate; only its localhost
+//     fallback follows TrueVision (the repository copy as served to this page: Flask /Whitecardopedia/Projects/).
+//   - Not taken: TrueVision's project-data fetch (and its v2.139.1 cache:'no-cache', which ValeVision's ?v= build
+//     token already covers), its model-group helpers and its CDN layout.
+// - Back-port     : none (the two names are the seam).
 //
 // -----------------------------------------------------------------------------
 //
@@ -64,6 +94,22 @@
 //   re-synced camera data and models visible immediately while keeping assets
 //   edge/browser-cacheable between builds. Manifest URL from AppConfig SSOT.
 //
+// 01-Oct-2026 - Version 1.4.1 (TrueVision identity helpers, v2.71.1)
+// - TrueVision's project identity helpers, with ValeVision's meaning:
+//   Na__AppUtils__GetProjectFolderFromUrl and Na__AppUtils__GetYearFromUrl
+//   answer "3047__Doous" and "2026" for ?project=3047 or
+//   ?project=2026/3047__Doous, from the master-index entry the token names.
+//   ?project-folder= and ?year= are honoured when given (a two-digit year
+//   reads as 20NN). Both answer null until the index has settled and for a
+//   token it does not know - never project.json's folderId and never a
+//   guessed year, either of which would send a save to a folder the app never
+//   reads - and a folder is answered only together with its year.
+// - Na__AppUtils__ResolveAssetUrl on localhost falls back to the repository
+//   copy the Flask server serves (/Whitecardopedia/Projects/<folderId>/...)
+//   instead of GH Pages, as TrueVision's does, so an asset the local mirror
+//   has just written is found when R2 is not. The live site is unchanged.
+// - Additive: no existing export, signature or live-site result changes.
+//
 // =============================================================================
 
 
@@ -92,6 +138,16 @@
     const Na__AppUtils__R2BaseUrl_Fallback  = 'https://cdn.noble-architecture.com/VaApps/Projects';     // <-- R2 CDN fallback default
     const Na__AppUtils__GhBaseUrl_Fallback  = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages fallback default
     const Na__AppUtils__DefaultProjectYear  = '2026';                                                   // <-- Legacy year fallback
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Local Repository Copy (localhost asset fallback)
+    // ------------------------------------------------------------
+    // The Whitecardopedia Flask server mirrors the production path
+    // /Whitecardopedia/<path> (server.py serve_whitecardopedia_proxy), so the
+    // project folders on this disk are served under this route, and a missing
+    // file answers a real 404 rather than the app shell.
+    // ------------------------------------------------------------
+    const Na__AppUtils__LocalProjectsRoute  = '/Whitecardopedia/Projects';                              // <-- Flask route to the repository's project folders
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Runtime Base URLs (populated by Na__AppUtils__InitFromConfig)
@@ -323,6 +379,36 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Extract Project Folder from URL (?project-folder=, else the master index)
+    // ------------------------------------------------------------
+    // TrueVision's name with ValeVision's meaning. ValeVision is opened with
+    // ?project=<folderId> or a bare code, so the folder is that of the
+    // master-index entry the token names: ?project=3047 and
+    // ?project=2026/3047__Doous both answer "3047__Doous". ?project-folder= is
+    // honoured when given. Null until the index has settled, for a token the
+    // index does not know, and whenever no year goes with the folder, so a
+    // caller's year + '/' + folder is always a whole folderId. Never
+    // project.json's folderId and never the legacy "2026/<code>" guess.
+    // ------------------------------------------------------------
+    function Na__AppUtils__GetProjectFolderFromUrl() {
+        return Na__AppUtils__ResolveUrlIdentity().folder;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Year from URL (?year=, else the master index)
+    // ------------------------------------------------------------
+    // Always four digits ("2026"), the first segment of a ValeVision folderId.
+    // ?year= is honoured when given (TrueVision's two-digit "26" reads as
+    // "2026"); otherwise the year of the same master-index entry the folder
+    // comes from. Null when unknown: no default year is ever guessed.
+    // ------------------------------------------------------------
+    function Na__AppUtils__GetYearFromUrl() {
+        return Na__AppUtils__ResolveUrlIdentity().year;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Normalize Project Folder ID (index-aware year lookup)
     // ------------------------------------------------------------
     // Resolves a `?project=` value into a full `{year}/{folder}` folderId.
@@ -348,6 +434,83 @@
         }
 
         return `${Na__AppUtils__DefaultProjectYear}/${trimmed}`;            // <-- Legacy fallback when index unavailable
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Project Identity (Master Index Only)
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Malformed ?year= Warning (logged once per value)
+    // ------------------------------------------------------------
+    let Na__AppUtils__WarnedYearParam     = null;                                // <-- Last malformed ?year= value warned about
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read One Query Parameter (trimmed; empty -> null)
+    // ------------------------------------------------------------
+    function Na__AppUtils__ReadUrlParam(urlParams, name) {
+        const value = urlParams.get(name);
+        if (value === null) return null;                                     // <-- Absent
+        const trimmed = value.trim();
+        return trimmed === '' ? null : trimmed;                              // <-- Empty counts as absent
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read a ?year= Value as a 4-Digit Year (null when malformed)
+    // ------------------------------------------------------------
+    // "2026" stands. TrueVision's two-digit "26" means 2026 and reads as
+    // "2026". Anything else is refused with the fix named, never corrected.
+    // ------------------------------------------------------------
+    function Na__AppUtils__ToFourDigitYear(value) {
+        if (/^\d{4}$/.test(value)) return value;                             // <-- ValeVision's form
+        if (/^\d{2}$/.test(value)) return `20${value}`;                      // <-- TrueVision's form ("26" -> "2026")
+
+        if (Na__AppUtils__WarnedYearParam !== value) {
+            Na__AppUtils__WarnedYearParam = value;                           // <-- Warn once per value, not per call
+            console.warn(`[ValeVision3D] ?year=${value} is not a year: use four digits, e.g. ?year=2026. The project year is unknown, so no project folder is answered.`);
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Split a FolderId Into Its Year and Folder ("2026/3047__Doous")
+    // ------------------------------------------------------------
+    function Na__AppUtils__SplitFolderId(folderId) {
+        const match = /^(\d{4})\/(.+)$/.exec(String(folderId || ''));
+        return match ? { year : match[1], folder : match[2] } : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve This Page's Project Folder and Year (Master Index Only)
+    // ------------------------------------------------------------
+    // Explicit ?project-folder= and ?year= win (TrueVision's parameters).
+    // Otherwise both come from ONE master-index entry - the one ?project-folder=
+    // names when given, else the one ?project= names - so they always agree.
+    // Before Na__AppUtils__InitMasterIndex has settled no entry is consulted
+    // and only explicit parameters answer. A folder without a year is not
+    // answered, so year + '/' + folder is a whole folderId or nothing.
+    // ------------------------------------------------------------
+    function Na__AppUtils__ResolveUrlIdentity() {
+        const urlParams   = new URLSearchParams(window.location.search);
+        const folderParam = Na__AppUtils__ReadUrlParam(urlParams, 'project-folder');  // <-- TrueVision's explicit folder
+        const yearParam   = Na__AppUtils__ReadUrlParam(urlParams, 'year');            // <-- TrueVision's explicit year
+
+        const indexReady  = Na__AppUtils__IndexByFolderId !== null;          // <-- Settled (maps exist, empty after a failed fetch)
+        const token       = folderParam !== null ? folderParam : Na__AppUtils__ReadUrlParam(urlParams, 'project');
+        const entry       = indexReady ? Na__AppUtils__LookupIndexEntry(token) : null;
+        const fromIndex   = entry ? Na__AppUtils__SplitFolderId(entry.folderId) : null;   // <-- { year, folder } of that one entry
+
+        const year   = yearParam !== null ? Na__AppUtils__ToFourDigitYear(yearParam) : (fromIndex ? fromIndex.year : null);
+        const folder = folderParam !== null ? folderParam : (fromIndex ? fromIndex.folder : null);
+
+        return { folder : (folder && year) ? folder : null, year : year };   // <-- Never a folder without its year
     }
     // ------------------------------------------------------------
 
@@ -455,11 +618,17 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Resolve Asset URL (R2-first, GH fallback)
+    // FUNCTION | Resolve Asset URL (R2-first; GH fallback, or the Flask copy on localhost)
     // ------------------------------------------------------------
     // Used by callers that need to resolve image/thumbnail URLs for a known
     // project folder ID (e.g. Presentation Mode scene images).
-    // Returns the R2 URL and the GH fallback URL as a pair.
+    // Returns the R2 URL and the fallback URL as a pair. On the live site the
+    // fallback is GH Pages. On localhost it is the repository copy as served
+    // to this page (the Flask server's /Whitecardopedia/Projects/ route, which
+    // answers a real 404), as TrueVision's ResolveAssetUrl falls back: an asset
+    // the local mirror has just written is found when R2 is not, and a reader
+    // that tries the fallback first on localhost sees this disk, not the last
+    // push. The primary URL never changes.
     // ------------------------------------------------------------
     function Na__AppUtils__ResolveAssetUrl(projectFolderId, filename) {
         const r2Url = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/${filename}`;   // <-- R2 CDN
@@ -468,10 +637,14 @@
         const entry      = Na__AppUtils__LookupIndexEntry(projectFolderId);          // <-- Index entry (if any)
         const imagesOnGh = entry && entry.hasImages_R2 === false;                    // <-- Index says images are GH-only
 
+        const fallbackUrl = Na__AppUtils__IsRunningOnLocalhost()
+            ? `${window.location.origin}${Na__AppUtils__LocalProjectsRoute}/${projectFolderId}/${filename}`   // <-- Localhost: the Flask repository copy
+            : ghUrl;                                                                 // <-- Live site: GH Pages (unchanged)
+
         if (imagesOnGh) {
-            return { primary: ghUrl, fallback: ghUrl };                              // <-- Go straight to GH (no 404)
+            return { primary: ghUrl, fallback: fallbackUrl };                        // <-- Go straight to GH (no 404)
         }
-        return { primary: r2Url, fallback: ghUrl };                                  // <-- R2 primary, GH fallback
+        return { primary: r2Url, fallback: fallbackUrl };                            // <-- R2 primary, repository fallback
     }
     // ------------------------------------------------------------
 
@@ -535,6 +708,8 @@
     export {
         Na__AppUtils__IsRunningOnLocalhost,
         Na__AppUtils__GetProjectCodeFromUrl,
+        Na__AppUtils__GetProjectFolderFromUrl,
+        Na__AppUtils__GetYearFromUrl,
         Na__AppUtils__NormalizeProjectFolderId,
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls,

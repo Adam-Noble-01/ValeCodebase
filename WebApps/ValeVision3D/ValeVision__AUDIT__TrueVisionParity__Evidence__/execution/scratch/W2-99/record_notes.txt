@@ -1,0 +1,814 @@
+##### W2-01.md
+## 5. Follow-ups for Adam
+1. **Confirm Drawing Planes in TrueVision** (v2.82.0 "Not yet signed off by Adam"; v2.84.0 "NOT yet confirmed by Adam"). They came across under DR-01 (c); the devlog entry will name them as unconfirmed.
+2. **Nothing to see yet in ValeVision.** The planes are started from index.html but no plane can be switched on until the 2.x Floor Plans and Elevations Dev menus land (W2-04, W2-05, later in this wave). Test them together.
+3. **Service-worker token**: folder 47 (9 files) joins the app at start-up; the bump is yours at deploy (DR-07, W6-02's list).
+4. `2026/60834__Clough` (older single-bucket export) will size its planes from the whole model including the landscape (TV's fallback), as W2-40 recorded; re-exporting it fixes that.
+
+##### W2-02.md
+## 6. Records notes for the W2-99 scribe
+- Placeholders to resolve (3 x `{{VVREL:W2-02}}`, all in comments): adapter `:81` (PORT NOTE Ported on) and `:107`
+  (log 1.3.0); SystemLogic `:40` (log entry).
+- Devlog wording: "The section adapter completes its DIV-2 seam: Serialize, Apply, the outline width get/set,
+  SetModelRoot (a no-op while design phases are dormant) and RenderDepthInto, the six names R6 F.8 C25 fixes for both
+  apps, over the live Cross Sections tool; the tool gains RenderDepthInto (its cap root alone into the bound depth
+  target, nothing cleared). Mirrors TrueVision3D v2.94.0's RenderDepthInto (not confirmed by Adam in TrueVision);
+  nothing calls the six until W2-03 and W2-15 land. No visible change."
+- Ledger Module Register: adapter row -> 1.3.0, parity diverged (DIV-2), 19 exports (13 + 6), Open TV versions: the
+  twin lacks the six until WT-02. SystemLogic row (VV-only) -> + RenderDepthInto. Release Watermark: v2.94.0's
+  RenderDepthInto part is now carried VV-side (DIV-2 body); the rest of v2.94.0 is W2-03 / W2-05 / W2-12.
+- `41__System__CrossSectionView/README__CrossSectionView__.md` (W0-06's; not in this package's list, so not edited):
+  its Files table says SystemLogic 1,753 lines and the adapter 497 lines (now 1,792 and 636), lists the adapter
+  exports as `GetSectionById`, `SetSectionPositionMm`, `ReapplyClipping` (now also `RenderDepthInto`), and says the
+  adapter's remaining calls "are completed by W2-02" (now done) - a records refresh for the scribe or W6-04.
+
+## 7. Follow-ups
+- **F1 (W2-15, outline width order - found by this package's harness, information):** VV's Render2d reads the
+  outline width AFTER `SuspendLiveTool()` (VV SnapshotRenderer :563, so it reads the drawing config's width) and puts
+  it back AFTER `Release()` (:597), so after any 2D sheet render the author's Cross Sections tool ends at the
+  drawing width, not its own: the harness's author width 3.5 px ends at 2 px in VV's order and at 3.5 px in
+  TrueVision3D's order (read before SuspendLiveTool, :877; put back before Release, :956). Invisible at the shipped
+  defaults (both widths 2 px); visible on a project whose `CrossSection__LineWidthPx` differs from the drawing
+  width. W2-15 replays TV's hunks into that file and is the place to take TV's order (it also makes the
+  "outline width unchanged" acceptance hold for custom widths). Not changed here (not this package's file).
+- **F2 (W2-03):** import `Na__DrawView__SectionAdapter__RenderDepthInto` from
+  `'../40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js'` in place of TV's 41 import; call it exactly
+  where TV does (after `renderer.render(scene, camera)` into the bound depth target, RenderLayer :476). It answers a
+  boolean (TV's answers undefined) - the call site ignores it either way.
+- **F3 (W2-15):** the five SnapshotRenderer section calls map one-to-one (table in section 2); SetModelRoot answers
+  false and is never reached while the PhaseLibrary is uninitialised (DR-09).
+- **F4 (WT-02, TrueVision lane, only with Adam's approval - DR-36):** add the same six names to TV's twin as thin
+  pass-throughs (table in section 2), whether or not this record is read first (F.8 C25 fixed the names).
+- **F5 (Adam, DR-01):** confirm in TrueVision, or not, v2.94.0 (the depth fog, whose RenderDepthInto VV now mirrors);
+  until then the scribe lists it as unconfirmed.
+- **F6 (orchestrator, records hygiene):** `scratch/W2-02/tv_at_pin/` holds seven TrueVision source files read at the
+  pin (re-creatable with `tv_extract.py`); `scratch/W2-02/staged/` and `preimage/` hold VV copies. Keep the scratch
+  folder out of any ValeCodebase commit. The TV devlog copy this package read was deleted after use.
+- Nothing to deploy for this package; the service-worker token note is above (bump at deploy, Adam's call).
+
+Restore (if ever needed): `python -B execution/scratch/W2-02/edit_w2_02.py --restore` puts both pre-images back
+(byte-checked); no other file was changed by this package. Scripts in `scratch/W2-02/`: `edit_w2_02.py`
+(`--dry-run`, `--stage`, `--restore`), `w2_02_unit.mjs` (`node --import ./harness/register.mjs w2_02_unit.mjs`;
+`W202_STAGED=1` for the staged copies), `w2_02_depth_browser.mjs` (`[--staged]`; Playwright from the npx cache,
+headless Chromium with SwiftShader, no server), `make_diffs.py`, `tv_extract.py`.
+
+##### W2-03.md
+## 5. Deferred to the orchestrator's smoke test (needs a browser on Adam's project)
+On `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`:
+1. The app loads with no console error from 49 (RenderLayer, ConfigState, the 49 AppConfig fetch).
+2. Open an elevation (Dev Tools > Elevations > Preview). With the fog OFF (every record's default) it must look exactly as before.
+3. Fog ON by script until W2-05 lands the Dev row, e.g. in the console:
+   `const d = await import('./02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js'); const m = await import('./02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js'); d.Na__ElevData__SetDepthFog(m.Na__ElevationMode__GetActiveElevation(), { enabled : true, startDepthMm : 1000, endDepthMm : 15000 });`
+   then nudge the view: surfaces, fat SketchUp edges and the 2D profile lines behind the plane fade into the paper; a section elevation's poche stays solid; the projected-linework SVG (when painted) stays crisp, as TV.
+4. Capture the scene card thumbnail while the fogged elevation is up: the card shows the fog.
+5. Image export of that elevation: the raster is fogged, the section overlay appears once (no doubled outline at tile joins), projected vectors print crisp above the fog (DR-15 exports (a)).
+6. Leave to 3D: no fog follows; FogPlane (Alt+Shift+F) still works in 3D and is off inside the drawing.
+Do not save the elevation with fog on unless Adam wants it: the edit is in memory until "Save Elevations".
+
+## 6. Follow-ups
+- **F1 (W2-15, interim until it lands):** TV's SnapshotRenderer nulls the fog source around a Layout Editor underlay render (TV :882, handed back :948); VV's has not been realigned yet, and W2-15's acceptance owns it. Until then an LE `Render2d` taken WHILE a fogged elevation is open in the 3D tab would bake the fog into that underlay (the tiled renderer now calls the preset's `renderDepthFog`). Opening the Layout Editor exits elevation mode (LE ModeController :694, which clears the source), so this needs a viewport bake from the 3D tab with a fogged elevation on screen - and no record has the fog on until an author switches it on (W2-05).
+- **F2 (TrueVision lane, information - DR-37 / DR-36):** TV's parallel-camera test (`Na__ElevFogMath__SolveAffineDepth`) samples depth only at s = 0 and s = 1, so a PERSPECTIVE camera looking exactly along the plane's normal passes it (`w2_03_unit` 1.12b INFO); an off-axis one is refused. Ported verbatim. In ValeVision no perspective camera ever reaches the layer (the only callers are RenderPreset.RenderFrame - active only with the drawing's own camera - and the export member with a tile of it; `w2_03_unit` 2.12), so nothing visible follows; TV's own callers may want the check if a head-on perspective view is ever drawn through RenderOverlay.
+- **F3 (W2-05):** place `Na__ElevFogRow__Build` under View depth with the elevation's accessors (`Na__ElevData__GetDepthFog` / `SetDepthFog`), ask for a render on change, save with "Save Elevations"; the Row already proves its read / write / onChanged contract in real DOM (`w2_03_fog_browser` D.1: Off/On, the metres-in-a-mm-box conversion, the readout).
+- **F4 (W2-12):** the TiledRenderer PORT NOTE's first Divergences bullet says the renderFrame route "is not here (W2-12 adds it ...)": W2-12 should reword it when it lands the route. The per-tile `renderDepthFog` call sits between the composer/present step and the section overlay; W2-12's opt-in route must keep the overlay once per tile.
+- **F5 (Adam, DR-01):** confirm v2.94.0 (the depth fog) in TrueVision, or not; until then the scribe lists it as unconfirmed.
+- **F6 (W2-99 scribe):** placeholders `{{VVREL:W2-03}}` x7, all in comments: RenderLayer :72, Row :55, Styles :23, ModeController :55 and :71, RenderPreset :69, TiledRenderer :115. Ledger: rows for the three 49 files (TV 1.0.0, v2.94.0), ModeController 1.1.3 (Source version now TV 1.1.0), RenderPreset 1.4.0 (DIV-1 fog seam), TiledRenderer 1.5.0 (C26; twin note added). Release Watermark: v2.94.0's render-layer, Dev-row, mode-controller and render-preset parts move to ported; its sheet part stays W2-12 / W2-15, its Dev-menu placement W2-05.
+- **F7 (W6-02):** add `49__System__ElevationDepthFog/Na__ElevationDepthFog__{RenderLayer,ConfigState,Maths,Shader}__.js`, the 49 AppConfig and the Styles__DevMenu sheet to the precache list (all now loaded at start-up); the Row once W2-05 links it.
+- **F8 (records hygiene):** `scratch/W2-03/tv/` holds TrueVision files read at the pin (re-creatable with `extract_tv.py`) and `backup/` / `staged/` hold VV copies; keep the scratch folder out of any ValeCodebase commit.
+
+Restore (if ever needed): `python -B execution/scratch/W2-03/port_w2_03.py --restore` (refuses if any of the eight files
+changed since landing). Scripts: `port_w2_03.py`, `extract_tv.py`, `w2_03_unit.mjs` (`node --import ./harness/register.mjs
+w2_03_unit.mjs`), `w2_03_fog_browser.mjs` (`[--old]`; Playwright from the npx cache, headless Chromium with SwiftShader
+
+##### W2-04.md
+## 5. Follow-ups for Adam
+1. **Confirm the menu rebuild in TrueVision** (v2.86.0 / v2.87.0, and v2.82.0's planes): TV's own plan lists six decisions still "mine until Adam confirms them" (edits live but kept only by Update; off-screen Update leaves the thumbnail; a new drawing / delete / Add to Scenes / Let clients measure save at once...). They came across under DR-01 (c).
+2. **Behaviour changes in ValeVision's Floor Plans panel** (DR-40 items 1-6 class, adopted): no Save Floor Plans and no Save Thumbnail; a slider change is kept only by the green Update (which asks); a rename is part of the draft and lands on Update; Delete uses the app dialog naming the sheets. The client-measuring tick now saves at once.
+3. **Thumbnail on an off-screen Update**: TV leaves the card's picture alone (and its dialog says so). ValeVision could queue a bake there instead (DR-32 reads "bake on add, seed and Update"); not done, because the shared dialog would then say the wrong thing. Say if you want it, and W2-05 / a follow-up can change the dialog wording with it.
+4. **Ground Floor quick action label**: now "+ Ground Floor" (config `FloorPlanViews__Labels__GroundFloorPlanLabel`), compact beside the +.
+5. **Service-worker token**: bump at deploy with the wave (DR-07, W6-02).
+
+##### W2-05.md
+## 4. Deferred to the orchestrator's smoke test (browser), then Adam
+On `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`:
+1. The app loads with no console error; Dev Tools shows Floor Plans, Elevations, **Cross Sections**, North Direction in that order, and the separate **Cross Section Tool** item still opens its own panel.
+2. Dev Tools > Elevations: head "Elevations [+]"; TEST ELEVATION's row folds open with the statement ("Direction not known yet - set north ..."), Plane in the 3D view (Show plane / Move to face / Aim at face), Drawing type, Plane position, View depth, **Fog** (Off / On, Depth, End, Fall-off), Advanced (Model bearing, the four style toggles, Exclude), Preview / Annotate / Update Elevation / Revert, Delete below the rule; the foot has + Add Elevation, Seed N / E / S / W, Bake Missing Thumbnails and no Save.
+3. Preview TEST ELEVATION, Fog On: the drawing fades behind the plane (W2-03's layer) at once; NOT UPDATED lights; Revert (or Update) - do not keep fog on unless Adam wants it.
+4. Drawing type Section, Update: the card moves to the Cross Sections carousel group; Dev Tools > Cross Sections lists it. Put it back to Elevation and Update (or Revert before Update) to leave Doous as it was.
+5. Cross Section Tool > Enable For This Project still toggles the Tools menu section live (do not Save unless Adam wants it - it writes project.json).
+
+## 5. Follow-ups for Adam (and the orchestrator)
+1. **Adam, DR-01:** confirm in TrueVision, or not, v2.82.0 (planes), v2.86.0 (menu rebuild, auto names, the Cross Sections placeholder) and v2.94.0 (depth fog); until then the scribe lists them as unconfirmed.
+2. **Behaviour changes in ValeVision's Elevations panel** (DR-40 items 1-6 class, adopted): no Save Elevations and no Save Thumbnail; Pick Face / Re-pick / dragging the green gizmo are gone - Aim at face, Move to face and dragging the plane (Drawing Planes) do the same jobs; edits are kept only by the green Update (which asks); names follow the project's north ("East Elevation") until typed over; Seed asks first when elevations exist; a section's card moves to Cross Sections when Update keeps the type, not on the button press (section 1); Delete uses the app dialog naming the sheets.
+3. **Orchestrator, OC-11:** the reading taken is in section 1; the alternative is one line here plus W1-08's twin line in the floor plan data module.
+4. **AppConfig:** 13 labels of the old menu were dropped (no reader); say if any should stay for a Vale-specific wording.
+5. **Retire in lockstep with TrueVision:** `Na__Elevation__PlaneGizmo__`, `FacePick__`, `GizmoGrip__` are now unused (still initialised by index.html, as in TV).
+6. **Thumbnail on an off-screen Update** (W2-04 follow-up 3) applies to elevations too: TV leaves the card's picture alone and its dialog says so.
+7. **Service-worker token** (DR-07, W6-02): bump at deploy with the wave - the old 1.x editor cannot link against the new data module. W6-02 precache list: add `48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js`, `45/Na__Elevation__AutoName__.js`, `45/Na__Elevation__AutoNameText__.js` and `49/Na__ElevationDepthFog__DevMenu__Row__.js` (all now loaded at start-up).
+8. **W2-99 scribe:** placeholders `{{VVREL:W2-05}}` x8, all in comments: Editor :66, RowBuilders :55, Styles__DevMenu :24, ProjectJson__Data :68 and :83, ThumbnailBake :59, 48 Editor :46, 41 DevControls :32. Ledger: Editor and RowBuilders 2.1.0 (adapted: DIV-2, D28 on Update, D33, bakes), 48 Editor 0.1.0 (verbatim; new row; DR-26), the data module (setters retired, OC-11 trim), the stylesheet (verbatim again), the AppConfig (union less the dead labels), ThumbnailBake 1.0.3, 41 DevControls 1.0.1 (ids). Release Watermark: v2.86.0's elevation menu and 48 parts and v2.94.0's Dev-menu placement move to ported; v2.82.0's elevation source likewise. W2-03 F3 and W1-10 follow-up 3 (trim) are closed by this package.
+9. **Records hygiene:** `scratch/W2-05/tv/` holds TrueVision files read at the pin (re-creatable with `extract_tv.py`) and `backup/` / `out/` hold VV copies; keep `execution/scratch/` out of any ValeCodebase commit.
+
+Restore (if ever needed): `python -B execution/scratch/W2-05/port_w2_05.py --restore` (puts the eight backups back and
+removes the 48 file; refuses if any landed file changed since landing - hashes in `scratch/W2-05/landed_sha256.json`).
+Scripts: `port_w2_05.py` (`--out` / `--land` / `--check` / `--restore`), `extract_tv.py`, `check_imports.py`,
+`editor_sim.mjs` (`node --import ./register_w205.mjs editor_sim.mjs`), `gate_sim.mjs` (`node --import ./register_gate.mjs
+gate_sim.mjs`), `dom_ids.py`.
+
+##### W2-06.md
+## 5. Records notes for the W2-99 scribe
+- Placeholders to resolve: 14 x `{{VVREL:W2-06}}`, each in a PORT NOTE "Ported on" line: AuthoredEdges :51, ClipKernel :116, ConfigAccess :38, CpuBackend :78, DevMenu__Controls :36, DoorPose :61, EdgeExtractor :66, ModelStage :51, Pipeline :53, Projector :46, StageSampler :57, ViewDefinition :55, WebGpuBackend :88 (all `02__Src__AppModules/50__System__ProjectedLinework/`), and `80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs:33`.
+- Devlog (W2-99 acceptance asks for it): **the DR-31 re-bake reminder** - "BuildToken is now 2026-10-02-tv-parity: every baked linework asset (R2 and each browser's IndexedDB) reads stale once; until each live project is re-baked on localhost (Dev > Bake All to R2, or Save Floor Plans / Save Elevations), viewers compute linework on their own devices. Existing elevations visibly lose flush-join lines (intended, DR-31 (1))." Name v2.32.0, v2.42.0, v2.48.1, v2.105.0, v2.140.0, v2.159.0 and the unlogged 20-21 Sep modifier work as not confirmed by Adam in TV; v2.37.0 (the rules) as signed off in TV on 14-Sep-2026.
+- Ledger Module Register: 13 rows (parity verbatim except ConfigAccess adapted; source versions as in the PORT NOTEs), the JSON row (adapted) and the StoreyBand test row. Release Watermark: v2.37.0, v2.42.0, v2.48.1, v2.105.0, v2.140.0 move to ported for folder 50 (their Layout Editor parts - PlanDoors, SnapshotRenderer, Viewport panel, HideSwings - stay open for W2-11 / W2-15 / W3-15); v2.159.0's folder-50 part is closed (FlushJoins by W2-43, its token superseded by VV's own).
+- TV-side items for WT-08 / WP-S02b-10R (DR-36, Adam's approval): TV ConfigAccess fallback token `2026-09-21-storey-swings` != its JSON `2026-09-23-flush-tolerance` (TV's StoreyBand is 52/53); the "Get the Model Sampling Setup" heading above GetAnnotationSetup; TV's AppConfig "Exact match" sentence; TV PORT NOTEs of all 13 files still read "PENDING to ValeVision3D"; the unlogged StageSampler 1.2.0 / AuthoredEdges / ConfigAccess modifier changes; TV devlog v2.159.0 :1067's wrong claim that VV had FlushJoins 1.0.0.
+
+## 6. Follow-ups for Adam
+- **F1 (DR-31 (4), your checklist):** re-bake each live ValeVision project on localhost (Dev > Bake All to R2) after this lands and before the next publish; until then viewers compute linework themselves on first open. Check in the Dev timings that a rendered elevation reads "Linework first: off - every mesh crease | Seams occlude: on | Flush joins: hidden", and compare one elevation with the rules on and off (Dev values) - only flush joins and seam leaks should go; the ground line stays.
+- **F2 (OVH move, information):** this package's "Bake All to R2" acceptance and DR-31's re-bake assume the R2 asset path. Your 02-Oct-2026 OVH VPS decision retires R2; Persistence (W0-14) still uploads through `Na__AppUtils__R2AssetUpload` on localhost. Nothing in W2-06 touches transport; the re-bake target (R2 now, the VPS's Flask store later) is yours to choose - the token bump forces a re-bake into whichever store is live.
+- **F3 (DR-01):** confirm in TrueVision, or not, v2.42.0 / v2.48.1 (door poses), v2.105.0 (one storey per plan), v2.140.0 (hide swings) and the unlogged LineworkModifier work; all are ported but inert for Vale users until the Layout Editor plan-doors packages land (no drawing outside the Layout Editor carries a DoorPose).
+- **F4 (DR-31 (3)):** confirm on a Vale GLB that nested 76-79 LineworkModifier nodes exist; with none, the modifier rows change nothing.
+- **F5 (deploy, DR-07):** the deploy carrying W2-06 needs the shared service-worker token bump (W6-02's consolidated request): new module DoorPose, newly linked FlushJoins / Storeys, and new exports on ConfigAccess and StageSampler.
+- **F6 (information):** `Na__ProjectedLinework__ConfigAccess__.js` keeps TV's mis-titled comment "Get the Model Sampling Setup" above GetAnnotationSetup (verbatim port; queued for TV). Say if you want it corrected VV-side as a declared seam.
+
+Restore (if the orchestrator rejects the package): `python execution/scratch/W2-06/build_w2_06.py --restore` writes the
+13 pre-images back byte for byte (most were CRLF) and removes DoorPose and the StoreyBand test - only if every live
+file still equals this build. Scripts in `scratch/W2-06/`: `extract.py`, `build_w2_06.py` (`--check`, `--write`,
+`--verify`, `--restore`), `import_walk.py`, `normdiff.py`, `make_mirror.py`, `hash_harness.mjs`.
+
+##### W2-07.md
+## 5. Behaviour as landed (for the W2-99 scribe and the smoke test)
+- **Every tick ends in `Na__RenderLoop__ArmNextFrame(keepRendering)`**, from the tick's finally (after `Na__InteractiveOverlays__EndFrame()`): hidden tab -> nothing; `WatchRefineProgress()` on every path; keepRendering -> next frame; else the refiner's pending work (straight back mid-burst, or the settle wake-up); else a part-finished total with nothing scheduled is restarted after 1 s (`Na__RenderLoop__STRANDED_RECOVERY_MS`), which a resting refiner (0 or converged) never triggers.
+- **A frame that throws** is caught and reported once per frame: `console.error('[ValeVision3D] Render frame failed; the loop carries on:', error)`. keepRendering is false for that tick (TV's choice), so an interactive drag continues on its next input event; a refinement burst continues from where it stopped.
+- **The watchdog**: a sample count that has not moved for 2.5 s (`Na__RenderLoop__NO_PROGRESS_MS`) prints `[ValeVision3D] Progressive refinement stalled at k of 16; restarting the run.` with { wanted, delayMs, fps, readBuffer WxH, pixelRatio, dpr, activeReasons, trailing, held, hidden } and restarts the run. Silent in every healthy scenario the harness ran.
+- **The engine hold**: `RenderFrame` begins with `if (Na__RenderLoop__IsPaused() || Na__RenderLoop__PauseReasons.size > 0)` -> remember the frame, `suspend()`, return false. ValeVision's own hold set, ScheduleFrame's refusal and the pause / resume listeners are unchanged; the tick's former early return is gone (its job is the gate's). The Invalidation mirror closes W1-01's follow-up 3 (a hold taken before the loop's listeners existed).
+- **planFrame** is called with `{ camera : Na__RenderLoop__ActiveCamera, sceneBusy }` - no `now`.
+
+## 6. Follow-ups for Adam (and the orchestrator)
+1. **Smoke test (acceptance 1 and 3, browser half)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`, ideally at 125% or 150% display scaling (or browser zoom) so the composer buffer is fractional: the app starts with no console error; park the camera and the Visual Effects readout climbs to 16 of 16 and stops (two steps cold, four at 60 fps: 6, 8, 14, 16) with no "Progressive refinement stalled" warning; open a drawing sheet - nothing in 3D paints over it, and `(await import('/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js')).Na__ProgressiveRefine__GetActive().getStatus().samplesDone` reads 0 and stays 0 while it is open; leave the sheet - the 3D view repaints at once and refines again. Optional: open a sheet while the models are still loading; the 3D frame must not paint over it.
+2. **Deploy note (SHARED SERVICE WORKER):** LoadingSequence now imports `Na__RenderLoop__IsPaused` from the precached Invalidation; ship this release with or after v2.71.2 under the one token bump the W0 deploy already needs (DR-07), never on its own against an old warm shell cache.
+3. **TrueVision release named (DR-01 (c)):** v2.58.2 - no confirmation line either way in TV's devlog (Adam reported the "6 out of 16" stall; the fix was verified by Claude on PS01).
+4. **Scribe placeholders `{{VVREL:W2-07}}` (3):** LoadingSequence `:65` (PORT NOTE Ported on) and `:100` (log 1.7.3); ProgressiveRefine `:125` (PORT NOTE Ported on). The hub's module step is a patch step (1.7.2 -> 1.7.3, as W1-01 used); the take carries TV's 1.0.3.
+5. **For the TrueVision lane (DR-36, informational, not done here):** TV's ProgressiveRefine log is out of order (1.0.1 above 1.0.3 and 1.0.2 - the reason for this file's Legacy marker) and its EnsureBuffer comment is headed "ROUNDED, BECAUSE THE COMPOSER DOES NOT" while the code floors; both are comment-only fixes for WT-08.
+6. **Informational:** W1-01's scratch loop harness (`scratch/W1-01/w1_01_loop_harness.mjs`) pinned the pre-W2-07 loop. Run against today's live files (`scratch/W2-07/w1_01_loop_harness_on_live__output.txt`) it scores 53/59; the 6 failures are this package's intended changes, nothing else: A4 (x2) and B6 - the held tick now reaches RenderFrame's gate and calls `refiner.suspend()`, which that harness logs as a call (nothing is drawn and the overlay stays invisible); A6 (x2) and B9 - a thrown frame is now caught instead of propagating (the overlay frame still ends, `groupVisibleAfter` false). It is a scratch tool, not a gate; W2-07's own loop harness supersedes it for the loop.
+
+##### W2-08.md
+## Follow-ups for Adam
+1. Two comments in W2-09's files now describe the main config as it was: `Na__LayoutEditor__RenderComposites__Config__.json`
+   `Meta__WhyWeightsHere` ends "The live drawing views still read the main config." (they now read
+   `Na__DrawView__AppConfig__.json`'s `DrawingView__Render__ProfileEdgeWidth`, the same 1.0), and
+   `Na__LayoutEditor__RenderComposites__.js` lines ~27 and ~80 name `RenderEffect__ProfileLines__Drawing2dEdgeWidth` as
+   the live width's source. Text only, no behaviour; a later holder of those files (or the scribe) can re-word them.
+2. The `Na__DrawView__ConfigState__.js` header still lists "RenderEffect__ProfileLines Drawing2d keys" as the main
+   config source - still true for Enabled / EdgeColor / EdgeThresholdNormal; nothing to change unless you want the
+   width called out.
+3. Decision still open (no DR taken, so left alone): whether VV should adopt TV's 2D outline colour 3355443 (#333333)
+   and threshold 0.2 for drawings, and whether the two DrawingView__Config Transition keys should go.
+4. Smoke test: open a plan and an elevation (flight in/out about 1.4 s, outline weight as before), and re-bake one
+   existing Layout Editor sheet underlay - its profile outline should match the previous picture.
+
+##### W2-09.md
+## 5. Records notes for the W2-99 scribe
+- Placeholders to resolve (3 x `{{VVREL:W2-09}}`):
+  `02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:64`,
+  `.../Na__LayoutEditor__RenderComposites__.js:65`, `80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs:42`.
+  The config carries no placeholder (a .json cannot hold one); its Meta__PortedFrom names the package instead.
+- Devlog wording: "Enhance 1.1.0 and Render Composites 1.2.0/1.3.0 taken whole with the config's percent Enhance
+  Whitecard row (TrueVision3D v2.93.0; the built-in Depth Fog row from v2.94.0) - neither confirmed by Adam in TV. The
+  dial is stored, clamped and keyed from now; it changes the picture once W2-15 / W2-16 pass the strength to the pass,
+  and the panel shows '%' with W2-36. Default 100: no existing sheet or snapshot changes."
+- Ledger Module Register: Enhance (VV 1.1.0 = TV 1.1.0, verbatim, authored in VV first), RenderComposites (VV 1.3.0 =
+  TV 1.3.0, verbatim), RenderComposites Config (VV Meta 1.3.0, TV Meta 1.4.0, adapted: VV Meta wording, depthFog row
+  pending W2-12). Closes S04a findings F20 (Enhance drift) and, with W2-12, F22.
+- Release Watermark: v2.93.0 gains its Enhance / RenderComposites 1.2.0 / config 1.3.0 / test parts (its
+  SnapshotRenderer, Frame, Viewport3d and Panel__Styles parts are W2-15 / W2-16 / W2-36's); v2.94.0 gains only
+  RenderComposites 1.3.0's fallback row.
+- TV-side record items for the TrueVision lane (WT-08, Adam's approval, DR-36), not done here: TV's Enhance PORT NOTE
+  still names this app's pre-subfolder path `51__System__LayoutEditor/Na__LayoutEditor__Enhance__.js` and its 1.1.0
+  is not in its note; TV's RenderComposites PORT NOTE says ValeVision took the module at v2.28.0 (now 1.3.0); TV's
+  v2.93.0 entry ends "not in ValeVision".
+
+## 6. Follow-ups
+- **F1 (Adam, DR-01):** confirm in TrueVision, or not, v2.93.0's Enhance Whitecard Strength dial and v2.94.0's depth
+  fog on sheets; until then the scribe lists both as unconfirmed.
+- **F2 (Adam, in-app checklist, after W2-15 / W2-16 / W2-36; the orchestrator's smoke test goes first):** open
+  2026/3047__Doous, a sheet with a 2D and a 3D viewport, Render Composites panel, Advanced: the Enhance Whitecard row
+  shows a Strength box reading 100 with "%"; type 40 - the box keeps 40, the reset arrow lights, the viewport
+  re-renders with the whitecard greys a little darker, on the 2D and the 3D viewport alike; 0 gives the plain render;
+  the arrow puts 100 back. Save Sheets (localhost: R2 then disk), export the PDF, the read-only web view, a project with
+  no drawings and Layout Mode off - as before. DEFERRED to the orchestrator's smoke test.
+- **F3 (Adam, a standard to name):** the default stays 100, TrueVision's, so every existing sheet bakes as before.
+  TrueVision measured the effect "almost all spent by 40%" on RB05's D01 (v2.93.0); a new house standard is one number
+  in this config when Adam names it.
+- **F4 (orchestrator, for W2-12):** the hand-over above; W2-12 also confirms TV's fallback Depth Fog row and its
+  config row agree (TV's test checks only the Enhance row).
+- **F5 (orchestrator, information):** a skill named `adam-vale-apps-infrastructure-architecture` surfaced in this
+  session, describing an October-2026 move of the Vale apps to a single VPS without Cloudflare R2 or Workers. W2-09
+  touches no transport, so nothing here depends on it and it was not loaded; the transport packages (W0-07, W0-10,
+  W0-12 onward) may want checking against it.
+- Nothing to deploy for this package, and no service-worker token needed by it.
+
+Restore (if ever needed): `python -B scratch/W2-09/port_w2_09.py --restore` puts the three pre-port files back from
+`scratch/W2-09/vv_before/` and removes the new test; it refuses if any of the four was edited after this port (W2-12
+will edit the config next, so after W2-12 a restore must go through W2-12 first). Scripts: `fetch_tv.py`,
+`port_w2_09.py` (`--dry-run`, `--apply`, `--verify`, `--restore`), `vv_vs_tv_parent.py`, `devlog_find.py`,
+`devlog_grep.py`, `make_trees.py`, `make_planted.py`, `acceptance_w2_09.mjs` (`--new <tree>`), `run_node_suite.py`,
+`save_diffs.py`, `patch_port_wording.py`, `cleanup_scratch.py`. The TV copies (`tv/`), the rehearsal, before and
+planted trees were removed by `cleanup_scratch.py`; re-create them with `fetch_tv.py`, `port_w2_09.py --dry-run`,
+`make_trees.py` and `make_planted.py`.
+
+##### W2-10.md
+## Follow-ups for Adam
+1. TV v2.87.0 is not signed off in TrueVision (no sign-off line). Its title rules (a typed plan name gives way to the storey unless it says more) came across under DR-01 (c) and do nothing in ValeVision until W2-16 lands ViewportIdentity 1.1.0 and a plan has a storey.
+2. The config's Meta and Naming descriptions now read as TrueVision's, which talk about design phases and existing-vs-proposed pairs. Under DR-09 (a) the Phase block is dormant: VV projects have no model groups, so no qualifier comes from a phase. VV's ViewportIdentity 1.0.0 header still says "This app loads one model per project". W2-16 replaces that file and should line the wording up.
+3. Smoke test: open a Doous sheet with parametric drawing titles and elevation viewports. Every title should read as before. After W2-16 and the storey field land, set a plan's storey in Dev Tools and check the title letters PROPOSED GROUND FLOOR PLAN.
+
+##### W2-11.md
+## Follow-ups for Adam
+- PlanDoors 1.0.0-1.3.0 come from four TrueVision releases (v2.42.0, v2.48.1, v2.138.0, v2.140.0) none of which you have marked tried in TrueVision. They land inert here; they become visible only when the viewport, SheetTools and panel packages wire them.
+- S06a's note stands: before you test plan doors on a Vale project, confirm what Vale GLBs carry for doors (the ADR / MOD / ROT naming contract the door module reads) and that the SketchUp door-swing linework exports as the `ValeVision__Linetype__DoorSwings` category.
+- In-app checklist (after the caller packages land): a plan viewport draws doors open with swings; a click on a door in the selected plan closes it (one undo step) and another opens it; right-click shows Close door / Open door / Open all doors; an elevation draws every door shut; the 3D view's doors never move; a plan named "Roof Plan" starts with Hide swings on; Save Sheets then reload keeps Viewport__ClosedDoors and Viewport__HideSwings; the PDF matches the sheet.
+
+##### W2-12.md
+## 6. Follow-ups
+- **F1 (W2-15):** pass `renderFrame : (cam) => Na__ElevFog__RenderLayerFrame(cam)` ONLY for the fog image (Render2d's 11th argument), never `RenderPreset__RenderFrame` for the picture - VV's picture stays on the composer route (DIV-1; TV passes RenderFrame there). Pass the preset's export overrides on the fog call as on the picture call (the route draws through `elevationOverrides.camera`, so the two register). Borrow / hand back the fog source around both renders (TV :882 / :948; W2-03 F1), and skip Enhance on the fog image (TV :942).
+- **F2 (W2-16):** Viewport2d / Frame import `Na__LeVp2d__FogFor` from this leaf (TV's Fill key, ForceRender, RenderFogForExport, the frame fog layer); the Paper CSS `.na-le-frame__fog` rules come with them.
+- **F3 (W2-99 scribe):** placeholders `{{VVREL:W2-12}}` x2, both in comments: TiledRenderer :141 (log 1.6.0), Viewport2d__DepthFog :52 (PORT NOTE). The config carries none (a .json cannot); its Meta__PortedFrom names W2-12. Ledger: Viewport2d__DepthFog (VV 1.0.0 = TV 1.0.0, verbatim, v2.94.0); RenderComposites Config (VV Meta 1.4.0 = TV Meta 1.4.0 rows, adapted Meta wording) - closes S04a-F22 with W2-09 and S04a-F29; TiledRenderer 1.6.0 (twin, diverged: the opt-in route). Release Watermark: v2.94.0's sheet parts - leaf and config row ported; the fog image call (W2-15), Viewport2d / Frame (W2-16), PDF (W3-16) still open. Devlog wording should say the route reverses TV TiledRenderer's back-port note on purpose (D-S04a-05 (a)).
+- **F4 (records, W2-15 or the scribe):** W2-03's RenderLayer PORT NOTE bullet "Nothing calls RenderLayerFrame yet ... (W2-12, W2-15)" stays true after W2-12 (the route exists, no caller yet); the package that adds the caller (W2-15) should reword it. Not edited here (not my file).
+- **F5 (TrueVision lane, information - DR-36):** TV TiledRenderer's PORT NOTE "Back-port: ... the callback route is not" is now out of date in both directions (VV carries the route since 1.6.0); a WT-08 records fix.
+- **F6 (Adam, DR-01):** confirm v2.94.0 (the depth fog, screen and sheets) in TrueVision, or not; until then the scribe lists it as unconfirmed.
+- **F7 (records hygiene):** `scratch/W2-12/tv/` holds TrueVision files read at the pin (re-creatable with `extract_tv.py`) and `backup/` the two VV pre-images; keep the scratch folder out of any ValeCodebase commit.
+
+Restore (if ever needed): `python -B execution/scratch/W2-12/port_w2_12.py --restore` (refuses if any of the three
+files changed since landing; W2-15 / W2-16 do not edit these files, so it stays usable until another package does).
+Scripts: `port_w2_12.py`, `extract_tv.py`, `w2_12_unit.mjs` (`node --import ./harness/register.mjs w2_12_unit.mjs`),
+`w2_12_browser.mjs` (`[--old]`; Playwright from the npx cache, headless Chromium with SwiftShader, no server).
+
+##### W2-13.md
+## 6. Follow-ups for Adam
+- **F1 (W2-15, orchestrator):** SnapshotRenderer must pass the rules - `Na__LineworkSettings__SetLineworkBaseOverride(weights.modelEdgePx, weights.modifiers)` at both set sites (VV :571 2D, :653 3D); the existing `(null)` clears in the finallys already clear the rules. Nothing else is needed from the renderer (no material swap, no restore of its own).
+- **F2 (W2-16, orchestrator):** TV's `Na__LeVp2d__RasterModifierToken` is never empty while the config lists modifier rows, so taking Frame whole changes every underlay cache key once (every cached base image re-renders once on Vale projects that have no 76-79 tag). Either accept it (and say so in the devlog) or have W2-16 declare a seam that returns '' when the loaded model carries no modifier node.
+- **F3 (DR-31 (3), your checklist):** no Vale GLB carries 76-79 tags today (Doous linework GLBs checked in S04a); until a model is re-exported with them the feature is inert. After W2-15/W2-16, open the fixture-equivalent model in the Layout Editor, switch "Fine Detail Linework" off in Model Layers, and check the detail edges leave both the vectors and the base image.
+- **F4 (back-port, DR-36, your approval):** TV's `Na__LeSnap__ModifierMaterial` clones the loader's fat-line material without its `onBeforeCompile` depth-bias hook (three's Material.copy does not copy an instance hook), so in TV modifier edges in the base image lose the orthographic depth bias. VV's version carries it across; queue for the TV lane (WT-08).
+- **F5 (DR-01):** confirm in TrueVision, or not, the unlogged LineworkModifier work (20-21 Sep) - ported here and named as unconfirmed.
+- **F6 (information):** the clone cache in LineworkSettings (like TV's) is never emptied; a model reload leaves its old clones in memory (a few materials per tag). Harmless at today's sizes.
+
+##### W2-14.md
+## Follow-ups for Adam
+1. DR-08 (B) is applied: the site plan client is in VV and dormant. Switching it on later is `LayoutEditor__Sheet__SitePlanDrawingsEnabled: true` plus a Vale pipeline (W5-06) that puts `SitePlan__DrawingData__{Existing,Proposed}/` in a project folder.
+2. OVH migration: the Store's R2 / GitHub Pages candidates and its localhost test are marked `TODO(OVH-MIGRATION)`; on the VPS it should read the same-origin copy only (rules from the adam-vale-apps-infrastructure-architecture skill; W2 ran under its original terms).
+3. TV v2.89.0 and v2.132.0 (site plan composites panel, faces-only fills) are not marked tried by Adam in TV.
+4. Orchestrator: ratify the out-of-list allow-list edit in Na__Test__AppConfigParity__; re-run Na__Test__SitePlanComposites__ after W2-16 (W2-16's acceptance should include it); W2-16's ModeController hunk registers Na__LePanelSpComp__Register.
+5. Offer to TV (DR-42): the exporter token / stem prefix as config would let the Store's stem rename disappear.
+
+##### W2-15.md
+## 5. Follow-ups
+- **F1 (W2-16):** the callers now matter: pass `depthFog` (Viewport2d__DepthFog's `source`) as Render2d's 11th argument only for the fog image, `enhancePct` and `modifiers` in RasterWeights / the 3D weights (TV Frame / Viewport3d). Every viewport today passes modelSourceId null; keep it so while PhaseLibrary is uninitialised (a named phase now draws nothing, as TV).
+- **F2 (records, W2-99 scribe or W2-16):** W2-03's RenderLayer PORT NOTE bullet "Nothing calls RenderLayerFrame yet ... (W2-12, W2-15)" (49 RenderLayer :89-:90) is now stale - this file calls it for the fog image (W2-12 F4). Not edited here (not in this package's list).
+- **F3 (W2-99 scribe):** placeholders `{{VVREL:W2-15}}` x2, both in comments: PORT NOTE "Ported on" (:45) and the log entry 1.8.0 (:75). Ledger Module Register: SnapshotRenderer VV 1.8.0, Source version 1.13.0, parity diverged (DIV-1), Open TV versions: none. Release Watermark: the SnapshotRenderer parts of v2.32.0 (dormant), v2.42.0, v2.48.1, v2.94.0, v2.105.0, v2.93.0 and the unlogged 6076ec10 move to ported; v2.161.0 was VV-authored. Devlog wording should say: no visible change on today's projects, sheet underlays can no longer borrow an on-screen elevation's fog, the Cross Sections width survives a sheet render, and Context Layer off now hides a tag-split existing building in full (TrueVision3D's rule).
+- **F4 (Adam, behaviour note):** on a project exported split by tag (ExistingWalls, ExistingRoofs ... as separate GLBs), a viewport with Context Layer off now drops the whole existing building, as TrueVision3D does; before, only the coarse `MainBuildingModel__Existing` category left. 3047__Doous has no existing-building categories, so nothing changes there.
+- **F5 (Adam, DR-01):** confirm in TrueVision, or not, v2.42.0 / v2.48.1 / v2.105.0 (plan doors), v2.94.0 (depth fog), v2.93.0 (Enhance strength) and the unlogged modifier rules; until then the scribe lists them as unconfirmed.
+- **F6 (TrueVision lane, DR-36 - WT-04 / WT-08):** TV's CONTEXT_CATEGORIES still lack `TrueVision__SceneEntourageSilhouette`; TV's SnapshotRenderer PORT NOTE ("door pose ... PENDING to ValeVision3D") is now out of date - VV carries 1.7.0-1.12.1.
+- **F7 (W6-02):** precache `26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js` (now linked at start-up through this file); the deploy bump note is above.
+- **F8 (records hygiene):** `scratch/W2-15/tv/` holds TrueVision files read at the pin (re-creatable with `fetch_tv.py`), `preimage/` the VV pre-image, `mutants/` the planted-fault copies; keep the scratch folder out of any ValeCodebase commit.
+
+Restore (if ever needed): `python -B execution/scratch/W2-15/build_w2_15.py --restore` (refuses if the live file is no
+longer this package's candidate). Scripts in `scratch/W2-15/`: `build_w2_15.py`, `fetch_tv.py`, `w2_15_unit.mjs`
+(`node --import ./harness/register.mjs w2_15_unit.mjs`; `W215_NEW=live` for the live file, `W215_REAL_ENHANCE=1` for the
+real Enhance module), `w2_15_mutants.py`, `harness/hooks.mjs` + `register.mjs`, `patch_harness_*.py` / `patch_mutants_*.py`
+(harness edits only).
+
+##### W2-16.md
+**Status: DONE.** The nine shared viewport / render-style files are now TrueVision's at the pin, each taken whole with only
+the banner, the console prefix, the PORT NOTE and (EdgeStyles, ModelLayers) the `ValeVision__` app token re-applied; a
+normalised diff of every one against TrueVision is empty. Model Source and the site-plan painter land new and verbatim,
+closing the Linework -> ModelSource -> Viewport2d__SitePlan -> Linework cycle in one step, and the mode controller wires
+them at TrueVision's sites. Both stay dormant (DR-09 (a), DR-08 (B)). Plan doors, fog on sheets, linework modifiers,
+Enhance strength and Draft-mode render guards are now live in the viewport units. G1, G2, G3 and G4 are green; the
+package's own tests pass; the only failing node tests are the two known FOREIGN W2-38 scrapbook tests. The in-browser
+items are deferred to the orchestrator's smoke test.
+## 5. Behaviour as landed (for W2-99, W3-03, W3-05, W3-15, W3-16 and the smoke test)
+- **Dormant, by construction.** PhaseLibrary has no groups: every viewport resolves to the live model, nothing waits, no Model Source UI; the phase listener never fires. No sheet is a site plan while the gate is off: the painter, the composites panel and the site plan branches are never reached.
+- **Live now on every sheet.** Plans draw their doors open with swings (a viewport's closed list empty until SheetTools' click, W3-03, or the Viewport panel's Doors row, W3-15, write one); elevations and sections draw every door shut; a plan guessed or picked as the roof hides its swings. A drawing whose elevation record has depth fog shows a fog image over its linework (Render Composites "Depth Fog", default on). Draft mode (W2-18 state) stops raster renders once W3-05 switches it on. The underlay honours Enhance strength and linework modifier rows.
+- **Keys.** 3D stored snapshot fingerprints unchanged. 2D underlay keys (in memory only) change for plans and elevations through the door pose, and gain the modifier token while modifier rows are configured.
+
+## 6. Follow-ups for Adam (and the orchestrator)
+1. **Smoke test** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: the editor opens with no console error; a plan viewport shows doors open with swing arcs; an elevation shows them shut (vectors, picture, and in a downloaded PDF); the 3D view's doors do not move; no Model Source row in the Viewport panel and no "Model:" items on right-click; the left column shows no Site Plan Render Composites section on an ordinary sheet; Model Layers shows the Fill and Line scale columns in its Advanced fold, the Line scale box greyed on a solid row; a fogged elevation drawing (Dev Tools > Elevations) shows its fog over the linework on a sheet and toggling Depth Fog repaints only the fog; a fogged section drawing reads its cut faces as on the plane. Typing 40 in Enhance Whitecard changes the picture of both a 2D and a 3D viewport. Gate-on site plans need a temporary project copy and a test store.
+2. **Plan doors are a visible change** (DR-16 default (a)), as are elevation doors drawn shut: every Doous plan and elevation linework is re-projected once (their record hashes change).
+3. **TV edge case (DR-37 (3), ported as is):** Linework 1.2.0's StyleBands paints a class whole when every segment LEFT after Model Layers switches one owner off shares one style (`buckets.size === 1` -> `indices : null`), so the switched-off modifier segments still draw, in the remaining style. Shown by the package harness (section E, NOTE line). Only bites when one style is left in a class; a TrueVision-lane fix (WT-08 / DR-36) is to keep `indices` whenever any segment was skipped.
+4. **W2-13 F2 answered:** TV's RasterModifierToken is taken as TV has it (no undeclared seam). The key it changes is in memory only, so nothing re-renders because of it; say so in the devlog if you like.
+5. **Scribe placeholders `{{VVREL:W2-16}}` (15):** Viewport2d :66, Frame :49, Linework :44, Window :40, Viewport3d :48, ViewportIdentity :59, EdgeStyles :49, ModelLayers :34, Panel__ModelLayers :38, ModelSource :43, Viewport2d__SitePlan :46, Na__Test__HideSwings__ :40, Na__Test__SitePlanFaces__ :42, ModeController :63 (PORT NOTE) and :98 (log 1.18.9). Ledger: the nine files move to verbatim / adapted (app token) at TV's versions above; ModelSource and the painter new (dormant); ModeController 1.18.9 adapted (hunks).
+6. **TrueVision releases named (DR-01 (c)):** v2.32.0, v2.42.0, v2.48.1, v2.49.0, v2.55.0, v2.87.0, v2.93.0, v2.94.0, the unlogged v2.95.0 / 55014c6a work, v2.101.0, v2.107.0, v2.138.0, v2.140.0, v2.160.0 and v2.164.0 - none recorded as tried by Adam in TrueVision.
+7. **Stale TV notes (TrueVision lane, DR-36):** TV's PORT NOTEs on these files still say "PENDING to ValeVision3D" / "Not yet back-ported" / "TrueVision only"; their DESCRIPTION lines "(TrueVision only)" for the SitePlan unit are kept verbatim here (H4).
+8. **SHARED SERVICE WORKER:** see the block above - the token bump at deploy (W6-02) is needed for this wave's editor files, or nothing once the OVH VPS has no service worker.
+
+##### W2-17.md
+**Status: DONE.** VV's Dev menu stays VV's 1.4.x (loader-aware, Layout Mode switch at its head), and takes TrueVision's
+1.2.0 behaviour through the loader: the linework bake names a drawing only when its viewport draws the live design
+phase (`editor.modelSource.Na__LeSource__Resolve(v).isLive`). The loader's `Na__LeLoad__ImportEditor` binds Model
+Source as a seventh literal editor part, `modelSource`, so the Dev section still imports nothing from the editor.
+DR-25 (a) is applied: the Layout Mode switch stays, recorded as a divergence in the refreshed PORT NOTE. G1, G2, G4
+(naming + port notes) are green; `Na__Test__LoaderFacade__` 118/118 and `Na__Test__LoaderStylesheets__` pass. The
+in-browser check is deferred to the orchestrator's smoke test.
+## Follow-ups for Adam
+- TV v2.32.0 (DevMenu 1.2.0, live-phase bake) is ported without a confirmation line in TrueVision's devlog (DR-01 (c)).
+- DR-25 is still on its default (a): the Layout Mode switch stays a VV divergence; revisit at the publishing port (DR-22) as the register recommends.
+- The DR-25 "stale comment that says the live site never reads the switch" was not found in this package's two files; whoever owns the remaining loader/ModeController comment pass (W5-03 / WP-S03a-10) should look for it.
+
+##### W2-18.md
+## 5. Follow-ups for Adam
+1. **Confirm the drafting aids in TrueVision.** v2.107.0 / v2.111.0 (Draft, no try recorded), v2.113.0 (Ortho), v2.114.0 (Grid), v2.129.0 (the grid ring's move) and v2.131.0 (Axes) are "NOT tried by Adam" in TV; all came across under DR-01 (c), inert.
+2. **Grid defaults (DR-40 item 5, adopted):** 10 mm major in 10, #969696 over #d6d5c9, Points, on top, not clipped - your NA A2 LayOut template's. Retune in `27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json` if Vale wants a different grid.
+3. **Draft note font:** `Styles__DraftMode` keeps TrueVision's literal 'Open Sans' stack for the raster/3D note; say if Vale wants its font token there.
+4. **For W3-05 (its suites):** TV's Na__Test__OrthoMode__ filters the controller's console line by `'[TrueVision3D LayoutEditor] Ortho'`; in VV the prefix is `[ValeVision3D LayoutEditor]`, so the ported test needs that seam or it prints the line (no failure). Na__Test__DrawingAxes__'s toolbar-words check needs TV's toolbar (W5-01).
+5. **Service worker:** no bump on this package's own account; the wave's bump (W2-19's) carries the three new sheets.
+
+##### W2-19.md
+## 5. Follow-ups for Adam
+1. **Confirm object snap in TrueVision.** v2.129.0, v2.137.0, v2.138.0, v2.143.0 (and v2.114.0, v2.123.0 carried in) are "NOT tried by Adam" in TV; v2.149.0's Move Anchor records no try. All came across under DR-01 (c).
+2. **Visible change (DR-40 item 2, adopted):** a snap marker's colour now says what was snapped TO, not which tool is snapping; orange now means text (it used to mean the Dimension tool). Object snap also gains Intersection, Perpendicular and Centre (on by default) and Nearest (off), and the paper's border/title block/margin as snap points.
+3. **Service worker:** a token bump is needed at deploy (exports removed from Snapping__ and four importers repointed must arrive together).
+4. The toolbar's Snap tooltip still reads "Snap dimensions to the linework endpoints and midpoints (F3)" (this app's config label) until W5-01 takes TrueVision's toolbar and its Label() words.
+
+##### W2-20.md
+## TV releases ported, and Adam's confirmation
+- v2.123.0 (21-Sep-2026) - ContextMenu 1.1.0 flyouts, hints, the mixed ring; Paper CSS menu rules. TV devlog: "NOT tried by Adam; NOT in ValeVision". Ported under DR-01 (c); scribe must name it.
+- 4f6bb9ef with v2.65.0 (18-Sep-2026) - HoverTooltip 1.0.0 (not named in TV's devlog entry). No confirmation recorded.
+- v2.144.0 (22-Sep-2026) - HoverTooltip 1.1.0 (lead, kept in window) and `.na-le-hovertip__lead`. TV devlog: "NOT tried by Adam; NOT in ValeVision".
+- None of these are DR-40 gesture changes (items 7-10); nothing held.
+
+## Follow-ups for Adam
+- In the app (Layout Editor, any sheet): right-click a viewport, a text item, a group; the Custom Scrapbook panel's item menu; a parametric element's grip menu and the noodle - each should open, sit at the pointer and close exactly as before. No flyout appears anywhere yet; the first (the Layer row) arrives with W2-21 / W3-03.
+- W2-19 note: take TV's region title "Linework Progress and the Hover Tooltip" when the snap-marker rules leave this sheet.
+
+##### W2-21.md
+## TV releases ported, and Adam's confirmation
+See the header block: all "NOT tried by Adam" / unconfirmed except v2.153.0 (box select, CONFIRMED 23-Sep-2026; only SelectionBox's description here). DR-40 item 1 (paste lands at the original paper coordinates, this sheet or another, even off the page) is ADOPTED in this package and must be named in the devlog entry. No DR-40 gesture change (7-10) lands here.
+
+## Follow-ups for Adam
+- In a drawing: select a text, a group and a vector; Ctrl+C then Ctrl+V - each copy lands exactly on top of its original with a toast saying so (VV used to step it clear / keep it on the paper - TV's rule, DR-40 item 1). Switch sheet and Ctrl+V - it lands at the same place on the other sheet, on a layer of the same name (made if missing). Ctrl+D still steps a duplicate clear.
+- Right-click an item: the clipboard rows now read Cut selection / Copy selection / Duplicate selection / Paste. Cut from the menu works now; Ctrl+X arrives with the hub (W3-03).
+- Drop a Scrapbook, Custom Scrapbook and Parametric item: each lands where dropped, as before.
+- Eyedropper: picking a dimension's style now also carries round-up, line weight and dash; a viewport's "show frame" travels too.
+- Nothing visible from LayerMenu or NoteTooltip yet (W3-03 wires them).
+- Service worker: new exports on EditScope and ItemClipboard - bump the token at deploy.
+
+##### W2-22.md
+## Follow-ups for Adam / the integrator
+1. Behavioural dependency, not a link dependency: the tool lands boxes through the Rectangle tool's `land` hook, which TV added in RectangleTool 1.4.0 (TV v2.143.0). VV's RectangleTool is still 1.2.0, which ignores `defaults.land` and would draw a rectangle vector instead of a region. W2-26 (RectangleTool 1.4.0) must land before anything dispatches TOOL_REGION here (Measurements 1.10.0 / the W3 hub). Harmless today because nothing imports this module.
+2. G3 fails only on the audit report's own prose (retired folder names cited as evidence); the orchestrator may want k2_path_gate to exempt `ValeVision__AUDIT__*` as history documents.
+
+##### W2-23.md
+## TV releases ported (none confirmed by Adam in TV; all under DR-01 (c), none a DR-40 gesture change)
+- v2.111.0 (21-Sep-2026) "Zoom now, redraw when it rests" - Measurements 1.5.1 only (placement on ZOOM_SETTLED_EVENT). TV: "Not ported. Goes with Draft mode, on Adam's sign-off."
+- v2.113.0 (21-Sep-2026) "Ortho mode on F8" - Measurements 1.6.0 only (`Say`). TV: "NOT tried by Adam".
+- v2.118.0 (21-Sep-2026) "The Measurements box reads every step; every move retypable" - Measurements 1.7.0 only. TV: "Adam has not tried it."
+- v2.119.0 (21-Sep-2026) "Copy arrays" - Measurements 1.8.0 only. TV: "Adam has not tried it."
+- v2.130.0 (21-Sep-2026) "Vector tools" - Measurements 1.9.0 only. TV: "NOT tried by Adam".
+- v2.143.0 (22-Sep-2026) "Overspill note regions" - Measurements 1.10.0 only. TV: "NOT tried by Adam".
+
+## Follow-ups for Adam / the integrator
+1. The new behaviour stays dormant until the W3 SheetTools hub hands in canArray / typeMoveArray / getMoveRetype / getViewportRetype / getVectorReading / typeVectorValue and dispatches TOOL_AREA / TOOL_REGION; Na__Test__MoveRetype__ belongs to W3-03.
+2. The box now refreshes on every `Na__LeModel__CHANGED_EVENT` (TV 1.7.0). Behaviour on VV's orchestrator is unchanged in what it shows, but the smoke test should confirm a half-typed value survives a drag that edits the model (it does in TV: the reading stays active, so nothing is cleared).
+3. The file changed from CRLF to LF (TV's text as git show returns it); with core.autocrlf git reports "LF will be replaced by CRLF" - the whole-file diff is mostly the 1.4.0 -> 1.10.0 content, not only line endings.
+4. Service worker: one new export on an existing module and two modules newly reachable - a token bump is needed at deploy (Adam's, policy 1).
+5. G3 fails only on the audit report's own prose; the orchestrator may want k2_path_gate to exempt `ValeVision__AUDIT__*` (also raised by W2-22).
+
+##### W2-24.md
+## 5. Follow-ups for Adam
+1. **Confirm in TrueVision:** Grips 1.10.0 (v2.129.0) and 1.11.0 (v2.137.0) are "NOT tried by Adam"; 1.9.0 (v2.116.0) records no try; 1.12.0 (the 2 px rubber box, commit a2e0a836) has no devlog entry at all. All came across under DR-01 (c).
+2. **Visible change:** a grip's colour now says where its point is (green on the drawing, ring on a line, blue on nothing, red in hand) - previously every grip was blue and picked ones red; the rubber band and rubber box are 2 px on screen at any zoom (were 1 px, and grew with the zoom).
+3. **Service worker:** bump the token at deploy - the Grips JS and the Paper CSS must arrive together (old JS + new CSS = a square insert diamond).
+4. The TV Paper sheet's VIEWPORT CARRY region is still not in VV (W2-25 takes it with ViewportSnapMove).
+
+##### W2-25.md
+## 5. Follow-ups for Adam
+1. **Confirm in TrueVision (DR-40 items 9-10, W3-04):** the viewport carry (ViewportSnapMove 1.2.0-1.6.0, v2.98.0 / v2.114.0 / v2.117.0 / v2.129.0 / v2.138.0 all "not tried by Adam"; 1.0.0-1.1.0 v2.28.0 / v2.31.0 record no try) and the move anchor (v2.149.0, no try recorded). Both modules are in ValeVision now, inert, waiting for that answer and the W3-03 hub.
+2. **Back-port offer for TV (DR-42 list, nothing done):** TV keeps the carry rules in its Paper sheet while every other snap rule moved to `Styles__ObjectSnap__.css` at v2.129.0 (slice S04b b.8); VV mirrors TV's placement. Recorded in ViewportSnapMove's PORT NOTE Back-port line.
+3. **Service worker:** no bump for this package alone; the deploy that wires W3-03/W3-04 needs one (the two modules and the JSON join the app graph then).
+4. The Paper sheet's last TV difference outside its header is TV's re-worded text-editor--multiline comment (TV :398-399); no package lists it (W2-24 noted it too) - W5-02's stylesheet convergence is its natural owner.
+
+##### W2-26.md
+## TV releases ported (none confirmed by Adam in TV; all under DR-01 (c), none a DR-40 gesture change)
+v2.36.0 (Leader 1.1.0 log only), v2.40.0, v2.41.0, v2.104.0, v2.113.0, v2.114.0, v2.123.0, v2.129.0, v2.139.0, v2.143.0, v2.152.0 - see the box above for each module part and TV's own words.
+
+## For the Parity Scribe
+- Devlog wording: "The Layout Editor's Dimension, Rectangle, Text and Leader tools taken whole from TrueVision3D (DimensionTool 1.12.0 with v2.152.0's create hunk, logged here as 1.13.0; RectangleTool 1.4.0; TextTool 1.4.0; LeaderTool 1.2.0): they snap through Object Snap (marker colour says what the point belongs to; a dimension's end can snap Perpendicular from its first point), dimensions follow Ortho mode (Ortho XOR Shift), and text, leader heads and a dimension's line land on the drawing grid while Grid Snap is on. New dimensions carry Measure at scale, Round up, Line pt, Dashed and the extension-line settings (off until the Dimensions panel's new-dimension defaults arrive). A new rectangle still takes no Hatch default, as in TrueVision (DR-37 (3)). The Draw tool (ShapeTool) follows with the vector tools. Releases not confirmed by Adam in TrueVision: v2.36.0, v2.40.0, v2.41.0, v2.104.0, v2.113.0, v2.114.0, v2.123.0, v2.129.0, v2.139.0, v2.143.0, v2.152.0."
+- Ledger Module Register: the four rows - VV path = TV path; TV source = current (Dimension 1.12.0 + v2.152 / VV log 1.13.0; Rectangle 1.4.0; Text 1.4.0; Leader 1.2.0); Parity verbatim; Divergences: banner (+ Dimension's 1.13.0 log entry); Transport none. Resolves WP-S05b-07 and its verify-only twin WP-S04b-07 for these four files (ShapeTool remains: W3-07).
+
+## Follow-ups for Adam
+1. DR-37 item 3: new rectangles (and shapes, circles, arcs when they land) ignore the Vectors panel's Hatch setting, as in TrueVision. If that is a defect, the fix is `hatch : d.hatchOn ? d.hatch : null` in the four tools, TV first (DR-36).
+2. Back-port offers (not made, DR-36): TV DimensionTool's log lacks the v2.152.0 entry (VV logs it as 1.13.0); TV DimensionTool's DESCRIPTION still says its markers are orange, the dimension tone, which 1.11.0 retired; TV RectangleTool and LeaderTool do not log their move onto ObjectSnap Search (v2.129.0).
+3. Smoke checklist items above (browser), once W3-05 brings the Ortho UI and the hub hands in the new dimension defaults.
+
+##### W2-27.md
+## 4. Records notes for the W2-99 scribe
+- Placeholders to resolve (5 x `{{VVREL:W2-27}}`, each the PORT NOTE "Ported on" line): State :47, Setup :29,
+  Geometry :48, Offset :46, Boolean :63. The config's `Meta__PortedFrom` names "parity package W2-27" (no placeholder,
+  as W1-16/W1-17 - a placeholder in a .json fails `Na__Verify__PortNotes__`); the scribe may replace that phrase with
+  the release number.
+- Devlog wording: "Six vector-tools leaves ported whole and inert from TrueVision3D v2.130.0 (State, Setup, Geometry,
+  Offset, the config), v2.142.0 and v2.151.0 (config wording) and v2.150.0 (Boolean geometry over the vendored
+  Clipper2, State 1.1.0, config 1.1.0) - none of these releases confirmed by Adam in TrueVision; nothing in ValeVision
+  imports them yet, so nothing changes on screen, in a saved sheet or in a PDF."
+- Ledger Module Register rows (six new): VV path = TV path; TV source ver State 1.1.0 (v2.150.0), Setup / Geometry /
+  Offset 1.0.0 (v2.130.0), Boolean 1.0.0 (v2.150.0), Config Meta 1.1.0 (v2.150.0, as v2.151.0 shipped it); TV current
+  ver = the same; Parity verbatim; Divergences: banner (all), console prefix (Setup), Meta__PortedFrom (Config); Open TV
+  versions: none; Loaded by: nothing yet (State/Setup/Geometry/Offset/Boolean -> W2-28 / W2-41 tools and adapter, then
+  W3-07's switch-on); Transport: none.
+- Release Watermark: v2.130.0 gains these five (Curves was W1-14's); v2.142.0, v2.150.0 and v2.151.0 each gain a partial
+  row (their LE/37 leaves only).
+- SHARED SERVICE WORKER paragraph: "adds 5 modules and 1 config JSON, no new export on any existing module; nothing
+  loaded imports them, so a warm client holding a mix of old and new files sees no difference. Token not bumped."
+
+## 5. Follow-ups
+- **F1 (W3-07, informational):** TV's `Na__Test__VectorTools__.test.mjs` at the pin already passes 138/138 against VV's
+  files (this package's runner); W3-07 can land it byte-for-byte with only the banner seam and a PORT NOTE.
+- **F2 (records, low - S05b's own finding):** the vendored Clipper2 index notes say no app module imports clipper2-js
+  directly; `VectorTools__Boolean__.js:86` now does (in VV too), so the coordinated-set upgrade rule also gates the
+  Boolean tools. Not edited here (outside the edits list).
+- **F3 (Adam, decision already on file):** v2.130.0, v2.142.0, v2.150.0 and v2.151.0 are unconfirmed in TrueVision by
+  their own status lines (DR-01 (c) ported the leaves inert and names them). v2.151.0's overview records you praising
+  v2.150.0 after trying it; if that counts as your sign-off, the TV devlog status line is the place to say so.
+- **F4 (Adam, in-app checklist - nothing here should change):** open 3047__Doous, open the drawing editor - it loads as
+  before with no console error and no request for `Na__LayoutEditor__VectorTools__Config__.json` (Network tab); Save
+  Sheets with no edit on localhost - `project.json` unchanged; a project with no drawings opens; a sheet's PDF is
+  unchanged; the read-only web view and Layout Mode off behave as before.
+
+Restore (if ever needed): delete the six new files (`scratch/W2-27/sha256__written.txt` lists them and their hashes);
+the LE/37 folder then holds only W1-14's Curves. Scripts (re-runnable, read TrueVision only at the pin): `extract_tv.py`,
+`port_w2_27.py` (hash-guarded, new files only), `make_test_runners.py`, `acceptance_check.mjs`, `mutation_check.py`.
+The TrueVision copies and the two test runners (they carry TrueVision / NA text) were deleted from scratch afterwards;
+`extract_tv.py` then `make_test_runners.py` re-create them.
+
+##### W2-28.md
+## 4. Records notes for the W2-99 scribe
+- Placeholders to resolve (6 x `{{VVREL:W2-28}}`, each the PORT NOTE "Ported on" line): Preview :42, Targets :54,
+  CircleTool :45, ArcTool :45, TrimTool :50, JoinTool :49.
+- Devlog wording: "Six vector-tools units ported whole and inert from TrueVision3D v2.130.0 (Preview, Targets, Circle,
+  Arc, Trim and Extend, Join and Split), v2.138.0 (Targets 1.1.0: turned viewports) and v2.150.0 (Targets 1.2.0,
+  TrimTool 1.1.0, JoinTool 1.1.0: vectors with holes and the targets' refusal words) - none of these releases confirmed
+  by Adam in TrueVision; nothing in ValeVision imports them yet, so nothing changes on screen, in a saved sheet or in a
+  PDF."
+- Ledger Module Register rows (six new): VV path = TV path; TV source ver Preview / CircleTool / ArcTool 1.0.0
+  (v2.130.0), Targets 1.2.0 (v2.150.0), TrimTool / JoinTool 1.1.0 (v2.150.0); TV current ver = the same; Parity
+  verbatim; Divergences: banner only; Open TV versions: none; Loaded by: nothing yet (W2-41 adapter, then W3-07's
+  switch-on); Transport: none. Known TV defect carried as is: DR-37 (3) - Circle and Arc do not pass the Vectors
+  panel's hatch to new shapes.
+- Release Watermark: v2.130.0 gains these six units; v2.138.0 gains a partial row (Targets 1.1.0); v2.150.0 gains a
+  partial row (Targets 1.2.0, TrimTool 1.1.0, JoinTool 1.1.0).
+- SHARED SERVICE WORKER paragraph: "adds 6 modules, no new export on any existing module; nothing loaded imports them,
+  so a warm client holding a mix of old and new files sees no difference. Token not bumped."
+
+## 5. Follow-ups
+- **F1 (Adam, decision already on file - DR-37 (3)):** TrueVision's CircleTool and ArcTool never pass the Vectors
+  panel's Hatch to a new shape (ShapeTool and RectangleTool likewise). Ported exactly as TV; if you want new shapes to
+  take the panel's hatch, the fix is TV-side first (S05b D-S05b-05), then re-ported.
+- **F2 (Adam, decision already on file - DR-01 (c)):** v2.130.0, v2.138.0 and v2.150.0 are unconfirmed in TrueVision
+  by their own status lines; these units are inert in VV until W3-07 switches the vector tools on.
+- **F3 (Adam, in-app checklist - nothing here should change):** open 3047__Doous and the drawing editor - it loads as
+  before with no console error and no request for any `VectorTools__*Tool__.js`, `__Preview__.js` or `__Targets__.js`
+  (Network tab); draw and move a rectangle and a line as before; Save Sheets with no edit on localhost leaves
+  `project.json` unchanged.
+
+Restore (if ever needed): delete the six new files listed in `scratch/W2-28/sha256__written.txt`; the LE/37 folder then
+holds W1-14's Curves and W2-27's six leaves. Scripts (re-runnable, read TrueVision only at the pin): `extract_tv.py`,
+`check_imports.py`, `port_w2_28.py` (hash-guarded, new files only), `acceptance_check.mjs` (run with
+`node --import ./importmap_register.mjs acceptance_check.mjs`; it needs `extract_tv.py` first for TV's export lists).
+The TrueVision copies and TV devlog extract were deleted from scratch afterwards (they carry NA text); `extract_tv.py`
+re-creates the copies.
+
+##### W2-29.md
+**Status: DONE.** The Patterns panel and its stylesheet land verbatim at TrueVision's paths, the mode controller waits
+on the hatch library and registers the panel at TrueVision's places, and `patterns` joins the accordion group. Every
+automatable acceptance item passes and every gate is green; the one failing test in the whole-tree sanity run is
+FOREIGN and already known (W2-14's `Na__Test__SitePlanComposites__`, waiting on W2-16). The in-app look is deferred to
+the orchestrator's smoke test.
+## 4. Records notes for the W2-99 scribe
+- Placeholders (3 x `{{VVREL:W2-29}}`): `Na__LayoutEditor__Panel__Patterns__.js` (PORT NOTE "Ported on"),
+  `Na__LayoutEditor__Styles__Patterns__.css` (PORT NOTE "Ported on"), `Na__LayoutEditor__ModeController__.js`
+  (DEVELOPMENT LOG 1.18.6 heading). The ModeController still carries W2-19's one placeholder too.
+- Devlog wording: "The drawing editor gains TrueVision's Patterns panel: the hatch library - Construction Materials first,
+  drawn in its own dark grey, then the Site Plan pack - at the foot of the Properties tab, hidden until the library has
+  loaded. The editor now waits for the library with its other configs before it opens a sheet. The panel's per-layer
+  hatch rows are TrueVision's but stay out of sight: site plans are dormant in ValeVision (DR-08 (B)), so the section is
+  the library and its intro note. From TrueVision3D v2.89.0, v2.90.0, v2.106.0, v2.126.0 and v2.155.0 - none confirmed
+  by Adam in TrueVision."
+- Ledger Module Register rows (new): the panel = TV path; TV source ver 1.1.0 (v2.126.0); TV current 1.1.0; parity
+  verbatim (site plan half dormant); Divergences: banner; Loaded by: ModeController (Register after the scrapbook
+  libraries); Transport: none. The stylesheet = TV path; TV source: unversioned (git 62dade1c, 20-Sep-2026); verbatim;
+  Divergences: banner; Loaded by: the panel's own <link>. ModeController row: 1.18.6, hunks Hatch Ready + Patterns
+  registration taken.
+- Release Watermark: v2.89.0, v2.90.0, v2.106.0, v2.126.0 and v2.155.0 gain partial rows for the Patterns panel /
+  accordion / import path.
+- SHARED SERVICE WORKER paragraph: "adds 1 module and 1 lazily linked stylesheet and no new export on any existing
+  module; the editor's lazy graph now also reaches the dormant site plan Store and GlbParse and the hatch module with its
+  JSON library (cache:'no-store'), so a warm client holding a mix of old and new files sees either the old editor
+  without the panel or the new one with it. The token is still Adam's call; it was not bumped."
+
+## 5. Follow-ups
+- **F1 (orchestrator):** acceptance item 3's wording ("an empty hidden section") does not match TrueVision's verbatim
+  behaviour, which shows the section after a failed load with "The pattern library is empty." (TV :436-439, :308-310).
+  Verbatim was kept (DR-19, P3). If Adam wants it hidden, that is a TrueVision change first (WT lane), then a re-port.
+- **F2 (Adam, in-app checklist - deferred smoke test):** on localhost open 3047__Doous with Layout Mode on and open a
+  drawing tab: (a) the right column's Properties tab ends with a "Patterns" section (after Shapes; Scrapbook tab
+  unchanged), which is not there for a moment and then appears; (b) it shows the intro note, "Select a site plan
+  viewport to set its hatches. The library below is always here.", and two groups of tiles - CONSTRUCTION MATERIALS
+  (14 dark-grey tiles, Brickwork first) and SITE PLAN HATCHES (5); clicking a tile does nothing (no site plan viewport);
+  (c) opening Text, Dimensions, Shapes or Leaders folds Patterns away and opening Patterns folds them (it is in the
+  accordion group); (d) the console shows `[ValeVision3D] Hatch patterns: 19 pattern(s) in 2 pack(s).` and no error;
+  (e) Save Sheets with no edit leaves `project.json` unchanged; a project with no drawings opens; a sheet's PDF is
+  unchanged; the read-only web view (no panels) and Layout Mode off behave as before.
+- **F3 (Adam, decisions on file):** every TrueVision release above is unconfirmed by you in TrueVision (DR-01 (c)).
+  The Site Plan pack and the panel's per-layer rows ship only because DR-08 defaults to (B); answering DR-08 (C) or
+  DR-19 (a) means the adapted library-only panel instead - decide before anyone builds on this one (D-S05b-V02: never
+  ship the adapted panel and re-port verbatim later, or the reverse).
+- **F4 (records, informational):** W2-19 added ModeController 1.18.5 without extending the PORT NOTE's Source version
+  hunk list; this package's edit names 1.18.5 and 1.18.6 there.
+
+Restore (if ever needed): `python -B scratch/W2-29/port_w2_29.py --restore` puts back the two edited files' pre-change
+bytes from `scratch/W2-29/backup/` (hash-checked) and deletes the two new files; landed hashes are in
+`scratch/W2-29/sha256__written.txt`. Scripts: `extract_tv.py` (re-creates `scratch/W2-29/tv/` from the pin; the harness
+needs it), `port_w2_29.py` (`--stage`, `--write`, `--check`, `--restore`), `harness/acceptance_check.mjs`,
+`harness/mutation_check.py`. The TrueVision copies and the staged set were deleted from scratch afterwards.
+
+##### W2-30.md
+## 5. Follow-ups for Adam (and the orchestrator)
+1. **Smoke test (deferred items)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: the Layout Editor opens with no module link error; console shows `[ValeVision3D] Layout Editor: project specification loaded from the cloud|repository (n note(s))`; a bubble linked to a deleted note shows the red halo on screen (Delete the note in the Project Specification tab, look, then Undo - do this on a copy or Undo before anything saves). Saves and Sync are Adam's call: they write R2 and the repository notes file.
+2. **Behaviour change on localhost: the notes file now follows the app.** With LockstepEnabled true (W0-15's config), an edit in the Project Specification tab is written to `Whitecardopedia/Projects/<folder>/ValeVision__DrawingNotes__.json` 4 s after typing pauses (AutoSaveLocalMs), after a look at the file; R2 is still written only by Sync / Save Sheets. Before, the file changed only on Sync. Set `LayoutEditor__Specification__LockstepEnabled` false to go back to the last save winning.
+3. **Interim until W2-31 (same wave): the question has no card yet.** If an agent or a hand edit moves the file while the app has it open, the autosave, Enter and Sync now hold and toast ("The specification and its file on disk are out of step ..."), but the "Keep the app's copy / Load the file" card (SpecLockstep 1.0.0), Bar 1.3.0's status and StartWatch/StopWatch arrive with W2-31. Until then **Reload Local** (load the file) or **Reload R2** answers it. If W2-31 does not land in this wave, this is the one visible gap.
+4. **Save Sheets with the question open** skips the specification silently (canSync is false); TV's toast for it arrives with Toolbar 1.24.0 (W5-01).
+5. **Reload R2 off localhost** is now disabled (TV's CanReloadCloud = Worker configured); VV used to allow a CDN re-read there. The live site is read-only for the specification anyway.
+6. **W2-33** can delete `03__AppUtils/Na__AppUtils__R2DrawingNotes__.js`: nothing imports it any more.
+7. **SHARED SERVICE WORKER**: bump needed at deploy if the shared worker still fronts ValeVision (see the record block). W6-02 (or its OVH successor) should precache the two new modules.
+8. **OVH move**: nothing in these files tests a host; the facade (W0-12) owns the localhost-vs-R2 decision and its TODO(OVH-MIGRATION) follow-up (working memory section 6) covers this package's transport too.
+9. **TV releases named for the scribe** (DR-01 (c)): v2.144.0, v2.157.0, v2.163.0 - all "NOT tried by Adam" in TV; SpecLinks 1.1.0 (18-Sep) has no TV devlog heading.
+
+##### W2-31.md
+**Status: DONE.** The question card lands new and verbatim, the specification bar is taken whole at TrueVision 1.3.0
+(its 1.4.0 Share button left for W4-08) with the OC-09 document-code seam, the stylesheet is taken whole with its
+"The Lockstep Question" region, and the mode controller gains TrueVision 1.31.0's three lockstep lines at this app's
+sites. Every automatable acceptance item passes and every gate is green; the one failing test in the whole-suite run is
+FOREIGN and already known (W2-14's `Na__Test__SitePlanComposites__`). The on-screen card and bar are deferred to the
+orchestrator's smoke test.
+## 5. Follow-ups for Adam (and the orchestrator)
+1. **Smoke test (deferred items)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`: open a drawing tab from the 3D view - no module link error; the Project Specification bar reads "Saved to file, not synced" / "Synced ..." or the cloud states, its status hover names when ValeVision__DrawingNotes__.json last changed, and its summary starts "3047 ·" (not "2026/3047__Doous"). To see the card: with the editor open, change the notes file on disk by hand (a copy of the project, or undo by Reload afterwards) - within ~3 s the card should rise over the sheet with the two answers, the Newer badge on the file, and the bar should read "Out of step with the file" with the amber alert. Escape must not close it. Answering writes the file or the app copy: do it on a copy.
+2. **The live web view** (read-only, `Na__LeVw__IsViewerMode`) must show no card and start no watch - covered statically here; worth one look in the smoke test.
+3. **Interim until W5-01**: Save Sheets with the question open skips the specification without a toast (TV's "specification held" toast is Toolbar 1.24.0).
+4. **W4-08** takes SpecEditor Bar 1.4.0 (Share): its build must re-apply this record's OC-09 document-code seam (import + the one `code` line) when it takes TV's file whole.
+5. **SHARED SERVICE WORKER**: bump needed at deploy if the shared worker still fronts ValeVision (see the record block); W6-02 (or its OVH successor) should precache SpecLockstep.
+6. **TV release named for the scribe** (DR-01 (c)): v2.163.0 - "NOT tried by Adam" in TV. TV's Styles__Specification header says v2.162.0 for the same region (cosmetic, already noted by S06b).
+
+##### W2-32.md
+## TV releases ported (DR-01 (c): named, not Adam-confirmed)
+- v2.143.0 (22-Sep-2026) "Overspill Note Regions" - SpecMargin 1.4.0, Column 1.0.0, NoteRegions 1.0.0, MarginGrip 1.3.0, the two region CSS regions. NOT tried by Adam.
+- v2.147.0 (22-Sep-2026) "Leaderless Notes" - SpecMargin 1.5.0, NoteRegions 1.0.1 (comments), Panel__MarginNotes__Leaderless 1.0.0, the leaderless CSS region, the two tests' current versions. NOT tried by Adam.
+- v2.111.0 (21-Sep-2026) "Zoom now, redraw when it rests" - MarginGrip 1.2.0 only. NOT tried by Adam.
+- v2.78.0 (19-Sep-2026) MarginGrip 1.1.0 (IsMoveAuto) - HELD for W3-03 / DR-40 item 7; its log entry is present (TV's DEVELOPMENT LOG verbatim, DR-34) and the PORT NOTE says the line is held.
+- None of these is a DR-40 gesture change landed live.
+
+## Follow-ups for Adam / the integrator
+1. W3-03 must restore MarginGrip's `Na__LeTools__IsMoveAuto` import and the `|| Na__LeTools__IsMoveAuto()` term (both marked `// <-- VV:`) and delete the PORT NOTE bullet; until then the margin grip hides while an automatic Move is up - which VV does not have yet, so no visible change today.
+2. W3-11 registers the Leaderless panel (Panel__MarginNotes 1.2.0); until then Leaderless Notes and regions have no UI in VV and every sheet plans exactly as before.
+3. W3-16 (PdfExporter 1.12.0) carries the 'fits nowhere' toast; VV's exporter still warns only while the margin is on (`margin.on && margin.overflow`), which is unchanged in meaning for sheets with no regions.
+4. Behaviour note for Adam: a typed margin heading too wide for the column now wraps onto more lines (TV's deliberate 1.4.0 change) instead of running past the right edge; no current VV project has a typed heading.
+5. SpecMargin, MarginGrip and the CSS changed from CRLF to LF (whole-file ports write TV's bytes; git normalises at commit).
+6. Shared service worker: 3 new modules and one new export on SpecMargin - a token bump at deploy is advisable (Adam's call, DR-07).
+7. G3 fails only on the audit report's own prose (as W2-22 reported).
+
+##### W2-33.md
+## Follow-ups for Adam
+1. The optional dev-saver migration (nine VV dev savers in 11 CameraUtils, 21 ScenePersistence, 28/29/31/41/70 dev controls -> Na__CfApi__MergeAndSaveKeys, each writing only its own key) remains open; it needs a package that owns those files.
+2. The Flask `drawing-notes` route the retired client called is untouched; whether any other caller still needs it is for the transport owner (S12) to confirm.
+3. Browser check: the Layout Editor's specification load/save on 3047__Doous - deferred to the orchestrator's smoke test (nothing loaded the deleted module, so no change is expected).
+
+##### W2-34.md
+## Issues
+1. FOREIGN (not this package's file), PortNotes whole-tree run: `02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:7` FAIL source-version-form ("none of its own - the sheet as TrueVision3D v2.147.0 left it ..." has no module version and no "- Legacy :" field). Re-run once: unchanged. Belongs to the Specification package that wrote it (W2-31/W2-35 family); left untouched.
+2. Untracked `WebApps/Whitecardopedia/__pycache__/Server__ValeVision*__.cpython-312.pyc` (5) are the running server's own compilations (W0-18 issue 2); this package wrote no byte-code (the test sets sys.dont_write_bytecode).
+
+## Follow-ups for Adam
+1. TrueVision release ported but not confirmed by you in TV: v2.144.0 (Spell Check) - NOT confirmed (DR-01 (c): ported and named).
+2. Writes work on localhost only: on Adam's Flask server the dictionary is writable through `/api/valevision/user-config/spellings`; anywhere else it is read from `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json` as a static file and is read-only. The Cloudflare worker has no such route (worker 1.6.0 was only staged, and is superseded by the OVH VPS move); on the VPS, registering W0-18's blueprint behind Nginx would make the live app writable too - decide with the VPS migration.
+3. Curate the Vale dictionary (DR-20, W0-18 follow-up 1): Vale's own product and supplier names by hand.
+4. When W2-35 lands, check in Edge (Settings > Languages, spell check on, English (UK)): type "Kingspan Kingspam" in a specification row editor - only Kingspam should be underlined; Add to Dictionary should write the word into "Added in ValeVision".
+5. Recorded only (DR-42 default, no back-port): reading the server's service name from the config would remove the SERVER_SERVICE seam; TV's private helper name `Na__SpellCheck__IsProjectVisionServer` is kept in VV as code identity.
+
+##### W2-35.md
+**Status: DONE.** The five files of `LE/58__Feature__ScrapbookSpecification` land new at TrueVision's path, taken whole
+from the pin with only the named seams (banner, console prefix, PORT NOTE, and this app's file names in two comments and
+the config's Meta wording). The mode controller gains TrueVision 1.20.0's left-column tabs at this app's sites: the
+`'document'` tab, the Specification tab straight after it, and the Specification section after Model Layers.
+`Na__Test__SpecInlineEdit__` is ported (adapted to this app's file and server) with a ValeVision region for this
+package's automatable acceptance: 51/51 PASS. G1, G2, G3 and G4 are green. The three failing node tests in the
+whole-suite run are FOREIGN (W2-38's two scrapbook tests waiting on W3-14's config, and W2-14's SitePlanComposites),
+re-run once after a pause, unchanged, none touching this package's files. The on-screen items are deferred to the
+orchestrator's smoke test (on a temporary project copy - never saved into a live project).
+## Follow-ups for Adam
+1. **Unconfirmed TrueVision releases ported (DR-01 (c)):** v2.91.0 (no try recorded), v2.138.0, v2.144.0 and
+   v2.162.0/v2.163.0 (NOT tried by Adam), plus TV's unlogged 22-Sep commit a2e0a836 (Panel/Config/Styles 1.2.0). The
+   scribe names them in the VV devlog.
+2. **Smoke test on a temporary copy** of 2026/3047__Doous: the left column shows Document Preferences | Specification;
+   rows show bubbles; drag a row onto a sheet; F2 + Enter on a row writes `ValeVision__DrawingNotes__.json` and lights
+   Save Sheets. Never on a live project.
+3. **Wording that names R2:** the config's Meta__Editing and the RowEditor/test DESCRIPTIONs keep TrueVision's "Save
+   Sheets takes it to the cloud (R2)", which is how ValeVision syncs today. With the October 2026 move to a single
+   OVH VPS (no R2), these words follow whatever replaces the cloud sync - a config/comment change, no code.
+4. **Dictionary words:** the RowEditor checks spelling against `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json`
+   (W2-34); Vale's product and brand words are Adam's to curate (DR-20).
+
+##### W2-36.md
+**Status: DONE.** Panel__Text 1.4.0, Panel__Styles 1.7.0, Panel__Leaders 1.2.0 and ScrapbookCustom (with its
+measured-room hunk) are taken whole from TrueVision; Panel__Shapes takes the 1.8.1 and 1.8.2 hunks and Panel__Layers the
+1.1.1 labels and the Off half of 1.3.0's one red; the three stale multi-select notes in the LE AppConfig now say what
+the panels do. Every automatable acceptance item passes (package harness 35/35, the pre-change tree fails 22 of the same
+checks) and G1-G4 are green. The in-app look is deferred to the orchestrator's smoke test. Three suite tests fail, all
+FOREIGN (below). One file outside the edits list was written: the AppConfigParity test's allow-list (3 rows + a log
+entry), as a direct consequence of the config fix (same pattern as W2-14 and OC-14) - please ratify.
+## 4. Records notes for the W2-99 scribe
+- Placeholders (11 x `{{VVREL:W2-36}}`, all in comments): Panel__Text (Ported on), Panel__Styles (Ported on), Panel__Leaders
+  (Ported on), ScrapbookCustom (Ported on), Panel__Shapes (Ported on, log 1.8.2, log 1.8.1), Panel__Layers (Ported on,
+  log 1.1.2, log 1.1.1), Na__Test__AppConfigParity__ (log 1.0.6). The test still carries W2-14's one placeholder.
+- Devlog wording: "Several drawing-editor panel fixes from TrueVision. With several text items selected the Text panel
+  now shows the first one's size, weight and colour (it showed the settings for new text while a change went to all of
+  them), and the Text, Dimensions and Vectors notes say 'Editing 3 selected ...: a change here goes to all of them.'
+  instead of telling you to click one on its own. Unticking Edges with several vectors selected takes their edges off and
+  nothing else - it used to repaint every selected shape, a plan's coloured rooms included, in the new-shape fill.
+  A hidden drawing layer's Off button is the same faint red as a locked layer's Unlock, and Floor Areas and Images layers
+  are named in the layer list. Render Composites shows its Enhance Whitecard strength in % beside the x and px weights.
+  From TrueVision3D v2.57.0, v2.93.0, v2.104.0, v2.106.0, v2.116.0 and v2.154.0 - none confirmed by Adam in TrueVision.
+  The three config notes are a ValeVision-side fix: TrueVision's own config still carries the old wording (back-port
+  WT-04)."
+- Ledger Module Register rows: Panel__Text 1.4.0 (TV 1.4.0, verbatim, banner only); Panel__Styles 1.7.0 (TV 1.7.0,
+  verbatim); Panel__Leaders 1.2.0 (TV 1.2.0, verbatim); ScrapbookCustom 1.0.0 + v2.104.0 hunk (verbatim but for the
+  Meta__Description string; console prefix); Panel__Shapes VV 1.8.2 (TV 1.9.0, adapted - hunks 1.8.1/1.8.2; Draw at scale
+  and hatch not yet); Panel__Layers VV 1.1.2 (TV 1.3.0, adapted - labels + Off red; Ref not yet); LE AppConfig: three
+  tv-defect label values.
+- Release Watermark: v2.57.0 (Text, Leaders) full for these files; v2.93.0 (Styles) full for the panel; v2.104.0 partial
+  (ScrapbookCustom hunk, Layers area label); v2.106.0 partial (Shapes 1.8.1 only); v2.116.0 partial (Shapes 1.8.2,
+  Layers 1.1.1); v2.154.0 partial (Off half; the Ref half waits for W3-13).
+- Back-port rows to open/keep for WT-04: TV AppConfig TextManyNote / DimManyNote / ShapeManyNote wording (S06a WP-S06a-11
+  item 5); TV ScrapbookCustom log entry for its v2.104.0 hunk (item 6).
+- SHARED SERVICE WORKER paragraph: "changes six existing modules (four panels, the Custom Scrapbook module, the LE config
+  JSON) with no new module, no new import and no new or renamed export, so any mix of old and new cached files still
+  links. The token is still Adam's call; it was not bumped."
+
+## 5. Follow-ups
+- **F1 (orchestrator):** ratify the out-of-list edit to `Na__Test__AppConfigParity__.test.mjs` (three tv-defect allow-list
+  rows + log 1.0.6), the unavoidable consequence of the package's config fix (same pattern as W2-14 / OC-14).
+- **F2 (orchestrator, decision on scope):** the K3/S06a scope also mentioned adding the three `*NoneOfKindNote` keys; they
+  were deliberately not added (S06a-F09 verifier refinement: optional, both apps run on the fallbacks, and each would be a
+  new vv-only difference). If wanted, it is a three-key add plus three vv-only allow-list rows.
+- **F3 (Adam, in-app checklist - deferred smoke test):** on localhost open 3047__Doous with Layout Mode on, open a drawing:
+  (a) place three text items of 3.5, 5 and 7 mm, box-select them: Text shows Size 3.5 and "Editing 3 selected text items:
+  a change here goes to all of them."; set 6 - all three become 6 mm, one undo step; select two vectors only: "Nothing
+  selected is text: ..."; (b) select two dimensions, then two vectors: the notes read "Editing 2 selected dimensions /
+  vectors: ..." with no "Click one ... on its own"; (c) draw a closed room with a coloured fill and a two-point line,
+  select both, untick Edges: the room keeps its colour and loses its edge, the line keeps its edge; undo restores; one
+  room alone: unticking Edges still turns its fill on as before; (d) in Drawing Layers hide a layer: its button reads Off
+  in faint red (#9b3b3b on #fbf3f3), the same as a locked layer's Unlock; show it again: plain On; a Floor Areas or
+  Images layer (if one exists, e.g. via the filter) is named "Floor Areas" / "Images"; (e) Render Composites > Advanced:
+  Enhance Whitecard's weight reads "%" in the same column as the "x" and "px" units, hover text "How much of the effect to
+  apply..."; (f) the console shows no error; Save Sheets with no edit leaves project.json unchanged; a project with no
+  drawings opens; a sheet's PDF is unchanged; the read-only web view (no panels) and Layout Mode off behave as before.
+- **F4 (Adam, decisions on file):** every TrueVision release above is unconfirmed by you in TrueVision (DR-01 (c)).
+- **F5 (records, informational):** the TV config defect (stale ManyNote wording shown over TV's own panels) is live in
+  TrueVision today - the harness shows TV's Panel__Shapes reading "2 items selected. Click one shape on its own...".
+
+Restore (if ever needed): `python -B scratch/W2-36/port_w2_36.py --restore` puts back the eight pre-change files from
+`scratch/W2-36/backup/` (refuses unless each live file still matches `sha256__written.txt`). Scripts: `extract_tv.py`
+(re-creates `scratch/W2-36/tv/` from the pin; the build and the harness's parity runs need it), `port_w2_36.py`
+(`--record-pre`, `--stage`, `--write`, `--check`, `--restore`), `harness/acceptance_check.mjs` (`--panels`, `--config`,
+`--scrap` to point it at other copies), `harness/panel_probe.mjs`, `harness/hooks.mjs`, `harness/fake_dom.mjs`. The
+TrueVision copies and the staged set were deleted from scratch afterwards.
+
+##### W2-37.md
+## Smoke checklist for the orchestrator / Adam (Layout Editor, Doous)
+1. Scrapbook tab: four parametric tiles - Drawing Title + Scale Bar, Drawing Title + Scale Bar to the Right, Drawing Title, Scale Bar; the bar-right tile previews "SOUTH ELEVATION" with the bar stood away.
+2. Drop the bar-right tile beside an elevation: the double arrow at the bar's far end carries it; it snaps to a drawing corner with a dashed guide; the near-end arrow lengthens back towards the title while the far end stays put.
+3. A long title: the underline ends 5 mm past the words. Ctrl+Z / Ctrl+Y round trip.
+4. Name a viewport "South East Elevation  -  Front" (two spaces each side), drop a linked title, Save Sheets, leave and come back: Save Sheets stays unlit.
+5. Scale bar checker cells read #858585 on screen and in the PDF.
+6. Drag any Standard / Custom scrapbook tile: it still lands centred on the pointer (TileDrag 1.2.0 hold/snap is opt-in).
+
+## Follow-ups for Adam
+- Every TV release above is ported unconfirmed (DR-01 (c)) - try the bar to the right and the 5 mm rule in TrueVision or here.
+- Config Meta__Version now reads TrueVision's 1.8.0 although the CabinetInfill/ProjectQr/AreaSchedule/SiteLegend content waits for W3-14 (stated in Meta__PortedFrom).
+- TrueVision's ViewportLink log carries two "1.3.0" entries; a TrueVision-lane renumber (DR-36) would let the VV copy drop its Legacy line.
+- The panel's metricsReady and the bar placement controls arrive with panel 1.8.0 (W3-14); until then titles drawn before this release keep their old underline until edited.
+- Shared service worker: token bump needed with this wave (new static imports between existing modules).
+
+##### W2-38.md
+## Follow-ups for Adam
+- Every TV release above is ported unconfirmed (DR-01 (c)): try the Cabinet Infill (base point, corner grips, fill rule) in TrueVision or here once W3-14 lands. CabinetInfill 1.2.0 (the fill's rule) has no TV devlog entry of its own (commit a2e0a836, "Minor").
+- The Project Portal block's words ("View Project Portal", the four bullets, the paragraph) are TrueVision's fallbacks; Vale wording for it is yours to give (DR-43) and lands as config values with W3-14. It stays off until a Vale QR resolver exists (DR-12).
+- Orchestrator / G5: until W3-14 lands the CabinetInfill and ProjectQr config blocks, both new tests exit 1 when run in the live tree (TypeError at the first config read). Run them via `scratch/W2-38/stage_run.py live` (then the run trees it builds) or after W3-14; W3-14 should re-run both live.
+- W3-14: the merged-config variant (b) above is the minimum its config must carry for these tests: the two blocks, the CabinetInfill tile (1800 x 600 real, architectural), the two ProjectQr tiles (compact, full), TypeNames CabinetInfill 'Cabinet Infill' / ProjectQr 'Project Portal', and the Labels__*Infill* / *Qr* words.
+
+##### W2-39.md
+**Status: DONE.** The site plan legend type (SiteLegend 1.0.0) and its data feed (SiteLegendLink 1.0.0) land new, whole and
+inert in `LE/57__Feature__ScrapbookParametric`. Nothing imports them until the parametric panel 1.8.0 registers and attaches
+them (W3-14), and site plans stay dormant (DR-08 (B)). Every import SiteLegendLink makes resolves to a VV export at
+TrueVision's path (W2-14, W2-16, W2-37 and the hatch and sheet hubs). The test is ported and passes 56/56 on a scratch copy
+of VV's config with the SiteLegend block merged in (the acceptance's form). G1, G2, G3 and G4 are green.
+## Follow-ups for Adam
+- TrueVision v2.164.0 (the site plan legend) is ported unconfirmed (DR-01 (c)): its devlog says "NOT tried by Adam". It is dormant in ValeVision, so nothing changes for Vale users.
+- Orchestrator / G5: until W3-14 lands the SiteLegend block and tile, `Na__Test__ScrapbookSiteLegend__` exits 1 in the live tree (TypeError at its first direct config read). Run it through `scratch/W2-39/stage_run.py live` or after W3-14; W3-14 should re-run it live.
+- W3-14: when the config is taken whole, the SiteLegend block's `SiteLegend__HiddenByDefault` list and the SiteLegend tile's `Element__PreviewParams` row keys must carry VV's stems (`ValeVision__SitePlan__*`, K2 K3; the naming lint flags any `TrueVision__` literal). The VV test checks `ValeVision__SitePlan__OsMapping` / `__Contours` are hidden by default, so a block left with TrueVision's stems fails 4 checks (proven by mutation m3).
+
+##### W2-40.md
+## 5. Follow-ups for Adam
+1. **Confirm Drawing Planes in TrueVision (v2.82.0, 20-Sep-2026).** TV's devlog still says "Not yet signed off by Adam" (:8310); the leaves came across under DR-01 (c) and the devlog entry will name it as unconfirmed.
+2. **One older export degrades.** `2026/60834__Clough` loads as a single `ValeVision__LegacyModel` bucket, so once W2-01 switches the planes on, its planes will be sized from the whole model including the landscape and will stand on the bucket's foot (TV's own fallback). Re-exporting that project with the current `__ValeVision__<Category>__` file naming gives it building-sized planes; no code change is needed. Every other project with models (90) matches the building and ground tokens.
+3. **TrueVision record fix (comment only, TrueVision lane, DR-36):** TV's `Na__DrawingPlanes__Bounds__.js` PORT NOTE (:49-51) and its v2.82.0 devlog line (:8310-8311) say ValeVision's category keys are "shorter (Landscape, Walls)" and that the token lists must change for the port; both are stale (S02a-F43, confirmed here against all 91 VV model lists).
+
+##### W2-41.md
+## 4. Records notes for the W2-99 scribe
+- Placeholders to resolve (5 x `{{VVREL:W2-41}}`, each on the PORT NOTE "Ported on" line): OffsetTool :49,
+  BooleanTool :65, adapter `VectorTools__.js` :59, Panel__VectorTools :52, Styles__VectorTools__.css :29.
+- Devlog wording: "The rest of the vector tools ported whole and inert from TrueVision3D v2.130.0 (Offset, Fillet and
+  Chamfer; the adapter; the Vector Tools panel and its stylesheet), v2.150.0 (the Boolean tools - Union, Subtract,
+  Trim, Intersect, Split, Outer Shell - and the panel's Boolean section) and v2.151.0 (the Boolean keys' commands in
+  the adapter and BooleanTool) - none of these releases confirmed by Adam in TrueVision by its status line; nothing in
+  ValeVision imports them yet, so nothing changes on screen, in a saved sheet or in a PDF."
+- Ledger Module Register rows (five new): VV path = TV path; TV source ver OffsetTool 1.1.0 (v2.150.0), BooleanTool
+  1.1.0 (v2.151.0), adapter 1.2.0 (v2.151.0), Panel__VectorTools 1.1.0 (v2.150.0), Styles__VectorTools (no version;
+  v2.150.0); TV current ver = the same; Parity verbatim; Divergences: banner only; Open TV versions: none; Loaded by:
+  nothing yet (W3-07's switch-on: ShapeTool 1.10.0 and the ModeController registration; the panel links the sheet);
+  Transport: none.
+- Release Watermark: v2.130.0 gains OffsetTool / adapter / Panel / Styles (with W2-28's six the v2.130.0 vector units
+  are all in VV, inert); v2.150.0 gains BooleanTool 1.0.0 -> 1.1.0, adapter 1.1.0, OffsetTool 1.1.0, Panel 1.1.0, the
+  sheet's rule; v2.151.0 gains a partial row (adapter 1.2.0, BooleanTool 1.1.0; the key rows already came with W0-15's
+  KeyMap 1.11.0, Keyboard 1.18.0 is the hub package's).
+- SHARED SERVICE WORKER paragraph: "adds 4 modules and 1 self-linked stylesheet, no new export on any existing module;
+  nothing loaded imports or links them, so a warm client holding a mix of old and new files sees no difference. Token
+  not bumped."
+
+## 5. Follow-ups
+- **F1 (Adam, decision already on file - DR-01 (c)):** v2.130.0, v2.150.0 and v2.151.0 are unconfirmed in TrueVision
+  by their own status lines. v2.151.0's overview quotes you after trying v2.150.0 ("It works INCREDIBLE!"), so
+  v2.150.0 may in fact be confirmed - if so, update its status line in TV and the VV devlog can drop it from the
+  unconfirmed list. These units stay inert in VV until W3-07 switches the vector tools on.
+- **F2 (Adam, decision already on file - DR-18 (a)):** v2.151.0 read your "Shift + t = Subtract" as a slip and made
+  Shift+T Trim (TV put it to you, devlog :1489-1490). Ported as TV; if you meant Subtract, the change is TV-side
+  first (the key file and the adapter's COMMANDS), then re-ported.
+- **F3 (Adam, in-app checklist - nothing here should change):** open 3047__Doous and the drawing editor - it loads as
+  before with no console error and no request for `VectorTools__OffsetTool__.js`, `__BooleanTool__.js`,
+  `Na__LayoutEditor__VectorTools__.js`, `Panel__VectorTools__.js` or `Styles__VectorTools__.css` (Network tab); the
+  Properties column shows no Vector Tools section; draw and move a rectangle and a line as before; Save Sheets with no
+  edit on localhost leaves `project.json` unchanged.
+
+Restore (if ever needed): delete the five new files listed in `scratch/W2-41/sha256__written.txt`; the LE/37 folder
+then holds W1-14's Curves, W2-27's six leaves and W2-28's six units. Scripts (re-runnable, read TrueVision only at the
+pin): `extract_tv.py`, `check_imports.py`, `port_w2_41.py` (hash-guarded, new files only), `acceptance_check.mjs` (run
+with `node --import ./importmap_register.mjs acceptance_check.mjs`; it needs `extract_tv.py` first for TV's export
+lists). The TrueVision copies and the TV devlog extract were deleted from scratch afterwards (they carry NA text);
+`extract_tv.py` re-creates the copies.
+
+##### W2-42.md
+## 5. Follow-ups for Adam
+1. **Confirm object snap in TrueVision.** v2.129.0 (the 28__System__ObjectSnap folder) and its follow-ups v2.137.0, v2.138.0, v2.143.0, v2.150.0 (plus v2.114.0 and v2.123.0 carried into Sources) are all "NOT tried by Adam" in TV's devlog; the leaves came across under DR-01 (c) and the devlog entry will name them as unconfirmed.
+2. **TrueVision record fix (comment only, TrueVision lane, DR-36):** `Na__LayoutEditor__ObjectSnap__Marker__.js`'s DEVELOPMENT LOG lists 1.0.0 above 1.1.0; newest first would put 1.1.0 on top. VV's copy carries a `Legacy` field until then.
+
+##### W2-43.md
+## 5. Records notes for the W2-99 scribe
+- Placeholders to resolve (3 x `{{VVREL:W2-43}}`, all in PORT NOTE comments, `Ported on` lines):
+  `02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js:59`,
+  `02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js:54`,
+  `80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs:43`.
+- Devlog wording: "folder 50's two new leaves - FlushJoins 1.1.0 (the flush-join rule of TrueVision3D v2.37.0,
+  signed off by Adam in TrueVision, with the v2.159.0 modelling tolerance) and Storeys 1.0.0 (v2.105.0) - and the
+  FlushJoins suite, ported whole; v2.105.0 and v2.159.0 not yet confirmed by Adam in TrueVision; inert in
+  ValeVision until W2-06 takes the rest of folder 50".
+- Ledger Module Register: two rows (parity verbatim; loaded by: nothing yet; transport: none) and the test row.
+  Release Watermark: v2.37.0, v2.105.0 and v2.159.0 move to ported-inert for this package's part only (their
+  CpuBackend / Projector / Pipeline / ConfigAccess / AppConfig parts are W2-06's; v2.105.0's DoorPose part too).
+- TV-side record items for the WT lane (WT-08, Adam's approval, DR-36), not done here: TV devlog v2.159.0 `:1067`
+  says "ValeVision has FlushJoins 1.0.0 with the old tolerances" (wrong - S02b b.3.2); TV's FlushJoins and Storeys
+  PORT NOTEs still read "PENDING to ValeVision3D".
+
+## 6. Follow-ups
+- **F1 (Adam, DR-01):** confirm in TrueVision, or not, v2.105.0 (one storey per plan) and v2.159.0 (flush joins at
+  modelling tolerance); until then the scribe lists them as unconfirmed. Both are inert in ValeVision for now.
+- **F2 (Adam, DR-43, information):** `Na__ProjectedLinework__FlushJoins__.js:77` (DEVELOPMENT LOG) and `:104`
+  (a Module Constants comment) name RB05 - TV's measurement notes. Not user-visible; kept verbatim so the file stays
+  TV's. Say if you want them neutralised (the file would then differ from TV by two comment lines, declared in its
+  PORT NOTE).
+- **F3 (W2-06 agent):** the leaves are in place for TV's imports - `Na__PlFlush__CutFlushJoins` (CpuBackend 1.3.0+)
+  and the eleven `Na__PlStorey__*` names (DoorPose, Projector 1.5.0, CpuBackend 1.4.0). Re-run
+  `Na__Test__FlushJoins__` after landing (expected 8/8). FlushJoins' 1.1.0 log speaks of a BuildToken bump: in VV
+  that is W2-06's AppConfig token (DR-31 (4): a new VV token), with the ConfigAccess fallback set equal to it
+  (S02b-F33, the StoreyBand check).
+- **F4 (orchestrator, records hygiene):** `scratch/W2-43/tv/` holds TrueVision's three sources, its DepthFog test and
+  its devlog (1.4 MB) at the pin, and `scratch/W2-43/tvrun/` the TV mirror for the baseline run - both name NA
+  projects. They are untracked scratch inside the audit folder (which `checkpoint.py` excludes) and are re-creatable
+  with `git show b2aa9151:...` / `verify_w2_43.py`. Keep them out of any ValeCodebase commit, or remove them; this
+  package deleted nothing.
+- **F5 (orchestrator, information, outside this package):** this session's skill list carries
+  `adam-vale-apps-infrastructure-architecture`, described as the Vale apps' production architecture "after the
+  October 2026 move to a single OVHcloud VPS ... no GitHub Pages hosting, Cloudflare R2, Cloudflare Workers". The
+  programme's transport decisions (DR-27/28/29, W0-10's worker 1.6.0, DR-31's "Bake All to R2" re-bake) assume R2
+  and the Cloudflare worker. Nothing in W2-43 touches transport; flagged so the orchestrator can check it with Adam.
+- Nothing to deploy for this package, and no service-worker token needed by it.
+
+Restore (if ever needed): `python execution/scratch/W2-43/build_w2_43.py --restore` removes the three files, and
+only if each is still byte-identical to the build; no existing file was changed. Scripts in `scratch/W2-43/`:
+`build_w2_43.py` (`--check`, `--write`, `--restore`), `verify_w2_43.py` (reverse-seam check, TV mirror).
+

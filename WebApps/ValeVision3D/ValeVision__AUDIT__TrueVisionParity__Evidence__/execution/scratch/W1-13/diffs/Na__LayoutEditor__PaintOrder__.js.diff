@@ -1,0 +1,17 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js
++++ VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - PAINT ORDER
++// VALEVISION3D - LAYOUT EDITOR - PAINT ORDER
+@@ -54,0 +55,11 @@
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js
++// - Source version: 1.0.0 (TrueVision3D v2.106.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-13}}
++// - Parity        : verbatim (TrueVision's file carries no PORT NOTE block; this one is the only addition)
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
++//
++// -----------------------------------------------------------------------------
++//

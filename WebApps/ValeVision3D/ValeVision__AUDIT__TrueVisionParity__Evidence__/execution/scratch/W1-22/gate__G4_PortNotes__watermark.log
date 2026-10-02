@@ -1,0 +1,26 @@
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 7 named file(s) - 7 PORT NOTE(s), 6 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 4 since rewritten (their full checks apply)
+
+  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+      WARN  :37    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.72.0 wrote it (19-Sep-2026; read at b2aa915" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: a stylesheet carries no module version, so the Source version names the release that wrote it.]
+
+  PENDING  7 release placeholder(s) in 7 file(s), for the wave's Parity Scribe: W1-22 x7
+
+  WATERMARK  TrueVision D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode at b2aa9151 (git)
+  The TrueVision DEVELOPMENT LOG entries dated after this app's newest log entry (the S11 c.1 rule; same-day entries are not flagged):
+    02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+        this app 21-Sep-2026 | TrueVision 1.2.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js
+        this app 09-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+        this app 14-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+        this app 14-Sep-2026 | TrueVision 1.2.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+        this app 17-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+        this app 21-Sep-2026 | TrueVision 1.9.0 | after: -
+
+  RESULT: PASS (0 fail, 1 warn, 7 pending)

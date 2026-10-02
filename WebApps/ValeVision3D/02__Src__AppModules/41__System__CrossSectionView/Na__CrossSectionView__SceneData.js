@@ -35,25 +35,38 @@
 // - The loading sequence dispatches 'na-crosssection-scenedata-loaded' with
 //   the raw project block after project.json resolves.
 // - Na__PresentationMode__DevMenu__SceneEditor imports the capture API.
+// - Initialize registers GetProjectBlock with the drawings data
+//   (Na__DrawData__RegisterSectionBlockProvider), so every drawings save
+//   carries this block as its third key - the hook TrueVision's section
+//   scene data uses. The block keeps this module's own entry schema
+//   (TD06, DR-41): TrueVision's 41 SceneData and Serialize never come here.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.2.0 (v2.71.2)
+// - The drawings save carries the bindings by registration: Initialize
+//   hands GetProjectBlock to Na__DrawData__RegisterSectionBlockProvider, the
+//   hook TrueVision's drawings data has always had (TD06), now that the
+//   drawings data is TrueVision's ProjectData 1.6.0 taken whole and no longer
+//   imports this module. The block and its entries are unchanged.
+// - This log now reads newest first, as every log in folders 40-55 does.
+//
 // 09-Sep-2026 - Drawing approach scenes (port Phase 2)
 // - The scene-activated listener returns early when the synthetic approach
 // - scene of a 2D drawing flight is announced, so the drawing cut applied by
 // - Na__DrawView__SectionAdapter__ is not cleared a moment later.
 //
-// 15-Jul-2026 - Version 1.0.0
-// - Initial implementation (per-scene cross section persistence).
+// 15-Jul-2026 - Version 1.1.0
+// - Capture/restore now include fill colour, line colour, and line width so
+//   localhost scene setup persists style to R2 for web playback.
 //
 // 15-Jul-2026 - Version 1.0.1
 // - Fixed: scenes with no ValeVision/SketchUp binding now CLEAR every live
 //   section on activation, instead of leaving the previous scene's cuts on.
 //
-// 15-Jul-2026 - Version 1.1.0
-// - Capture/restore now include fill colour, line colour, and line width so
-//   localhost scene setup persists style to R2 for web playback.
+// 15-Jul-2026 - Version 1.0.0
+// - Initial implementation (per-scene cross section persistence).
 //
 // =============================================================================
 
@@ -70,6 +83,13 @@
         Na__CrossSection__SerializeSections,
         Na__CrossSection__ApplySerializedSections
     } from './Na__CrossSectionView__SystemLogic.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Drawings Save Path (registers this block as the third key)
+    // ------------------------------------------------------------
+    // @delegate: ../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+    // ------------------------------------------------------------
+    import { Na__DrawData__RegisterSectionBlockProvider } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -446,6 +466,9 @@
     function Na__SectSceneData__Initialize() {
         if (Na__SectSceneData__Initialized) return;
         Na__SectSceneData__Initialized = true;
+
+        // The drawings save carries this block as its third key.
+        Na__DrawData__RegisterSectionBlockProvider(Na__SectSceneData__GetProjectBlock);
 
         // PROJECT LOAD | Seed the block from project.json (loading sequence event)
         window.addEventListener(Na__SectSceneData__LOADED_EVENT, (event) => {

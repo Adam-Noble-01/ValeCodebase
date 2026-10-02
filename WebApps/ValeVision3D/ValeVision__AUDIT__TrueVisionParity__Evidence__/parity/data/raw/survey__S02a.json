@@ -1,0 +1,1803 @@
+{
+ "slice_id": "S02a",
+ "report_path": "C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S02a__DrawingCore_Plans_Elevations_North_Planes_Sections.md",
+ "summary": "S02a covers TV 40/41/42/45/46/47/48 (73 files, 29,524 lines) against VV 42/41/43/46/47/40 (63 files, 24,352 lines). Every shared file was checked by devlog, whitespace-blind diff, comment-stripped code diff and export comparison. A resolver also mapped each TV import onto VV and listed every missing file or name (Appendix A). Nothing was run in either app.\n\nMain results:\n(1) The folder map no longer works. VV's +1/+2 shift (D05) leaves no slot for TV's new 47 DrawingPlanes, 48 CrossSectionViews and 49 ElevationDepthFog. The recommendation is to renumber VV to TV's numbers first, in one atomic package (affects ~100 files).\n(2) VV lacks the whole v2.86 draft system: DraftMaths, DrawingUsage, DevRowShell, DraftGuard, the RowAccordion guard, staged renames and Modal 1.1/1.2. VV's Dev rows still write live, so any other save can move every viewport drawn from a half-edited plan.\n(3) Critical port hazard: TV editors pass the presentation config as the first argument to the data modules' Create and Delete calls. VV's data modules treat that argument as a drawings block and would write plan and elevation arrays into PresentationMode__SavedCameraScenes. TV's data-module convention must be ported first.\n(4) VV is missing: the v2.87 storey (blocks LE ViewportIdentity, PlanDoors/Hide Swings and the title text); the v2.86 elevation auto-names; drawing planes plus the InteractiveOverlays registry (also needed for Show Compass); the Transitions 1.1.0 walk fix; and ProjectData 1.3-1.6 (payload guard, save steps, IsLoaded, base guard, report).\n(5) VV is ahead or deliberately different in four areas: the floor plan and elevation mode controllers (TV is still on 1.1.0), sections filed by drawing type, the drawing-approach flag and the thumbnail bake.\n(6) TV's 2.x menus dropped or never had four VV features: the styles/exclusion rows (D33), Ground Floor Plan (D11), bake-before-save (D20) and the thumbnail bake. Adam needs to decide whether VV keeps them.\n(7) By code reading only, TV and VV write CrossSection__SceneData positionMm with opposite signs, so TD06 interchangeability is not met. TV's per-scene section restore listener is also dead, because TV never dispatches na-pm-scene-activated.\n(8) Recommendation: rename VV ComposerPreset to RenderPreset. The interface is identical and the composer route stays inside the file.\n\nThere are 15 work packages and 10 decisions. VV paths are pre-renumber; translate them if WP-S02a-01 lands first.",
+ "findings": [
+  {
+   "id": "S02a-F01",
+   "category": "folder",
+   "title": "VV +1/+2 drawing-folder shift has no slot for TV 47/48/49",
+   "detail": "VV D05 shifted the new drawing folders (42 core, 43 plans, 44 annotations, 45 dimensions, 46 elevations, later 47 north) to keep legacy 40/41. TV has since added 47 DrawingPlanes, 48 CrossSectionViews and 49 ElevationDepthFog. TV 47 collides with VV 47 North, and TV 49 has no number below VV 50 ProjectedLinework. Under the current map every port rewrites paths, and the new folders cannot be placed consistently.",
+   "recommendation": "Renumber VV to TV's numbers in one atomic WP before any other port: 42->40, 43->42, 44->43, 45->44, 46->45, 47->46; move VV legacy 40 out (e.g. 39); VV 41 keeps 41 (different engine, same role). Then TV 47/48/49 land unchanged. Verify with Na__Verify__ModuleGraph__ and Na__Verify__Exports__.",
+   "action": "renumber_folder",
+   "severity": "critical",
+   "evidence": "VV PLAN D05 (ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:53); TV realign plan s.4.1 lines 304-321. VV references: 42__ 51 files/124, 43__ 11/22, 44__ 7/14, 45__ 9/33, 46__ 11/23, 47__ 6/13, 40 legacy 4/6.",
+   "tv_paths": [
+    "02__Src__AppModules/47__System__DrawingPlanes",
+    "02__Src__AppModules/48__System__CrossSectionViews",
+    "02__Src__AppModules/49__System__ElevationDepthFog"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore",
+    "02__Src__AppModules/43__System__FloorPlanViews",
+    "02__Src__AppModules/44__System__PlanAnnotations",
+    "02__Src__AppModules/45__System__PlanDimensions",
+    "02__Src__AppModules/46__System__ElevationViews",
+    "02__Src__AppModules/47__System__NorthDirection",
+    "02__Src__AppModules/40__System__2dElevationsView"
+   ],
+   "depends_on": [
+    "D-S02a-01",
+    "D-S02a-04"
+   ],
+   "est_lines": 250
+  },
+  {
+   "id": "S02a-F02",
+   "category": "decision",
+   "title": "VV legacy 40__System__2dElevationsView occupies slot 40 and still feeds the composer",
+   "detail": "VV-only folder (8 files, 2,407 lines) is a live user tool: Tools > Elevation View (index.html:518-535, init :2149). Its export overrides run ahead of the drawing preset's (:1874). Its Na__RenderEffect__2dProfileLines__ is the ortho profile pass VV's ComposerPreset is built on (42/...ComposerPreset__.js:93). D06 keeps it 'untouched for now'. TV has no counterpart. It blocks slot 40 under the renumber.",
+   "recommendation": "Keep the tool for now and move the folder to 39__System__2dElevationsView inside the renumber WP. Alternatively, retire the menu item and move Na__RenderEffect__2dProfileLines__ into DrawingViewCore. Adam decides.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "VV index.html:518-535,1375-1376,1874,2149; VVM/42/Na__DrawView__ComposerPreset__.js:93; VV PLAN D06 line 54.",
+   "vv_paths": [
+    "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js",
+    "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js",
+    "index.html"
+   ],
+   "depends_on": [
+    "D-S02a-04"
+   ]
+  },
+  {
+   "id": "S02a-F03",
+   "category": "tooling",
+   "title": "drift_all vv_ver is the PORT NOTE source version; DraftMode plan is unrelated to DraftGuard",
+   "detail": "drift_all.tsv vv_ver holds VV's '- Source version:' line, i.e. the TV version it was ported FROM, not VV's current version. Examples: 43 DevMenu Editor reads 1.0.0 but is 1.2.0; 43 ModeController reads 1.1.0 but is 1.2.2. TrueVision__PLAN__DraftMode__.md covers the LE Draft Mode (K key, 51/26__System__DraftMode). It has nothing on DrawView DraftGuard/DraftMaths, which are specified in TrueVision__PLAN__DrawingMenus__.md s.3 and TV devlog v2.86.0.",
+   "recommendation": "Planner: take VV versions from DEVELOPMENT LOG tops (report table c). Brief DraftGuard work from the DrawingMenus plan and devlog v2.86.0 (line 7788), not the DraftMode plan.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "VVM/43/Na__FloorPlan__DevMenu__Editor__.js:43 (Source version 1.0.0) vs :59 (Version 1.2.0); VVM/43/...ModeController__.js:49 vs :63."
+  },
+  {
+   "id": "S02a-F04",
+   "category": "data_schema",
+   "title": "TV editors pass the presentation config where VV data modules expect a drawings block",
+   "detail": "TV editors call Na__FpData__CreatePlan(config,..)/DeletePlan(config,..) and Na__ElevData__CreateElevation(config,..)/DeleteElevation(config,..) with the PresentationMode block; TV's data modules ignore arg 1 for records. VV's treat arg 1 as an optional drawings block (Na__FpData__Block / Na__ElevData__Block). EnsureArray would then create LayoutEditor__DrawingsData__FloorPlans/__Elevations inside PresentationMode__SavedCameraScenes, corrupting the next save silently once TV's editors run against VV's data modules.",
+   "recommendation": "Port TV's data-module convention first: records always via Na__DrawData__Get*Array, arg 1 = sceneConfig (ignored for records). All 18 current VV external callers pass null or nothing, so the switch is safe. Add a Node check that Create/Delete with a presentation object leaves that object untouched.",
+   "action": "port_adapted",
+   "severity": "critical",
+   "evidence": "TVM/42/Na__FloorPlan__DevMenu__Editor__.js:957,1064; TVM/45/Na__Elevation__DevMenu__Editor__.js:1075,1228; VVM/43/Na__FloorPlan__ProjectJson__Data__.js:160; VVM/46/Na__Elevation__ProjectJson__Data__.js:181.",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.1.1",
+   "vv_adaptation": "Keep VV extras (STYLE_KEYS export, FloorPlan__Dimensions default, trimmed exclusion tokens, SeededFrom per D-S02a-05).",
+   "depends_on": [
+    "S02a-F01"
+   ]
+  },
+  {
+   "id": "S02a-F05",
+   "category": "drift",
+   "title": "Na__DrawView__ProjectData__ is four TV versions behind (payload guard, save steps, IsLoaded, report)",
+   "detail": "TV 1.6.0 vs VV 1.2.0. VV lacks: 1.3.0 RegisterPayloadGuard (an unfinished draft goes out as last Updated in ANY save); 1.4.0 RegisterSaveStep (before/payload/after, used by Sheet Images); 1.5.0 IsLoaded (LE late-start draft restore); 1.6.0 SavedIso stamp and base guard; Save(showToast, report, registerKeys). VV-only Get/SetLayoutModeEnabled is used by VV's lazy loader and stays. TV's legacy-migration region is TV-only history.",
+   "recommendation": "Add RegisterPayloadGuard, RegisterSaveStep, IsLoaded, SAVED_ISO_KEY stamping and report/registerKeys to VV Save. Fill report.local from R2SaveProjectJson's {r2Success, localSuccess} and suppress its own toast when a report is given. Defer GetBase/WhenBaseKnown/CheckBase to the transport WP.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TVM/40/Na__DrawView__ProjectData__.js:710 (Save), :862 (RegisterPayloadGuard), :873 (RegisterSaveStep); VVM/42/...ProjectData__.js:380,389; VVM/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js:184-219.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js"
+   ],
+   "tv_version": "1.6.0",
+   "vv_version": "1.2.0",
+   "vv_adaptation": "Keep Flask GET /api/projects/{code} merge + R2SaveProjectJson (R2 first, Flask mirror); no migration region; keep LayoutModeEnabled.",
+   "est_lines": 200
+  },
+  {
+   "id": "S02a-F06",
+   "category": "transport",
+   "title": "v2.146 drawings save guard needs Flask routes VV does not have",
+   "detail": "After each load, TV 1.6.0 learns a base: the local server's sha1 fingerprint of the drawings block (or the SavedIso stamp on the web). Save refuses BEFORE writing R2 when the disk has moved on. The local write carries the base, and the server answers 409 and backs up every overwritten copy. VV's Flask WCP/server.py has none of these routes. LE AutoSave 1.5.0 imports GetBase/WhenBaseKnown/SAVED_ISO_KEY.",
+   "recommendation": "In WCP/server.py, add GET /api/projects/<code>/drawings-fingerprint, a base header on the project POST (409 on mismatch) and backups before overwrite. Add GetBase/WhenBaseKnown/CheckBase to VV ProjectData. The worker needs no change (TV does not judge R2 either). Adapt Na__Test__ProjectDataSaveGuard__.test.py to server.py.",
+   "action": "build_vv_transport",
+   "severity": "medium",
+   "evidence": "TV devlog v2.146.0 lines 1901-2005; TVM/40/...ProjectData__.js:490-551 (GetBase, LearnBase, CheckBase); LE AutoSave imports (le_deps.txt line 50).",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "depends_on": [
+    "S02a-F05"
+   ],
+   "vv_adaptation": "Routes live in Whitecardopedia's server.py (not ProjectVision); VV project folders resolve via get_project_path."
+  },
+  {
+   "id": "S02a-F07",
+   "category": "missing_module",
+   "title": "DraftMaths and DrawingUsage (pure helpers of the draft system) missing",
+   "detail": "Na__DrawView__DraftMaths__ (246 lines) handles snapshot, changed keys (view keys ignored), restore-in-place and substitute-in-payload. Na__DrawView__DrawingUsage__ (156) counts the sheet viewports drawn from a drawing, by the sheet model's rule. Both import nothing and run under Node. VV sheets already carry every key DrawingUsage reads (Sheet__Name, Sheet__Fields__DrawingNumber, Sheet__Viewports, Viewport__Kind/DrawingId/SceneId).",
+   "recommendation": "Port both verbatim (header and console prefix only) into the drawing core. Port Na__Test__DrawingDrafts__.test.mjs with VV folder paths and a VV fixture (D37 Doous or the test's builtFixture).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TV devlog v2.86.0 Files list (line 7905-7907); VVM/51/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:363-367,654.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js"
+   ],
+   "tv_version": "1.0.0",
+   "est_lines": 402
+  },
+  {
+   "id": "S02a-F08",
+   "category": "missing_module",
+   "title": "Na__DrawView__DevRowShell__ (shared panel shell) missing",
+   "detail": "486 lines; v2.86. Provides the panel head with its +, header swatch and chips, Update/Revert actions, danger zone, Advanced fold, the Update/Delete dialogs and WhereSaved(report). Imports 21 Modal Confirm, ProjectData.GetSheetsArray and DrawingUsage, and uses existing na-pm-dev__ classes (all present in VV). Imported by both editors, both row builders, the 48 placeholder and TV 49's fog row.",
+   "recommendation": "Port verbatim after Modal 1.1.0+ and the ProjectData report field. Port the 'Drawing Panel Shell' CSS region with it.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TVM/40/Na__DrawView__DevRowShell__.js:1-60 (header), :374-378 (WhereSaved); CSS class check: all na-pm-dev__* used exist in VV CSS.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S02a-F05",
+    "S02a-F07",
+    "S02a-F47"
+   ],
+   "est_lines": 486
+  },
+  {
+   "id": "S02a-F09",
+   "category": "missing_module",
+   "title": "Na__DrawView__DraftGuard__ missing - VV Dev rows still write drawings live",
+   "detail": "491 lines; v2.86. One draft across both panels: owners per type, ConfirmLeave, Revert (same object, arrays refilled), SaveActive/SaveBlock, plus a payload guard registered at load. Without it, VV's rows change the live record on every slider. The drawings block is saved whole by whoever saves next (Save Sheets, north, rename), so a brushed slider moves every sheet viewport of that drawing.",
+   "recommendation": "Port verbatim (paths) after ProjectData RegisterPayloadGuard/report and RowAccordion SetChangeGuard/OnOpenChanged. Wire the owners through the rebuilt editors.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TVM/40/Na__DrawView__DraftGuard__.js:12-45,74-95; TV devlog v2.86.0 lines 7802-7807 and 7917-7920 ('NOT in ValeVision ... still write live').",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S02a-F05",
+    "S02a-F07",
+    "S02a-F10",
+    "S02a-F47"
+   ],
+   "est_lines": 491
+  },
+  {
+   "id": "S02a-F10",
+   "category": "drift",
+   "title": "RowAccordion lacks the change guard, open listeners and RequestOpenId",
+   "detail": "TV (20-Sep, v2.86) adds SetChangeGuard, OnOpenChanged and RequestOpenId (a header click ASKS before the slot moves), plus header lead/trail elements, and Wrap returns name. SetOpenId/IsOpen/GetOpenId/CloseIfOpen are unchanged, so VV's current callers keep working. TV's PORT NOTE says change (2) 'goes back with the Floor Plans and Elevations menu rebuild'.",
+   "recommendation": "Take TV's file whole (console prefix only). Needed by DraftGuard and the rebuilt editors.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "evidence": "TVM/40/Na__DrawView__RowAccordion__.js:42-52 (PORT NOTE), :235 SetChangeGuard, :259 RequestOpenId.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js"
+   ],
+   "est_lines": 120
+  },
+  {
+   "id": "S02a-F11",
+   "category": "drift",
+   "title": "RenameDrawing lacks StageFloorPlan/StageElevation (rename inside a draft)",
+   "detail": "TV 1.1.0 (20-Sep) adds StageHolders/StageFloorPlan/StageElevation: the card name, section-binding key and sheet fingerprints are staged in memory with an undo, so a name rides in the row draft and lands with one Update. VV restamps through its lazy LE loader (Na__LeLoad__PrepareRestamp/RestampForScene); TV imports Viewport3d dynamically.",
+   "recommendation": "Add the three Stage functions on VV's loader route: call Na__LeLoad__PrepareRestamp before staging and Na__LeLoad__RestampForScene for the stamp and the undo. Keep VV's Apply path for the scene editor.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/40/Na__DrawView__RenameDrawing__.js:127 (ResolveRestamp), :399 StageHolders, :426 StageFloorPlan; VVM/42/...RenameDrawing__.js loader imports.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "vv_adaptation": "Restamp via 51/01__Core__Loader (VV lazy-loads the editor).",
+   "est_lines": 70
+  },
+  {
+   "id": "S02a-F12",
+   "category": "drift",
+   "title": "Transitions 1.1.0: sheet pictures still kick a walking user into Orbit in VV",
+   "detail": "TV 1.1.0 (21-Sep, v2.112) adds ReturnToOrbit and leaves Walk/Fly only when SuspendThreeD({returnToOrbit:true}) is asked; the LE asks, the snapshot renderer does not. VV's SuspendThreeD() always converts, and VV's snapshot renderer calls it for every picture. TV's original toolbar-repaint fault is absent in VV: SetOrbitMode runs HandleOrbitClick, a real exit.",
+   "recommendation": "Port the options gate and ReturnToOrbit using VV's Na__NavToolbar__SetOrbitMode. Keep VV's MaxEngine culling path and Initialize call. Update the LE ModeController to pass {returnToOrbit:true}. Port the transitions checks from Na__Test__SheetPagingWalkExit__.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/40/...Transitions__.js:171-172; TVM/51/05/...ModeController__.js:707; VVM/42/...Transitions__.js:114-115; VVM/51/25/...SnapshotRenderer__.js:501; VVM/10/...NavigationToolbar__Controls.js:233-236,403.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "vv_adaptation": "ReturnToOrbit = VV SetOrbitMode; culling import 05/02__Engine__MaxEngine/; keep Initialize.",
+   "est_lines": 60
+  },
+  {
+   "id": "S02a-F13",
+   "category": "drift",
+   "title": "DrawView dev stylesheet lacks the Drawing Panel Shell region and loads in the wrong cascade slot",
+   "detail": "TV adds the .na-draw-dev__* region (panel head, swatch, chips, captions, actions grid, green commit button, danger zone, disabled-button rule) for the rebuilt panels. TV imports this sheet LAST in the drawing group of its CSS index; VV imports it FIRST, so its overrides (e.g. .na-pm-dev__btn:disabled) would lose to later sheets.",
+   "recommendation": "Port the region verbatim. Move VV's @import of Na__DrawView__Styles__DevMenu__.css after the plan, elevation, north and planes sheets, as TV does.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "TVM/40/Na__DrawView__Styles__DevMenu__.css region 'Drawing Panel Shell'; TV CSS index :149 vs VV CSS index :85.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "est_lines": 140
+  },
+  {
+   "id": "S02a-F14",
+   "category": "module_naming",
+   "title": "Rename VV Na__DrawView__ComposerPreset__ to Na__DrawView__RenderPreset__ (DIV-1 seam)",
+   "detail": "Both apps expose the same eight functions (ApplyStyles, Enter, Exit, GetCamera, GetExportOverrides, Initialize, IsActive, RenderFrame) under different module and export prefixes. TV's design says 'the seam is the eight function names'. Every TV caller (LE SnapshotRenderer, the 49 fog layer) therefore needs a rename to port. VV's composer route (D12) can live behind TV's name unchanged.",
+   "recommendation": "Rename the VV file and exports to Na__DrawView__RenderPreset__*, keep the composer implementation, and write a PORT NOTE: 'TV interface, composer route (DIV-1, D12)'. Update the importers: LoadingSequence:425, 43/46 ModeControllers, 51/25 SnapshotRenderer:132, index.html:1412,1874,2211.",
+   "action": "rename_move",
+   "severity": "medium",
+   "evidence": "exports.py: TV RenderPreset and VV ComposerPreset share 8 suffixes; TVM/40/Na__DrawView__RenderPreset__.js DESCRIPTION; VV importer lines listed.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.3.0",
+   "depends_on": [
+    "D-S02a-10"
+   ],
+   "est_lines": 40
+  },
+  {
+   "id": "S02a-F15",
+   "category": "permanent_divergence",
+   "title": "ProfileLines overlay route stays TV-only (DIV-1)",
+   "detail": "TV's Na__DrawView__ProfileLines__ (738 lines) draws a Sobel overlay quad over a flat render. It is used by TV's render loop, thumbnail renderer, tiled exporter, RenderPreset and the LE SnapshotRenderer (SetEdgeWidth, InvalidateSceneCache). VV renders drawings through its composer, using the legacy 2dProfileLines pre-pass and an Enter edgeWidthPx override (ComposerPreset 1.3.0).",
+   "recommendation": "Do not port. Ports of TV LE code that call Na__DrawProfile__SetEdgeWidth/InvalidateSceneCache must map them to VV's Enter({edgeWidthPx}) and a documented no-op.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "TV realign plan s.2.2 DIV-1 lines 83-99; TVM/01/...LoadingSequence.js:1171-1177; VV ComposerPreset 1.3.0 dev log.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js"
+   ]
+  },
+  {
+   "id": "S02a-F16",
+   "category": "permanent_divergence",
+   "title": "Drawing view edge width: TV 0.55 vs VV 1.0",
+   "detail": "TV ConfigState 1.0.1 (13-Sep) and AppConfig set ProfileEdgeWidth 0.55, the width TV's live overlay views draw at, so a LE bake does not leave them thicker. VV's composer writes the width to the pass uniform every frame, so VV does not have that fault, and 1.0 is VV's own live width.",
+   "recommendation": "Keep VV's 1.0 and record it as a DIV-1 divergence in both PORT NOTEs.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "TVM/40/Na__DrawView__ConfigState__.js dev log 13-Sep 1.0.1; AppConfig diff ProfileEdgeWidth 0.55 vs 1.0.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ConfigState__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__AppConfig__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js"
+   ],
+   "tv_version": "1.0.1",
+   "vv_version": "1.0.0"
+  },
+  {
+   "id": "S02a-F17",
+   "category": "permanent_divergence",
+   "title": "MaterialPreset dual style-key read and MaxEngine gate",
+   "detail": "TV reads both Styles__GlassOpaque and glassOpaque, and drops VV's MaxEngine gate on the whitecard swap (TV has one pipeline). VV's ledger records the dual read as a deliberate non-port: VV callers always pass mapped flags via GetStyles.",
+   "recommendation": "Keep VV's file. Re-check only if a TV caller that passes raw record styles is ported verbatim.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "VV ledger ValeVision__PARITY__TrueVisionLedger__.md:898-901; MaterialPreset diff (Na__DrawMat__Read vs Object.assign).",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.1.0"
+  },
+  {
+   "id": "S02a-F18",
+   "category": "drift",
+   "title": "Drawing core modules already identical in code",
+   "detail": "Comment-stripped code diff is 0 lines for ActiveView, Navigation, MarkupFocus, SceneLinkRow and StyleRows; for North Compass, ConfigState and PickTool; and for FloorPlan OrthoCamera, Elevation OrthoCamera, FacePick and GizmoGrip. MarkupMount differs only because VV imports the split PlanDimensions ConfigState (VV ahead).",
+   "recommendation": "No code change. Headers and paths follow the renumber only.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "codediff.py results: 0 code lines for each listed pair.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ActiveView__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Navigation__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__StyleRows__.js"
+   ]
+  },
+  {
+   "id": "S02a-F19",
+   "category": "vv_only",
+   "title": "Na__DrawView__ThumbnailBake__ (VV-only) must survive the menu rebuild",
+   "detail": "VV 1.0.1 (433 lines) queues added or seeded drawings, opens each, records framing, captures and uploads, then saves once; it also backs 'Bake Missing Thumbnails'. TV 2.x only takes the picture on Update while the drawing is on screen, so new TV cards still show broken images. VV's Queue calls the editor's own Save (Na__FpDev__Save / Na__ElevDev__Save), which disappears in TV's 2.x editors.",
+   "recommendation": "Keep it, re-wire add/seed/Bake Missing into the rebuilt editors, and point its save adapter at Na__DrawDraft__SaveBlock. Offer it to TV (ledger pending back-port row 1232).",
+   "action": "keep_vv_divergence",
+   "severity": "medium",
+   "evidence": "VVM/42/Na__DrawView__ThumbnailBake__.js header; VVM/43/...Editor__.js:115,552,566; VV ledger line 1232.",
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js"
+   ],
+   "vv_version": "1.0.1",
+   "depends_on": [
+    "D-S02a-02",
+    "S02a-F09"
+   ]
+  },
+  {
+   "id": "S02a-F20",
+   "category": "permanent_divergence",
+   "title": "Section engines and SectionAdapter stay different by design (DIV-2/TD06)",
+   "detail": "TV 41 SectionCutEngine (7 files) and VV 41 CrossSectionView (7 files, the live user tool) are different engines in the same role. Na__DrawView__SectionAdapter__ exposes the same 13 exports in both apps. Scene-data APIs differ: TV has Load/RemoveForScene and a provider registration; VV has the capture toggle. The LE SnapshotRenderer calls each engine's serialize pair directly, a permanent seam.",
+   "recommendation": "Keep both. Ported TV code that calls 41/Na__SectionCut__* (editors: SetPlaneHeightMm, SetPlaneDistanceMm) must call the matching Na__DrawView__SectionAdapter__* in VV.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "exports.py: adapters share 13 names; TVM/42/...Editor__.js:211,421; TVM/45/...Editor__.js:130,440.",
+   "tv_paths": [
+    "02__Src__AppModules/41__System__SectionCutEngine",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/41__System__CrossSectionView",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js"
+   ]
+  },
+  {
+   "id": "S02a-F21",
+   "category": "data_schema",
+   "title": "CrossSection__SceneData positionMm sign is opposite in the two apps (TD06 not met)",
+   "detail": "VV writes positionMm = -plane.constant and restores the plane through normal*positionMm (constant = -positionMm). TV writes +plane.constant and restores constant = +positionMm. The same {normalXyz, positionMm} therefore builds planes mirrored through the world origin: a TV plan cut at 1200 would restore in VV at y = -1200. Each app round-trips its own data. Code reading only, not executed.",
+   "recommendation": "No VV change. Fix TV to VV's convention (TD06 says VV's schema wins, and TV's own mapping table says -constant), and migrate TV's saved bindings. Add a cross-app fixture test once fixed. Adam decides.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "VVM/41/Na__CrossSectionView__SystemLogic.js:1502,1540-1542,567; TVM/41/Na__SectionCut__Serialize__.js:194,261; TV realign plan s.3.2 mapping table.",
+   "tv_paths": [
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js"
+   ],
+   "depends_on": [
+    "D-S02a-03"
+   ]
+  },
+  {
+   "id": "S02a-F22",
+   "category": "ledger",
+   "title": "TV TD06 wiring gaps: dead scene-activated listener, no approach flag",
+   "detail": "TV Na__SectionCut__SceneData__ restores on 'na-pm-scene-activated', which no TV module dispatches: TV's carousel raises 'na-presentation-mode-scene-activated'. TV's Framing modules never set PresentationMode__Scene__IsDrawingApproach, although TV SceneData checks it. VV dispatches the event and sets the flag. VV is correct; these are TV back-port items.",
+   "recommendation": "Record both in the back-port memo for TV. No VV change.",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "evidence": "TVM/41/...SceneData__.js:104,299-308; TVM/21/...SceneCarousel.js:148,350; VVM/21/...SceneTransition.js:451; VVM/43/...Framing__.js:209; VVM/46/...Framing__.js:287; TVM/42/...Framing__.js:191-196.",
+   "tv_paths": [
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Framing__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Framing__.js"
+   ]
+  },
+  {
+   "id": "S02a-F23",
+   "category": "missing_module",
+   "title": "Floor plan storey level (v2.87) missing: StoreyLevel, StoreyRow, data 1.1.0, ConfigState 1.1.0",
+   "detail": "TV adds FloorPlan__StoreyLevel (ground, first, second, roof, basement; a pick is stored, a guess never is): Na__FloorPlan__StoreyLevel__ (337, pure), Na__FloorPlan__DevMenu__StoreyRow__ (227), a data API (GetStoreyLevel, IsStoreyLevelSet, GetStoreyLevelChoices, SetStoreyLevel, STOREY_CHANGED_EVENT), ConfigState GetStoreyLevelSetup, a config block and six labels. LE ViewportIdentity 1.1.0, ViewportTitleText 1.1.0, Scrapbook titles, PlanDoors/Hide Swings and Panel__ViewportSettings 1.9.0 all import it.",
+   "recommendation": "Port StoreyLevel and StoreyRow verbatim, ConfigState 1.1.0 verbatim, and the data module whole (with F04). Union the AppConfig and add the CSS storey note. Port Na__Test__FloorPlanStoreyLevel__ (36 checks).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TV devlog v2.87.0 lines 7678-7786; check_names: LE ViewportIdentity/PlanDoors/Panel__ViewportSettings need Na__FpData__GetStoreyLevel.",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "S02a-F04"
+   ],
+   "est_lines": 700
+  },
+  {
+   "id": "S02a-F24",
+   "category": "permanent_divergence",
+   "title": "Floor plan and elevation mode controllers: VV is ahead, keep VV",
+   "detail": "TV Na__FloorPlan__ModeController__ is 1.1.0 (07-Sep) and the elevation one is 1.1.0 (20-Sep, fog source only). Both still call 41 SectionCut directly, own their suspend/culling, fly with AnimateToScene and apply no presets. VV 1.2.2/1.1.1 route through SectionAdapter, ComposerPreset, MaterialPreset and Transitions, and export ApplyStyles. The TV plan's claim that controllers 'port unchanged' through RenderPreset never happened.",
+   "recommendation": "Keep VV's controllers (DIV-1/DIV-2). Add only TV's fog source hook when 49 lands. Offer TV the drawing-core routing as a back-port.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "FP ModeController diff (imports): TV 41 Engine + 05 culling + 21 AnimateToScene; VV 42 SectionAdapter/ComposerPreset/MaterialPreset/Transitions; TV realign plan s.2.2 lines 95-99.",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.2.2",
+   "depends_on": [
+    "D-S02a-08"
+   ]
+  },
+  {
+   "id": "S02a-F25",
+   "category": "drift",
+   "title": "Floor plan Dev editor: TV 2.0.0 menu rebuild (drafts, planes, Update flow)",
+   "detail": "TV 1.1.0 (v2.82) adds drawing planes; 2.0.0 (v2.86) adds folding draft rows, the green confirmed Update (framing + thumbnail + one save), Revert, the leave prompt, + in the head, Delete below a rule, no Save-all, and clients-measure saving at once. VV 1.2.0 has Ground Floor Plan, ThumbnailBake, BakeBeforeSave, live styles and live writes. The diff is 1,280 lines: a rewrite.",
+   "recommendation": "Take TV's file whole and re-apply VV seams: SectionAdapter.SetPlaneHeightMm in place of 41 Engine; Na__PlanDim__GetLabel from 45 ConfigState; ThumbnailBake via SaveBlock; and the D-S02a-02 features. Ship with the data-module convention (F04).",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "TVM/42/Na__FloorPlan__DevMenu__Editor__.js:54-79 dev log, :211,421 (41 Engine); VVM/43/...Editor__.js:450 (Ground Floor), :577 (BakeBeforeSave).",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js"
+   ],
+   "tv_version": "2.0.0",
+   "vv_version": "1.2.0",
+   "vv_adaptation": "SectionAdapter calls; PlanDim label from ConfigState; VV-only features per D-S02a-02; Modal >= 1.1.0.",
+   "depends_on": [
+    "S02a-F04",
+    "S02a-F08",
+    "S02a-F09",
+    "S02a-F23",
+    "S02a-F42",
+    "D-S02a-02"
+   ],
+   "est_lines": 1375
+  },
+  {
+   "id": "S02a-F26",
+   "category": "drift",
+   "title": "Floor plan row builders: TV 2.0.0 shell rows with the storey row",
+   "detail": "TV 2.0.0 builds rows from DevRowShell (Button, Caption, BuildCommitActions) and mounts StoreyRow under the name. It does NOT import StyleRows. VV 1.2.0 builds the Styles row and the Exclusions field through StyleRows (D33).",
+   "recommendation": "Take TV's file whole and re-add the Styles and Exclusions rows inside TV's Advanced fold if D-S02a-02 keeps them.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "TVM/42/...RowBuilders__.js:73,262 (StoreyRow); VVM/43/...RowBuilders__.js:92,367 (StyleRows).",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js"
+   ],
+   "tv_version": "2.0.0",
+   "vv_version": "1.2.0",
+   "depends_on": [
+    "S02a-F08",
+    "S02a-F23",
+    "D-S02a-02"
+   ],
+   "est_lines": 353
+  },
+  {
+   "id": "S02a-F27",
+   "category": "decision",
+   "title": "VV-only drawing-menu features absent from TV's 2.x menus",
+   "detail": "TV 2.x has no Styles/Exclusions rows (D33). StyleRows is imported by nothing in TV, and nothing calls Set*Style/SetExcludeTokens, although records keep the keys. It also lacks Ground Floor Plan (D11), the bake-before-save of projected linework (D20; the editors no longer call Na__PlStore__BakeBeforeSave and no devlog says why) and the thumbnail bake on add/seed. VV has all four.",
+   "recommendation": "Keep all four as VV seams inside TV's layout: Styles/Exclusions in the Advanced fold, Ground Floor beside +, bake on Update and add. Raise each as a TV back-port so the menus converge. Adam decides.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "grep: Na__DrawStyleRow__ only in TVM/40/StyleRows and a comment in 49 row; BakeBeforeSave defined only (TVM/50/...Persistence__.js:616); VV PLAN D11/D20/D33 lines 59,68,81.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__StyleRows__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__StyleRows__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js"
+   ],
+   "depends_on": [
+    "D-S02a-02"
+   ]
+  },
+  {
+   "id": "S02a-F28",
+   "category": "drift",
+   "title": "Floor plan AppConfig and dev stylesheet need a union, not a replace",
+   "detail": "TV config adds FloorPlanViews__StoreyLevels__Config and six storey labels. VV config carries Ground Floor, Style, Exclusions and BakeThumbnails labels. The TV CSS adds the storey-note region; VV's CSS has the style-toggle region (D33).",
+   "recommendation": "Merge both key sets (TV's description text plus VV's storage sentence). Keep VV labels while their features stay. Port the storey-note CSS and keep the style-toggle region.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "jsondiff.py FloorPlan AppConfig: TV-only 9 keys, VV-only 10 keys; CSS diff regions.",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css"
+   ]
+  },
+  {
+   "id": "S02a-F29",
+   "category": "drift",
+   "title": "Floor plan SceneLink and Framing: VV already ahead",
+   "detail": "TV still exports Na__FpLink__SyncSceneName, which TV realign plan s.7.2 said to delete; VV deleted it. VV's Framing marks the approach scene IsDrawingApproach; TV's does not. Elevation SceneLink and Framing show the same pattern. Nothing to port into VV.",
+   "recommendation": "No VV change. List both items in the TV back-port memo.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "exports.py: TV-only Na__FpLink__SyncSceneName/Na__ElevLink__SyncSceneName; codediff Framing +IsDrawingApproach (VV).",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Framing__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Framing__.js"
+   ]
+  },
+  {
+   "id": "S02a-F30",
+   "category": "missing_module",
+   "title": "Elevation auto-name and identity (v2.86) missing: AutoName, AutoNameText",
+   "detail": "Na__Elevation__AutoNameText__ (176, pure) and Na__Elevation__AutoName__ (288; imports north FacingWordForAzimuth/TrueBearingForAzimuth). Names follow the north-derived direction until typed over (Elevation__NameIsAuto), and a typed name reaches sheet titles through ViewportIdentity. The row states 'East elevation - the side that faces east, seen looking west'. VV still names presets by the model's -Z axis (ledger row 87). VV already has north, so nothing blocks this.",
+   "recommendation": "Port both verbatim (north path 46->47 until the renumber). Add 12 labels and the identity/compass-mark CSS region. Tests are covered by Na__Test__DrawingDrafts__ (AutoNameText).",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TV devlog v2.86.0 lines 7854-7875; jsondiff Elevation AppConfig TV-only 12 labels; VV ledger line 87.",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S02a-F04"
+   ],
+   "est_lines": 464
+  },
+  {
+   "id": "S02a-F31",
+   "category": "drift",
+   "title": "Elevation Dev editor: TV 2.1.0 (planes, drafts, auto names, fog)",
+   "detail": "TV 1.1.0 moves Pick Face/grip onto 47 DrawingPlanes and centres on the BUILDING. 2.0.0 adds the draft rebuild, the north statement and auto names. 2.1.0 adds the depth-fog block. VV 1.2.0 still uses FacePick/GizmoGrip/PlaneGizmo, model-bounds centring (landscape included), mode-based groups (D28) and live writes. The diff is 1,549 lines.",
+   "recommendation": "Take TV's file whole and re-apply: SectionAdapter.SetPlaneDistanceMm; Na__ElevLink__SyncSceneGroup in onModeChange; the D-S02a-02 features; and the fog block staged until 49 lands.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "TVM/45/Na__Elevation__DevMenu__Editor__.js:61-104 dev log, :130,440 (41 Engine), :883 onModeChange, :679 building centre; VVM/46/...Editor__.js:149-160 (gizmo/grip/pick imports).",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js"
+   ],
+   "tv_version": "2.1.0",
+   "vv_version": "1.2.0",
+   "vv_adaptation": "SectionAdapter; SyncSceneGroup (D28); VV-only features per D-S02a-02; fog block after 49.",
+   "depends_on": [
+    "S02a-F04",
+    "S02a-F09",
+    "S02a-F30",
+    "S02a-F42",
+    "D-S02a-02"
+   ],
+   "est_lines": 1475
+  },
+  {
+   "id": "S02a-F32",
+   "category": "drift",
+   "title": "Elevation row builders: TV 2.1.0 identity statement, Advanced bearing, fog block",
+   "detail": "TV 2.x drops the N/E/S/W compass-preset strip. It adds the identity statement and compass mark, 'Model bearing' under Advanced and the 49 fog row (Na__ElevFogRow__Build). It has no Styles/Exclusions rows. VV 1.1.0 has the preset strip, a Re-pick button and StyleRows.",
+   "recommendation": "Take TV's file whole. Re-add the Styles and Exclusions rows if D-S02a-02 keeps them. Stage the fog block until 49 is ported.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "evidence": "TVM/45/...RowBuilders__.js:111 (49 fog row), :119,302 (Statement), :602; VVM/46/...RowBuilders__.js:96,563 (StyleRows).",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "tv_version": "2.1.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S02a-F08",
+    "S02a-F30",
+    "D-S02a-02"
+   ],
+   "est_lines": 663
+  },
+  {
+   "id": "S02a-F33",
+   "category": "drift",
+   "title": "Elevation data 1.1.0: depth fog fields and TV's first-argument convention",
+   "detail": "TV 1.1.0 (v2.94) lends Elevation__DepthFog (the normaliser writes it switched off) and adds Get/SetDepthFog and GetDepthFogPlane through 49 RecordData. TV uses the sceneConfig first argument (see F04). VV 1.1.1 adds Elevation__SeededFrom, SetAzimuthDeg and STYLE_KEYS. TV's file header still describes the legacy nested storage, which is stale.",
+   "recommendation": "Take TV's file whole when 49's RecordData is available (otherwise port the convention now and the fog accessors later). Keep VV extras per D-S02a-05.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "evidence": "TVM/45/...ProjectJson__Data__.js:58-66 dev log, 75-90 (49 import); VVM/46/...ProjectJson__Data__.js:138,181; check_names: LE Viewport2d__DepthFog needs GetDepthFog/GetDepthFogPlane.",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.1.1",
+   "depends_on": [
+    "S02a-F04",
+    "D-S02a-05"
+   ],
+   "est_lines": 150
+  },
+  {
+   "id": "S02a-F34",
+   "category": "drift",
+   "title": "Elevation mode controller: add TV's depth-fog source hook to VV's controller",
+   "detail": "TV elevation ModeController 1.1.0 (v2.94) hands the fog layer closures over the live record (Na__ElevFog__SetSource) on register, and clears them on exit. That is its only functional delta beyond the older TV structure. VV draws drawings through its composer RenderFrame, so the fog must be drawn there (TV RenderPreset 1.1.0 draws it between silhouettes and cut fills).",
+   "recommendation": "When 49 is ported, add the SetSource/clear calls to VV's controller, and draw the fog inside VV's RenderPreset/ComposerPreset RenderFrame and the render-loop drawing branch. Do not replace VV's controller.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "Elevation ModeController diff: Na__ElevFog__SetSource register/clear; TVM/40/...RenderPreset__.js dev log 1.1.0; VVM/01/...LoadingSequence.js:1323.",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js"
+   ],
+   "depends_on": [
+    "49__System__ElevationDepthFog port (other slice)",
+    "S02a-F14"
+   ]
+  },
+  {
+   "id": "S02a-F35",
+   "category": "data_schema",
+   "title": "VV-only record key Elevation__SeededFrom",
+   "detail": "VV's normaliser writes Elevation__SeededFrom ('facepick'|'preset'|'manual') on every elevation, and Pick Face sets 'facepick'. TV records lack it, while TV adds Elevation__NameIsAuto and Elevation__DepthFog. Once VV takes TV's editors, nothing writes any value but the 'manual' default.",
+   "recommendation": "Stop writing new values when TV's editors land. Preserve and read existing values; do not strip them. Adam decides.",
+   "action": "needs_decision",
+   "severity": "low",
+   "evidence": "VVM/46/Na__Elevation__ProjectJson__Data__.js:138 (F_SEEDED_FROM), normaliser; VVM/46/...Editor__.js:404,450.",
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js"
+   ],
+   "depends_on": [
+    "D-S02a-05"
+   ]
+  },
+  {
+   "id": "S02a-F36",
+   "category": "vv_only",
+   "title": "Sections filed by drawing type (D28) is VV-only and must be re-applied",
+   "detail": "VV's Na__ElevLink__SyncSceneGroup and Na__ElevCfg__GetSectionGroupTarget ('Cross Sections', Group_006) move a card between groups when the mode changes. TV files everything into Elevations: TV's realign ledger still lists 'Sections filed by drawing type - Not yet ported'. Both apps share the id-fallback trap described in TV's StandardDrawingGroups note.",
+   "recommendation": "Keep, call it from TV's onModeChange in the rebuilt editor, and offer it to TV. A Standard Groups feature should replace the id fallback in both apps later.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "Elevation SceneLink diff (SyncSceneGroup); VV PLAN D28 line 76; TV realign plan line 767; TrueVision__NOTES__StandardDrawingGroups__.md s.2.",
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__SceneLink__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ConfigState__.js"
+   ],
+   "vv_version": "1.1.0"
+  },
+  {
+   "id": "S02a-F37",
+   "category": "drift",
+   "title": "FacePick, GizmoGrip and PlaneGizmo are superseded by Drawing Planes",
+   "detail": "The code is identical in both apps (PlaneGizmo differs by VV's extra naCrossSectionHelper flag and export order). TV stopped using all three at v2.82: they are still on disk and initialised in Index.html, with deletion pending sign-off. After WP-08, VV is in the same state.",
+   "recommendation": "Keep the files and the three init lines in VV until TV deletes them, then delete in lockstep. Update VV PORT NOTEs that say 'TrueVision has no face pick by design'.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "TV devlog v2.82.0 lines 8305-8306, v2.86.0 lines 7921-7922; TV Index.html:1751-1753; VV index.html:2232-2234.",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__FacePick__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__GizmoGrip__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__PlaneGizmo__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js"
+   ]
+  },
+  {
+   "id": "S02a-F38",
+   "category": "drift",
+   "title": "Elevation AppConfig and dev stylesheet union",
+   "detail": "TV config adds 12 labels (AutoName formats, FacingStatement formats, Model bearing, Update/Revert/Delete, plane captions). VV config carries Pick Face/Re-pick/Grip hint, Styles/Exclusions, Save/Thumbnail labels and the SectionTargetGroup keys. TV CSS replaces the Compass Preset Strip region with the identity/compass-mark region.",
+   "recommendation": "Union the configs. Keep VV keys whose features remain (SectionTargetGroup, Styles, Exclusions); drop keys only when their feature goes. Port the identity CSS and keep the style-toggle rules.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "jsondiff.py Elevation AppConfig: TV-only 12, VV-only 23 keys; CSS diff region names.",
+   "tv_paths": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AppConfig__.json",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css"
+   ]
+  },
+  {
+   "id": "S02a-F39",
+   "category": "drift",
+   "title": "North: Show Compass needs TV's CompassGizmo/DevMenu 1.1.0 whole",
+   "detail": "VV ported north as v2.67.0 but adapted the gizmo and editor because it lacks the interactive-overlay registry: no IsKept/SetKept and no Show Compass. VV instead shuts the panel on 'na-layouteditor-mode-changed' and hides the compass during 'na-layouteditor-snapshot-queue'. The AppConfig lacks ShownByDefault and three labels. VV's PORT NOTEs: 'When Na__InteractiveOverlays is ported, take TrueVision's 1.1.0 whole.'",
+   "recommendation": "After the overlays registry lands, take TV's CompassGizmo 1.1.0 and DevMenu Editor 1.1.0 whole (D-S02a-09), add the config keys and re-run Na__Test__NorthCompass__.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "evidence": "VVM/47/Na__North__CompassGizmo__.js:46-55; VVM/47/...DevMenu__Editor__.js:43-58,483-505; jsondiff North AppConfig TV-only 4 keys; TV devlog v2.84.0.",
+   "tv_paths": [
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js",
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__AppConfig__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__CompassGizmo__.js",
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__AppConfig__.json"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "S02a-F41",
+    "D-S02a-09"
+   ],
+   "est_lines": 120
+  },
+  {
+   "id": "S02a-F40",
+   "category": "drift",
+   "title": "North data Save signature lacks the report argument",
+   "detail": "TV Na__NorthData__Save(showToast, report) passes the report to Na__DrawData__Save. VV's is Save(showToast), because VV's drawings Save has no report.",
+   "recommendation": "Take TV's signature once VV ProjectData accepts a report (F05).",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "North ProjectJson__Data diff: Save(showToast, report) vs Save(showToast).",
+   "tv_paths": [
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__ProjectJson__Data__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js"
+   ],
+   "depends_on": [
+    "S02a-F05"
+   ]
+  },
+  {
+   "id": "S02a-F41",
+   "category": "missing_module",
+   "title": "Na__RenderLoop__InteractiveOverlays__ (render-path guard for authoring overlays) missing",
+   "detail": "TV 05 module (170 lines, v2.82): registered overlays are invisible by default; the render loop switches them on for one interactive 3D frame (BeginFrame after the drawing branch, EndFrame in the tick's finally). No sheet viewport, thumbnail, export, video or drawing preset can ever print one. Required by DrawingPlanes Overlay and North CompassGizmo 1.1.0.",
+   "recommendation": "Port verbatim. Wire Begin after VV's drawing branch and after the Video Studio preview branch (to be safe), and End in VV's tick finally. Verify that VV-only render paths (Video Studio export, Export Render Layers) never see an overlay.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "evidence": "TVM/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js:1-60; TVM/01/...LoadingSequence.js:1189,1447; VVM/01/...LoadingSequence.js:1312-1340.",
+   "tv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "tv_version": "1.0.0",
+   "est_lines": 180
+  },
+  {
+   "id": "S02a-F42",
+   "category": "missing_module",
+   "title": "47__System__DrawingPlanes (planes you can see, grab and snap) missing",
+   "detail": "Nine files, 3,967 lines (v2.82/v2.84). Every plan and elevation gets a coloured plane in 3D, shown singly or all at once and kept per project in the browser. Planes drag along their normal on an ABSOLUTE snap grid (10-500 mm) and support Move to face / Aim at face. They are sized from the building only, sitting 100 mm above the ground cut. The editors register sources, and a drag claims the draft. Test: Na__Test__DrawingPlanes__ (47 checks).",
+   "recommendation": "Port all nine files into the TV-numbered slot 47 (after the renumber). Adapt the bounds tokens (F43) and add IsPaused (F44). Wire the CSS index import and the three init lines in index.html. Port the test.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TV devlog v2.82.0 lines 8181-8312, v2.84.0 8022-8035; TrueVision__PLAN__DrawingPlanes__.md s.4 module map; check_names lists every 47 import as missing in VV.",
+   "tv_paths": [
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css"
+   ],
+   "depends_on": [
+    "S02a-F01",
+    "S02a-F41",
+    "S02a-F44"
+   ],
+   "est_lines": 3967
+  },
+  {
+   "id": "S02a-F43",
+   "category": "wiring",
+   "title": "Drawing-planes bounds tokens must be checked against VV's model root",
+   "detail": "Bounds substring-matches the model root's direct children: building ['MainBuildingModel','Storey__'], ground ['LandscapeEnvironment'], ignore ['OrbitHelperCube']. VV's current categories (ValeVision__MainBuildingModel__*, ValeVision__LandscapeEnvironment) would match. Older VV exports with coarse categories ('Landscape', 'Walls'; TV plan line 133) would not, so the landscape would size the plane again. Not verified on a running VV project.",
+   "recommendation": "Before porting the config, load D37 Doous and one older VV project and list Na__ModelGroup__Root.children names. Add VV-specific tokens (e.g. 'Landscape') to the VV AppConfig only.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/47/Na__DrawingPlanes__Bounds__.js:110-113,217-229; TVM/47/...AppConfig__.json Bounds tokens; VV ModelLayers config category keys; TrueVision__PLAN__DrawingPlanes__.md:133-134.",
+   "tv_paths": [
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js"
+   ],
+   "depends_on": [
+    "S02a-F42"
+   ]
+  },
+  {
+   "id": "S02a-F44",
+   "category": "wiring",
+   "title": "VV render-loop invalidation lacks Na__RenderLoop__IsPaused",
+   "detail": "DrawingPlanes Grip imports Na__RenderLoop__IsPaused (with RequestActiveRender/StopActiveRender). VV's Invalidation module has the event-based Pause/Resume (NA__PAUSE_RENDER_LOOP_EVENT) but no query. TV keeps a reason set and IsPaused().",
+   "recommendation": "Add Na__RenderLoop__IsPaused to VV's 05/Na__RenderLoop__Invalidation.js by mirroring the pause reasons it already dispatches. Do not change the event contract.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "exports.py cmp Invalidation: TV-only Na__RenderLoop__IsPaused; VV-only NA__PAUSE/RESUME events; TVM/05/...Invalidation.js:38-72.",
+   "tv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js"
+   ],
+   "est_lines": 20
+  },
+  {
+   "id": "S02a-F45",
+   "category": "missing_module",
+   "title": "48__System__CrossSectionViews placeholder panel missing",
+   "detail": "Na__CrossSection__DevMenu__Editor__ 0.1.0 (198 lines, v2.86) is the third drawing panel. It shows the shared head (+ disabled, saying why), a note, and a list of elevations whose type is Section. It authors nothing and imports DevRowShell.BuildPanelHead, ProjectData.CHANGED_EVENT and ElevData.GetElevations/IsSection. Its header documents how the real system will plug into the accordion, draft guard and row shell.",
+   "recommendation": "Port into slot 48 after the renumber, with the DOM ids per D-S02a-06. Add the <li> between Elevations and North Direction and the init call in the elevation mode .then.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "TVM/48/Na__CrossSection__DevMenu__Editor__.js:1-60,79-81; TV Index.html:599-608,1767.",
+   "tv_paths": [
+    "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js"
+   ],
+   "tv_version": "0.1.0",
+   "depends_on": [
+    "S02a-F08",
+    "S02a-F46"
+   ],
+   "est_lines": 198
+  },
+  {
+   "id": "S02a-F46",
+   "category": "wiring",
+   "title": "DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate",
+   "detail": "TV 48 binds naCrossSectionDevItem/Toggle/Panel. VV index.html already uses those ids for 'Cross Section Tool' (the per-project enable and save of its live 41 tool), owned by 41/Na__UiFeature__CrossSectionView__DevControls.js. Porting 48 verbatim would bind both modules to one element.",
+   "recommendation": "Rename the 48 ids in VV to naCrossSectionViewsDevItem/Toggle/Panel and offer the same rename to TV, so both trees keep one id set. Do not rename VV's 41 gate.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "TVM/48/...Editor__.js:79-81; VV index.html:855-866; TV Index.html:600-608.",
+   "tv_paths": [
+    "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js",
+    "Index.html"
+   ],
+   "vv_paths": [
+    "index.html",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js"
+   ],
+   "depends_on": [
+    "D-S02a-06"
+   ]
+  },
+  {
+   "id": "S02a-F47",
+   "category": "wiring",
+   "title": "Presentation Dev modal is TV 1.2.0, VV 1.0.0",
+   "detail": "DevRowShell, DraftGuard and both TV editors call Na__PresentationMode__DevMenu__Confirm with details (a list), footnote and isCommit (1.1.0, v2.86); LE AutoSave uses altLabel/altIsDestructive (1.2.0, v2.146). VV's modal is 1.0.0 (code diff 67 lines), and its CSS lacks .na-pm-modal__details, __message--footnote and __btn--commit.",
+   "recommendation": "Take TV's modal 1.2.0 whole and port the modal CSS rules from TV's Na__PresentationMode__Styles__SceneCarousel__.css (lines 1034-1049, 1189-1195) into VV's sheet.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/21/Na__PresentationMode__DevMenu__Modal__.js:45-60 dev log; git diff stat 67 lines; TV carousel CSS lines cited.",
+   "tv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js",
+    "03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js",
+    "03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.0.0",
+   "est_lines": 80
+  },
+  {
+   "id": "S02a-F48",
+   "category": "wiring",
+   "title": "Layout Editor call sites that change with this slice",
+   "detail": "LE ModeController must call SuspendThreeD({returnToOrbit:true}) (VV :524 calls it bare). LE SnapshotRenderer imports ComposerPreset (:132) and must follow the RenderPreset rename. Its section/profile calls stay seams (VV Na__CrossSection__Serialize/Apply/GetAppearance/SetLineWidth vs TV Na__SectSerialize__* and Na__DrawProfile__*).",
+   "recommendation": "Edit both LE files inside WP-11/WP-12, coordinated with the LE slice owners because both are hot files.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "VVM/51/05/...ModeController__.js:246,524; VVM/51/25/...SnapshotRenderer__.js:132,138,501; TV le_deps lines 71-83.",
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js"
+   ],
+   "depends_on": [
+    "S02a-F12",
+    "S02a-F14"
+   ]
+  },
+  {
+   "id": "S02a-F49",
+   "category": "wiring",
+   "title": "LE modules blocked by this slice (ordering for the planner)",
+   "detail": "Ports from other slices cannot resolve against VV until this slice lands: ViewportIdentity 1.1.0, ViewportTitleText 1.1.0, Scrapbook DrawingTitle/ViewportLink/panel, PlanDoors (Hide Swings) and Panel__ViewportSettings 1.9.0 need the storey API. Viewport2d__DepthFog needs ElevData fog and 49. AutoSave/SheetModel need IsLoaded (plus GetBase, WhenBaseKnown, SAVED_ISO_KEY). SheetImages Publish needs RegisterSaveStep; Register Transactions needs Save(...,registerKeys); Share Open needs IsLoaded. The LE 'Drawings' tab menu (v2.158) is not blocked.",
+   "recommendation": "Sequence: WP-03 (ProjectData) and WP-05 (storey) before the LE title, doors and autosave ports; WP-14 before Viewport2d__DepthFog. Hand this table to the LE slice planner.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "check_names.py (port_blockers.txt) LE section; le_deps.txt TV lines 50-129.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "depends_on": [
+    "S02a-F05",
+    "S02a-F23",
+    "S02a-F33"
+   ]
+  },
+  {
+   "id": "S02a-F50",
+   "category": "wiring",
+   "title": "index.html, CSS index and render loop wiring for the new systems",
+   "detail": "VV index.html needs: the 47 imports and the three init lines (PlaneOverlay, PlaneGrip, PlaneUi), the 48 <li> and init, and later the RenderPreset rename lines. The CSS index needs the planes sheet and TV's ordering. The render loop needs the overlay Begin/End. The floor plan and elevation init signatures already match TV (camera, canvas, modelRoot; editors modelRoot, camera, showToast).",
+   "recommendation": "Bundle these edits with the WPs that need them and serialise them, since all three files are hot. Keep VV's Transitions and ComposerPreset/RenderPreset init with pipelineRef.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TV Index.html:1676-1688,1747-1749,1755-1768; VV index.html:2203-2252; CSS indexes TV :105-149, VV :85-90.",
+   "tv_paths": [
+    "Index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "vv_paths": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ]
+  },
+  {
+   "id": "S02a-F51",
+   "category": "ledger",
+   "title": "VV parity ledger and VV PORT NOTEs are stale for this slice",
+   "detail": "The ledger has no rows for DraftGuard, DraftMaths, DrawingUsage, DevRowShell, StoreyLevel/StoreyRow, AutoName/AutoNameText, 47 (9 files), 48 or InteractiveOverlays. Its 'Pending back-port' table still lists closed or superseded items: scene splits (withdrawn v2.68.2), style rows/config state, dimension splits, confirm dialog, R2 asset upload, the whole LE, and Pick Face/grip (superseded by planes). VV FacePick/GizmoGrip PORT NOTEs say TV has no face pick or read-only gizmo, which is no longer true.",
+   "recommendation": "Add rows as each WP lands. Mark superseded rows. Fix the two PORT NOTEs. Keep row 87 (v2.86/v2.87) until ported.",
+   "action": "fix_ledger",
+   "severity": "low",
+   "evidence": "VV/ValeVision__PARITY__TrueVisionLedger__.md:29,39-42,87,1214-1232; VVM/46/Na__Elevation__FacePick__.js:41; VVM/46/...GizmoGrip__.js:38.",
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js"
+   ]
+  },
+  {
+   "id": "S02a-F52",
+   "category": "ledger",
+   "title": "TV realign plan progress ledger rows are stale",
+   "detail": "TV realign plan s.12 still says 'C | FacePick + GizmoGrip | - | Not yet ported' although both are in TV (verbatim, since v2.21.x), as VV's ledger states. Ground Floor Plan and Sections filed by type remain correctly open. The s.2.2 DIV-1 note says the mode controllers 'port unchanged' through RenderPreset; TV's controllers never adopted it.",
+   "recommendation": "Add to the TV back-port memo: update s.12 rows and note that TV's controllers predate the drawing-core routing. TV docs are not edited by the VV swarm.",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "evidence": "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md:764-767, 95-99; TV 45/Na__Elevation__FacePick__.js PORT NOTE (verbatim).",
+   "tv_paths": [
+    "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md"
+   ]
+  },
+  {
+   "id": "S02a-F53",
+   "category": "test",
+   "title": "Drawing-system tests to port to VV",
+   "detail": "VV has Verify__ModuleGraph/Exports and Na__Test__NorthCompass__, but lacks: Na__Test__DrawingDrafts__ (DraftMaths, DrawingUsage, AutoNameText; PS01 fixture), Na__Test__FloorPlanStoreyLevel__ (36), Na__Test__DrawingPlanes__ (47), Na__Test__SheetPagingWalkExit__ (Transitions + Walk/Fly + LE keys), Na__Test__ElevationGeometry__.html (elevation geometry) and Na__Test__ProjectDataSaveGuard__.test.py. Na__Test__DraftGuard__.test.cjs concerns the LE AutoSave draft guard, not DrawView DraftGuard.",
+   "recommendation": "Port each with its WP, rewriting folder paths (or not, after the renumber), a VV fixture (D37 Doous) for DrawingDrafts, and server.py for the save guard. Keep Node tests import-free as TV's are.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "TV 80 folder listing; test headers (DrawingDrafts :58-70, DraftGuard :1-35); VV 80 folder listing.",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__FloorPlanStoreyLevel__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html",
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py"
+   ],
+   "est_lines": 1500
+  },
+  {
+   "id": "S02a-F54",
+   "category": "decision",
+   "title": "Port gate: TV v2.80-v2.87 drawing items have no recorded sign-off",
+   "detail": "VV ledger row 87 holds v2.86/v2.87 'awaiting Adam's sign-off there'. The DrawingMenus and DrawingPlanes plans say 'Awaiting Adam's test'. TV's devlog records no sign-off, but later releases build on them: v2.140 and v2.105 cite the v2.87 storey, and RB05/PS01 work uses the rebuilt menus.",
+   "recommendation": "Ask Adam to confirm v2.82, v2.84, v2.86 and v2.87 before WPs 04-10. Low risk: TV has been building on them for ten days.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "VV ledger :87; TrueVision__PLAN__DrawingMenus__.md:4; TrueVision__PLAN__DrawingPlanes__.md:115; TV devlog v2.140.0 line 2610, v2.105.0 line 5958.",
+   "depends_on": [
+    "D-S02a-07"
+   ]
+  },
+  {
+   "id": "S02a-F55",
+   "category": "ui",
+   "title": "Live carousel drawings may look different (VV presets vs TV flat render)",
+   "detail": "VV's live plan/elevation view applies the record styles through ComposerPreset and MaterialPreset (whitecard default true under MaxEngine, glass, profile). TV's live drawing branch is renderer.render + profile overlay + fog + section overlay, with no material preset: its mode controllers import neither preset. The same record may read differently in the two carousels. Not run; verify by eye.",
+   "recommendation": "Adam to compare a plan and an elevation in both apps after WP-08. If TV should match VV, raise a TV back-port; no VV change proposed.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "TVM/01/...LoadingSequence.js:1171-1177; TV 42/45 ModeController import lists; VVM/43/...ModeController__.js EnterPresets.",
+   "tv_paths": [
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js"
+   ]
+  },
+  {
+   "id": "S02a-F56",
+   "category": "decision",
+   "title": "Standard drawing groups not built in either app (shared trap)",
+   "detail": "TrueVision__NOTES__StandardDrawingGroups__.md (20-Sep, NOT built) found that both SceneLink modules resolve a target group by name, then by a configured id (Group_004/Group_005), so on RB05 elevations were filed into 'Interior 3D - First Floor'. VV has the same id step (plus Group_006 for Cross Sections). It is not a parity gap, but a feature whichever app builds first must build for both.",
+   "recommendation": "Treat as a joint future item: groups identified by a StandardKind, EnsureStandardGroups on load, and off meaning hidden rather than evicted. No WP now.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "TrueVision__NOTES__StandardDrawingGroups__.md s.2-4; VVM/46/Na__Elevation__ConfigState__.js GetSectionGroupTarget ('Group_006').",
+   "tv_paths": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__SceneLink__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__SceneLink__.js"
+   ]
+  },
+  {
+   "id": "S02a-F57",
+   "category": "wiring",
+   "title": "Depth fog needs the live cut's depth (RenderDepthInto) from VV's section tool",
+   "detail": "TV engine 1.2.0 and caps 1.1.0 (v2.94) add Na__SectionCut__RenderDepthInto / Na__SectMesh__RenderDepthInto, so the fog layer's depth buffer includes the cut caps; without them a poche fades with the far wall. TV 49 imports these straight from 41. VV's Cross Sections tool has no equivalent.",
+   "recommendation": "With the 49 port, add Na__DrawView__SectionAdapter__RenderDepthInto to BOTH adapters (TV pass-through; VV over its caps), so 49 imports the adapter and ports verbatim.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TVM/41/Na__SectionCut__Engine__.js:44-48; TVM/41/...CapMeshes__.js:34-37; TVM/49/Na__ElevationDepthFog__RenderLayer__.js:476.",
+   "tv_paths": [
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js"
+   ],
+   "depends_on": [
+    "49__System__ElevationDepthFog port (other slice)"
+   ],
+   "est_lines": 80
+  },
+  {
+   "id": "S02a-F58",
+   "category": "ui",
+   "title": "Dev Tools drawing panels must match TV's look and behaviour",
+   "detail": "TV's panels match the Presentation Scenes family. One row is open across both panels. Folded headers show a colour swatch, the name and chips. A + sits in the head, captions sit over control groups, actions use a two-column grid (Preview/Annotate, green Update/Revert), Delete sits below a rule, and Advanced holds the model bearing. The Drawing Planes bar heads both panels, and the storey dropdown shows a guess note and Confirm. A Cross Sections panel sits between Elevations and North, and Show Compass is on North. VV shows unfolded-style live rows, a Viewed-from strip and Save-all buttons.",
+   "recommendation": "Deliver through WP-04/07/08/09/10. Acceptance is TV DrawingMenus plan s.2 items 1-17 reproduced in VV, checked by Adam.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TrueVision__PLAN__DrawingMenus__.md s.2; TV devlog v2.86.0 lines 7815-7875; TV Index.html:599-616.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js"
+   ],
+   "depends_on": [
+    "S02a-F08",
+    "S02a-F25",
+    "S02a-F31",
+    "S02a-F42"
+   ]
+  },
+  {
+   "id": "S02a-F59",
+   "category": "vv_only",
+   "title": "VV's user-facing Cross Sections tool and per-project gate stay (DIV-2)",
+   "detail": "VV ships a Tools > Cross Sections menu (select face, mode, slice depth, gizmos, list, colours; index.html:540-600) and a Dev 'Cross Section Tool' per-project gate (:855-866), both from 41__System__CrossSectionView. TV has no user section tool. This is the live tool VV's SectionAdapter wraps (D07).",
+   "recommendation": "Keep both as VV-only features. Do not rename their ids (see F46). Record them in the ledger as deliberate divergences.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "evidence": "VV index.html:540-600,855-866,1377-1378; VV PLAN D07 line 55.",
+   "vv_paths": [
+    "02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js"
+   ]
+  }
+ ],
+ "work_packages": [
+  {
+   "id": "WP-S02a-01",
+   "title": "Renumber VV drawing folders to TV numbers",
+   "scope": "Gated on D-S02a-01/D-S02a-04. Move VV 42->40, 43->42, 44->43, 45->44, 46->45, 47->46 and relocate 40__System__2dElevationsView (to 39 or retire). Rewrite every import, @delegate, fetch/config URL, CSS @import, header FILE path and PORT NOTE folder note in VV, then update the ledger and plan paths. Mechanical; no behaviour change. Must run first and alone because every other WP and other slices import these folders.",
+   "depends_on": [
+    "D-S02a-01",
+    "D-S02a-04"
+   ],
+   "size": "L",
+   "acceptance": [
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs passes",
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs passes",
+    "grep for '42__System__DrawingViewCore', '43__System__FloorPlanViews', '46__System__ElevationViews', '47__System__NorthDirection' under 02__Src__AppModules, index.html, 03__Style__AppStylesheets returns nothing (devlog history excepted)",
+    "Adam: app boots on localhost; a floor plan and an elevation preview from the carousel; a sheet opens and bakes"
+   ],
+   "files_tv": [],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore",
+    "02__Src__AppModules/43__System__FloorPlanViews",
+    "02__Src__AppModules/44__System__PlanAnnotations",
+    "02__Src__AppModules/45__System__PlanDimensions",
+    "02__Src__AppModules/46__System__ElevationViews",
+    "02__Src__AppModules/47__System__NorthDirection",
+    "02__Src__AppModules/40__System__2dElevationsView"
+   ],
+   "hot_files": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/51__System__LayoutEditor (every file importing ../../42-47)",
+    "02__Src__AppModules/50__System__ProjectedLinework (DevMenu, ExportCompositor, ModelStage, Persistence, Pipeline, SvgOverlay, ViewDefinition)",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js",
+    "80__Testing__PrototypeEnvironment",
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Touches ~100 files across all slices; a missed path 404s a module. Do it in one commit with the module-graph verifier, before any parallel work.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02a-02",
+   "title": "Interactive overlays registry and render-loop pause query",
+   "scope": "Port 05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js verbatim. Wire BeginFrame on VV's interactive 3D path (after the drawing branch and after the Video Studio preview branch) and EndFrame in the tick's finally. Add Na__RenderLoop__IsPaused to VV's Invalidation module, mirroring its pause reasons.",
+   "depends_on": [
+    "WP-S02a-01"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Module graph and exports verifiers pass",
+    "With nothing registered, a thumbnail, a sheet 3D viewport and an image export are byte-identical to before (spot check)",
+    "A registered test group is visible only in live 3D frames and never in a sheet render, thumbnail or export",
+    "Na__RenderLoop__IsPaused() is true while the Layout Editor holds the loop and false otherwise"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "VV renders more paths than TV (Video Studio, Export Render Layers); a Begin in the wrong branch would show overlays in a video preview.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02a-03",
+   "title": "Drawings data seam: payload guard, save steps, IsLoaded, report",
+   "scope": "Upgrade VV Na__DrawView__ProjectData__ to TV's interface while keeping VV's transport. Add RegisterPayloadGuard plus guarded payload copy, RegisterSaveStep with before/payload/after phases, IsLoaded, SAVED_ISO_KEY stamping, and Save(showToast, report, registerKeys) filling report.local/steps/cloudSaved. Add an option to R2SaveProjectJson to suppress its success toast and return the mirror error. Change North Save(showToast, report). Keep LayoutModeEnabled; no migration region.",
+   "depends_on": [
+    "WP-S02a-01"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Exports verifier shows IsLoaded, RegisterPayloadGuard, RegisterSaveStep, SAVED_ISO_KEY on the drawing core ProjectData",
+    "Node test (stubbed fetch/R2): a registered payload guard changes the written copy but not the live block; save steps run in order; report.local mirrors R2SaveProjectJson's localSuccess; one toast per save with a report",
+    "Existing VV callers (LE SheetModel, Loader, editors, north) still save unchanged (Adam: Save Sheets, Save North on localhost)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__ProjectJson__Data__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "R2SaveProjectJson is used by every VV Dev save; the toast option must default to today's behaviour.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs (ProjectData part only, adapted)"
+   ]
+  },
+  {
+   "id": "WP-S02a-04",
+   "title": "Draft core: DraftMaths, DrawingUsage, DevRowShell, DraftGuard, RowAccordion, staged rename, modal",
+   "scope": "Port verbatim: DraftMaths, DrawingUsage, DevRowShell, DraftGuard. Take TV's RowAccordion whole. Add StageHolders/StageFloorPlan/StageElevation to RenameDrawing on VV's loader restamp route. Port the DrawView dev CSS 'Drawing Panel Shell' region and move its @import last. Take the Presentation modal 1.2.0 whole and add the modal CSS rules (details, footnote, commit button).",
+   "depends_on": [
+    "WP-S02a-03"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Test__DrawingDrafts__.test.mjs (ported) passes against VV's modules",
+    "Module graph and exports verifiers pass",
+    "Existing VV floor plan and elevation panels still fold and open (current callers of SetOpenId/Wrap unchanged)",
+    "Modal shows a details list, footnote and green commit button in a manual test page"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__DraftMaths__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__DevRowShell__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__DraftGuard__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js",
+    "03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "DraftGuard registers guards at import time; it must not be imported before ProjectData exposes RegisterPayloadGuard (WP-03).",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02a-05",
+   "title": "Floor plan storey level and TV data-module convention",
+   "scope": "Port Na__FloorPlan__StoreyLevel__ and Na__FloorPlan__DevMenu__StoreyRow__ verbatim and ConfigState 1.1.0. Take ProjectJson__Data__ 1.1.0 whole (records via Na__DrawData__GetFloorPlansArray; arg 1 = sceneConfig, ignored for records), re-adding VV extras (STYLE_KEYS export, Dimensions default, trimmed tokens). Add the FloorPlanViews__StoreyLevels__Config block and labels (union) and the storey-note CSS.",
+   "depends_on": [
+    "WP-S02a-01"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Test__FloorPlanStoreyLevel__.test.mjs passes (36 checks incl. shipped JSON vs fallback)",
+    "Node check: Na__FpData__CreatePlan(presentationConfigObject, {}) adds to LayoutEditor__DrawingsData__FloorPlans and leaves the presentation object without new keys",
+    "GetStoreyLevel on a plan named 'Roof Plan' answers roof from the name and writes nothing; SetStoreyLevel dispatches na-floorplan-storey-changed",
+    "Exports verifier: GetStoreyLevel, IsStoreyLevelSet, GetStoreyLevelChoices, SetStoreyLevel, STOREY_CHANGED_EVENT present"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css"
+   ],
+   "hot_files": [
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Data-module signature switch: every VV caller passes null today (18 sites), but a missed caller passing a block would silently read the wrong object.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FloorPlanStoreyLevel__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02a-06",
+   "title": "Elevation auto-name, identity statement and data-module convention",
+   "scope": "Port Na__Elevation__AutoNameText__ and Na__Elevation__AutoName__ verbatim. Take ProjectJson__Data__ 1.1.0 whole with TV's first-argument convention; include the fog accessors if 49's RecordData has landed, otherwise defer them to WP-14. Apply SeededFrom per D-S02a-05. Union the AppConfig labels and add the identity/compass-mark CSS. Port the elevation geometry test page.",
+   "depends_on": [
+    "WP-S02a-01"
+   ],
+   "size": "M",
+   "acceptance": [
+    "With north set, a new elevation is named '<Word> Elevation' and a second facing the same way '<Word> Elevation 2'; a typed name sets Elevation__NameIsAuto false and survives turning",
+    "Node check: Na__ElevData__CreateElevation(presentationConfigObject, {}) writes only to LayoutEditor__DrawingsData__Elevations",
+    "Na__Test__ElevationGeometry__.html (ported) renders its checks green",
+    "Module graph and exports verifiers pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AutoName__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AutoNameText__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AppConfig__.json",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css"
+   ],
+   "hot_files": [
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "The elevation data file is also touched by WP-08 and WP-14; serialise them.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html"
+   ]
+  },
+  {
+   "id": "WP-S02a-07",
+   "title": "Drawing Planes system",
+   "scope": "Port 47__System__DrawingPlanes (9 files) into the TV-numbered slot. Check the bounds tokens against VV models (D37 Doous and an older export) and set VV values in the AppConfig only. Wire PlaneOverlay/PlaneGrip/PlaneUi init in index.html and the stylesheet import in the CSS index. The planes appear in the menus via WP-08.",
+   "depends_on": [
+    "WP-S02a-02"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Na__Test__DrawingPlanes__.test.mjs passes (47 checks)",
+    "On Doous the plane spans the building plus overshoot, not the site; the bottom edge sits 100 mm above the ground cut",
+    "A drag snaps the ABSOLUTE position to the chosen increment; Escape restores",
+    "With planes switched on, a thumbnail, a sheet 3D viewport and an image export contain no plane (Adam)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/47__System__DrawingPlanes (new, after renumber)"
+   ],
+   "hot_files": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Category-token mismatch on older VV exports would size planes from the landscape; verify on real projects before shipping the config.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02a-08",
+   "title": "Floor Plans and Elevations Dev menu rebuild (TV 2.x)",
+   "scope": "Take TV's DevMenu__Editor__ (FP 2.0.0, Elev 2.1.0) and DevMenu__RowBuilders__ (FP 2.0.0, Elev 2.1.0) whole. Re-apply VV seams: SectionAdapter calls in place of 41 Engine; PlanDim label from 45 ConfigState; SyncSceneGroup on mode change (D28). Apply D-S02a-02 features: Styles/Exclusions rows + ApplyStyles, Ground Floor Plan, ThumbnailBake via SaveBlock, BakeBeforeSave on Update. Stage the fog block until 49 lands. Union the AppConfig labels.",
+   "depends_on": [
+    "WP-S02a-04",
+    "WP-S02a-05",
+    "WP-S02a-06",
+    "WP-S02a-07",
+    "D-S02a-02"
+   ],
+   "size": "XL",
+   "acceptance": [
+    "TV DrawingMenus plan s.2 items 1-17 reproduced: rows fold one at a time across both panels; NOT UPDATED chip; Update dialog names the changes and the sheets drawn from the drawing; Revert restores in place; leaving a changed row asks",
+    "A Save Sheets while a row is changed writes the last-updated record (payload guard)",
+    "+ adds an elevation centred on the BUILDING; a Section-mode elevation's card moves to Cross Sections",
+    "Module graph and exports verifiers pass; Adam tests on Doous on localhost"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AppConfig__.json",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Largest file set in the slice; losing a VV seam silently (SectionAdapter, SyncSceneGroup, bake) is the main risk. Use check_names.py and the module graph to prove no TV-only import remains.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs (re-run)"
+   ]
+  },
+  {
+   "id": "WP-S02a-09",
+   "title": "Cross Sections placeholder panel",
+   "scope": "Port 48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js with renamed DOM ids (D-S02a-06). Add the <li> between Elevations and North Direction and the init call in the elevation mode .then.",
+   "depends_on": [
+    "WP-S02a-04",
+    "D-S02a-06"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Panel lists the project's Section-type elevations and updates on Na__DrawData__CHANGED_EVENT",
+    "VV's existing 'Cross Section Tool' Dev item still enables and saves",
+    "Module graph verifier passes"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js (new)"
+   ],
+   "hot_files": [
+    "index.html",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Id collision if D-S02a-06 is skipped: two modules would bind one element.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02a-10",
+   "title": "North Show Compass (TV 1.1.0 whole)",
+   "scope": "After overlays: take CompassGizmo 1.1.0 and DevMenu Editor 1.1.0 whole (D-S02a-09), add ShownByDefault and the three Show Compass labels, and keep ProjectJson__Data with Save(showToast, report).",
+   "depends_on": [
+    "WP-S02a-02",
+    "WP-S02a-03",
+    "D-S02a-09"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Na__Test__NorthCompass__.test.mjs passes",
+    "Show Compass on, panel closed, reload: compass back with no panel opened",
+    "A sheet render, a thumbnail and an export while the compass is kept contain no compass (Adam)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js",
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+    "02__Src__AppModules/46__System__NorthDirection/Na__North__AppConfig__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__CompassGizmo__.js",
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+    "02__Src__AppModules/47__System__NorthDirection/Na__North__AppConfig__.json"
+   ],
+   "hot_files": [
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Dropping VV's sheet-open/snapshot-queue listeners relies entirely on the overlay registry being wired on every VV render path.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs (re-run)"
+   ]
+  },
+  {
+   "id": "WP-S02a-11",
+   "title": "Transitions 1.1.0 (walk exit only when asked)",
+   "scope": "Port ReturnToOrbit and the options.returnToOrbit gate onto VV's Transitions, using VV's Na__NavToolbar__SetOrbitMode as the exit, VV's MaxEngine culling path and VV's Initialize. Update the LE ModeController to call SuspendThreeD({ returnToOrbit: true }); the snapshot renderer keeps the bare call.",
+   "depends_on": [
+    "WP-S02a-01"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Ported transitions checks from Na__Test__SheetPagingWalkExit__.test.mjs pass",
+    "Walking in 3D while a scene save restamps sheet viewports stays in Walk with the toolbar on Walk (Adam)",
+    "Opening a sheet while walking leaves Walk and lights Orbit"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "LE ModeController is a hot file shared with the LE slices.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs (transitions part)"
+   ]
+  },
+  {
+   "id": "WP-S02a-12",
+   "title": "Rename ComposerPreset to RenderPreset (DIV-1 kept inside)",
+   "scope": "Rename VV Na__DrawView__ComposerPreset__.js to Na__DrawView__RenderPreset__.js and its exports to Na__DrawView__RenderPreset__*, keeping the composer implementation and writing the PORT NOTE. Update the importers: LoadingSequence, both ModeControllers, the LE SnapshotRenderer and index.html.",
+   "depends_on": [
+    "WP-S02a-01",
+    "D-S02a-10"
+   ],
+   "size": "S",
+   "acceptance": [
+    "grep for Na__DrawView__ComposerPreset__ in 02__Src__AppModules and index.html returns nothing",
+    "Module graph and exports verifiers pass",
+    "Carousel plan/elevation preview, a sheet 2D bake and an image export of a drawing look identical to before (Adam)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "index.html",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "Low; pure rename. Coordinate the SnapshotRenderer edit with the LE slice.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02a-13",
+   "title": "Ledger, PORT NOTEs and TV back-port memo",
+   "scope": "Add VV parity-ledger rows for every module this slice ports. Mark superseded pending back-port rows and fix stale VV PORT NOTEs (FacePick/GizmoGrip). Write a back-port memo for Adam/TV covering: positionMm sign, dead na-pm-scene-activated listener, missing IsDrawingApproach, unused StyleRows, dropped BakeBeforeSave, Ground Floor Plan, ThumbnailBake, SyncSceneGroup and the stale TV realign-plan rows.",
+   "depends_on": [
+    "WP-S02a-08"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Every file created or changed by WP-01..12 has a ledger row with parity state and divergences",
+    "Pending back-port table matches the memo",
+    "Memo lists each TV item with path:line evidence"
+   ],
+   "files_tv": [],
+   "files_vv": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md"
+   ],
+   "hot_files": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "None to code; ledger edits from parallel WPs must be serialised.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02a-14",
+   "title": "Elevation depth-fog hooks in the drawing system (after 49 is ported)",
+   "scope": "Once the slice owning 49__System__ElevationDepthFog lands: add the elevation data fog API (if not in WP-06), SetSource/clear in VV's elevation ModeController, fog drawn in VV's RenderPreset (composer) RenderFrame and render-loop drawing branch, the fog block in the elevation row builders and editor, and Na__DrawView__SectionAdapter__RenderDepthInto over VV's Cross Sections caps.",
+   "depends_on": [
+    "WP-S02a-06",
+    "WP-S02a-08",
+    "WP-S02a-12",
+    "49__System__ElevationDepthFog port (other slice)"
+   ],
+   "size": "M",
+   "acceptance": [
+    "An elevation with fog on fades distant geometry in the live view, a sheet viewport and the PDF; a section's poche stays solid",
+    "Turning fog off restores the drawing exactly",
+    "LE Viewport2d__DepthFog resolves against VV"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "DIV-1/DIV-2 adaptation: VV's composer route and live section tool must provide depth TV gets from its overlay route.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs (with the 49 slice)"
+   ]
+  },
+  {
+   "id": "WP-S02a-15",
+   "title": "Drawings save guard over VV's Flask transport",
+   "scope": "VV equivalent of TV v2.146 layers 2/3. Add to WCP/server.py: GET /api/projects/<code>/drawings-fingerprint (sha1 of the canonical drawings block), a base header on the project POST with 409 on mismatch, and backups before overwrite outside the repo. On the client add GetBase, WhenBaseKnown, LearnBase and CheckBase to VV ProjectData. The worker is unchanged.",
+   "depends_on": [
+    "WP-S02a-03",
+    "transport slice"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Adapted Na__Test__ProjectDataSaveGuard__.test.py passes against server.py through Flask's test client",
+    "A save from a window that loaded before another window saved is refused before R2 with the TV wording",
+    "A server without the route leaves saves unjudged and logs once",
+    "LE AutoSave 1.5.0 imports resolve"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "hot_files": [
+    "WCP/server.py",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "server.py runs in Flask debug mode and tracks __pycache__ in git; tests must set sys.dont_write_bytecode (VV ledger line 85).",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py"
+   ]
+  }
+ ],
+ "decisions_needed": [
+  {
+   "id": "D-S02a-01",
+   "question": "Renumber VV's drawing folders to TV's numbers so TV's new 47 DrawingPlanes, 48 CrossSectionViews and 49 ElevationDepthFog have slots?",
+   "options": "(B) VV 42->40, 43->42, 44->43, 45->44, 46->45, 47->46, new 47/48/49 as TV, legacy VV 40 relocated; (A) keep VV D05 shift: TV 47->VV 48, 48->49, 49 has no slot",
+   "recommendation": "B, executed first and alone (WP-S02a-01). It is the only option where every later port has identical paths.",
+   "blocks": [
+    "WP-S02a-01",
+    "WP-S02a-07",
+    "WP-S02a-09",
+    "S02a-F01"
+   ]
+  },
+  {
+   "id": "D-S02a-02",
+   "question": "Keep VV-only drawing-menu features inside TV's rebuilt 2.x menus: Styles/Exclusions rows with live ApplyStyles (D33), Ground Floor Plan (D11), thumbnail bake + Bake Missing (v2.46), and bake projected linework before save (D20)?",
+   "options": "keep all four as VV seams (and back-port to TV); keep a subset; drop all for identical menus",
+   "recommendation": "Keep all four inside TV's layout (Styles/Exclusions in the Advanced fold, Ground Floor beside +, bake on add/seed/Update) and raise each as a TV back-port.",
+   "blocks": [
+    "WP-S02a-08",
+    "S02a-F19",
+    "S02a-F25",
+    "S02a-F26",
+    "S02a-F27"
+   ]
+  },
+  {
+   "id": "D-S02a-03",
+   "question": "CrossSection__SceneData positionMm is written with opposite signs (TV +constant, VV -constant). Which convention wins?",
+   "options": "fix TV to VV's convention and migrate TV's saved bindings; accept and document the difference",
+   "recommendation": "Fix TV (TD06 says VV's schema wins, and TV's own mapping table says -constant). No VV change. Confirm by running a cross-app fixture before migrating.",
+   "blocks": [
+    "S02a-F21"
+   ]
+  },
+  {
+   "id": "D-S02a-04",
+   "question": "What happens to VV's legacy 40__System__2dElevationsView (Tools > Elevation View), which occupies slot 40 and supplies the composer's 2D profile pass?",
+   "options": "keep and renumber (e.g. 39__System__2dElevationsView); retire the menu item and move Na__RenderEffect__2dProfileLines__ into DrawingViewCore",
+   "recommendation": "Keep the tool for now (D06) and renumber it to 39 inside WP-01. Revisit retirement once drawings cover its use.",
+   "blocks": [
+    "WP-S02a-01",
+    "S02a-F02"
+   ]
+  },
+  {
+   "id": "D-S02a-05",
+   "question": "VV-only record key Elevation__SeededFrom: what happens once TV's editors replace VV's Pick Face wiring?",
+   "options": "keep writing; stop writing new values but preserve existing ones; back-port to TV",
+   "recommendation": "Stop writing new values and preserve existing ones on read and save.",
+   "blocks": [
+    "WP-S02a-06",
+    "S02a-F35"
+   ]
+  },
+  {
+   "id": "D-S02a-06",
+   "question": "TV's Cross Sections placeholder uses DOM ids naCrossSectionDevItem/Toggle/Panel, already used by VV's 'Cross Section Tool' gate. How to resolve?",
+   "options": "rename the 48 ids in VV (and offer the rename to TV); rename VV's 41 gate ids; merge the placeholder list into VV's gate item",
+   "recommendation": "Rename the 48 ids to naCrossSectionViewsDev* in VV and propose the same ids to TV so both trees match.",
+   "blocks": [
+    "WP-S02a-09",
+    "S02a-F46"
+   ]
+  },
+  {
+   "id": "D-S02a-07",
+   "question": "TV v2.80-v2.87 drawing items (planes, Show Compass, menu rebuild, storey) have no recorded sign-off, and VV's ledger row 87 says 'awaiting'. Port now?",
+   "options": "port now; wait for Adam's explicit sign-off",
+   "recommendation": "Ask Adam once. Later TV work (v2.105, v2.140) builds on them, so porting carries low risk.",
+   "blocks": [
+    "WP-S02a-04",
+    "WP-S02a-05",
+    "WP-S02a-06",
+    "WP-S02a-07",
+    "WP-S02a-08",
+    "WP-S02a-10"
+   ]
+  },
+  {
+   "id": "D-S02a-08",
+   "question": "The floor plan and elevation mode controllers: TV 1.1.0 predates VV 1.2.2/1.1.1, which route through the drawing core. Keep VV's?",
+   "options": "keep VV's controllers and add TV's fog hook; adopt TV's older controllers",
+   "recommendation": "Keep VV's (DIV-1/DIV-2 seams) and offer TV the drawing-core routing as a back-port.",
+   "blocks": [
+    "S02a-F24",
+    "WP-S02a-14"
+   ]
+  },
+  {
+   "id": "D-S02a-09",
+   "question": "Once the overlay registry exists, should VV drop its compass listeners on sheet open and snapshot queue and take TV's North 1.1.0 whole?",
+   "options": "take TV 1.1.0 whole; keep VV's listeners as extra defence",
+   "recommendation": "Take TV whole, as VV's own PORT NOTEs instruct; the registry covers every render path.",
+   "blocks": [
+    "WP-S02a-10"
+   ]
+  },
+  {
+   "id": "D-S02a-10",
+   "question": "Rename VV Na__DrawView__ComposerPreset__ to Na__DrawView__RenderPreset__ (same eight-function interface, composer route kept inside)?",
+   "options": "rename; keep VV name and translate on every port",
+   "recommendation": "Rename; TV's design names the eight functions as the seam, and the rename removes a translation from every future port.",
+   "blocks": [
+    "WP-S02a-12",
+    "S02a-F14"
+   ]
+  }
+ ],
+ "coverage": {
+  "files_examined": 184,
+  "files_in_scope_tv": 73,
+  "files_in_scope_vv": 63,
+  "not_examined": [
+   "49__System__ElevationDepthFog internals (other slice; only its interfaces into 40/41/45 and LE were read)",
+   "50__System__ProjectedLinework internals (Persistence BakeBeforeSave and Storeys/DoorPose only by grep)",
+   "WCP/server.py and WCP/CloudflareWorker (not opened; transport needs inferred from TV devlog v2.146 and VV R2SaveProjectJson)",
+   "NAAPPS/ProjectVision__LocalServer__Main__.py (fingerprint/backup routes taken from TV devlog, not read)",
+   "No app was run: the positionMm sign mismatch, the live-view look difference and VV model-root category names are verified by code reading only",
+   "TV DEVELOPMENT LOGs of 47__System__DrawingPlanes files were not compared entry by entry (TV-only; git shows last change 20-Sep-2026)"
+  ]
+ }
+}

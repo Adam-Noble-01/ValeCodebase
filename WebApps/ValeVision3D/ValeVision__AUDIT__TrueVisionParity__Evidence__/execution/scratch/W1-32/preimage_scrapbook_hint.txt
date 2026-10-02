@@ -1,0 +1,2 @@
+﻿  FAIL  the Scrapbook tab is registered on the right with its hint in the spec
+  FAIL  once the scrapbook config is read, the tab button carries the hover text itself

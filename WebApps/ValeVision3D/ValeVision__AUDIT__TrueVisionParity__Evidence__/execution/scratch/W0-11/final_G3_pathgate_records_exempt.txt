@@ -1,0 +1,8 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-11\..\W0-02\path_gate_records_exempt.py --root D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+(records-exempt wrapper: HISTORY = (DEVLOG|PARITY__TrueVisionLedger|__PLAN__|__AUDIT__TrueVisionParity__|__WORKING_MEMORY__TrueVisionParity__))
+K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked: css @import 28, new URL 34, path strings 152, folder tokens 11
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+RESULT: PASS (0 fail, 1 warn)
+
+EXIT=0

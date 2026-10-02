@@ -1,0 +1,26 @@
+{
+  "WebApps/ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json": {
+    "sha1": "55f4b0d47bbb5147b7769eb5fc52510ac0d9af2b",
+    "bytes": 34083,
+    "crlf": 404,
+    "lf": 404
+  },
+  "WebApps/Whitecardopedia/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py": {
+    "sha1": "52c4ab26bb31e023852f9db034fde40322fbbf37",
+    "bytes": 61310,
+    "crlf": 1219,
+    "lf": 1219
+  },
+  "WebApps/Whitecardopedia/Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py": {
+    "sha1": "d857ec86b89d4e7e641eeaa1ed664847906680c0",
+    "bytes": 19924,
+    "crlf": 377,
+    "lf": 377
+  },
+  "WebApps/Whitecardopedia/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py": {
+    "sha1": "1a8f58872dbcd0756364ce4ce017960eb0cc6229",
+    "bytes": 26444,
+    "crlf": 524,
+    "lf": 524
+  }
+}

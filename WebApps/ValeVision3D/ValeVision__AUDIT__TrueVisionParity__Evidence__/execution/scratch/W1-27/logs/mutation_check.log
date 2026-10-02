@@ -1,0 +1,11 @@
+control (as landed)                              exit 0, 0 check(s) failed  -> PASS
+the scale is not squared                         exit 1, 4 check(s) failed  -> caught
+the perimeter is out by ten                      exit 1, 2 check(s) failed  -> caught
+a crossing outline is never reported             exit 1, 1 check(s) failed  -> caught
+the box middle is used even outside the room     exit 1, 3 check(s) failed  -> caught
+toFixed rounding (half to even in binary)        exit 1, 2 check(s) failed  -> caught
+the config ships square feet                     exit 1, 2 check(s) failed  -> caught
+the layer is renamed                             exit 1, 1 check(s) failed  -> caught
+labels run into the next room                    exit 1, 1 check(s) failed  -> caught
+a palette colour is not hex                      exit 1, 1 check(s) failed  -> caught
+mutants: 9 planted, 0 problem(s)

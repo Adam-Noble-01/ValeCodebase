@@ -28,15 +28,23 @@
 //
 // PORT NOTE:
 // - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
-// - Parity        : verbatim - every check is TrueVision's, run against this app's own modules. The fixtures
-//                   are TrueVision project sheets (PS02): they are what the house style was measured from.
+// - Source version: 1.0.0 (TrueVision3D v2.96.0, 20-Sep-2026 - the checker fill #858585, unlogged in
+//                   the file; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, with the scale bar 1.1.0 and the config
+//                   fill. This app's copy before it was TrueVision's 1.0.0 with #666666
+//                   (ValeVision3D v2.68.0, 20-Sep-2026).
+// - Parity        : verbatim - every check is TrueVision's, run against this app's own module
+//                   and config. The fixtures are TrueVision project sheets (PS02): they are what
+//                   the house style was measured from.
+// - Divergences   :
+//   - Banner and the printed title read ValeVision3D.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D with the module it proves.
+// 19-Sep-2026 - Version 1.0.0
+// - Written with the scale bar, TrueVision3D v2.76.0.
 //
 // =============================================================================
 
@@ -68,11 +76,11 @@ import { tmpdir } from 'node:os';
     const HOUSE_BAR = {
         stroke : '#172b3a', strokePt : 0.2,
         cells  : [
-            [  0,  20, 0, 1, null      ], [  0,  20, 1, 2, '#666666' ],
-            [ 20,  40, 0, 1, '#666666' ], [ 20,  40, 1, 2, null      ],
-            [ 40,  60, 0, 1, null      ], [ 40,  60, 1, 2, '#666666' ],
-            [ 60,  80, 0, 1, '#666666' ], [ 60,  80, 1, 2, null      ],
-            [ 80, 100, 0, 1, null      ], [ 80, 100, 1, 2, '#666666' ]
+            [  0,  20, 0, 1, null      ], [  0,  20, 1, 2, '#858585' ],
+            [ 20,  40, 0, 1, '#858585' ], [ 20,  40, 1, 2, null      ],
+            [ 40,  60, 0, 1, null      ], [ 40,  60, 1, 2, '#858585' ],
+            [ 60,  80, 0, 1, '#858585' ], [ 60,  80, 1, 2, null      ],
+            [ 80, 100, 0, 1, null      ], [ 80, 100, 1, 2, '#858585' ]
         ],
         // [ text, size mm ] - centred on each division, baseline 7.314 mm under the bar's top, weight 400. His are hand placed within 0.6 mm of the divisions.
         numerals : [ [ '0', 2.5 ], [ '1', 2 ], [ '2', 2 ], [ '3', 2 ], [ '4', 2 ], [ '5', 2.5 ] ],

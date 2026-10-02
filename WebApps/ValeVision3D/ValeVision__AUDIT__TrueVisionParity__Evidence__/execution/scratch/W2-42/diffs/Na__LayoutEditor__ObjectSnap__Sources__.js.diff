@@ -1,0 +1,27 @@
+--- TV/Na__LayoutEditor__ObjectSnap__Sources__.js
++++ VV/Na__LayoutEditor__ObjectSnap__Sources__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - OBJECT SNAP - SHEET SOURCES
++// VALEVISION3D - LAYOUT EDITOR - OBJECT SNAP - SHEET SOURCES
+@@ -62,4 +62,17 @@
+-// - Authored in   : TrueVision3D first (21-Sep-2026). Offers, ChromeFrom,
+-//                   ChromePoints and the vector and dimension walks came across
+-//                   from 30__System__SheetTools/Na__LayoutEditor__Snapping__.js 1.5.0.
+-// - ValeVision    : not yet ported - it waits for Adam's sign-off.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js
++// - Source version: 1.2.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
++//                   other object snap leaves (W2-42). Nothing imported it then: W2-19
++//                   brings the search, the controller and the menu, and switches the
++//                   editor over from 30__System__SheetTools/Na__LayoutEditor__Snapping__.js
++//                   (K2 FR-14, FR-15).
++//                   TrueVision's own note said "not yet ported - it waits for Adam's
++//                   sign-off"; v2.129.0 (1.0.0, with what it carried over
++//                   from Snapping 1.5.0: the title block snaps of v2.114.0 and the
++//                   reference layers of v2.123.0), v2.143.0 (1.1.0, note regions) and
++//                   v2.150.0 (1.2.0, vectors with holes) are "NOT tried by Adam" there.
++//                   They come across under DR-01 (c) and are named as not yet confirmed.
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.

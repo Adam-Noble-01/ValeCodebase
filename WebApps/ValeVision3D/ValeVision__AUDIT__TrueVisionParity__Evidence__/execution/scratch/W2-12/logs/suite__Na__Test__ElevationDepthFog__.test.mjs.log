@@ -1,0 +1,80 @@
+﻿
+The block
+  PASS  a record with no block starts OFF
+  PASS  ...with a metre of clear air behind the plane
+  PASS  ...full at fifteen metres
+  PASS  ...and an even fade
+  PASS  a whole block is kept as it stands
+  PASS  only an explicit true switches it on (1 does not)
+  PASS  ...nor does the word
+  PASS  End typed short of Depth: Depth stands, End gives way
+  PASS  the fog never starts in front of the plane
+  PASS  both depths stop at the far limit, a band apart
+  PASS  fall-off stops at 100
+  PASS  ...and at 0
+  PASS  half a block is filled in from the defaults
+  PASS  a block that is not a block reads as the defaults
+  PASS  depths are whole millimetres
+  PASS  writing keeps the SAME block object
+  PASS  ...and what it wrote reads back identical
+  PASS  ...in a fixed key order
+  PASS  a block one value out does not match
+  PASS  no block matches nothing
+
+The fall-off
+  PASS  50 typed, half way there: half fogged
+  PASS  80 typed, half way there: 80% fogged
+  PASS  20 typed, half way there: 20% fogged
+  PASS  50 is a straight ramp (a quarter of the way: a quarter)
+  PASS  ...and three quarters: three quarters
+  PASS  nothing in front of Depth is touched
+  PASS  nothing in front of the PLANE is touched
+  PASS  at Depth itself the fog is still nothing
+  PASS  at End it is full
+  PASS  beyond End it stays full
+  PASS  whatever is typed, the fog only ever thickens with depth
+  PASS  a higher fall-off is denser at EVERY depth in the band
+  PASS  100 is a wall at Depth (a millimetre in: all but full)
+  PASS  0 is a wall at End (a metre short of it: all but clear)
+  PASS  neither wall is a division by zero
+  PASS  the ceiling scales the lot
+  PASS  the curve is its own mirror (b against 1 - b)
+  PASS  a fall-off that is not a number is the even fade
+
+Behind the plane
+  PASS  the fixture is the one on screen (cut -2200 mm)
+  PASS  a point on the plane is 0 behind it
+  PASS  a metre further east is a metre behind
+  PASS  a metre nearer the viewer is a metre in FRONT
+  PASS  sliding along the facade changes nothing
+  PASS  nor does height
+
+The depth solve
+  PASS  a drawing camera solves
+  PASS  ...square on, so screen position changes nothing
+  PASS  ...the near plane is a stand-off in FRONT of the plane
+  PASS  ...and depth runs the whole near-to-far range
+  PASS  the depth stored AT the plane reads 0 behind it
+  PASS  ...and a metre further reads a metre, anywhere on screen
+  PASS  one tile of a big export solves to the same numbers
+  PASS  a parallel camera swung off square still solves
+  PASS  ...and reads any pixel back exactly
+  PASS  a perspective camera is refused, not fogged wrongly
+  PASS  a solve with nothing to sample is refused
+  PASS  ...as is one that answers nonsense
+
+Colour and the token
+  PASS  paper white reads as three ones
+  PASS  a colour without its hash still reads
+  PASS  anything unreadable is paper white
+  PASS  a display value survives the bake's own encode
+  PASS  fog off keys as nothing at all
+  PASS  no settings keys as nothing at all
+  PASS  fog on has a key
+  PASS  ...that moves with how far open paper looks
+  PASS  ...that moves with Depth
+  PASS  ...with End
+  PASS  ...with the fall-off
+  PASS  ...and with the colour
+
+All checks passed.

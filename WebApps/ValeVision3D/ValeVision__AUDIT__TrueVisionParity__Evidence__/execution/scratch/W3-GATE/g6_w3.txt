@@ -1,0 +1,81 @@
+W3-touched files scanned: 62
+hits: 75 (code 12, comment 63)
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] code    02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json:7  "Meta__Author"      : "Adam Noble - Noble Architecture",
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [/api/truevision] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js:46  //     registers (TrueVision: /api/truevision/sheet-images on its ProjectVision local server). The
+  [localhost host test] comment 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js:56  //     folder is skipped. Na__AppUtils__IsRunningOnLocalhost is not imported. Today only a drawings
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] code    02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css:10  AUTHOR  : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:22  //   Noble Architecture path given this app's), identity (wording that named
+  [TRUEVISION banner/prefix] comment 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:32  //   TrueVision__ literal, a TRUEVISION3D banner or [TrueVision3D prefix,
+  [NaProjectPortal] comment 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:33  //   NaProjectPortal, 30__TrueVision__AppContent, an /na-apps/ path, the
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:34  //   Noble Architecture Ltd author or any noble-architecture.com address but
+  [Noble Architecture] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:397  console.log('\n  Identity: nothing of TrueVision\'s or Noble Architecture\'s');
+  [NaProjectPortal] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:404  const MARKERS = [ /TrueVision__/, /TRUEVISION3D/, /\[TrueVision3D/, /NaProjectPortal/, /30__TrueVision__AppContent/, /\/na-apps\//, /Noble Architecture Ltd/, /\/api\/true
+  [Noble Architecture] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:404  const MARKERS = [ /TrueVision__/, /TRUEVISION3D/, /\[TrueVision3D/, /NaProjectPortal/, /30__TrueVision__AppContent/, /\/na-apps\//, /Noble Architecture Ltd/, /\/api\/true
+  [TRUEVISION banner/prefix] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:404  const MARKERS = [ /TrueVision__/, /TRUEVISION3D/, /\[TrueVision3D/, /NaProjectPortal/, /30__TrueVision__AppContent/, /\/na-apps\//, /Noble Architecture Ltd/, /\/api\/true
+  [NaProjectPortal] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:406  check('no TrueVision__ literal, TRUEVISION3D, [TrueVision3D, NaProjectPortal, 30__TrueVision__AppContent, /na-apps/, Noble Architecture Ltd or /api/truevision',
+  [Noble Architecture] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:406  check('no TrueVision__ literal, TRUEVISION3D, [TrueVision3D, NaProjectPortal, 30__TrueVision__AppContent, /na-apps/, Noble Architecture Ltd or /api/truevision',
+  [TRUEVISION banner/prefix] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:406  check('no TrueVision__ literal, TRUEVISION3D, [TrueVision3D, NaProjectPortal, 30__TrueVision__AppContent, /na-apps/, Noble Architecture Ltd or /api/truevision',
+  [/api/truevision] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:406  check('no TrueVision__ literal, TRUEVISION3D, [TrueVision3D, NaProjectPortal, 30__TrueVision__AppContent, /na-apps/, Noble Architecture Ltd or /api/truevision',
+  [NA job phase] code    80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs:420  const NA_STAGES = { T01 : 'Concept', T02 : 'Planning', T03 : 'Building Regs', T04 : 'Site & Remedial' };
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__AreaSchedule__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__BubbleNoteTooltip__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__CopyDrag__.test.cjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__SetMoveLeaderTips__.test.cjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [NA job phase] comment 80__Testing__PrototypeEnvironment/Na__Test__SetMoveLeaderTips__.test.cjs:239  // RB05 T01's lower CGI as a picture: a vector carrying Shape__Image.
+  [NA job phase] code    80__Testing__PrototypeEnvironment/Na__Test__SetMoveLeaderTips__.test.cjs:261  test("a CGI boxed with its bubbles and a note moves as one: every tip goes with the picture (RB05 T01)", () => {
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__VectorTools__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+  [Noble Architecture] comment 80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs:8  // AUTHOR     : Adam Noble - Noble Architecture
+TODO(OVH-MIGRATION) seams: 7 in 3 file(s)
+    5  02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js
+    1  02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js
+    1  80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs

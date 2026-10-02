@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  W1-06 manual test page (scratch, never shipped). Served by the Whitecardopedia Flask server at
+  http://localhost:8000/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-06/modal_manual_check.html
+  It loads ValeVision's real CSS index and the landed modules: the Dev menu modal 1.2.0 and the drawing
+  panels' row shell. Nothing here saves anything; no project is loaded.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>W1-06 Modal and Row Shell Check</title>
+    <link rel="stylesheet" href="../../../../03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+    <style>
+        body          { margin : 24px; font-family : 'Open Sans', Arial, sans-serif; background : #f4f6f8; }
+        .w106-panel   { width : 360px; padding : 12px; background : #ffffff; border : 1px solid #d9dde2; border-radius : 8px; }
+        .w106-buttons { margin : 16px 0; display : flex; flex-wrap : wrap; gap : 8px; }
+        .w106-result  { font-family : monospace; font-size : 12px; color : #333; }
+    </style>
+</head>
+<body>
+    <h2>W1-06 - Dev menu modal 1.2.0 and the drawing row shell</h2>
+    <div class="w106-buttons">
+        <button type="button" id="w106Green">Update dialog (green commit)</button>
+        <button type="button" id="w106Red">Update dialog (red: moves a drawing sheets draw from)</button>
+        <button type="button" id="w106Delete">Delete dialog</button>
+        <button type="button" id="w106Alt">Three-button dialog (altLabel)</button>
+    </div>
+    <div class="w106-result" id="w106Result">answer: -</div>
+    <h3>Row shell parts (Presentation Scenes classes plus the Drawing Panel Shell region)</h3>
+    <div class="w106-panel" id="w106Panel"></div>
+
+    <script type="module">
+        import { Na__PresentationMode__DevMenu__Confirm } from '../../../../02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js';
+        import {
+            Na__DrawShell__BuildPanelHead, Na__DrawShell__BuildHeaderChips, Na__DrawShell__BuildCommitActions,
+            Na__DrawShell__BuildDangerZone, Na__DrawShell__BuildAdvanced, Na__DrawShell__Caption,
+            Na__DrawShell__ConfirmUpdate, Na__DrawShell__ConfirmDelete
+        } from '../../../../02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js';
+
+        const usage  = { viewports : 3, sheets : [ { label : 'D02 - Elevations', count : 2 }, { label : 'D05 - Sections', count : 1 } ] };
+        const result = document.getElementById('w106Result');
+        const show   = (promise) => promise.then((answer) => { result.textContent = 'answer: ' + JSON.stringify(answer); });
+
+        document.getElementById('w106Green').addEventListener('click', () => show(Na__DrawShell__ConfirmUpdate({
+            word : 'elevation', name : 'East Elevation', changes : [ 'Name: "Elevation 2" to "East Elevation"' ],
+            usage : usage, movesDrawing : false, willCapture : true })));
+        document.getElementById('w106Red').addEventListener('click', () => show(Na__DrawShell__ConfirmUpdate({
+            word : 'elevation', name : 'East Elevation', changes : [ 'Plane moved 300 mm toward the viewer', 'Turned: model bearing 180 to 270 deg' ],
+            usage : usage, movesDrawing : true, willCapture : false })));
+        document.getElementById('w106Delete').addEventListener('click', () => show(Na__DrawShell__ConfirmDelete({
+            word : 'elevation', name : 'East Elevation', usage : usage })));
+        document.getElementById('w106Alt').addEventListener('click', () => show(Na__PresentationMode__DevMenu__Confirm({
+            title : 'Apply the unsaved draft?', message : 'A browser draft is older than the drawings saved since.',
+            details : [ 'Draft from 09:41', 'Drawings saved at 10:02' ], footnote : 'Decide later keeps it for the next load.',
+            confirmLabel : 'Apply', cancelLabel : 'Decide later', altLabel : 'Discard', altIsDestructive : true })));
+
+        const panel = document.getElementById('w106Panel');
+        panel.appendChild(Na__DrawShell__BuildPanelHead({ title : 'Elevations', addTitle : 'Add an elevation', onAdd : () => { result.textContent = 'answer: + pressed'; } }));
+        const chips = Na__DrawShell__BuildHeaderChips();
+        chips.set({ kind : 'SECTION', isActive : true, isDirty : true });
+        panel.appendChild(chips.element);
+        panel.appendChild(Na__DrawShell__Caption('Plane'));
+        const actions = Na__DrawShell__BuildCommitActions({ isActive : true, drawingWord : 'elevation' });
+        actions.refresh({ isDirty : true });
+        panel.appendChild(actions.element);
+        const idle = Na__DrawShell__BuildCommitActions({ isActive : false, drawingWord : 'elevation' });
+        panel.appendChild(idle.element);
+        const advanced = Na__DrawShell__BuildAdvanced('Elevation_001', 'Advanced');
+        advanced.body.textContent = 'Model bearing (the stored azimuth) lives here.';
+        panel.appendChild(advanced.element);
+        panel.appendChild(Na__DrawShell__BuildDangerZone({ label : 'Delete Elevation' }));
+        window.W106_READY = true;
+    </script>
+</body>
+</html>

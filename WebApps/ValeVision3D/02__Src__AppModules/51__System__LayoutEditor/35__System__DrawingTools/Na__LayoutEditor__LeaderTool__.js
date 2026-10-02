@@ -42,15 +42,36 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__LeaderTool__.js 1.0.0
-// - Ported on     : 14-Sep-2026
-// - Parity        : verbatim (header only)
-// - Divergences   : none - it writes the same Sheet__Leaders record through CreateLeader and UpdateLeader
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js
+// - Source version: 1.2.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This app's
+//                   copy was its 1.0.0 (14-Sep-2026, ValeVision3D v2.32.0), which already carried 1.1.0's
+//                   Project Specification links (TrueVision3D v2.36.0) in code without logging them. It
+//                   now takes Object Snap (the 28 folder, in place of this app's 30 Snapping, TrueVision3D
+//                   v2.129.0, unlogged in this module) and 1.2.0: the head follows the drawing grid while
+//                   Grid Snap is on (v2.114.0). Neither TrueVision release is confirmed by Adam in
+//                   TrueVision; they come across under DR-01 (c) and are named so.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.2.0
+// - The head (the note or bubble end) follows the drawing grid while Grid
+//   Snap is on (F7, Na__LayoutEditor__DrawingGrid__), as it is drawn out and
+//   where it lands; the tip reaches the grid through Na__LeOsnap__Snap.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Project Specification: a bubble committed with a code links to the note
+//   that has it, and reads that code exactly ("ee2" becomes EE02); a code no
+//   note has leaves it unlinked, as typed. A new bubble whose suggested code a
+//   note already has is placed linked. A linked bubble's field opens on the
+//   code it shows. Note leaders, and bubbles when no note matches, commit
+//   exactly as before (Na__LayoutEditor__SpecLinks__).
+//
 // 14-Sep-2026 - Version 1.0.0
 // - Initial implementation: two-click and drag placement with a live leader,
 //   the inline note and bubble fields, and the next bubble code.
@@ -74,7 +95,8 @@
         Na__LeModel__SetSelection
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__GetZoom, Na__LeSurface__Refresh } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
-    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker } from '../30__System__SheetTools/Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js';
+    import { Na__LeGrid__SnapPoint } from '../27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js';   // <-- Grid Snap (F7): a leaf, the nearest grid point
     import { Na__LeText__OpenField } from './Na__LayoutEditor__TextTool__.js';
     import { Na__LeLeadGeo__TYPE_BUBBLE, Na__LeLeadGeo__Layout, Na__LeLeadGeo__Lines } from '../15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js';
     import { Na__LeSpecLink__PatchForText, Na__LeSpecLink__StartFor, Na__LeSpecLink__NoteIdOf } from '../50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js';
@@ -136,7 +158,7 @@
     // panel does; the record keeps a colour or null.
     // ------------------------------------------------------------
     function Na__LeLeader__Options(sheet, defaults) {
-        const d = defaults || {};
+        const d     = defaults || {};
         const start = Na__LeSpecLink__StartFor(d.type || Na__LeCfg__GetLeaderSetup().defaultType, Na__LeLeader__InitialText(sheet, d.type));   // <-- A bubble whose first code a note has starts linked to it
         return {
             type : d.type, text : start.text, specNoteId : start.specNoteId,
@@ -200,6 +222,7 @@
         if (!sheet || !pointMm) return false;
         const p = Na__LeLeader__Placement;
         if (!p) { Na__LeOsnap__Snap(sheet, pointMm, null); return false; }
+        pointMm = Na__LeGrid__SnapPoint(pointMm);                               // <-- Grid Snap (F7): the head follows the grid; the tip already snapped to it
         if (pressed && !p.dragging) {
             const slop = Na__LeCfg__GetSelectionSetup().dragThresholdMm / Na__LeSurface__GetZoom();
             if (Math.hypot(pointMm.x - p.pressMm.x, pointMm.y - p.pressMm.y) >= slop) p.dragging = true;
@@ -243,6 +266,7 @@
     function Na__LeLeader__Land(sheet, pointMm) {
         const p = Na__LeLeader__Placement;
         if (!p || !Na__LeLeader__Far(p.tipMm, pointMm)) return false;          // <-- Not a leader yet: keep placing
+        pointMm = Na__LeGrid__SnapPoint(pointMm);                               // <-- The head lands where the band showed it
         Na__LeLeader__Placement = null;
         Na__LeOsnap__HideMarker();
         let id = p.id;

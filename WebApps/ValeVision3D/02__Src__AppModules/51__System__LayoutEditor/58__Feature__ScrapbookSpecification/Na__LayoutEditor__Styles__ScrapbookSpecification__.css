@@ -1,0 +1,428 @@
+/* ================================================================= */
+/* VALEVISION3D - LAYOUT EDITOR - STYLES: SPECIFICATION SCRAPBOOK     */
+/* ================================================================= */
+/*
+ * FILE       : Na__LayoutEditor__Styles__ScrapbookSpecification__.css
+ * MODULE     : Layout Editor - Specification Scrapbook
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The rows of the left column's Specification tab: a note's bubble beside its title and text
+ * CREATED    : 20-Sep-2026
+ *
+ * DESCRIPTION:
+ * - Linked by Na__LayoutEditor__Panel__ScrapbookSpecification__ when it is
+ *   wired, the way the Drawing Register and the other scrapbooks link theirs.
+ * - A row IS a scrapbook tile (.na-le-scrap__item in Styles__Panels): its
+ *   border, its hover, its focus ring, its grab cursor and its ghost are the
+ *   Scrapbook's and are not restated. What differs is the shape - the other
+ *   libraries' tiles are a picture over a name, and a note is a bubble BESIDE
+ *   a paragraph - so the modifier lays the same two parts out in a row.
+ * - Every row is styled alike. The count of bubbles already on the sheet is
+ *   quiet grey text beside the title, never a colour or a badge.
+ * - The tab strip is the panel host's (.na-le-panel__tabs in Styles__Panels),
+ *   shared with the right column: nothing here touches it.
+ *
+ * - A ROW BEING EDITED (22-Sep-2026) steps aside for its editor
+ *   (Na__LayoutEditor__ScrapbookSpecification__RowEditor__): the same card in
+ *   the house blue, holding the note's title and text as spell-checked boxes
+ *   (their text rules are the Spell Check feature's), the word bar and the
+ *   keys. The boxes are drawn like the panels' own inputs.
+ * - A ROW BEING LOCATED pulses a halo three times - a bubble's Show in
+ *   Specification. The spread stays inside the column's padding, so nothing
+ *   clips it. It pulses whatever the operating system's animation setting:
+ *   see the region's note.
+ *
+ * PORT NOTE:
+ * - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css
+ * - Source version: 1.2.0 (TrueVision3D v2.151.0, 22-Sep-2026; read at b2aa9151)
+ * - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, new in this app, linked by
+ *                   Na__LayoutEditor__Panel__ScrapbookSpecification__ itself (no loader or CSS index
+ *                   line). 1.0.0 (v2.91.0), 1.1.0 (v2.144.0, NOT tried by Adam) and 1.2.0 (git
+ *                   a2e0a836, no devlog entry) are not confirmed in TrueVision: ported under
+ *                   DR-01 (c) and named.
+ * - Parity        : verbatim
+ * - Divergences   :
+ *   - Banner reads ValeVision3D.
+ * - Back-port     : none.
+ *
+ * DEVELOPMENT LOG:
+ * 22-Sep-2026 - Version 1.2.0
+ * - The "i" info disclosure, on the Show full notes row rather than a line
+ *   of its own, and the filter/toggle pinned under the tab strip while the
+ *   list scrolls beneath them (the section body's own overflow-y:auto
+ *   turned off for this one section, so the pin can reach the column that
+ *   actually scrolls).
+ *
+ * 22-Sep-2026 - Version 1.1.0
+ * - The row editor and the located row's halo.
+ *
+ * 20-Sep-2026 - Version 1.0.0
+ * - Initial implementation.
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Info Disclosure                                        */
+/* ----------------------------------------------------------------- */
+
+/* HOW TO USE THIS TAB, on demand. The instructions ran to four sentences and
+   sat on a line of their own on every visit whether they were wanted or not;
+   now it is a small "i" on the Show full notes row, before its words, and a
+   person opens it once and remembers. Reuses .na-le-note for the revealed
+   text, so it reads exactly as the old paragraph did.
+
+   THE ROW IS A DIV, NOT A LABEL, because the row now holds two things a
+   click means differently for: the icon opens the hint, the caption and
+   checkbox toggle Show full notes. A label wrapping both would forward a
+   click on the icon to the checkbox too. na-le-scrapspec__full-wrap is the
+   actual label - display:contents, so it takes no box of its own and the
+   caption and checkbox still lay out as the row's own flex children. */
+
+.na-le-scrapspec__info-icon {
+    display                            : inline-flex;
+    flex                                : 0 0 auto;
+    align-items                        : center;
+    justify-content                    : center;
+    width                              : 16px;
+    height                             : 16px;
+    margin                             : 0;
+    padding                            : 0;
+    border                             : 1px solid #b7c0c7;
+    border-radius                      : 50%;
+    background                         : #f4f6f8;
+    color                              : #6c757d;
+    font-family                        : Georgia, 'Times New Roman', serif;
+    font-size                          : 0.64rem;
+    font-style                         : italic;
+    font-weight                        : 700;
+    line-height                        : 1;
+    cursor                             : pointer;
+}
+
+.na-le-scrapspec__info-icon:hover {
+    border-color                       : #1a7fc4;
+    color                              : #1a7fc4;
+    background                         : #eef5fb;
+}
+
+.na-le-scrapspec__info-icon.is-open {
+    border-color                       : #1a7fc4;
+    color                              : #ffffff;
+    background                         : #1a7fc4;
+}
+
+.na-le-scrapspec__info-icon[hidden] {
+    display                            : none;
+}
+
+.na-le-scrapspec__full-wrap {
+    display                            : contents;
+}
+
+.na-le-scrapspec__info-text {
+    margin-top                         : -2px;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Filter and Toggle                                      */
+/* ----------------------------------------------------------------- */
+
+/* THE TWO CONTROLS above the list. The filter takes the whole width - it has
+   no label, its placeholder says what it is - and the toggle is a panel row
+   like every other. Neither sets a display of its own, so the hidden
+   attribute puts either away.
+
+   BOTH ARE PINNED under the tab strip while the list scrolls beneath them -
+   a specification runs to dozens of notes, and a filter that scrolls away
+   with them has to be hunted back down every time. The 30px offset is the
+   column tab strip's own rendered height (.na-le-panel__tabs in
+   Styles__Panels), so the pin sits flush under it rather than beneath it.
+
+   position:sticky ONLY reaches the column that actually scrolls
+   (.na-le-panel__scroll) if nothing between here and there also declares an
+   overflow - so the section body's own overflow-y:auto (Styles__Panels,
+   there for the height grip's clip) is turned off for this one section,
+   below. */
+
+.na-le-scrapspec__tools {
+    position                           : sticky;
+    top                                : 30px;
+    z-index                            : 2;
+    margin                             : 0 0 6px 0;
+    padding-top                        : 6px;
+    background                         : #ffffff;
+}
+
+.na-le-section[data-na-section="scrapbook-specification"] > .na-le-section__body {
+    overflow-y                         : visible;
+}
+
+.na-le-scrapspec__filter {
+    box-sizing                         : border-box;
+    width                              : 100%;
+    margin                             : 0 0 6px 0;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  The List and Its Rows                                  */
+/* ----------------------------------------------------------------- */
+
+.na-le-scrapspec {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 4px;
+    --Na_LeScrapSpec_ClampLines        : 3;                           /* <-- Overwritten inline from List__BodyClampLines */
+}
+
+/* A GROUP'S HEADING is the panel host's group subhead; it only sits a little
+   closer to the rows it heads than to the rows above it. */
+
+.na-le-scrapspec > .na-le-note--heading {
+    margin                             : 8px 0 0 0;
+}
+
+.na-le-scrapspec > .na-le-note--heading:first-child {
+    margin-top                         : 0;
+}
+
+/* THE ROW: the bubble at the left, the words beside it. The tile is a flex
+   column in the Scrapbook's sheet, so its display is already set and the
+   hidden attribute needs saying again for the filter to put a row away. */
+
+.na-le-scrap__item--spec {
+    flex-direction                     : row;
+    align-items                        : flex-start;
+    gap                                : 8px;
+    padding                            : 5px 6px;
+}
+
+.na-le-scrap__item--spec[hidden] {
+    display                            : none;
+}
+
+.na-le-scrap__item--spec .na-le-scrap__thumb {
+    flex                               : 0 0 36px;
+    width                              : 36px;
+    height                             : 36px;
+}
+
+/* THE BUBBLE IS DRAWN AT A FRACTION OF ITS PAPER SIZE, where its 0.35 pt edge
+   would be half a pixel and read as a smudge. In the row - never in the ghost,
+   which is at the sheet's zoom and is what lands - the edge is held at a
+   pixel so the circle reads as a circle. */
+
+.na-le-scrap__item--spec .na-le-scrap__thumb svg [stroke]:not([stroke="none"]) {
+    vector-effect                      : non-scaling-stroke;
+    stroke-width                       : 1px;
+}
+
+.na-le-scrap__item--spec .na-le-scrap__name {
+    display                            : flex;
+    flex                               : 1 1 auto;
+    flex-direction                     : column;
+    gap                                : 1px;
+    min-width                          : 0;
+}
+
+.na-le-scrapspec__head {
+    display                            : flex;
+    align-items                        : baseline;
+    gap                                : 6px;
+}
+
+.na-le-scrapspec__title {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    font-size                          : 0.74rem;
+    font-weight                        : 600;
+    line-height                        : 1.3;
+    color                              : #172b3a;
+    overflow-wrap                      : anywhere;
+}
+
+/* HOW MANY BUBBLES ON THIS SHEET already link to the note. A fact about the
+   sheet, said quietly: grey text, no fill, no colour. */
+
+.na-le-scrapspec__used {
+    flex                               : 0 0 auto;
+    font-size                          : 0.68rem;
+    font-variant-numeric               : tabular-nums;
+    color                              : #6c757d;
+}
+
+/* THE NOTE'S TEXT, cut short after a few lines unless Show full notes is on.
+   The whole note is always in the row's tooltip. */
+
+.na-le-scrapspec__body {
+    display                            : -webkit-box;
+    -webkit-box-orient                 : vertical;
+    -webkit-line-clamp                 : var(--Na_LeScrapSpec_ClampLines, 3);
+    line-clamp                         : var(--Na_LeScrapSpec_ClampLines, 3);
+    overflow                           : hidden;
+    font-size                          : 0.7rem;
+    line-height                        : 1.35;
+    color                              : #46596b;
+    overflow-wrap                      : anywhere;
+}
+
+.na-le-scrapspec.is-full .na-le-scrapspec__body {
+    display                            : block;
+    -webkit-line-clamp                 : unset;
+    line-clamp                         : unset;
+    overflow                           : visible;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  A Row Being Edited                                     */
+/* ----------------------------------------------------------------- */
+
+/* THE ROW STEPS ASIDE for its editor, whatever the filter says of it: a class
+   of its own, so the filter's hidden attribute can never bring it back
+   beside the editor. */
+
+.na-le-scrap__item--spec.is-editing {
+    display                            : none;
+}
+
+.na-le-scrapspec-edit {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 5px;
+    padding                            : 6px;
+    border                             : 1px solid #1a7fc4;
+    border-radius                      : 5px;
+    background                         : #f7fbfe;
+    box-shadow                         : 0 0 0 2px rgba(26, 127, 196, 0.16);
+}
+
+.na-le-scrapspec-edit__head {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+}
+
+.na-le-scrapspec-edit__thumb {
+    flex                               : 0 0 28px;
+    width                              : 28px;
+    height                             : 28px;
+}
+
+.na-le-scrapspec-edit__thumb svg {
+    display                            : block;
+    width                              : 100%;
+    height                             : 100%;
+    overflow                           : visible;
+}
+
+.na-le-scrapspec-edit__thumb svg [stroke]:not([stroke="none"]) {
+    vector-effect                      : non-scaling-stroke;
+    stroke-width                       : 1px;
+}
+
+.na-le-scrapspec-edit__caption {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    font-size                          : 0.66rem;
+    font-weight                        : 700;
+    letter-spacing                     : 0.05em;
+    text-transform                     : uppercase;
+    color                              : #1a7fc4;
+}
+
+/* THE TWO BOXES are drawn like the panels' own inputs; the Spell Check
+   feature's own sheet gives them their wrapping, their caret and their
+   placeholder. */
+
+.na-le-scrapspec-edit__title,
+.na-le-scrapspec-edit__body {
+    padding                            : 4px 6px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background                         : #ffffff;
+    color                              : #172b3a;
+}
+
+.na-le-scrapspec-edit__title {
+    font-size                          : 0.74rem;
+    font-weight                        : 600;
+    line-height                        : 1.3;
+}
+
+.na-le-scrapspec-edit__body {
+    min-height                         : 4.4em;
+    max-height                         : 50vh;
+    overflow-y                         : auto;
+    font-size                          : 0.72rem;
+    line-height                        : 1.4;
+}
+
+.na-le-scrapspec-edit__title:focus,
+.na-le-scrapspec-edit__body:focus {
+    border-color                       : #1a7fc4;
+    box-shadow                         : 0 0 0 2px rgba(26, 127, 196, 0.2);
+}
+
+.na-le-scrapspec-edit__foot {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    align-items                        : center;
+    gap                                : 6px;
+}
+
+.na-le-scrapspec-edit__keys {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    font-size                          : 0.64rem;
+    line-height                        : 1.3;
+    color                              : #8a96a0;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  A Row Being Located                                    */
+/* ----------------------------------------------------------------- */
+
+/* "I AM THE NOTE FOR THAT BUBBLE." Three pulses of a blue ring spreading from
+   the row, over a blue wash that fades back to white. The ring spreads 6 px,
+   inside the section's 10 px padding, so the column never clips it.
+
+   NO prefers-reduced-motion BRANCH, for the reason written up in
+   Na__UiFeature__Styles__AppHeader__.css ("Why There Is No
+   prefers-reduced-motion Branch Here"): Windows' Animation effects are off on
+   the studio PC and Chromium reports that as reduce, so a branch here would
+   turn the pulses the halo exists for into a still wash on the very machine
+   it was asked for. The motion is a 6 px ring and a colour fade - no zoom,
+   spin or travel. */
+
+@keyframes Na_LeScrapSpec_Locate {
+    0% {
+        background                     : #d9ebf8;
+        box-shadow                     : 0 0 0 0 rgba(26, 127, 196, 0.55);
+    }
+    70% {
+        background                     : #eaf3fb;
+        box-shadow                     : 0 0 0 6px rgba(26, 127, 196, 0);
+    }
+    100% {
+        background                     : #f7fbfe;
+        box-shadow                     : 0 0 0 0 rgba(26, 127, 196, 0);
+    }
+}
+
+.na-le-scrap__item--spec.is-located,
+.na-le-scrapspec-edit.is-located {
+    border-color                       : #1a7fc4;
+    animation                          : Na_LeScrapSpec_Locate 0.9s ease-out 3;
+}
+
+/* endregion ------------------------------------------------------- */

@@ -1,0 +1,9 @@
+﻿link sweep: 376 module(s) asked (40 touched in W3), 376 linked and evaluated, 0 failed
+requests: 623 (619 from disk, 0 404, 3 aborted)
+  aborted (off-machine)  GET https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf
+  aborted (off-machine)  GET https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf
+  aborted (off-machine)  GET https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf
+console errors / page errors: 3; warnings: 1; all console lines: 5
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED

@@ -29,6 +29,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 02-Oct-2026 - Version 1.0.1 (Cross Sections placeholder, v2.71.4)
+// - The gate's DOM ids are naCrossSectionToolDev*. TrueVision's Cross
+//   Sections placeholder panel (48) uses naCrossSectionDev*, and this app's
+//   own ids give way so that file ports unchanged (K2 S4, DR-26).
+//
 // 14-Jul-2026 - Version 1.0.0
 // - Initial implementation as part of the cross section tool.
 //
@@ -76,11 +81,13 @@
 
     // MODULE CONSTANTS | DOM Element IDs
     // ------------------------------------------------------------
-    const Na__SectDevMenu__ItemId      = 'naCrossSectionDevItem';        // <-- Dev menu list item container
-    const Na__SectDevMenu__ToggleId    = 'naCrossSectionDevToggle';      // <-- Submenu open/close button
-    const Na__SectDevMenu__PanelId     = 'naCrossSectionDevPanel';       // <-- Collapsible submenu panel
-    const Na__SectDevMenu__EnableId    = 'naCrossSectionDevEnableCheck'; // <-- Enable-for-project checkbox
-    const Na__SectDevMenu__SaveBtnId   = 'naCrossSectionDevSave';        // <-- Save Cross Section Config button
+    // The ids are naCrossSectionToolDev*: naCrossSectionDev* belongs to the
+    // Cross Sections drawing panel (48), whose ids are TrueVision's (K2 S4).
+    const Na__SectDevMenu__ItemId      = 'naCrossSectionToolDevItem';        // <-- Dev menu list item container
+    const Na__SectDevMenu__ToggleId    = 'naCrossSectionToolDevToggle';      // <-- Submenu open/close button
+    const Na__SectDevMenu__PanelId     = 'naCrossSectionToolDevPanel';       // <-- Collapsible submenu panel
+    const Na__SectDevMenu__EnableId    = 'naCrossSectionToolDevEnableCheck'; // <-- Enable-for-project checkbox
+    const Na__SectDevMenu__SaveBtnId   = 'naCrossSectionToolDevSave';        // <-- Save Cross Section Config button
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

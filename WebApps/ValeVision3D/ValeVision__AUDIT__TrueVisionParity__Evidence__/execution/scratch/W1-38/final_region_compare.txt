@@ -1,0 +1,6 @@
+﻿pre-image regions : ['ValeVision3D - Layout Editor Styles (panels)', 'Columns and Grips', 'Sections', 'Rows and Controls', 'Advanced Fold', 'Layer Rows', 'Gradient Rows (Vectors panel)', 'Dashed-Edge Rows (Vectors panel)', 'Scrapbook', 'Column Tabs']
+landed regions    : ['ValeVision3D - Layout Editor Styles (panels)', 'Columns and Grips', 'Sections', 'Rows and Controls', 'Advanced Fold', 'Layer Rows', 'Gradient Rows (Vectors panel)', 'Dashed-Edge Rows (Vectors panel)', 'Linked Pair (two values and a padlock)', 'Scrapbook', 'Column Tabs']
+TrueVision regions: (same titles as landed, banner aside)
+PASS  region "Scrapbook": 94 lines; landed == pre-image: True; landed == TrueVision: True
+PASS  region "Column Tabs": 70 lines; landed == pre-image: True; landed == TrueVision: True
+RESULT: PASS

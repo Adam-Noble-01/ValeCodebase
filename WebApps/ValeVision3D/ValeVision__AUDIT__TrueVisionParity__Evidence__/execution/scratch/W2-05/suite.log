@@ -1,0 +1,35 @@
+﻿Na__Test__AppConfigParity__.test.mjs                    exit 0    Every check passed.
+Na__Test__AuthoringZoomMax__.test.mjs                   exit 0    Every check passed.
+Na__Test__ColourPalette__.test.mjs                      exit 0  55 passed, 0 failed
+Na__Test__DimensionRoundUp__.test.mjs                   exit 0  Every check passed.
+Na__Test__DocumentKeys__.test.mjs                       exit 0    Every check passed.
+Na__Test__DraftRestore__.test.mjs                       exit 0  Every check passed
+Na__Test__DrawingDrafts__.test.mjs                      exit 0  ALL CHECKS PASSED
+Na__Test__DrawingPlanes__.test.mjs                      exit 0  All checks passed.
+Na__Test__ElevationDepthFog__.test.mjs                  exit 0  All checks passed.
+Na__Test__EnhanceWhitecardStrength__.test.mjs           exit 0    PASS - the Enhance Whitecard dial runs 0 to 100 and 100 is the old pass.
+Na__Test__FloorAreas__.test.mjs                         exit 0    PASS - every check passed.
+Na__Test__FloorPlanStoreyLevel__.test.mjs               exit 0    PASS - every check passed.
+Na__Test__FlushJoins__.test.mjs                         exit 0  8 passed, 0 failed
+Na__Test__LayerMenu__.test.mjs                          exit 0    PASS - every check passed.
+Na__Test__LayerStack__.test.mjs                         exit 0    PASS - every check passed.
+Na__Test__LineworkModifiers__.test.mjs                  exit 0    PASS - every check passed.
+Na__Test__LoaderFacade__.test.mjs                       exit 0    PASS - every check passed (118).
+Na__Test__LoaderStylesheets__.test.mjs                  exit 0    Every check passed.
+Na__Test__NorthCompass__.test.mjs                       exit 0    PASS - every check passed.
+Na__Test__ObjectSnap__.test.mjs                         exit 0    Every check passed.
+Na__Test__PerSceneLighting__.test.mjs                   exit 0  All checks passed.
+Na__Test__ProjectQr__.test.mjs                          exit 0  62 passed, 0 failed
+Na__Test__ScrapbookDrawingTitle__.test.mjs              exit 0    PASS - every check passed.
+Na__Test__ScrapbookScaleBar__.test.mjs                  exit 0    PASS - the scale bar draws the house bar and holds its rules.
+Na__Test__SheetPagingWalkExit__.test.mjs                exit 0    Every check passed.
+Na__Test__SheetsNormaliseOnce__.test.mjs                exit 0  Every check passed.
+Na__Test__SitePlanComposites__.test.mjs                 exit 1  Node.js v22.23.2
+Na__Test__SitePlanStore__.test.mjs                      exit 0  44 passed, 0 failed
+Na__Test__SpecLockstep__.test.mjs                       exit 0    ALL PASSED
+Na__Test__StatementLockstep__.test.mjs                  exit 0  ALL PASS
+Na__Test__StoreyBand__.test.mjs                         exit 0    PASS - every check passed.
+Na__Test__TitleBlockCells__.test.mjs                    exit 0  ALL CHECKS PASSED
+Na__Test__VectorQuality__.test.mjs                      exit 0  Every check passed.
+Na__Test__ViewportRotation__.test.mjs                   exit 0  Every check passed.
+Na__Test__ViewportTitleText__.test.mjs                  exit 0    PASS - every check passed.

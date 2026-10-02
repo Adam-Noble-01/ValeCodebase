@@ -29,27 +29,43 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ModelLayers__.js
-// - Ported on     : 12-Sep-2026
-// - Parity        : verbatim
-// - Divergences   : None in this file. The config JSON beside it differs: its
-//                   categories are namespaced ValeVision__, and an older
-//                   ValeVision export groups the building coarsely, so the config
-//                   keeps those coarse rows beside TrueVision's. The inventory is
-//                   read from the loaded model either way, so this module never
-//                   needed to know which app it was in.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js
+// - Source version: 1.4.0 (TrueVision3D v2.95.0, 20-Sep-2026, git 62dade1c, unlogged in its devlog; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was TrueVision's 1.1.0 (ValeVision3D v2.30.0). 1.2.0 (v2.32.0, phase categories), 1.3.0
+//                   (v2.49.0, site plan layers), 1.4.0 (Group__AlwaysShow) and the unlogged storey equivalent
+//                   key come across under DR-01 (c); none is recorded as tried by Adam in TrueVision.
+// - Parity        : adapted (app token only)
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - Category keys carry this app's token (K2 K3): the fallback stripPrefix is 'ValeVision__', the storey
+//     fallback prefix is 'ValeVision__MainBuildingModel__' (the config's Fallback__StoreyElementPrefix says
+//     the same), and three comments name ValeVision__ categories. The config beside it keeps this app's own
+//     rows (ValeVision__ keys, the coarse Existing / Proposed rows and the legacy group).
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
+// 20-Sep-2026 - Version 1.4.0
+// - Group__AlwaysShow. A group whose rows are never a real loaded model
+//   category (the linework-modifiers group - see Na__DataLib__CoreIndex__Tags
+//   76-79) now lists its rows regardless, instead of being silently dropped
+//   by the "model did not load it" check every other group still gets.
+//
+// 14-Sep-2026 - Version 1.3.0
+// - Site plan layers. Groups lists a site plan viewport's layers under their
+//   export's own groups and labels, in draw order, ahead of any model groups.
+//
+// 13-Sep-2026 - Version 1.2.0
+// - Groups takes an optional category key list, for a viewport drawing a
+//   design phase other than the one the 3D view holds.
+//
+// 12-Sep-2026 - Version 1.1.0
 // - The config gained a per-category edge style (weight factor, colour alias,
 //   line type alias) and this module indexes it. EdgeDefault(categoryKey) is
 //   what a newly drawn viewport starts from; Na__LayoutEditor__EdgeStyles__.js
-//   layers the per-viewport overrides on top of it. Ported from TrueVision3D;
-//   the config has TrueVision's rows under the ValeVision__ prefix, plus the
-//   coarse rows older exports need.
+//   layers the per-viewport overrides on top of it.
 //
 // 12-Sep-2026 - Version 1.0.0
 // - Initial implementation.
@@ -64,6 +80,7 @@
     // MODULE IMPORTS | The Loaded Model Categories
     // ------------------------------------------------------------
     import { Na__ModelToggle__GetCategoryKeys } from '../../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
+    import { Na__SpStore__GetLayers } from '../21__System__SitePlanData/Na__SitePlan__Store__.js';   // <-- A site plan viewport's layers and their names
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -192,6 +209,33 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Whole-Model Key a Storey Category Is the Same Thing As
+    // ------------------------------------------------------------
+    // A STOREY EXPORT NAMES ITS CATEGORIES DIFFERENTLY, and this file only ever
+    // listed the whole-model names. The SSOT builds both from the same token:
+    // Glb__ExportFileNameStem is "ValeVision__MainBuildingModel__" + the tag's
+    // Storey__ElementExportName, and a storey export loads as
+    // "Storey__<Storey>__" + that same element. So the two differ ONLY in the
+    // prefix, and "Storey__FirstFloor__ProposedWindows" is the same kind of
+    // thing as "ValeVision__MainBuildingModel__ProposedWindows".
+    //
+    // Without this every storey category missed the index and fell to the edge
+    // module's black / solid / 1.00 fallback - so on any storey-exported project
+    // (which is every project modelled with storey containers) the whole
+    // configured hierarchy below, windows at 0.80 and furniture at 0.50, had
+    // never once applied. Found 20-Sep-2026.
+    // ------------------------------------------------------------
+    function Na__LeModelLayers__StoreyEquivalentKey(categoryKey) {
+        if (typeof categoryKey !== 'string') return null;
+        const match = categoryKey.match(/^Storey__[^_]+(?:_[^_]+)*?__(.+)$/);
+        if (!match) return null;
+        const block  = Na__LeModelLayers__Config ? Na__LeModelLayers__Config['LayoutEditor__ModelLayers__Fallback'] : null;
+        const prefix = (block && block['Fallback__StoreyElementPrefix']) || 'ValeVision__MainBuildingModel__';
+        return prefix + match[1];
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Configured Edge Style for One Category (null When Unlisted)
     // ------------------------------------------------------------
     // Null is a real answer, not a failure: a category the model loaded that this
@@ -200,7 +244,11 @@
     // ------------------------------------------------------------
     function Na__LeModelLayers__EdgeDefault(categoryKey) {
         if (!Na__LeModelLayers__EdgeIndex) Na__LeModelLayers__BuildEdgeIndex();
-        return Na__LeModelLayers__EdgeIndex.get(categoryKey) || null;
+        const direct = Na__LeModelLayers__EdgeIndex.get(categoryKey);
+        if (direct) return direct;
+
+        const equivalent = Na__LeModelLayers__StoreyEquivalentKey(categoryKey);   // <-- A storey category wears the whole-model row's style
+        return (equivalent ? Na__LeModelLayers__EdgeIndex.get(equivalent) : null) || null;
     }
     // ------------------------------------------------------------
 
@@ -233,21 +281,39 @@
     // shows a First Floor Furniture row, and a project that exports a category
     // nobody has named yet still shows it - under "Other", with a generated
     // label - rather than offering no way to switch it off.
+    //
+    // categoryKeys names the model when it is not the live one: a viewport
+    // drawing another design phase lists THAT phase's categories. Omitted, the
+    // live model's registry answers, as it always did.
     // ------------------------------------------------------------
-    function Na__LeModelLayers__Groups() {
-        const loaded = Na__ModelToggle__GetCategoryKeys();
+    function Na__LeModelLayers__Groups(categoryKeys) {
+        const loaded = Array.isArray(categoryKeys) ? categoryKeys : Na__ModelToggle__GetCategoryKeys();
         if (!loaded || loaded.length === 0) return [];
 
         const remaining = new Set(loaded);
         const groups    = [];
         const mapped    = Na__LeModelLayers__Config ? (Na__LeModelLayers__Config['LayoutEditor__ModelLayers__Groups'] || []) : [];
 
+        // SITE PLAN LAYERS | Named and grouped by their own export (the SSOT's label
+        // and group), in draw order, ahead of any model groups.
+        const sitePlanGroups = new Map();
+        Na__SpStore__GetLayers().forEach((layer) => {
+            const key = layer.Layer__CategoryKey;
+            if (!remaining.has(key)) return;
+            remaining.delete(key);
+            const groupLabel = layer.Layer__Group || Na__LeModelLayers__Fallback().groupLabel;
+            if (!sitePlanGroups.has(groupLabel)) sitePlanGroups.set(groupLabel, []);
+            sitePlanGroups.get(groupLabel).push({ key : key, label : layer.Layer__Label || Na__LeModelLayers__Generated(key), tags : layer.Layer__TagName ? [ layer.Layer__TagName ] : [] });
+        });
+        sitePlanGroups.forEach((rows, groupLabel) => groups.push({ id : 'siteplan-' + groupLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-'), label : groupLabel, layers : rows }));
+
         mapped.forEach((group) => {
-            const rows = [];
+            const rows       = [];
+            const alwaysShow = group['Group__AlwaysShow'] === true;               // <-- A style-only group (e.g. linework-modifiers): never a loaded category, list it anyway
             (group['Group__Layers'] || []).forEach((layer) => {
                 const key = layer['Layer__CategoryKey'];
-                if (!remaining.has(key)) return;                                  // <-- The model did not load it: it is not a choice
-                remaining.delete(key);
+                if (!alwaysShow && !remaining.has(key)) return;                   // <-- The model did not load it: it is not a choice
+                remaining.delete(key);                                            // <-- Harmless when absent; keeps an always-shown key out of "Other" if the model happens to carry it too
                 rows.push({
                     key   : key,
                     label : layer['Layer__Label'] || Na__LeModelLayers__Generated(key),
@@ -316,9 +382,10 @@
     // THE LEADING '=' ASKS FOR AN EXACT MATCH, and it has to. The projection's
     // exclusion tokens are ordinarily substrings, which is right for the
     // hand-written tokens in a drawing record but wrong here: a category key
-    // is a whole name, and "ValeVision__MainBuildingModel__Proposed" is a
-    // substring of "ValeVision__MainBuildingModel__ProposedDoors".
-    // Switching off the proposal would have taken its doors with it.
+    // is a whole name, and "ValeVision__MainBuildingModel__Existing" is a
+    // substring of "...ExistingWalls", "...ExistingRoofs" and seven more.
+    // Switching off the existing building would have taken its walls, roofs
+    // and windows with it.
     // ------------------------------------------------------------
     function Na__LeModelLayers__ExcludeTokens(viewport) {
         return Na__LeModelLayers__HiddenKeys(viewport).map((key) => '=' + key);

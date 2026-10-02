@@ -1,0 +1,972 @@
+[
+ {
+  "id": "FR-01",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/40__System__2dElevationsView/",
+  "target_vv": "02__Src__AppModules/91__System__2dElevationsView/",
+  "tv_twin": null,
+  "reason": "Vacate TV's 40 first (legacy VV tool, 7 files after FR-08). 91 proved free: not in TV's current top level, never in TV's devlog folder history (TV used 90 for its own legacy PageLayoutSystem).",
+  "importers": [
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:93 (comments :91)",
+   "index.html:1375,1376",
+   "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js:67 [inside]",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js (comments :39)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low.",
+  "decision_refs": [
+   "D-S01-13",
+   "D-S01-02",
+   "D-S02a-04"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R"
+  ],
+  "notes": "Folder-level row: the 6 files that move with it keep their names. Rewrite order: FR-08's specifier first, then the folder name.",
+  "evidence": [],
+  "dr_refs": [
+   "DR-03"
+  ]
+ },
+ {
+  "id": "FR-02",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/42__System__DrawingViewCore/",
+  "target_vv": "02__Src__AppModules/40__System__DrawingViewCore/",
+  "tv_twin": "02__Src__AppModules/40__System__DrawingViewCore/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 51 importer files / 124 refs (1 inside the folder).",
+  "importers": [
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+   "index.html",
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js",
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+   "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+   "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js",
+   "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js",
+   "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+   "02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+   "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css",
+   "02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+   "02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-03",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/43__System__FloorPlanViews/",
+  "target_vv": "02__Src__AppModules/42__System__FloorPlanViews/",
+  "tv_twin": "02__Src__AppModules/42__System__FloorPlanViews/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 11 importer files / 22 refs (0 inside the folder).",
+  "importers": [
+   "index.html",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+   "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-04",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/44__System__PlanAnnotations/",
+  "target_vv": "02__Src__AppModules/43__System__PlanAnnotations/",
+  "tv_twin": "02__Src__AppModules/43__System__PlanAnnotations/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 7 importer files / 14 refs (0 inside the folder).",
+  "importers": [
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-05",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/45__System__PlanDimensions/",
+  "target_vv": "02__Src__AppModules/44__System__PlanDimensions/",
+  "tv_twin": "02__Src__AppModules/44__System__PlanDimensions/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 9 importer files / 33 refs (0 inside the folder).",
+  "importers": [
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js",
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-06",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/46__System__ElevationViews/",
+  "target_vv": "02__Src__AppModules/45__System__ElevationViews/",
+  "tv_twin": "02__Src__AppModules/45__System__ElevationViews/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 11 importer files / 23 refs (0 inside the folder).",
+  "importers": [
+   "index.html",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+   "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-07",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/47__System__NorthDirection/",
+  "target_vv": "02__Src__AppModules/46__System__NorthDirection/",
+  "tv_twin": "02__Src__AppModules/46__System__NorthDirection/",
+  "reason": "Drawing-system renumber to TV's number (folder-level row; every file inside keeps its name except FR-09). 6 importer files / 13 refs (0 inside the folder).",
+  "importers": [
+   "index.html",
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+   "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+   "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "See TF row; executed only by k2_renumber_apply.py --mode git in W1.",
+  "decision_refs": [
+   "D-S01-01",
+   "D-S01-15",
+   "D-S02a-01",
+   "D-S09-02",
+   "D-S02b-V03"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-01"
+  ],
+  "notes": "The PORT NOTE bullet \"Import paths follow the ValeVision folder numbers (...)\" in 28 files becomes false and is deleted by the same change (T8).",
+  "evidence": [],
+  "dr_refs": [
+   "DR-02"
+  ]
+ },
+ {
+  "id": "FR-08",
+  "level": "file",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js",
+  "target_vv": "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__2dProfileLines__.js",
+  "tv_twin": null,
+  "reason": "VV-only render pass (DIV-1) used by the composer route. A file's folder follows its base name (ledger 1115-1117): Na__RenderEffect__* lives in 05 beside Na__RenderEffect__ProfileLines__.js in both apps; TV's 40 DrawingViewCore holds only Na__DrawView__* files. Moving it into DrawingViewCore (S02a option) would put a non-DrawView file in a shared folder.",
+  "importers": [
+   "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js (comments :5,7)",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:93 (comments :91)",
+   "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js:47"
+  ],
+  "self_imports_to_fix": [
+   "'../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js' -> './Na__RenderEffect__SectionClipping__State.js' (still resolves either way; normalised)"
+  ],
+  "risk": "Low (2 importers).",
+  "decision_refs": [
+   "D-S01-13",
+   "D-S02a-04"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R"
+  ],
+  "notes": "",
+  "evidence": [
+   "VV 42/Na__DrawView__ComposerPreset__.js:91,93",
+   "VV 40/Na__ElevationView__SystemLogic.js:47",
+   "S01-F03"
+  ],
+  "dr_refs": [
+   "DR-03"
+  ]
+ },
+ {
+  "id": "FR-09",
+  "level": "file",
+  "kind": "rename",
+  "current_vv": "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+  "target_vv": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+  "tv_twin": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+  "reason": "Same eight-function interface: TV's RenderPreset was ported FROM VV ComposerPreset 1.2.0 \"interface only\" and says \"the seam is the eight function names\" (TV RenderPreset__.js:24-25, :31-32). Rename file and exports Na__DrawView__ComposerPreset__* -> Na__DrawView__RenderPreset__*; keep VV's composer body (DIV-1). Also give RenderFrame an optional camera argument so TV's RenderFrame(cam) calls stay correct (S02a-F14).",
+  "importers": [
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:274,276,311,324,333,368,405,426,434,447,486,507... (comments :5)",
+   "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:120,121,122,123,346,357,628",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:112,113,114,115,375,386,716",
+   "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:129,130,131,132,502,513,526",
+   "index.html:1412,1874,2211",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:425,1323 (comments :1319)",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js (comments :30)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low mechanically (6 live importer files + the file itself, 52 code refs); behaviour unchanged.",
+  "decision_refs": [
+   "D-S01-06",
+   "D-S02a-10"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S02a-12"
+  ],
+  "notes": "Header after the rename: banner \"VALEVISION3D - DRAWING VIEW CORE - RENDER PRESET\", MODULE \"Drawing View Core - Render Preset\" (TV text), NAMESPACE keeps VV's private Na__DrawPreset (VV body; listed as a divergence). PORT NOTE must be rewritten by hand: VV-authored, renamed to TV's interface name; Parity diverged (DIV-1).",
+  "evidence": [
+   "S01-F21",
+   "S02a-F14"
+  ],
+  "dr_refs": [
+   "DR-04"
+  ]
+ },
+ {
+  "id": "FR-10",
+  "level": "file",
+  "kind": "rename",
+  "current_vv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js",
+  "target_vv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js",
+  "tv_twin": "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js",
+  "reason": "VV added a trailing __ on port. TV is the naming lead and keeps legacy names without the suffix (ConfirmDialog.js and ProjectLoader.js lack it in both apps), so VV takes TV's name; a TV-side rename (D-S11-08 b) is not scheduled.",
+  "importers": [
+   "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:65 (comments :38,63)",
+   "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js:61 (comments :38,59)",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js (comments :5)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "None (2 importers, both in folders W1 renumbers anyway).",
+  "decision_refs": [
+   "D-S02b-12R",
+   "D-S11-08"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R",
+   "WP-S09-10"
+  ],
+  "notes": "The two PORT NOTE bullets \"Snapshot history imported from Na__AppUtils__SnapshotHistory__.js ...\" (PlanAnnotations History :38, PlanDimensions History :38) become false and are deleted (T8).",
+  "evidence": [
+   "S01-F19",
+   "S09-F05",
+   "S11-F44",
+   "S02b-F05"
+  ],
+  "dr_refs": [
+   "DR-04"
+  ]
+ },
+ {
+  "id": "FR-11",
+  "level": "file",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js",
+  "target_vv": "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js",
+  "tv_twin": "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js",
+  "reason": "Same module at a different depth. TV's 40 Transitions, 42 and 45 ModeControllers (and LoadingSequence) import it from 05/, so the move removes a seam from three drawing files. Done inside W1 because W1 already rewrites every importer (D-S09-V02 b).",
+  "importers": [
+   "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js (comments :5,30)",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:216",
+   "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__FrameRenderer.js:112",
+   "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Thumbnails.js:117",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js:63",
+   "WEBAPPS/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:318",
+   "WEBAPPS/live_sw.js:157"
+  ],
+  "self_imports_to_fix": [
+   "'../../04__MathUtils/Na__Math__Units.js' -> '../04__MathUtils/Na__Math__Units.js' (TV :57 has the same)"
+  ],
+  "risk": "Low. The shared WCP precache entry (logic :318) goes stale but cannot break an install: the precache is best-effort per URL (logic :592-600).",
+  "decision_refs": [
+   "D-S01-07",
+   "D-S09-V02",
+   "D-S10-13"
+  ],
+  "phase": "W1",
+  "work_packages": [
+   "WP-S01-01R"
+  ],
+  "notes": "No WCP edit in W1 (K1 DR-07: no feature package edits or bumps the shared worker). The precache line WCP Whitecardopedia__Pwa__ServiceWorker__Logic__.js:318 is updated by the DR-07 service-worker package (k2_renumber_apply.py --edit-wcp-sw does it if Adam wants it in W1). WebApps/live_sw.js:157 is a stale tracked copy (token 2026-09-10-6) - confirm which file the deployed site registers before touching it (S01 W7).",
+  "evidence": [
+   "TV 05/Na__RenderEffect__DistanceCulling__.js:57",
+   "S01-F20",
+   "S09-F22"
+  ],
+  "dr_refs": [
+   "DR-04",
+   "DR-07"
+  ]
+ },
+ {
+  "id": "FR-12",
+  "level": "file",
+  "kind": "rename",
+  "current_vv": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json",
+  "target_vv": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+  "tv_twin": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+  "reason": "TV renamed its drawing-tab key file in v2.115.0 (TV DEVLOG:5043, \"was Na__LayoutEditor__KeyMappings__.json\"); internal keys (LayoutEditor__KeyMappings__*) were kept, so only the FILE name changes. Rename name-only in W1b (content unchanged) so S04b/S05b key rows and TV's tests target TV's name; TV's CONTENT lands only together with ConfigState__KeyMap__ 1.11.0 (WP-S03a-02), never on VV's 1.0.0 matcher.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:63 (comments :13,154)",
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:277,457",
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js (comments :154)",
+   "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js (comments :19)",
+   "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js (comments :29)",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js (comments :56)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low for the name-only step; the content step is behaviour (T would reach Trim without the When-aware matcher).",
+  "decision_refs": [
+   "D-S03a-03",
+   "D-S05a-04",
+   "D-S04b-07",
+   "D-S05b-04"
+  ],
+  "phase": "W1b",
+  "work_packages": [
+   "WP-S01-03R",
+   "WP-S03a-02"
+  ],
+  "notes": "",
+  "evidence": [
+   "S01-F17",
+   "S03a-F08",
+   "S05a-F03",
+   "S09-F06"
+  ],
+  "dr_refs": [
+   "DR-18",
+   "DR-33"
+  ]
+ },
+ {
+  "id": "FR-13",
+  "level": "file",
+  "kind": "rename",
+  "current_vv": "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json",
+  "target_vv": "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json",
+  "tv_twin": "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json",
+  "reason": "Same file by role and schema: TV's Manager header says its array schema \"is the same schema ValeVision3D's hotkey dictionary uses\" (TV 10/Na__Hotkeys__Manager.js:17-21); TV renamed its own (was Na__AppConfig__Hotkeys.json) in v2.115.0 (TV DEVLOG:5042). D-S05a-04's \"different schema\" is only the root key and action prefixes (app tokens). Rename the FILE; keep root key Na__ValeVision__HotkeysDictionary, the ValeVision__* actions and VV's handler (handler choice stays D-S05a-04).",
+  "importers": [
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:116 (comments :13,28)",
+   "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:84 (comments :22)",
+   "index.html (comments :1261,1776)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low: two runtime fetches (HotkeyHandler :116, NavigationHelpPanel :84) - miss the second and the help panel empties.",
+  "decision_refs": [
+   "D-S03a-03",
+   "D-S05a-04"
+  ],
+  "phase": "W1b",
+  "work_packages": [
+   "WP-S01-03R",
+   "WP-S03a-V03"
+  ],
+  "notes": "",
+  "evidence": [
+   "S01-F17",
+   "S03a-F30",
+   "S05a-F04",
+   "S11-V08"
+  ],
+  "dr_refs": [
+   "DR-33"
+  ]
+ },
+ {
+  "id": "FR-14",
+  "level": "file",
+  "kind": "shim",
+  "current_vv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+  "target_vv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+  "tv_twin": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/ (Na__LayoutEditor__ObjectSnap__Search__.js, __State__.js, __Marker__.js, __.js)",
+  "reason": "Step 1 of 2 (TV did exactly this: \"a re-export for an hour\", TV ObjectSnap__.js:60-63). In the ObjectSnap port commit, replace VV's 455-line Snapping__ by a re-export shim that imports ONLY from __Search__ (Find, Snap, ShowMarker, HideMarker, Clear, IsEnabled, KIND_END, KIND_MID) and __State__ (CHANGED_EVENT) and declares TONE_VERTEX / TONE_DIMENSION / TONE_VIEWPORT as local strings - never the controller (controller -> Measurements -> Shape/Rectangle/Dimension tools -> shim would be a cycle, TV ObjectSnap__.js:33-37). Repoint the Toggle importers (Keyboard :123, Toolbar :110, ContextMenu :100) to the controller and ModeController :228 to __Search__ in the same commit.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:121 (comments :82)",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:228",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js (comments :336)",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:100",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:112",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:123",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:137",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js (comments :5)",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:129",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:77",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:98",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:110"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Medium: visible snap behaviour change in one step (marker colours by target, D-S04b-02).",
+  "decision_refs": [
+   "D-S04b-09",
+   "D-S04b-02",
+   "D-S04b-01"
+  ],
+  "phase": "W2",
+  "work_packages": [
+   "WP-S04b-06R"
+  ],
+  "notes": "10 importing files (ModeController :228, ContextMenu :100, HitResolution :112, Keyboard :123, PointerDrag :137, DimensionTool :129, LeaderTool :77, RectangleTool :98, ShapeTool :121, Toolbar :110) + 2 comment-only mentions (SheetTools__.js:336, ShapeTool :82). S01's \"11 importers\" counted SheetTools__.js, which only names it in a comment.",
+  "evidence": [
+   "S04b-F02",
+   "S01-F18",
+   "S05a-F29",
+   "S05b-F39",
+   "S11-V07"
+  ],
+  "dr_refs": [
+   "DR-01",
+   "DR-05",
+   "DR-40"
+  ]
+ },
+ {
+  "id": "FR-15",
+  "level": "file",
+  "kind": "retire",
+  "current_vv": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+  "target_vv": null,
+  "tv_twin": null,
+  "reason": "Step 2 of 2: delete the shim once its last importer is repointed to 28__System__ObjectSnap (the hub and drawing-tool ports, S05a/S05b), behind a grep gate (no Na__LayoutEditor__Snapping__ and no Na__LeOsnap__TONE_ outside history). TV has no file of this name.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:121 (comments :82)",
+   "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:228",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js (comments :336)",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:100",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:112",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:123",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:137",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js (comments :5)",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:129",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:77",
+   "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:98",
+   "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:110"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low.",
+  "decision_refs": [
+   "D-S04b-09"
+  ],
+  "phase": "W2 (after the SheetTools/DrawingTools hub ports)",
+  "work_packages": [
+   "WP-S04b-09"
+  ],
+  "notes": "",
+  "evidence": [
+   "S04b-F02"
+  ],
+  "dr_refs": [
+   "DR-05"
+  ]
+ },
+ {
+  "id": "FR-16",
+  "level": "file",
+  "kind": "shim",
+  "current_vv": null,
+  "target_vv": "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+  "tv_twin": "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+  "reason": "VV-bodied facade at TV's path with TV's namespace (Na__CfApi), all 33 export names and signatures, implemented over whitecardopedia-editor-api, WCP Flask and VaApps/Projects/<folderId>/ (DIV-4 kept). Its VV twins today are three per-route clients it fronts: 03/Na__AppUtils__R2SaveProjectJson__.js, R2AssetUpload__.js, R2DrawingNotes__.js. Every TV importer then ports with unchanged specifiers.",
+  "importers": [
+   "(TV importers that port unchanged, 29 files): ",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js:63 (comments :58)",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js:83 (comments :81)",
+   "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js:160 (comments :155)",
+   "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:141",
+   "02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js:54",
+   "02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js:52",
+   "02__Src__AppModules/11__CameraUtils/Na__UiFeature__ViewModeFov__DevControls.js:59",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:257",
+   "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js:64",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js:77",
+   "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:113",
+   "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js:97",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:73",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js:115",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:131",
+   "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js:58",
+   "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js:86",
+   "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js:90",
+   "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js:111",
+   "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js:97",
+   "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js:83",
+   "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js:54",
+   "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:200",
+   "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js:46",
+   "02__Src__AppModules/70__System__DevTools/Na__UiFeature__AssetCullDistance__DevControls.js:74",
+   "02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js:50",
+   "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs (comments :271)",
+   "Index.html:885",
+   "TrueVision__NOTES__SitePlanComposites__Survey__.md:331"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "High value / medium risk: transport semantics (S12 b.4-b.6); land before the first port that imports it.",
+  "decision_refs": [
+   "D-S01-03",
+   "D-S09-04",
+   "D-S09-V01",
+   "D-S12-01",
+   "D-S07a-08"
+  ],
+  "phase": "W2 (first)",
+  "work_packages": [
+   "WP-S01-06R",
+   "WP-S09-06"
+  ],
+  "notes": "D-S09-V01 (c: facade over per-document VV clients) and D-S12-01 (A: facade straight onto the worker routes) differ on the body only; the PATH and NAME are the same either way.",
+  "evidence": [
+   "S01-F13",
+   "S12-F43"
+  ],
+  "dr_refs": [
+   "DR-27"
+  ]
+ },
+ {
+  "id": "FR-17",
+  "level": "file",
+  "kind": "shim",
+  "current_vv": null,
+  "target_vv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+  "tv_twin": "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+  "reason": "VV-bodied local-mirror shim at TV's path (Na__LocalMirror, 8 exports) over WCP/server.py routes (POST /api/projects/<folder_id> exists at :439; /files/<name>, drawings-fingerprint and statement routes are new).",
+  "importers": [
+   "(TV importers that port unchanged, 8 files): ",
+   "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js:167 (comments :31,120,165)",
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js:114 (comments :113)",
+   "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js:99 (comments :91)",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js (comments :5)",
+   "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js:59",
+   "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js:76",
+   "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js:112",
+   "TrueVision__NOTES__StatementWriter__.md:512"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Medium (localhost writes).",
+  "decision_refs": [
+   "D-S01-03",
+   "D-S09-04",
+   "D-S12-01"
+  ],
+  "phase": "W2 (first)",
+  "work_packages": [
+   "WP-S01-06R",
+   "WP-S09-06"
+  ],
+  "notes": "",
+  "evidence": [
+   "S01-F14",
+   "S12-F43"
+  ],
+  "dr_refs": [
+   "DR-27"
+  ]
+ },
+ {
+  "id": "FR-18",
+  "level": "file",
+  "kind": "retire",
+  "current_vv": "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js",
+  "target_vv": null,
+  "tv_twin": "(role absorbed by 80/Na__CloudflareIntegration__ApiClient__.js ReadProjectFile/WriteProjectFile and 03/Na__AppUtils__LocalProjectMirror__.js WriteSiblingFile)",
+  "reason": "VV-only notes client; its only importer is SpecData__Transport__ :90. Retire once TV's SpecData Transport 1.3.0 / Lockstep are ported over the facade. Conditional: under D-S09-V01 (c) the facade may keep calling it as a per-document client - then it stays (kind becomes keep).",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:90 (comments :30,37,89)",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js (comments :5)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low.",
+  "decision_refs": [
+   "D-S12-01",
+   "D-S09-V01",
+   "D-S06b-V01"
+  ],
+  "phase": "W2 late (WP-S06b-01 first extends it to 1.1.0; retire when the spec transport is re-based onto the facade)",
+  "work_packages": [
+   "WP-S06b-01",
+   "WP-S09-06"
+  ],
+  "notes": "",
+  "evidence": [
+   "S12-F22"
+  ],
+  "dr_refs": [
+   "DR-27"
+  ]
+ },
+ {
+  "id": "FR-19",
+  "level": "file",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js",
+  "target_vv": "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+  "tv_twin": "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+  "reason": "Identical 4.1.0 build; TV moved its copy here in v2.155.0. COPY now (the legacy 35 page keeps its own copy until 35 retires, FR-21), repoint the LE config, the SheetSetup fallback and both test pages.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:402",
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:396",
+   "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html:31",
+   "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html:70"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low.",
+  "decision_refs": [
+   "D-S01-02"
+  ],
+  "phase": "W2",
+  "work_packages": [
+   "WP-S01-02",
+   "WP-S09-10",
+   "WP-S03a-V02"
+  ],
+  "notes": "The two test pages (Na__Test__SpecificationPdf__.html:31, Na__Test__TitleBlockCells__.html:70) were missed by S01 and S09.",
+  "evidence": [
+   "S01-F05",
+   "S08-F20",
+   "S09-F03",
+   "S06b-F54"
+  ],
+  "dr_refs": [
+   "DR-03"
+  ]
+ },
+ {
+  "id": "FR-20",
+  "level": "file",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png",
+  "target_vv": "01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
+  "tv_twin": "01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png (CONTENT DIFFERS - NA scan, never copied)",
+  "reason": "TV's asset path and file name; VV's own Vale scan (md5 59777a65; the 02__VizDpt__ copy 05085a29 is not the live one). COPY now, delete the 35 original with FR-21.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:105,106,107,108",
+   "02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Config.json:6",
+   "02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js:33"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low.",
+  "decision_refs": [
+   "D-S03b-10"
+  ],
+  "phase": "W2",
+  "work_packages": [
+   "WP-S01-02",
+   "WP-S09-10",
+   "WP-S03a-V02"
+  ],
+  "notes": "",
+  "evidence": [
+   "S03b-F36",
+   "S09-F04"
+  ],
+  "dr_refs": [
+   "DR-43"
+  ]
+ },
+ {
+  "id": "FR-21",
+  "level": "folder",
+  "kind": "retire",
+  "current_vv": "02__Src__AppModules/35__System__PageLayoutSystem/",
+  "target_vv": null,
+  "tv_twin": "(TV retired its copy, 90__System__PageLayoutSystem, in v2.155.0 - TV DEVLOG:1287)",
+  "reason": "Retire the legacy Create Drawing tool after FR-19/FR-20 and Adam's confirmation; remove the Create Drawing button (index.html:354, overlay :215) and its handler (ImageExport Controls :364, :564-646, :627). Number 35 stays reserved, never reused.",
+  "importers": [
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:105,106,107,108,402",
+   "02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js:627",
+   "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:396",
+   "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js (comments :27)",
+   "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js (comments :32)",
+   "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js (comments :124)",
+   "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js (comments :30)",
+   "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html:31",
+   "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html:70"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Medium (user-visible menu item removed).",
+  "decision_refs": [
+   "D-S01-02",
+   "D-S09-10"
+  ],
+  "phase": "W3",
+  "work_packages": [
+   "WP-S01-02"
+  ],
+  "notes": "",
+  "evidence": [
+   "S09-F46"
+  ],
+  "dr_refs": [
+   "DR-03"
+  ]
+ },
+ {
+  "id": "FR-22",
+  "level": "folder",
+  "kind": "move",
+  "current_vv": "02__Src__AppModules/62__Feature__EmailWorkers/",
+  "target_vv": "02__Src__AppModules/92__Feature__EmailWorkers/",
+  "tv_twin": null,
+  "reason": "Clears the nominal collision with TV/WCP 62__Feature__AppInstallability. 92 proved free (never used by TV). Runs only if Adam asks (D-S01-08 (a); K3 W6-03): the DR-03 default keeps 62 (TF-T32). Never before node_modules is untracked (1,857 of 1,877 tracked files).",
+  "importers": [
+   "02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__README__.md (comments :1) [inside]",
+   "02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js (comments :12)",
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:65",
+   "index.html:1382"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Medium (deploy shortcut .lnk embeds an absolute path).",
+  "decision_refs": [
+   "D-S01-08",
+   "D-S01-05"
+  ],
+  "phase": "W3 (only on request; K3 W6-03)",
+  "work_packages": [
+   "WP-S01-09"
+  ],
+  "notes": "",
+  "evidence": [
+   "S01-F57",
+   "S01-F58"
+  ],
+  "dr_refs": [
+   "DR-03"
+  ]
+ },
+ {
+  "id": "FR-23",
+  "level": "folder",
+  "kind": "retire",
+  "current_vv": "04__Lib__ThirdParty__Three/",
+  "target_vv": null,
+  "tv_twin": null,
+  "reason": "Unreferenced legacy three.js copy (17 tracked files); superseded by 04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0.",
+  "importers": [
+   "WEBAPPS/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js (comments :131)",
+   "WEBAPPS/live_sw.js (comments :41)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "None.",
+  "decision_refs": [],
+  "phase": "W3",
+  "work_packages": [],
+  "notes": "",
+  "evidence": [
+   "S01-F56"
+  ],
+  "dr_refs": []
+ },
+ {
+  "id": "FR-24",
+  "level": "region",
+  "kind": "move",
+  "current_vv": "03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css (lines 969-1239, REGION \"Scene Inspector - Dev Tools Panel\")",
+  "target_vv": "03__Style__AppStylesheets/Na__UiFeature__Styles__SceneInspector__.css",
+  "tv_twin": "03__Style__AppStylesheets/Na__UiFeature__Styles__SceneInspector__.css",
+  "reason": "Optional structural alignment, NOT recommended for drawing parity (K1 DR-44 skips the stylesheet split): TV split this region out of DropdownAndToast into its own sheet. If Adam wants identical 3D-tab file structure, move it verbatim and import it right after DropdownAndToast (TV CSS index :36).",
+  "importers": [
+   "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css (new @import)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Low (cascade order kept by importing it immediately after DropdownAndToast).",
+  "decision_refs": [
+   "D-S10-11"
+  ],
+  "phase": "W3 (optional)",
+  "work_packages": [],
+  "notes": "",
+  "evidence": [
+   "S10-F28"
+  ],
+  "dr_refs": [
+   "DR-44"
+  ]
+ },
+ {
+  "id": "FR-25",
+  "level": "folder",
+  "kind": "retire",
+  "current_vv": "02__Src__AppModules/91__System__2dElevationsView/ (after FR-01)",
+  "target_vv": null,
+  "tv_twin": null,
+  "reason": "Retire the legacy Elevation View once Adam confirms the Elevation drawings cover it (D-S01-02 b later): remove the Tools-menu item (index.html:519-526), the imports (:1375-1376), the export-override chain (:1874) and init (:2149), and the DropdownAndToast \"Elevation View - Cursor and UI States\" region (:1341-1372). Its 2dProfileLines pass has already left (FR-08), so the composer is unaffected.",
+  "importers": [
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:93 (comments :91)",
+   "index.html:1375,1376",
+   "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js:67 [inside]",
+   "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js (comments :39)"
+  ],
+  "self_imports_to_fix": [],
+  "risk": "Medium (user-visible tool removed).",
+  "decision_refs": [
+   "D-S01-02",
+   "D-S09-10"
+  ],
+  "phase": "W3",
+  "work_packages": [],
+  "notes": "",
+  "evidence": [
+   "S09-F46",
+   "S01-F02"
+  ],
+  "dr_refs": [
+   "DR-03"
+  ]
+ }
+]

@@ -1,0 +1,59 @@
+{
+ "pin": "b2aa9151",
+ "tv": {
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js": {
+   "bytes": 11667,
+   "sha256": "d7dc14f92e7dad2b6b8179aa9735e3a46c7ebdebf41b133fb52f4e4e1d1af560",
+   "crlf": 0,
+   "lf": 249
+  },
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js": {
+   "bytes": 33531,
+   "sha256": "8ac9ab79f6572bb7ce3e85f3d4c71d76a5605685fd3a2008a3cbdeb9bc8b3ff7",
+   "crlf": 0,
+   "lf": 660
+  },
+  "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js": {
+   "bytes": 8220,
+   "sha256": "a6cb65e6f3a0ee603bd85c66800b3cbe907688adf965dfea0fdb844f98e493a6",
+   "crlf": 0,
+   "lf": 165
+  },
+  "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js": {
+   "bytes": 14946,
+   "sha256": "9854841f7b27632f42b8c2086e6358b7d27f1f897ed27b69b9aca2401254d912",
+   "crlf": 0,
+   "lf": 287
+  }
+ },
+ "vv": {
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js": {
+   "bytes": 10091,
+   "sha256": "7cc5da5b0fcfa7ab5331d8dcf28568438770ee5a707bf921d6a194d7c0904f48",
+   "crlf": 0,
+   "lf": 225,
+   "bom": false
+  },
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js": {
+   "bytes": 32977,
+   "sha256": "188782d1200ec619054d3afe65242467ee5439eaefea5acaa7ed572a8282ab0b",
+   "crlf": 640,
+   "lf": 640,
+   "bom": false
+  },
+  "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js": {
+   "bytes": 13288,
+   "sha256": "b1acc1fd5d3da71ab891139b4648d6b77c0d7c25cc48a79628ecfcbacfd8aac1",
+   "crlf": 0,
+   "lf": 272,
+   "bom": false
+  },
+  "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js": {
+   "bytes": 13427,
+   "sha256": "22bbff315e735c5d167dc5d137ae15b828e977888d4d53d4f9feae51438f9989",
+   "crlf": 0,
+   "lf": 263,
+   "bom": false
+  }
+ }
+}

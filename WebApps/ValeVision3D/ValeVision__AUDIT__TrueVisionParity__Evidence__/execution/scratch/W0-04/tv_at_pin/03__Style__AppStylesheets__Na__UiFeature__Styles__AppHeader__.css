@@ -1,0 +1,310 @@
+﻿/* =============================================================================
+ * TRUEVISION3D - HEADER COMPONENT STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__AppHeader__.css
+ * NAMESPACE  : TrueVision3D
+ * MODULE     : Header Component Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Header bar with Vale branding matching Whitecardopedia design
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Persistent header component matching Whitecardopedia design
+ * - Features Noble Architecture logo on left
+ * - Features TrueVision 3D text placeholder on right
+ * - White background with subtle shadow and Vale blue bottom border
+ * - Fixed positioning at top of viewport
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Header-Specific Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        --Vale_HeaderHeight                : 60px;                         /* <-- Fixed header height */
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Noble Architecture brand blue */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
+        --Vale_Spacing_Large               : 24px;                         /* <-- Large spacing unit */
+        --Vale_FontSize_Heading           : 24px;                         /* <-- Heading text size */
+        --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
+        --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        position                           : fixed;                        /* <-- Fixed positioning at top */
+        top                                : 0;                            /* <-- Align to top of viewport */
+        left                               : 0;                            /* <-- Align to left edge */
+        right                              : 0;                            /* <-- Align to right edge */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : space-between;                /* <-- Space between elements */
+        height                             : var(--Vale_HeaderHeight);     /* <-- Fixed header height */
+        padding                            : 0 var(--Vale_Spacing_Large);  /* <-- Horizontal padding */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.08);  /* <-- Subtle shadow */
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue bottom border */
+        z-index                            : 1001;                         /* <-- Dropdown layer: the Dev Tools flyout is a header child and inherits this stacking context */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Logo Container Base Styles */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Left Logo Container */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container--left {
+        justify-content                    : flex-start;                   /* <-- Align left */
+        gap                                : 20px;                         /* <-- Breathing room between the logo and the Dev Tools trigger */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Dev Tools Trigger Slot (Localhost Only) */
+    /* ------------------------------------------------------------ */
+    /* Empty in the markup. Na__UiFeature__DevMenu__LocalhostOnly.js moves    */
+    /* #naDevToolsMenuContainer in here once the authoring gate passes, so on */
+    /* a live deployment the slot stays empty and collapses to nothing.       */
+    .app-header__dev-slot {
+        display                            : flex;                         /* <-- Vertically centres the trigger in the bar */
+        align-items                        : center;
+    }
+
+    .app-header__dev-slot:empty {
+        display                            : none;                         /* <-- No stray gap when the gate is closed */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Right Logo Container */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container--right {
+        justify-content                    : flex-end;                     /* <-- Align right */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Vale Logo (Left Side) */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-left {
+        height                             : 42px;                         /* <-- Vale logo height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | TrueVision 3D Title Text (Right Side) */
+    /* ------------------------------------------------------------ */
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+        color                              : var(--Vale_PrimaryBrand);     /* <-- Vale brand blue color */
+        margin                             : 0;                            /* <-- Remove default margins */
+        padding                            : 0;                            /* <-- Remove default padding */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive | Narrow Mobile Screens (<=600px)
+ * -----------------------------------------------------------------------------
+ * Targets narrow viewports only (<=600px). iPad portrait, landscape phones,
+ * and desktop are unaffected. Scales the top bar + logo down 20% and reduces
+ * the "TrueVision 3D" title so it no longer dominates a phone-width header.
+ * Redefining --Vale_HeaderHeight at :root cascades to the canvas, image
+ * export overlays, dropdowns, and toolbar top offsets, so all header-
+ * relative positioning follows the smaller header automatically.
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 600px) {
+
+        /* HEADER | Scale Header Down 20% on Narrow Screens */
+        /* ------------------------------------------------------------ */
+        :root {
+            --Vale_HeaderHeight            : 48px;                         /* <-- 60px scaled to 80% (auto-cascades to canvas / overlays) */
+        }
+
+        .app-header {
+            padding                        : 0 12px;                       /* <-- Tighter horizontal padding on narrow screens */
+        }
+
+        .app-header__logo-left {
+            height                         : 33.6px;                       /* <-- 42px scaled to 80% */
+        }
+
+        .app-header__logo-container--left {
+            gap                            : 10px;                         /* <-- Tighter pairing on a phone-width bar */
+        }
+
+        .app-header__title {
+            font-size                      : 18px;                         /* <-- Reduced from 24px; full size felt oversized on phones */
+        }
+        /* ------------------------------------------------------------ */
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Contextual Fold | The Bar Leaves on a Drawing Tab
+ * -----------------------------------------------------------------------------
+ * THE BRANDING EARNS ITS 60px IN THE 3D VIEW AND NOWHERE ELSE. Landing in
+ * TrueVision, orbiting a model, reaching for Dev Tools: the bar belongs there
+ * and is left exactly as it was. The moment a drawing tab is pressed the paper
+ * becomes the subject, and 60px of logo is 60px of drawing, on a localhost
+ * editor and on the live site a client reads.
+ *
+ * WHAT MOVES, AND WHAT DELIBERATELY DOES NOT. The header and the tab strip
+ * slide up together as one unit; the editor host does NOT animate - it is laid
+ * out at its folded position the same frame the class lands, and the two bars
+ * slide up OVER it. That reads as a curtain lifting, and it is also the only
+ * arrangement that is correct: Na__LeMode__Enter fits the paper to the stage on
+ * the next animation frame (Na__LeNav__Fit), so a host still growing at that
+ * moment would fit the drawing to a stage 60px short of its final height.
+ * Nothing else in the app re-measures on a container resize - there is no
+ * ResizeObserver in the codebase - so the snap costs one layout and no render.
+ *
+ * WHY top AND NOT transform. A transform would be the cheaper animation, and it
+ * is not available here: a transformed ancestor becomes the containing block for
+ * its position: fixed descendants, and the Dev Tools flyout list is a fixed
+ * descendant of this header. Na__UiFeature__Styles__DevToolsMenu__.css states
+ * that constraint outright - "The container must never carry a transform" - so
+ * the header carries none, in either state, and slides on top instead. The bar
+ * holds a logo and a heading; the layout is trivial.
+ *
+ * THE 3D CANVAS IS NOT TOUCHED AT ALL - not its size, not its position, not its
+ * transition. It never needed to be: the renderer is sized from
+ * window.innerWidth/innerHeight and never from this box, so folding the bar
+ * cannot move the 3D framing or resize the drawing buffer. The reasoning behind
+ * leaving it out, including the one thing that argued for pulling it in, is
+ * kept with the rule it replaced further down.
+ *
+ * Both steady states are identical to the pre-fold app. Only the 480ms between
+ * them is new, and the rules for it live together on purpose: they share one
+ * duration and one easing curve, and split across stylesheets they would drift.
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Fold Timing */
+    /* ------------------------------------------------------------ */
+    :root {
+        --Vale_HeaderFoldDuration      : 1000ms;                       /* <-- THE ONE NUMBER THAT SETS THE PACE. Change it here and both bars follow. */
+        --Vale_HeaderFoldEase          : cubic-bezier(0.40, 0.00, 0.20, 1);  /* <-- Even glide; a front-loaded curve read as a snap then a crawl */
+        --Vale_HeaderFoldDelay         : 1000ms;                       /* <-- The beat the bar waits before leaving. Going away only; see below. */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Header Itself */
+    /* ------------------------------------------------------------ */
+    /* THE DELAY IS ONE-WAY, AND THAT IS NOT AN OVERSIGHT. A transition takes
+       its timing from the state it is moving TO, so declaring the delay only
+       on the folded rule buys a held beat on the way out and nothing at all on
+       the way back. That is the asymmetry the two directions deserve: pressing
+       a drawing tab, the drawing is what you came for and the bar can take its
+       time leaving; pressing 3D Model, the branding and the Dev Tools trigger
+       are what you came back for, and a second of empty space first would just
+       read as lag. Both the base rule's shorthand (delay 0) and the folded
+       rule's override are load-bearing - do not fold the delay into the
+       shorthand above, or it applies in both directions. */
+    .app-header {
+        transition                     : top var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase),
+                                         box-shadow var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase);
+    }
+
+    body.na-layout-editor--active .app-header {
+        top                            : calc(-1 * var(--Vale_HeaderHeight));   /* <-- Clears the viewport; follows the 48px narrow-screen value by itself */
+        box-shadow                     : 0 0 0 rgba(0, 0, 0, 0);                /* <-- Otherwise the drop shadow stays behind as a smudge over the tabs */
+        transition-delay               : var(--Vale_HeaderFoldDelay);           /* <-- Hold, then go. Only on this state; see the note below. */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Drawing Tab Strip Travels With It */
+    /* ------------------------------------------------------------ */
+    /* Defined here rather than in the layout editor stylesheet so the strip    */
+    /* cannot fall out of step with the bar it is pinned beneath. Its own rule  */
+    /* (Na__LayoutEditor__Styles__Main__.css) still owns everything else.       */
+    .na-le-tabs {
+        transition                     : top var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase);
+    }
+
+    body.na-layout-editor--active .na-le-tabs {
+        top                            : 0;                            /* <-- Takes the space the header gave up */
+        transition-delay               : var(--Vale_HeaderFoldDelay);  /* <-- Identical to the header's, or the two come apart during the hold */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Editor Host Takes the Space at Once */
+    /* ------------------------------------------------------------ */
+    /* No transition, by design - see the region note. The host is only ever on */
+    /* screen while this class is set, so this is its only real position; the   */
+    /* base rule keeps the header term for the case that never happens.         */
+    body.na-layout-editor--active .na-le-host {
+        top                            : var(--Vale_LayoutTabStripHeight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The 3D Canvas Is Deliberately Left Out of It */
+    /* ------------------------------------------------------------ */
+    /* THIS WAS TRIED AND TAKEN BACK OUT, so it is not tried again. The canvas
+       sits at top: var(--Vale_HeaderHeight), so for the length of an unfold
+       there is a shrinking band between the bottom of the tab strip and the
+       top of the canvas. Sliding the canvas along with the bars would close
+       it, and costs more than it is worth on two counts. The band is body
+       white (#ffffff) behind a 3D view that is itself white, so there is
+       nothing to see. And #renderCanvas.canvas-visible in
+       Na__UiFeature__Styles__DropdownAndToast__.css already owns this
+       element's transition shorthand at a higher specificity for its 800ms
+       load fade, so a rule here either loses outright, as the first attempt
+       did, or has to restate that fade and drift from it later.
+
+       So the canvas keeps the size, the position and the single transition it
+       has always had, and the fold is the two bars moving over the top of it. */
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Why There Is No prefers-reduced-motion Branch Here
+ * -----------------------------------------------------------------------------
+ * There was one, and it silently switched the whole feature off on the machine
+ * it was written for. Windows > Accessibility > Visual effects > Animation
+ * effects is off on the studio PC (MinAnimate = 0 in the registry), and
+ * Chromium reports that as prefers-reduced-motion: reduce. The fold ran at
+ * 0.01ms, which is the two end states and no travel - exactly the snap Adam
+ * reported, from a rule meant to be considerate.
+ *
+ * That Windows toggle is one most people flip for window animations or for
+ * speed, not as a statement about vestibular motion, so treating it as a veto
+ * over a 60px linear slide of a toolbar reads the setting far more strongly
+ * than it was meant. The fold is small, straight, one axis, no zoom, spin or
+ * parallax - the kind of motion reduced-motion guidance exists to permit.
+ *
+ * So the pace is the app's to decide, in --Vale_HeaderFoldDuration above, and
+ * not the operating system's. If it is ever wanted back, it is a three-line
+ * block here; shorten the duration rather than collapsing it, or the feature
+ * disappears again with no sign of why.
+ * ----------------------------------------------------------------------------- */

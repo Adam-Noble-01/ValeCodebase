@@ -24,21 +24,31 @@
 //   document agree; the id floor in the State unit keeps undone ids spent.
 //
 // INTEGRATION:
-// - Imports the State, Document and Draft units and the config state.
+// - Imports the State, Document, Draft and Lockstep units and the config
+//   state.
 //   Imported by Na__LayoutEditor__SpecData__.js, which exports the changes and
 //   CanUndo, CanRedo, Undo and Redo.
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : Changed and ApplySnapshot store through the State unit's setters
-// - Back-port     : the same split applies to TrueVision's copy.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js
+// - Source version: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. This app's copy was its 1.0.0
+//                   (the v2.47.0 split).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Sep-2026 - Version 1.1.0
+// - Every change, live typing and undo or redo included, tells the lockstep
+//   unit (Na__LeSpec__AfterEdit): when the app's copy last changed, and the
+//   autosave to the local file put back to AutoSaveLocalMs from now.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecData__.js; the code moved verbatim.
 //
@@ -77,6 +87,7 @@
         Na__LeSpec__IsLoaded
     } from './Na__LayoutEditor__SpecData__Document__.js';
     import { Na__LeSpec__ScheduleDraft } from './Na__LayoutEditor__SpecData__Draft__.js';
+    import { Na__LeSpec__AfterEdit } from './Na__LayoutEditor__SpecData__Lockstep__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -107,6 +118,7 @@
         Na__LeSpec__SetCodeSig(signature);
         if (!live) Na__LeSpec__Record();
         Na__LeSpec__ScheduleDraft();
+        Na__LeSpec__AfterEdit();                                                // <-- The local file follows once the editing pauses
         Na__LeSpec__Dispatch(reason, Object.assign({ codesChanged : codesChanged, live : live === true }, detail || {}));
     }
     // ------------------------------------------------------------
@@ -370,6 +382,7 @@
         const codesChanged = signature !== Na__LeSpec__CodeSig;
         Na__LeSpec__SetCodeSig(signature);
         Na__LeSpec__ScheduleDraft();
+        Na__LeSpec__AfterEdit();
         Na__LeSpec__Dispatch('restore', { codesChanged : codesChanged, direction : direction });
     }
     // ------------------------------------------------------------

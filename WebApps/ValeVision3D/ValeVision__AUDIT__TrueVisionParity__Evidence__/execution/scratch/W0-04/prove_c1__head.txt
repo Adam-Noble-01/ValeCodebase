@@ -1,0 +1,59 @@
+ValeVision3D - port notes, module logs and release placeholders
+  app root : C:\Users\adamw\AppData\Local\Temp\claude\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\a1674149-918e-4d62-a79a-e7961f105155\scratchpad\w0_04_c1_head_copy
+  checked  : 20 files in 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment and index.html - 22 PORT NOTE(s), 20 DEVELOPMENT LOG(s)
+  baseline : none found (every finding fails)
+
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js
+      FAIL  :32    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+      FAIL  :41    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+      FAIL  :49    log-order            version 1.3.0 sits above 1.4.0 (this log runs newest first, as TrueVision's do)
+      FAIL  :80    log-duplicate        version 1.3.0 appears twice in the DEVELOPMENT LOG (also line 49)
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js
+      FAIL  :29    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js
+      FAIL  :48    source-version       PORT NOTE says "Ported from : TrueVision3D" and has no "Source version" line (K2 H5: "- Source version: <x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")
+
+  WATERMARK  TrueVision D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode at b2aa9151 (git)
+  The TrueVision DEVELOPMENT LOG entries dated after this app's newest log entry (the S11 c.1 rule; same-day entries are not flagged), under 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData:
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js
+        this app 09-Sep-2026 | TrueVision 1.0.1 | after: 14-Sep 1.0.1
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+        this app 20-Sep-2026 | TrueVision 1.5.0 | after: 22-Sep 1.5.0; 22-Sep 1.4.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+        this app 14-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+        this app 20-Sep-2026 | TrueVision 1.7.0 | after: 21-Sep 1.7.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js
+        this app 20-Sep-2026 | TrueVision 1.1.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js
+        this app 09-Sep-2026 | TrueVision 1.2.1 | after: 14-Sep 1.1.0; 17-Sep 1.2.0; 21-Sep 1.2.1
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+        this app 15-Sep-2026 | TrueVision 1.2.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+        this app 20-Sep-2026 | TrueVision 1.35.1 | after: 21-Sep 1.33.0; 21-Sep 1.32.0; 21-Sep 1.31.0; 21-Sep 1.30.0; 21-Sep 1.29.0; 21-Sep 1.28.0; 22-Sep 1.35.1 [2.147.0]; 22-Sep 1.35.0; 22-Sep 1.34.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js
+        this app 20-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js
+        this app 15-Sep-2026 | TrueVision 1.0.0 | after: -
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js
+        this app 20-Sep-2026 | TrueVision 1.3.0 | after: 21-Sep 1.2.0; 22-Sep 1.3.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js
+        this app 15-Sep-2026 | TrueVision 1.4.0 | after: 21-Sep 1.4.0; 21-Sep 1.3.0; 21-Sep 1.2.1; 21-Sep 1.2.0; 21-Sep 1.1.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js
+        this app 18-Sep-2026 | TrueVision 1.2.0 | after: 22-Sep 1.2.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+        this app 15-Sep-2026 | TrueVision 1.6.0 | after: 21-Sep 1.5.0; 21-Sep 1.4.0; 21-Sep 1.3.0; 21-Sep 1.2.1; 21-Sep 1.2.0; 21-Sep 1.1.0; 22-Sep 1.6.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+        this app 19-Sep-2026 | TrueVision 1.4.0 | after: 21-Sep 1.2.0; 22-Sep 1.4.0; 22-Sep 1.3.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js
+        this app 20-Sep-2026 | TrueVision 1.2.0 | after: 21-Sep 1.2.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js
+        this app 20-Sep-2026 | TrueVision 1.2.0 | after: 21-Sep 1.1.0; 22-Sep 1.2.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+        this app 20-Sep-2026 | TrueVision 1.4.0 | after: 21-Sep 1.3.0; 21-Sep 1.2.0; 22-Sep 1.4.0
+    02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+        this app 20-Sep-2026 | TrueVision 1.39.0 | after: 21-Sep 1.34.0; 21-Sep 1.33.0; 21-Sep 1.32.0; 21-Sep 1.31.0; 21-Sep 1.30.0; 21-Sep 1.29.0; 21-Sep 1.28.0; 21-Sep 1.27.0; 21-Sep 1.26.0; 21-Sep 1.25.0; 21-Sep 1.24.0; 22-Sep 1.38.0; 22-Sep 1.37.0; 22-Sep 1.36.0; 22-Sep 1.35.0; 23-Sep 1.39.0
+
+  RESULT: FAIL (6 fail, 0 warn, 0 pending)

@@ -1,0 +1,72 @@
+[drawings] exit 0  18/18 checks  PASS
+   ok   start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE
+   ok   window listeners armed by the start-up block (before the loading sequence)
+   ok   DrawCfg config fetch started inside the start-up block (not awaited)
+   ok   console switches exposed on window by the start-up block
+   ok   Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched
+   ok   Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)
+   ok   second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event
+   ok   no console.error during start-up and load
+   ok   project WITH drawings: block adopted (2 plans, 1 elevation, 1 sheet) - what the Dev menus list
+   ok   drawings data logged once
+   ok   section bindings block adopted once
+   ok   SketchUp sections enabled the cross-section feature
+   ok   scene change to a bound scene restores its saved cut
+   ok   scene change to an unbound scene clears every cut
+   ok   scene change to a SketchUp-sectioned scene applies the SketchUp plane
+   ok   a drawing approach scene is left to the drawing (no restore)
+   ok   back to the bound scene restores it again
+   ok   localhost: authoring open, Dev menu revealed and mounted in the header slot
+[nodrawings] exit 0  13/13 checks  PASS
+   ok   start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE
+   ok   window listeners armed by the start-up block (before the loading sequence)
+   ok   DrawCfg config fetch started inside the start-up block (not awaited)
+   ok   console switches exposed on window by the start-up block
+   ok   Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched
+   ok   Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)
+   ok   second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event
+   ok   no console.error during start-up and load
+   ok   project WITHOUT drawings opens: empty skeleton (0 / 0 / 0)
+   ok   drawings data logged once with zero counts
+   ok   no section block (nothing dispatched, nothing invented)
+   ok   scene change with the feature off leaves sections alone
+   ok   localhost: authoring open, Dev menu revealed and mounted in the header slot
+[authoringoff] exit 0  11/11 checks  PASS
+   ok   start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE
+   ok   window listeners armed by the start-up block (before the loading sequence)
+   ok   DrawCfg config fetch started inside the start-up block (not awaited)
+   ok   console switches exposed on window by the start-up block
+   ok   Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched
+   ok   Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)
+   ok   second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event
+   ok   no console.error during start-up and load
+   ok   ?authoring=off on localhost: authoring LOCKED, Dev menu stays hidden and unmounted
+   ok   ?authoring=off remembered on this device (ValeVision3D__AuthoringUnlocked = false)
+   ok   the gate was resolved in the start-up block (its URL log line came first)
+[livehost] exit 0  9/9 checks  PASS
+   ok   start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE
+   ok   window listeners armed by the start-up block (before the loading sequence)
+   ok   DrawCfg config fetch started inside the start-up block (not awaited)
+   ok   console switches exposed on window by the start-up block
+   ok   Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched
+   ok   Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)
+   ok   second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event
+   ok   no console.error during start-up and load
+   ok   live host, no parameter: authoring closed, Dev menu hidden
+[race-new] exit 0  12/12 checks  PASS
+   ok   start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE
+   ok   window listeners armed by the start-up block (before the loading sequence)
+   ok   DrawCfg config fetch started inside the start-up block (not awaited)
+   ok   console switches exposed on window by the start-up block
+   ok   Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched
+   ok   Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)
+   ok   second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event
+   ok   no console.error during start-up and load
+   ok   project WITH drawings: block adopted (2 plans, 1 elevation, 1 sheet) - what the Dev menus list
+   ok   drawings data logged once
+   ok   section bindings block adopted once
+   ok   localhost: authoring open, Dev menu revealed and mounted in the header slot
+[race-old] exit 0  2/2 checks  PASS
+   ok   OLD order, dispatch with no await: drawings listener MISSES the block (the latent race TV fixed)
+   ok   OLD order, dispatch with no await: section bindings MISSED
+OVERALL: PASS

@@ -81,9 +81,9 @@
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing View Broker (is a 2D drawing on screen?)
-    // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+    // @delegate: ../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js
     // ------------------------------------------------------------
-    import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+    import { Na__DrawView__IsActive } from '../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

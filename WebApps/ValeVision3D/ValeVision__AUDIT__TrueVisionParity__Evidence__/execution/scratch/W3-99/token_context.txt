@@ -1,0 +1,69 @@
+COMMENT Na__LayoutEditor__Loader__.js:148  // 02-Oct-2026 - Version 1.1.8 ({{VVREL:W3-09}})
+COMMENT Na__LayoutEditor__ModeController__.js:64  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-05}} (the drawing grid and the drawing axes);
+COMMENT Na__LayoutEditor__ModeController__.js:65  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-07}} (the vector tools);
+COMMENT Na__LayoutEditor__ModeController__.js:66  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-09}} (sheet images);
+COMMENT Na__LayoutEditor__ModeController__.js:67  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-10}} (floor areas);
+COMMENT Na__LayoutEditor__ModeController__.js:68  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-11}} (the note region grips)
+COMMENT Na__LayoutEditor__ModeController__.js:102  // 02-Oct-2026 - Version 1.18.14 (note region grips, {{VVREL:W3-11}})
+COMMENT Na__LayoutEditor__ModeController__.js:115  // 02-Oct-2026 - Version 1.18.13 (floor areas, {{VVREL:W3-10}})
+COMMENT Na__LayoutEditor__ModeController__.js:136  // 02-Oct-2026 - Version 1.18.12 (sheet images, {{VVREL:W3-09}})
+COMMENT Na__LayoutEditor__ModeController__.js:155  // 02-Oct-2026 - Version 1.18.11 (the vector tools, {{VVREL:W3-07}})
+COMMENT Na__LayoutEditor__ModeController__.js:171  // 02-Oct-2026 - Version 1.18.10 (the drawing grid and the drawing axes, {{VVREL:W3-05}})
+COMMENT Na__LayoutEditor__Viewport3dZoom__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-06}} - whole, with rotatable viewports
+COMMENT Na__LayoutEditor__ViewportClipboard__.js:96  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-06}} - whole, with rotatable viewports
+COMMENT Na__LayoutEditor__ViewportHandles__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, inside the SheetTools hub's
+COMMENT Na__LayoutEditor__AxisLock__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - header sync with the hub (the code and
+COMMENT Na__LayoutEditor__SheetTools__.js:145  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__ContentEditing__.js:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - header sync with the hub (the code was
+COMMENT Na__LayoutEditor__SheetTools__ContextMenu__.js:51  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__CopyDrag__.js:72  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - new, in the hub's atomic sub-wave B:
+COMMENT Na__LayoutEditor__SheetTools__HitResolution__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__Keyboard__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__PointerDrag__.js:76  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__PointerPress__.js:58  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} - whole, in the hub's atomic
+COMMENT Na__LayoutEditor__SheetTools__State__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-01}} - whole, as the hub's sub-wave A
+COMMENT Na__LayoutEditor__SheetTools__ToolState__.js:55  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-01}} - whole, as the hub's sub-wave A
+COMMENT Na__LayoutEditor__ShapeTool__.js:50  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-07}}, whole, with the vector tools switched on.
+COMMENT Na__LayoutEditor__Panel__Dimensions__.js:39  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-12}} - whole: Measure at scale (1.2.0,
+COMMENT Na__LayoutEditor__Panel__Layers__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-13}} - whole: the Ref switch (1.2.0,
+COMMENT Na__LayoutEditor__Panel__Shapes__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-12}} - whole: Draw at scale (1.6.0,
+COMMENT Na__LayoutEditor__Panel__ViewportSettings__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-15}} - whole (package W3-15): Frame,
+COMMENT Na__LayoutEditor__MarginGrip__.js:42  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-03}} with that hub. While DR-40 item 7 (the
+COMMENT Na__LayoutEditor__NoteRegions__Grips__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-11}}, the whole file, new to this
+COMMENT Na__LayoutEditor__Panel__MarginNotes__.js:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-11}}, the whole file over this app's
+COMMENT Na__LayoutEditor__Panel__MarginNotes__Regions__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-11}}, the whole file, new to this
+COMMENT Na__LayoutEditor__Panel__SheetImages__.js:35  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__Crop__.js:36  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__Handles__.js:41  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__Insert__.js:35  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__Insert__.js:40  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-09}}: switched on (the mode controller's
+COMMENT Na__LayoutEditor__SheetImages__Menu__.js:26  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-02}},
+COMMENT Na__LayoutEditor__SheetImages__Publish__.js:60  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-18}}, landed inert: the save step is
+COMMENT Na__LayoutEditor__SheetImages__Store__.js:36  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-18}}, landed inert: only
+COMMENT Na__LayoutEditor__Styles__SheetImages__.css:35  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-18}}, landed inert: nothing links it
+COMMENT Na__LayoutEditor__Panel__ScrapbookParametric__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-14}}, the whole file. This app's copy
+COMMENT Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js:50  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-17}} - new in this app, the whole file.
+COMMENT Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:97  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-13}}, the whole 1.5.1 file: Nearest leaves
+COMMENT Na__LayoutEditor__FloorAreas__LabelGrip__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-10}}
+COMMENT Na__LayoutEditor__FloorAreas__Table__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-10}}
+COMMENT Na__LayoutEditor__Panel__FloorAreas__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-10}}
+COMMENT Na__LayoutEditor__Styles__FloorAreas__.css:28  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-10}}, linked only by
+COMMENT Na__LayoutEditor__PdfExporter__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-16}} - whole (package W3-16): site plan
+COMMENT Na__LayoutEditor__PdfExporter__.js:69  // 02-Oct-2026 - Version 1.12.1 (the document code, {{VVREL:W3-16}})
+COMMENT Na__Test__AreaSchedule__.test.mjs:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-17}}, with the Area Schedule module
+COMMENT Na__Test__BubbleNoteTooltip__.test.mjs:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the SheetTools hub
+COMMENT Na__Test__CopyDrag__.test.cjs:39  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the SheetTools hub
+COMMENT Na__Test__DrawingAxes__.test.mjs:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-05}}, with the drafting aids switched on
+COMMENT Na__Test__DrawingGrid__.test.mjs:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-05}}, with the drafting aids switched on
+COMMENT Na__Test__DrawingTabKeys__.test.mjs:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the PC controls 1.4.0 (its key map
+COMMENT Na__Test__GroupMoveSnapping__.test.cjs:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the SheetTools hub
+COMMENT Na__Test__HatchLineControls__.test.mjs:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-12}}, with the Vectors panel's hatch line
+COMMENT Na__Test__MoveRetype__.test.mjs:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the SheetTools hub
+COMMENT Na__Test__OrthoMode__.test.mjs:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-05}}, with the drafting aids switched on
+COMMENT Na__Test__SetMoveLeaderTips__.test.cjs:58  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-03}}, with the SheetTools hub
+COMMENT Na__Test__SheetImages__.test.mjs:34  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-09}}, with Sheet Images switched on (the mode
+COMMENT Na__Test__VectorBooleans__.test.mjs:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-07}}, with the vector tools and Booleans
+COMMENT Na__Test__VectorTools__.test.mjs:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W3-07}}, with the vector tools and Booleans
+COMMENT Na__Test__ViewportRotation__.test.mjs:45  //                   02-Oct-2026 for ValeVision3D {{VVREL:W3-06}} with the HANDLES, the WINDOW AND THE
+tokens: 68; outside a comment: 0

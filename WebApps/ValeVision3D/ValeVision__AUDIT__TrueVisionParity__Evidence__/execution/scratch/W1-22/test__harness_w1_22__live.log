@@ -1,0 +1,95 @@
+loaded four variants (new, old, none, phase); config fetches: new:02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json, old:02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json, none:02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json, phase:02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+
+=== A. The shipped config and the SheetSetup fallbacks (TrueVision's rows, 1:200, the anchors)
+  PASS  new: the title block rows are TrueVision's, every key, label, width, Flex and the Rev cell's ValuePrefix
+  PASS  new: the fourth cell is DocumentId "Document ID"; no DrawingNumber row
+  PASS  none (config unreadable): the SheetSetup fallback rows are TrueVision's too
+  PASS  control old: DrawingNumber "Drawing No." and no Rev prefix (W0-15's withhold)
+  PASS  new: the architectural scales are 1:20, 1:50, 1:100 and 1:200 (DR-17)
+  PASS  none: the fallback list is the same four
+  PASS  control old: 1:20, 1:50, 1:100
+  PASS  a new viewport still starts at 1:50
+  PASS  new: the Classic A3 anchors are TrueVision's (DocumentId; the VV-only DrawingNumber anchor gone)
+  PASS  control old: both anchors, at the same point
+  PASS  the register values are DR-11's default: {project}_{drawing}, no phase list, no default phase, D and two digits
+  PASS  the letterhead logo aspect is the Vale logo's 4.5 and PDF.js is this app's vendor copy (07)
+  PASS  the title block QR cell stays switched off in the shipped config (DR-12)
+
+=== B. v2.71.0 ComposeDocumentId cases (this app's SheetRecords and TrueVision's, imports swapped for stubs)
+  PASS  all three parts: {project}_{phase}_{drawing} -> "3047_S1_D01" (TrueVision's file gives the same)
+  PASS  the project missing: {project}_{phase}_{drawing} -> "S1_D01" (TrueVision's file gives the same)
+  PASS  the phase missing: {project}_{phase}_{drawing} -> "3047_D01" (TrueVision's file gives the same)
+  PASS  the drawing missing: {project}_{phase}_{drawing} -> "3047_S1" (TrueVision's file gives the same)
+  PASS  all three missing: {project}_{phase}_{drawing} -> "" (TrueVision's file gives the same)
+  PASS  null and undefined parts: {project}_{phase}_{drawing} -> "D01" (TrueVision's file gives the same)
+  PASS  untrimmed input: {project}_{phase}_{drawing} -> "3047_S1_D01" (TrueVision's file gives the same)
+  PASS  another separator: {project}-{phase}-{drawing} -> "3047-S1-D01" (TrueVision's file gives the same)
+  PASS  another order: {drawing}/{project} -> "D01/3047" (TrueVision's file gives the same)
+  PASS  a leading literal: DWG-{project}_{drawing} -> "DWG-3047_D01" (TrueVision's file gives the same)
+  PASS  a leading literal, project empty: DWG-{project}_{drawing} -> "DWG-D01" (TrueVision's file gives the same)
+  PASS  a trailing literal: {project}_{drawing}-PL -> "3047_D01-PL" (TrueVision's file gives the same)
+  PASS  this app's shipped format: {project}_{drawing} -> "3047_D01" (TrueVision's file gives the same)
+  PASS  this app's format ignores a phase: {project}_{drawing} -> "3047_D01" (TrueVision's file gives the same)
+  PASS  a five-digit code at D100: {project}_{drawing} -> "57994_D100" (TrueVision's file gives the same)
+  PASS  a never-numbered sheet: DrawingNumber "D01", no phase, DocumentId "3047_D01" (this app and TrueVision's file alike)
+  PASS  a typed Sheet__Fields__DocumentId wins for its sheet alone
+
+=== C. A never-numbered pack on the real graph (DR-11; never NA's T01-T04)
+  PASS  shipped config: the pack composes 3047_D01, 3047_D02
+  PASS  with a Vale stage list (test config: S1 by default): 3047_S1_D01, 3047_S1_D02 - a config change, no code
+  PASS  no composed id names one of TrueVision's job stages
+  PASS  the shipped register block holds none of TrueVision's job stages (T01-T04) as a phase or default
+  PASS  its tabs' short codes, cut from the drawing number with its default: "D01 - Plans", "D02 - Elevations"
+
+=== D. 2026/3047__Doous, 2026/44371__Gill, 2026/57994__Harris__Scheme-02 load unchanged
+  PASS  2026/3047__Doous: 1 sheet(s) normalise byte-identically before and after this package
+  PASS  2026/3047__Doous: and a second load (normalise again) is byte-identical
+  PASS  2026/3047__Doous: no stored scale is one the list gained (1:200), so nothing reads differently
+  PASS  2026/3047__Doous: each title block's Document ID reads 3047_D01
+  PASS  2026/44371__Gill: 1 sheet(s) normalise byte-identically before and after this package
+  PASS  2026/44371__Gill: and a second load (normalise again) is byte-identical
+  PASS  2026/44371__Gill: no stored scale is one the list gained (1:200), so nothing reads differently
+  PASS  2026/44371__Gill: each title block's Document ID reads 44371_D01
+  PASS  2026/57994__Harris__Scheme-02: 2 sheet(s) normalise byte-identically before and after this package
+  PASS  2026/57994__Harris__Scheme-02: and a second load (normalise again) is byte-identical
+  PASS  2026/57994__Harris__Scheme-02: no stored scale is one the list gained (1:200), so nothing reads differently
+  PASS  2026/57994__Harris__Scheme-02: each title block's Document ID reads 57994_D01, 57994_D02
+
+=== E. The modern strip, QR off: every primitive as before except the number cell's label and value
+  PASS  2026/3047__Doous Sheet_001 (A3 landscape): 28 primitives either side; only 2 text runs differ, at the same place and size
+  PASS  2026/3047__Doous Sheet_001 (A3 landscape): and they are DRAWING NO. / D0n becoming DOCUMENT ID / 3047_D0n
+  PASS  2026/3047__Doous Sheet_001 (A3 landscape): every cell divider is where it was (9 rules)
+  PASS  2026/44371__Gill Sheet_001 (A3 landscape): 28 primitives either side; only 2 text runs differ, at the same place and size
+  PASS  2026/44371__Gill Sheet_001 (A3 landscape): and they are DRAWING NO. / D0n becoming DOCUMENT ID / 44371_D0n
+  PASS  2026/44371__Gill Sheet_001 (A3 landscape): every cell divider is where it was (9 rules)
+  PASS  2026/57994__Harris__Scheme-02 Sheet_001 (A2 landscape): 28 primitives either side; only 2 text runs differ, at the same place and size
+  PASS  2026/57994__Harris__Scheme-02 Sheet_001 (A2 landscape): and they are DRAWING NO. / D0n becoming DOCUMENT ID / 57994_D0n
+  PASS  2026/57994__Harris__Scheme-02 Sheet_001 (A2 landscape): every cell divider is where it was (9 rules)
+  PASS  2026/57994__Harris__Scheme-02 Sheet_002 (A3 landscape): 28 primitives either side; only 2 text runs differ, at the same place and size
+  PASS  2026/57994__Harris__Scheme-02 Sheet_002 (A3 landscape): and they are DRAWING NO. / D0n becoming DOCUMENT ID / 57994_D0n
+  PASS  2026/57994__Harris__Scheme-02 Sheet_002 (A3 landscape): every cell divider is where it was (9 rules)
+
+=== F. The Classic title block paints one value at the number anchor
+  PASS  new: one text run at (330, 289), the Document ID 3047_D01
+  PASS  control old: two runs printed over each other there, D01 and 3047_D01 (since W1-19 gave the fields a DocumentId)
+
+=== G. 1:200 is a scale like the others (DR-17)
+  PASS  the Viewport panel builds four scale buttons: 1:20, 1:50, 1:100, 1:200
+  PASS  an architectural viewport keeps 1:200 (control old: coerced to 1:50)
+  PASS  the toggle runs on from 1:100 to 1:200 and back round to 1:20
+  PASS  the title block names it with its paper, alone and in a mix
+  PASS  a saved 1:200 viewport survives a load and a reload (1:150, on no list, still falls to 1:50)
+  PASS  control old: the same record lost its scale on load (1:50)
+  PASS  a sheet with a 1:100 and a 1:200 viewport: its Scale cell reads "1:100 & 1:200 @ ISO A2"
+
+=== H. The header re-syncs link and answer exactly as before
+  PASS  Cells exports Cell, Solve and now Widen; nothing it exported before is gone
+  PASS  SheetLayout, Classic and PdfFilename link and export what they did
+  PASS  Na__LayoutEditor__DrawingScale__.js: everything below the header is unchanged
+  PASS  Na__LayoutEditor__SheetLayout__.js: everything below the header is unchanged
+  PASS  Na__LayoutEditor__TitleBlock__Classic__.js: everything below the header is unchanged
+  PASS  Na__LayoutEditor__PdfFilename__.js: everything below the header is unchanged
+  PASS  Na__LayoutEditor__Styles__Surfaces__.css: everything below the header is unchanged
+  PASS  PdfFilename names a sheet the same way (3047_D01__FloorPlans__A2__RevB__02-Oct-2026__.pdf with the shipped pattern)
+
+76 passed, 0 failed (1 console warnings: [ValeVision3D LayoutEditor] Config fetch failed (404) - using built-in defaults.)

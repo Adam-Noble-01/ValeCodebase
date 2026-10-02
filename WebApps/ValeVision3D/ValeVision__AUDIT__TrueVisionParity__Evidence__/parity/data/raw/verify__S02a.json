@@ -1,0 +1,291 @@
+{
+ "slice_id": "S02a",
+ "claims_checked": 112,
+ "confirmed_ids": [
+  "S02a-F02",
+  "S02a-F03",
+  "S02a-F04",
+  "S02a-F05",
+  "S02a-F06",
+  "S02a-F07",
+  "S02a-F08",
+  "S02a-F09",
+  "S02a-F10",
+  "S02a-F11",
+  "S02a-F13",
+  "S02a-F15",
+  "S02a-F16",
+  "S02a-F17",
+  "S02a-F18",
+  "S02a-F19",
+  "S02a-F20",
+  "S02a-F22",
+  "S02a-F23",
+  "S02a-F24",
+  "S02a-F25",
+  "S02a-F26",
+  "S02a-F28",
+  "S02a-F29",
+  "S02a-F30",
+  "S02a-F31",
+  "S02a-F32",
+  "S02a-F33",
+  "S02a-F34",
+  "S02a-F35",
+  "S02a-F36",
+  "S02a-F38",
+  "S02a-F39",
+  "S02a-F40",
+  "S02a-F42",
+  "S02a-F44",
+  "S02a-F45",
+  "S02a-F47",
+  "S02a-F48",
+  "S02a-F49",
+  "S02a-F50",
+  "S02a-F51",
+  "S02a-F52",
+  "S02a-F53",
+  "S02a-F54",
+  "S02a-F55",
+  "S02a-F56",
+  "S02a-F57",
+  "S02a-F59"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S02a-F01",
+   "field": "recommendation",
+   "new_value": "Renumber VV to TV's numbers in one atomic WP, before any other port.\n- Use git mv, in this order: move 40__System__2dElevationsView to 39 first (or retire it, per D-S02a-04), then 42->40, 43->42, 44->43, 45->44, 46->45, 47->46. Every old name carries a unique system suffix, so the text replacements cannot collide.\n- VV 41 keeps 41 (a different engine in the same role). TV's 47/48/49 then land unchanged.\n- Gate 1: Na__Verify__ModuleGraph__ and Na__Verify__Exports__ pass.\n- Gate 2: a grep for all SEVEN old names returns nothing (devlog and ledger history excepted): 42__System__DrawingViewCore, 43__System__FloorPlanViews, 44__System__PlanAnnotations, 45__System__PlanDimensions, 46__System__ElevationViews, 47__System__NorthDirection, 40__System__2dElevationsView. Search 02__Src__AppModules, index.html, 03__Style__AppStylesheets and 80__Testing__PrototypeEnvironment.\n- The grep is needed because the module-graph harness reads JS import specifiers only. It cannot see fetch() or config paths written from the app root (e.g. 40/Na__ElevationView__SystemLogic.js:67), CSS @import lines, or the LE loader's stylesheet list.\n- 67 files outside the moved folders reference an old name, including 02__AppData/Na__AppConfig__Main.json:385 and 10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js:384.\n- Run it only when no other VV session is editing.\n- Record the PWA_SW_VERSION_TOKEN need (S02a-V02, D-S09-06).",
+   "reason": "The survey's acceptance grep listed only four of the seven old names, two hot files were missing, and the harness's blind spots (fetch/config paths, CSS @import, loader stylesheet list) were not stated. Move order, git mv, the parallel-session hazard and the service-worker cache hazard are added."
+  },
+  {
+   "id": "S02a-F12",
+   "field": "recommendation",
+   "new_value": "Port the options gate and ReturnToOrbit using VV's Na__NavToolbar__SetOrbitMode. In VV that is a real exit: HandleOrbitClick calls the Walk and Fly toggles with 'return-to-orbit' (VVM/10/...NavigationToolbar__Controls.js:233-236, 403). Keep VV's MaxEngine culling path and its Initialize call.\n\nIn the SAME change, make VV's two VV-only callers ask for the exit: VVM/43/Na__FloorPlan__ModeController__.js:465 and VVM/46/Na__Elevation__ModeController__.js:526 -> SuspendThreeD({ returnToOrbit : true }). Without this, opening a plan or elevation from the carousel while walking stops leaving Walk. TV never needed the change because TV's controllers do not use Transitions.\n\nLeave the snapshot renderer's bare call as it is: that is the point of 1.1.0. The LE ModeController's { returnToOrbit: true } (VVM/51/05/...:524) arrives with S03a's whole-file port of that module, so coordinate rather than edit it twice. Port the Transitions checks from Na__Test__SheetPagingWalkExit__. Run this after or before the RenderPreset rename, never alongside it: both edit the 43 and 46 controllers.",
+   "reason": "Missed regression: grep shows VV's 43 and 46 mode controllers call SuspendThreeD() with no options and rely on it to leave Walk/Fly. TV's controllers never call Transitions."
+  },
+  {
+   "id": "S02a-F12",
+   "field": "vv_adaptation",
+   "new_value": "ReturnToOrbit = VV Na__NavToolbar__SetOrbitMode; culling import from 05/02__Engine__MaxEngine/; keep Initialize; VV's 43 and 46 mode controllers (VV-only callers) pass { returnToOrbit : true }.",
+   "reason": "Adds the two VV-only call sites that must change, or VV regresses."
+  },
+  {
+   "id": "S02a-F14",
+   "field": "detail",
+   "new_value": "Both apps expose the same eight export NAMES (ApplyStyles, Enter, Exit, GetCamera, GetExportOverrides, Initialize, IsActive, RenderFrame) under different module and export prefixes. Two signatures differ:\n- RenderFrame: TV's RenderFrame(camera) requires the camera and does not check IsActive (TVM/40/Na__DrawView__RenderPreset__.js:297). VV's RenderFrame() renders through the camera stored by Enter and returns false when inactive (VVM/42/Na__DrawView__ComposerPreset__.js:405).\n- Enter: VV's also accepts edgeWidthPx.\nTV's LE SnapshotRenderer passes (cam) => RenderPreset__RenderFrame(cam) as its bake renderer (TV :938). VV bakes through RenderToCanvas({ camera }), and slice S04a keeps VV's SnapshotRenderer as a DIV-1 adaptation that must not be overwritten whole. TV's design names 'the eight function names' as the seam, so a rename removes a name translation from future ports. The call semantics stay a documented seam.",
+   "reason": "The survey called the interface identical, but RenderFrame's parameter and Enter's options differ."
+  },
+  {
+   "id": "S02a-F14",
+   "field": "recommendation",
+   "new_value": "Rename the VV file and exports to Na__DrawView__RenderPreset__*. Keep the composer implementation. Give RenderFrame an optional camera argument (used when given, else the Enter camera) so a verbatim TV call stays correct. Write a PORT NOTE: 'TV interface, composer route (DIV-1, D12)'.\n\nImporters to update:\n- LoadingSequence:425, plus the @delegate at :1319\n- 43 ModeController:120-123 and 46 ModeController:112-115\n- 51/25 SnapshotRenderer:129-131\n- index.html:1412, 1874, 2211\n- the comment at 42/Na__DrawView__ConfigState__.js:30\n\nNa__Verify__Exports__ does not read index.html, so check those lines by grep. Run it one after the other with the Transitions WP: both edit the 43 and 46 controllers.",
+   "reason": "Adds the camera-parameter compatibility, the full importer list, the verifier's blind spot and the hot-file serialisation."
+  },
+  {
+   "id": "S02a-F21",
+   "field": "severity",
+   "new_value": "medium",
+   "reason": "Confirmed by re-derivation, but there is no live fault (neither app reads the other's projects) and no VV change is proposed. It matters only for cross-app documents or a careless verbatim port of TV's Serialize."
+  },
+  {
+   "id": "S02a-F21",
+   "field": "evidence",
+   "new_value": "- VVM/41/Na__CrossSectionView__SystemLogic.js: :1502 (serialize -constant), :1540-1542 (restore point = normal*positionMm), :567 (plane through point).\n- VVM/42/Na__DrawView__SectionAdapter__.js:298-300: the plan cut has normal (0,-1,0) and position -cutHeight, so constant = +cutHeight and positionMm = -cutHeight.\n- TVM/41/Na__SectionCut__Serialize__.js:194 writes +constant. The comment above it claims 'the two engines store plane.constant with opposite signs for the same normal'. That is false: a THREE.Plane's constant is fixed by its normal and position, and both engines build plan cuts with normal (0,-1,0) and constant +h. TV's round-trip test only proves TV to TV.\n- TV realign plan: the example at line 217 (positionMm 1200) contradicts the mapping row at line 245 (-record.plane.constant).",
+   "reason": "Adds the VV SectionAdapter path and the TV-side evidence of why the sign diverged, which strengthens the decision for Adam."
+  },
+  {
+   "id": "S02a-F27",
+   "field": "detail",
+   "new_value": "TV's 2.x menus lack four VV features; VV has all four.\n- Styles/Exclusions rows (D33): StyleRows is imported by nothing in TV and nothing calls Set*Style or SetExcludeTokens, although the records keep the keys.\n- Ground Floor Plan quick action (D11): TV realign ledger line 764 says 'Not yet ported'.\n- Thumbnail bake on add or seed.\n- Bake-before-save of projected linework (D20): this was NEVER in TV's editors, not dropped from them. git log -S over TV's 42, 45 and Index.html finds no commit naming Na__PlStore__; the only commit naming it is 35615d29 (Persistence, 10-Sep). TV's own TrueVision__PLAN__PublishingSystem__.md:31 records that BakeBeforeSave 'has no callers'. TV moved drawing bakes to publish time in v2.155.0 (publisher 51/65__Feature__DocumentPublishing, reader 52; slice S08).",
+   "reason": "The survey said TV's editors 'no longer call' BakeBeforeSave and no devlog says why. Git history shows they never did, and TV documents the gap in its publishing plan."
+  },
+  {
+   "id": "S02a-F27",
+   "field": "recommendation",
+   "new_value": "Keep three of the four as VV seams inside TV's layout: Styles/Exclusions in TV's Advanced fold, Ground Floor Plan beside the +, and the thumbnail bake on add, seed and Update. Raise those three as TV back-ports so the menus converge. Keep VV's bake-before-save on Update until VV adopts TV's publish-time bake (S08). Do not offer it to TV in its current form. Adam decides (D-S02a-02).",
+   "reason": "BakeBeforeSave is a VV-only design that TV has replaced, not a TV gap to fill."
+  },
+  {
+   "id": "S02a-F37",
+   "field": "detail",
+   "new_value": "The code is identical in both apps; PlaneGizmo differs only by VV's extra naCrossSectionHelper flag and its export order. TV's editors stopped using FacePick, GizmoGrip and PlaneGizmo at v2.82. The files are still on disk and initialised in Index.html (TV devlog v2.86: 'unused since v2.82.0'). Both apps' elevation ModeControllers still import Na__ElevGizmo__Hide (TVM/45/...ModeController__.js:159; VVM/46/...:188) as a defensive hide, so a later deletion must remove that import in both controllers too. After WP-08, VV is in the same state.",
+   "reason": "The PlaneGizmo is still imported by both elevation mode controllers, so it is not wholly unused."
+  },
+  {
+   "id": "S02a-F41",
+   "field": "recommendation",
+   "new_value": "Port verbatim. Call Na__InteractiveOverlays__BeginFrame() straight after VV's drawing early-return in Na__RenderLoop__RenderFrame (as TV does at :1189), and EndFrame in the tick's finally.\n\nVV's Video Studio preview is an arm of the same if/else as Walk, Fly and Orbit, not a separate branch. To keep overlays out of preview playback, guard Begin with !Na__VideoStudio__Preview__IsPlaying() (Adam's choice, D-S02a-11).\n\nVideo Studio export (31/...Export__FrameRenderer.js:371), image export and Export Render Layers render outside the tick, so they see overlays as invisible by design. Check that 71's SceneStateGuard and ShadowMask passes never set visible=true on scene children outside the model root.",
+   "reason": "'Place Begin after the Video Studio preview branch' does not exclude the preview: in VV that branch is not a separate return path."
+  },
+  {
+   "id": "S02a-F43",
+   "field": "detail",
+   "new_value": "Bounds substring-matches the model root's direct children against three token lists: building ['MainBuildingModel','Storey__'], ground ['LandscapeEnvironment'], ignore ['OrbitHelperCube'].\n\nVV's loader names each child group by its category key (VVM/15__ModelLoader/Na__ModelLoader__MultiModel.js:857). The keys come from three regexes (:145-148):\n- current exports: ValeVision__<Category>, e.g. MainBuildingModel__Existing/Proposed/ProposedDoors, LandscapeEnvironment, SiteBoundaries;\n- storey exports: Storey__<Storey>__<Element>;\n- every older __Layer-XX__ export: one ValeVision__LegacyModel bucket.\n\nNo VV path produces 'Landscape' or 'Walls' categories, so TV's Bounds PORT NOTE (TVM/47/...Bounds__.js:47-50) and plan line 133 are stale. TV's tokens match VV's current and storey exports. A legacy single-bucket project matches no building token and falls back to TV's own usedFallback (the whole model minus ground and ignored groups): a degrade, not a failure. Not verified on a loaded VV model.",
+   "reason": "The survey's premise that older VV exports use coarse 'Landscape'/'Walls' categories is contradicted by VV's loader."
+  },
+  {
+   "id": "S02a-F43",
+   "field": "recommendation",
+   "new_value": "Port the AppConfig tokens verbatim; do not add VV-specific tokens. After WP-07, spot-check one current-export project (D37 Doous) and one legacy project. Record the legacy fallback in the VV PORT NOTE.",
+   "reason": "Follows from the corrected premise."
+  },
+  {
+   "id": "S02a-F43",
+   "field": "severity",
+   "new_value": "low",
+   "reason": "With the tokens matching VV's naming, the risk drops to a cosmetic fallback on legacy projects."
+  },
+  {
+   "id": "S02a-F46",
+   "field": "recommendation",
+   "new_value": "Rename VV's own VV-only gate instead. naCrossSectionDev{Item,Toggle,Panel,EnableCheck,Save} -> naCrossSectionToolDev*, in two places: VV/index.html:855-866 and the constants at VVM/41/Na__UiFeature__CrossSectionView__DevControls.js:79-83. No CSS uses the ids. TV's 48 module then ports byte-for-byte with no TV change. The survey's option (rename the 48 ids in VV and offer them to TV) also works, but needs a TV edit to stay identical. Adam decides (D-S02a-06).",
+   "reason": "Renaming the VV-only gate costs two files and keeps the TV module verbatim. Renaming the 48 ids forces a lasting divergence or a TV edit."
+  },
+  {
+   "id": "S02a-F06",
+   "field": "recommendation",
+   "new_value": "Owned by WP-S03b-05. That WP covers ProjectData 1.6.0 (GetBase, WhenBaseKnown, CheckBase, SAVED_ISO_KEY), the base header through R2SaveProjectJson, the WCP/server.py fingerprint route with 409 and backups, and the 32-check Python test. WP-S09-06 lists the same routes. WP-S02a-15 is withdrawn as a duplicate. The worker needs no change (TV does not judge R2 either).",
+   "reason": "Three slices proposed the same transport work; the planner needs a single owner."
+  },
+  {
+   "id": "S02a-F34",
+   "field": "recommendation",
+   "new_value": "Owned by WP-S02b-04 (the 49 port). Add Na__ElevFog__SetSource and its clear to VV's elevation controller, and draw the fog inside VV's RenderPreset/ComposerPreset RenderFrame and the render loop's drawing branch. Do not replace VV's controller. WP-S02a-14 is withdrawn as a duplicate.",
+   "reason": "WP-S02b-04 already scopes this exact change."
+  },
+  {
+   "id": "S02a-F57",
+   "field": "recommendation",
+   "new_value": "Owned by WP-S02b-04. Add a depth-only cap render to VV's 41 tool, and add Na__DrawView__SectionAdapter__RenderDepthInto to BOTH adapters (TV: pass-through; VV: over its caps), so 49 imports the adapter and ports verbatim. WP-S02a-14 is withdrawn as a duplicate.",
+   "reason": "WP-S02b-04 already scopes the 41 cap-depth export and the adapter pass-through."
+  },
+  {
+   "id": "S02a-F47",
+   "field": "recommendation",
+   "new_value": "Take TV's modal 1.2.0 whole in WP-S02a-04, as the single owner; WP-S03b-05 also needs 1.2.0's altLabel and should depend on WP-S02a-04. Port the modal CSS rules (.na-pm-modal__details, __message--footnote, __btn--commit) from TV's Na__PresentationMode__Styles__SceneCarousel__.css (lines 1034-1049, 1189-1195) into VV's sheet.",
+   "reason": "WP-S03b-05 also takes the modal to 1.2.0; without one owner the swarm would edit it twice."
+  },
+  {
+   "id": "S02a-F53",
+   "field": "recommendation",
+   "new_value": "Port each test with its WP, rewriting folder paths (none are needed after the renumber). Use a VV fixture (D37 Doous) for DrawingDrafts. DrawingDrafts also loads 45/Na__Elevation__AutoNameText__.js (:60), so it passes only once AutoNameText is in: move AutoNameText into WP-04. Na__Test__ProjectDataSaveGuard__ (server.py) belongs to WP-S03b-05. Keep the Node tests import-free, as TV's are.",
+   "reason": "WP-04 as written could not meet its own acceptance, and the save-guard test belongs to the S03b owner."
+  },
+  {
+   "id": "S02a-F52",
+   "field": "recommendation",
+   "new_value": "Add three items to the TV back-port memo:\n- Update the s.12 rows of TV's realign plan.\n- Note that TV's mode controllers predate the drawing-core routing.\n- Fix the stale 'ValeVision has no north system' lines in TVM/45/Na__Elevation__AutoName__.js:51, TVM/45/Na__Elevation__AutoNameText__.js:34 and TV devlog line 7919 ('Still open'). VV has had north since v2.67.0.\nTV docs are not edited by the VV swarm.",
+   "reason": "More stale TV notes found while verifying."
+  },
+  {
+   "id": "S02a-F05",
+   "field": "vv_adaptation",
+   "new_value": "- Keep the Flask GET /api/projects/{code} merge and R2SaveProjectJson (R2 first, Flask mirror).\n- Run the payload guard and the save steps on a JSON deep copy of the drawings block placed in the merged projectData, as TV does at :775-779. VV's Save currently assigns the LIVE block by reference (:401), so a guard run there would revert the author's open draft in memory.\n- No migration region; keep LayoutModeEnabled.\n- registerKeys.localFirst goes to the register slice (S07a).\n- The 1.6.0 base guard goes to WP-S03b-05.",
+   "reason": "Makes the copy semantics explicit, because VV's Save writes the live block, and records ownership."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S02a-V01",
+   "category": "wiring",
+   "title": "Thumbnail capture signature differs: ported TV editors cannot take the Update picture, and VV's batch thumbnails already fail",
+   "detail": "The two apps' Na__PresentationMode__Thumbnail__CaptureAndUpload take different arguments:\n- TV: (sceneId, targetWidthPx), writing through Na__CfApi__WriteThumbnailWebp.\n- VV: (sceneId, projectCode, showToast), which returns { ok:false, error:'missing scene id or project code' } when no project code is passed.\nTV's 2.x editors call it with the scene id only. Ported whole (WP-08), every Update would toast 'Thumbnail upload failed' and leave the card's picture unchanged. The survey's name-only import check cannot see this; sigcheck.py (parameter counts) found it.\nThe same fault is already live in VV: VV's ported Presentation Scenes batch op calls it with one argument, and that op is wired to Update All Thumbnails. By code reading, every batch thumbnail fails in VV today. Not run.",
+   "recommendation": "Make VV's CaptureAndUpload accept TV's call shape. When the second argument is not a string, resolve the project code itself (Na__PresentationMode__ProjectJson__GetActiveProjectCode, falling back to Na__AppUtils__GetProjectCodeFromUrl), and treat a numeric second argument as targetWidthPx. Keep (sceneId, projectCode, showToast) working for ScenePersistence, ThumbnailBake and the 1.x editors. This fixes VV's Update All Thumbnails now, and lets TV's editors (and TV's scene editor) port verbatim. Land it before WP-08. Ask Adam to confirm the batch failure with one press on localhost, before and after.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TVM/21/Na__PresentationMode__Thumbnail__Renderer.js:261; VVM/21/Na__PresentationMode__Thumbnail__Renderer.js:229-231; TVM/42/Na__FloorPlan__DevMenu__Editor__.js:858; TVM/45/Na__Elevation__DevMenu__Editor__.js:992; VVM/21/Na__PresentationMode__DevMenu__BatchOps__.js:353 wired at VVM/21/Na__PresentationMode__DevMenu__SceneEditor.js:1360; parity/verify_s02a/sigcheck.py output.",
+   "tv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js"
+   ],
+   "vv_adaptation": "Transport stays VV's: Na__AppUtils__R2AssetUpload to PresentationMode/Thumbnails/<scene id>.webp, R2 first then the Flask mirror.",
+   "est_lines": 15
+  },
+  {
+   "id": "S02a-V02",
+   "category": "wiring",
+   "title": "Shared service-worker token must be bumped for the renumber and every export-changing S02a WP",
+   "detail": "In production, VV's shell JS and CSS are served stale-while-revalidate by the shared WebApps worker, keyed on PWA_SW_VERSION_TOKEN ('2026-09-18-1', WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:229). The VV ledger (lines 161-175) records four VV releases that added cross-module exports without a bump.\nEvery S02a WP adds or moves exports, and WP-01 moves about 70 module paths. Until its next load, a warm client can run an old cached index.html or LE module that imports a path or name that no longer exists.\nTV bumped its own worker token for v2.86.0 for exactly this reason (devlog: 'Service worker token 2026-09-20-3: new exports on files a warm cache already holds').",
+   "recommendation": "Each S02a WP records 'token needed' in its devlog entry. Bump the token once per VV release wave that ships them. It is Adam's call, because the token evicts every Vale app's caches (D-S09-06). The renumber release must not ship without the bump.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "WCP/.../Whitecardopedia__Pwa__ServiceWorker__Logic__.js:229; VV/ValeVision__PARITY__TrueVisionLedger__.md:161-175; TV devlog v2.86.0 Files list (line ~7914); S09 D-S09-06.",
+   "vv_paths": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js",
+    "ValeVision__DEVLOG__.md"
+   ],
+   "depends_on": [
+    "D-S09-06",
+    "S02a-F01"
+   ]
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S02a-16",
+   "title": "Thumbnail capture accepts TV's call shape (also fixes VV's Update All Thumbnails)",
+   "scope": "In VVM/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js, make CaptureAndUpload(sceneId, second, showToast) resolve the project code itself when 'second' is not a string. Use Na__PresentationMode__ProjectJson__GetActiveProjectCode from the same folder, falling back to Na__AppUtils__GetProjectCodeFromUrl. Treat a numeric 'second' as targetWidthPx, passed to RenderCurrentViewportToWebp if VV's renderer takes a width, otherwise ignored. The existing three-argument callers (ScenePersistence, ThumbnailBake, the 43/46 1.x editors) must behave exactly as before. Must land before WP-S02a-08.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Node stub test: CaptureAndUpload(id) and CaptureAndUpload(id, 512) resolve the active project code and call R2AssetUpload with PresentationMode/Thumbnails/<id>.webp; CaptureAndUpload(id, code, toast) is unchanged",
+    "Adam, on localhost: Presentation Scenes > Update All Thumbnails writes every eligible scene's thumbnail (today it fails every scene, by code reading)",
+    "Module graph and exports verifiers pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js"
+   ],
+   "hot_files": [
+    "ValeVision__DEVLOG__.md"
+   ],
+   "risk": "The renderer is shared by the scene editor, ThumbnailBake and the drawing editors, so the three-argument form must stay byte-compatible.",
+   "tests_to_port": []
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S02a-14",
+   "reason": "Duplicate. WP-S02b-04 already scopes every item: the 49 port, the 41 depth-only cap export, the 42 SectionAdapter pass-through, the ComposerPreset RenderFrame fog call, the elevation data GetDepthFog/SetDepthFog/GetDepthFogPlane, the ModeController SetSource/clear, and the row builder and editor fog block. WP-S02b-05 covers LE Viewport2d__DepthFog. Keep S02a-F34/F57 as input to those WPs."
+  },
+  {
+   "id": "WP-S02a-15",
+   "reason": "Duplicate. WP-S03b-05 already scopes ProjectData 1.6.0 (GetBase, WhenBaseKnown, CheckBase, SAVED_ISO_KEY), the base header through R2SaveProjectJson, and the WCP/server.py fingerprint route with 409 and backups, with a 32-check Python test. WP-S09-06 lists the same Flask routes. Keep S02a-F06 as evidence."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S02a-11",
+   "question": "Should authoring overlays (drawing planes, a kept compass) show during VV Video Studio preview playback? This is VV-only: TV has no Video Studio.",
+   "options": "(a) show them, like any live 3D frame: call BeginFrame unconditionally after the drawing early-return; (b) hide them during preview playback: guard BeginFrame with !Na__VideoStudio__Preview__IsPlaying(). Exports are unaffected either way, because they render outside the tick.",
+   "recommendation": "(b) hide. A preview is a presentation view, and VV already suppresses its own path visualizer for export.",
+   "blocks": [
+    "WP-S02a-02",
+    "S02a-F41"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "Parameter-count drift for every named import of the S02a TV files against VV (sigcheck.py). Found the Thumbnail CaptureAndUpload mismatch that name-only checks miss.",
+  "VV-only callers of shared drawing-core functions: VV's 43/46 mode controllers call Transitions.SuspendThreeD; TV's never do.",
+  "Cross-slice duplicate WPs: S02a-14 vs S02b-04/05; S02a-15 vs S03b-05/S09-06. Shared-file ownership for Modal 1.2.0 and ProjectData set.",
+  "Git history of BakeBeforeSave in TV: never called by TV's editors.",
+  "VV model-root category naming, checked against the drawing-planes bounds tokens.",
+  "VV render-loop structure, checked for overlay Begin placement: Video Studio preview, progressive refiner, out-of-tick exports.",
+  "Service-worker cache hazard for the renumber and export changes.",
+  "Module-graph harness blind spots for the renumber: fetch/config paths, CSS @import, loader stylesheet list.",
+  "Test dependency: the DrawingDrafts test needs AutoNameText.",
+  "VV single-writer check for the drawings block (payload-guard coverage) and the live-block-by-reference hazard in VV's Save."
+ ],
+ "notes": "The slice is good: thorough and well evidenced. Every critical and high claim checks out against the code (17 of 17 opened: F01, F04, F05, F07-F09, F21, F23, F25-F27, F30-F32, F41, F42, F49). File coverage of both trees is complete. None of the survey's findings is refuted outright.\n\nMaterial corrections:\n1. The Transitions 1.1.0 port would regress VV. VV's own floor plan and elevation controllers (43:465, 46:526) call SuspendThreeD() bare and rely on it to leave Walk, so they must pass returnToOrbit.\n2. Two WPs duplicate other slices and are refuted: WP-14 (S02b-04/05) and WP-15 (S03b-05/S09-06).\n3. BakeBeforeSave was never in TV's editors. TV documents this (PublishingSystem plan :31) and moved to publish-time baking.\n4. The 'interface identical' claim for ComposerPreset vs RenderPreset is wrong on RenderFrame(camera).\n5. The premise behind the planes bounds tokens is stale. VV categories are ValeVision__*/Storey__*, and legacy exports collapse into one bucket.\n6. positionMm is confirmed but lowered to medium. TV's own Serialize comment and its plan example are inconsistent.\n7. Overlay Begin placement in VV must account for the Video Studio preview, which shares the if/else with Walk, Fly and Orbit.\n\nAdditions:\n- S02a-V01: a signature drift in Thumbnail CaptureAndUpload breaks the ported Update picture. By code reading it already breaks VV's Update All Thumbnails. New WP-S02a-16.\n- S02a-V02: the service-worker token hazard for the renumber.\n- D-S02a-11: whether overlays show in Video Studio preview.\n\nWatch in planning:\n- Single ownership of shared hot files across S02a, S02b, S03a, S03b and S04a: 42 ProjectData, 21 Modal, 51 LE ModeController and SnapshotRenderer, the 43/46 mode controllers, index.html, the CSS index, LoadingSequence.\n- WP-11 and WP-12 must be serialised.\n- WP-04 needs AutoNameText.\n- The renumber must run alone, with the seven-name grep and a token bump.\n\nMinor nit: there are 19 VV external data-call sites, not 18. All pass null or nothing, so F04's conclusion stands.\n\nStill unverified (nothing was run): the positionMm effect across apps; the VV batch-thumbnail failure; 71 Export Render Layers visibility handling; pointer precedence between the planes Grip and VV's 41 gizmos; the UI look.\n\nReport edited in place: C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S02a__DrawingCore_Plans_Elevations_North_Planes_Sections.md (inline [Verifier ...] marks plus a closing '## Verification' section). Scripts: ...\\parity\\verify_s02a\\ (codecmp.py, jsonkeys.py, sigcheck.py, devlog_scope*.py)."
+}

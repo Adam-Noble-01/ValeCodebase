@@ -33,10 +33,16 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : n/a
-// - Back-port     : the same split applies to TrueVision's copy.
+// - Authored in   : ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+//                   Na__LayoutEditor__SheetTools__.js); TrueVision3D took the split back unchanged
+//                   (v2.55.0); since ported back whole from TrueVision3D 1.0.0 (HEAD b2aa9151)
+// - Source version: 1.0.0 (TrueVision3D v2.55.0, 15-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - header sync with the hub (the code was
+//                   already identical).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //

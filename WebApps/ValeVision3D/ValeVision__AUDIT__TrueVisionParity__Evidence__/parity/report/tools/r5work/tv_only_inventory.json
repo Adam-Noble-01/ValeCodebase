@@ -1,0 +1,2652 @@
+[
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js",
+  "lines": 486,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-06",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js",
+  "lines": 491,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-06",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js",
+  "lines": 246,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "verbatim",
+  "wp": "W1-06",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js",
+  "lines": 156,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "verbatim",
+  "wp": "W1-06",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js",
+  "lines": 738,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-1: VV keeps 05/Na__RenderEffect__2dProfileLines__ (K2 section 7)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.19.0"
+ },
+ {
+  "path": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+  "lines": 376,
+  "ver": "1.1.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "path only: FR-09 renames VV ComposerPreset to this path and names; VV body kept (DIV-1, DR-04)",
+  "wp": "W0-02",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapGeometry__.js",
+  "lines": 601,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js",
+  "lines": 372,
+  "ver": "1.1.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.12.0-16.2 (f264be71)"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__ConfigState__.js",
+  "lines": 298,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.12.0-16.2 (f264be71)"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js",
+  "lines": 712,
+  "ver": "1.2.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__AppConfig__.json",
+  "lines": 22,
+  "ver": "",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js",
+  "lines": 342,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js",
+  "lines": 291,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js",
+  "lines": 227,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-08",
+  "gate": "",
+  "first": "v2.87.0"
+ },
+ {
+  "path": "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+  "lines": 337,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-08",
+  "gate": "",
+  "first": "v2.87.0"
+ },
+ {
+  "path": "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js",
+  "lines": 176,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-10",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js",
+  "lines": 288,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W1-10",
+  "gate": "",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js",
+  "lines": 807,
+  "ver": "1.3.0",
+  "feature": "B. Projected linework (50)",
+  "action": "gated, adapted - DR-16 a",
+  "wp": "W2-06",
+  "gate": "DR-16",
+  "first": "v2.42.0"
+ },
+ {
+  "path": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js",
+  "lines": 308,
+  "ver": "1.1.0",
+  "feature": "B. Projected linework (50)",
+  "action": "gated, adapted - DR-31",
+  "wp": "W2-43",
+  "gate": "DR-31",
+  "first": "v2.37.0"
+ },
+ {
+  "path": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js",
+  "lines": 320,
+  "ver": "1.0.0",
+  "feature": "B. Projected linework (50)",
+  "action": "gated, adapted - DR-16 a",
+  "wp": "W2-43",
+  "gate": "DR-16",
+  "first": "v2.105.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+  "lines": 1267,
+  "ver": "",
+  "feature": "D. Keyboard scopes (LE 31, key files, KeyScope)",
+  "action": "rename + content: FR-12 renames VV KeyMappings__.json (W0-03); KeyMap 1.11.0 content in W0-15 (DR-33)",
+  "wp": "W0-03, W0-15",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js",
+  "lines": 292,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-20",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js",
+  "lines": 178,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W1-13",
+  "gate": "",
+  "first": "v2.147.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js",
+  "lines": 308,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W1-13",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js",
+  "lines": 479,
+  "ver": "1.0.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, verbatim - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-22",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js",
+  "lines": 102,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W1-13",
+  "gate": "",
+  "first": "v2.139.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js",
+  "lines": 205,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W1-13",
+  "gate": "",
+  "first": "v2.106.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+  "lines": 385,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "adapted",
+  "wp": "W1-13",
+  "gate": "",
+  "first": "v2.150.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js",
+  "lines": 305,
+  "ver": "1.1.0",
+  "feature": "G. Viewports, rotation, doors, quality, Model Source",
+  "action": "gated, adapted - dormant (DR-09 a)",
+  "wp": "W2-16",
+  "gate": "DR-09",
+  "first": "v2.32.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+  "lines": 459,
+  "ver": "1.3.0",
+  "feature": "G. Viewports, rotation, doors, quality, Model Source",
+  "action": "gated, adapted - DR-16 a",
+  "wp": "W2-11",
+  "gate": "DR-16",
+  "first": "v2.42.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js",
+  "lines": 240,
+  "ver": "1.0.0",
+  "feature": "G. Viewports, rotation, doors, quality, Model Source",
+  "action": "adapted",
+  "wp": "W1-14",
+  "gate": "",
+  "first": "v2.136.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+  "lines": 145,
+  "ver": "1.0.0",
+  "feature": "G. Viewports, rotation, doors, quality, Model Source",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W2-12",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js",
+  "lines": 633,
+  "ver": "1.2.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim - dormant (DR-08 B)",
+  "wp": "W2-16",
+  "gate": "DR-08",
+  "first": "v2.55.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js",
+  "lines": 313,
+  "ver": "1.0.0",
+  "feature": "G. Viewports, rotation, doors, quality, Model Source",
+  "action": "adapted",
+  "wp": "W1-14",
+  "gate": "",
+  "first": "v2.138.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js",
+  "lines": 366,
+  "ver": "1.0.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim - dormant (DR-08 B)",
+  "wp": "W2-14",
+  "gate": "DR-08",
+  "first": "v2.48.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js",
+  "lines": 802,
+  "ver": "1.2.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, adapted - dormant (DR-08 B)",
+  "wp": "W2-14",
+  "gate": "DR-08",
+  "first": "v2.48.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js",
+  "lines": 439,
+  "ver": "1.0.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim - dormant (DR-08 B)",
+  "wp": "W1-13",
+  "gate": "DR-08",
+  "first": "v2.93.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json",
+  "lines": 65,
+  "ver": "",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim - dormant (DR-08 B)",
+  "wp": "W1-13",
+  "gate": "DR-08",
+  "first": "v2.89.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+  "lines": 311,
+  "ver": "1.1.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "adapted",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.107.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json",
+  "lines": 32,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "adapted",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.107.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js",
+  "lines": 107,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W1-14",
+  "gate": "",
+  "first": "v2.107.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css",
+  "lines": 199,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "adapted",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.107.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+  "lines": 669,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json",
+  "lines": 89,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js",
+  "lines": 383,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W1-14",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js",
+  "lines": 247,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css",
+  "lines": 63,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.114.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+  "lines": 707,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "gated, verbatim* - gesture held (DR-40)",
+  "wp": "W2-25",
+  "gate": "DR-40",
+  "first": "v2.149.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json",
+  "lines": 34,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "gated, verbatim* - gesture held (DR-40)",
+  "wp": "W2-25",
+  "gate": "DR-40",
+  "first": "v2.149.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+  "lines": 309,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json",
+  "lines": 79,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+  "lines": 219,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+  "lines": 157,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+  "lines": 330,
+  "ver": "1.2.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.113.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+  "lines": 296,
+  "ver": "1.1.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+  "lines": 265,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+  "lines": 350,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+  "lines": 159,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+  "lines": 657,
+  "ver": "1.1.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+  "lines": 565,
+  "ver": "1.2.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+  "lines": 337,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-42",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css",
+  "lines": 432,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "adapted",
+  "wp": "W2-19",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js",
+  "lines": 638,
+  "ver": "1.6.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "gated, verbatim - gesture held (DR-40)",
+  "wp": "W2-25",
+  "gate": "DR-40",
+  "first": "v2.28.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js",
+  "lines": 195,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "gated, adapted - DR-17",
+  "wp": "W2-21",
+  "gate": "DR-17",
+  "first": "v2.123.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js",
+  "lines": 494,
+  "ver": "1.2.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "gated, adapted - gesture held (DR-40)",
+  "wp": "W3-03",
+  "gate": "DR-40",
+  "first": "v2.117.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js",
+  "lines": 122,
+  "ver": "1.1.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W2-20",
+  "gate": "",
+  "first": "v2.63.1-65.1 (4f6bb9ef)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js",
+  "lines": 305,
+  "ver": "1.0.0",
+  "feature": "H. Sheet tools and records (shared LE subfolders)",
+  "action": "adapted",
+  "wp": "W2-21",
+  "gate": "",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json",
+  "lines": 73,
+  "ver": "",
+  "feature": "D. Keyboard scopes (LE 31, key files, KeyScope)",
+  "action": "gated, adapted - DR-33 a",
+  "wp": "W1-30",
+  "gate": "DR-33",
+  "first": "v2.109.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js",
+  "lines": 384,
+  "ver": "1.1.0",
+  "feature": "D. Keyboard scopes (LE 31, key files, KeyScope)",
+  "action": "gated, adapted - DR-33 a",
+  "wp": "W1-30",
+  "gate": "DR-33",
+  "first": "v2.109.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+  "lines": 230,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.113.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json",
+  "lines": 28,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.113.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js",
+  "lines": 180,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W1-14",
+  "gate": "",
+  "first": "v2.113.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+  "lines": 550,
+  "ver": "1.0.0",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.131.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json",
+  "lines": 43,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.131.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css",
+  "lines": 87,
+  "ver": "",
+  "feature": "C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)",
+  "action": "verbatim",
+  "wp": "W2-18",
+  "gate": "",
+  "first": "v2.131.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js",
+  "lines": 997,
+  "ver": "1.5.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, adapted - DR-19",
+  "wp": "W1-17",
+  "gate": "DR-19",
+  "first": "v2.89.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js",
+  "lines": 456,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-19",
+  "wp": "W2-29",
+  "gate": "DR-19",
+  "first": "v2.89.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css",
+  "lines": 27,
+  "ver": "",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-19",
+  "wp": "W1-17",
+  "gate": "DR-19",
+  "first": "v2.89.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js",
+  "lines": 424,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-41",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css",
+  "lines": 77,
+  "ver": "",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-41",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js",
+  "lines": 709,
+  "ver": "1.2.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-41",
+  "gate": "DR-18",
+  "first": "v2.130.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js",
+  "lines": 470,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js",
+  "lines": 690,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-41",
+  "gate": "DR-18",
+  "first": "v2.150.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js",
+  "lines": 549,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.150.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js",
+  "lines": 353,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json",
+  "lines": 208,
+  "ver": "",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js",
+  "lines": 389,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W1-14",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js",
+  "lines": 684,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js",
+  "lines": 382,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js",
+  "lines": 419,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-41",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js",
+  "lines": 480,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js",
+  "lines": 218,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js",
+  "lines": 153,
+  "ver": "1.0.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js",
+  "lines": 296,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-27",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js",
+  "lines": 504,
+  "ver": "1.2.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js",
+  "lines": 380,
+  "ver": "1.1.0",
+  "feature": "E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)",
+  "action": "gated, verbatim - DR-18 a",
+  "wp": "W2-28",
+  "gate": "DR-18",
+  "first": "v2.129.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js",
+  "lines": 240,
+  "ver": "1.0.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim - dormant (DR-08 B)",
+  "wp": "W2-14",
+  "gate": "DR-08",
+  "first": "v2.91.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js",
+  "lines": 346,
+  "ver": "1.0.1",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-32",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js",
+  "lines": 518,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W3-11",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js",
+  "lines": 268,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W2-22",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js",
+  "lines": 510,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W2-32",
+  "gate": "",
+  "first": "v2.147.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js",
+  "lines": 511,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W3-11",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js",
+  "lines": 1045,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-30",
+  "gate": "",
+  "first": "v2.163.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js",
+  "lines": 365,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W2-31",
+  "gate": "",
+  "first": "v2.163.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js",
+  "lines": 303,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "verbatim",
+  "wp": "W2-32",
+  "gate": "",
+  "first": "v2.143.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js",
+  "lines": 377,
+  "ver": "1.0.1",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__DeleteDialog__.js",
+  "lines": 64,
+  "ver": "",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js",
+  "lines": 688,
+  "ver": "1.3.0",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-10",
+  "gate": "DR-11",
+  "first": "v2.79.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js",
+  "lines": 171,
+  "ver": "1.0.1",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-10",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js",
+  "lines": 196,
+  "ver": "1.0.1",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js",
+  "lines": 113,
+  "ver": "1.0.1",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W1-13",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js",
+  "lines": 846,
+  "ver": "1.1.0",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.79.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js",
+  "lines": 204,
+  "ver": "1.1.0",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.69.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js",
+  "lines": 425,
+  "ver": "1.2.0",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-18",
+  "gate": "DR-11",
+  "first": "v2.79.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Styles__DrawingRegister__.css",
+  "lines": 575,
+  "ver": "",
+  "feature": "L. Drawing Register (LE 51)",
+  "action": "gated, adapted - DR-11 A code",
+  "wp": "W4-10",
+  "gate": "DR-11",
+  "first": "v2.78.1"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js",
+  "lines": 1195,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-06",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js",
+  "lines": 361,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-05",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js",
+  "lines": 434,
+  "ver": "1.1.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-06",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js",
+  "lines": 352,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-05",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js",
+  "lines": 245,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "verbatim (lands now with the spec lockstep, DR-10)",
+  "wp": "W2-30",
+  "gate": "",
+  "first": "v2.157.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js",
+  "lines": 474,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-04",
+  "gate": "DR-10",
+  "first": "v2.165.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js",
+  "lines": 421,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-04",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js",
+  "lines": 397,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-04",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js",
+  "lines": 287,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-04",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js",
+  "lines": 501,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim* - switched off (DR-10)",
+  "wp": "W4-04",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js",
+  "lines": 407,
+  "ver": "1.1.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-06",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js",
+  "lines": 1039,
+  "ver": "1.6.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js",
+  "lines": 683,
+  "ver": "1.4.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js",
+  "lines": 724,
+  "ver": "1.3.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js",
+  "lines": 839,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.97.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js",
+  "lines": 323,
+  "ver": "1.1.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-05",
+  "gate": "DR-10",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js",
+  "lines": 570,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-05",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js",
+  "lines": 178,
+  "ver": "1.1.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-06",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js",
+  "lines": 449,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js",
+  "lines": 349,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js",
+  "lines": 312,
+  "ver": "1.2.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.88.0-95.0 (62dade1c)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js",
+  "lines": 401,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-05",
+  "gate": "DR-10",
+  "first": "v2.170.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css",
+  "lines": 1049,
+  "ver": "",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-15",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css",
+  "lines": 1330,
+  "ver": "2.1.1",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-15",
+  "gate": "DR-10",
+  "first": "v2.95.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json",
+  "lines": 191,
+  "ver": "",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Contents__.js",
+  "lines": 248,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__.js",
+  "lines": 579,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.167.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__Live__.js",
+  "lines": 140,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.167.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Finishes__.js",
+  "lines": 644,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.168.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Footer__.js",
+  "lines": 311,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.167.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Header__.js",
+  "lines": 324,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10)",
+  "wp": "W4-16",
+  "gate": "DR-10",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Registry__.js",
+  "lines": 818,
+  "ver": "1.3.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-12",
+  "gate": "DR-10",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js",
+  "lines": 323,
+  "ver": "1.1.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, adapted - switched off (DR-10); NA content off (DR-43)",
+  "wp": "W4-12",
+  "gate": "DR-10, DR-43",
+  "first": "v2.162.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json",
+  "lines": 47,
+  "ver": "",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, adapted - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js",
+  "lines": 863,
+  "ver": "1.0.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, verbatim - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js",
+  "lines": 226,
+  "ver": "1.0.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, verbatim - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js",
+  "lines": 196,
+  "ver": "1.1.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, adapted - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js",
+  "lines": 397,
+  "ver": "1.2.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, adapted - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md",
+  "lines": 166,
+  "ver": "",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, adapted - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W1-15",
+  "gate": "DR-12, DR-43",
+  "first": "v2.81.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js",
+  "lines": 309,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js",
+  "lines": 196,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json",
+  "lines": 122,
+  "ver": "",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js",
+  "lines": 525,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js",
+  "lines": 389,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js",
+  "lines": 472,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js",
+  "lines": 259,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js",
+  "lines": 382,
+  "ver": "1.2.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js",
+  "lines": 118,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-02",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js",
+  "lines": 172,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js",
+  "lines": 229,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js",
+  "lines": 112,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js",
+  "lines": 464,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-18",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js",
+  "lines": 212,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js",
+  "lines": 304,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W1-16",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js",
+  "lines": 208,
+  "ver": "1.0.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-18",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css",
+  "lines": 236,
+  "ver": "1.1.0",
+  "feature": "M. Sheet Images (LE 54)",
+  "action": "gated, adapted - DR-13 a",
+  "wp": "W3-18",
+  "gate": "DR-13",
+  "first": "v2.116.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js",
+  "lines": 668,
+  "ver": "1.1.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W3-17",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js",
+  "lines": 990,
+  "ver": "1.2.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "verbatim",
+  "wp": "W2-38",
+  "gate": "",
+  "first": "v2.128.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js",
+  "lines": 810,
+  "ver": "1.3.0",
+  "feature": "K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)",
+  "action": "gated, verbatim* - switched off (DR-12 A); NA content off (DR-43)",
+  "wp": "W2-38",
+  "gate": "DR-12, DR-43",
+  "first": "v2.100.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js",
+  "lines": 442,
+  "ver": "1.0.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, verbatim* - dormant (DR-08 B)",
+  "wp": "W2-39",
+  "gate": "DR-08",
+  "first": "v2.164.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js",
+  "lines": 894,
+  "ver": "1.0.0",
+  "feature": "F. Site plans (LE 21; site-plan units)",
+  "action": "gated, adapted - dormant (DR-08 B)",
+  "wp": "W2-39",
+  "gate": "DR-08",
+  "first": "v2.164.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js",
+  "lines": 797,
+  "ver": "1.2.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-35",
+  "gate": "",
+  "first": "v2.91.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js",
+  "lines": 446,
+  "ver": "1.0.1",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-35",
+  "gate": "",
+  "first": "v2.91.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json",
+  "lines": 89,
+  "ver": "",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-35",
+  "gate": "",
+  "first": "v2.91.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js",
+  "lines": 469,
+  "ver": "1.1.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-35",
+  "gate": "",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css",
+  "lines": 419,
+  "ver": "1.2.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "adapted",
+  "wp": "W2-35",
+  "gate": "",
+  "first": "v2.91.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js",
+  "lines": 849,
+  "ver": "1.2.2",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json",
+  "lines": 158,
+  "ver": "",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js",
+  "lines": 566,
+  "ver": "1.1.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js",
+  "lines": 315,
+  "ver": "1.0.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W3-10",
+  "gate": "DR-14",
+  "first": "v2.125.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js",
+  "lines": 204,
+  "ver": "1.1.1",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js",
+  "lines": 231,
+  "ver": "1.1.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js",
+  "lines": 492,
+  "ver": "1.1.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W3-10",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js",
+  "lines": 309,
+  "ver": "1.0.0",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W1-27",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js",
+  "lines": 871,
+  "ver": "1.2.1",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W3-10",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css",
+  "lines": 227,
+  "ver": "",
+  "feature": "J. Floor areas (LE 59; Area Schedule)",
+  "action": "gated, verbatim - DR-14 A",
+  "wp": "W3-10",
+  "gate": "DR-14",
+  "first": "v2.104.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js",
+  "lines": 250,
+  "ver": "1.0.0",
+  "feature": "P. PDF fonts",
+  "action": "gated, adapted - DR-21 a",
+  "wp": "W1-25",
+  "gate": "DR-21",
+  "first": "v2.52.0-54.0 (ffbaee21)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js",
+  "lines": 707,
+  "ver": "1.1.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-07",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json",
+  "lines": 54,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-03",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js",
+  "lines": 285,
+  "ver": "1.1.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-07",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js",
+  "lines": 340,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-03",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js",
+  "lines": 479,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-03",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js",
+  "lines": 282,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-03",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js",
+  "lines": 457,
+  "ver": "1.1.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-03",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js",
+  "lines": 454,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-08",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json",
+  "lines": 61,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-08",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js",
+  "lines": 418,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-07",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js",
+  "lines": 487,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-07",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js",
+  "lines": 364,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-08",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Styles__Share__.css",
+  "lines": 220,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-08",
+  "gate": "DR-23",
+  "first": "v2.162.0-165.0 (55014c6a)"
+ },
+ {
+  "path": "02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/README__DocumentSharing__.md",
+  "lines": 112,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-23 a",
+  "wp": "W4-08",
+  "gate": "DR-23",
+  "first": "v2.166.0"
+ },
+ {
+  "path": "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+  "lines": 237,
+  "ver": "1.1.0",
+  "feature": "D. Keyboard scopes (LE 31, key files, KeyScope)",
+  "action": "gated, adapted - DR-33 a",
+  "wp": "W1-29",
+  "gate": "DR-33",
+  "first": "v2.109.0"
+ },
+ {
+  "path": "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+  "lines": 447,
+  "ver": "1.2.0",
+  "feature": "R. Transport and project file (80; LocalProjectMirror)",
+  "action": "VV body: FR-17: same path and 8 exports over WCP Flask (DIV-4, DR-27)",
+  "wp": "W0-12",
+  "gate": "",
+  "first": "v2.39.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__AppConfig__.json",
+  "lines": 76,
+  "ver": "",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Gesture__RightClickGuard__.js",
+  "lines": 315,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Picking__HitResolver__.js",
+  "lines": 318,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__README__.md",
+  "lines": 225,
+  "ver": "",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__DoorInteraction__.js",
+  "lines": 211,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__ModelVisibility__.js",
+  "lines": 621,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css",
+  "lines": 157,
+  "ver": "",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "verbatim",
+  "wp": "W4-11",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__SystemLogic__.js",
+  "lines": 437,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11)",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js",
+  "lines": 394,
+  "ver": "1.0.0",
+  "feature": "N. Statement Writer (LE 52) and its context-menu renderer (27)",
+  "action": "gated, verbatim - switched off (DR-10)",
+  "wp": "W4-11",
+  "gate": "DR-10",
+  "first": "v2.10.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json",
+  "lines": 76,
+  "ver": "",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-40",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js",
+  "lines": 382,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-40",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js",
+  "lines": 356,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-40",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js",
+  "lines": 397,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-01",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+  "lines": 824,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-01",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js",
+  "lines": 411,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-40",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js",
+  "lines": 828,
+  "ver": "1.1.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-01",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js",
+  "lines": 551,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-40",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css",
+  "lines": 142,
+  "ver": "",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "adapted",
+  "wp": "W2-01",
+  "gate": "",
+  "first": "v2.82.0"
+ },
+ {
+  "path": "02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js",
+  "lines": 198,
+  "ver": "0.1.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, adapted - DR-26",
+  "wp": "W2-05",
+  "gate": "DR-26",
+  "first": "v2.86.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+  "lines": 44,
+  "ver": "",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W1-09",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+  "lines": 263,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W1-09",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+  "lines": 314,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, adapted - DR-15",
+  "wp": "W2-03",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+  "lines": 402,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W1-09",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+  "lines": 189,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W1-09",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+  "lines": 631,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, adapted - DR-15",
+  "wp": "W2-03",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+  "lines": 253,
+  "ver": "1.0.0",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W1-09",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css",
+  "lines": 107,
+  "ver": "",
+  "feature": "A. Drawing core, planes, sections and fog (top level)",
+  "action": "gated, verbatim - DR-15",
+  "wp": "W2-03",
+  "gate": "DR-15",
+  "first": "v2.94.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Config__.json",
+  "lines": 133,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js",
+  "lines": 621,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-02",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Elements__.js",
+  "lines": 653,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-02",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js",
+  "lines": 596,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.156.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Paint__.js",
+  "lines": 522,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Sheet__.js",
+  "lines": 298,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-02",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Styles__Main__.css",
+  "lines": 123,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Unpublished__.js",
+  "lines": 226,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js",
+  "lines": 340,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Viewports__.js",
+  "lines": 426,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-02",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/52__System__Layout__PublishedDocuments/README__PublishedDocuments__.md",
+  "lines": 60,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a; README adapted for VV: Vale identity, SCHEMA REF at the VV example folder W4-01 seeds, the Urls line as W4-17's VV Urls; a W4-17 target since Section F's F.8 C30",
+  "wp": "W4-17",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json",
+  "lines": 189,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-01",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js",
+  "lines": 678,
+  "ver": "1.1.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-01",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js",
+  "lines": 172,
+  "ver": "1.0.0",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-01",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md",
+  "lines": 99,
+  "ver": "",
+  "feature": "O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)",
+  "action": "gated, adapted - DR-22 a",
+  "wp": "W4-01",
+  "gate": "DR-22",
+  "first": "v2.155.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js",
+  "lines": 88,
+  "ver": "1.0.0",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json",
+  "lines": 196,
+  "ver": "",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js",
+  "lines": 448,
+  "ver": "1.1.0",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js",
+  "lines": 733,
+  "ver": "1.1.0",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css",
+  "lines": 205,
+  "ver": "",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/54__Feature__ColourPalette/README__ColourPalette__.md",
+  "lines": 151,
+  "ver": "",
+  "feature": "Q. Colour palette (54 top level)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W1-37",
+  "gate": "DR-20",
+  "first": "v2.126.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__.js",
+  "lines": 99,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Config__.json",
+  "lines": 46,
+  "ver": "",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js",
+  "lines": 556,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Field__.js",
+  "lines": 630,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css",
+  "lines": 115,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js",
+  "lines": 211,
+  "ver": "1.0.0",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20)",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/55__Feature__SpellCheck/README__SpellCheck__.md",
+  "lines": 147,
+  "ver": "",
+  "feature": "I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)",
+  "action": "gated, adapted - Vale name/dictionary (DR-20); README rewritten for VV (a new W2-34 target): the Vale dictionary file and route of W0-18; TV's 'NOT in ValeVision' line goes",
+  "wp": "W2-34",
+  "gate": "DR-20",
+  "first": "v2.144.0"
+ },
+ {
+  "path": "02__Src__AppModules/80__CloudflareIntegration/FutureCfHelpersEtc__ForServerlessFeaturesSuchAsClientComments__.note",
+  "lines": 1,
+  "ver": "",
+  "feature": "R. Transport and project file (80; LocalProjectMirror)",
+  "action": "excluded: TV note file; nothing to port",
+  "wp": "-",
+  "gate": "",
+  "first": "v2.0.1"
+ },
+ {
+  "path": "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+  "lines": 1221,
+  "ver": "1.5.0",
+  "feature": "R. Transport and project file (80; LocalProjectMirror)",
+  "action": "VV body: FR-16: same path, 33 exports over whitecardopedia-editor-api (DIV-4, DR-27)",
+  "wp": "W0-12",
+  "gate": "",
+  "first": "v2.7.0"
+ }
+]

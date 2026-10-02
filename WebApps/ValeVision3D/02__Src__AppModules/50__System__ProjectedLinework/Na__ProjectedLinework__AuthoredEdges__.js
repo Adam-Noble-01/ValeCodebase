@@ -26,6 +26,14 @@
 //   category groups, so a category left out of the drawing is out of both
 //   classes.
 //
+// - WHICH CATEGORIES SHIP LINEWORK. The walk also names every category whose
+//   GLB pair brought a linework root holding at least one segment, returned
+//   as Categories. That Set is what LINEWORK FIRST reads (see the edge
+//   extractor): those categories draw their creases from here and only their
+//   silhouettes from the mesh. It records what was LOADED, not what is
+//   showing this frame, so a passing hide of a linework root cannot swap a
+//   category back to mesh creases under a cache key that would not know.
+//
 // INTEGRATION:
 // - Na__ProjectedLinework__CpuBackend__ asks for the edges per model state
 //   and runs them through the clip kernel as the authored class.
@@ -33,20 +41,27 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : none (ValeVision original)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : new (D18)
-// - Divergences   : n/a
-// - Back-port     : none.
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, a ValeVision
+//                   original (D18);
+//                   ValeVision's own 1.1.0 (13-Sep-2026) took TrueVision's owner tags);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151), with the per-node
+//                   LineworkModifier owners TrueVision added unlogged on 21-Sep-2026 (the commit of
+//                   TrueVision3D v2.98.0; its DEVELOPMENT LOG does not record them)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D; DESCRIPTION says "Every ValeVision model" (the running app). No console
+//     output in this file.
+// - Back-port     : none (TrueVision could log the per-node owners in its DEVELOPMENT LOG).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
-// - Collect takes an ownerTable in its rules and returns { Edges, Owners }: one
-//   model category id per authored edge, from the object it was drawn on, so
-//   authored linework takes its category's style like the model's own edges.
-//   Ported from TrueVision3D (Edge Styles).
+// 14-Sep-2026 - Version 1.2.0
+// - Collect also returns Categories, the Set of category names that ship
+//   linework. Edges and Owners are unchanged. (1.1.0, the owner tags of
+//   12-Sep-2026, was never logged here.)
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -60,8 +75,8 @@
 
     // MODULE IMPORTS | Config and the Sampler's Name Matching
     // ------------------------------------------------------------
-    import { Na__PlCfg__GetSkipObjectNames } from './Na__ProjectedLinework__ConfigAccess__.js';
-    import { Na__PlSampler__NameMatches } from './Na__ProjectedLinework__StageSampler__.js';
+    import { Na__PlCfg__GetSkipObjectNames, Na__PlCfg__GetLineworkModifiers } from './Na__ProjectedLinework__ConfigAccess__.js';
+    import { Na__PlSampler__NameMatches, Na__PlSampler__ModifierOwnerFor } from './Na__ProjectedLinework__StageSampler__.js';
     import { Na__PlOwners__IdFor }         from './Na__ProjectedLinework__Owners__.js';
     // ------------------------------------------------------------
 
@@ -140,21 +155,47 @@
 // REGION | Collection
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Does a Linework Root Hold Any Segment at All?
+    // ------------------------------------------------------------
+    // Visibility is deliberately not asked: this answers what the GLB brought,
+    // for the Categories Set, not what is drawn this frame.
+    // ------------------------------------------------------------
+    function Na__PlAuthored__HoldsSegments(root) {
+        let holds = false;
+        root.traverse((node) => {
+            if (holds) return;
+            if (!(node.isLineSegments2 === true || node.isLineSegments === true || node.isLine === true)) return;
+            const geometry = node.geometry;
+            if (!geometry || !geometry.attributes) return;
+            const start = geometry.attributes.instanceStart;
+            if (start) { holds = start.count > 0; return; }
+            const position = geometry.attributes.position;
+            holds = !!position && (geometry.index ? geometry.index.count : position.count) >= 2;
+        });
+        return holds;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Gather the Authored Edges of the Model in Scene Space
     // ------------------------------------------------------------
-    // rules: { excludeTokens, ownerTable }. Returns { Edges, Owners } - Edges a
-    // Float64Array of six doubles per segment, Owners one category id per
-    // segment or null when no table was supplied. Visibility is honoured up the
-    // tree exactly as the sampler honours it for meshes.
+    // rules: { excludeTokens, ownerTable }. Returns { Edges, Owners, Categories }
+    // - Edges a Float64Array of six doubles per segment, Owners one category id
+    // per segment or null when no table was supplied, Categories the Set of
+    // category names that ship linework. Visibility is honoured up the tree
+    // for the edges exactly as the sampler honours it for meshes; the Set asks
+    // only whether the category itself is drawn.
     // ------------------------------------------------------------
     function Na__PlAuthored__Collect(modelRoot, rules) {
         const collected  = [];
         const ownerTable = (rules && rules.ownerTable) ? rules.ownerTable : null;
         const owners     = ownerTable ? [] : null;
-        if (!modelRoot) return { Edges : new Float64Array(0), Owners : owners ? new Uint16Array(0) : null };
+        const categories = new Set();
+        if (!modelRoot) return { Edges : new Float64Array(0), Owners : owners ? new Uint16Array(0) : null, Categories : categories };
 
         const excludeTokens = (rules && rules.excludeTokens) || [];
         const skipNames     = Na__PlCfg__GetSkipObjectNames();
+        const modifiers     = Na__PlCfg__GetLineworkModifiers();                 // <-- Nested detail tags that own their linework node
 
         modelRoot.updateMatrixWorld(true);
 
@@ -173,25 +214,40 @@
         while (stack.length > 0) {
             const entry    = stack.pop();
             const object3d = entry.object;
-            if (object3d.visible === false) continue;
-            if (Na__PlSampler__NameMatches(object3d.name, skipNames)) continue;
-
             const data       = object3d.userData || {};
             const isLinework = data[Na__PlAuthored__TYPE_KEY] === Na__PlAuthored__TYPE_LINEWORK;
 
+            // Named before the visibility test, on purpose: see WHICH CATEGORIES
+            // SHIP LINEWORK in the header.
+            if (isLinework && !categories.has(entry.category) && Na__PlAuthored__HoldsSegments(object3d)) categories.add(entry.category);
+
+            if (object3d.visible === false) continue;
+            if (Na__PlSampler__NameMatches(object3d.name, skipNames)) continue;
+
             if (isLinework) {
-                const ownerId  = ownerTable ? Na__PlOwners__IdFor(ownerTable, entry.category) : 0;
-                const runStart = collected.length;
+                // PER NODE, NOT PER ROOT. The GlbBuilder used to flatten a
+                // category's whole linework into one unnamed node, so every
+                // authored edge could only ever be tagged with the category it
+                // arrived in. It now gives each nested LineworkModifier tag
+                // (SSOT 76-79) a node of its own, named with that tag, so a
+                // stonework or joinery detail drawn inside a wall can be styled
+                // and switched apart from the wall. Anything without a modifier
+                // name still falls to entry.category, exactly as before, which
+                // is also what an older GLB written as one flat node does.
+                const categoryOwnerId = ownerTable ? Na__PlOwners__IdFor(ownerTable, entry.category) : 0;
                 object3d.traverse((node) => {
                     if (node.visible === false) return;
-                    if (node.isLineSegments2 === true || node.isLineSegments === true || node.isLine === true) {
-                        Na__PlAuthored__PushSegments(node, collected);
-                    }
-                });
-                if (owners) {
-                    const added = (collected.length - runStart) / 6;
+                    if (node.isLineSegments2 !== true && node.isLineSegments !== true && node.isLine !== true) return;
+
+                    const runStart = collected.length;
+                    Na__PlAuthored__PushSegments(node, collected);
+                    if (!owners) return;
+
+                    const modifierKey = Na__PlSampler__ModifierOwnerFor(node, modifiers);
+                    const ownerId     = modifierKey ? Na__PlOwners__IdFor(ownerTable, modifierKey) : categoryOwnerId;
+                    const added       = (collected.length - runStart) / 6;
                     for (let k = 0; k < added; k++) owners.push(ownerId);
-                }
+                });
                 continue;                                                        // <-- The root's subtree is done
             }
 
@@ -200,8 +256,9 @@
         }
 
         return {
-            Edges  : new Float64Array(collected),
-            Owners : owners ? new Uint16Array(owners) : null
+            Edges      : new Float64Array(collected),
+            Owners     : owners ? new Uint16Array(owners) : null,
+            Categories : categories
         };
     }
     // ------------------------------------------------------------

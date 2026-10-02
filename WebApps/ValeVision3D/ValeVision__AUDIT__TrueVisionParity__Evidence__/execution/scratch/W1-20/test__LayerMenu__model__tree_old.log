@@ -1,0 +1,21 @@
+﻿TrueVision3D - the Layer flyout and reference layers
+  PASS  a layer from before reference layers comes out of the normaliser byte-identical
+  PASS  a reference layer keeps Layer__Selectable false
+  PASS  true, or anything else, is not stored: selectable is every layer's default
+node : file:///C:/Users/adamw/AppData/Local/Temp/claude/C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-
+Plugins/a1674149-918e-4d62-a79a-e7961f105155/scratchpad/W1-20/tests/LayerMenu__model__w1_20.test.mjs:202
+At line:1 char:709
++ ... ppModules"; node "$sp\tests\LayerMenu__model__w1_20.test.mjs" > "$s\t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///C:/User...20.test.mjs:202:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+        [ M.Na__LeModel__IsLayerSelectable(s, 'Layer_006'), M.Na__LeModel__IsLayerSelectable(s, 'Layer_999') ], [ 
+true, true ]);
+            ^
+
+TypeError: M.Na__LeModel__IsLayerSelectable is not a function
+    at file:///C:/Users/adamw/AppData/Local/Temp/claude/C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-
+Plugins/a1674149-918e-4d62-a79a-e7961f105155/scratchpad/W1-20/tests/LayerMenu__model__w1_20.test.mjs:202:13
+
+Node.js v22.23.2

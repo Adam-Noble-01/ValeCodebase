@@ -1,0 +1,1046 @@
+===  .. 14
+   S07a-F15 [high/needs_decision] VV project codes are not unique per folder: affects {project} in Document IDs and QR resolver keys
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S12-F12 [high/needs_decision] Save guards for VV, plus VV-first R2 judging (D-S12-05)
+   S01-F52 [medium/update_wiring] Shared Whitecardopedia service worker precaches VV paths and must be bumped
+   S01-V05 [medium/update_wiring] WCP's shared SW registrar can reload a VV editor with unsaved sheets
+   S02a-V02 [medium/update_wiring] Shared service-worker token must be bumped for the renumber and every export-changing S02a WP
+   S06b-V03 [medium/update_wiring] Whitecardopedia service-worker token must be bumped per package
+   S07a-V03 [medium/update_wiring] TV v2.116.0 also gave its service worker a sheet-pictures bucket; VV's shared worker has none
+   S10-V05 [medium/port_adapted] Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install
+   S12-F26 [medium/build_vv_transport] Statement transport: F-STMT family and a statements blueprint
+   S12-F27 [medium/build_vv_transport] Sheet images transport: F-IMG family, blueprint and save step
+   S12-F28 [medium/build_vv_transport] Publishing transport: F-PUB family, blueprint, reader fallback
+   S12-F33 [medium/port_adapted] Absolute URLs in project data vs VV project rename
+   S12-F48 [medium/backport_to_tv] TV dev-owned key lists lack CrossSection__SceneData and LayoutEditor__DrawingRegister
+===  01__AppCore 16
+   S02a-F41 [high/port_verbatim] Na__RenderLoop__InteractiveOverlays__ (render-path guard for authoring overlays) missing
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S04a-F32 [high/update_wiring] Model Source's support chain is missing in VV
+   S07a-F13 [high/port_adapted] Register configuration and project block absent in VV
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S12-F09 [high/update_wiring] Loading sequence: Initialize, SetLoadedProjectData, editor-owned overlay
+   S12-F31 [high/build_vv_transport] One editor-owned key list: VV's Na__DevSavedKeys equivalent
+   S01-V01 [medium/update_wiring] Na__RenderLoop__IsPaused missing in VV; VV's render-loop hold is event-based
+   S02a-F50 [medium/update_wiring] index.html, CSS index and render loop wiring for the new systems
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S08-V05 [medium/update_wiring] S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+   S09-F18 [medium/keep_vv_divergence] Project-data dispatch contract differs; VV must keep its own
+   S09-F20 [medium/port_adapted] Render-loop hooks TV features need in VV's loading sequence, composer and thumbnail renderer
+   S09-F34 [medium/needs_decision] Overlay keys: TV's three allow-lists vs VV's patch-own-keys sync; rules for new data
+   S11-F19 [medium/port_adapted] TV v2.58.2 only partly ported: render-loop guards and Asset__Samples missing
+   S12-F48 [medium/backport_to_tv] TV dev-owned key lists lack CrossSection__SceneData and LayoutEditor__DrawingRegister
+===  02__AppData 4
+   S02b-F45 [high/port_adapted] Fat-line orthographic depth bias (TV v2.38.1) missing: VV base images show lines through faces
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S11-F20 [high/port_adapted] Ortho linework depth-bias fault (TV v2.38.1) is live in VV base images
+   S12-F31 [high/build_vv_transport] One editor-owned key list: VV's Na__DevSavedKeys equivalent
+===  03__AppUtils 24
+   S07b-F34 [critical/update_wiring] Keyboard: VV's 3D hotkeys would eat statement typing, and Backspace navigates back
+   S01-F15 [high/needs_decision] ProjectLoader exports GetProjectFolderFromUrl / GetYearFromUrl used by 11-12 TV files; VV lacks them
+   S01-F16 [high/port_adapted] Three keyboards: KeyScope (TV-only) + VV 3D hotkey handler guard
+   S01-F44 [high/port_adapted] Project file names and storage layout: TrueVision__X__.json / 30__TrueVision__AppContent vs VaApps/Projects/<folderId>/project.json
+   S02a-F05 [high/port_adapted] Na__DrawView__ProjectData__ is four TV versions behind (payload guard, save steps, IsLoaded, report)
+   S03a-F28 [high/port_verbatim] Key scope leaf missing in VV
+   S03a-F29 [high/port_adapted] VV 3D hotkeys answer under drawing tabs (code-path evidence)
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S03b-V02 [high/port_adapted] 53 ProjectLink imports two ProjectLoader functions VV lacks: ShapeGeometry 1.6.0+ and QrCell fail at link time even with the QR switched off
+   S05a-F06 [high/port_adapted] Na__AppUtils__KeyScope__ (three keyboards, one live) missing
+   S05a-F35 [high/update_wiring] VV 3D hotkeys fire under drawing tabs and in label edits
+   S07a-F15 [high/needs_decision] VV project codes are not unique per folder: affects {project} in Document IDs and QR resolver keys
+   S09-F40 [high/port_verbatim] KeyScope missing: VV's 3D hotkeys likely still fire under drawing and document tabs
+   S11-V02 [high/update_wiring] 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+   S12-F05 [high/build_vv_transport] VV local mirror facade (Na__LocalMirror, 8 names)
+   S12-F06 [high/update_wiring] ProjectLoader identity helpers and localhost repository fallback
+   S12-V02 [high/build_vv_transport] project.json folderId is unreliable: never use it for R2 or disk paths
+   S03b-F38 [medium/port_verbatim] Controls__Pc 1.1.0 vs 1.4.0 and TouchScreen 1.0.0 vs 1.1.0 (Page Up/Down, keyboard focus fix)
+   S07a-V05 [medium/port_adapted] VV project.json identity fields are unreliable; resolve folder and name through the master index and projectName
+   S08-F24 [medium/update_wiring] VV ProjectLoader lacks GetProjectFolderFromUrl/GetYearFromUrl, which 52, 65 and 66 import
+   S08-V02 [medium/port_adapted] VV ResolveAssetUrl sends 11 projects to GitHub Pages only; the published reader must build its R2 URL itself
+   S09-V01 [medium/keep_vv_divergence] Keep VV's confirm-dialog markup and styles; TV's ConfirmDialog falls back to window.confirm
+   S10-F19 [medium/backport_to_tv] Confirm dialog: TV falls back to window.confirm for every editor confirm; VV shows a styled modal
+   S10-F30 [medium/port_adapted] Keyboard and focus: Drawings menu keys, restarting the sheet keyboard, three keyboards
+===  03__Style__AppStylesheets 19
+   S01-F50 [high/update_wiring] Stylesheet registration: TV CSS index vs VV loader Na__LeLoad__STYLESHEETS
+   S03a-F23 [high/update_wiring] Loader STYLESHEETS must mirror TV's CSS-index LE imports
+   S04b-F42 [high/update_wiring] Four new stylesheets must go into VV's loader STYLESHEETS, not a CSS index
+   S10-F04 [high/port_adapted] VV first open hides the fold under a full-screen start-up cover; TV shows an in-host veil under visible tabs
+   S10-F16 [high/update_wiring] Stylesheet loading model: every ported TV sheet needs a VV home (index, loader list or self-link)
+   S10-V01 [high/update_wiring] VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil
+   S02a-F47 [medium/port_adapted] Presentation Dev modal is TV 1.2.0, VV 1.0.0
+   S02a-F50 [medium/update_wiring] index.html, CSS index and render loop wiring for the new systems
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S06b-F43 [medium/update_wiring] Colour Palette wiring: PanelHost, PlanAnnotations toolbar, CSS index
+   S07b-F41 [medium/port_adapted] Open Sans Medium (500) missing from VV fonts
+   S09-F15 [medium/update_wiring] Loader STYLESHEETS list must gain TV's eagerly imported LE sheets, in TV cascade order
+   S09-F45 [medium/port_adapted] Top-bar fold already ported verbatim; the residual differences are the loading screen, veil CSS and tab strip
+   S09-F48 [medium/update_wiring] Index-level wiring each TV-only system needs when it lands (47, 49, 66, 27, mode-controller contexts)
+   S09-V01 [medium/keep_vv_divergence] Keep VV's confirm-dialog markup and styles; TV's ConfirmDialog falls back to window.confirm
+   S10-F05 [medium/port_adapted] LoadingOverlays veil region: VV lacks TV's in-host base mode
+   S10-F12 [medium/port_verbatim] Colour palette popover (TV 54) absent; its CSS must load from VV's style index
+   S10-F19 [medium/backport_to_tv] Confirm dialog: TV falls back to window.confirm for every editor confirm; VV shows a styled modal
+   S10-F22 [medium/port_adapted] Fonts: VV lacks Open Sans Medium (500) and loads fonts from Noble Architecture's web host
+===  05__RenderPipeline 8
+   S01-F06 [high/port_adapted] 47__System__DrawingPlanes (TV-only, 9 files, 3,967 lines) plus 05 InteractiveOverlays
+   S02a-F41 [high/port_verbatim] Na__RenderLoop__InteractiveOverlays__ (render-path guard for authoring overlays) missing
+   S01-V01 [medium/update_wiring] Na__RenderLoop__IsPaused missing in VV; VV's render-loop hold is event-based
+   S02a-F44 [medium/update_wiring] VV render-loop invalidation lacks Na__RenderLoop__IsPaused
+   S02b-F44 [medium/port_adapted] Supersampler premultiplied clamp (TV v2.103.0) missing in VV
+   S04a-F47 [medium/port_adapted] Nested LineworkModifier styling (SSOT 76-79) is absent in VV and missing from TV module logs
+   S09-F21 [medium/port_adapted] 05 RenderPipeline: InteractiveOverlays module and Invalidation IsPaused missing in VV
+   S11-F19 [medium/port_adapted] TV v2.58.2 only partly ported: render-loop guards and Asset__Samples missing
+===  10__NavigationAndCameras 5
+   S01-F16 [high/port_adapted] Three keyboards: KeyScope (TV-only) + VV 3D hotkey handler guard
+   S03a-F29 [high/port_adapted] VV 3D hotkeys answer under drawing tabs (code-path evidence)
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S05a-F35 [high/update_wiring] VV 3D hotkeys fire under drawing tabs and in label edits
+   S09-F40 [high/port_verbatim] KeyScope missing: VV's 3D hotkeys likely still fire under drawing and document tabs
+===  15__ModelLoader 4
+   S02b-F45 [high/port_adapted] Fat-line orthographic depth bias (TV v2.38.1) missing: VV base images show lines through faces
+   S11-F20 [high/port_adapted] Ortho linework depth-bias fault (TV v2.38.1) is live in VV base images
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S04a-V04 [medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+===  21__System__PresentationMode 9
+   S03b-F16 [high/port_whole_reapply_vv] AutoSave 1.3.0 vs 1.5.0: draft restore after reload and the draft guard (v2.145/v2.146)
+   S09-F37 [high/keep_vv_divergence] Scene-activation event names diverge; TV's section scene data listens to an event TV never fires
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S11-V02 [high/update_wiring] 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+   S12-F11 [high/port_adapted] AutoSave 1.3.0 -> 1.5.0 with DevMenu Modal 1.2.0
+   S02a-F47 [medium/port_adapted] Presentation Dev modal is TV 1.2.0, VV 1.0.0
+   S02a-V01 [medium/update_wiring] Thumbnail capture signature differs: ported TV editors cannot take the Update picture, and VV's batch thumbnails already fail
+   S07a-V05 [medium/port_adapted] VV project.json identity fields are unreliable; resolve folder and name through the master index and projectName
+   S09-F20 [medium/port_adapted] Render-loop hooks TV features need in VV's loading sequence, composer and thumbnail renderer
+===  25__System__3dObject__InteractionSystem 5
+   S02b-F26 [critical/port_adapted] Door module (25) must reach the TV 1.9.0 exports, plus FindDoorGroups, before any folder 50 port
+   S04a-F28 [high/update_wiring] Plan doors depend on pieces outside the Layout Editor that VV lacks
+   S01-F24 [medium/port_adapted] TV-only drawing files in 42, 45 and 50, plus 25 FindDoorGroups
+   S01-V02 [medium/port_adapted] Shared VV modules lack TV export names: ModelToggle x3, ClickToOpenDoors x6
+   S09-F25 [medium/port_adapted] Door-animation exports missing for TV projected-linework door swings
+===  26__System__ToggleModelElements 6
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S04a-F32 [high/update_wiring] Model Source's support chain is missing in VV
+   S01-V02 [medium/port_adapted] Shared VV modules lack TV export names: ModelToggle x3, ClickToOpenDoors x6
+   S09-F24 [medium/port_adapted] ModelToggle lacks BorrowRegistry, RestoreRegistry and SetCategoryVisibleByKey
+   S09-F38 [medium/keep_vv_divergence] na-model-visibility-changed has no dispatcher in TV; VV's must survive ports
+===  27__System__ContextMenuSystem 3
+   S01-F12 [medium/port_verbatim] 27__System__ContextMenuSystem (TV-only, 9 files) - MenuRenderer needed by StatementWriter
+   S07b-F15 [medium/port_verbatim] Picture menu (justify, crop, frame, shadow, title) needs the context menu renderer
+   S07b-V06 [medium/port_verbatim] Context-menu renderer leaf and its stylesheet have no owning WP
+===  30__System__ImageExport 5
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S02b-F42 [medium/update_wiring] Depth fog in VV exports: add a fog-only per-tile hook before the existing section overlay
+   S02b-V02 [medium/needs_decision] Depth fog and projected vectors: on screen neither app fogs the SVG overlay; VV exports put vectors above the fog
+   S04a-F30 [medium/port_adapted] Fog images need a callback route that VV's tiled renderer lacks (DIV-1)
+   S09-F46 [medium/needs_decision] VV Tools menu keeps legacy drawing entry points TV retired (Create Drawing, Elevation View)
+===  35__System__PageLayoutSystem 1
+   S09-F46 [medium/needs_decision] VV Tools menu keeps legacy drawing entry points TV retired (Create Drawing, Elevation View)
+===  40__System__2dElevationsView 1
+   S09-F46 [medium/needs_decision] VV Tools menu keeps legacy drawing entry points TV retired (Create Drawing, Elevation View)
+===  40__System__DrawingViewCore 25
+   S01-F23 [high/port_verbatim] TV-only files in 40__System__DrawingViewCore (DevRowShell, DraftGuard, DraftMaths, DrawingUsage) + DIV-1 pair
+   S02a-F05 [high/port_adapted] Na__DrawView__ProjectData__ is four TV versions behind (payload guard, save steps, IsLoaded, report)
+   S02a-F07 [high/port_verbatim] DraftMaths and DrawingUsage (pure helpers of the draft system) missing
+   S02a-F08 [high/port_verbatim] Na__DrawView__DevRowShell__ (shared panel shell) missing
+   S02a-F09 [high/port_verbatim] Na__DrawView__DraftGuard__ missing - VV Dev rows still write drawings live
+   S07a-F48 [high/update_wiring] VV drawings save has no save steps and no step notes in the Save Sheets toast
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S12-F10 [high/port_whole_reapply_vv] Na__DrawView__ProjectData__ 1.2.0 -> 1.6.0 (the one save path)
+   S12-F12 [high/needs_decision] Save guards for VV, plus VV-first R2 judging (D-S12-05)
+   S02a-F10 [medium/port_whole_reapply_vv] RowAccordion lacks the change guard, open listeners and RequestOpenId
+   S02a-F11 [medium/port_adapted] RenameDrawing lacks StageFloorPlan/StageElevation (rename inside a draft)
+   S02a-F12 [medium/port_adapted] Transitions 1.1.0: sheet pictures still kick a walking user into Orbit in VV
+   S02a-F34 [medium/port_adapted] Elevation mode controller: add TV's depth-fog source hook to VV's controller
+   S02a-F58 [medium/port_adapted] Dev Tools drawing panels must match TV's look and behaviour
+   S02b-F40 [medium/port_adapted] Depth fog Dev row: needs DevRowShell and VV's elevation editor model
+   S03a-F15 [medium/port_adapted] No sheet-key restart or Page Up/Down turning; the Walk/Fly exit already works in VV
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+   S04a-V03 [medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+   S09-F13 [medium/port_whole_reapply_vv] Loader-boundary seams in SheetRecords (DrawingCode leaf) and RenameDrawing (facade restamp)
+   S09-F18 [medium/keep_vv_divergence] Project-data dispatch contract differs; VV must keep its own
+   S09-F20 [medium/port_adapted] Render-loop hooks TV features need in VV's loading sequence, composer and thumbnail renderer
+   S09-F36 [medium/update_wiring] 32 TV-only window events arrive with TV modules; names must be kept exactly
+   S09-V02 [medium/port_whole_reapply_vv] Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41
+===  41__System__CrossSectionView 10
+   S09-F37 [high/keep_vv_divergence] Scene-activation event names diverge; TV's section scene data listens to an event TV never fires
+   S02a-F21 [medium/needs_decision] CrossSection__SceneData positionMm sign is opposite in the two apps (TD06 not met)
+   S02a-F46 [medium/needs_decision] DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate
+   S02a-F57 [medium/port_adapted] Depth fog needs the live cut's depth (RenderDepthInto) from VV's section tool
+   S02b-F39 [medium/port_adapted] Depth fog RenderLayer: VV needs a depth-only section-cap hook (DIV-2)
+   S04a-V03 [medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+   S09-F07 [medium/update_wiring] VV attaches the drawings, section-scene and DrawCfg listeners after the loading sequence starts (latent race TV fixed)
+   S09-V02 [medium/port_whole_reapply_vv] Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41
+   S12-F46 [medium/update_wiring] VV 41 SceneData registers its block with ProjectData
+   S12-V01 [medium/backport_to_tv] CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met
+===  41__System__SectionCutEngine 7
+   S09-F37 [high/keep_vv_divergence] Scene-activation event names diverge; TV's section scene data listens to an event TV never fires
+   S02a-F21 [medium/needs_decision] CrossSection__SceneData positionMm sign is opposite in the two apps (TD06 not met)
+   S02a-F57 [medium/port_adapted] Depth fog needs the live cut's depth (RenderDepthInto) from VV's section tool
+   S02b-F39 [medium/port_adapted] Depth fog RenderLayer: VV needs a depth-only section-cap hook (DIV-2)
+   S09-V02 [medium/port_whole_reapply_vv] Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41
+   S12-F46 [medium/update_wiring] VV 41 SceneData registers its block with ProjectData
+   S12-V01 [medium/backport_to_tv] CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met
+===  42__System__DrawingViewCore 26
+   S02a-F05 [high/port_adapted] Na__DrawView__ProjectData__ is four TV versions behind (payload guard, save steps, IsLoaded, report)
+   S04a-F32 [high/update_wiring] Model Source's support chain is missing in VV
+   S07a-F48 [high/update_wiring] VV drawings save has no save steps and no step notes in the Save Sheets toast
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S12-F10 [high/port_whole_reapply_vv] Na__DrawView__ProjectData__ 1.2.0 -> 1.6.0 (the one save path)
+   S01-V04 [medium/port_adapted] TV LE reads TV PWA globals for the project's display name; VV has no such global
+   S02a-F10 [medium/port_whole_reapply_vv] RowAccordion lacks the change guard, open listeners and RequestOpenId
+   S02a-F11 [medium/port_adapted] RenameDrawing lacks StageFloorPlan/StageElevation (rename inside a draft)
+   S02a-F12 [medium/port_adapted] Transitions 1.1.0: sheet pictures still kick a walking user into Orbit in VV
+   S02a-F34 [medium/port_adapted] Elevation mode controller: add TV's depth-fog source hook to VV's controller
+   S02a-F57 [medium/port_adapted] Depth fog needs the live cut's depth (RenderDepthInto) from VV's section tool
+   S02b-F39 [medium/port_adapted] Depth fog RenderLayer: VV needs a depth-only section-cap hook (DIV-2)
+   S02b-F40 [medium/port_adapted] Depth fog Dev row: needs DevRowShell and VV's elevation editor model
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S02b-F42 [medium/update_wiring] Depth fog in VV exports: add a fog-only per-tile hook before the existing section overlay
+   S03a-F15 [medium/port_adapted] No sheet-key restart or Page Up/Down turning; the Walk/Fly exit already works in VV
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+   S03b-F07 [medium/update_wiring] Likely VV bug: Common fields seed never runs on the first editor load
+   S04a-V03 [medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S09-F13 [medium/port_whole_reapply_vv] Loader-boundary seams in SheetRecords (DrawingCode leaf) and RenameDrawing (facade restamp)
+   S09-F18 [medium/keep_vv_divergence] Project-data dispatch contract differs; VV must keep its own
+   S09-F20 [medium/port_adapted] Render-loop hooks TV features need in VV's loading sequence, composer and thumbnail renderer
+   S09-F34 [medium/needs_decision] Overlay keys: TV's three allow-lists vs VV's patch-own-keys sync; rules for new data
+   S09-V02 [medium/port_whole_reapply_vv] Section-block save seam: TV ProjectData uses a provider registration, VV hard-imports VV 41
+===  42__System__FloorPlanViews 9
+   S02a-F04 [critical/port_adapted] TV editors pass the presentation config where VV data modules expect a drawings block
+   S02a-F23 [high/port_verbatim] Floor plan storey level (v2.87) missing: StoreyLevel, StoreyRow, data 1.1.0, ConfigState 1.1.0
+   S02a-F25 [high/port_whole_reapply_vv] Floor plan Dev editor: TV 2.0.0 menu rebuild (drafts, planes, Update flow)
+   S02a-F26 [high/port_whole_reapply_vv] Floor plan row builders: TV 2.0.0 shell rows with the storey row
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S01-F24 [medium/port_adapted] TV-only drawing files in 42, 45 and 50, plus 25 FindDoorGroups
+   S02a-V01 [medium/update_wiring] Thumbnail capture signature differs: ported TV editors cannot take the Update picture, and VV's batch thumbnails already fail
+   S02b-F09 [medium/backport_to_tv] TV copied VV's dimension split but never wired it: duplicate config, orphan modules
+===  43__System__FloorPlanViews 8
+   S02a-F04 [critical/port_adapted] TV editors pass the presentation config where VV data modules expect a drawings block
+   S02a-F23 [high/port_verbatim] Floor plan storey level (v2.87) missing: StoreyLevel, StoreyRow, data 1.1.0, ConfigState 1.1.0
+   S02a-F25 [high/port_whole_reapply_vv] Floor plan Dev editor: TV 2.0.0 menu rebuild (drafts, planes, Update flow)
+   S02a-F26 [high/port_whole_reapply_vv] Floor plan row builders: TV 2.0.0 shell rows with the storey row
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+===  43__System__PlanAnnotations 2
+   S02b-F06 [medium/port_adapted] Plan annotation Toolbar 1.1.0: Colour Palette attach (TV v2.126.0)
+   S06b-F43 [medium/update_wiring] Colour Palette wiring: PanelHost, PlanAnnotations toolbar, CSS index
+===  44__System__PlanAnnotations 2
+   S02b-F06 [medium/port_adapted] Plan annotation Toolbar 1.1.0: Colour Palette attach (TV v2.126.0)
+   S06b-F43 [medium/update_wiring] Colour Palette wiring: PanelHost, PlanAnnotations toolbar, CSS index
+===  44__System__PlanDimensions 3
+   S02b-F08 [high/keep_vv_divergence] Plan dimensions: VV's split (ConfigState, EditorPreview) is the target - do NOT copy TV's Data or Editor
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S02b-F09 [medium/backport_to_tv] TV copied VV's dimension split but never wired it: duplicate config, orphan modules
+===  45__System__ElevationViews 13
+   S02a-F04 [critical/port_adapted] TV editors pass the presentation config where VV data modules expect a drawings block
+   S02a-F30 [high/port_verbatim] Elevation auto-name and identity (v2.86) missing: AutoName, AutoNameText
+   S02a-F31 [high/port_whole_reapply_vv] Elevation Dev editor: TV 2.1.0 (planes, drafts, auto names, fog)
+   S02a-F32 [high/port_whole_reapply_vv] Elevation row builders: TV 2.1.0 identity statement, Advanced bearing, fog block
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S01-F24 [medium/port_adapted] TV-only drawing files in 42, 45 and 50, plus 25 FindDoorGroups
+   S02a-F33 [medium/port_whole_reapply_vv] Elevation data 1.1.0: depth fog fields and TV's first-argument convention
+   S02a-F34 [medium/port_adapted] Elevation mode controller: add TV's depth-fog source hook to VV's controller
+   S02a-V01 [medium/update_wiring] Thumbnail capture signature differs: ported TV editors cannot take the Update picture, and VV's batch thumbnails already fail
+   S02b-F09 [medium/backport_to_tv] TV copied VV's dimension split but never wired it: duplicate config, orphan modules
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S11-V09 [medium/update_wiring] Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo
+===  45__System__PlanDimensions 2
+   S02b-F08 [high/keep_vv_divergence] Plan dimensions: VV's split (ConfigState, EditorPreview) is the target - do NOT copy TV's Data or Editor
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+===  46__System__ElevationViews 12
+   S02a-F04 [critical/port_adapted] TV editors pass the presentation config where VV data modules expect a drawings block
+   S02a-F31 [high/port_whole_reapply_vv] Elevation Dev editor: TV 2.1.0 (planes, drafts, auto names, fog)
+   S02a-F32 [high/port_whole_reapply_vv] Elevation row builders: TV 2.1.0 identity statement, Advanced bearing, fog block
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S11-V03 [high/keep_vv_divergence] Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles
+   S02a-F33 [medium/port_whole_reapply_vv] Elevation data 1.1.0: depth fog fields and TV's first-argument convention
+   S02a-F34 [medium/port_adapted] Elevation mode controller: add TV's depth-fog source hook to VV's controller
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+   S04a-F29 [medium/port_verbatim] Viewport2d__DepthFog (TV-only, 145 lines, 1.0.0)
+   S11-V09 [medium/update_wiring] Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo
+===  46__System__NorthDirection 2
+   S02a-F39 [medium/port_whole_reapply_vv] North: Show Compass needs TV's CompassGizmo/DevMenu 1.1.0 whole
+   S09-F39 [medium/port_whole_reapply_vv] VV-only listeners in North DevMenu and SheetModel must be re-applied on whole-file ports
+===  47__System__DrawingPlanes 6
+   S01-F06 [high/port_adapted] 47__System__DrawingPlanes (TV-only, 9 files, 3,967 lines) plus 05 InteractiveOverlays
+   S02a-F42 [high/port_adapted] 47__System__DrawingPlanes (planes you can see, grab and snap) missing
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S01-V01 [medium/update_wiring] Na__RenderLoop__IsPaused missing in VV; VV's render-loop hold is event-based
+   S02a-F58 [medium/port_adapted] Dev Tools drawing panels must match TV's look and behaviour
+   S11-V09 [medium/update_wiring] Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo
+===  47__System__NorthDirection 2
+   S02a-F39 [medium/port_whole_reapply_vv] North: Show Compass needs TV's CompassGizmo/DevMenu 1.1.0 whole
+   S09-F39 [medium/port_whole_reapply_vv] VV-only listeners in North DevMenu and SheetModel must be re-applied on whole-file ports
+===  48__System__CrossSectionViews 2
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S02a-F46 [medium/needs_decision] DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate
+===  49__System__ElevationDepthFog 8
+   S01-F08 [high/port_verbatim] 49__System__ElevationDepthFog (TV-only, 8 files, 2,203 lines) and the LE depth-fog unit
+   S11-F11 [high/port_adapted] Drawing core: ported to v2.80.0 (+ the v2.84.0 compass); planes, rebuilt menus, storey and depth fog open
+   S02b-F38 [medium/port_verbatim] Depth fog pure modules: AppConfig, ConfigState, Maths, RecordData, Shader, dev CSS
+   S02b-F39 [medium/port_adapted] Depth fog RenderLayer: VV needs a depth-only section-cap hook (DIV-2)
+   S02b-F40 [medium/port_adapted] Depth fog Dev row: needs DevRowShell and VV's elevation editor model
+   S02b-V02 [medium/needs_decision] Depth fog and projected vectors: on screen neither app fogs the SVG overlay; VV exports put vectors above the fog
+   S04a-F29 [medium/port_verbatim] Viewport2d__DepthFog (TV-only, 145 lines, 1.0.0)
+   S04a-V03 [medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+===  50__System__ProjectedLinework 26
+   S01-F43 [high/port_adapted] Runtime model category keys are app-prefixed; TV code hard-codes TrueVision__ categories
+   S02b-F11 [high/port_adapted] Projected linework AppConfig: rule switches, Storeys block, LineworkModifiers block, BuildToken
+   S02b-F12 [high/port_verbatim] Na__ProjectedLinework__FlushJoins__.js (TV-only, 1.1.0): flush joins cut before the clip
+   S02b-F13 [high/port_whole_reapply_vv] ClipKernel 1.2.0: SeamsOcclude
+   S02b-F16 [high/port_whole_reapply_vv] ConfigAccess 1.2.0: rule switches, GetStoreySetup, GetLineworkModifiers
+   S02b-F17 [high/port_whole_reapply_vv] CpuBackend 1.4.0: rules into the kernel, flush joins, storey band for annotation
+   S02b-F20 [high/port_whole_reapply_vv] Projector 1.5.0: rules in BuildOptions, door pose around Collect, storeys measured per collection
+   S02b-F21 [high/port_whole_reapply_vv] Pipeline 1.5.0: optional model root, linework-first/door-pose/storey keys, swings
+   S02b-F24 [high/port_verbatim] Na__ProjectedLinework__DoorPose__.js (TV-only, 1.3.0)
+   S04a-F28 [high/update_wiring] Plan doors depend on pieces outside the Layout Editor that VV lacks
+   S04a-F32 [high/update_wiring] Model Source's support chain is missing in VV
+   S11-F10 [high/port_adapted] Projected linework: flush joins, plan doors, storeys and hide swings open; 14 TV PORT NOTEs in folder 50 say 'PENDING to ValeVision3D'
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S01-F24 [medium/port_adapted] TV-only drawing files in 42, 45 and 50, plus 25 FindDoorGroups
+   S02b-F14 [medium/port_whole_reapply_vv] EdgeExtractor 1.3.0: linework-first category set
+   S02b-F15 [medium/port_whole_reapply_vv] AuthoredEdges 1.2.0: Categories set and per-node LineworkModifier owners (unlogged)
+   S02b-F18 [medium/port_whole_reapply_vv] ModelStage: edge rules in the fingerprint (TV 1.1.0)
+   S02b-F22 [medium/port_whole_reapply_vv] StageSampler 1.2.0: posed door panels, LineworkModifier owners
+   S02b-F23 [medium/port_whole_reapply_vv] ViewDefinition 1.2.0: door pose in the definition and record hash
+   S02b-F25 [medium/port_verbatim] Na__ProjectedLinework__Storeys__.js (TV-only, 1.0.0)
+   S02b-V02 [medium/needs_decision] Depth fog and projected vectors: on screen neither app fogs the SVG overlay; VV exports put vectors above the fog
+   S04a-F12 [medium/port_whole_reapply_vv] Viewport2d__Window TV 1.2.0 vs VV 1.0.0
+   S04a-F47 [medium/port_adapted] Nested LineworkModifier styling (SSOT 76-79) is absent in VV and missing from TV module logs
+   S09-F25 [medium/port_adapted] Door-animation exports missing for TV projected-linework door swings
+   S09-F38 [medium/keep_vv_divergence] na-model-visibility-changed has no dispatcher in TV; VV's must survive ports
+   S12-F20 [medium/port_adapted] ProjectedLinework Persistence 1.2.0 -> 1.2.1 ports verbatim
+===  50__TrueVision__UserConfig 1
+   S01-F11 [medium/port_adapted] 55__Feature__SpellCheck (TV-only, 7 files, 1,804 lines) with app-named dictionary file, key and route
+===  50__ValeVision__UserConfig 1
+   S01-F11 [medium/port_adapted] 55__Feature__SpellCheck (TV-only, 7 files, 1,804 lines) with app-named dictionary file, key and route
+===  51__LayoutEditor__UserScrapbookContent 1
+   S06a-F30 [medium/backport_to_tv] TV scrapbook folders 02-05 missing on disk: saves there fail
+===  51__System__LayoutEditor 2
+   S07a-F59 [medium/port_verbatim] UI parity gaps in this slice
+   S09-F36 [medium/update_wiring] 32 TV-only window events arrive with TV modules; names must be kept exactly
+===  52__LayoutEditor__HatchPatternLibrary 2
+   S01-F28 [medium/port_verbatim] LE/36__System__HatchPatternTools (TV-only, 3 files) + app-root 52__LayoutEditor__HatchPatternLibrary (24 files)
+   S05b-F06 [medium/port_adapted] Hatch library content: Construction pack yes, Site Plan pack per decision, reference PNGs not needed
+===  52__System__Layout__PublishedDocuments 9
+   S08-F01 [critical/port_adapted] VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent
+   S01-F09 [high/port_adapted] 52__System__Layout__PublishedDocuments + 53__Data__Layout__PublishedSchema (TV-only, 15 files, 5,136 lines)
+   S01-V06 [high/needs_decision] TV's web viewer now depends on 52/53 and shows published files only
+   S08-F04 [high/port_adapted] 52__System__Layout__PublishedDocuments (the reader) is absent
+   S02b-F48 [medium/update_wiring] Published Documents (52) copy TV's linework folder-id rule; VV must use its own
+   S08-F23 [medium/port_adapted] Reader URL order on VV localhost must start with the Flask-served copy
+   S08-V02 [medium/port_adapted] VV ResolveAssetUrl sends 11 projects to GitHub Pages only; the published reader must build its R2 URL itself
+   S08-V04 [medium/port_adapted] Noble Architecture / TrueVision identity written into published data and share links (missed by F45 and the module table)
+   S10-F25 [medium/port_verbatim] Published drawings loading screen (TV 52, v2.156.0) absent
+===  53__Data__Layout__PublishedSchema 6
+   S08-F01 [critical/port_adapted] VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent
+   S01-F09 [high/port_adapted] 52__System__Layout__PublishedDocuments + 53__Data__Layout__PublishedSchema (TV-only, 15 files, 5,136 lines)
+   S08-F03 [high/port_adapted] 53__Data__Layout__PublishedSchema (the shared publish/read contract) is absent
+   S08-F29 [medium/needs_decision] Where VV's published documents live
+   S08-V04 [medium/port_adapted] Noble Architecture / TrueVision identity written into published data and share links (missed by F45 and the module table)
+   S12-F17 [medium/needs_decision] Relative storage layout for new content (D-S12-03)
+===  54__Feature__ColourPalette 4
+   S01-F10 [medium/port_verbatim] 54__Feature__ColourPalette (TV-only, 6 files, 1,821 lines)
+   S06b-F42 [medium/port_adapted] Colour Palette feature missing (top-level 54, 6 files)
+   S10-F12 [medium/port_verbatim] Colour palette popover (TV 54) absent; its CSS must load from VV's style index
+   S11-F17 [medium/port_adapted] Colour palette popover absent (TV v2.126.0, v2.133.0)
+===  55__Feature__SpellCheck 3
+   S11-F07 [high/port_adapted] LE specification and notes: five releases open, and the 'margin' undo step is still missing
+   S01-F11 [medium/port_adapted] 55__Feature__SpellCheck (TV-only, 7 files, 1,804 lines) with app-named dictionary file, key and route
+   S06b-F44 [medium/port_adapted] Spell Check feature missing (top-level 55, 7 files)
+===  62__Feature__AppInstallability 3
+   S01-V05 [medium/update_wiring] WCP's shared SW registrar can reload a VV editor with unsaved sheets
+   S07a-V03 [medium/update_wiring] TV v2.116.0 also gave its service worker a sheet-pictures bucket; VV's shared worker has none
+   S10-V05 [medium/port_adapted] Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install
+===  64__Feature__BreadcrumbNav 1
+   S07a-V05 [medium/port_adapted] VV project.json identity fields are unreliable; resolve folder and name through the master index and projectName
+===  80__CloudflareIntegration 5
+   S12-F04 [critical/build_vv_transport] VV Cloudflare client facade (Na__CfApi, 33 names)
+   S07b-F30 [high/build_vv_transport] VV storage layout: statements folder, index file, R2 keys, CDN
+   S12-F18 [high/build_vv_transport] Repository URLs must be app-root relative in VV
+   S12-V02 [high/build_vv_transport] project.json folderId is unreliable: never use it for R2 or disk paths
+   S12-F17 [medium/needs_decision] Relative storage layout for new content (D-S12-03)
+===  80__Testing__PrototypeEnvironment 1
+   S05b-V03 [medium/update_wiring] Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreac
+===  Index.html 14
+   S01-F51 [high/update_wiring] index.html wiring: TV Index.html:885-919 vs VV index.html:1375-1442
+   S03a-F24 [high/update_wiring] Loader facade additions: strip actions, view copies, model source, shared links
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S02a-F46 [medium/needs_decision] DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate
+   S02a-F50 [medium/update_wiring] index.html, CSS index and render loop wiring for the new systems
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S07b-V07 [medium/update_wiring] A shared statement link must itself load VV's lazy editor
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S09-F07 [medium/update_wiring] VV attaches the drawings, section-scene and DrawCfg listeners after the loading sequence starts (latent race TV fixed)
+   S09-F46 [medium/needs_decision] VV Tools menu keeps legacy drawing entry points TV retired (Create Drawing, Elevation View)
+   S09-F48 [medium/update_wiring] Index-level wiring each TV-only system needs when it lands (47, 49, 66, 27, mode-controller contexts)
+   S09-V01 [medium/keep_vv_divergence] Keep VV's confirm-dialog markup and styles; TV's ConfirmDialog falls back to window.confirm
+   S10-F19 [medium/backport_to_tv] Confirm dialog: TV falls back to window.confirm for every editor confirm; VV shows a styled modal
+   S11-V09 [medium/update_wiring] Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo
+===  LE/01__Core__Loader 27
+   S01-F50 [high/update_wiring] Stylesheet registration: TV CSS index vs VV loader Na__LeLoad__STYLESHEETS
+   S01-F54 [high/port_adapted] Tab strip 2.0.0 (five tabs) and the VV Layout Mode switch
+   S03a-F18 [high/update_wiring] Document tabs opened from 3D: VV loader wait would cover the page
+   S03a-F23 [high/update_wiring] Loader STYLESHEETS must mirror TV's CSS-index LE imports
+   S03a-F24 [high/update_wiring] Loader facade additions: strip actions, view copies, model source, shared links
+   S03b-F06 [high/port_whole_reapply_vv] SheetModel facade 1.18.0 vs 1.35.1: late start, Save report, AnnounceRestore location
+   S04a-V01 [high/update_wiring] Whole-file takes need their whole import closure: eight shared files can only be taken whole at the end
+   S04b-F42 [high/update_wiring] Four new stylesheets must go into VV's loader STYLESHEETS, not a CSS index
+   S07a-F17 [high/update_wiring] No Document Register tab: VV tab strip and lazy loader know only sheet and spec views
+   S07b-F33 [high/update_wiring] VV loader facade and TabStrip need the statements view
+   S07b-F35 [high/update_wiring] Document Sharing and Statement Data depend on each other; keep Share__Open off VV start-up
+   S09-F11 [high/update_wiring] Loader facade lacks the entry points TV's TabStrip 2.0.0 and DevMenu need
+   S10-F03 [high/port_whole_reapply_vv] Tab strip: TV 2.0.0 compact strip with a Drawings menu vs VV 1.5.0 tab-per-sheet
+   S10-F04 [high/port_adapted] VV first open hides the fold under a full-screen start-up cover; TV shows an in-host veil under visible tabs
+   S10-F07 [high/update_wiring] Loader facade and ModeController seams needed by the compact strip and the veils
+   S10-F16 [high/update_wiring] Stylesheet loading model: every ported TV sheet needs a VV home (index, loader list or self-link)
+   S10-V01 [high/update_wiring] VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil
+   S03a-F19 [medium/port_adapted] Tab strip CSS: Drawings menu rules belong in VV's Boot stylesheet
+   S03b-F07 [medium/update_wiring] Likely VV bug: Common fields seed never runs on the first editor load
+   S03b-F39 [medium/port_adapted] Styles__Main: tab strip lives in VV's Boot CSS; TV v2.158 Drawings menu tab missing
+   S07b-V07 [medium/update_wiring] A shared statement link must itself load VV's lazy editor
+   S08-F26 [medium/update_wiring] VV loader would hold its screen 2.5 s for renders that never come in the published viewer
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S09-F14 [medium/update_wiring] Late-start semantics: ported LE modules must not rely on hearing the first drawings-loaded event
+   S09-F15 [medium/update_wiring] Loader STYLESHEETS list must gain TV's eagerly imported LE sheets, in TV cascade order
+   S09-F16 [medium/port_adapted] Tab-strip CSS lives in TV Styles__Main__.css but in VV's Boot sheet
+   S09-F45 [medium/port_adapted] Top-bar fold already ported verbatim; the residual differences are the loading screen, veil CSS and tab strip
+===  LE/03__Core__Config 34
+   S01-F43 [high/port_adapted] Runtime model category keys are app-prefixed; TV code hard-codes TrueVision__ categories
+   S01-F44 [high/port_adapted] Project file names and storage layout: TrueVision__X__.json / 30__TrueVision__AppContent vs VaApps/Projects/<folderId>/project.json
+   S03a-F01 [high/port_whole_reapply_vv] AppConfig JSON: 356 key-level differences, diff inflated by formatting
+   S03a-F02 [high/port_adapted] AppConfig brand seams and NA-specific values a blind copy would break
+   S03a-F06 [high/port_whole_reapply_vv] ConfigState barrel missing nine re-exports
+   S03a-F07 [high/port_verbatim] KeyMap unit 1.0.0 vs 1.11.0, with a live fallback bug
+   S03a-V01 [high/update_wiring] Barrel ahead of its units breaks module linking
+   S04b-F34 [high/update_wiring] Key map rows, fallback rows, catalogue entries and SHEET_CHORDS missing
+   S05a-F32 [high/update_wiring] Config readers missing fields make features fail silently
+   S05a-F33 [high/port_adapted] Key map content behind; VV fallback has TV's v2.115 bug
+   S05b-F35 [high/update_wiring] Keys: 13 vector/Boolean rows, When contexts, and a key-map engine VV lacks
+   S07a-F13 [high/port_adapted] Register configuration and project block absent in VV
+   S07a-F49 [high/update_wiring] Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+   S07b-F30 [high/build_vv_transport] VV storage layout: statements folder, index file, R2 keys, CDN
+   S07b-F31 [high/update_wiring] Config block, GetStatementSetup and tab labels missing in VV
+   S08-F13 [high/needs_decision] PdfFonts absent: VV prints non-embedded Helvetica (deliberate divergence to revisit)
+   S10-F07 [high/update_wiring] Loader facade and ModeController seams needed by the compact strip and the veils
+   S03a-F03 [medium/port_adapted] Title block config: DocumentId row, ValuePrefix, row width factor, QR cell
+   S03a-F04 [medium/port_verbatim] 188 TV-only labels, 13 rewordings, 8 VV-only labels
+   S03a-F09 [medium/port_whole_reapply_vv] SheetSetup unit 1.3.0 vs 1.9.0, plus VV duplicate keys
+   S03a-F10 [medium/port_verbatim] ToolSetup unit 1.0.0 vs 1.5.0
+   S03a-F11 [medium/port_whole_reapply_vv] EditorSetup unit 1.0.0 vs 1.6.0
+   S03a-F40 [medium/port_adapted] Drawing Register and Statement Writer config blocks need VV values
+   S03b-F43 [medium/update_wiring] Config readers, AppConfig keys and labels the slice ports need
+   S04a-F44 [medium/update_wiring] Config and ConfigState gaps for this slice
+   S04b-F41 [medium/update_wiring] Snapping and carry config keys missing from VV config
+   S04b-V04 [medium/update_wiring] Viewport carry needs TV-only CarryTarget in HitResolution and mandatory config keys
+   S05b-F36 [medium/port_adapted] Config keys, ToolSetup readers and tool defaults for at-scale, round-up, hatch and dimension styles
+   S06a-F09 [medium/port_adapted] Multi-select notes in AppConfig contradict panel behaviour (both apps)
+   S06a-V02 [medium/port_adapted] Select/Move tooltips need TV v2.78.0 auto-Move and live in AppConfig
+   S06b-F16 [medium/update_wiring] Specification config: lockstep keys missing
+   S06b-F33 [medium/update_wiring] Margin config, labels and the PDF overflow toast
+   S06b-F50 [medium/port_adapted] VV toolbar still has the Notes toggle TV removed
+   S07a-F33 [medium/port_verbatim] Title block QR cell (TitleBlock__QrCell__ 1.0.0) and its Modern hook are absent
+===  LE/05__Core__ModeController 49
+   S03a-F13 [critical/port_adapted] Mode controller 1.18.0 vs 1.32.0: the integration hub
+   S03a-F17 [critical/port_adapted] Tab strip 2.0.0: compact five-tab strip with a Drawings menu
+   S08-F01 [critical/port_adapted] VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent
+   S01-F54 [high/port_adapted] Tab strip 2.0.0 (five tabs) and the VV Layout Mode switch
+   S03a-F18 [high/update_wiring] Document tabs opened from 3D: VV loader wait would cover the page
+   S03a-F24 [high/update_wiring] Loader facade additions: strip actions, view copies, model source, shared links
+   S03a-F42 [high/update_wiring] Per-feature mode-controller hunks (from the TV import walk)
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S05b-F10 [high/port_verbatim] Vector Tools panel section and stylesheet missing in VV
+   S05b-F33 [high/update_wiring] ModeController: hatch ready chain, panel registrations, vector tools initialise
+   S06b-F14 [high/update_wiring] ModeController lockstep wiring (mount, StartWatch, StopWatch)
+   S07a-F16 [high/update_wiring] ModeController has no register view, mount, open or image wiring
+   S07a-F17 [high/update_wiring] No Document Register tab: VV tab strip and lazy loader know only sheet and spec views
+   S07b-F32 [high/update_wiring] ModeController has no statement view
+   S07b-F33 [high/update_wiring] VV loader facade and TabStrip need the statements view
+   S08-F15 [high/update_wiring] ModeController must never render a sheet in the viewer
+   S09-F11 [high/update_wiring] Loader facade lacks the entry points TV's TabStrip 2.0.0 and DevMenu need
+   S09-F12 [high/port_whole_reapply_vv] VV-only ModeController API and listeners must be re-applied on any whole-file port of TV's ModeController
+   S10-F02 [high/port_adapted] TV v2.158 folds the bar on document tabs from the 3D view; VV folds only for drawing tabs
+   S10-F03 [high/port_whole_reapply_vv] Tab strip: TV 2.0.0 compact strip with a Drawings menu vs VV 1.5.0 tab-per-sheet
+   S10-F04 [high/port_adapted] VV first open hides the fold under a full-screen start-up cover; TV shows an in-host veil under visible tabs
+   S10-F06 [high/port_whole_reapply_vv] LoadingVeil: VV has no going-in veil, so after the compact strip VV's first drawing can open uncovered
+   S10-F07 [high/update_wiring] Loader facade and ModeController seams needed by the compact strip and the veils
+   S11-F05 [high/port_whole_reapply_vv] LE core: paint order, toolbar slimming, author zoom, draft race, layer reds and the five-tab strip open
+   S11-V02 [high/update_wiring] 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+   S02a-F12 [medium/port_adapted] Transitions 1.1.0: sheet pictures still kick a walking user into Orbit in VV
+   S02a-F48 [medium/update_wiring] Layout Editor call sites that change with this slice
+   S03a-F15 [medium/port_adapted] No sheet-key restart or Page Up/Down turning; the Walk/Fly exit already works in VV
+   S03a-F16 [medium/update_wiring] Viewer path: TV never renders a sheet for a reader (v2.155.0)
+   S03a-F20 [medium/keep_vv_divergence] Loading veil: VV adaptation is right; the first-open wait is narrower
+   S03a-F41 [medium/update_wiring] Mode controller Ready chain grows with each feature
+   S03a-F44 [medium/update_wiring] Left-column tabs (Document Preferences | Specification)
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+   S04a-F39 [medium/port_verbatim] Panel__SitePlanComposites (TV-only, 240 lines, 1.0.0)
+   S04a-F45 [medium/update_wiring] ModeController lacks this slice's registrations
+   S04a-V02 [medium/update_wiring] TabStrip 2.0.0 (TV v2.158.0) replaced the 'site plans after the plus' tab group with marked rows of a Drawings menu
+   S04b-F36 [medium/update_wiring] Mode controller must register the grid panel, attach grid and axes, and repoint Clear
+   S04b-V02 [medium/update_wiring] A Snapping__ shim must not re-export the controller (module cycle through Measurements)
+   S05a-F34 [medium/update_wiring] Mode controller wiring for key scope and document keys
+   S05b-F51 [medium/update_wiring] Right-column layout parity: Vector Tools under Vectors, Patterns before Floor Areas
+   S06a-F20 [medium/update_wiring] ModeController: left-column tabs, tab hints and 7 TV sections absent
+   S06a-F21 [medium/update_wiring] Selecting a viewport leaves the markup sections open in VV
+   S06a-F48 [medium/backport_to_tv] Back-port to TV: Add Viewport list refresh (VV 1.4.1 / MC 1.15.1)
+   S07b-F43 [medium/needs_decision] Design Statements tab label, placement and a config gate
+   S08-F26 [medium/update_wiring] VV loader would hold its screen 2.5 s for renders that never come in the published viewer
+   S08-V05 [medium/update_wiring] S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+   S09-F45 [medium/port_adapted] Top-bar fold already ported verbatim; the residual differences are the loading screen, veil CSS and tab strip
+   S10-F30 [medium/port_adapted] Keyboard and focus: Drawings menu keys, restarting the sheet keyboard, three keyboards
+   S11-F28 [medium/backport_to_tv] Back-port: Add Viewport list fills once in TV - VV v2.45.1 fix never landed
+===  LE/07__Core__SheetData 54
+   S03b-F01 [critical/port_whole_reapply_vv] SheetRecords schema 24 versions behind (TV 1.39.0 vs VV 1.15.0)
+   S03b-F03 [critical/port_whole_reapply_vv] Layer-stack migration (RestackLegacyLayers) must precede the paint order
+   S06b-F23 [critical/port_verbatim] VV NormaliseMarginNotes drops region and leaderless keys
+   S07a-F14 [critical/needs_decision] TV v2.71.0 Document ID schema missing in VV: the register's foundation and the images' folder key
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S01-F43 [high/port_adapted] Runtime model category keys are app-prefixed; TV code hard-codes TrueVision__ categories
+   S02a-F49 [high/update_wiring] LE modules blocked by this slice (ordering for the planner)
+   S03b-F02 [high/port_whole_reapply_vv] VV normalisers DROP or COERCE TV-era fields on the next load
+   S03b-F06 [high/port_whole_reapply_vv] SheetModel facade 1.18.0 vs 1.35.1: late start, Save report, AnnounceRestore location
+   S03b-F08 [high/port_whole_reapply_vv] SheetModel Sheets unit 1.1.0 vs 1.4.0
+   S03b-F10 [high/port_verbatim] SheetModel Layers unit 1.0.0 vs 1.4.0, incl. VV bug: deleting a layer orphans its vectors
+   S03b-F16 [high/port_whole_reapply_vv] AutoSave 1.3.0 vs 1.5.0: draft restore after reload and the draft guard (v2.145/v2.146)
+   S03b-F42 [high/update_wiring] Import closure: other slices' leaves and seams must exist before the core files swap
+   S04a-F40 [high/needs_decision] Site plan record fields, stems and project data keys
+   S05a-F31 [high/update_wiring] Shared-module exports the slice needs that VV lacks
+   S05b-F25 [high/port_verbatim] Shape record: Shape__Hatch, Shape__Curve, Shape__Holes unknown to VV
+   S05b-F26 [high/port_verbatim] Dimension record: AtScale never written, extension lines, RoundUp, LinePt, LineStyle absent in VV
+   S05b-F27 [high/update_wiring] SheetModel API gaps the vector tools need, plus facade re-exports
+   S05b-V01 [high/needs_decision] Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+   S06b-F24 [high/update_wiring] SheetModel__Sheets lacks margin patch keys and region functions
+   S06b-F38 [high/update_wiring] Floor Areas touches about 25 shared modules in VV
+   S06b-F39 [high/update_wiring] Floor-area data schema absent from VV records
+   S07a-F19 [high/port_adapted] History and AutoSave lack the register hooks
+   S07a-F48 [high/update_wiring] VV drawings save has no save steps and no step notes in the Save Sheets toast
+   S07a-F49 [high/update_wiring] Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S08-F11 [high/needs_decision] VV has no document id, yet it names every published folder, archive and share fallback
+   S11-F07 [high/port_adapted] LE specification and notes: five releases open, and the 'margin' undo step is still missing
+   S11-V02 [high/update_wiring] 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+   S12-F11 [high/port_adapted] AutoSave 1.3.0 -> 1.5.0 with DevMenu Modal 1.2.0
+   S01-F35 [medium/port_verbatim] Floor areas: LE/59__Feature__FloorAreas (10 files) + SheetModel__AreaGroups__ + ScrapbookParametric__AreaSchedule__
+   S01-V05 [medium/update_wiring] WCP's shared SW registrar can reload a VV editor with unsaved sheets
+   S03b-F07 [medium/update_wiring] Likely VV bug: Common fields seed never runs on the first editor load
+   S03b-F11 [medium/port_verbatim] SheetModel Shapes unit 1.0.0 vs 1.6.0, incl. VV InsertShape not writing its fallback layer
+   S03b-F12 [medium/port_whole_reapply_vv] SheetModel Viewports unit 1.1.0 vs 1.4.0
+   S03b-F13 [medium/port_verbatim] TextAndDimensions, Leaders and Groups units: dimension keys, delete-prunes, group kinds (one atomic set)
+   S03b-F14 [medium/port_verbatim] TV-only SheetModel__AreaGroups unit (floor areas)
+   S03b-F15 [medium/port_verbatim] TV-only record leaves NoteRegions and LeaderlessNotes
+   S03b-F18 [medium/port_verbatim] History: missing 'margin' step (VV bug), 'areas' step and register-updated rewrite
+   S04a-F43 [medium/update_wiring] VV SheetRecords loses three of this slice's fields and ignores the rest
+   S04a-V04 [medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+   S04b-F39 [medium/update_wiring] SheetModel lacks IsLayerSelectable (reference layers), which Sources imports
+   S06b-F40 [medium/port_verbatim] SheetModel__AreaGroups and the AreaSchedule type missing
+   S07a-F05 [medium/port_verbatim] Register__Numbering (1.0.1) absent: pure numbering plan used by the register and by the sheet model
+   S07a-F34 [medium/update_wiring] Shape__Qr and the 'qr' primitive are absent from VV's record, shape painter, chrome and exporter
+   S08-V05 [medium/update_wiring] S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+   S09-F13 [medium/port_whole_reapply_vv] Loader-boundary seams in SheetRecords (DrawingCode leaf) and RenameDrawing (facade restamp)
+   S09-F39 [medium/port_whole_reapply_vv] VV-only listeners in North DevMenu and SheetModel must be re-applied on whole-file ports
+   S10-V05 [medium/port_adapted] Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install
+   S11-F12 [medium/port_verbatim] Floor Areas feature absent (TV v2.104.0, v2.125.0, v2.148.0)
+   S12-F19 [medium/port_adapted] LE/07 Assets 1.0.0 -> 1.0.1 ports verbatim
+   S12-F50 [medium/port_whole_reapply_vv] Port SheetRecords before features that add record keys or enum values
+   S12-V03 [medium/update_wiring] Printed project name never fills: VV reads a TV-only global, and both apps read the presentation block
+===  LE/10__Core__SheetSurface 35
+   S03b-F23 [high/port_verbatim] SheetChrome '1.5.0' (code 1.8.0) vs 1.14.0
+   S03b-F24 [high/port_verbatim] SheetSurface 1.6.0 vs 1.13.0 (stack, zoom gesture, translate placement, rotation, published view)
+   S03b-F42 [high/update_wiring] Import closure: other slices' leaves and seams must exist before the core files swap
+   S03b-V01 [high/update_wiring] VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys
+   S04b-F06 [high/needs_decision] Zoom-settle event (TV v2.111) is a prerequisite VV lacks
+   S04b-F23 [high/port_adapted] Snap stylesheet missing, and VV's old marker rules will corrupt the new marker
+   S05a-F31 [high/update_wiring] Shared-module exports the slice needs that VV lacks
+   S05b-F28 [high/port_verbatim] SheetChrome: hatch deck and holed polylines on screen and in the PDF
+   S05b-V01 [high/needs_decision] Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S08-F13 [high/needs_decision] PdfFonts absent: VV prints non-embedded Helvetica (deliberate divergence to revisit)
+   S10-F03 [high/port_whole_reapply_vv] Tab strip: TV 2.0.0 compact strip with a Drawings menu vs VV 1.5.0 tab-per-sheet
+   S10-V01 [high/update_wiring] VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil
+   S01-F32 [medium/needs_decision] Project QR code family (LE/53 ProjectQrCode, TitleBlock__QrCell__, ScrapbookParametric__ProjectQr__) - NA URL base
+   S03a-F19 [medium/port_adapted] Tab strip CSS: Drawings menu rules belong in VV's Boot stylesheet
+   S03b-F34 [medium/port_whole_reapply_vv] Title block Cells 1.0.0 vs 1.2.0 and Modern 1.2.0 vs 1.5.0
+   S03b-F35 [medium/port_verbatim] TV-only TitleBlock__QrCell: generic layout, NA-specific link
+   S03b-F37 [medium/port_verbatim] Navigation 1.1.0 vs 1.3.0 (zoom gesture, authoring zoom to 6400%)
+   S03b-F38 [medium/port_verbatim] Controls__Pc 1.1.0 vs 1.4.0 and TouchScreen 1.0.0 vs 1.1.0 (Page Up/Down, keyboard focus fix)
+   S03b-F39 [medium/port_adapted] Styles__Main: tab strip lives in VV's Boot CSS; TV v2.158 Drawings menu tab missing
+   S03b-F40 [medium/port_adapted] Styles__Main__Paper: region-by-region port; snap-marker rules moved out
+   S04a-F25 [medium/update_wiring] Viewport rotation is wired through 31 TV files
+   S04b-F38 [medium/update_wiring] SheetSurface needs a chrome cache and GetSheetChrome for title-block snaps
+   S04b-F43 [medium/update_wiring] Grips and frames must be painted on their points for the snap marker to register
+   S04b-F45 [medium/needs_decision] Snap marker colour changes meaning for VV users (by tool to by target)
+   S05a-F38 [medium/update_wiring] Controls__Pc carries Page Down paging and the focus fix
+   S05a-F41 [medium/port_verbatim] Sheet-surface CSS rules the slice needs
+   S06a-F51 [medium/needs_decision] VV measures paper text in Helvetica; paper shows Open Sans
+   S07a-F33 [medium/port_verbatim] Title block QR cell (TitleBlock__QrCell__ 1.0.0) and its Modern hook are absent
+   S07a-F34 [medium/update_wiring] Shape__Qr and the 'qr' primitive are absent from VV's record, shape painter, chrome and exporter
+   S08-F25 [medium/update_wiring] VV SheetSurface lacks ShowPublished and ZOOM_SETTLED_EVENT
+   S08-F33 [medium/needs_decision] Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+   S08-V05 [medium/update_wiring] S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+   S09-F16 [medium/port_adapted] Tab-strip CSS lives in TV Styles__Main__.css but in VV's Boot sheet
+   S10-F15 [medium/port_whole_reapply_vv] Main__Paper stylesheet can only move together with the surface, grips and snap ports
+===  LE/15__Core__Markup 32
+   S03b-F03 [critical/port_whole_reapply_vv] Layer-stack migration (RestackLegacyLayers) must precede the paint order
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S03b-F25 [high/port_verbatim] TV-only PaintOrder: the Layers list is the paint order
+   S03b-F26 [high/port_whole_reapply_vv] MarkupBridge 1.10.0 vs 1.20.0, incl. VV inconsistency: printed dimension ignores AtScale
+   S03b-F42 [high/update_wiring] Import closure: other slices' leaves and seams must exist before the core files swap
+   S04b-F40 [high/port_verbatim] Three pure leaves and ShapeGeometry ring helpers are prerequisites of the snap folder
+   S04b-V03 [high/port_adapted] ShapeGeometry seam must be a hunk: TV's whole 1.9.0 file would not link in VV and brings NA's QR
+   S05a-F31 [high/update_wiring] Shared-module exports the slice needs that VV lacks
+   S05b-F11 [high/port_verbatim] ShapeRings (holes leaf) missing in VV
+   S05b-F21 [high/port_whole_reapply_vv] ShapeGeometry: VV 1.5.0 vs TV 1.9.0 - hatch deck, holes, QR and pictures
+   S05b-F29 [high/port_adapted] MarkupBridge dimension hunks: scale, extension lines, round up, line weight and dashes
+   S05b-V01 [high/needs_decision] Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+   S06b-F38 [high/update_wiring] Floor Areas touches about 25 shared modules in VV
+   S06b-V01 [high/port_verbatim] Floor Areas and Region tool modules must precede the hub/MarkupBridge ports
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S11-F03 [high/port_adapted] LE drawing tools: ported to TV v2.60.0; extension lines, hatch, vector tools, booleans, rounding and dimension line styles open
+   S11-F05 [high/port_whole_reapply_vv] LE core: paint order, toolbar slimming, author zoom, draft race, layer reds and the five-tab strip open
+   S02b-F09 [medium/backport_to_tv] TV copied VV's dimension split but never wired it: duplicate config, orphan modules
+   S03b-F27 [medium/port_verbatim] TV-only DimensionRounding (round up to 5 mm)
+   S03b-F28 [medium/port_verbatim] DimensionGeometry 1.2.0 vs 1.6.0 (fixed-length extension lines, dashed dimensions)
+   S03b-F29 [medium/port_verbatim] LeaderGeometry '1.0.0' (code 1.1.0) vs 1.3.0 (broken-bubble halo, note resolver)
+   S03b-F30 [medium/port_verbatim] ShapeGeometry 1.5.0 vs 1.9.0 (QR box, pictures, holes, hatch hit)
+   S03b-F31 [medium/port_verbatim] TV-only ShapeRings (vectors with holes)
+   S03b-F32 [medium/port_verbatim] Groups (markup) 1.2.0 vs 1.4.0: groups hold leaders, dimensions and viewports
+   S05a-F37 [medium/update_wiring] Specification must register broken and note resolvers
+   S05b-F12 [medium/port_verbatim] Round up to 5 mm: DimensionRounding leaf and its wiring
+   S05b-F22 [medium/port_verbatim] DimensionGeometry: VV 1.2.0 (= TV 1.3.0-1.5.1) vs TV 1.6.0 - extension lines and dashes
+   S05b-F40 [medium/port_verbatim] Prerequisite leaves from other slices are import-free and inert - land them early
+   S06b-F19 [medium/port_verbatim] LeaderGeometry 1.0.0 lacks SetBrokenResolver and SetNoteResolver
+   S06b-F41 [medium/update_wiring] Floor Areas depends on TV-only systems from other slices
+   S07a-F34 [medium/update_wiring] Shape__Qr and the 'qr' primitive are absent from VV's record, shape painter, chrome and exporter
+   S08-F33 [medium/needs_decision] Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+===  LE/20__System__Viewports 32
+   S01-F08 [high/port_verbatim] 49__System__ElevationDepthFog (TV-only, 8 files, 2,203 lines) and the LE depth-fog unit
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S02a-F49 [high/update_wiring] LE modules blocked by this slice (ordering for the planner)
+   S02b-F37 [high/update_wiring] Layout Editor plan doors and hide swings chain needed before sheets use DoorPose
+   S04a-F06 [high/update_wiring] Render entry points take different positional arguments in the two apps
+   S04a-F09 [high/port_whole_reapply_vv] Viewport2d TV 1.16.0 vs VV 1.8.0
+   S04a-F27 [high/port_adapted] PlanDoors (TV-only, 459 lines, 1.3.0): doors open on plans, shut on elevations, Hide swings
+   S04a-F31 [high/needs_decision] ModelSource (TV-only, 305 lines, 1.1.0)
+   S04a-F37 [high/port_verbatim] Viewport2d__SitePlan painter (TV-only, 633 lines, 1.2.0)
+   S04a-V01 [high/update_wiring] Whole-file takes need their whole import closure: eight shared files can only be taken whole at the end
+   S04b-F40 [high/port_verbatim] Three pure leaves and ShapeGeometry ring helpers are prerequisites of the snap folder
+   S05a-F31 [high/update_wiring] Shared-module exports the slice needs that VV lacks
+   S11-F04 [high/port_adapted] LE viewports and render styles: ported to TV v2.64.1; frame toggle and six later releases open
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S01-F25 [medium/needs_decision] Site-plan family (TV-only, NA site-plan data and OS mapping categories)
+   S02b-F36 [medium/update_wiring] Layout Editor consumers of linework modifiers (ModelLayers group, Viewport2d Frame and Linework)
+   S02b-F43 [medium/update_wiring] Depth fog on sheets: Layout Editor Viewport2d__DepthFog, sixth frame layer, composite, record key, PDF
+   S04a-F10 [medium/port_whole_reapply_vv] Viewport2d__Frame TV 1.4.0 vs VV 1.1.0
+   S04a-F11 [medium/port_whole_reapply_vv] Viewport2d__Linework TV 1.2.0 vs VV 1.1.0
+   S04a-F12 [medium/port_whole_reapply_vv] Viewport2d__Window TV 1.2.0 vs VV 1.0.0
+   S04a-F13 [medium/port_whole_reapply_vv] Viewport3d TV 1.8.1 vs VV 1.6.1
+   S04a-F15 [medium/port_verbatim] ViewportHandles TV 1.5.0 vs VV 1.4.0
+   S04a-F17 [medium/port_whole_reapply_vv] ViewportIdentity TV 1.1.0 (+v2.86.0 hunk) vs VV 1.0.0, and its config
+   S04a-F24 [medium/port_verbatim] ViewportRotation leaf (TV-only, 313 lines, 1.0.0)
+   S04a-F26 [medium/port_verbatim] VectorQuality (TV-only, 240 lines, 1.0.0)
+   S04a-F29 [medium/port_verbatim] Viewport2d__DepthFog (TV-only, 145 lines, 1.0.0)
+   S04a-F47 [medium/port_adapted] Nested LineworkModifier styling (SSOT 76-79) is absent in VV and missing from TV module logs
+   S04b-F05 [medium/update_wiring] Draft render guards missing from VV's viewport modules
+   S05b-F40 [medium/port_verbatim] Prerequisite leaves from other slices are import-free and inert - land them early
+   S06a-F53 [medium/port_verbatim] Port the ViewportRotation leaf early: it unblocks 4 files
+   S06b-F41 [medium/update_wiring] Floor Areas depends on TV-only systems from other slices
+   S08-F33 [medium/needs_decision] Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+===  LE/21__System__SitePlanData 2
+   S01-F25 [medium/needs_decision] Site-plan family (TV-only, NA site-plan data and OS mapping categories)
+   S04a-V04 [medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+===  LE/25__System__RenderStyles 20
+   S01-F43 [high/port_adapted] Runtime model category keys are app-prefixed; TV code hard-codes TrueVision__ categories
+   S02b-F37 [high/update_wiring] Layout Editor plan doors and hide swings chain needed before sheets use DoorPose
+   S04a-F05 [high/port_adapted] SnapshotRenderer TV 1.13.0 vs VV 1.7.0 (1,085 vs 639 lines)
+   S04a-F06 [high/update_wiring] Render entry points take different positional arguments in the two apps
+   S04a-V01 [high/update_wiring] Whole-file takes need their whole import closure: eight shared files can only be taken whole at the end
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S01-F25 [medium/needs_decision] Site-plan family (TV-only, NA site-plan data and OS mapping categories)
+   S02a-F48 [medium/update_wiring] Layout Editor call sites that change with this slice
+   S02b-F36 [medium/update_wiring] Layout Editor consumers of linework modifiers (ModelLayers group, Viewport2d Frame and Linework)
+   S02b-F42 [medium/update_wiring] Depth fog in VV exports: add a fog-only per-tile hook before the existing section overlay
+   S02b-F43 [medium/update_wiring] Depth fog on sheets: Layout Editor Viewport2d__DepthFog, sixth frame layer, composite, record key, PDF
+   S03a-V03 [medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+   S04a-F21 [medium/port_whole_reapply_vv] EdgeStyles TV 1.1.0 (+unlogged) vs VV 1.0.0; config Meta 1.2.0 vs 1.0.0
+   S04a-F22 [medium/port_verbatim] RenderComposites TV 1.3.0 vs VV 1.1.0; config Meta 1.4.0 vs 1.2.0
+   S04a-F23 [medium/port_whole_reapply_vv] ModelLayers TV 1.4.0 (+unlogged) vs VV 1.1.0; config Meta 1.2.0 vs 1.1.1
+   S04a-F30 [medium/port_adapted] Fog images need a callback route that VV's tiled renderer lacks (DIV-1)
+   S04a-F38 [medium/port_verbatim] SitePlanComposites module + config (TV-only, 439 + 65 lines)
+   S04a-F48 [medium/port_adapted] Per-viewport Line scale (any dashed category) and Fill colour overrides
+   S04a-V03 [medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+   S04a-V04 [medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+===  LE/26__System__DraftMode 5
+   S01-F26 [high/port_verbatim] LE drafting aids: 26 DraftMode, 27 DrawingGrid, 32 OrthoMode, 33 DrawingAxes (TV-only, 15 files)
+   S11-F04 [high/port_adapted] LE viewports and render styles: ported to TV v2.64.1; frame toggle and six later releases open
+   S04a-F46 [medium/update_wiring] Draft mode guards are compiled into three viewport files
+   S04b-F03 [medium/port_verbatim] Draft mode state leaf (Na__LayoutEditor__DraftMode__State__.js) missing
+   S04b-F04 [medium/port_adapted] Draft mode controller, config and stylesheet missing
+===  LE/27__System__DrawingGrid 4
+   S01-F26 [high/port_verbatim] LE drafting aids: 26 DraftMode, 27 DrawingGrid, 32 OrthoMode, 33 DrawingAxes (TV-only, 15 files)
+   S04b-F07 [medium/port_verbatim] Drawing grid state leaf missing
+   S04b-F08 [medium/port_verbatim] Drawing grid controller, config and stylesheet missing
+   S05b-F40 [medium/port_verbatim] Prerequisite leaves from other slices are import-free and inert - land them early
+===  LE/28__System__ObjectSnap 22
+   S05b-F08 [critical/update_wiring] Load-order trap: ObjectSnap Sources statically imports VectorTools Curves
+   S04b-F12 [high/port_verbatim] ObjectSnap state leaf missing (keeps VV's F3 storage key and event name)
+   S04b-F15 [high/port_verbatim] ObjectSnap linework index missing (VV Build/IndexFor grown into it)
+   S04b-F16 [high/port_verbatim] ObjectSnap sheet sources missing; their imports need four VV seams
+   S04b-F17 [high/port_verbatim] ObjectSnap Search (the API every tool imports) missing
+   S04b-F18 [high/port_verbatim] ObjectSnap marker (SVG, colour by target, painted on the point) missing
+   S04b-F23 [high/port_adapted] Snap stylesheet missing, and VV's old marker rules will corrupt the new marker
+   S05b-F38 [high/update_wiring] Drawing tools depend on TV's Object Snap folder (VV still on its own Snapping module)
+   S07a-F50 [high/needs_decision] Picture editing depends on TV-only editor systems: ObjectSnap, PickUpMove, WithAdoption, RegisterShapeProvider
+   S11-F02 [high/port_adapted] LE sheet tools: ported to TV v2.59.0; 16 releases open and 3 partial
+   S04b-F13 [medium/port_verbatim] ObjectSnap geometry leaf missing
+   S04b-F19 [medium/port_verbatim] ObjectSnap Moves missing: VV's SnapShapeTranslation moved here and gained GroupTranslation
+   S04b-F20 [medium/port_verbatim] ObjectSnap GridMoves (LayOut grab-point grid moves) missing
+   S04b-F21 [medium/port_verbatim] ObjectSnap controller and config missing (VV SetEnabled/Toggle grown into it)
+   S04b-F22 [medium/port_verbatim] Snap options menu and the Snap button's caret missing
+   S04b-F24 [medium/port_verbatim] Viewport snap move (carry a viewport by its linework) never ported
+   S04b-F25 [medium/needs_decision] Move anchor (Ctrl+click, move from this point to that point) missing
+   S04b-F45 [medium/needs_decision] Snap marker colour changes meaning for VV users (by tool to by target)
+   S04b-V02 [medium/update_wiring] A Snapping__ shim must not re-export the controller (module cycle through Measurements)
+   S04b-V04 [medium/update_wiring] Viewport carry needs TV-only CarryTarget in HitResolution and mandatory config keys
+   S05a-F40 [medium/update_wiring] Exact S04b names the sheet tools call
+   S05a-V05 [medium/update_wiring] Grips and Measurements wait on different chains; split WP-S05a-07
+===  LE/30__System__SheetTools 60
+   S04b-F63 [critical/update_wiring] TONE import trap: repointing a VV caller without dropping TONE breaks module linking
+   S05a-F30 [critical/update_wiring] Hub import closure: 12 TV-only systems must exist first
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S04b-F15 [high/port_verbatim] ObjectSnap linework index missing (VV Build/IndexFor grown into it)
+   S04b-F17 [high/port_verbatim] ObjectSnap Search (the API every tool imports) missing
+   S04b-F30 [high/update_wiring] PointerDrag ApplyDrag must take the drafting-aid sequence
+   S04b-F33 [high/update_wiring] Keyboard lacks the K, F6, F7, F8 and F9 cases and RedrawHeld
+   S04b-F34 [high/update_wiring] Key map rows, fallback rows, catalogue entries and SHEET_CHORDS missing
+   S04b-F37 [high/update_wiring] Measurements has no Say echo line, which six new modules import
+   S05a-F09 [high/port_verbatim] CopyDrag (Ctrl-drag copy, copy arrays) missing
+   S05a-F12 [high/port_whole_reapply_vv] PointerDrag hub: 15 TV versions behind
+   S05a-F13 [high/port_whole_reapply_vv] PointerPress hub: auto Move, copy marks, anchor, box over viewport
+   S05a-F14 [high/port_whole_reapply_vv] Keyboard hub: 12 TV versions and 7 key actions behind
+   S05a-F15 [high/port_whole_reapply_vv] HitResolution hub: auto-Move rules, rotation, groups, anchor
+   S05a-F16 [high/port_whole_reapply_vv] SheetTools__ orchestrator: 1.31.0-1.39.0 missing
+   S05a-F19 [high/port_whole_reapply_vv] Sheet tools right-click menu: 6 TV versions plus older rows
+   S05a-F22 [high/port_verbatim] ItemClipboard: cut, cross-sheet paste, layers, open-group paste
+   S05a-F26 [high/port_verbatim] Measurements box: settle, Say, live retype, arrays, vector tools
+   S05a-F49 [high/port_whole_reapply_vv] Behaviour inventory VV lacks, v2.65.0 to v2.153.0
+   S05a-V01 [high/update_wiring] Hub and Sheet Images form a link-time import cycle
+   S05b-F30 [high/update_wiring] Six sheet-tools dispatch sites and extras for the vector tools
+   S05b-F31 [high/update_wiring] Holes awareness in the sheet tools must ship with the Boolean tools
+   S05b-F38 [high/update_wiring] Drawing tools depend on TV's Object Snap folder (VV still on its own Snapping module)
+   S05b-V01 [high/needs_decision] Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+   S06b-F38 [high/update_wiring] Floor Areas touches about 25 shared modules in VV
+   S06b-V01 [high/port_verbatim] Floor Areas and Region tool modules must precede the hub/MarkupBridge ports
+   S07a-F49 [high/update_wiring] Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+   S07a-F50 [high/needs_decision] Picture editing depends on TV-only editor systems: ObjectSnap, PickUpMove, WithAdoption, RegisterShapeProvider
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S11-F02 [high/port_adapted] LE sheet tools: ported to TV v2.59.0; 16 releases open and 3 partial
+   S03b-F40 [medium/port_adapted] Styles__Main__Paper: region-by-region port; snap-marker rules moved out
+   S04a-F25 [medium/update_wiring] Viewport rotation is wired through 31 TV files
+   S04b-F19 [medium/port_verbatim] ObjectSnap Moves missing: VV's SnapShapeTranslation moved here and gained GroupTranslation
+   S04b-F31 [medium/update_wiring] PointerPress lacks the carry grab and the move-anchor press handling
+   S04b-F32 [medium/update_wiring] HitResolution still owns the vector move snap that TV moved out
+   S04b-F43 [medium/update_wiring] Grips and frames must be painted on their points for the snap marker to register
+   S04b-V02 [medium/update_wiring] A Snapping__ shim must not re-export the controller (module cycle through Measurements)
+   S04b-V04 [medium/update_wiring] Viewport carry needs TV-only CarryTarget in HitResolution and mandatory config keys
+   S05a-F08 [medium/port_verbatim] LayerMenu (right-click Layer row and flyout) missing
+   S05a-F10 [medium/port_verbatim] HoverTooltip missing (missed by VV v2.58.0)
+   S05a-F11 [medium/port_verbatim] NoteTooltip (a bubble names its note) missing
+   S05a-F17 [medium/port_whole_reapply_vv] SheetTools State: retype, press and tool-name state missing
+   S05a-F18 [medium/port_whole_reapply_vv] ToolState: auto Move, adoption, vector tools, new defaults
+   S05a-F20 [medium/port_verbatim] Context menu card lacks flyouts, hints and mixed ring
+   S05a-F21 [medium/port_verbatim] EditScope: pictures, reference layers, group contents, adoption
+   S05a-F23 [medium/port_verbatim] SelectionSet: leader tips follow what they point at
+   S05a-F24 [medium/port_verbatim] SelectionBox: reference layers, turned viewports, rings, rooms
+   S05a-F25 [medium/port_verbatim] Grips: counter-scaled, painted on the point, colour as a check
+   S05a-F27 [medium/port_verbatim] Eyedropper: extension, round-up, line weight and frame traits
+   S05a-F42 [medium/port_verbatim] Right-click menu content and wording change
+   S05a-F54 [medium/port_whole_reapply_vv] TV changes this slice needs are missing from TV's logs
+   S05a-V05 [medium/update_wiring] Grips and Measurements wait on different chains; split WP-S05a-07
+   S05b-F32 [medium/update_wiring] Eyedropper lacks the hatch trait and six dimension style traits
+   S05b-F36 [medium/port_adapted] Config keys, ToolSetup readers and tool defaults for at-scale, round-up, hatch and dimension styles
+   S05b-F52 [medium/update_wiring] Context menu flyouts and Measurements-box readings for vector tools
+   S05b-F57 [medium/update_wiring] Placing Text, Leaders and Dimensions inside an open group depends on EditScope 1.4.0
+   S05b-V02 [medium/update_wiring] Vector-tool menus and the speaker line need ContextMenu 1.1.0 flyouts and Measurements Say (missed prerequisites)
+   S05b-V03 [medium/update_wiring] Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreac
+   S06b-F51 [medium/update_wiring] Bubble hover label, Show in Specification and Locate halo
+   S10-F13 [medium/port_adapted] Sheet context menu: TV flyouts, hints and the Layer row; VV 1.0.0 menu
+===  LE/31__System__DocumentKeys 5
+   S07b-F34 [critical/update_wiring] Keyboard: VV's 3D hotkeys would eat statement typing, and Backspace navigates back
+   S01-F27 [high/port_verbatim] LE/31__System__DocumentKeys (TV-only, 2 files)
+   S03a-F31 [medium/port_verbatim] Document keyboard (31__System__DocumentKeys) missing
+   S05a-F07 [medium/port_adapted] Document tabs' keyboard (DocumentKeys + JSON) missing
+   S10-F30 [medium/port_adapted] Keyboard and focus: Drawings menu keys, restarting the sheet keyboard, three keyboards
+===  LE/32__System__OrthoMode 6
+   S01-F26 [high/port_verbatim] LE drafting aids: 26 DraftMode, 27 DrawingGrid, 32 OrthoMode, 33 DrawingAxes (TV-only, 15 files)
+   S04b-F10 [medium/port_verbatim] Ortho state leaf with the Ortho XOR Shift rule missing
+   S04b-F11 [medium/port_verbatim] Ortho controller and config missing
+   S05a-F40 [medium/update_wiring] Exact S04b names the sheet tools call
+   S05b-F40 [medium/port_verbatim] Prerequisite leaves from other slices are import-free and inert - land them early
+   S06b-F41 [medium/update_wiring] Floor Areas depends on TV-only systems from other slices
+===  LE/33__System__DrawingAxes 2
+   S01-F26 [high/port_verbatim] LE drafting aids: 26 DraftMode, 27 DrawingGrid, 32 OrthoMode, 33 DrawingAxes (TV-only, 15 files)
+   S04b-F26 [medium/port_verbatim] Drawing Axes Overlay (F9) folder missing
+===  LE/35__System__DrawingTools 10
+   S04b-F63 [critical/update_wiring] TONE import trap: repointing a VV caller without dropping TONE breaks module linking
+   S04b-F29 [high/update_wiring] Dimension, Draw and Rectangle tools: snap repoint, targets, from-points and Ortho
+   S05b-F13 [high/port_verbatim] DimensionTool: VV 1.5.0 vs TV 1.12.0 plus unlogged v2.152 hunk
+   S11-F03 [high/port_adapted] LE drawing tools: ported to TV v2.60.0; extension lines, hatch, vector tools, booleans, rounding and dimension line styles open
+   S04b-F28 [medium/update_wiring] TextTool and LeaderTool carry grid-snap code despite being classed 'header-only'
+   S05b-F14 [medium/port_verbatim] ShapeTool (Draw): VV 1.6.0 vs TV 1.10.0
+   S05b-F18 [medium/port_verbatim] GradientTool: VV 1.0.0 vs TV 1.1.0 (holes even-odd PDF clip)
+   S05b-F19 [medium/port_verbatim] LineStyleTool: VV 1.0.0 vs TV 1.1.0 (rows reusable by the Dimensions panel)
+   S05b-V03 [medium/update_wiring] Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreac
+   S06b-F26 [medium/port_verbatim] Region tool (NoteRegions__Tool) missing
+===  LE/36__System__HatchPatternTools 4
+   S05b-F04 [high/port_adapted] Na__LayoutEditor__HatchPatterns__.js (leaf) missing in VV
+   S11-F03 [high/port_adapted] LE drawing tools: ported to TV v2.60.0; extension lines, hatch, vector tools, booleans, rounding and dimension line styles open
+   S01-F28 [medium/port_verbatim] LE/36__System__HatchPatternTools (TV-only, 3 files) + app-root 52__LayoutEditor__HatchPatternLibrary (24 files)
+   S05b-F05 [medium/needs_decision] Patterns panel (Panel__Patterns + Styles__Patterns) needs a VV adaptation without site plans
+===  LE/37__System__VectorTools 9
+   S05b-F08 [critical/update_wiring] Load-order trap: ObjectSnap Sources statically imports VectorTools Curves
+   S01-F29 [high/port_verbatim] LE/37__System__VectorTools (TV-only, 18 files, 7,385 lines)
+   S04b-F40 [high/port_verbatim] Three pure leaves and ShapeGeometry ring helpers are prerequisites of the snap folder
+   S05b-F07 [high/port_verbatim] VectorTools pure leaves (State, Setup, Config, Curves, Geometry, Offset, Boolean) can land first, inert
+   S05b-F09 [high/port_verbatim] VectorTools interactive units and adapter (Trim, Extend, Join, Split, Offset, Fillet, Chamfer, Circle, Arc, six Booleans)
+   S05b-F10 [high/port_verbatim] Vector Tools panel section and stylesheet missing in VV
+   S11-F03 [high/port_adapted] LE drawing tools: ported to TV v2.60.0; extension lines, hatch, vector tools, booleans, rounding and dimension line styles open
+   S05b-V02 [medium/update_wiring] Vector-tool menus and the speaker line need ContextMenu 1.1.0 flyouts and Measurements Say (missed prerequisites)
+   S05b-V03 [medium/update_wiring] Switch-on rules: register panel and toolbar only with the hub; ShapeTool and TV hubs load the whole 37 folder; Verify__Exports checks unreac
+===  LE/40__Ui__Panels 38
+   S04b-F35 [high/update_wiring] Toolbar lacks the split Snap button, its menu and five drafting toggles
+   S05b-F23 [high/port_verbatim] Vectors panel (Panel__Shapes): Draw at scale, Hatch block, and a live VV bug TV fixed in v2.106
+   S05b-F24 [high/port_verbatim] Dimensions panel: Measure at scale, Ext. lines, Round up, Line pt and Dashed lines missing
+   S05b-V01 [high/needs_decision] Cross-slice ownership: six S05b hunk packages edit files that S03b, S04b, S05a and S06a port whole
+   S06a-F04 [high/port_whole_reapply_vv] PanelHost 1.4.0 lacks LinkedPairRow, tab hints, palette, slider box
+   S06a-F07 [high/port_whole_reapply_vv] Toolbar lacks 11 TV tools and toggles (TV 1.24.0)
+   S06a-F08 [high/port_verbatim] VV Panel__Text does not read the first of several selected
+   S06a-F12 [high/port_adapted] Vectors panel: Edges-off on several selected repaints every fill (VV bug)
+   S06a-F18 [high/port_whole_reapply_vv] Viewport panel 1.4.1 vs TV 1.10.0: Frame, Rotation, Doors, adoption missing
+   S06a-V01 [high/update_wiring] Whole-file ports must remap drawing-folder import paths (40->42, 42->43)
+   S07a-F49 [high/update_wiring] Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S11-F05 [high/port_whole_reapply_vv] LE core: paint order, toolbar slimming, author zoom, draft race, layer reds and the five-tab strip open
+   S01-F25 [medium/needs_decision] Site-plan family (TV-only, NA site-plan data and OS mapping categories)
+   S03a-F44 [medium/update_wiring] Left-column tabs (Document Preferences | Specification)
+   S04a-F25 [medium/update_wiring] Viewport rotation is wired through 31 TV files
+   S04a-F39 [medium/port_verbatim] Panel__SitePlanComposites (TV-only, 240 lines, 1.0.0)
+   S04a-F48 [medium/port_adapted] Per-viewport Line scale (any dashed category) and Fill colour overrides
+   S04a-F53 [medium/port_verbatim] Viewport and render-style UI that VV users do not see
+   S04b-F46 [medium/port_adapted] Drafting aids UI set VV is missing: toolbar toggles, echo line, grid section, overlays
+   S04b-V02 [medium/update_wiring] A Snapping__ shim must not re-export the controller (module cycle through Measurements)
+   S05b-F34 [medium/update_wiring] Toolbar: Circle and Arc buttons after Rectangle
+   S05b-F37 [medium/port_verbatim] PanelHost LinkedPairRow/ShowLink and the Linked Pair CSS region
+   S06a-F05 [medium/port_verbatim] Panel stylesheet lacks TV regions (pair, rangebox, ref/red, wrap)
+   S06a-F06 [medium/port_adapted] Toolbar keeps Undo/Redo/Fit/100%/Notes that TV removed
+   S06a-F11 [medium/port_whole_reapply_vv] Dimensions panel lacks Measure at scale, Ext. lines, Round up, Line pt
+   S06a-F13 [medium/port_whole_reapply_vv] Vectors panel lacks Draw at scale and the Hatch block
+   S06a-F14 [medium/port_adapted] Layers panel lacks Ref switch, one-red states, Images/Floor Areas labels
+   S06a-F48 [medium/backport_to_tv] Back-port to TV: Add Viewport list refresh (VV 1.4.1 / MC 1.15.1)
+   S06a-V02 [medium/port_adapted] Select/Move tooltips need TV v2.78.0 auto-Move and live in AppConfig
+   S06b-F43 [medium/update_wiring] Colour Palette wiring: PanelHost, PlanAnnotations toolbar, CSS index
+   S06b-F50 [medium/port_adapted] VV toolbar still has the Notes toggle TV removed
+   S07a-F18 [medium/retire_vv] Sheet panel keeps VV's deliberate divergence: Drawing No. typed in the panel instead of owned by the register
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S10-F09 [medium/port_adapted] Toolbar: VV keeps Undo, Redo, Fit, 100% and Notes; TV removed them and added 12 controls
+   S10-F10 [medium/port_verbatim] Panels stylesheet: TV additions (one-red layer switches, Ref, padlock pair, rangebox, wrapping scale buttons)
+   S10-F11 [medium/port_adapted] PanelHost: tab hover hints (1.5.0), colour palette attach (1.6.0), LinkedPairRow (TV 1.2.0)
+   S11-F28 [medium/backport_to_tv] Back-port: Add Viewport list fills once in TV - VV v2.45.1 fix never landed
+===  LE/50__Feature__Specification 28
+   S01-F38 [high/port_verbatim] TV-only Specification and notes units in LE/50 + CabinetInfill (9 files)
+   S05a-F36 [high/update_wiring] MarginGrip must learn IsMoveAuto in the same commit as the hub
+   S06b-F02 [high/port_adapted] SpecData__Lockstep unit missing (1,045 lines)
+   S06b-F03 [high/port_adapted] VV Reload Local marks the file as the cloud copy (unsynced edit lost)
+   S06b-F07 [high/port_verbatim] SpecData State 1.0.0 behind TV 1.2.0
+   S06b-F08 [high/port_adapted] SpecData Document 1.0.0 behind TV 1.1.0 (LockJson, LockstepOn, GetState)
+   S06b-F09 [high/port_verbatim] Editing and Draft carry code changes although drift_all says header-only
+   S06b-F10 [high/port_verbatim] SpecData barrel 1.3.0 behind TV 1.5.0
+   S06b-F20 [high/port_verbatim] SpecMargin 1.3.0 behind TV 1.5.0 (regions, leaderless, Report)
+   S06b-V01 [high/port_verbatim] Floor Areas and Region tool modules must precede the hub/MarkupBridge ports
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S11-F07 [high/port_adapted] LE specification and notes: five releases open, and the 'margin' undo step is still missing
+   S12-F25 [high/port_verbatim] Spec transport 1.1.0 -> 1.3.0 and Lockstep port verbatim over the facade
+   S01-V04 [medium/port_adapted] TV LE reads TV PWA globals for the project's display name; VV has no such global
+   S05a-F37 [medium/update_wiring] Specification must register broken and note resolvers
+   S06b-F12 [medium/port_verbatim] Lockstep question card (SpecLockstep) missing
+   S06b-F13 [medium/port_adapted] SpecEditor Bar 1.2.0 behind TV 1.4.0 (disk-first status, Share)
+   S06b-F18 [medium/port_verbatim] SpecLinks 1.0.0 behind TV 1.2.0 (broken and note resolvers)
+   S06b-F21 [medium/port_verbatim] SpecMargin__Column missing
+   S06b-F22 [medium/port_verbatim] NoteRegions (Place/Push) missing
+   S06b-F26 [medium/port_verbatim] Region tool (NoteRegions__Tool) missing
+   S06b-F27 [medium/port_verbatim] Region grips (NoteRegions__Grips) missing; depend on snap systems
+   S06b-F28 [medium/port_verbatim] Margin Notes Regions sub-panel missing
+   S06b-F29 [medium/port_verbatim] Margin Notes Leaderless sub-panel missing
+   S06b-F30 [medium/port_verbatim] Panel__MarginNotes 1.0.0 behind TV 1.2.0
+   S08-F27 [medium/update_wiring] Share entry points and start-up wiring in VV
+   S08-F34 [medium/port_adapted] SpecPdf: embedded font and awaited save
+   S12-V03 [medium/update_wiring] Printed project name never fills: VV reads a TV-only global, and both apps read the presentation block
+===  LE/51__Feature__DrawingRegister 13
+   S01-F30 [high/port_adapted] LE/51__Feature__DrawingRegister (TV-only, 10 files, 3,659 lines)
+   S07a-F03 [high/port_adapted] Register__Data (1.0.1) absent: register block, notes draft, explicit Save and Load
+   S07a-F04 [high/port_adapted] Register__Transactions (1.2.0) absent: confirmed metadata, renumber, jump, move and delete saves
+   S07a-F07 [high/port_adapted] Register__Editor (1.3.0) absent: the register tab; static imports of 31, 65 and 66 block it
+   S07a-F08 [high/port_adapted] Register__Pdf (1.1.0) absent: the register PDF used by Read view and download
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S01-V04 [medium/port_adapted] TV LE reads TV PWA globals for the project's display name; VV has no such global
+   S07a-F05 [medium/port_verbatim] Register__Numbering (1.0.1) absent: pure numbering plan used by the register and by the sheet model
+   S07a-F09 [medium/port_verbatim] Register__Preview (1.1.0) absent: needs a VV-vendored PDF.js
+   S07a-F10 [medium/port_verbatim] Register__Export (1.0.1) absent; relies on PdfExporter strict mode VV lacks
+   S07a-F24 [medium/backport_to_tv] TV defect: a yellow revision warning is never boxed in the register PDF
+   S07b-F23 [medium/port_verbatim] Drawing Schedule live source needs the Drawing Register
+   S12-F30 [medium/port_adapted] Drawing Register persistence (new top-level key)
+===  LE/52__Feature__StatementWriter 26
+   S06b-F11 [high/port_verbatim] Statement Writer pure lockstep rules leaf needed by the spec
+   S07b-F04 [high/port_verbatim] Statement Lockstep leaf first - TV's Specification lockstep (v2.163) imports it
+   S07b-F05 [high/port_adapted] Statement Data module - storage keys, starter template and folder identity are VV seams
+   S07b-F09 [high/port_verbatim] Markdown engine - five pure modules
+   S07b-F12 [high/port_adapted] The Statements tab page
+   S07b-F13 [high/port_verbatim] Editor, typing rules and section Move
+   S07b-F18 [high/port_adapted] Publish and picture publishing call TV's CfApi and LocalMirror directly
+   S07b-V02 [high/port_adapted] Statement file names would carry the raw ?project= folder id as {code}, slash included
+   S07b-V05 [high/update_wiring] WP-05, WP-06 and WP-07 cannot land separately; the writing surface needs ProjectQrCode
+   S01-F31 [medium/needs_decision] LE/52__Feature__StatementWriter (TV-only, 33 files, 16,898 lines, nested 01-09 sub-subfolders) - NA planning-statement content
+   S01-F46 [medium/port_adapted] Browser storage keys: identical names, except keys that embed the app name
+   S07b-F08 [medium/port_verbatim] Picture-link resolution (Statement Images)
+   S07b-F11 [medium/port_verbatim] Document manager (create, rename, delete, adopt)
+   S07b-F14 [medium/port_adapted] Frozen cards - the dropped-picture store calls a TV-only route
+   S07b-F15 [medium/port_verbatim] Picture menu (justify, crop, frame, shadow, title) needs the context menu renderer
+   S07b-F16 [medium/port_verbatim] Reader (the Read view the PDF photographs)
+   S07b-F17 [medium/port_verbatim] Rasterised pageless PDF
+   S07b-F20 [medium/port_verbatim] Chrome and document stylesheets
+   S07b-F21 [medium/port_adapted] Standard sections config JSON carries NA words
+   S07b-F22 [medium/port_verbatim] Registry, Contents, Finishes and Drawing Schedule - pure section modules
+   S07b-F23 [medium/port_verbatim] Drawing Schedule live source needs the Drawing Register
+   S07b-F56 [medium/port_verbatim] Index schema and statement folder conventions stay identical
+   S07b-F57 [medium/update_wiring] No direct import of Sheet Images, Spell Check or Colour Palette; a transitive dependency on the Published Schema, Published Documents and Do
+   S11-F14 [medium/needs_decision] Statement Writer absent (12 TV releases v2.95.0-v2.172.0)
+   S12-F26 [medium/build_vv_transport] Statement transport: F-STMT family and a statements blueprint
+   S12-F33 [medium/port_adapted] Absolute URLs in project data vs VV project rename
+===  LE/53__Feature__ProjectQrCode 10
+   S03b-V02 [high/port_adapted] 53 ProjectLink imports two ProjectLoader functions VV lacks: ShapeGeometry 1.6.0+ and QrCell fail at link time even with the QR switched off
+   S07a-F29 [high/port_adapted] QR ProjectLink (1.1.0) absent: must read VV's project identity, not TV's URL parameters
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S01-F32 [medium/needs_decision] Project QR code family (LE/53 ProjectQrCode, TitleBlock__QrCell__, ScrapbookParametric__ProjectQr__) - NA URL base
+   S03b-F35 [medium/port_verbatim] TV-only TitleBlock__QrCell: generic layout, NA-specific link
+   S07a-F26 [medium/port_verbatim] QR Encoder (1.0.0) absent: first-party, Vale Lantern lineage
+   S07a-F27 [medium/port_verbatim] QR Painter (1.0.0) absent: one-path vector symbol for SVG and jsPDF
+   S07a-F28 [medium/port_adapted] QR Symbol (1.2.0) absent: the one door, with the print guard and the resolver index check
+   S07a-F30 [medium/port_adapted] QR config is NA-addressed; VV needs its own address, index and floor, shipped switched off
+   S07b-F36 [medium/update_wiring] Project QR Code is a static import of the page, the publisher and the hub
+===  LE/54__Feature__SheetImages 12
+   S01-F33 [high/port_adapted] LE/54__Feature__SheetImages (TV-only, 17 files, 4,709 lines)
+   S05a-V01 [high/update_wiring] Hub and Sheet Images form a link-time import cycle
+   S07a-F39 [high/port_verbatim] Sheet Images editing UI absent and blocked by TV-only editor systems: Insert, Handles, Crop, Menu, Panel
+   S07a-F43 [high/port_adapted] Sheet Images Publish (1.1.0) absent: the save step that files pictures by Document ID
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S07a-F37 [medium/port_adapted] Sheet Images leaves absent: Setup (1.1.0), Geometry (1.1.0), Painter (1.0.0)
+   S07a-F38 [medium/port_verbatim] Sheet Images render and PDF modules absent: Paint, Pdf, Encode
+   S07a-F40 [medium/port_adapted] Sheet Images entry point (1.0.0) absent
+   S07a-F41 [medium/port_adapted] Sheet Images Source (1.0.0) absent: picture URLs must follow VV's CDN, GitHub Pages and localhost layout
+   S07a-F42 [medium/port_adapted] Sheet Images Store (1.0.0) absent: local-server routes must be VV's Flask
+   S09-F14 [medium/update_wiring] Late-start semantics: ported LE modules must not rely on hearing the first drawings-loaded event
+   S12-F27 [medium/build_vv_transport] Sheet images transport: F-IMG family, blueprint and save step
+===  LE/55__Feature__Scrapbook 1
+   S06a-F26 [medium/port_verbatim] TileDrag lacks caption (1.1.0) and hold/snap (1.2.0)
+===  LE/57__Feature__ScrapbookParametric 20
+   S06a-F38 [critical/needs_decision] Parametric panel can't be taken whole: static NA-only imports
+   S01-F38 [high/port_verbatim] TV-only Specification and notes units in LE/50 + CabinetInfill (9 files)
+   S06a-F32 [high/port_whole_reapply_vv] Parametric engine is TV 1.2.0; lacks slide, choices, Refit, adopt, base
+   S06a-F35 [high/port_whole_reapply_vv] ViewportLink lacks Refit and the FactsPatch fix (rebuild-every-visit bug)
+   S06a-F36 [high/port_whole_reapply_vv] Parametric grips lack slide, choices, corner and base grips
+   S06a-V01 [high/update_wiring] Whole-file ports must remap drawing-folder import paths (40->42, 42->43)
+   S11-V01 [high/port_adapted] Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)
+   S11-V02 [high/update_wiring] 44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam
+   S01-F25 [medium/needs_decision] Site-plan family (TV-only, NA site-plan data and OS mapping categories)
+   S01-F32 [medium/needs_decision] Project QR code family (LE/53 ProjectQrCode, TitleBlock__QrCell__, ScrapbookParametric__ProjectQr__) - NA URL base
+   S01-F35 [medium/port_verbatim] Floor areas: LE/59__Feature__FloorAreas (10 files) + SheetModel__AreaGroups__ + ScrapbookParametric__AreaSchedule__
+   S01-V04 [medium/port_adapted] TV LE reads TV PWA globals for the project's display name; VV has no such global
+   S04a-V04 [medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+   S06a-F33 [medium/port_verbatim] Scale bar: PaperMm missing; checker fill still #666666
+   S06a-F34 [medium/port_verbatim] Drawing Title lacks bar-to-the-right and the 5 mm underline rule
+   S06a-F39 [medium/port_adapted] Parametric config lacks 485 keys and new tiles; VV wording must survive
+   S06a-F41 [medium/port_verbatim] Cabinet Infill element missing (universal plan convention)
+   S06a-F42 [medium/port_verbatim] Area Schedule element missing (goes with Floor Areas)
+   S06b-F40 [medium/port_verbatim] SheetModel__AreaGroups and the AreaSchedule type missing
+   S11-F08 [medium/port_whole_reapply_vv] LE scrapbooks: VV holds TV's 20-Sep state; five later item releases open
+===  LE/58__Feature__ScrapbookSpecification 4
+   S06a-F45 [high/port_verbatim] Specification Scrapbook (LE/58) missing: left Specification tab
+   S11-F07 [high/port_adapted] LE specification and notes: five releases open, and the 'margin' undo step is still missing
+   S01-F34 [medium/port_adapted] LE/58__Feature__ScrapbookSpecification (TV-only, 5 files, 2,220 lines)
+   S03a-F44 [medium/update_wiring] Left-column tabs (Document Preferences | Specification)
+===  LE/59__Feature__FloorAreas 5
+   S06b-F37 [high/port_verbatim] Floor Areas feature folder missing (10 files, 4,222 lines)
+   S06b-V01 [high/port_verbatim] Floor Areas and Region tool modules must precede the hub/MarkupBridge ports
+   S01-F35 [medium/port_verbatim] Floor areas: LE/59__Feature__FloorAreas (10 files) + SheetModel__AreaGroups__ + ScrapbookParametric__AreaSchedule__
+   S08-F33 [medium/needs_decision] Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+   S11-F12 [medium/port_verbatim] Floor Areas feature absent (TV v2.104.0, v2.125.0, v2.148.0)
+===  LE/60__Feature__PdfExport 14
+   S01-F37 [high/port_adapted] TV-only units inside shared LE subfolders: core, markup, viewports and tools (14 files)
+   S04a-F06 [high/update_wiring] Render entry points take different positional arguments in the two apps
+   S07a-F49 [high/update_wiring] Picture hooks are missing across VV's shared editor modules (TV v2.116.0 checklist)
+   S07a-V01 [high/needs_decision] VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01
+   S07a-V04 [high/update_wiring] Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle
+   S08-F12 [high/port_whole_reapply_vv] PdfExporter TV 1.12.0 vs VV 1.2.0
+   S08-F13 [high/needs_decision] PdfFonts absent: VV prints non-embedded Helvetica (deliberate divergence to revisit)
+   S02b-F43 [medium/update_wiring] Depth fog on sheets: Layout Editor Viewport2d__DepthFog, sixth frame layer, composite, record key, PDF
+   S04a-F25 [medium/update_wiring] Viewport rotation is wired through 31 TV files
+   S06b-F33 [medium/update_wiring] Margin config, labels and the PDF overflow toast
+   S07a-F23 [medium/needs_decision] Register PDF and pack export need PdfFonts and PdfExporter strict mode
+   S07a-F34 [medium/update_wiring] Shape__Qr and the 'qr' primitive are absent from VV's record, shape painter, chrome and exporter
+   S07b-F37 [medium/update_wiring] Na__LePdf__LoadLibrary export missing in VV PdfExporter
+   S08-F19 [medium/port_adapted] FAST picture packing (PdfExporter 1.11.0): independent and needed now for Chrome/Android
+===  LE/65__Feature__DocumentPublishing 7
+   S08-F01 [critical/port_adapted] VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent
+   S01-F36 [high/port_adapted] Publishing and sharing: LE/65__Feature__DocumentPublishing (7) + LE/66__Feature__DocumentSharing (7)
+   S08-F05 [high/port_adapted] Publisher orchestration (Publish__ 1.1.0 + Publish__Config) is absent
+   S08-F06 [high/port_adapted] Bakers Publish__Raster, Publish__Sheet and Publish__Viewports are absent and import TV-only exports
+   S08-F18 [high/update_wiring] Publish entry point: TV opens Publish Drawings from the Drawing Register, which VV lacks
+   S08-V04 [medium/port_adapted] Noble Architecture / TrueVision identity written into published data and share links (missed by F45 and the module table)
+   S12-F28 [medium/build_vv_transport] Publishing transport: F-PUB family, blueprint, reader fallback
+===  LE/66__Feature__DocumentSharing 6
+   S01-F36 [high/port_adapted] Publishing and sharing: LE/65__Feature__DocumentPublishing (7) + LE/66__Feature__DocumentSharing (7)
+   S07b-F35 [high/update_wiring] Document Sharing and Statement Data depend on each other; keep Share__Open off VV start-up
+   S08-F16 [high/port_adapted] 66__Feature__DocumentSharing (share links and the share-link record) is absent
+   S07b-V07 [medium/update_wiring] A shared statement link must itself load VV's lazy editor
+   S08-F31 [medium/port_adapted] Statements and the register: share and viewer document kinds that depend on TV-only features
+   S08-V04 [medium/port_adapted] Noble Architecture / TrueVision identity written into published data and share links (missed by F45 and the module table)
+===  LE/70__DevTools__DevMenu 2
+   S08-F18 [high/update_wiring] Publish entry point: TV opens Publish Drawings from the Drawing Register, which VV lacks
+   S09-F11 [high/update_wiring] Loader facade lacks the entry points TV's TabStrip 2.0.0 and DevMenu need
+===  LE/80__Feature__WebViewer 5
+   S08-F01 [critical/port_adapted] VV web viewer renders drawings and builds PDFs on the reader's device; TV's published-document system is absent
+   S01-V06 [high/needs_decision] TV's web viewer now depends on 52/53 and shows published files only
+   S08-F14 [high/port_whole_reapply_vv] WebViewer 1.1.0 vs 1.2.0, plus the unlogged v2.155/v2.156 published-reader integration
+   S07a-F20 [medium/update_wiring] Web viewer has no register entry
+   S10-F26 [medium/port_adapted] Web viewer: TV shows published drawings with a dock Share; VV renders sheets on the reader's device
+===  TrueVision__PLAN__ElevationDepthFog__.md 1
+   S02b-V02 [medium/needs_decision] Depth fog and projected vectors: on screen neither app fogs the SVG overlay; VV exports put vectors above the fog
+===  TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md 2
+   S02b-V01 [high/keep_vv_divergence] VV-only folder-50 integrations TV never wired: keep them through every host-file port
+   S12-V01 [medium/backport_to_tv] CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met
+===  ValeVision__DEVLOG__.md 1
+   S02a-V02 [medium/update_wiring] Shared service-worker token must be bumped for the renumber and every export-changing S02a WP
+===  index.html 12
+   S01-F51 [high/update_wiring] index.html wiring: TV Index.html:885-919 vs VV index.html:1375-1442
+   S05a-F35 [high/update_wiring] VV 3D hotkeys fire under drawing tabs and in label edits
+   S09-F40 [high/port_verbatim] KeyScope missing: VV's 3D hotkeys likely still fire under drawing and document tabs
+   S02a-F46 [medium/needs_decision] DOM id collision: naCrossSectionDev* already used by VV's Cross Section Tool gate
+   S02a-F50 [medium/update_wiring] index.html, CSS index and render loop wiring for the new systems
+   S02b-F41 [medium/update_wiring] Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init
+   S07b-V07 [medium/update_wiring] A shared statement link must itself load VV's lazy editor
+   S09-F07 [medium/update_wiring] VV attaches the drawings, section-scene and DrawCfg listeners after the loading sequence starts (latent race TV fixed)
+   S09-F46 [medium/needs_decision] VV Tools menu keeps legacy drawing entry points TV retired (Create Drawing, Elevation View)
+   S09-F48 [medium/update_wiring] Index-level wiring each TV-only system needs when it lands (47, 49, 66, 27, mode-controller contexts)
+   S09-V01 [medium/keep_vv_divergence] Keep VV's confirm-dialog markup and styles; TV's ConfirmDialog falls back to window.confirm
+   S10-F19 [medium/backport_to_tv] Confirm dialog: TV falls back to window.confirm for every editor confirm; VV shows a styled modal

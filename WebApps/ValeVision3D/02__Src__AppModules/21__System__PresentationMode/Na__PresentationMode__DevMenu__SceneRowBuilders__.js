@@ -61,11 +61,17 @@
 //   - No layer-timing row. TrueVision offers a per-scene "switch layers before the camera move"
 //     choice; this app applies model layers instantly at the start of a flight ON PURPOSE - an
 //     instant cut reads better than a mid-flight pop-out - so the choice would control nothing.
-// - Back-port     : the split itself is worth carrying to TrueVision, whose editor is over budget.
+// - Back-port     : none - TrueVision withdrew this split in its v2.68.2 (19-Sep-2026: its
+//                   copies were never imported and were deleted, "do not re-port"). The
+//                   split is a deliberate, permanent ValeVision divergence.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.3.1 (records hygiene, v2.71.1)
+// - Comments only. The PORT NOTE no longer offers this split to TrueVision,
+//   which withdrew it in v2.68.2.
+//
 // 28-Sep-2026 - Version 1.3.0 (per-scene lighting, v2.71.0)
 // - Advanced ends with a Lighting subsection: Rotation, Height, Sun, Ambient
 //   and Shadows, previewed live, with its own Use Default and Save Lighting.
@@ -146,12 +152,12 @@
 
     // MODULE IMPORTS | Drawing Rename (a drawing card's name is not ours)
     // ------------------------------------------------------------
-    // @delegate: ../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+    // @delegate: ../40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
     // ------------------------------------------------------------
     import {
         Na__DrawRename__OwnsScene,
         Na__DrawRename__RenameSceneCard
-    } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+    } from '../40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Advanced > Lighting Subsection (per-scene sun and fill light)

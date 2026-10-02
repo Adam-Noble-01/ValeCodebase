@@ -1,0 +1,155 @@
+﻿====================================================================================================
+LINE 4979
+## TrueVision3D v2.115.0  -  21-Sep-2026
+### M Was Never Stuck: Every Click on the Paper Left the Keyboard in Whatever Panel Control Had It Last
+
+**Overview**
+- Adam: "The M hotkey keeps getting stuck ... I hit M, but the move tool doesn't engage. I physically go into the
+  menu and press M." Selecting something did not always bring Move up either, going to the document tabs or the
+  3D Model tab and back seemed to make it worse, the drawing tabs' hotkeys should be set up again whenever a
+  drawing is opened from one of those, and the hotkeys should be three config files, clearly named for the tab
+  each one serves. "It might be multiple things."
+- It was the focus. The sheet tools take every press on the paper from the browser (preventDefault on
+  pointerdown), and in Chrome that also stops the press moving the focus. So a tick box, a list or a number box
+  used in a panel - or the Raster list on the toolbar - kept the keyboard through any number of clicks on the
+  paper, and the drawing tabs' keyboard stood down for EVERY bare key while any control had it: M, V, Escape,
+  Delete and the arrows all went nowhere. A focused list went further and took the letter itself - M switched the
+  Raster list to Medium and re-rendered every viewport. Clicking a toolbar button was the only way out, because a
+  button takes the focus: exactly Adam's "go into the menu and press M".
+- Proved in the pane on RB05 with trusted input and every write blocked: Raster focused, a real click on the
+  paper, a real M. Before: the focus stayed on the list, the tool stayed Select, Raster went Low to Medium. After:
+  the stage has the focus, M picks Move, Raster stays Low.
+- The auto Move was never broken - a real click on RB05's room schedule brings it up - but with the keys dead,
+  Escape and V could not put a placing tool down, so the next click placed rather than picked. (Move still only
+  comes up by itself for text, vectors, leaders and groups; viewports and dimensions wait for M, by design.)
+- Coming back from the 3D Model tab, the Specification, the Register or the Statements was not the cause on its
+  own: Chrome blurs a field on a hidden page, and every round trip tried left the keys working. The drawing tabs'
+  keyboard is now started afresh on every such return all the same, as asked.
+
+**A press on the stage takes the keyboard** (`Na__LayoutEditor__Controls__Pc__.js` 1.4.0)
+- TakeKeyboard, in the capture phase of every press on the stage, before any tool: the stage takes the focus as
+  the browser would have given it, so the panel control blurs - committing what was typed into it - before the
+  press acts on the sheet. A real control pressed on the stage keeps its own focus, and text being typed on the
+  paper is left to the tool that opened it. The stage has no focus ring (`outline : none`).
+
+**A focused control keeps only the keys it uses** (`Na__AppUtils__KeyScope__.js` 1.1.0,
+`Na__LayoutEditor__SheetTools__Keyboard__.js` 1.10.0)
+- Na__KeyScope__ControlKeepsKey: a text box, a text area and a page being written keep every key; a number box its
+  figures, the arrows and the keys that edit them; a list, a radio button or a slider the arrows, Home, End, the
+  page keys, Space and Enter; a tick box or a button Space and Enter. Any other bound key is the sheet's, taken
+  from the control together with the focus (TakeKeyFromControl), so a list never sees it and the next key is the
+  sheet's too. The chords reach the sheet from any control, as before. Page Up / Page Down turn the drawings from
+  a ticked box and stay a list's.
+- Enter in a one-line panel field, once the field has had it, gives the keys back to the sheet (EnterLeavesField)
+  and so commits the field. It kept the focus after Enter, so M straight after naming a room in Floor Areas would
+  have been typed onto the end of the name. Text areas, text on the paper and an input method's composing Enter
+  are left alone.
+
+**The drawing tabs' keyboard is started afresh** (`Na__LayoutEditor__ModeController__.js` 1.25.0)
+- RestartSheetKeys, whenever a drawing is opened from the 3D Model tab or a document tab: every listener off (a
+  held key, a half-typed value and a tool half used go with them), the drawing tabs' key file read again, every
+  listener back on with Select up, and the stage given the keyboard - whatever the last tab left the focus in lets
+  go. One drawing to another keeps its keyboard as it is. Verified: back from the Specification with one of its
+  fields focused, and from the Register with a list focused - the stage has the keys, Select is up, the key file
+  was re-read once, and M picks Move.
+
+**The fallback had no Move key** (`Na__LayoutEditor__ConfigState__KeyMap__.js` 1.5.0,
+`Na__LayoutEditor__ConfigState__.js` 1.27.0)
+- The built-in key map had drifted from the file since 17-Sep: no Tool__Move (M), no Tool__SelectSpace, no
+  Edit__Save, and the space bar still cleared the selection (Edit__Deselect, which the file ships off). Whenever
+  the key file failed to load - offline for a moment, or caught half written by an editor - M did nothing for the
+  whole session. Brought level, and the test below now fails if fallback and file resolve any key differently.
+- ReloadKeyMap reads the key file again: the bindings in force stay until it lands, a read that fails keeps them,
+  and a key map handed in (SetKeyMap) is never replaced. The restart above asks for it.
+
+**Three hotkey files, one per kind of tab, named for it**
+- `02__AppData/Na__Hotkeys__3dModelTab__.json` (was Na__AppConfig__Hotkeys.json) - the 3D Model tab.
+- `51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json` (was Na__LayoutEditor__KeyMappings__.json)
+  - the drawing tabs: keys, mouse, wheel, touch.
+- `51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json` (was
+  Na__LayoutEditor__DocumentKeys__Config__.json) - the Project Specification, the Drawing Register and the Statements.
+- Contents unchanged apart from each description, which now says which tab it serves and names the other two. The
+  loaders (`Na__AppConfig__Loader.js`, the key map unit, `Na__LayoutEditor__DocumentKeys__.js` 1.1.0), the service
+  worker's precache list, the comments that name them and the six tests that read them all follow. Checked in the
+  pane: all three load (200), the drawing tabs' map is the file's (its 49-action catalogue), the documents' three
+  bindings are the file's, and the 3D toolbar's "Reset view ... (R)" tooltip comes from the 3D file.
+- Plan annotation editing keeps its few keys in its own config (Na__PlanAnnotations__AppConfig__.json); they are
+  3D Model tab keys, not yet moved into the 3D file.
+
+**Tests**
+- New `80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs` (53 checks): fallback against file
+  over 426 key presses plus every other block; the re-read rules; ControlKeepsKey; the real keyboard unit with a
+  tick box, a list, a number box, a text box and a page focused; Enter leaving a panel field; the real PC controls
+  taking the focus on a press and on a drawing tab opening.
+- `Na__Test__SheetPagingWalkExit__` gains a check (Page Down from a ticked box) and the key scope stub the PC
+  controls now need. OrthoMode, DrawingGrid, DocumentKeys and SheetPagingWalkExit pass; Na__Verify__Exports__
+  passes. Na__Test__CrossSheetClipboard__ still fails 5 of 8 with Na__LeModel__ShapeLayerType missing from its fake
+  model - unrelated, and true since v2.104.0; its keyboard check passes.
+
+**Also**
+- Service worker token: -08 (v2.116.0's) covers this release; see the worker's log 1.9.16.
+- Built alongside Ortho (v2.113.0), the Drawing Grid (v2.114.0) and Sheet Images (v2.116.0), which share the key
+  map, the keyboard unit and the mode controller: their rows and hunks are kept, and their tests were repointed
+  at the renamed files.
+
+# ---------------------------------------------------------
+====================================================================================================
+LINE 3158
+## TrueVision3D v2.135.0  -  21-Sep-2026
+### An Author Zooms In to 6400%; the Web Viewer Still Stops at 800%
+
+**Overview**
+- From Adam, over a screenshot of RB05 D10 at the editor's closest zoom (800%: the Library label and one wall corner
+  filling the stage): "Update the drawing layout editor so I can zoom in more. This is the closest I can zoom, which
+  isn't close enough, specifically on the local host version where I'm going to be editing. The viewers don't need to
+  zoom in this far. It would be a pain [...] for the live web one to have to keep rendering really huge zooms, so make
+  an exception for the local host version and allow it to zoom in further, as I can't get close enough into things."
+
+**Why it stopped at 800%**
+- One number, `LayoutEditor__Navigation__ZoomMax` 8, which `Na__LeNav__Clamp` applied to every zoom: the wheel, a pinch,
+  the zoom keys, Fit, the right-click menu and the web viewer's own buttons. The editor and the web viewer share the
+  navigation module, so raising that number alone would have raised it for every reader as well.
+
+**What changed**
+- "The local host version" is read the way the rest of the editor reads it: through the authoring gate
+  (`Na__AppUtils__DevGate__`). It is open on localhost and on a device unlocked with `?authoring=on`, and shut on the
+  live web and under `?authoring=off` - so the read-only build previewed on localhost gets the reader's ceiling too.
+- Config (`Na__LayoutEditor__AppConfig__.json`, Navigation block): `AuthoringZoomMax` 64, with a note.
+  `ZoomMax` 8 is now the reader's ceiling, unchanged.
+- `Na__LayoutEditor__ConfigState__EditorSetup__.js` 1.3.0: `GetNavigationSetup` answers `authoringZoomMax`: 64 when the
+  key is missing, and never below `ZoomMax`.
+- `Na__LayoutEditor__Navigation__.js` 1.3.0: `Clamp` stops at `authoringZoomMax` where the gate is open and at `zoomMax`
+  everywhere else. A setup with no authoring ceiling (a navigation module newer than the config unit it runs beside)
+  falls back to the reader's 8, never to no ceiling at all. The floor (0.15) is the same for both.
+- What 64 means: zoom 1 puts 3.2 screen pixels on a paper millimetre, so 800% was 25.6 px to the millimetre and 6400%
+  is 205. A 20 mm frame member drawn at 1:100 goes from 5 px across to 41.
+- Lines keep their printed weight as the sheet grows, as they do in LayOut, so at the deepest zooms a wall reads as
+  thick bars. Draft mode (K) draws every line one device pixel wide at any zoom, and is the way to see fine detail
+  apart.
+- Nothing that follows the zoom needed a change. The grid and the axes draw only what is in view; handles, grips, snap
+  and pick radii are screen pixels divided by the zoom; the settle is the same.
+- No new export anywhere (`Na__DevGate__IsAuthoringEnabled` is an old one, already imported across the editor), so no
+  service worker token bump; it stands at `2026-09-21-18`.
+
+**How it was proved**
+- `Na__Test__AuthoringZoomMax__.test.mjs`, new, 12 checks:
+  - The real config readers on the SHIPPED config and the real editor setup unit: 8 and 64 as shipped; 64 with the key
+    missing; 8 with the key set below `ZoomMax`; 128 honoured as written.
+  - The real navigation module with its imports stubbed: an author passes 8 and stops at 64, and a wheel step at 64
+    settles nothing; a reader stops at 8, by `ZoomTo` and by a wheel step; the floor is 0.15 for both; the half-updated
+    setup falls back to 8.
+  - MUTATION CHECKED on scratch copies, the shipped files untouched: the clamp ignoring the gate, the clamp always
+    taking the author's ceiling, the finite guard removed, the ceiling allowed below `ZoomMax`, and a default of 8 each
+    fail at least one check. Unmutated, every check passes.
+- `Na__Test__DrawingTabKeys__` (53 checks) and `Na__Test__SheetPagingWalkExit__` (18) pass. `Na__Verify__Exports__.mjs`
+  passes (485 files).
+- In the app on RB05 D10, with fresh modules from a no-store server and a fetch guard refusing every write (none was
+  attempted):
+  - On `127.0.0.1` (authoring open, the editor), 40 wheel steps in over the Library's bottom left corner went 0.41,
+    ..., 7.23, 8.48, 9.95, ..., 57.8, 64, and then held at 64, with one settle at the end. At 6400% the sheet drew
+    crisp: the Library's fill, and its outline at its printed weight with the corner rounded.
+  - On `zoomtest.localhost` (not localhost, so authoring shut: the web document viewer on the live R2 data), the same
+    steps stopped at exactly 8, and `ZoomTo(100)` stayed at 8.
+- NOT tried by Adam; NOT in ValeVision.
+
+# ---------------------------------------------------------

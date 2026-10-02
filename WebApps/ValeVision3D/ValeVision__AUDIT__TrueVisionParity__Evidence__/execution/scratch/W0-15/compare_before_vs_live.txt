@@ -1,0 +1,88 @@
+﻿[before] file vs fallback: 963 presses, 5 differ
+    " "[]                        file Tool__SelectToggle           fallback Edit__Deselect
+    "M"[]                        file Tool__Move                   fallback -
+    "S"[Ctrl]                    file Edit__Save                   fallback -
+    "m"[]                        file Tool__Move                   fallback -
+    "s"[Ctrl]                    file Edit__Save                   fallback -
+[before] non-keyboard answers differing file vs fallback: []
+[after] file vs fallback: 963 presses, 0 differ
+[after] non-keyboard answers differing file vs fallback: []
+
+== file: before -> after: NEW 28, LOST 0, CHANGED 0
+  NEW     "A"[Shift]                   -> Tool__Arc+coarse
+  NEW     "A"[]                        -> Tool__FloorArea
+  NEW     "C"[Shift]                   -> Tool__Chamfer+coarse
+  NEW     "C"[]                        -> Tool__Circle
+  NEW     "F"[Shift]                   -> Tool__Fillet+coarse
+  NEW     "F"[]                        -> Tool__Offset
+  NEW     "F6"[]                       -> View__GridToggle
+  NEW     "F7"[]                       -> Snap__GridToggle
+  NEW     "F8"[]                       -> Ortho__Toggle
+  NEW     "F9"[]                       -> View__AxesToggle
+  NEW     "J"[]                        -> Tool__Join
+  NEW     "K"[]                        -> View__DraftToggle
+  NEW     "PageDown"[]                 -> Nav__NextSheet
+  NEW     "PageUp"[]                   -> Nav__PreviousSheet
+  NEW     "T"[Shift]                   -> Tool__Extend+coarse
+  NEW     "U"[]                        -> Tool__Split
+  NEW     "X"[Ctrl]                    -> Edit__Cut
+  NEW     "a"[Shift]                   -> Tool__Arc+coarse
+  NEW     "a"[]                        -> Tool__FloorArea
+  NEW     "c"[Shift]                   -> Tool__Chamfer+coarse
+  NEW     "c"[]                        -> Tool__Circle
+  NEW     "f"[Shift]                   -> Tool__Fillet+coarse
+  NEW     "f"[]                        -> Tool__Offset
+  NEW     "j"[]                        -> Tool__Join
+  NEW     "k"[]                        -> View__DraftToggle
+  NEW     "t"[Shift]                   -> Tool__Extend+coarse
+  NEW     "u"[]                        -> Tool__Split
+  NEW     "x"[Ctrl]                    -> Edit__Cut
+
+== fallback: before -> after: NEW 32, LOST 0, CHANGED 1
+  NEW     "A"[Shift]                   -> Tool__Arc+coarse
+  NEW     "A"[]                        -> Tool__FloorArea
+  NEW     "C"[Shift]                   -> Tool__Chamfer+coarse
+  NEW     "C"[]                        -> Tool__Circle
+  NEW     "F"[Shift]                   -> Tool__Fillet+coarse
+  NEW     "F"[]                        -> Tool__Offset
+  NEW     "F6"[]                       -> View__GridToggle
+  NEW     "F7"[]                       -> Snap__GridToggle
+  NEW     "F8"[]                       -> Ortho__Toggle
+  NEW     "F9"[]                       -> View__AxesToggle
+  NEW     "J"[]                        -> Tool__Join
+  NEW     "K"[]                        -> View__DraftToggle
+  NEW     "M"[]                        -> Tool__Move  <-- HANDLED by VV today
+  NEW     "PageDown"[]                 -> Nav__NextSheet
+  NEW     "PageUp"[]                   -> Nav__PreviousSheet
+  NEW     "S"[Ctrl]                    -> Edit__Save  <-- HANDLED by VV today
+  NEW     "T"[Shift]                   -> Tool__Extend+coarse
+  NEW     "U"[]                        -> Tool__Split
+  NEW     "X"[Ctrl]                    -> Edit__Cut
+  NEW     "a"[Shift]                   -> Tool__Arc+coarse
+  NEW     "a"[]                        -> Tool__FloorArea
+  NEW     "c"[Shift]                   -> Tool__Chamfer+coarse
+  NEW     "c"[]                        -> Tool__Circle
+  NEW     "f"[Shift]                   -> Tool__Fillet+coarse
+  NEW     "f"[]                        -> Tool__Offset
+  NEW     "j"[]                        -> Tool__Join
+  NEW     "k"[]                        -> View__DraftToggle
+  NEW     "m"[]                        -> Tool__Move  <-- HANDLED by VV today
+  NEW     "s"[Ctrl]                    -> Edit__Save  <-- HANDLED by VV today
+  NEW     "t"[Shift]                   -> Tool__Extend+coarse
+  NEW     "u"[]                        -> Tool__Split
+  NEW     "x"[Ctrl]                    -> Edit__Cut
+  CHANGED " "[]                        Edit__Deselect -> Tool__SelectToggle  <-- HANDLED action involved
+
+== non-keyboard answers, file: before -> after
+  selection
+     before {"": {"combine": null, "anywhere": false}, "Shift": {"combine": "toggle", "anywhere": false}, "Ctrl": {"combine": "add", "anywhere": false}, "Ctrl+Shift": {"combine": "remove", "anywhere": false}, "Alt": {"combine": null, "anywhere": true}, "Alt+Shift": {"combine": "toggle", "anywhere": true}, "Ctrl+Alt": {"combine": "add", "anywhere": true}, "Meta": {"combine": null, "anywhere": false}, "Space": {"combine": null, "anywhere": false}, "Ctrl+Shift+Alt": {"combine": "remove", "anywhere": true}}
+     after  {"": {"combine": null, "anywhere": false, "copy": false, "anchor": false}, "Shift": {"combine": "toggle", "anywhere": false, "copy": false, "anchor": false}, "Ctrl": {"combine": "add", "anywhere": false, "copy": true, "anchor": true}, "Ctrl+Shift": {"combine": "remove", "anywhere": false, "copy": true, "anchor": false}, "Alt": {"combine": null, "anywhere": true, "copy": false, "anchor": false}, "Alt+Shift": {"combine": "toggle", "anywhere": true, "copy": false, "anchor": false}, "Ctrl+Alt": {"combine": "add", "anywhere": true, "copy": true, "anchor": false}, "Meta": {"combine": null, "anywhere
+  measure
+     before {"start": "0123456789.,-", "typing": "0123456789.,-+ xX*;mMcC", "commit": ["Enter"], "clear": ["Escape", "Delete"], "erase": ["Backspace"]}
+     after  {"start": "0123456789.,-", "typing": "0123456789.,-+ xX*;mMcC", "array": "xX*/", "commit": ["Enter"], "clear": ["Escape", "Delete"], "erase": ["Backspace"]}
+  catalogue
+     before 41
+     after  63
+  exports
+     before ["Na__LeCfg__FetchKeyMap", "Na__LeCfg__GetActionCatalogue", "Na__LeCfg__GetGuards", "Na__LeCfg__GetKeyboardSetup", "Na__LeCfg__GetMeasureKeys", "Na__LeCfg__GetTouchSetup", "Na__LeCfg__IsPointerModifierBound", "Na__LeCfg__MatchKeyBinding", "Na__LeCfg__MatchPointerBinding", "Na__LeCfg__MatchSelectionModifier", "Na__LeCfg__MatchWheelBinding", "Na__LeCfg__SetKeyMap"]
+     after  ["Na__LeCfg__FetchKeyMap", "Na__LeCfg__GetActionCatalogue", "Na__LeCfg__GetCopyDragModifier", "Na__LeCfg__GetGuards", "Na__LeCfg__GetKeyboardSetup", "Na__LeCfg__GetMeasureKeys", "Na__LeCfg__GetMoveAnchorModifier", "Na__LeCfg__GetTouchSetup", "Na__LeCfg__IsCopyDragKey", "Na__LeCfg__IsPointerModifierBound", "Na__LeCfg__MatchKeyBinding", "Na__LeCfg__MatchPointerBinding", "Na__LeCfg__MatchSelectionModifier", "Na__LeCfg__MatchWheelBinding", "Na__LeCfg__ReloadKeyMap", "Na__LeCfg__SetKeyMap"]

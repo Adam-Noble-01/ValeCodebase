@@ -1,0 +1,20 @@
+DEFAULT_CONTENT_TYPE         = "application/octet-stream"                  # <-- Fallback content type
+    # ------------------------------------------------------------
+
+    # MODULE CONSTANTS | ValeVision Editor-Owned project.json Keys (DR-06, DR-30)
+    # ------------------------------------------------------------
+VV_APP_CONFIG_PATH           = (_WCP_ROOT.parent / "ValeVision3D" / "02__Src__AppModules"
+                                / "02__AppData" / "Na__AppConfig__Main.json")   # <-- Holds THE editor-owned key list
+EDITOR_OWNED_KEYS_BLOCK      = "ProjectData__EditorOwnedKeys"              # <-- Config block holding the list
+EDITOR_OWNED_KEYS_FIELD      = "ProjectData__EditorOwnedKeys__Keys"        # <-- Array of top-level project.json keys
+PIPELINE_OWNED_PROJECT_KEYS  = frozenset({                                 # <-- Keys the pipelines write; a list naming one is refused
+    "projectCode", "projectName", "folderId", "basePath",
+    "images", "allImages", "displayImages", "thumbnailImage",
+    "valeVision_ModelUrls", "ValeVison3D__SketchUpCameraData"
+})
+PROJECT_JSON_CACHE_CONTROL   = "no-cache, max-age=0"                       # <-- Same header as the editor worker's save path
+R2_MISSING_OBJECT_CODES      = frozenset({"NoSuchKey", "404", "NotFound"}) # <-- get_object codes meaning 'absent', not 'error'
+LOCAL_WRITE_RETRY_DELAYS_S   = (0.05, 0.1, 0.2, 0.4, 0.8)                  # <-- os.replace retries while Windows holds the file
+    # ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------

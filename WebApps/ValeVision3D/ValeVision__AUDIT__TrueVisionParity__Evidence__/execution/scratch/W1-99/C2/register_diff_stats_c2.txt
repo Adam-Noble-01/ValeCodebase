@@ -1,0 +1,34 @@
+﻿ASCII: yes; pure CRLF: True
+preamble identical: True
+Archive identical: True
+register: 610 rows before, 610 rows now
+  changed rows: 130
+      53  only Blocked by
+      18  several: Parity, Loaded by
+      15  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions
+       6  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Blocked by
+       6  several: VV path, TV path, TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by, Blocked by
+       5  several: VV path, TV path, TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by
+       4  several: Parity, Divergences and seams, Packages
+       4  several: TV source ver (app ver), Parity, Open TV versions
+       4  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by, Blocked by
+       3  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by
+       2  several: VV path, TV path, TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by, Transport
+       1  several: TV source ver (app ver), Parity, Open TV versions, Blocked by
+       1  several: TV source ver (app ver), Parity, Open TV versions, Loaded by
+       1  several: TV source ver (app ver), TV current ver, Parity, Divergences and seams, Open TV versions, Loaded by, Blocked by
+       1  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Transport, Blocked by
+       1  several: TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Packages, Blocked by
+       1  several: TV source ver (app ver), Parity, Open TV versions, Packages
+       1  several: Parity, Divergences and seams, Open TV versions, Blocked by
+       1  several: VV path, TV path, TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by, Packages, Blocked by
+       1  several: VV path, TV path, TV source ver (app ver), Parity, Divergences and seams, Open TV versions, Loaded by, Transport, Blocked by
+       1  several: Parity, Packages
+watermark: 187 rows before, 187 rows now
+  changed rows: 64
+      22  several: VV release, Packages, Notes and evidence
+      13  several: Class, VV release, Packages, Notes and evidence
+       9  several: Class, VV release, Notes and evidence
+       9  several: Packages, Notes and evidence
+       7  several: VV release, Notes and evidence
+       4  only Notes and evidence

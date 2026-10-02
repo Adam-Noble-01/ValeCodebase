@@ -1,0 +1,29 @@
+{
+ "about": "W1-37 in-app browser check (Claude desktop Browser pane, Chromium) of the LIVE tree on Adam's running Flask server, 02-Oct-2026 02:54 UTC. Page: scratch/W1-37/palette_check.html (real CSS index, real Plan Annotations toolbar with its real imports, mounted into a #root like the 3D tab's). Viewport emulated at 1600 x 900 (the pane was hidden). Script-made events: the browser refuses its own mixer (showPicker) without a user gesture, so the native mixer itself was not opened or seen. Console: only '[ValeVision3D ColourPalette] 13 colour(s) in 1 palette(s).'; no error.",
+ "url": "http://localhost:8000/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-37/palette_check.html?v=2",
+ "viewport": [1600, 900],
+ "passed": 12,
+ "failed": 0,
+ "checks": [
+  "PASS the CSS index imports the palette stylesheet (it is in the page's @import chain, after Boot)",
+  "PASS the palette config loaded and the palette is available",
+  "PASS the toolbar has its dimension colour field",
+  "PASS a click on the dimension colour is taken from the browser and opens the palette",
+  "PASS the palette is styled by its sheet: fixed to the window over everything (z 1300), white, ringed in the panels' grey (declared 1px solid rgb(204, 211, 216))",
+  "PASS titled with the Vale name, Monochrome (10) then Dimensions (3) swatches of 22 px",
+  "PASS it sits inside the window, clear of the field, with the proxy strip (the mixer's hanging point) above it; proxy opacity 0, pointer-events none",
+  "PASS the swatch for the field's colour is ringed (the next dimension's default #323232 is not a palette colour: none ringed, readout 'custom colour')",
+  "PASS a swatch pick puts Existing in the field: input, then change (#000096)",
+  "PASS and the field lets go of the focus; the palette and the proxy are gone",
+  "PASS a disabled field: the click is not taken and no palette opens",
+  "PASS Escape closes it"
+ ],
+ "geometry": {
+  "field": {"left": 709, "top": 98, "width": 17, "height": 24},
+  "place": "beside",
+  "palette": {"left": 425, "top": 262, "width": 278, "height": 146},
+  "proxyStrip": {"left": 425, "top": 7, "width": 278, "height": 1},
+  "reading": "The toolbar sits under the header (top 78 px), so there is no room above the field for the mixer (250 px) and the palette; the stack goes to the field's LEFT: the mixer would hang from y 8 to 258 and the palette sits at 262 to 408, 4 px under it. Whether Chrome's real mixer is 232 x 250 on Adam's screen is his to see (risk: the browser's own mixer cannot be seen headless)."
+ },
+ "readoutAfterPick": "Current  #000096 / Existing"
+}

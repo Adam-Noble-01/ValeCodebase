@@ -1,0 +1,626 @@
+{
+ "slice_id": "S03b",
+ "claims_checked": 150,
+ "confirmed_ids": [
+  "S03b-F01",
+  "S03b-F02",
+  "S03b-F03",
+  "S03b-F04",
+  "S03b-F06",
+  "S03b-F07",
+  "S03b-F08",
+  "S03b-F09",
+  "S03b-F10",
+  "S03b-F11",
+  "S03b-F12",
+  "S03b-F13",
+  "S03b-F14",
+  "S03b-F15",
+  "S03b-F17",
+  "S03b-F18",
+  "S03b-F19",
+  "S03b-F20",
+  "S03b-F21",
+  "S03b-F22",
+  "S03b-F23",
+  "S03b-F25",
+  "S03b-F26",
+  "S03b-F28",
+  "S03b-F32",
+  "S03b-F33",
+  "S03b-F34",
+  "S03b-F36",
+  "S03b-F37",
+  "S03b-F39",
+  "S03b-F40",
+  "S03b-F41",
+  "S03b-F43",
+  "S03b-F44",
+  "S03b-F45",
+  "S03b-F46",
+  "S03b-F47",
+  "S03b-F48",
+  "S03b-F49",
+  "S03b-F50",
+  "S03b-F51"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S03b-F01",
+   "field": "recommendation",
+   "new_value": "Take TV's whole file (incl. the undocumented 29-Sep NormaliseProjectedEdges edits, commit 55014c6a) and re-apply only: DrawingCode leaf imports, DrawingNumber default/short-code policy (D-S03b-01), keep exporting Na__LeRec__SheetShortCode until the Sheets unit lands (VV Sheets 1.1.0 L69/L279 imports it), path 40->42, ValeVision console prefix. Land before any feature writing these fields. Its ShapeRings import (Na__LeRings__Clean, SheetRecords 1.38.0, TV L374) puts it behind the ShapeRings sign-off (D-S03b-11); the TV-named site plan category prefix 'TrueVision__SitePlan__' (TV L434) comes with it and is inert in VV. Accept its output against VV's current normalised records using the whitelist in S03b-V04.",
+   "reason": "TV ShapeRings PORT NOTE says the VV port waits for Adam's sign-off, and SheetRecords imports it; the acceptance whitelist in the original WP was incomplete (see S03b-V04)."
+  },
+  {
+   "id": "S03b-F05",
+   "field": "action",
+   "new_value": "needs_decision",
+   "reason": "The leaf's own PORT NOTE (VVM/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js L38-39) says 'offer to TrueVision3D only if its tab strip is ever made lazy; until then the split would buy it nothing', so an unconditional backport_to_tv contradicts it; it is D-S03b-02."
+  },
+  {
+   "id": "S03b-F05",
+   "field": "recommendation",
+   "new_value": "Keep the leaf and its name in VV. Back-porting it to TV is D-S03b-02, not a given: the leaf's own PORT NOTE says 'offer to TrueVision3D only if its tab strip is ever made lazy; until then the split would buy it nothing', so the case for it rests only on the identical-SheetRecords goal and needs Adam's yes. If D-S03b-01 adopts v2.71, grow the leaf with pure DefaultNumber(order, prefix, digits) and ComposeDocumentId(format, project, phase, drawing) either way, so the loader's pre-load tab labels (Loader L541-548) match the loaded model.",
+   "reason": "Reflects the leaf's PORT NOTE and the decision status."
+  },
+  {
+   "id": "S03b-F07",
+   "field": "detail",
+   "new_value": "VV lazy-loads the editor, so the model initialises after the drawings load. The loader then dispatches a synthetic 'loaded' on the model's own event (Loader L307-311, called at L339), bypassing reload(), the only caller of Na__LeModel__SeedCommonFields (SheetModel L504). Code-traced, not run: on first open the pack's client and site address are neither seeded nor migrated from the sheets, and because Na__LeCommon__Record is filled only by that seed (SheetModel__Common L266-282), the Sheet panel's project-record offer (RecordOffer) is empty too. VV also hears any later load twice (the facade listens to LOADED and CHANGED, L506-507, and ProjectData dispatches CHANGED from inside its LOADED handler, L208-216/L446-455), clearing the dirty flag a draft restore just set (TV v2.145 finding). VV's ModeController initialises model, History, AutoSave, Spec and SpecLinks in one synchronous pass (ModeController L831-835), so TV's microtask announce works unchanged in VV.",
+   "reason": "Verifier traced a second symptom (empty record offer) and confirmed TV's late-start mechanism fits VV's init order."
+  },
+  {
+   "id": "S03b-F08",
+   "field": "recommendation",
+   "new_value": "port_whole_reapply_vv together with the facade (WP-S03b-04). Replace the CfApi read (Na__CfApi__GetLoadedProjectData, TV Sheets L113, L263) with a VV accessor for the LayoutEditor__DrawingRegister block, and make RenumberSheets a no-op without that block (D-S03b-01). Record this as a deliberate VV seam: TV's RenumberSheets does NOT no-op - with no register block it falls back to the config numbering (prefix D, start 1, 2 digits; TV Sheets L260-272) and renumbers every sheet on create, duplicate, delete and reorder, which in VV would overwrite hand-typed Drawing No. values. Never import 80__CloudflareIntegration.",
+   "reason": "The original wording implied TV also no-ops; TV Sheets L263-270 falls back to config numbering, so the gate is a VV divergence the planner must record."
+  },
+  {
+   "id": "S03b-F16",
+   "field": "recommendation",
+   "new_value": "port_whole_reapply_vv, after VV 42 ProjectData gains IsLoaded (TV ProjectData 1.5.0) and GetBase, WhenBaseKnown and SAVED_ISO_KEY (TV 1.6.0) - VV already exports Na__DrawData__GetBlock, so that is not a prerequisite - and VV 21 DevMenu Modal reaches TV 1.2.0 (Confirm altLabel / altIsDestructive; VV is 1.0.0). Add the labels DraftApplied, DraftDiscarded and DraftLeftAside (VV AppConfig has only DraftRestored). Seams: 40->42 path, ValeVision console prefix, and the PWA flag per D-S03b-07 - TV AutoSave L566 writes window.TrueVision__Pwa__HasUnsavedWork, which must not ship into VV under that name.",
+   "reason": "VV already has Na__DrawData__GetBlock (VVM/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js L199, exported L477); the import-closure run shows only IsLoaded, GetBase, WhenBaseKnown and SAVED_ISO_KEY missing."
+  },
+  {
+   "id": "S03b-F17",
+   "field": "recommendation",
+   "new_value": "build_vv_transport (transport slice, WP-S03b-05). In WCP/server.py: a drawings-fingerprint route following its /api/projects/<path:folder_id> convention, a base check (409) on POST /api/projects/<path:folder_id>, and backup-before-overwrite. Carry the base header through R2SaveProjectJson phase 2. Add IsLoaded, GetBase, WhenBaseKnown, CheckBase and SAVED_ISO_KEY to VV 42 ProjectData, with CheckBase called BEFORE R2SaveProjectJson phase 1, as TV does (TV ProjectData L741, before Na__CfApi__MergeAndSaveKeys). A VV option worth weighing: VV's Save already GETs the live project.json from Flask before writing (VV ProjectData L385-392), so the pre-R2 judgement could compare a canonical fingerprint of that fetched block with the base, leaving the server to refuse a stale mirror write and keep backups. The R2 Worker stays unjudged in both apps.",
+   "reason": "Makes the ordering explicit (a 409 at phase 2 alone would come after R2 is written), names WCP's real route pattern, and records a cheaper VV-specific design option."
+  },
+  {
+   "id": "S03b-F23",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-06 once these exist in VV: 36 HatchPatterns, 60 PdfFonts (with the TTFs and GetPdfSetup font keys), 53 ProjectQr__Painter, 54 SheetImages__Painter, 20 ViewportRotation, ShapeRings (after D-S03b-11), and 35 GradientTool DrawPdf(..., holes). The measuring and PDF face changes from jsPDF Helvetica to Open Sans: VV's title block row widths were re-measured in Helvetica (ledger L121) and VV's Na__Test__TitleBlockCells__ fixture holds Helvetica numbers (ledger L127), so re-measure and update the fixture in the same change (S03b-V05).",
+   "reason": "Adds the sign-off gate and the Helvetica-to-Open-Sans consequence for VV's own measured title block and test fixture."
+  },
+  {
+   "id": "S03b-F24",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-07, together with the PaintOrder consumers, MarkupBridge 1.15.0+ (BuildLayerPrimitives, BuildHighlightPrimitives), SheetChrome 1.10.0+ (BuildViewportFrame), 20 VectorQuality (which imports the TV-only config reader Na__LeCfg__GetVectorQualitySetup), 20 ViewportRotation (Deg, CssRotate) and the GetNavigationSetup keys zoomSettleMs and holdPaperWhileZooming. Not prerequisites, because both are already in VV with TV's signatures: 30 EditScope Na__LeScope__IsInside(sheet, container, item) (VV EditScope L336, exported L582, body identical to TV L409) and 50 SpecMargin Na__LeMargin__Push(list, sheet, layout) (VV L320). The restack (WP-S03b-03) must already have run. ShowPublished (v2.155.0) stays inert in VV until a published-documents viewer exists.",
+   "reason": "The survey listed '30 EditScope IsInside' as missing in VV and SpecMargin Push as something to port; both exist in VV with identical signatures."
+  },
+  {
+   "id": "S03b-F25",
+   "field": "detail",
+   "new_value": "PaintOrder (205 lines, v2.106.0) gives the back-to-front Plan: viewports, then the sheet's own paper directly over the frontmost shown viewport, then each layer's markup; hidden layers are left out and unknown-layer items go frontmost. It implements VV's own plan decision D31 ('top of the list draws frontmost', VV/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md L79), which VV's painter obeys today only between viewports. It imports only SheetModel GetLayers and has no PORT NOTE block. Consumers: SheetSurface, MarkupBridge (paint and hit test layer by layer), 60 PdfExporter, 65 Publish__Sheet and 37 VectorTools__BooleanTool. It is harmless on its own, but its consumers need the restack first (F03).",
+   "reason": "Adds the VV decision it implements and the full TV consumer list."
+  },
+  {
+   "id": "S03b-F27",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-02 once Adam signs it off for ValeVision: TV's own PORT NOTE says 'ValeVision: not yet ported - it waits for Adam's sign-off' (D-S03b-11). Opt-in: TV ships LayoutEditor__Dimensions__DefaultRoundUp false, so no VV dimension changes until somebody ticks Round up. Config keys RoundUpStepMm (5) and RoundUpMarker ('*') via GetDimensionSetup roundUpStepMm, roundUpMarker, defaultRoundUp. Port Na__Test__DimensionRoundUp__.",
+   "reason": "The TV PORT NOTE is an explicit sign-off gate the survey did not carry."
+  },
+  {
+   "id": "S03b-F29",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-06 after Adam's sign-off - TV's PORT NOTE: '1.0.0 ported ... Later versions wait for their own sign-off' (D-S03b-11). VV's 50 SpecLinks must then register the two new resolvers next to its existing SetCodeResolver (TV SpecLinks L91 import, L355-357 registrations; VV SpecLinks L77 import, L315 code resolver only). Readers are the sheet tools ContextMenu, NoteTooltip and PointerDrag (30 slice).",
+   "reason": "TV LeaderGeometry PORT NOTE gates later versions on sign-off; precise SpecLinks wiring lines."
+  },
+  {
+   "id": "S03b-F29",
+   "field": "evidence",
+   "new_value": "TV LeaderGeometry L131-160, L279-339, L515-570 and its PORT NOTE ('Later versions wait for their own sign-off'); TV SpecLinks L91 (import), L164 (doc comment), L355-357 (the three registrations); VV SpecLinks L77, L315 (code resolver only); VV LeaderGeometry header says 1.0.0 but has SetCodeResolver (L217); VV exports lack 4 names.",
+   "reason": "The original cited TV SpecLinks L164 (a comment) as a registration site."
+  },
+  {
+   "id": "S03b-F30",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-06. Needs ShapeRings (after D-S03b-11), SheetChrome PushQr (1.9.0), 53 ProjectQr__Symbol with a VV ProjectLink (S03b-V02 - disabling the QR in config does not avoid the link failure, because TV's ProjectLink imports Na__AppUtils__GetProjectFolderFromUrl and Na__AppUtils__GetYearFromUrl, which VV's ProjectLoader does not export) and 54 SheetImages__Paint, whose Source imports TV 80__CloudflareIntegration (Na__CfApi__SheetImageLocation) and needs a VV transport adapter.",
+   "reason": "'VV config disabled' does not make 53 linkable in VV; ES module link errors are independent of config."
+  },
+  {
+   "id": "S03b-F30",
+   "field": "vv_adaptation",
+   "new_value": "None inside the file. Its imports need VV adaptations: a VV Na__ProjectQr__ProjectLink__ for the ?project= URL scheme (S03b-V02), and a VV Na__LayoutEditor__SheetImages__Source__ on VV's R2/Flask transport.",
+   "reason": "Field was missing; the adapters are the real VV seams for this port."
+  },
+  {
+   "id": "S03b-F31",
+   "field": "recommendation",
+   "new_value": "Port verbatim in WP-S03b-02 after Adam's sign-off: TV's PORT NOTE says 'ValeVision: not yet ported - it waits for Adam's sign-off' (D-S03b-11). Because SheetRecords 1.38.0+ (Na__LeRings__Clean), ShapeGeometry 1.9.0 and SheetChrome 1.14.0 import it, the same sign-off gates WP-S03b-03 and WP-S03b-06 (or those files keep a holes seam, against the identical-file goal). Port the ShapeRings checks from Na__Test__VectorBooleans__.",
+   "reason": "The TV PORT NOTE is an explicit sign-off gate, and three core files import ShapeRings."
+  },
+  {
+   "id": "S03b-F35",
+   "field": "recommendation",
+   "new_value": "Port QrCell verbatim (its code carries no NA strings) once the 53 leaves exist in VV with a VV-adapted Na__ProjectQr__ProjectLink__ (S03b-V02: TV's imports GetProjectFolderFromUrl and GetYearFromUrl, which VV's 03__AppUtils/Na__AppUtils__ProjectLoader.js does not export, so the module graph will not link even with the QR switched off). Ship VV's 53 Na__ProjectQr__Config__.json with ProjectQr__Enabled false and set LayoutEditor__TitleBlock__QrCellEnabled false (TV ships true), so the strip stays as today, until Adam picks a VV target, e.g. VV's ?project= share URL (D-S03b-03). Never ship NA's BaseUrl (https://www.noble-architecture.com/q/) or IndexUrl (the q/index.json built by NA's ProjectVision) in VV.",
+   "reason": "Disabling the QR does not avoid the link-time dependency; TV's QrCellEnabled default is true."
+  },
+  {
+   "id": "S03b-F38",
+   "field": "recommendation",
+   "new_value": "Port both verbatim in WP-S03b-09, together with the new 03__AppUtils/Na__AppUtils__KeyScope__.js 1.1.0 (a leaf; TV v2.110.0 and v2.115.0; its PORT NOTE: 'ValeVision's own hotkey handler and its Layout Editor have the same shape, so the same leaf fits'), the ModeController wiring (STEP_SHEET_EVENT listener, TakeKeyboard on entry, Na__KeyScope__Follow), and key map entries Nav__PreviousSheet (PageUp) and Nav__NextSheet (PageDown). ALSO gate VV's 3D hotkeys: VV's 03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js (initialised in Index.html L1792) listens on window with no scope test and binds R, B, T, Y, V, 1-9, PageUp and PageDown (02__AppData/Na__ValeVision__HotkeysDictionary__.json); it must return unless Na__KeyScope__Is(MODEL), as TV's 10__NavigationAndCameras/Na__Hotkeys__Manager.js L167 does (S03b-V01).",
+   "reason": "KeyScope's purpose is to stop the 3D keyboard answering under drawings; VV's 3D keyboard is a different module the survey did not list."
+  },
+  {
+   "id": "S03b-F41",
+   "field": "detail",
+   "new_value": "(1) VV per-file logs under-report: ScaleManager says 1.0.0 (code TV 1.2.0), SheetChrome 1.5.0 (code 1.8.0), LeaderGeometry 1.0.0 (has 1.1.0); History has two 1.3.0 entries. (2) TV SheetRecords' log stops at 1.39.0 although commit 55014c6a (29-Sep) changed it, and Asset__Samples (5665508c) is unlogged. (3) Ledger L126 says 53__System__ProjectQrCode, which TV moved into LE/53__Feature__ProjectQrCode in v2.155; TV's own LayoutEditor__TitleBlock__QrCellNote still names 02__Src__AppModules/53__Feature__ProjectQrCode/. (4) Eleven ledger rows say 'this tree has no PWA worker' (L340, L384, L404, L420, L429, L439, L452, L522, L542, L569, L615), contradicting L135-166. (5) TD04 and 10.3 of the TV realign plan are stale (TV has TitleBlock__Classic__ with a PLACEHOLDER scan). (6) drift_all.tsv header-only mislabels. Verifier additions: (7) TV SheetSurface gained ShowPublished in v2.155.0 (commit b24f33a9, +50 lines) with no per-file log entry (log stops at 1.13.0). (8) TV PaintOrder has no PORT NOTE block. (9) TV's own logs repeat versions too: History two 1.3.0 entries (14-Sep, 19-Sep), MarkupBridge two 1.12.0. (10) TV Na__LeCfg__GetDrawingRegisterSetup's pdfJsScriptPath fallback is NA's '/na-apps/20__PlanVision__CoreAppCode/...' path.",
+   "reason": "Verifier found four more documentation gaps and listed the exact ledger rows."
+  },
+  {
+   "id": "S03b-F42",
+   "field": "detail",
+   "new_value": "TV slice files import modules VV lacks (verified by resolving every TV import against the VV tree with the 40->42 and 42..45->43..46 seams). SheetRecords needs 20 ViewportRotation, 36 HatchPatterns, 25 SitePlanComposites (imports ScaleManager only) and 54 SheetImages__Geometry (no imports), plus its own leaves NoteRegions, LeaderlessNotes and 15 ShapeRings, and config GetDrawingRegisterSetup. SheetChrome needs 60 PdfFonts, the 53 and 54 painters (both import-free), 20 ViewportRotation and ShapeRings. ShapeGeometry and QrCell need 53 ProjectQr__Symbol, which imports ProjectQr__ProjectLink, which imports Na__AppUtils__GetProjectFolderFromUrl and Na__AppUtils__GetYearFromUrl from 03__AppUtils/Na__AppUtils__ProjectLoader.js - two functions VV's ProjectLoader does not export (VV names projects by ?project= and NormalizeProjectFolderId), so it is a link-time failure even with the QR switched off. ShapeGeometry also needs 54 SheetImages__Paint (-> Source -> TV 80__CloudflareIntegration Na__CfApi__SheetImageLocation). MarkupBridge needs DimensionRounding, PaintOrder, 59 FloorAreas__Paint (-> FloorAreas__) and the facade's IsLayerSelectable. SheetSurface needs PaintOrder, Chrome BuildViewportFrame, MarkupBridge BuildLayerPrimitives/BuildHighlightPrimitives, 20 VectorQuality (+ config reader GetVectorQualitySetup) and 20 ViewportRotation - NOT EditScope IsInside or SpecMargin Push, which VV already has. Controls__Pc needs 03 KeyScope; Navigation needs SheetSurface NoteZoomGesture. Sheets needs Register__Numbering (no imports) and a replacement for TV CfApi Na__CfApi__GetLoadedProjectData. Facade and AutoSave need 42 ProjectData IsLoaded, GetBase, WhenBaseKnown and SAVED_ISO_KEY.",
+   "reason": "Removes the false 'EditScope IsInside missing' claim and adds the 53 ProjectLink gap found by the import-closure run (verify_s03b/v3/import_closure_out.txt)."
+  },
+  {
+   "id": "S03b-F42",
+   "field": "recommendation",
+   "new_value": "The planner orders other slices' leaf ports (feature UI off) ahead of WP-S03b-03R/06R/07R. Every whole-file port applies the mechanical seams: DrawingViewCore 40->42, drawing folders 42/43/44/45 -> 43/44/45/46, ValeVision console prefix. No VV file may import 80__CloudflareIntegration; write VV transport adapters instead (Sheets' register read, 54 SheetImages__Source). The QR slice must ship a VV ProjectLink (VV ?project= scheme) before ShapeGeometry 1.6.0+, TitleBlock__QrCell or Modern 1.5.0 is linked, because a missing named export fails the whole editor module graph at link time whatever ProjectQr__Enabled says. Run Na__Verify__ModuleGraph__ after every step.",
+   "reason": "Adds the ProjectLink prerequisite and the link-time nature of the failure."
+  },
+  {
+   "id": "S03b-F43",
+   "field": "detail",
+   "new_value": "Missing VV setup keys. GetDimensionSetup: roundUpStepMm, roundUpMarker, defaultRoundUp, defaultAtScale, defaultExtensionMm. GetMarginNotesSetup: six region* keys. GetNavigationSetup: authoringZoomMax, zoomSettleMs, holdPaperWhileZooming. GetTitleBlockSetup: 16 qrCell* keys and rowWidthFactorByPaper. GetViewportSetup: rotate*. GetScaleSetup: sitePlan*. GetDrawingRegisterSetup: all 37 keys (TV-only reader; its pdfJsScriptPath fallback is NA's PlanVision path and must not be copied). Also GetEditScopeSetup autoMove* and GetLeaderSetup noteTooltip*, plus labels (Draft*, SavedLocal*, SitePlanViewportName) and DefaultStyles.depthFog. Verifier additions from a reader-by-reader key diff: the TV-only reader GetVectorQualitySetup (ConfigState__SheetSetup; imported by 20 VectorQuality, which SheetSurface 1.10.0+ needs), GetPdfSetup fonts/fontFamily/fontBasePath/fontCdnBase (60 PdfFonts, needed by SheetChrome 1.7.0+), GetMeasureSetup arrayMaxCount (copy arrays, MeasureParse's consumer) and GetSnappingSetup sheetChrome/viewportCarry/viewportTracking (the 28 consumer of GetSheetChrome).",
+   "reason": "verify_s03b/v3/setupkeys_cmp.py found readers and keys the slice's ports need that the survey did not list."
+  },
+  {
+   "id": "S03b-F47",
+   "field": "detail",
+   "new_value": "SheetRecords, Viewports and ScaleManager carry site plan records (Sheet__DrawingType, Viewport__SitePlan, SitePlanHatches, site plan scales; the category prefix constant is the TV-named 'TrueVision__SitePlan__', SheetRecords L434), model source (Viewport__ModelSourceId, always written; VV has no model groups, ledger L412/L637) and hatch overrides. Ported verbatim they are inert, except that each VV viewport gains 'Viewport__ModelSourceId: null' and each snapshot asset 'Asset__Samples: null' on its next save.",
+   "reason": "TV L1062 also null-fills Asset__Samples on every snapshot asset; the TV-named constant comes with the verbatim port."
+  },
+  {
+   "id": "S03b-F49",
+   "field": "evidence",
+   "new_value": "Controls__Pc diff L17; TouchScreen diff L27; TV KeyScope header L12-30 and its 1.1.0 log entry (the rename); TV ConfigState__KeyMap__ L13, L101-102. VV places a rename must change: Na__LayoutEditor__ConfigState__KeyMap__.js L63 (the fetch URL - the only code dependency) and comments in ConfigState__ L154, ConfigState__KeyMap__ L13/L154, Measurements L56, Controls__TouchScreen L29, Controls__Pc L19, and AppConfig notes L277/L457.",
+   "reason": "The brief asks for every importer that a rename would break; the survey named none."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S03b-V01",
+   "category": "wiring",
+   "title": "VV's 3D hotkeys are global: the KeyScope port must gate VV's own hotkey handler, not only the drawing keys",
+   "detail": "TV's KeyScope (03__AppUtils/Na__AppUtils__KeyScope__.js 1.1.0, TV v2.110.0 'Three Tool Sets, Three Keyboards', plus v2.115.0) exists because the 3D model's keys answered under every tab (its header: 'T on a drawing picked the Text tool AND put the hidden model into Walk mode'). TV's 3D hotkey manager returns unless the MODEL scope is live (10__NavigationAndCameras/Na__Hotkeys__Manager.js L84, L167) and the mode controller feeds the scope (ModeController L389, L654-655, L1182). KeyScope's PORT NOTE: 'ValeVision's own hotkey handler and its Layout Editor have the same shape, so the same leaf fits.' VV's 3D hotkeys are a different module: 03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js (initialised at Index.html L1792) adds one window keydown listener that skips only focused inputs (L53, L91-101) and binds R, B, T, Y, V, PageUp, PageDown, 1-9, Backspace and Shift+F (02__AppData/Na__ValeVision__HotkeysDictionary__.json). VV's Controls__Pc also listens on window (L360) with no stopPropagation, so both keyboards hear every key. Code-traced, not run: letters typed on a VV drawing very likely act on the hidden 3D model today (the Index.html callbacks guard only on walk-enabled, carousel-visible and not-flying), and porting Controls__Pc 1.3.0's Page Up/Down adds the page keys to that set whenever the carousel counts as visible. The survey's F38/WP-S03b-09 list KeyScope but not VV's 3D handler.",
+   "recommendation": "In WP-S03b-09R (coordinated with the keyboard/mode-controller slice): port KeyScope and make VV's Na__AppUtils__ValeVision__HotkeyHandler__ (or its Index.html callbacks) return unless Na__KeyScope__Is(Na__KeyScope__MODEL), and use Na__KeyScope__IsTypingTarget instead of its own input test, as TV's Na__Hotkeys__Manager does. Keep VV's file names (the 3D dictionary stays 02__AppData/Na__ValeVision__HotkeysDictionary__.json; TV's is Na__Hotkeys__3dModelTab__.json - a naming question for the config slice). Acceptance: with a drawing open, R, B, T, Y, V, 1-9, PageUp and PageDown change nothing in the 3D view; on the 3D tab they work as today.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "TV Na__AppUtils__KeyScope__.js header L12-40, PORT NOTE L66-69, exports L225-233; TV Na__Hotkeys__Manager.js L84, L167; TV ModeController L319, L389, L616, L654-655, L1182, L1219; VV Na__AppUtils__ValeVision__HotkeyHandler__.js L53, L91-101, L113-135; VV Index.html L1792 (callback guards); VV Na__ValeVision__HotkeysDictionary__.json bindings; VV Controls__Pc L360; TV DEVLOG v2.110.0 (index L5496).",
+   "tv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+    "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json",
+    "Index.html",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js"
+   ],
+   "tv_version": "KeyScope 1.1.0 (v2.110.0, v2.115.0)",
+   "vv_version": "HotkeyHandler (no scope test); KeyScope absent",
+   "depends_on": [
+    "S03b-F38",
+    "05 ModeController (S03a slice)"
+   ],
+   "est_lines": 260,
+   "vv_adaptation": "Gate VV's own 3D hotkey module rather than TV's Na__Hotkeys__Manager; keep VV's dictionary and file names."
+  },
+  {
+   "id": "S03b-V02",
+   "category": "wiring",
+   "title": "53 ProjectLink imports two ProjectLoader functions VV lacks: ShapeGeometry 1.6.0+ and QrCell fail at link time even with the QR switched off",
+   "detail": "TV LE/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js imports Na__AppUtils__GetProjectCodeFromUrl, Na__AppUtils__GetProjectFolderFromUrl and Na__AppUtils__GetYearFromUrl from 03__AppUtils/Na__AppUtils__ProjectLoader.js (L85-89); 53 Symbol imports ProjectLink (L80); ShapeGeometry 1.6.0+ (L123) and TitleBlock__QrCell import Symbol; TitleBlock__Modern 1.3.0+ imports QrCell. VV's ProjectLoader exports GetProjectCodeFromUrl but neither of the other two (export block L535-548): VV names a project by ?project= and resolves its folder through the master index (NormalizeProjectFolderId). A missing named export stops the browser linking the whole editor graph, whatever ProjectQr__Enabled says, so the survey's 'port with ProjectQr__Enabled false' does not by itself make ShapeGeometry, QrCell or Modern 1.5.0 portable. The printed address is also built from TV's URL tokens (QueryPattern projectCode, projectFolder, year).",
+   "recommendation": "Before WP-S03b-06R/08 link ShapeGeometry 1.6.0+, QrCell or Modern 1.5.0, the QR slice gives VV its own Na__ProjectQr__ProjectLink__ for the ?project= scheme (VV ProjectLoader, NormalizeProjectFolderId), or adds VV implementations of GetProjectFolderFromUrl and GetYearFromUrl to VV's ProjectLoader. Keep the module name; record the divergence in its PORT NOTE; never carry NA's BaseUrl or IndexUrl. Gate each step with Na__Verify__ModuleGraph__.mjs.",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TV Na__ProjectQr__ProjectLink__.js L85-89; TV Na__ProjectQr__Symbol__.js L79-81; TV ShapeGeometry L123; TV ProjectLoader L92, L101, L329 (defines/exports them); VV ProjectLoader export block L535-548; verifier import-closure run (scratchpad/parity/verify_s03b/v3/import_closure_out.txt).",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js"
+   ],
+   "tv_version": "ProjectLink (v2.81.0; moved into LE/53 in v2.155.0)",
+   "vv_version": "-",
+   "depends_on": [
+    "S03b-F30",
+    "S03b-F35",
+    "QR slice (S07a)"
+   ],
+   "est_lines": 196,
+   "vv_adaptation": "VV ProjectLink reads ?project= and VV folder ids through VV's ProjectLoader; no NA resolver URL or index."
+  },
+  {
+   "id": "S03b-V03",
+   "category": "decision",
+   "title": "Three TV PORT NOTEs make the VV port wait for Adam's sign-off (DimensionRounding, ShapeRings, LeaderGeometry 1.2.0+)",
+   "detail": "DimensionRounding PORT NOTE: 'ValeVision: not yet ported - it waits for Adam's sign-off.' ShapeRings PORT NOTE: the same, with the warning that a reader unaware of Shape__Holes paints a stray edge. LeaderGeometry PORT NOTE: '1.0.0 ported ... Later versions wait for their own sign-off.' The survey recommends port_verbatim for all three (F27, F31, F29) without the gate. SheetRecords 1.38.0+ imports Na__LeRings__Clean (TV L374, L818-826), and ShapeGeometry 1.9.0 and SheetChrome 1.14.0 import ShapeRings, so the ShapeRings gate reaches WP-S03b-03 and -06. By contrast NoteRegions and LeaderlessNotes say 'Nothing here is app-specific', AreaGroups 'goes with the rest of Floor Areas' (D-S03b-04) and KeyScope 'the same leaf fits'.",
+   "recommendation": "Decide D-S03b-11 before WP-S03b-02R/03R/06R. Until then WP-S03b-02R ports only NoteRegions, LeaderlessNotes, PaintOrder and MeasureParse.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "evidence": "TV DimensionRounding PORT NOTE; TV ShapeRings PORT NOTE L49-55; TV LeaderGeometry PORT NOTE; TV SheetRecords L374, L818-826; TV ShapeGeometry L127; TV SheetChrome L196; TV AppConfig LayoutEditor__Dimensions__DefaultRoundUp false (L270).",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js"
+   ],
+   "vv_paths": [],
+   "tv_version": "DimensionRounding 1.0.0 / ShapeRings 1.1.0 / LeaderGeometry 1.3.0",
+   "vv_version": "- / - / 1.0.0 (code 1.1.0)",
+   "depends_on": [
+    "D-S03b-11"
+   ]
+  },
+  {
+   "id": "S03b-V04",
+   "category": "test",
+   "title": "The schema port's acceptance must whitelist every key TV's normaliser adds to VV sheets, measured against VV's current normalised output",
+   "detail": "WP-S03b-03 acceptance 2 (and the b3 table) say the only change besides the restack is Viewport__ModelSourceId: null. Traced against TV SheetRecords: every snapshot asset also gains Asset__Samples: null (TV L1062; 3047__Doous Viewport_002 has an asset without it), every viewport's Styles gains depthFog once LayoutEditor__Viewport__DefaultStyles.depthFog is configured (TV L1019; TV default on), plus Sheet__LayerStack: 2 and new Layer__Order values (L1438, L1482-1490). The files on disk are not VV-normalised either (3047__Doous Sheet_001 has no Sheet__Groups or Sheet__Leaders and older Styles keys), so a check against the raw file fails for reasons unrelated to the port. The Layers panel lists Viewports at the bottom after the restack (the sheet and the PDF do not change).",
+   "recommendation": "Golden-fixture and restack tests compare VV-before (VV's own NormaliseSheet output) with VV-after (TV's) and whitelist exactly: Layer__Order (restack), Sheet__LayerStack 2, Viewport__ModelSourceId null, Asset__Samples null, Viewport__Styles.depthFog (when configured). Anything else is a regression. Tell Adam the Layers panel order changes once on each old sheet.",
+   "action": "port_test",
+   "severity": "medium",
+   "evidence": "TV SheetRecords L954-955, L1019, L1058-1063, L1430-1438, L1482-1490; WCP/Projects/2026/3047__Doous/project.json (Viewport_002 SnapshotAsset without Asset__Samples; sheet without Sheet__Groups/Sheet__Leaders); verifier scan of all 4 local sheets.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "80__Testing__PrototypeEnvironment/"
+   ],
+   "tv_version": "SheetRecords 1.39.0 (+55014c6a)",
+   "vv_version": "1.15.0",
+   "depends_on": [
+    "S03b-F01",
+    "S03b-F03"
+   ],
+   "est_lines": 150
+  },
+  {
+   "id": "S03b-V05",
+   "category": "ui",
+   "title": "Helvetica to Open Sans moves VV's title block measurements: re-measure the Vale rows and the VV TitleBlockCells fixture",
+   "detail": "VV's SheetChrome measures and prints text in jsPDF Helvetica (VV-only doc.setFont('helvetica', ...) lines). The ledger records VV's title block row widths as re-measured in Helvetica (L121: 'FOR BUILDING CONTROL needs 29.8 of 30', 'Vale Garden Houses 23.1 of 28') and VV's Na__Test__TitleBlockCells__ fixture as Helvetica numbers (L127); VV's SpecPdf is on Helvetica by the same rule (L1169). TV SheetChrome 1.7.0+ measures and embeds Open Sans through 60 PdfFonts, so after WP-S03b-06 the title block fits, caption fits and Status cut points move (Open Sans sets narrower).",
+   "recommendation": "In WP-S03b-06R (and WP-S03b-08) re-run the title block measurements on A4 to A1, update the VV fixture of Na__Test__TitleBlockCells__ to Open Sans numbers, and flag the SpecPdf ledger row for the 50 slice. Adam approves the printed strip.",
+   "action": "port_test",
+   "severity": "low",
+   "evidence": "VV SheetChrome Helvetica lines (comment-free diff); VV ledger L121, L127, L1169; TV SheetChrome 1.7.0 log entry.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html"
+   ],
+   "tv_version": "SheetChrome 1.7.0+",
+   "vv_version": "SheetChrome '1.5.0' (code 1.8.0 minus 1.4.0/1.7.0)",
+   "depends_on": [
+    "S03b-F23"
+   ],
+   "est_lines": 60
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S03b-02",
+   "reason": "Superseded by WP-S03b-02R (same scope): ShapeRings and DimensionRounding carry TV PORT NOTEs saying the VV port waits for Adam's sign-off (D-S03b-11), which the original did not gate."
+  },
+  {
+   "id": "WP-S03b-03",
+   "reason": "Superseded by WP-S03b-03R (same scope): acceptance 2 was wrong - TV's normaliser also adds Asset__Samples: null to snapshot assets and Viewport__Styles.depthFog once configured, and the comparison must be against VV's current normalised output, not the file on disk; the ShapeRings sign-off dependency (D-S03b-11) was missing."
+  },
+  {
+   "id": "WP-S03b-06",
+   "reason": "Superseded by WP-S03b-06R (same scope): missing the VV ProjectLink prerequisite (53 Symbol -> ProjectLink imports ProjectLoader functions VV lacks, a link-time failure), the D-S03b-11 gate for ShapeRings/LeaderGeometry, and the Open Sans re-measure of VV's title block and test fixture."
+  },
+  {
+   "id": "WP-S03b-07",
+   "reason": "Superseded by WP-S03b-07R (same scope): '30/EditScope IsInside' is not a prerequisite (VV EditScope already exports it with TV's body) and EditScope is not a hot file; SpecMargin push already exists; the TV-only config reader GetVectorQualitySetup was missing."
+  },
+  {
+   "id": "WP-S03b-09",
+   "reason": "Superseded by WP-S03b-09R (same scope): missing VV's 3D hotkey handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, Index.html L1792, 02__AppData/Na__ValeVision__HotkeysDictionary__.json), which KeyScope must gate, and a 3D-keys acceptance."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S03b-02R",
+   "title": "Pure leaves: NoteRegions and LeaderlessNotes records, PaintOrder and MeasureParse now; ShapeRings and DimensionRounding after sign-off",
+   "scope": "Port verbatim the TV-only leaves SheetRecords__NoteRegions 1.0.0 and SheetRecords__LeaderlessNotes 1.0.0 (PORT NOTEs: 'Nothing here is app-specific'), PaintOrder 1.0.0 (inert, no consumer yet; implements VV plan D31) and MeasureParse 1.1.0 over VV 1.0.0 (purely additive). Port ShapeRings 1.1.0 and DimensionRounding 1.0.0 only after D-S03b-11 (their TV PORT NOTEs say the VV port waits for Adam's sign-off). Add the margin region config keys: GetMarginNotesSetup regionMinSizeMm, regionBordersDefault, regionPaddingMm, regionOverspillTitle, regionGroupsTitle, regionGripPx, and AppConfig MarginNotes Region*.",
+   "depends_on": [
+    "config slice: GetMarginNotesSetup region keys",
+    "D-S03b-11 (ShapeRings and DimensionRounding only)"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Every new module loads with no consumer, and Na__Verify__Exports__ and Na__Verify__ModuleGraph__ pass",
+    "NoteRegions and LeaderlessNotes normalise a fixture margin record exactly as TV's do",
+    "After D-S03b-11: Na__Test__DimensionRoundUp__ and the ShapeRings checks of Na__Test__VectorBooleans__ pass",
+    "Before D-S03b-11 is answered no VV file contains ShapeRings or DimensionRounding"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "risk": "Very low: no consumer until later packages.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs (record part)",
+    "80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs (record part)",
+    "80__Testing__PrototypeEnvironment/Na__Test__DimensionRoundUp__.test.mjs (after D-S03b-11)",
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs (ShapeRings checks only, after D-S03b-11)"
+   ]
+  },
+  {
+   "id": "WP-S03b-03R",
+   "title": "Sheet record schema and model units to TV level, incl. the layer-stack restack (corrected acceptance)",
+   "scope": "Bring 07/SheetRecords to TV 1.39.0 plus the 29-Sep edge fields (commit 55014c6a), and the SheetModel units State 1.2.0, Layers 1.4.0, Shapes 1.6.0, Viewports 1.4.0, TextAndDimensions 1.2.0, Leaders 1.2.0 and Groups 1.3.0; add AreaGroups 1.0.0 per D-S03b-04; re-sync headers of DrawOrder and Common. VV seams: DrawingCode leaf imports; DrawingNumber default per D-S03b-01; keep Na__LeRec__SheetShortCode exported until WP-S03b-04 (VV's Sheets unit 1.1.0 imports it); folder paths 40->42 (SheetRecords, State), 42->43 and 45->46 (Viewports); ValeVision console prefix. GROUP_KINDS, the Groups-unit PruneGroups and the per-kind delete prunes land together. The one-time RestackLegacyLayers starts running on VV sheets here: invisible on the sheet and in the PDF while VV still paints all markup over all viewports, but the Layers panel lists Viewports at the bottom afterwards.",
+   "depends_on": [
+    "WP-S03b-02R",
+    "D-S03b-11 (SheetRecords imports ShapeRings)",
+    "20/Na__LayoutEditor__ViewportRotation__ (leaf)",
+    "36/Na__LayoutEditor__HatchPatterns__ (leaf)",
+    "25/Na__LayoutEditor__SitePlanComposites__ (imports ScaleManager only)",
+    "54/Na__LayoutEditor__SheetImages__Geometry__ (leaf)",
+    "config slice readers (GetDrawingRegisterSetup without NA's PlanVision pdfJsScriptPath fallback)",
+    "D-S03b-01",
+    "D-S03b-04",
+    "D-S03b-08"
+   ],
+   "size": "XL",
+   "acceptance": [
+    "A golden fixture carrying every field in b2 (rows 1-44) normalises in VV byte-identical to TV's SheetRecords, apart from the documented VV seams",
+    "The 4 local VV sheets (3047__Doous, 44371__Gill, 57994__Harris__Scheme-02 x2) each restack once (Viewports to the bottom of the list) and a second normalise is byte-identical. Compared with VV's CURRENT normalised output (not the file on disk) the ONLY changes are Layer__Order (restack), Sheet__LayerStack 2, Viewport__ModelSourceId null on every viewport, Asset__Samples null on every snapshot asset (3047__Doous Viewport_002) and Viewport__Styles.depthFog once DefaultStyles.depthFog is configured",
+    "Screen and PDF of those sheets show no visible change",
+    "A group holding a leader, a dimension or a viewport survives a delete elsewhere and a reload",
+    "Margin regions, leaderless groups, depthFog, Category__LineTypeScale and a 1:200 viewport (when configured) survive a reload",
+    "Na__Verify__Exports__ and Na__Verify__ModuleGraph__ pass with VV's old facade and old Sheets unit still in place"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js"
+   ],
+   "risk": "High blast radius: every sheet is re-normalised. Mitigate with the golden fixture and the whitelisted restack test on real data (S03b-V04), and check an R2 sample before release. Invisible until paint order lands, so problems may surface late.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs (model part)",
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs (record part)",
+    "80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs (records part)"
+   ]
+  },
+  {
+   "id": "WP-S03b-06R",
+   "title": "Chrome primitives and markup geometry, with a VV ProjectLink and the Open Sans re-measure",
+   "scope": "Port SheetChrome 1.14.0, ShapeGeometry 1.9.0 and DimensionGeometry 1.6.0 verbatim, and LeaderGeometry 1.3.0 after D-S03b-11. Prerequisites from other slices: 36 HatchPatterns; 60 PdfFonts with the TTFs and the GetPdfSetup font keys; 53 ProjectQr__Painter and __Symbol with a VV ProjectLink (S03b-V02) and VV config disabled; 54 SheetImages__Painter and __Paint with Source on VV transport; 20 ViewportRotation; 35 GradientTool DrawPdf holes argument; 50 SpecLinks registering SetBrokenResolver and SetNoteResolver. In the same change re-measure the title block strip and captions in Open Sans and update VV's Na__Test__TitleBlockCells__ fixture (S03b-V05).",
+   "depends_on": [
+    "WP-S03b-02R",
+    "WP-S03b-03R",
+    "D-S03b-11",
+    "36/HatchPatterns",
+    "60/PdfFonts",
+    "53/ProjectQrCode leaves + VV ProjectLink (S03b-V02)",
+    "54/SheetImages leaves + VV Source transport",
+    "20/ViewportRotation"
+   ],
+   "size": "L",
+   "acceptance": [
+    "The PDF of each local VV sheet is identical apart from embedded Open Sans and the re-measured fits, which Adam approves",
+    "Viewport__ShowFrame false hides frame and caption on screen and in the PDF",
+    "A holed fixture vector shows its hole on screen and in the PDF (even-odd)",
+    "Na__Verify__ModuleGraph__ links ShapeGeometry through 53 Symbol and VV's own ProjectLink; no VV module imports GetProjectFolderFromUrl or GetYearFromUrl unless VV's ProjectLoader exports them",
+    "A QR primitive paints when 53 is enabled in a test config; no QR in production config",
+    "A bubble whose note is deleted shows a red halo on screen only, never in a PDF",
+    "Na__Test__TitleBlockCells__ passes with Open Sans numbers on A4 to A1"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js (new, VV-adapted)",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js (STYLESHEETS, if 54 CSS lands)",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs"
+   ],
+   "risk": "Pulls in feature leaves (53, 54, 60) whose URL and transport parts need VV adapters; a missing adapter breaks the whole editor at link time. On-screen and PDF text measurement moves from Helvetica to Open Sans.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html",
+    "80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs (chrome part)"
+   ]
+  },
+  {
+   "id": "WP-S03b-07R",
+   "title": "Paint order: the Layers list is the stack (switch on PaintOrder's consumers), corrected prerequisites",
+   "scope": "In ONE change: MarkupBridge 1.20.0 (path seams 42->43, 43->44, 44->45, 45->46), markup Groups 1.4.0, SheetSurface 1.13.0, the Paper CSS stack/zoom/fog/frame/per-slot-fade regions, and 60 PdfExporter painting by Na__LePaint__Plan with BuildLayerPrimitives and BuildViewportFrame. Prerequisites: 20 VectorQuality with the TV-only config reader Na__LeCfg__GetVectorQualitySetup, 20 ViewportRotation, 59 FloorAreas__Paint (or a D-S03b-04 stub), and the GetNavigationSetup keys zoomSettleMs and holdPaperWhileZooming. NOT prerequisites: 30 EditScope Na__LeScope__IsInside and 50 SpecMargin Na__LeMargin__Push, both already in VV with TV's signatures.",
+   "depends_on": [
+    "WP-S03b-03R",
+    "WP-S03b-04",
+    "WP-S03b-06R",
+    "20/VectorQuality + GetVectorQualitySetup",
+    "20/ViewportRotation",
+    "59/FloorAreas__Paint (or D-S03b-04 stub)"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Every local VV sheet looks identical on screen and in the PDF before and after (pixel diff at Fit)",
+    "A markup layer dragged under the Viewports layer draws under the drawing on screen and in the PDF",
+    "Clicks find the top-most item; a reference layer passes clicks through; an open group keeps its viewports at full strength",
+    "An AtScale dimension prints the same figure as the Measurements box",
+    "A wheel zoom adds na-le-paper--zooming and settles once (ZOOM_SETTLED_EVENT)",
+    "Na__Verify__Exports__ and Na__Verify__ModuleGraph__ pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "risk": "Highest visual risk. If WP-S03b-03R's restack has not run, every note is buried under the drawings. Screen and PDF must switch together.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs (paint plan)",
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs (bounds part)"
+   ]
+  },
+  {
+   "id": "WP-S03b-09R",
+   "title": "Navigation and controls (zoom gesture, authoring zoom, Page Up/Down, keyboard focus) with KeyScope gating VV's 3D hotkeys",
+   "scope": "Port Navigation 1.3.0, Controls__Pc 1.4.0 and Controls__TouchScreen 1.1.0 verbatim, plus the new 03__AppUtils/Na__AppUtils__KeyScope__.js 1.1.0 leaf. Wiring: the ModeController feeds the scope (Na__KeyScope__Follow), listens for Na__LePc__STEP_SHEET_EVENT and calls Na__LePc__TakeKeyboard when a drawing is opened; key map entries Nav__PreviousSheet (PageUp) and Nav__NextSheet (PageDown); config authoringZoomMax, zoomSettleMs, holdPaperWhileZooming. VV's 3D hotkeys (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, wired in Index.html L1792) return unless Na__KeyScope__Is(MODEL) and use Na__KeyScope__IsTypingTarget, as TV's Na__Hotkeys__Manager does (S03b-V01). Coordinate with the keyboard/mode-controller slice.",
+   "depends_on": [
+    "WP-S03b-07R",
+    "config slice key map",
+    "05 ModeController wiring (S03a slice)"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Test__AuthoringZoomMax__, Na__Test__SheetPagingWalkExit__ and Na__Test__DrawingTabKeys__ pass on VV",
+    "After ticking a panel checkbox, a click on the paper then M picks Move",
+    "Page Down turns to the next drawing and stops at the last one without scrolling the stage",
+    "With a drawing open, R, B, T, Y, V, 1-9, PageUp and PageDown change nothing in the 3D view; on the 3D tab they work as today",
+    "A touchpad produces one zoom per frame; authoring zoom reaches 6400% and the web viewer stops at 800%"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js (reference for the 3D gate)"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+    "Index.html",
+    "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json"
+   ],
+   "risk": "Keyboard scoping touches every key in the app: a half-wired scope either deafens the 3D tab or leaves both keyboards answering. Test on the 3D tab, a drawing tab and the specification.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs"
+   ]
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S03b-11",
+   "question": "Three TrueVision-first features say in their TV PORT NOTEs that the ValeVision port waits for your sign-off. Sign them off for ValeVision? (1) Round up to 5 mm with an asterisk (DimensionRounding; opt-in per dimension, DefaultRoundUp false). (2) Vectors with holes (ShapeRings; imported by SheetRecords 1.38.0+, ShapeGeometry 1.9.0 and SheetChrome 1.14.0). (3) Broken-bubble halos and the bubble's note resolver (LeaderGeometry 1.2.0/1.3.0).",
+   "options": "A: sign off all three now (the core files stay identical). B: sign off ShapeRings only (needed for an identical SheetRecords) and hold the other two. C: hold all three (SheetRecords, ShapeGeometry and SheetChrome keep holes seams in VV).",
+   "recommendation": "A. Each is inert or opt-in until a VV user acts (DefaultRoundUp is false; Shape__Holes is only written by the Boolean vector tools; halos show on screen only, for a deleted note), and B or C leave seams in three core files against the identical-editor goal.",
+   "blocks": [
+    "WP-S03b-02R",
+    "WP-S03b-03R",
+    "WP-S03b-06R"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "VV's global 3D hotkey handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, Index.html L1792) must be gated by KeyScope (S03b-V01)",
+  "53 ProjectLink imports GetProjectFolderFromUrl/GetYearFromUrl that VV's ProjectLoader lacks - link-time failure for ShapeGeometry/QrCell/Modern even with QR off (S03b-V02)",
+  "TV PORT NOTE sign-off gates for DimensionRounding, ShapeRings and LeaderGeometry 1.2.0+ (S03b-V03, D-S03b-11)",
+  "Complete whitelist of keys TV's normaliser adds to VV sheets (Asset__Samples null, depthFog) and the compare-against-VV-normalised rule (S03b-V04)",
+  "Helvetica to Open Sans re-measurement of VV's title block and its test fixture (S03b-V05)",
+  "False 'VV lacks' sub-claims removed: Na__DrawData__GetBlock, Na__LeScope__IsInside, Na__LeMargin__Push exist in VV (F16, F24, F42, WP-S03b-07)",
+  "Config readers/keys the ports need that were missing: GetVectorQualitySetup, GetPdfSetup fonts, GetMeasureSetup arrayMaxCount, GetSnappingSetup sheetChrome; NA PlanVision pdfJsScriptPath fallback flagged (F43)",
+  "TV doc gaps: SheetSurface ShowPublished unlogged, PaintOrder without PORT NOTE, duplicate log versions (F41)",
+  "Key map rename importers listed (F49)",
+  "RenumberSheets no-op identified as a VV seam because TV falls back to config numbering (F08)",
+  "Every in-scope file in both apps mapped to a finding (report Verification coverage map)"
+ ],
+ "notes": "Slice quality is high: the 44-row schema table, the round trip on the 4 real VV sheets, the import closure and the late-start/Common-seed trace all hold line by line. No finding is refuted. The errors were small, but each would mislead a swarm agent: three false 'VV lacks' sub-claims (Na__DrawData__GetBlock, Na__LeScope__IsInside and Na__LeMargin__Push already exist in VV), a wrong WP-S03b-03 acceptance line (TV's normaliser also adds Asset__Samples null and depthFog), and a Styles__Main action mismatch. Material omissions were wiring and process, not schema: (1) VV's 3D hotkeys are a global window listener that KeyScope must gate, or keys typed on a drawing also drive the hidden model (S03b-V01); (2) 53 ProjectLink imports two ProjectLoader functions VV lacks, so ShapeGeometry 1.6.0+, QrCell and Modern 1.5.0 fail at link time even with the QR off (S03b-V02); (3) TV PORT NOTEs make DimensionRounding, ShapeRings and later LeaderGeometry wait for Adam's sign-off, and SheetRecords 1.38.0+ imports ShapeRings (D-S03b-11). What to watch: use the R versions of WP-02/03/06/07/09; treat RenumberSheets' no-op as a recorded VV seam (TV falls back to config numbering); never ship TrueVision__Pwa__HasUnsavedWork, 'NOBLE ARCHITECTURE', noble-architecture.com/q/ or the PlanVision pdfJsScriptPath into VV. F07, F26 and V01 are code-traced only, and R2 data was not inspected. The report is edited in place with [Verifier] marks and a Verification section; scripts are in scratchpad/parity/verify_s03b/v3 (import_closure.py, setupkeys_cmp.py, patch_report*.py), with a pre-edit backup at verify_s03b/v3/report_backup_before_verifier.md."
+}

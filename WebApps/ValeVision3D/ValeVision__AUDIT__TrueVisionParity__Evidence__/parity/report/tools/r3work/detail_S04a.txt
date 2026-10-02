@@ -1,0 +1,180 @@
+### S04a-F04 [tooling/medium/no_action] drift_all 'header-only' hides real changes in 4 rows of this slice
+TV: 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json; 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__La...
+VV: 
+DET: drift_all marks a file header-only when all its differences sit in its first ~120 lines. Viewport3dZoom__.js has TV 1.1.0 code at TV :265-269 (rotation-aware wheel). ViewportIdentity__Config (24 lines), EdgeStyles__Config (66) and RenderComposites__Config (108) are shorter than that window, so their real data changes read as header: the Phase block; accent colours and Weight__Max 10; the depthFog row and percent weight. ForceRender and RasterQual...
+REC: Planner: treat Viewport3dZoom and the three configs as drifted (port_verbatim). Do not skip them as header-only.
+ADAPT: 
+EVID: git diff --no-index -w: Viewport3dZoom hunk @@ -265; configs diffed key by key (scratchpad parity/work_S04a/jsontree2.py).
+VER: 
+DEP: 
+
+### S04a-F06 [wiring/high/update_wiring] Render entry points take different positional arguments in the two apps
+TV: 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__Layout...
+VV: 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Vi...
+DET: TV Render2d(def,win,styles,w,h,layers,samples,weights,modelSourceId,stillWanted,depthFog) vs VV (..,weights,stillWanted). TV Render3d(..,weights,modelSourceId,viewWindow,stillWanted) vs VV (..,weights,viewWindow,stillWanted). TV EnsureLinework(def,onPhase,force,modelSource,waited) vs VV (def,onPhase,force). TV's fingerprint and GetModelRoot calls take modelSourceId, and TV Describe returns modelSource. A TV caller pasted into VV passes its view w...
+REC: Adopt TV's signatures in VV now, before any viewport file is ported, whatever D-S04a-02 decides: Render2d(..., weights, modelSourceId, stillWanted, depthFog), Render3d(..., weights, modelSourceId, viewWindow, stillWanted), EnsureLinework(definition, onPhase, force, modelSource, waited), and an optional modelSourceId on GetModelFingerprint / GetPipelineFingerprint / GetModelRoot, with null/undefined in the new slots. Make VV's Describe return a Re...
+ADAPT: 
+EVID: TV SnapshotRenderer :863,:991 vs VV :469,:555; TV Linework :132 vs VV :113; TV PdfExporter :428 passes described.modelSource; VV ledger :1171 'stillWanted ninth here, tenth there'.
+VER: The survey recommended 'Describe returning modelSource null'; any pasted TV hunk would then throw a TypeError. Caller list re-checked across all of VVM.
+DEP: D-S04a-06
+
+### S04a-F25 [wiring/medium/update_wiring] Viewport rotation is wired through 31 TV files
+TV: 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js; 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js; 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Viewpo...
+VV: 02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js
+DET: Apart from the leaf, 31 TV files read Na__LeVpRot__* or Viewport__RotationDeg, and SheetTools HitResolution (:201, :535), PointerPress (:345) and PointerDrag (:665) carry the feature through Handles' OnRotateGrip / RotateStart / RotateTo: 34 consumers. Nine of the 31 live in files VV does not have (ObjectSnap GridMoves/Index/Search/ViewportSnapMove, VectorTools__Targets, ScrapbookSpecification, FloorAreas, Publish__Viewports, M/52 PubDoc Viewport...
+REC: Do it as one coordinated WP (WP-S04a-03), after the owning slices have brought SheetSurface, SheetTools, ObjectSnap/Snapping and PdfExport up to TV's baseline. Port Na__Test__ViewportRotation__ (52 checks).
+ADAPT: 
+EVID: grep 'Na__LeVpRot__|Viewport__RotationDeg' in TV M/ = 32 files; TV ConfigState__SheetSetup :342 vs VV ToolSetup :79 (text only); TV devlog v2.138.0 :2825-:2868.
+VER: Re-ran the grep and checked each hit against VV; WP-03 omitted Groups, MarkupBridge, Eyedropper, SelectionBox, SelectionSet and both ScrapbookParametric units.
+DEP: S04a-F24; S04a-F44
+
+### S04a-F28 [wiring/high/update_wiring] Plan doors depend on pieces outside the Layout Editor that VV lacks
+TV: 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js; 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js; 02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js; 02__Src__AppModules/25__Sys...
+VV: 02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js; 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js; 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js; 0...
+DET: TV-only: M/50 DoorPose (807 lines) and Storeys (320); the DoorPose/Storey hooks in Projector, Pipeline, StageSampler and ViewDefinition (a 4th doorPose argument; VV ViewDefinition :314/:340 take three). DoorPose imports names VV's door module 1.7.1 lacks: Na__DoorAnim__MOD_TYPE_ROT_ONLY, MOD_TYPE_FIXED, DescribeDoors, ComputePanelLocalPose, ApplyPanelTransform and GetLiveProgress (TV 1.9.0), plus the TV-only Na__DoorAnimation__FindDoorGroups.js a...
+REC: Sequence: door module 1.9.0 + FindDoorGroups, then folder-50 DoorPose/Storeys and hooks, then PlanDoors, then the Window/Frame/Viewport2d/SnapshotRenderer door hunks, then the UI. Owned jointly with the folder-50 and 3D-interaction slices.
+ADAPT: 
+EVID: TV DoorPose header :1-:80; VV M/50 listing lacks DoorPose/Storeys; VV ClickToOpenDoors log 1.7.1 (:44) vs TV 1.9.0 (:48); realign plan rows AA/AH.
+VER: imports.py on TV DoorPose gave the exact missing names, including GetStoreySetup which the survey did not list.
+DEP: folder-50 ProjectedLinework slice; 43__System__FloorPlanViews storey level
+
+### S04a-F30 [wiring/medium/port_adapted] Fog images need a callback route that VV's tiled renderer lacks (DIV-1)
+TV: 02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js
+VV: 02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js; 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+DET: TV renders a drawing's fog image with Render2d(..., fogSource) -> RenderToCanvas({ renderFrame: Na__ElevFog__RenderLayerFrame }). VV's TiledRenderer 1.4.0 has no renderFrame option; TV's (now 2.1.0 - the callback route arrived in 2.0.0) has it at :232-:269. TV TiledRenderer's own PORT NOTE says 'the supersampling is worth carrying back; the callback route is not' - written before the fog image existed, so option (a) knowingly reverses it. TV devl...
+REC: D-S04a-05: add TV's optional renderFrame callback route to VV's tiled renderer, used only when a caller passes it (the fog image); the underlay keeps the composer route. Then port SnapshotRenderer's fog hunks, the Frame fog layer, RenderFogForExport, the Paper CSS .na-le-frame__fog rule and the PdfExporter fog.
+ADAPT: 
+EVID: VV TiledRenderer: no 'renderFrame'; TV TiledRenderer :232,:259,:269,:402,:421; TV devlog :7095-:7096.
+VER: TV TiledRenderer log shows 2.1.0; its PORT NOTE contradicts option (a); the RenderDepthInto dependency was missed.
+DEP: D-S04a-05; S04a-F29
+
+### S04a-F32 [wiring/high/update_wiring] Model Source's support chain is missing in VV
+TV: 02__Src__AppModules/26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js; 02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js; 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js
+VV: 02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js; 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js; 02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js; 02__Src__AppModules/01__AppCore/Na__...
+DET: A dormant or full port needs: M/26 Na__ModelGroup__PhaseLibrary__ (602 lines; VV's loader exports every name it imports and the render loop has Pause/Resume); Na__ModelToggle__BorrowRegistry/RestoreRegistry (absent in VV); Pipeline RenderDefinition(..., root) and GetCached(def, fp) (missing at VV :321,:593); a section model-root hook; MaterialPreset__SetModelRoot (VV already has it, :299); the record key; the config ModelSource block; 9 labels; L...
+REC: WP-05: PhaseLibrary verbatim and uninitialised - no LoadingSequence change is needed (IsLive(null) is true, WaitFor(null) resolves true, StatusText answers '' without a renderId, and every status reader is behind a renderId guard). Add ModelToggle BorrowRegistry/RestoreRegistry, the Pipeline's optional modelRoot/fingerprint arguments, and Na__DrawView__SectionAdapter__SetModelRoot in VV as a no-op stub: VV's Cross Sections tool sets its root only...
+ADAPT: 
+EVID: VV MultiModel export block :924; VV ModelToggle has no Borrow/RestoreRegistry; VV MaterialPreset :299; TV PhaseLibrary :1-:60.
+VER: Read TV PhaseLibrary :445-:475 and ModelSource :160-:190; VV CrossSectionView export list has no root setter.
+DEP: D-S04a-02
+
+### S04a-F33 [wiring/low/backport_to_tv] Both SnapshotRenderers call their own section engine directly for three things, not through the DIV-2 adapter
+TV: 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js; 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js
+VV: 02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js
+DET: TV SnapshotRenderer imports Na__SectSerialize__Serialize/Apply (41 Serialize, :213; used :1008, :1050), Na__SectCutCfg__GetAppearance/SetAppearance (41 ConfigState, :223; used :877, :902, :956) and Na__SectionCut__SetModelRoot (41 Engine, :244; used :786, :819). VV SnapshotRenderer imports Na__CrossSection__SerializeSections/ApplySerializedSections (:162) and GetAppearance/SetLineWidth (:173) straight from its Cross Sections tool. Only plane upse...
+REC: Superseded by S04a-V03 / WP-S04a-15: add Serialize, Apply, the outline width get/set, SetModelRoot and RenderDepthInto to both SectionAdapters (TV pass-throughs; VV over the Cross Sections tool) and point both SnapshotRenderers and TV's 49 RenderLayer at them.
+ADAPT: 
+EVID: TV SnapshotRenderer import of Na__SectionCut__SetModelRoot from ../../41__System__SectionCutEngine/Na__SectionCut__Engine__.js; realign plan DIV-2.
+VER: The bypass is wider than SetModelRoot. | Import blocks of both SnapshotRenderers read in full. | Broadened scope.
+DEP: 
+
+### S04a-F36 [transport/high/build_vv_transport] The site plan Store needs a VV transport adapter
+TV: 02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js; 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
+DET: TV's Store (802 lines, 1.2.0) is generic apart from its URL functions and constants: the NaProjectPortal CDN, na-project-portal and 30__TrueVision__AppContent (:118-:120), the manifest name (:122), RED_LINE_STEM (:124), FolderUrls (:267), Candidates (:290) and ProjectDataBlocks (:455), which uses the TV-only M/80 Na__CfApi__GetLoadedProjectData. It also imports Na__AppUtils__GetProjectFolderFromUrl and GetYearFromUrl, which VV's ProjectLoader doe...
+REC: Port the Store with FolderUrls / Candidates / ProjectDataBlocks replaced by a VV adapter: project identity from GetProjectCodeFromUrl + NormalizeProjectFolderId; URLs from the R2 base then the GH fallback; the build token (export WithBuildToken from VV ProjectLoader, or carry the same rule); localhost from the WCP static path; ProjectDataBlocks awaiting the memoised Na__AppUtils__FetchProjectJson. Rename manifest stems TrueVision__SitePlan__ -> V...
+ADAPT: VV adapter for FolderUrls/Candidates/ProjectDataBlocks; stem prefix per D-S04a-03.
+EVID: TV Store :97-:101 imports, :118-:120, :267, :290, :455; VV ProjectLoader :92,:251,:464; WCP server.py :899,:956.
+VER: VV ProjectLoader exports and FetchProjectJson read; TV Store's only ProjectDataBlocks caller is async. | Removes an unnecessary LoadingSequence edit and names the real VV gaps.
+DEP: D-S04a-01; D-S04a-03
+
+### S04a-F40 [data_schema/high/needs_decision] Site plan record fields, stems and project data keys
+TV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+DET: The shared record shape: Sheet__DrawingType ('siteplan' only); Viewport__SitePlan { SitePlan__StoreId, SitePlan__PlanType, SitePlan__Composites }; Viewport__Kind stays '2d'; ProjectedEdges Category__FillHex and Category__LineTypeScale; project data SitePlan__DataStores / SitePlan__DataStore; manifest schema 1; store-qualified keys (<stem>@existing). The stem prefix 'TrueVision__SitePlan__' is hard-coded in four places in TV's editor (SheetRecords...
+REC: Keep the record and key schema identical apart from the prefix. Make the stem prefix one constant per app; in VV set it to 'ValeVision__SitePlan__' and have the Store adapter rename manifest stems on read - the rule VV's model loader already applies to GLBs - so no exporter change is needed (D-S04a-03, S04a-V04).
+ADAPT: 
+EVID: TV SheetRecords :427,:434,:543-:561,:932-:955; Plugins Tags SSOT: 42 SitePlan__ExportFileNameStem values, all 'TrueVision__SitePlan__...'; VV ModelLayers config keys are all ValeVision__.
+VER: JSON walk of the SSOT found 39 stems, not 42; a fourth hard-coded prefix exists in SiteLegend. | Evidence that Vale exports already use TrueVision__ stems and VV normalises at load.
+DEP: D-S04a-01; D-S04a-03
+
+### S04a-F41 [transport/medium/build_vv_transport] There is no Vale site plan data pipeline
+TV: TrueVision__PLAN__SitePlanDrawings__.md; TrueVision__PLAN__SitePlanComposites__.md
+VV: 
+DET: TV's data comes from the GLB Builder's Site Plan Export (Plugins), the ProjectVision build (05__ProjectVision__CoreAppCode/ProjectVision__BuildScript__.py: discover_truevision_siteplan_stores :564, SitePlan__DataStores written at :618, folders SitePlan__DrawingData__{Existing,Proposed} :59-:63) and its R2 sync into NaProjectPortal/{year}-Projects/{folder}/30__TrueVision__AppContent/. VV's counterparts: Vale GLBs are already built by the same 'Tru...
+REC: Only if D-S04a-01 = A: a WP outside the app root - land the export under WCP/Projects/{year}/{folder}/SitePlan__DrawingData__{Existing,Proposed}/ (served by the WCP catch-all on localhost, synced to VaApps/Projects/{folderId}/), register SitePlan__DataStores from the WCP build script, and check TagVisibilityCapture first. No exporter naming target and no worker change are needed (the GLBs are static reads).
+ADAPT: 
+EVID: TV PLAN__SitePlanDrawings SP03-SP05 and 8.3; TV PLAN__SitePlanComposites P9a-P9d; VV project layout WCP/Projects/2026/3047__Doous.
+VER: Located the TV build script and the WCP equivalents. | Smaller, evidence-based scope.
+DEP: D-S04a-01; D-S04a-03
+
+### S04a-F43 [data_schema/medium/update_wiring] VV SheetRecords loses three of this slice's fields and ignores the rest
+TV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+DET: VV's normalisers mutate records in place and keep unknown top-level keys, so a TV record keeps Viewport__RotationDeg, Viewport__ClosedDoors, Viewport__HideSwings, Viewport__ModelSourceId, the Viewport__SitePlan block, Sheet__DrawingType and Asset__Samples (inside the kept snapshot slot) through a VV save - VV simply ignores them. What VV does lose: Viewport__Styles is rebuilt from its eight known keys (depthFog dropped; VV :415-:424, STYLE_KEYS :...
+REC: Each feature WP adds its keys to SheetRecords and SheetModel (owned by the SheetData slice; serialise these edits). Keep TV's rule of storing a key only while it is non-default, so old records stay byte-identical.
+ADAPT: 
+EVID: grep counts in LE/07 SheetRecords (TV 1.39.0 vs VV 1.15.0); TV :427,:1019,:1038-:1062; VV :214.
+VER: VV's normalisers keep unknown top-level keys. | VV NormaliseViewport, NormaliseSheet, NormaliseProjectedEdges and NormaliseCompositeWeights read in full. | Only three fields are lost, and the two apps do not share project files in practice.
+DEP: 
+
+### S04a-F44 [wiring/medium/update_wiring] Config and ConfigState gaps for this slice
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState_...
+DET: VV's AppConfig lacks: the ModelSource block (MaxCachedPhases 3); the PlanDoors block (8 keys); the VectorQuality block; viewport RotateStepDeg, RotateDetentDeg, RotateGripOffsetPx and RotateNote; DefaultStyles.DepthFog; the site plan scales [100...5000] with default 500; and labels (Model Source 9, Doors 10, Vector 5, site plan 19, Drawing Type 3, Patterns 9). VV's ConfigState lacks GetModelSourceSetup, GetPlanDoorsSetup, GetVectorQualitySetup, t...
+REC: Add each block with the WP that uses it; AppConfig and ConfigState__SheetSetup are hot files, so serialise those edits. TV has no config keys for the rotation labels or the Fill/Line scale headings (they are fallback strings in the code).
+ADAPT: 
+EVID: Normalised AppConfig diff (work_S04a/appconfig_diff.txt); TV ConfigState SheetSetup :342,:405-:413; GetModelSourceSetup occurs 8 times in TV, 0 in VV.
+VER: 
+DEP: 
+
+### S04a-F45 [wiring/medium/update_wiring] ModeController lacks this slice's registrations
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: TV's ModeController ready chain includes Na__LeHatch__Ready and Na__LeSpComp__Ready (:1193). It registers Na__LePanelSpComp__Register (:533), calls Na__LeSource__Initialize (:1206), and listens to Na__PhaseLib__CHANGED_EVENT to refresh frames and panels (:1247). VV's chain (VV :828) has only Cfg, Edge, Composite, Grad, Dash and DrawCfg. VV starts the editor through LE/01__Core__Loader, so index.html needs no change for these.
+REC: Add each line with its feature WP. Keep VV's loader-based start-up (Na__LeMode__WaitForFirstDrawing etc.).
+ADAPT: 
+EVID: TV ModeController :343-:344,:378-:380,:533,:1193-:1251; VV :189-:227,:828-:837.
+VER: 
+DEP: 
+
+### S04a-F46 [wiring/medium/update_wiring] Draft mode guards are compiled into three viewport files
+TV: 02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js
+VV: 
+DET: TV Viewport2d (1.13.0), Frame (1.3.0) and Viewport3d (1.8.0) import Na__LeDraft__IsOn from LE/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js. That file is a leaf with no imports, exporting CHANGED_EVENT, IsOn and AssignOn. Taking any of the three files whole needs that leaf present, even before Draft mode itself is ported (another slice).
+REC: Land DraftMode__State.js verbatim in WP-S04a-01, coordinated with the Draft mode slice owner. IsOn stays false until that slice lands the rest.
+ADAPT: 
+EVID: TV DraftMode__State exports Na__LeDraft__CHANGED_EVENT/IsOn/AssignOn; imported by Viewport2d, Frame and Viewport3d (see diffs).
+VER: 
+DEP: Draft mode slice (LE/26__System__DraftMode)
+
+### S04a-F52 [test/medium/port_test] Tests to port with this slice
+TV: 80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__VectorQuality__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs; 80__Testi...
+VV: 80__Testing__PrototypeEnvironment/
+DET: VV has only 2 of the relevant TV tests (PerSceneLighting, and ViewportTitleText at 1.0.0). To port: ViewportRotation (344 lines, 52 checks), VectorQuality (227, 33), HideSwings (331, 47), EnhanceWhitecardStrength (279, 23), ElevationDepthFog (295, 68), SitePlanStore (263, 32), SitePlanComposites (1,052, 108, plus the Output html), SitePlanFaces (200), StoreyBand (186), ViewportTitleText (171 vs VV 134) and PaintedOnThePoint (handles placement). A...
+REC: Port each test with its feature WP, pointed at VV module paths (folders 42/43/46) and VV config. Run every suite plus Na__Verify__Exports__ and Na__Verify__ModuleGraph__ after each step.
+ADAPT: 
+EVID: 80__Testing__PrototypeEnvironment listings in ref/tree_tv.tsv and tree_vv.tsv; check counts from the TV devlog entries.
+VER: grep of TV tests for this slice's module names.
+DEP: 
+
+### S04a-V01 [wiring/high/update_wiring] Whole-file takes need their whole import closure: eight shared files can only be taken whole at the end
+TV: 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js; 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__View...
+VV: 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/; 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/; 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: Every relative import of every TV file in the slice was resolved against VV (folder numbers mapped, exported names checked). Missing in VV today - Viewport2d: ModelSource, DraftMode__State, PlanDoors, Store, DepthFog, SitePlan painter, SheetModel IsSitePlanViewport, Frame RasterModifierToken/PlaceFog/ClearFog/RenderFog/ScheduleFog. Frame: DraftMode__State, PlanDoors, DepthFog, folder-50 Na__PlCfg__GetLineworkModifiers. Linework: ModelSource (cycl...
+REC: Every feature WP replays hunks into Viewport2d, Frame, Linework, Window, Viewport3d, ViewportIdentity, EdgeStyles and ModelLayers; take them whole only in WP-S04a-14, once every import resolves. Never land a TV file whose imports are missing in VV; run Na__Verify__Exports__ and Na__Verify__ModuleGraph__ after each step.
+ADAPT: 
+EVID: parity/verify_s04a/imports.py and its outputs imports_a.txt, imports_b.txt, imports_c.txt; VV LE/01 Loader :246-:251.
+VER: 
+DEP: S04a-F24; S04a-F27; S04a-F29; S04a-F31; S04a-F36; S04a-F37; S04a-F46; S04a-F47
+
+### S04a-V03 [wiring/medium/update_wiring] Section-engine calls bypass the DIV-2 adapter in both SnapshotRenderers and in TV's fog render layer
+TV: 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js; 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js; 02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js; 02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js; 02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js
+DET: TV SnapshotRenderer imports Na__SectSerialize__Serialize/Apply (:213), Na__SectCutCfg__GetAppearance/SetAppearance (:223) and Na__SectionCut__SetModelRoot (:244) from its 41__System__SectionCutEngine; VV SnapshotRenderer imports Na__CrossSection__SerializeSections/ApplySerializedSections (:162) and GetAppearance/SetLineWidth (:173) from its 41__System__CrossSectionView. TV's M/49 Na__ElevationDepthFog__RenderLayer__.js imports Na__SectionCut__Ren...
+REC: Add Serialize, Apply, the outline width get/set, SetModelRoot and RenderDepthInto to both SectionAdapters (TV: pass-throughs to SectionCut; VV: over the Cross Sections tool - SetModelRoot a stub while Model Source is dormant, RenderDepthInto drawing VV's cap meshes into the fog depth target) and point both SnapshotRenderers and TV's 49 RenderLayer at them (WP-S04a-15). This supersedes F33 and is a prerequisite of WP-07.
+ADAPT: 
+EVID: Import blocks of both SnapshotRenderers; TV 49 RenderLayer :66-:73, :103-:105, :476; grep for RenderDepthInto in VV 41/42 finds nothing; both adapters' export lists.
+VER: 
+DEP: 
+
+### S04a-V04 [data_schema/medium/build_vv_transport] Vale GLBs already carry TrueVision__ stems and VV renames them at load; site plan stems should be normalised the same way
+TV: 02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js; 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.j...
+VV: 02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js
+DET: Doous's project.json lists 14 GLBs such as Doous__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb, built by 'TrueVision3D GLB Builder' (linework v1.5.0, mesh v2.0.0). VV's Na__ModelLoader__MultiModel.js regex (:145) accepts ValeVision|NaModel|TrueVision and ParseModelUrl rewrites every namespace to ValeVision__ (:175). TV's site plan Store takes category keys from the manifest's Layer__Stem (TrueVision__SitePlan__...), and four ...
+REC: D-S04a-03: keep the exporter, folder names and TrueVision__SitePlanData__Manifest__.json exactly as TV writes them; in VV, rename stems TrueVision__SitePlan__ -> ValeVision__SitePlan__ when the Store reads a manifest (the model loader's rule), and set VV's four prefix constants to ValeVision__SitePlan__. No Vale exporter naming target is needed in WP-11.
+ADAPT: 
+EVID: WCP/Projects/2026/3047__Doous/project.json valeVision_ModelUrls; VV MultiModel :145, :175; GLB asset.generator fields read from the CDN; TV grep for TrueVision__SitePlan__ in LE.
+VER: 
+DEP: D-S04a-01; D-S04a-03
+

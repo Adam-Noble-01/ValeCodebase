@@ -1,0 +1,38 @@
+--- TV@b2aa9151
++++ VV-live
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - RENDER COMPOSITES
++// VALEVISION3D - LAYOUT EDITOR - RENDER COMPOSITES
+@@ -62,5 +62,21 @@
+-// - Ported from   : n/a - authored in TrueVision3D
+-// - Back-port     : ported 13-Sep-2026 as ValeVision3D v2.28.0. Module verbatim,
+-//                   config layers verbatim; ValeVision's composer owns the profile
+-//                   pass differently (DIV-1), so only the consumers of the pixel
+-//                   weights differ there.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js
++// - Source version: 1.3.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - 1.2.0, the percent
++//                   kind, is TrueVision3D v2.93.0 of the same day
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-09}}, the whole file. This app's copy
++//                   before it was 1.1.0, ported from TrueVision3D on 13-Sep-2026 (ValeVision3D v2.28.0;
++//                   the 2.00 Context Layer default followed in v2.59.0, as in TrueVision).
++//                   TrueVision's v2.93.0 entry says NOT signed off by Adam and neither release is
++//                   recorded as tried by him; both come across under DR-01 (c) and are named so.
++// - Parity        : verbatim (the code is TrueVision 1.3.0's; the banner, the console prefix and this
++//                   note are the only differences)
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++//   - Not in this file, but worth knowing beside it: what CONSUMES the pixel weights differs (DIV-1).
++//     The profile width reaches the composer's pass through Na__DrawView__RenderPreset__, the section
++//     outline goes through the Cross Sections tool and the model's own edges through
++//     Na__LineworkSettings - and this app's export line-width compensation still multiplies all three.
++//   - WHERE THE 2D OUTLINE WIDTH WENT, above, is TrueVision's own history (its v2.27.0). ValeVision3D
++//     made the same move in its v2.28.0, from the 1.0 its Na__AppConfig__Main.json carried in
++//     RenderEffect__ProfileLines__Drawing2dEdgeWidth; the config's Meta__WhyWeightsHere keeps that
++//     wording.
++// - Back-port     : none.
+@@ -146 +162 @@
+-                        console.warn('[TrueVision3D LayoutEditor] Render composite config fetch failed (' + response.status + ') - the built-in inventory will be used.');
++                        console.warn('[ValeVision3D LayoutEditor] Render composite config fetch failed (' + response.status + ') - the built-in inventory will be used.');
+@@ -152 +168 @@
+-                    console.warn('[TrueVision3D LayoutEditor] Render composite config unavailable - the built-in inventory will be used.', error);
++                    console.warn('[ValeVision3D LayoutEditor] Render composite config unavailable - the built-in inventory will be used.', error);

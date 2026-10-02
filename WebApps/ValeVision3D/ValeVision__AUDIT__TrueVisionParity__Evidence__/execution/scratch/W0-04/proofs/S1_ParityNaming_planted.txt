@@ -1,0 +1,25 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs
+(exit 1, 0.38 s)
+
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : C:\Users\adamw\AppData\Local\Temp\claude\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\a1674149-918e-4d62-a79a-e7961f105155\scratchpad\w0_04_tree
+  checked  : 492 shipped files (02__Src__AppModules, 03__Style__AppStylesheets, the root pages) and 8 test-folder files (banner only); 58 folders against the registry; 11 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Planted__.js:8  identity-literal  (K2 K3)
+        "TrueVision__" - instead: the app token ValeVision__ (a ported file's TrueVision__ literal is a seam)
+        > const Na__Planted__A = 'TrueVision__Vegetation';
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Planted__.js:9  window-global  (K2 K4)
+        "window.TrueVision__" - instead: read a module accessor or a neutral window.Na__* global
+        > const Na__Planted__B = window.TrueVision__Pwa__ProjectContext;
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Planted__.js:10  na-marker  (K2 V2, R1)
+        "NaProjectPortal" - instead: VaApps/Projects/<folderId>/ keys
+        > const Na__Planted__C = 'NaProjectPortal/2026/RB05/project.json';
+  FAIL  02__Src__AppModules/08__System__PlantedForProof  folder-unregistered  (K2 N1-N4, DR-03)
+        number 08 is registered as TV-only, not for this folder
+  WARN  02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css:2  banner-tv  (K2 H1)
+        TrueVision's banner: the banner reads VALEVISION3D (or REGION | ValeVision3D) followed by TrueVision's text   [baseline 01-Oct-2026]
+        > /* REGION  |  TrueVision3D - Layout Editor Web Viewer Styles         */
+
+  RESULT: FAIL (4 fail, 1 warn)

@@ -1,0 +1,56 @@
+W2-36 acceptance - panels: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\51__System__LayoutEditor\40__Ui__Panels
+  PASS  Text: registers, builds and refreshes without a throw or console error
+  FAIL  Text, 3 items of 3.5 / 5 / 7 mm selected: the Size box shows the FIRST item's size (3.5)
+        Size box: 2.5
+  FAIL  Text, 3 selected: the note reads "Editing 3 selected text items: a change here goes to all of them."
+        note: 3 items selected. Click one text item on its own to edit it; these settings apply to new text.
+  PASS  Text, 3 selected: a Size change goes to all three (one ApplyToSelection), not to the new-text settings
+  FAIL  Text, two vectors selected: the note says nothing selected is text
+        note: 2 items selected. Click one text item on its own to edit it; these settings apply to new text.
+  PASS  Text, one item selected: unchanged (its size, the selected-text note)
+  FAIL  PARITY: TrueVision's Panel__Text at the pin reads and writes the same (its note differs only by its config, below)
+  FAIL  config TextManyNote = the panel's own words, no "Click one ... on its own"
+        {count} items selected. Click one text item on its own to edit it; these settings apply to new text.
+  FAIL  config DimManyNote = the panel's own words, no "Click one ... on its own"
+        {count} items selected. Click one dimension on its own to edit it; these settings apply to new dimensions.
+  FAIL  config ShapeManyNote = the panel's own words, no "Click one ... on its own"
+        {count} items selected. Click one shape on its own to edit it; these settings apply to new shapes.
+  PASS  Dimensions panel reads DimManyNote with the same fallback the config now holds
+  PASS  Vectors: registers, builds and refreshes without a throw or console error
+  FAIL  Vectors, a room and a line selected: the note reads "Editing 2 selected vectors: ..."
+        note: 2 items selected. Click one shape on its own to edit it; these settings apply to new shapes.
+  FAIL  Vectors, coloured room + plain line, untick Edges: ONE write, { stroked : false } to both - no fill written, so both fills are unchanged
+        [["ApplyToSelection","shape",["room","line"],{"stroked":false,"fillColour":"#cfe3f5"}]]
+  PASS  Vectors, ONE room selected, untick Edges: unchanged (edges off, its own fill kept on)
+  FAIL  Vectors, a picture + 2 vectors selected: the picture is left out (2 vectors)
+        note: 3 items selected. Click one shape on its own to edit it; these settings apply to new shapes.
+  FAIL  Vectors, a picture alone selected: not read as a vector
+        note: Editing the selected shape. Hold Shift over an edge and click to add a vertex. Dragging snaps to the linework. While dragging a vertex, type a length into the Measurements box to move it that far along the drag.
+  FAIL  PARITY: TrueVision's Panel__Shapes 1.9.0 writes the same on Edges off (several and one)
+        [[["ApplyToSelection","shape",["room","line"],{"stroked":false}]],[["UpdateShape","room",{"stroked":false,"fillColour":"#e6c7a0"}]]]
+  FAIL  PARITY: TrueVision's picture guard counts and reads the same
+        ["2 items selected. Click one shape on its own to edit it; these settings apply to new shapes.","Nothing selected: these settings apply to new shapes."]
+  PASS  Layers: registers, builds and refreshes without a throw or console error
+  FAIL  Layers: a hidden layer's button reads Off and carries na-le-btn--eye is-off, aria-pressed true
+        {"id":"L2","eye":"Off","eyeClass":"na-le-btn na-le-btn--icon","eyePressed":null,"lock":"Lock","lockClass":"na-le-btn na-le-btn--icon na-le-btn--lock","lockPressed":"false","typeLabel":"Vectors","buttons":["layer-eye","layer-lock","layer-grip"]}
+  FAIL  Layers: a shown layer's button reads On, no is-off, aria-pressed false
+        {"id":"L1","eye":"On","eyeClass":"na-le-btn na-le-btn--icon","eyePressed":null,"lock":"Lock","lockClass":"na-le-btn na-le-btn--icon na-le-btn--lock","lockPressed":"false","typeLabel":"Viewports","buttons":["layer-eye","layer-lock","layer-grip"]}
+  PASS  Layers: a locked layer's button still reads Unlock with is-locked
+  FAIL  Layers: area and image layers read "Floor Areas" and "Images" in the type select
+        ["area","image"]
+  FAIL  Layers: ... and in the filter
+        ["all=All layers","viewport=Viewports","annotation=Annotations","dimension=Dimensions","vector=Vectors","area=area","image=image","mixed=General"]
+  PASS  Layers: no Ref switch yet (reference layers arrive with W3-13)
+  FAIL  PARITY: TrueVision's Panel__Layers 1.3.0 gives the same On/Off, Lock and type labels (it adds only its Ref button)
+  PASS  Styles__Panels (W1-38): .na-le-btn--eye.is-off shares the locked Unlock's rule - #9b3b3b on #fbf3f3
+  PASS  Render Composites: registers, builds and refreshes without a throw or console error
+  FAIL  Render Composites: a percent weight shows %, beside px and x
+        [{"key":"projectedLinework","title":"Multiplier on the sheet viewport lineweight","unit":"×","unitClass":"na-le-adv-unit","clusterClass":"na-le-row__adv na-le-adv"},{"key":"profileLinework","title":"Line width in render pixels","unit":"px","unitClass":"na-le-adv-unit","clusterClass":"na-le-row__adv na-le-adv"},{"key":"enhance","title":"Multiplier on the sheet viewport lineweight","unit":"×","unitClass":"na-le-adv-unit","clusterClass":"na-le-row__adv na-le-adv"},{"key":"sectionOutline","title":"Line width in render pixels","unit":"px","unitClass":"na-le-adv-unit","clusterClass":"na-le-row__adv 
+  PASS  Render Composites: % sits in the same unit slot and cluster as x and px (so it lines up with them)
+  FAIL  Render Composites: the percent weight has its own hover text
+        Multiplier on the sheet viewport lineweight
+  PASS  the live Render Composites config carries a percent weight (Enhance Whitecard), so the % shows in the app
+  FAIL  PARITY: TrueVision's Panel__Styles 1.7.0 builds the same weights
+  FAIL  ScrapbookCustom: a captured measured room drops its group and hand-set scale
+
+FAIL 13/35

@@ -1,0 +1,1033 @@
+{
+ "checks": [
+  {
+   "name": "before: the chrome measured in jsPDF's Helvetica",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "after: the chrome measures in the embedded Open Sans cut (the PDF's own metrics)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the same four sheets built before and after",
+   "ok": true,
+   "detail": [
+    [
+     "2026/3047__Doous",
+     "Sheet_001"
+    ],
+    [
+     "2026/44371__Gill",
+     "Sheet_001"
+    ],
+    [
+     "2026/57994__Harris__Scheme-02",
+     "Sheet_001"
+    ],
+    [
+     "2026/57994__Harris__Scheme-02",
+     "Sheet_002"
+    ]
+   ]
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): the same strip texts apart from the Rev cell's prefix",
+   "ok": true,
+   "detail": [
+    [
+     "A",
+     "Revision A"
+    ]
+   ]
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): the same number of chrome and markup primitives",
+   "ok": true,
+   "detail": "chrome 33 -> 33, markup 43 -> 43"
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)",
+   "ok": true,
+   "detail": "0.08 %"
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else",
+   "ok": true,
+   "detail": "['Helvetica', 'Helvetica-Bold'] -> ['OpenSans']"
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)",
+   "ok": true,
+   "detail": "13 runs, worst 0.137 %"
+  },
+  {
+   "name": "3047__Doous Sheet_001 (A3 landscape): the PDF prints the same strip texts as the screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): the same strip texts apart from the Rev cell's prefix",
+   "ok": true,
+   "detail": [
+    [
+     "A",
+     "Revision A"
+    ]
+   ]
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): the same number of chrome and markup primitives",
+   "ok": true,
+   "detail": "chrome 30 -> 30, markup 30 -> 30"
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)",
+   "ok": true,
+   "detail": "0.08 %"
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else",
+   "ok": true,
+   "detail": "['Helvetica', 'Helvetica-Bold'] -> ['OpenSans']"
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)",
+   "ok": true,
+   "detail": "10 runs, worst 0.137 %"
+  },
+  {
+   "name": "44371__Gill Sheet_001 (A3 landscape): the PDF prints the same strip texts as the screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the same strip texts apart from the Rev cell's prefix",
+   "ok": true,
+   "detail": [
+    [
+     "A",
+     "Revision A"
+    ]
+   ]
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the same number of chrome and markup primitives",
+   "ok": true,
+   "detail": "chrome 33 -> 33, markup 12 -> 12"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)",
+   "ok": true,
+   "detail": "0.21 %"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else",
+   "ok": true,
+   "detail": "['Helvetica', 'Helvetica-Bold'] -> ['OpenSans']"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)",
+   "ok": true,
+   "detail": "6 runs, worst 0.135 %"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_001 (A2 landscape): the PDF prints the same strip texts as the screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the same strip texts apart from the Rev cell's prefix",
+   "ok": true,
+   "detail": [
+    [
+     "A",
+     "Revision A"
+    ]
+   ]
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the same number of chrome and markup primitives",
+   "ok": true,
+   "detail": "chrome 27 -> 27, markup 0 -> 0"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): on screen every run sets within 1 % of the width the chrome measured it at (truncation decided in the face it is drawn in)",
+   "ok": true,
+   "detail": "0.08 %"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the PDF set its text in Helvetica before and embeds Open Sans after, nothing else",
+   "ok": true,
+   "detail": "['Helvetica'] -> ['OpenSans']"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the PDF's own glyph widths match the chrome's measure (level, untracked runs, within 0.2 %)",
+   "ok": true,
+   "detail": "6 runs, worst 0.137 %"
+  },
+  {
+   "name": "57994__Harris__Scheme-02 Sheet_002 (A3 landscape): the PDF prints the same strip texts as the screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "2026/3047__Doous Sheet_001 (A3): every divider where it was",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "2026/44371__Gill Sheet_001 (A3): every divider where it was",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "2026/57994__Harris__Scheme-02 Sheet_002 (A3): every divider where it was",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "2026/3047__Doous Sheet_001 (A3): on screen the strip is pixel-identical but for the Rev cell (273-301 mm)",
+   "ok": true,
+   "detail": "42 differing pixel columns, spanning (274.25, 284.75) mm"
+  },
+  {
+   "name": "2026/44371__Gill Sheet_001 (A3): on screen the strip is pixel-identical but for the Rev cell (273-301 mm)",
+   "ok": true,
+   "detail": "42 differing pixel columns, spanning (274.25, 284.75) mm"
+  },
+  {
+   "name": "2026/57994__Harris__Scheme-02 Sheet_002 (A3): on screen the strip is pixel-identical but for the Rev cell (273-301 mm)",
+   "ok": true,
+   "detail": "42 differing pixel columns, spanning (274.25, 284.75) mm"
+  },
+  {
+   "name": "A1 landscape: every fixed cell a fifth wider, the title's text uncut, the Rev cell reads Revision B",
+   "ok": true,
+   "detail": [
+    43.2,
+    84,
+    470.6,
+    28.8,
+    33.6,
+    33.6,
+    33.6,
+    33.6
+   ]
+  },
+  {
+   "name": "A2 landscape: every fixed cell a fifth wider, the title's text uncut, the Rev cell reads Revision B",
+   "ok": true,
+   "detail": [
+    43.2,
+    84,
+    223.6,
+    28.8,
+    33.6,
+    33.6,
+    33.6,
+    33.6
+   ]
+  },
+  {
+   "name": "A3 landscape: the fixed cells as configured, Revision B, nothing cut",
+   "ok": true,
+   "detail": [
+    36,
+    70,
+    104,
+    24,
+    28,
+    28,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "A4 portrait: the prefix is dropped (the Rev cell reads B) - the strip drawn is the strip solved with bare values, where Revision B would have cut the date further",
+   "ok": true,
+   "detail": {
+    "date bare": 13.508,
+    "date with prefix": 12.979
+   }
+  },
+  {
+   "name": "A3 portrait: everything fits whole, so the prefix stays (Revision B) and the strip is the prefixed solution",
+   "ok": true,
+   "detail": [
+    20.869,
+    64.822,
+    43.567,
+    17.648,
+    18.318,
+    20.76,
+    19.455,
+    25.063
+   ]
+  },
+  {
+   "name": "A4 landscape: everything fits whole, so the prefix stays (Revision B) and the strip is the prefixed solution",
+   "ok": true,
+   "detail": [
+    20.869,
+    64.822,
+    43.567,
+    17.648,
+    18.318,
+    20.76,
+    19.455,
+    25.063
+   ]
+  },
+  {
+   "name": "a shown frame: frame and caption on screen and in the PDF",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Viewport__ShowFrame false: neither frame nor caption on screen nor in the PDF (only the sheet's own border is left)",
+   "ok": true,
+   "detail": "hidden ['rect'], shown ['rect', 'rect', 'rect', 'text']; one viewport's frame alone: hidden 0, shown 3"
+  },
+  {
+   "name": "control: before, a hidden frame still drew both",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "on screen: the hole is bare paper and the ring is filled (even-odd)",
+   "ok": true,
+   "detail": [
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     47,
+     111,
+     208,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "in the PDF: the hole is bare paper and the ring is filled",
+   "ok": true,
+   "detail": [
+    [
+     255,
+     255,
+     255
+    ],
+    [
+     45,
+     112,
+     209
+    ]
+   ]
+  },
+  {
+   "name": "in the PDF's content stream: the even-odd fill operator (B* or f*)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "a click in the hole is not inside the shape; one on the ring is",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "control: before, the hole was painted over (one run, no even-odd)",
+   "ok": true,
+   "detail": [
+    45,
+    112,
+    209
+   ]
+  },
+  {
+   "name": "a 'qr' primitive paints the symbol on screen and in the PDF (dark finder corner, light paper outside)",
+   "ok": true,
+   "detail": {
+    "screen": [
+     [
+      255,
+      255,
+      255,
+      255
+     ],
+     [
+      0,
+      0,
+      0,
+      255
+     ],
+     [
+      255,
+      255,
+      255,
+      255
+     ]
+    ],
+    "pdf": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   }
+  },
+  {
+   "name": "shipped config: no code anywhere - 53 off, the end cell off, no symbol, a Shape__Qr box draws only its box, no strip has a cell",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "test config: the code paints - a Shape__Qr box carries it",
+   "ok": true,
+   "detail": "https://qr.example.test/q/?test-key-3047"
+  },
+  {
+   "name": "test config: a 56 mm end cell on A1, A2 and A3; compact on A4 (landscape and portrait)",
+   "ok": true,
+   "detail": {
+    "A1 landscape": 56,
+    "A2 landscape": 56,
+    "A3 landscape": 56,
+    "A4 landscape": 12.352,
+    "A4 portrait": 12.352
+   }
+  },
+  {
+   "name": "the logo's stand-in text comes from config: VALE GARDEN HOUSES",
+   "ok": true,
+   "detail": "VALE GARDEN HOUSES"
+  },
+  {
+   "name": "a bubble whose note is gone: a red halo on screen when the editor asks, none in a PDF (which never asks)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "a plain dimension's skeleton is unchanged; the ghost points are new; a length cuts the extension line short",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "detail": {
+  "face_old": {
+   "screen400": true,
+   "pdfLoaded": true,
+   "styleFont": "'Open Sans', Helvetica, Arial, sans-serif",
+   "chromeMm": 28.424000000000014,
+   "helveticaMm": 28.424000000000014,
+   "openSansMm": 30.187695312500004
+  },
+  "face_new": {
+   "screen400": true,
+   "pdfLoaded": true,
+   "styleFont": "'Open Sans', Helvetica, Arial, sans-serif",
+   "chromeMm": 30.187695312500004,
+   "helveticaMm": 28.424000000000014,
+   "openSansMm": 30.187695312500004
+  },
+  "3047__Doous Sheet_001 (A3 landscape)": {
+   "textsBefore": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Elevations Test",
+    "DOCUMENT ID",
+    "3047_D01",
+    "REV",
+    "A",
+    "SCALE",
+    "1:50 @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "textsAfter": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Elevations Test",
+    "DOCUMENT ID",
+    "3047_D01",
+    "REV",
+    "Revision A",
+    "SCALE",
+    "1:50 @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "dividersBefore": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "dividersAfter": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "chromeCount": [
+    33,
+    33
+   ],
+   "markupCount": [
+    43,
+    43
+   ],
+   "worstScreenVsMeasure_before": {
+    "ratio": 0.1265832854071485,
+    "run": {
+     "text": "REV",
+     "screenMm": 2.981844663619995,
+     "chromeMm": 3.414,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "worstScreenVsMeasure_after": {
+    "ratio": 0.0008083369339024663,
+    "run": {
+     "text": "SITE ADDRESS",
+     "screenMm": 11.066047668457031,
+     "chromeMm": 11.075000000000001,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "pdfFonts": {
+    "before": [
+     [
+      "Helvetica",
+      "n/a",
+      "Type1"
+     ],
+     [
+      "Helvetica-Bold",
+      "n/a",
+      "Type1"
+     ]
+    ],
+    "after": [
+     [
+      "OpenSans",
+      "ttf",
+      "Type0"
+     ]
+    ]
+   },
+   "pdfSpanVsMeasureWorstRatio": 0.0013650829691324983
+  },
+  "44371__Gill Sheet_001 (A3 landscape)": {
+   "textsBefore": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Drawing 1",
+    "DOCUMENT ID",
+    "44371_D01",
+    "REV",
+    "A",
+    "SCALE",
+    "1:50 @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "textsAfter": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Drawing 1",
+    "DOCUMENT ID",
+    "44371_D01",
+    "REV",
+    "Revision A",
+    "SCALE",
+    "1:50 @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "dividersBefore": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "dividersAfter": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "chromeCount": [
+    30,
+    30
+   ],
+   "markupCount": [
+    30,
+    30
+   ],
+   "worstScreenVsMeasure_before": {
+    "ratio": 0.1265832854071485,
+    "run": {
+     "text": "REV",
+     "screenMm": 2.981844663619995,
+     "chromeMm": 3.414,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "worstScreenVsMeasure_after": {
+    "ratio": 0.0008083369339024663,
+    "run": {
+     "text": "SITE ADDRESS",
+     "screenMm": 11.066047668457031,
+     "chromeMm": 11.075000000000001,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "pdfFonts": {
+    "before": [
+     [
+      "Helvetica",
+      "n/a",
+      "Type1"
+     ],
+     [
+      "Helvetica-Bold",
+      "n/a",
+      "Type1"
+     ]
+    ],
+    "after": [
+     [
+      "OpenSans",
+      "ttf",
+      "Type0"
+     ]
+    ]
+   },
+   "pdfSpanVsMeasureWorstRatio": 0.0013653936577499378
+  },
+  "57994__Harris__Scheme-02 Sheet_001 (A2 landscape)": {
+   "textsBefore": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Elevations",
+    "DOCUMENT ID",
+    "57994_D01",
+    "REV",
+    "A",
+    "SCALE",
+    "1:50 @ ISO A2",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "textsAfter": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Elevations",
+    "DOCUMENT ID",
+    "57994_D01",
+    "REV",
+    "Revision A",
+    "SCALE",
+    "1:50 @ ISO A2",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "dividersBefore": [
+    39,
+    75,
+    145,
+    423,
+    447,
+    475,
+    503,
+    531,
+    559
+   ],
+   "dividersAfter": [
+    39,
+    82.2,
+    166.2,
+    389.8,
+    418.6,
+    452.2,
+    485.8,
+    519.4,
+    553
+   ],
+   "chromeCount": [
+    33,
+    33
+   ],
+   "markupCount": [
+    12,
+    12
+   ],
+   "worstScreenVsMeasure_before": {
+    "ratio": 0.12835333734209525,
+    "run": {
+     "text": "REV",
+     "screenMm": 2.975801706314087,
+     "chromeMm": 3.414,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "worstScreenVsMeasure_after": {
+    "ratio": 0.0021175145018200426,
+    "run": {
+     "text": "DRAWN BY",
+     "screenMm": 8.567756652832031,
+     "chromeMm": 8.585937500000002,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "pdfFonts": {
+    "before": [
+     [
+      "Helvetica",
+      "n/a",
+      "Type1"
+     ],
+     [
+      "Helvetica-Bold",
+      "n/a",
+      "Type1"
+     ]
+    ],
+    "after": [
+     [
+      "OpenSans",
+      "ttf",
+      "Type0"
+     ]
+    ]
+   },
+   "pdfSpanVsMeasureWorstRatio": 0.0013521319050622913
+  },
+  "57994__Harris__Scheme-02 Sheet_002 (A3 landscape)": {
+   "textsBefore": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Drawing 2",
+    "DOCUMENT ID",
+    "57994_D02",
+    "REV",
+    "A",
+    "SCALE",
+    "NTS @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "textsAfter": [
+    "CLIENT",
+    "SITE ADDRESS",
+    "DRAWING TITLE",
+    "Drawing 2",
+    "DOCUMENT ID",
+    "57994_D02",
+    "REV",
+    "Revision A",
+    "SCALE",
+    "NTS @ ISO A3",
+    "DATE",
+    "02 Oct 2026",
+    "DRAWN BY",
+    "Vale Garden Houses",
+    "STATUS"
+   ],
+   "dividersBefore": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "dividersAfter": [
+    39,
+    75,
+    145,
+    249,
+    273,
+    301,
+    329,
+    357,
+    385
+   ],
+   "chromeCount": [
+    27,
+    27
+   ],
+   "markupCount": [
+    0,
+    0
+   ],
+   "worstScreenVsMeasure_before": {
+    "ratio": 0.1265832854071485,
+    "run": {
+     "text": "REV",
+     "screenMm": 2.981844663619995,
+     "chromeMm": 3.414,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "worstScreenVsMeasure_after": {
+    "ratio": 0.0008083369339024663,
+    "run": {
+     "text": "SITE ADDRESS",
+     "screenMm": 11.066047668457031,
+     "chromeMm": 11.075000000000001,
+     "fontMm": 1.6,
+     "weight": "normal",
+     "trackingMm": 0.05
+    }
+   },
+   "pdfFonts": {
+    "before": [
+     [
+      "Helvetica",
+      "n/a",
+      "Type1"
+     ]
+    ],
+    "after": [
+     [
+      "OpenSans",
+      "ttf",
+      "Type0"
+     ]
+    ]
+   },
+   "pdfSpanVsMeasureWorstRatio": 0.0013653936577499378
+  },
+  "A2 cells": {
+   "before": [
+    36,
+    70,
+    278,
+    24,
+    28,
+    28,
+    28,
+    28
+   ],
+   "after": [
+    43.2,
+    84.0,
+    223.6,
+    28.8,
+    33.6,
+    33.6,
+    33.6,
+    33.6
+   ]
+  },
+  "stripPixels 2026/3047__Doous Sheet_001": {
+   "sameSize": true,
+   "differingColumns": 42,
+   "spanMm": [
+    274.25,
+    284.75
+   ]
+  },
+  "stripPixels 2026/44371__Gill Sheet_001": {
+   "sameSize": true,
+   "differingColumns": 42,
+   "spanMm": [
+    274.25,
+    284.75
+   ]
+  },
+  "stripPixels 2026/57994__Harris__Scheme-02 Sheet_001": {
+   "sameSize": true,
+   "differingColumns": 687,
+   "spanMm": [
+    74.75,
+    566.25
+   ]
+  },
+  "stripPixels 2026/57994__Harris__Scheme-02 Sheet_002": {
+   "sameSize": true,
+   "differingColumns": 42,
+   "spanMm": [
+    274.25,
+    284.75
+   ]
+  },
+  "holes_old": {
+   "normalisedHoles": [
+    4
+   ],
+   "svgEvenOdd": false,
+   "subpaths": 1,
+   "containsHole": false,
+   "containsRing": false,
+   "screenPixels": [
+    [
+     47,
+     111,
+     208,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ],
+   "pdfPixels": [
+    [
+     45,
+     112,
+     209
+    ],
+    [
+     255,
+     255,
+     255
+    ],
+    [
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  "holes_new": {
+   "normalisedHoles": [
+    4
+   ],
+   "svgEvenOdd": true,
+   "subpaths": 2,
+   "containsHole": false,
+   "containsRing": true,
+   "screenPixels": [
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     47,
+     111,
+     208,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ],
+   "pdfPixels": [
+    [
+     255,
+     255,
+     255
+    ],
+    [
+     45,
+     112,
+     209
+    ],
+    [
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  "qron_pdf_A3 landscape": 3634914,
+  "qron_pdf_A4 landscape": 3631246,
+  "qron_pdf_A4 portrait": 3631277
+ }
+}

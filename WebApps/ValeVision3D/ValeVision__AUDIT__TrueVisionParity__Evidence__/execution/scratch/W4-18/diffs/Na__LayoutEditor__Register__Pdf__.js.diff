@@ -1,0 +1,57 @@
+--- TV b2aa9151/Na__LayoutEditor__Register__Pdf__.js
++++ VV/Na__LayoutEditor__Register__Pdf__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - DRAWING REGISTER PDF
++// VALEVISION3D - LAYOUT EDITOR - DRAWING REGISTER PDF
+@@ -34,2 +34,23 @@
+-// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the register tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js
++// - Source version: 1.1.0 (TrueVision3D v2.69.0, 19-Sep-2026; it also carries, unlogged in its own log, v2.71.0's
++//                   phase and document-code columns, v2.72.0's letterhead, v2.78.1's self-placed tracked text and
++//                   v2.79.0's status on each row; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
++//                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++//   - The project's name comes from Na__CfApi__GetProjectDisplayName() (the project data the app loaded,
++//     R3 C.4 S11), where TrueVision reads the project context its PWA layer publishes on window - which
++//     ValeVision does not have (K2 K4).
++//   - THE DOCUMENT CODE (DR-11, R3 C.4 S10): the code the register prints, numbers itself by (3047_REGISTER)
++//     and names its file by is Na__DrawData__GetDocumentCode() (the loaded project's own code), where
++//     TrueVision reads Na__DrawData__GetProjectCode(): here that is the ?project= token, which can be a
++//     folder id such as 2026/3047__Doous. Three marked lines and the import.
++//   - The office name's last fallback is 'Vale Garden Houses Limited' (TrueVision: its own office name);
++//     the config's LayoutEditor__Pdf__Author already says the same.
++//   - DR-37 item 2: a 'yellow' revision warning (what the register's Notes offer) is boxed in the amber
++//     panel; TrueVision boxes only 'red' and 'amber', so its yellow notes print as plain text. One
++//     marked line.
++// - Back-port     : the display-name and document-code accessors in place of the PWA global and the ?project= code;
++//                   the yellow-as-amber fix (DR-37 item 2, WT lane).
+@@ -85,2 +106,2 @@
+-    import { Na__DrawData__GetProjectCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+-    import { Na__CfApi__GetLoadedProjectData } from '../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';
++    import { Na__DrawData__GetDocumentCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';   // <-- ValeVision: the document code, not the ?project= token (DR-11)
++    import { Na__CfApi__GetLoadedProjectData, Na__CfApi__GetProjectDisplayName } from '../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';   // <-- ValeVision: the project's name from the project data the app loaded (K2 K4)
+@@ -213,2 +233,0 @@
+-        const context = window.TrueVision__Pwa__ProjectContext;
+-        const active  = context && typeof context.get === 'function' ? context.get() : null;
+@@ -216 +235 @@
+-        return (active && active.displayName) || data.Project__Name || Na__DrawData__GetProjectCode() || 'Project';
++        return Na__CfApi__GetProjectDisplayName() || data.Project__Name || Na__DrawData__GetDocumentCode() || 'Project';   // <-- ValeVision seam (K2 K4, DR-11): the loaded project's name, not a PWA global; the project's own code
+@@ -245 +264 @@
+-                console.warn('[TrueVision3D LayoutEditor] The register letterhead could not load the office logo.', logoError);
++                console.warn('[ValeVision3D LayoutEditor] The register letterhead could not load the office logo.', logoError);
+@@ -644 +663 @@
+-        const boxed  = level === 'red' || level === 'amber';
++        const boxed  = level === 'red' || level === 'amber' || level === 'yellow';   // <-- ValeVision seam (DR-37 item 2): the Notes offer 'yellow', so it takes the amber panel
+@@ -763 +782 @@
+-        const code   = String(Na__DrawData__GetProjectCode() || '');
++        const code   = String(Na__DrawData__GetDocumentCode() || '');            // <-- ValeVision seam (DR-11): the project's own code, never the ?project= folder id
+@@ -777 +796 @@
+-            company : Na__LeCfg__GetPdfSetup().author || 'Noble Architecture Ltd',
++            company : Na__LeCfg__GetPdfSetup().author || 'Vale Garden Houses Limited',   // <-- ValeVision seam: Vale's office name (the config's Pdf Author says the same)
+@@ -813 +832 @@
+-                projectCode : Na__DrawData__GetProjectCode()
++                projectCode : Na__DrawData__GetDocumentCode()                       // <-- ValeVision seam (DR-11): the project's own code, never the folder token

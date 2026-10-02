@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // FILE       : Na__RenderEffect__SectionClipping__State.js
-// NAMESPACE  : Na__RenderEffect
-// MODULE     : Section Clipping State
+// NAMESPACE  : Na__SectionClipping
+// MODULE     : Render Pipeline - Section Clipping State
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Shared accessor for the active cross-section clipping planes
 // CREATED    : 14-Jul-2026
@@ -27,6 +27,23 @@
 //   once at init with its live plane array.
 // - Profile-line passes call Na__SectionClipping__GetClipList() per render
 //   and assign the result to material.clippingPlanes (null when no cuts).
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 14-Jul-2026, with the cross section tool of ValeVision3D
+//                   v2.10.0); TrueVision3D took it to the same path, unchanged apart from the header
+// - Source version: 1.0.0 (TrueVision3D v2.12.0, 31-Aug-2026; read at b2aa9151)
+// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.1 (TrueVision's NAMESPACE and MODULE lines only)
+// - Parity        : adapted (identical code; the header keeps the ValeVision text listed below)
+// - Divergences   :
+//   - DESCRIPTION and INTEGRATION are ValeVision's: both render engines (PureEngine and MaxEngine) and the
+//     2D elevation profile pass read the planes, and 41__System__CrossSectionView owns them (TrueVision
+//     runs one engine, and its 41__System__SectionCutEngine owns them).
+//   - PURPOSE and CREATED are ValeVision's: "cross-section" and the authoring date (TrueVision's port
+//     reads "section-cut" and 31-Aug-2026).
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //

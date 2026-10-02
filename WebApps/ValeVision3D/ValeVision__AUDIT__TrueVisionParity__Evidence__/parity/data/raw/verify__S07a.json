@@ -1,0 +1,517 @@
+{
+ "slice_id": "S07a",
+ "claims_checked": 126,
+ "confirmed_ids": [
+  "S07a-F01",
+  "S07a-F02",
+  "S07a-F03",
+  "S07a-F04",
+  "S07a-F06",
+  "S07a-F07",
+  "S07a-F09",
+  "S07a-F10",
+  "S07a-F11",
+  "S07a-F12",
+  "S07a-F17",
+  "S07a-F18",
+  "S07a-F19",
+  "S07a-F22",
+  "S07a-F24",
+  "S07a-F25",
+  "S07a-F26",
+  "S07a-F27",
+  "S07a-F31",
+  "S07a-F32",
+  "S07a-F33",
+  "S07a-F34",
+  "S07a-F35",
+  "S07a-F36",
+  "S07a-F40",
+  "S07a-F41",
+  "S07a-F42",
+  "S07a-F43",
+  "S07a-F44",
+  "S07a-F45",
+  "S07a-F46",
+  "S07a-F49",
+  "S07a-F51",
+  "S07a-F53",
+  "S07a-F54",
+  "S07a-F55",
+  "S07a-F56",
+  "S07a-F57",
+  "S07a-F58",
+  "S07a-F59",
+  "S07a-F60",
+  "S07a-F61"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S07a-F05",
+   "field": "detail",
+   "new_value": "Plan validates a letter-led prefix, start and 1-6 digits, applies number jumps (refusing duplicates/backward jumps) and Apply writes Sheet__Order and Sheet__Fields__DrawingNumber; sheet ids never change. No imports. TV's SheetModel__Sheets 1.4.0 imports it: Na__LeModel__RenumberSheets (TV SheetModel__Sheets__.js:261-272) reads the register block through Na__CfApi__GetLoadedProjectData() and, when a project has NO LayoutEditor__DrawingRegister block, falls back to the config series (prefix D, start 1, digits 2) and still renumbers the whole pack - which is how PS01's hand-typed PS01_T02_D01..D10 became D01..D05 (devlog v2.70.0 lines 9654-9661). Slice S03b's SheetModel__Sheets row recommends the opposite for VV (RenumberSheets a no-op without a register block), so the two slices conflict until D-S07a-01 is answered.",
+   "reason": "Verified TV SheetModel__Sheets__.js:105-135 and :261-272: the config-default fallback renumbers packs that have no register block; S03b's report (Sheets row) prescribes a no-op guard, a cross-slice conflict the survey did not surface."
+  },
+  {
+   "id": "S07a-F05",
+   "field": "recommendation",
+   "new_value": "Port Numbering verbatim. Wire RenumberSheets per D-S07a-01: if VV adopts the register (A), take TV's behaviour (renumber from the register series, config default when the block is absent) and run WP-S07a-01 before more VV sheets are numbered by hand; if it does not (C), take S03b's no-op guard. Either way RenumberSheets reads the register block through the VV transport shim (D-S09-04), never TV's ApiClient, and lands inside S03b's whole-file Sheets port (WP-S03b-04).",
+   "reason": "The original recommendation assumed the TV behaviour without noting S03b's contrary rule or the transport import inside RenumberSheets."
+  },
+  {
+   "id": "S07a-F08",
+   "field": "vv_adaptation",
+   "new_value": "Company fallback (:777) from LayoutEditor__Pdf__Author ('Vale Garden Houses Limited' already in VV AppConfig :400). Project name (:212-217) from VV's established source Na__PresentationMode__ProjectJson__GetActiveConfig().projectName - what VV's title block Project field uses (VV SheetRecords__.js:767-769) and what S06a recommends for 57 - instead of window.TrueVision__Pwa__ProjectContext; projectName is present in 155/155 local project.json files, displayName in 31/155, projectNameAlias in 7/155. Register number (:763-765, '<code>_REGISTER') from the VV document-code accessor (S07a-V01), not Na__DrawData__GetProjectCode() (the ?project= token, normally '2026/3047__Doous'). LetterheadLogoAspect 4.5 (Vale logo measured 2000 x 444).",
+   "reason": "Scan of all 155 VV project.json files: displayName/projectNameAlias are mostly absent; projectName is universal and VV already reads it via GetActiveConfig. The register number uses GetProjectCode, which in VV is the folderId token."
+  },
+  {
+   "id": "S07a-F08",
+   "field": "recommendation",
+   "new_value": "Port after PdfFonts lands (D-S07a-09); 40->42 path; project name from Na__PresentationMode__ProjectJson__GetActiveConfig().projectName; register number from the VV document-code accessor (WP-S07a-09); company fallback 'Vale Garden Houses Limited'; apply the yellow/amber fix (S07a-F24).",
+   "reason": "projectNameAlias/displayName via a facade is an unreliable source (31/155 and 7/155 present); the document code must not be the ?project= token."
+  },
+  {
+   "id": "S07a-F13",
+   "field": "recommendation",
+   "new_value": "Add the config block with VV values (LetterheadLogoAspect 4.5 for the 2000x444 Vale logo, VV PDF.js paths, phases per D-S07a-02), port the reader and re-export with the same VV values in the reader's OWN fallbacks (TV ConfigState__EditorSetup__.js:403-404 PlanVision PDF.js paths, :419 NA phases via Na__LeCfg__REGISTER_PHASES, :423 aspect 4.096 - S03a's EditorSetup row says the same), keep the project block key identical and dispatch it from the loading sequence.",
+   "reason": "Verified the reader hard-codes NA fallbacks; a config read failure would otherwise fall back to PlanVision's PDF.js path and NA phases."
+  },
+  {
+   "id": "S07a-F14",
+   "field": "detail",
+   "new_value": "TV composes PS01_T02_D01 from project code, per-sheet Phase and the register's DrawingNumber (Na__LeRec__Phase/ComposeDocumentId/DocumentId; Sheet__Fields__DocumentId escape hatch; title block row DocumentId 'Document ID'; PDF names; History). VV has v2.70.0 short tabs via its own DrawingCode leaf but not v2.71.0: its DrawingNumber default is code-order (SheetRecords :730-735), row still DrawingNumber 'Drawing No.' (ledger row 121), ledger row 339 'not ported - needs Adam's decision'. Sheet Images files pictures by Na__LeRec__DocumentId. VV-specific trap (verifier): TV takes {project} from Na__DrawData__GetProjectCode() (TV SheetRecords__.js:1604-1607), which in TV is the NA code off ?project=PS01; in VV the same function returns the raw ?project= token (VV 42/Na__DrawView__ProjectData__.js:224-229; Na__AppFlow__LoadingSequence.js:672, 728-729) and Whitecardopedia always opens VV with the full folderId (WCP Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js:36-55; Na__AppData__ProjectLoader.js:519), so a verbatim port composes '2026/3047__Doous_T01_D01' (S07a-V01). The PDF-name part of v2.71.0 lives in PdfExporter's Na__LePdf__Filename (TV PdfExporter__.js:474-482, code: fields.DocumentId), not in PdfFilename.js (header-only drift).",
+   "reason": "The survey's acceptance '<code>_T01_D01' silently assumes VV's project code is numeric; traced the token from Whitecardopedia through the loading sequence. Also the hot-file list named PdfFilename.js, which needs no change."
+  },
+  {
+   "id": "S07a-F14",
+   "field": "recommendation",
+   "new_value": "Port the schema first (WP-S07a-01), executed inside S03b's whole-file ports of SheetRecords / SheetModel facade / Sheets / History (WP-S03b-03/04) rather than as hunks, keeping VV's DrawingCode leaf split (extended per D-S03b-02); take {project} from a VV document-code accessor (WP-S07a-09, D-S07a-13), never the ?project= token; flip the title block row to DocumentId (re-measure the cell in VV's mm rows, re-key VV's Classic anchors, re-check the VV fixture Na__Test__TitleBlockCells__.html:95), hide it in the Sheet panel when the register lands, update History, and switch PdfExporter's Na__LePdf__Filename to fields.DocumentId.",
+   "reason": "Adds the document-code prerequisite, the correct file for the filename change, and coordination with S03b's whole-file ports of the same files."
+  },
+  {
+   "id": "S07a-F15",
+   "field": "detail",
+   "new_value": "VV master index (152 entries) has 13 codes shared by schemes/variants, e.g. 63592 Bressard-Kayode and __Scheme-02, 63578 Yates__Orangery and __Porch, 62104 with three Fenner schemes; codes are 4-5 digits, and IndexByCode keeps the newest year on a clash (ProjectLoader.js:115, comment). TV codes (PS01) are unique by the build script's rule. VV identifies a project by ?project= (folderId, folder name or code) resolved through the master index (ProjectLoader.js:260-279, 335-353); Whitecardopedia always passes the full folderId (S07a-V01). project.json is not a reliable identity source: projectCode and projectName are present in all 155 local files, but folderId is missing in 10 and differs from the real folder in 54 (e.g. 2025/59494__Weeks stores 2025/WK-3007__Weeks), displayName exists in 31 and projectNameAlias in 7 (S07a-V05). VV's worker can rename a project live, rewriting folderId and possibly projectCode (S07a-V06).",
+   "reason": "Original text said project.json 'carries folderId, projectCode, displayName, projectNameAlias' - measured across 155 files, only projectCode/projectName are reliable; rename behaviour verified in CloudflareHandler__ProjectRename__.js:300-304."
+  },
+  {
+   "id": "S07a-F15",
+   "field": "recommendation",
+   "new_value": "Decide D-S07a-03 (Document ID project part), D-S07a-13 (where VV's document code comes from) and D-S07a-05/D-S07a-14 (QR key). Recommended: the numeric projectCode from the loaded project.json in Document IDs (through a VV accessor, never the ?project= token) with the per-sheet escape hatch; a permanent per-project QR key stored in each master index entry and preserved by the rename handler.",
+   "reason": "The recommended numeric code needs an accessor that does not exist in VV, and the QR key must survive VV's live rename."
+  },
+  {
+   "id": "S07a-F16",
+   "field": "detail",
+   "new_value": "VV ModeController 1.18.0 has VIEW_SHEET/VIEW_SPEC only. TV 1.32.0 adds VIEW_REGISTER, Na__LeRegEd__Mount in Build (also for the viewer), OpenRegister(options) (quiet entry, detach input, hide spec, viewer ShowRegister, Show), Hide on Enter/Leave/OpenSpec, register Initialize after AutoSave, the model-change handler's 'register-updated' branch that refreshes the sheet chrome so a register save repaints the open sheet's title block (TV :1142; goes beside VV's 'sheet-updated'/'fields' branch at :780), and Sheet Images: Ready in ReadyOnce, Initialize, Attach/DetachInput, Images panel registration, SectionForKind 'images', refresh on shape changes.",
+   "reason": "Verified TV ModeController :1136-1152; the 'register-updated' chrome refresh was missing from the survey's D1 wiring list."
+  },
+  {
+   "id": "S07a-F20",
+   "field": "recommendation",
+   "new_value": "Port TV's register entry, ShowRegister and the openRegister callback with the WebViewer slice (S08) only: TV WebViewer 1.2.0 imports 52__System__Layout__PublishedDocuments (ShowRegister calls Na__PubLoad__CancelAll, :621-626) and 66's Share button, so the entry cannot land in WP-S07a-03 without seams.",
+   "reason": "Verified TV WebViewer imports (52 PublishedDocuments Document/LoadingScreen/Urls, 66 Share__Button); the survey offered WP-S07a-03 as an alternative home."
+  },
+  {
+   "id": "S07a-F21",
+   "field": "vv_adaptation",
+   "new_value": "Fresh read = CDN read of VaApps/Projects/{folderId}/project.json with a per-call ?t=<Date.now()> and cache:'no-store' (the pattern ProjectLoader uses for the build manifest, ProjectLoader.js:218-230) - not FetchProjectJson, which is memoised per code (:289-291, 373-376) and appends a ?v=<buildVersion> token fixed for the session and edge-cacheable between builds; folderId via Na__AppUtils__NormalizeProjectFolderId(token); merge base = local Flask GET; localFirst = Flask POST before the worker; report.local.ok from R2SaveProjectJson localSuccess. Build the shim once with S09 (D-S09-04 option a, WP-S09-06) and banner it 'never overwrite from TrueVision'.",
+   "reason": "The survey's 'same ?v= pattern VV's ProjectLoader already uses' would return the session's own copy and defeat Save to R2's changed-since-load check; S09 specifies the same shim files."
+  },
+  {
+   "id": "S07a-F23",
+   "field": "detail",
+   "new_value": "Register__Pdf imports Na__LePdfFonts__EnsureLoaded/Install/SetFont (TV-only 60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js); without them it prints non-embedded Helvetica, the exact v2.69.0 fault. VV deliberately set its SpecPdf in Helvetica (VV SpecPdf PORT NOTE :46). VV AppConfig lacks the Pdf FontFamily/FontBasePath/FontCdnBase/Fonts keys, and TV's values are NA-hosted (FontBasePath ../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/, FontCdnBase https://www.noble-architecture.com/na-apps/..., TV AppConfig :499-504); VV has no Open Sans TTFs in assets__CommonApplicationAssets, though VV's UI already loads Open Sans TTFs from https://www.noble-architecture.com/assets/AD04_... (VV Na__CoreUi__Styles__Fonts__.css:12-34). Register__Export needs ExportSheet options.strict.",
+   "reason": "Verified the PdfFonts config is NA-hosted and VV has no local Open Sans TTFs, so the font source is part of D-S07a-09, not a verbatim copy."
+  },
+  {
+   "id": "S07a-F28",
+   "field": "recommendation",
+   "new_value": "Port adapted and FAIL CLOSED: in VV, Na__ProjectQr__IsEnabled must answer false when the config cannot be read and FALLBACKS.baseUrl must be '' until the Vale resolver exists (TV fails open by design: Symbol__.js:100-113 FALLBACKS carry the NA address; :185-186 'return !Na__ProjectQr__Config || ...'; see S07a-V02). VerifyEntry compares against VV's resolver index schema; console prefix; Na__AppUtils__IsRunningOnLocalhost exists in VV (also true on port 8000). Land it early with WP-S07a-10, because ShapeGeometry 1.6.0+ imports it.",
+   "reason": "Mirroring the VV config in FALLBACKS is not enough: TV's IsEnabled returns true when no config loaded, so any config fetch failure draws a code."
+  },
+  {
+   "id": "S07a-F29",
+   "field": "vv_adaptation",
+   "new_value": "CurrentProject(): {projectCode} = the permanent resolver key (D-S07a-05/D-S07a-14); {projectFolder}/{year} from the master index via Na__AppUtils__NormalizeProjectFolderId(?project=) - not project.json folderId (missing in 10/155, stale in 54/155) and not the raw ?project= token, which is usually the full folderId and would encode a 79-byte version 5 symbol at 0.244 mm (measured with TV's encoder).",
+   "reason": "The survey proposed folderId from project.json; measured to be missing or wrong in 64 of 155 files."
+  },
+  {
+   "id": "S07a-F30",
+   "field": "recommendation",
+   "new_value": "VV config: Enabled false AND BaseUrl '' (not a placeholder address) until a resolver exists, so a failed or stale config read still draws nothing (S07a-V02); QueryPattern/IndexUrl per D-S07a-04/05; MinModuleMm 0.265 if the GitHub Pages option is chosen (v4 symbol, 0.270 mm); keep colours and quiet zone; rewrite notes. Also set LayoutEditor__TitleBlock__QrCellEnabled false in VV AppConfig (S03a D-S03a-06 and S03b D-S03b-03 name the two switches differently - ship both).",
+   "reason": "Enabled:false alone does not survive a config read failure; two switches exist (ProjectQr__Enabled and TitleBlock QrCellEnabled read at ConfigState__SheetSetup__.js:265)."
+  },
+  {
+   "id": "S07a-F37",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "Setup is not NA-neutral: SheetImages__Setup__.js:184 falls back to PagesBaseUrl https://www.noble-architecture.com, so a verbatim Setup sends a VV viewer to the NA site when its config cannot be read."
+  },
+  {
+   "id": "S07a-F37",
+   "field": "detail",
+   "new_value": "Three import-free leaves: the config reader with fallbacks equal to the shipped JSON (quality 0.90, print dpi), the box/crop/corner-scale/StoreSize/NeedsRecut/file-name arithmetic, and the 'picture' primitive painter (nested svg viewBox crop; jsPDF with alias). SheetRecords 1.39.0 imports the Geometry leaf (TV :406) and SheetChrome 1.14.0 the Painter leaf (TV :194). Setup is not NA-neutral: its fallbacks hard-code Sources PagesBaseUrl https://www.noble-architecture.com (Setup__.js:184) and the frame colour #555041 (:158), and Painter falls back to 555041 on a bad hex (Painter__.js:84).",
+   "reason": "Fallback values verified in code; the importing hub files determine the landing order."
+  },
+  {
+   "id": "S07a-F37",
+   "field": "recommendation",
+   "new_value": "Port Geometry and Painter verbatim (banner, PORT NOTE, console prefix); port Setup adapted (fallback PagesBaseUrl = VV's Pages base; frame fallbacks per D-S07a-11). Land all three early in WP-S07a-10, before S03b's SheetRecords/SheetChrome whole-file ports.",
+   "reason": "Action change to port_adapted for Setup and sequencing ahead of the hub ports."
+  },
+  {
+   "id": "S07a-F38",
+   "field": "detail",
+   "new_value": "Paint turns a Shape__Image into one 'picture' primitive with frame and Gaussian shadow; Pdf cuts print copies (300 dpi, JPEG 0.95 or PNG with alpha) before a page is drawn; Encode prepares the stored WebP, SHA-256 names, Recut from the held original and the shadow PNG (v2.121.0). Not leaf-only: Paint and Pdf both import Source, which imports TV's transport (Na__CfApi__SheetImageLocation) and ProjectLoader's IsRunningOnLocalhost, so they need the VV shim's SheetImageLocation; ShapeGeometry 1.7.0+ imports Paint (TV :125) and PdfExporter 1.8.0+ imports Pdf (TV :173).",
+   "reason": "Import graph of the 54 folder re-derived: 'only internal and leaf imports' hides the transport dependency reached through Source."
+  },
+  {
+   "id": "S07a-F39",
+   "field": "recommendation",
+   "new_value": "Port verbatim after S04b WP-S04b-06 (ObjectSnap core, with VV's Snapping__.js turned into its shim) and the ToolState/EditScope/Grips ports that bring PickUpMove, WithAdoption and RegisterShapeProvider (S07a-F50).",
+   "reason": "The ObjectSnap dependency belongs to S04b's existing plan; VV already has the two snap names (see F50)."
+  },
+  {
+   "id": "S07a-F50",
+   "field": "detail",
+   "new_value": "Crop and Handles call Na__LeOsnap__Snap(sheet, point, {kind:'shape', id}) and HideMarker from 28__System__ObjectSnap/...Search__ (folder absent in VV). VV does have both names in its older single-file engine, 30__System__SheetTools/Na__LayoutEditor__Snapping__.js 1.2.0 (same Na__LeOsnap namespace; its Snap(sheet, pointMm, exclude, tone) honours {kind:'shape', id} and returns {x, y, snapped, kind}, Snapping__.js:246-276, 376-381), which S04b WP-S04b-06 turns into a re-export shim of the 28 units - so this dependency is S04b's, and a marked one-line import-path seam to Snapping__.js would also work (losing only TV's grid fallback and snap modes; TV Search__.js:511-517 returns the same shape plus target). Insert picks Move up (Na__LeTools__PickUpMove, TV v2.78.0) and joins an open group (Na__LeScope__WithAdoption, TV v2.142.0); Handles draws grips via Na__LeGrips__RegisterShapeProvider (TV Grips 1.9.0). VV ToolState 1.1.0, EditScope 1.1.0 and Grips 1.8.0 lack those three.",
+   "reason": "The 'VV lacks' claim for the snap names is wrong: grep of VVM finds both exports in Snapping__.js with a call-compatible signature."
+  },
+  {
+   "id": "S07a-F50",
+   "field": "recommendation",
+   "new_value": "Sequence WP-S07a-07 after S04b WP-S04b-06 and the SheetTools slice's ToolState/EditScope/Grips ports; do not stub PickUpMove, WithAdoption or RegisterShapeProvider. If WP-07 must land first, seam only the ObjectSnap import path to Snapping__.js and record it in the PORT NOTE.",
+   "reason": "Names the owning work package and the one safe interim seam."
+  },
+  {
+   "id": "S07a-F47",
+   "field": "recommendation",
+   "new_value": "Extend VV worker: guard LayoutEditor/SheetImages/<DocumentId>/<file>.(webp|jpg|png) and write those objects with 'public, max-age=31536000, immutable' and WITHOUT the build-manifest bump the existing asset handler performs on every write (CloudflareHandler__ProjectAsset__.js:137-148, cacheControl 'no-cache, max-age=0' + na_write_build_manifest); add list and delete (copy optional - the client can copy via the CDN); implement the shim functions with S09 WP-S09-06; add a ValeCodebase .gitignore allowlist for hashed names and exclude 00__Archive. One owner for ProjectAsset__.js and server.py across S07a WP-06, S08 and S09.",
+   "reason": "Verified VV's asset handler semantics; reusing it unchanged would make hashed pictures uncacheable and bust every client's build token per picture."
+  },
+  {
+   "id": "S07a-F48",
+   "field": "detail",
+   "new_value": "TV ProjectData 1.4.0 added RegisterSaveStep and runs before/payload/after around every drawings save, with notes on report.steps; TV SheetModel 1.29.0 joins those notes to the Save Sheets toast (TV SheetModel__.js:730). Each step receives a context object - ctx.block (the drawings block about to be written), ctx.state (per-step scratch), ctx.note(message, isError) and, after the write, ctx.local ({ ok } of the local copy) - TV ProjectData__.js:860-895, used by SheetImages__Publish__.js:253-389. Sheet Images depends on it so that a register renumber moves pictures. VV ProjectData 1.2.0 Save(showToast) has no steps; VV SheetModel 1.18.0 has no step notes (it calls Save(showToast), :479).",
+   "reason": "The survey named the three phases but not the context contract VV's Save must build for the ported step to run."
+  },
+  {
+   "id": "S07a-F52",
+   "field": "recommendation",
+   "new_value": "Port both; adapt section 4 to VV's resolver index and WCP/Projects (skip while Enabled is false); the floor check uses VV MinModuleMm; section 4's 'every project's code is a version 3 symbol' becomes the version the Vale address allows (4 for option A); the harness stages 03__AppUtils/Na__AppUtils__ProjectLoader.js alone into a temp folder (test :82-91) but VV's ProjectLoader imports ./Na__AppUtils__ResilientLoad__.js (VV :77), so stage that file too.",
+   "reason": "Verified the harness staging and the v3 assertion; a verbatim port of sections 1-3 fails to import in VV."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S07a-V01",
+   "category": "data_schema",
+   "title": "VV's drawing-system project code is the ?project= token (normally the folderId): a verbatim Document ID prints 2026/3047__Doous_T01_D01",
+   "detail": "TV composes the Document ID's {project}, the register number '<code>_REGISTER' and the PDF names from Na__DrawData__GetProjectCode() (TV SheetRecords__.js:1604-1607, Register__Pdf__.js:763-765, PdfExporter__.js:474-482), which in TV is the NA code read off ?project=PS01. VV's Na__DrawData__GetProjectCode() returns the raw ?project= token (VV 42/Na__DrawView__ProjectData__.js:224-229, set by Na__AppFlow__LoadingSequence.js:672 and :728-729), and Whitecardopedia always opens VV with ?project=<folderId> (WCP 61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js:36-55; ImageCarousel.jsx:93-95; projectData.folderId set at 03__AppData/Na__AppData__ProjectLoader.js:519). A verbatim v2.71.0 port therefore prints '2026/3047__Doous_T01_D01' in the title block, '2026/3047__Doous_REGISTER' on the register, '2026_3047__Doous...' in PDF names and files pictures under '2026-3047__Doous_T01_D01'. The same token already leaks today: VV's DrawingNumber default prints '2026/3047__Doous-01' on every unnumbered sheet opened from the gallery (VV SheetRecords__.js:730-735) and VV SpecPdf numbers its document from it (VV SpecPdf__.js:144). The token cannot simply change meaning: Na__DrawData__Save GETs /api/projects/<token> and R2SaveProjectJson resolves the folder from it.",
+   "recommendation": "Add a VV document-code accessor (WP-S07a-09, D-S07a-13) answering the loaded project.json projectCode (present in all 155 local files), handed over by the loading sequence; use it for every DOCUMENT use (DocumentId and the DrawingNumber default, register number, PdfExporter and SpecPdf names, picture folders) and keep GetProjectCode() as the transport token. Record the seam in each ported file's PORT NOTE, or back-port the same accessor name to TV so the seam disappears.",
+   "action": "needs_decision",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "../Whitecardopedia/02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js"
+   ],
+   "tv_version": "SheetRecords 1.39.0; Register__Pdf 1.1.0; PdfExporter 1.12.0",
+   "vv_version": "ProjectData 1.2.0; SheetRecords 1.15.0",
+   "evidence": "TV SheetRecords__.js:1604-1607; TV Register__Pdf__.js:763-765; TV PdfExporter__.js:474-482; VV ProjectData__.js:224-229, 380-395; VV LoadingSequence.js:672, 728-729; WCP ValeVisionLinkRouting__Logic__.js:36-55; WCP Na__AppData__ProjectLoader.js:519; VV SheetRecords__.js:730-735; VV SpecPdf__.js:144; TV devlog v2.71.0 line 9473 ('The project code ... comes from the project data').",
+   "depends_on": [
+    "D-S07a-13"
+   ],
+   "est_lines": 60
+  },
+  {
+   "id": "S07a-V02",
+   "category": "permanent_divergence",
+   "title": "QR Symbol and Sheet Images Setup fail OPEN to NA addresses when their config cannot be read",
+   "detail": "Na__ProjectQr__IsEnabled() returns true when the config JSON failed to load ('return !Na__ProjectQr__Config || ...', TV Symbol__.js:185-186) and the FALLBACKS carry baseUrl https://www.noble-architecture.com/q/ (:100-113). In VV a config fetch failure (offline, a stale service-worker copy, Flask's catch-all answering a missing file with index.html) would therefore draw a code addressed to NA's resolver on a Vale drawing - even with ProjectQr__Enabled:false in the shipped JSON. Sheet Images Setup has the same pattern: fallback Sources PagesBaseUrl https://www.noble-architecture.com (Setup__.js:184), so a VV viewer would fetch pictures from the NA site. TV fails open by design (its resolver exists); VV must not.",
+   "recommendation": "In VV: Symbol fails closed (IsEnabled false without config) and FALLBACKS.baseUrl is '' until the Vale resolver exists (BuildUrl then returns '' and no symbol is drawn); Setup's PagesBaseUrl fallback is VV's Pages base; set LayoutEditor__TitleBlock__QrCellEnabled false in VV AppConfig as a second guard. Record each as a PORT NOTE divergence and add an acceptance test with the QR config unreadable.",
+   "action": "port_adapted",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "tv_version": "Symbol 1.2.0; Setup 1.1.0",
+   "vv_adaptation": "Fail closed; empty base URL; VV Pages base fallback.",
+   "evidence": "TV Symbol__.js:100-113, 185-186; TV SheetImages__Setup__.js:184; WCP server.py:956-977 (missing file answered with index.html, 200); TV ConfigState__SheetSetup__.js:265 (QrCellEnabled default true).",
+   "depends_on": [
+    "S07a-F28",
+    "S07a-F30",
+    "S07a-F37"
+   ],
+   "est_lines": 12
+  },
+  {
+   "id": "S07a-V03",
+   "category": "wiring",
+   "title": "TV v2.116.0 also gave its service worker a sheet-pictures bucket; VV's shared worker has none",
+   "detail": "TV's PWA worker logic gained a fifth bucket, tv-images-vN, cache-first and LRU-capped at 160, matched by /05__Layout__DrawingDocs__Images/<id>/<file>.(webp|jpe?g|png) (TV 62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js:687-706, 1083, 1123; devlog v2.116.0 lines 4942-4943: 'a stored picture's name carries its hash, so a cached copy can never be stale'). VV runs the shared Vale worker (WebApps/Na__Pwa__ServiceWorker__.js -> WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js), whose buckets are shell/thumbs/data/models (:229-236) and whose classifier (:391-401) would put a .webp/.jpg picture from cdn.noble-architecture.com in 'other' and a .png picture in the unbounded 'shell' cache. The survey's slice listing missed this file.",
+   "recommendation": "Add a wpwa-images bucket (owned prefix, LRU cap) and a pattern for VV's picture path (per D-S07a-07, e.g. /LayoutEditor/SheetImages/<id>/<name>__<10 hex>.(webp|jpe?g|png)) classified before the shell pattern, cache-first (WP-S07a-11). Bump PWA_SW_VERSION_TOKEN only on Adam's say-so: it evicts every Vale app's caches (S06a D-S06a-12).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "vv_paths": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "tv_version": "SW logic 1.9.15 (bucket), 1.9.19 current",
+   "vv_version": "token 2026-09-18-1",
+   "evidence": "TV SW logic :377-387 (1.9.15 log), :687-706, :1083, :1123; VV SW logic :229-256, :391-401; TV devlog v2.116.0 lines 4942-4943.",
+   "depends_on": [
+    "D-S07a-07"
+   ],
+   "est_lines": 40
+  },
+  {
+   "id": "S07a-V04",
+   "category": "wiring",
+   "title": "Shared-core whole-file ports need this slice's render leaves first, and the editing modules form a cross-slice cycle",
+   "detail": "The hub files other slices port whole import this slice's modules: SheetRecords 1.39.0 -> 54 Geometry (TV :406); SheetChrome 1.14.0 -> 53 Painter and 54 Painter (TV :193-194); ShapeGeometry 1.9.0 -> 53 Symbol (-> Encoder, ProjectLink -> ProjectLoader GetProjectFolderFromUrl/GetYearFromUrl) and 54 Paint (-> Setup, Geometry, Painter, Source -> Na__CfApi__SheetImageLocation) (TV :123-126); PdfExporter 1.12.0 -> 54 Pdf (-> Encode, Paint, Source) (TV :173); SheetModel__Sheets 1.4.0 -> 51 Numbering. S03b already plans 'leaves first' and lists these as other slices' leaves, but the survey's packages put the QR files in WP-04 and all 17 picture files in WP-07 (blocked on ObjectSnap/ToolState/EditScope/Grips). The editing modules are pulled in too: PointerPress 1.3.0+ imports 54 Crop (TV :271), SheetTools ContextMenu 1.2.0+ imports 54 Menu (:203), Toolbar 1.18.0+ imports 54 Insert (:221), Panel__Sheet imports 51 Transactions (:117) - while WP-07 itself waits on S04b/S05a tool-state work: a cycle.",
+   "recommendation": "Split out WP-S07a-10: the 53 QR files (fail-closed, disabled) and the 54 render files (Setup, Geometry, Painter, Paint, Source, Pdf, Encode, Config), landed before S03b's SheetRecords/SheetChrome/ShapeGeometry and S08's PdfExporter ports, with only the read side of the transport shim. Break the editing cycle by landing WP-S07a-07 in the same wave as S05a/S06a's PointerPress, ContextMenu and Toolbar ports, or by marked seams on those hubs' picture lines removed when WP-07 lands. Keep the register-dependent Panel__Sheet routing with WP-S07a-03.",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/"
+   ],
+   "evidence": "Import graph re-derived from the 54 folder (Paint -> Geometry, Painter, Setup, Source; Pdf -> Encode, Geometry, Paint, Painter, Source; Source -> ProjectLoader + ApiClient); TV SheetRecords__.js:406; SheetChrome__.js:193-194; ShapeGeometry__.js:123-126; PdfExporter__.js:173; PointerPress__.js:271; SheetTools__ContextMenu__.js:203; Toolbar__.js:221; Panel__Sheet__.js:117; S03b report d1/ordering ('Leaves first').",
+   "depends_on": [
+    "S07a-V02"
+   ],
+   "est_lines": 0
+  },
+  {
+   "id": "S07a-V05",
+   "category": "data_schema",
+   "title": "VV project.json identity fields are unreliable; resolve folder and name through the master index and projectName",
+   "detail": "Scan of all 155 local WCP/Projects/*/*/project.json files (01-Oct-2026): projectCode and projectName present in 155; folderId present in 145 but missing in 10 (e.g. 2026/44371__Gill) and different from the real folder in 54 (e.g. 2025/59494__Weeks stores 2025/WK-3007__Weeks, 2025/43822__Napthine stores 43822__Napthine); displayName in 31; projectNameAlias in 7. The survey's adaptations read folder/year from project.json folderId (QR ProjectLink) and the register's project name from projectNameAlias/displayName. VV already has established sources: the master index via Na__AppUtils__NormalizeProjectFolderId (ProjectLoader.js:335-353) for {year}/{folder}, and Na__PresentationMode__ProjectJson__GetActiveConfig().projectName for the name (title block Project field, VV SheetRecords__.js:767-769; the breadcrumb uses projectNameAlias || projectName).",
+   "recommendation": "QR ProjectLink, SheetImages Store/Source and the transport shim take {year}/{folder} from the master index (never project.json folderId); the register PDF takes the project name from GetActiveConfig().projectName; the document code (S07a-V01) takes project.json projectCode.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js",
+    "02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js"
+   ],
+   "evidence": "scratchpad/parity/verify_s07a/vv_identity_fields.py output: {'projectCode': 155, 'folderId': 145, 'displayName': 31, 'projectNameAlias': 7}, projectName 155/155; missing folderId 10; folderId != path 54; VV SheetRecords__.js:767-769; Breadcrumb Controls :158-165.",
+   "depends_on": [
+    "S07a-F08",
+    "S07a-F29"
+   ],
+   "est_lines": 0
+  },
+  {
+   "id": "S07a-V06",
+   "category": "decision",
+   "title": "VV renames projects live (worker moves the R2 folder and rewrites the index entry): QR keys and resolver must survive it",
+   "detail": "VV's worker route POST /api/editor/projects/{folderId}/rename (CloudflareHandler__ProjectRename__.js) copies every object under VaApps/Projects/{old}/ to {new}, deletes the old ones, and patches the master index entry's folderId, year, name and projectCode (code from project.json, else the new folder name; :300-304) via CloudflareHelper__MasterIndexR2__.js; Flask has the matching /api/projects/<old>/rename route (server.py:560). TV's resolver keys on NA codes that never change. In VV a printed key based on folderId or folder name breaks on the first rename; projectCode is shared by 13 schemes and can be rewritten. Pictures under LayoutEditor/SheetImages/ move with the folder (fine); the register's browser draft key follows the token. The survey did not locate the index writers: they are WCP/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py (na_make_index_entry, na_index_upsert_project, na_index_write, na_index_rebuild_all) and the worker helper above.",
+   "recommendation": "Decide D-S07a-14: a permanent qrKey field in each master index entry, written once by the Python index writer and preserved by the rename handler; the Vale resolver (WP-S07a-05) reads it (possibly straight from the existing master index on the CDN with the GitHub copy as fallback, instead of a second generated index). Add 'rename a scratch project; its printed key still resolves' to WP-05's acceptance.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "vv_paths": [
+    "../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js",
+    "../Whitecardopedia/CloudflareWorker/src/CloudflareHelper__MasterIndexR2__.js",
+    "../Whitecardopedia/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py",
+    "../Whitecardopedia/server.py"
+   ],
+   "evidence": "CloudflareHandler__ProjectRename__.js header :8-31 and :300-304; CloudflareHelper__MasterIndexR2__.js :58-118; AutomationUtil__R2Common__Lib__.py :21-22, 63, 298-401; server.py:560.",
+   "depends_on": [
+    "D-S07a-05",
+    "D-S07a-14"
+   ],
+   "est_lines": 40
+  },
+  {
+   "id": "S07a-V07",
+   "category": "test",
+   "title": "Other slices' TV tests stub this slice's names; they only port cleanly if 51/53 names land verbatim",
+   "detail": "Na__Test__HatchLineControls__.test.mjs (:337-339) and Na__Test__VectorBooleans__.test.mjs (:372-374) stub Na__ProjectQr__GetSymbol/GetSetup/CheckPrint (ShapeGeometry's 53 import); Na__Test__SheetsNormaliseOnce__.test.mjs (:82-91) stubs Na__LeRegNum__Plan/Apply and Na__LeRec__Phase/DocumentId/ComposeDocumentId; Na__Test__StatementSchedule__.test.mjs (:68) stages 51__System__LayoutEditor/53__Feature__ProjectQrCode and asserts register-synced rows; Na__Test__PublishedSchema__.test.mjs (:190-191) composes DocumentId. These belong to S05b, S03b, S07b and S08 but depend on this slice's module names and paths. Also Na__Test__DocumentKeys__ registers only statements and specification - it is not a register test, contrary to the survey's label.",
+   "recommendation": "Keep every 51/53/54 export name and path identical (already F02); port these tests after WP-S07a-01/WP-S07a-10 or with their stubs unchanged; do not count DocumentKeys as register coverage - author Na__Test__RegisterNumbering__ (F54).",
+   "action": "port_test",
+   "severity": "low",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetsNormaliseOnce__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementSchedule__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs"
+   ],
+   "evidence": "grep of TV 80__Testing__PrototypeEnvironment for 51/53/54 names; line refs as given; Na__Test__DocumentKeys__.test.mjs:190-217.",
+   "est_lines": 0
+  },
+  {
+   "id": "S07a-V08",
+   "category": "drift",
+   "title": "TV's open Sheet Images gap carries over: pictures in Custom Scrapbook items or pasted across projects point at the source project's file",
+   "detail": "TV/TrueVision__PLAN__SheetImages__.md section 9 lists 'Pictures in Custom Scrapbook items / pasted across projects | OPEN - they point at the source project's file (not found)'. VV has the 56 Custom Scrapbook (with its own Flask blueprint) so a VV port inherits the same failure: a scrapbook item or a paste carries Image__File/Image__Folder of another project, and Source looks only in the current project's folders.",
+   "recommendation": "Record it in the VV ledger with WP-S07a-07; fix once in TV (copy or re-file a foreign picture into the target project by its content hash on insert/paste, e.g. in the Publish before-phase) and port the fix, rather than diverging.",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "tv_paths": [
+    "TrueVision__PLAN__SheetImages__.md",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/"
+   ],
+   "evidence": "TV PLAN__SheetImages__.md section 9 table (line 127).",
+   "est_lines": 0
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S07a-09",
+   "title": "VV document project code accessor",
+   "scope": "Add a VV accessor for the document code (e.g. Na__DrawData__GetDocumentCode() in VVM/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js) answering the loaded project.json projectCode, handed over by Na__AppFlow__LoadingSequence.js beside the drawings block (:726-730), falling back to the master index entry for the ?project= token (Na__AppUtils__LookupIndexEntry is not exported today). Repoint only the DOCUMENT uses - VV SheetRecords DrawingNumber default (:730-735), SpecPdf document number (:144), PdfExporter Na__LePdf__Filename projectCode - and keep Na__DrawData__GetProjectCode() as the transport token (/api/projects/<token>, R2SaveProjectJson). The ported Register__Pdf, SheetRecords DocumentId and Sheet Images call the accessor (one marked seam each) unless TV adopts the same accessor name (back-port).",
+   "depends_on": [
+    "D-S07a-13"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Opened as ?project=2026/3047__Doous, ?project=3047 and ?project=3047__Doous, the title block default, the specification number and the PDF file names all read 3047..., never the folderId",
+    "Drawings, register and specification saves still reach /api/projects/<token> and R2 unchanged",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "risk": "Touches the one drawings save module and the loading sequence (also edited by the DrawingViewCore/DIV-4 slices); must not change the token used for transport."
+  },
+  {
+   "id": "WP-S07a-10",
+   "title": "QR and picture render leaves, ahead of the shared-core ports",
+   "scope": "Port the render half of 53 and 54 before the whole-file hub ports that import it (S03b SheetRecords 1.39.0, SheetChrome 1.14.0, ShapeGeometry 1.9.0; S08 PdfExporter 1.12.0): 53 Encoder and Painter verbatim; Symbol adapted and fail-closed; ProjectLink adapted to VV identity (master index, resolver key); Config with Enabled false and BaseUrl ''; README rewritten; 54 Setup adapted (VV Pages-base and frame fallbacks), Geometry, Painter, Paint, Pdf, Encode verbatim, Source adapted, Config adapted. Requires only the read side of the transport shim (Na__CfApi__SheetImageLocation, IsConfigured) from S09 WP-S09-06 and Na__AppUtils__IsRunningOnLocalhost (present in VV).",
+   "depends_on": [
+    "WP-S09-06"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass with the leaves present and nothing importing them yet",
+    "Na__Test__ProjectQr__ sections 1-3 and 5-6 and the geometry/painter parts of Na__Test__SheetImages__ pass in VV",
+    "With the QR config JSON unreadable, Na__ProjectQr__GetSymbol answers no symbol and no NA address appears anywhere",
+    "Every file carries a VV header, PORT NOTE (Ported from TrueVision3D path + version, Divergences) and [ValeVision3D ...] console prefix"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/",
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/"
+   ],
+   "hot_files": [],
+   "risk": "Low (new files only), but it is upstream of S03b and S08 hub ports; ProjectLink's resolver key waits on D-S07a-05/D-S07a-14, which shipping disabled does not need.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__Decode__.py"
+   ]
+  },
+  {
+   "id": "WP-S07a-11",
+   "title": "Shared Vale service worker: a sheet-pictures cache bucket",
+   "scope": "In WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js add a wpwa-images-<token> bucket and owned prefix, a classification pattern for VV's picture path (per D-S07a-07, e.g. /LayoutEditor/SheetImages/<id>/<name>__<10 hex>.(webp|jpe?g|png)) evaluated before the shell pattern, cache-first with an LRU cap (TV: 160), mirroring TV's tv-images-vN (TV SW logic :687-706, 1083, 1123). Bump PWA_SW_VERSION_TOKEN only with Adam's consent.",
+   "depends_on": [
+    "D-S07a-07"
+   ],
+   "size": "S",
+   "acceptance": [
+    "A picture fetched twice from cdn.noble-architecture.com is served from the images bucket the second time",
+    "A .png picture no longer lands in the shell cache",
+    "Gallery thumbnail, full-image, data and model rules behave as before"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "files_vv": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "hot_files": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js"
+   ],
+   "risk": "Shared by every Vale web app; a token bump evicts all their caches (S06a D-S06a-12). Also edited by S06a, S07b and S08 for the token: one owner."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S07a-13",
+   "question": "Where does ValeVision's document code - the {project} of a Document ID, <code>_REGISTER, <code>_SPEC, the PDF names and the picture folders - come from, given Na__DrawData__GetProjectCode() is the ?project= token (2026/3047__Doous when opened from the gallery)?",
+   "options": "A a VV accessor returning the loaded project.json projectCode (numeric, present in all 155 local project files), handed over by the loading sequence; B keep GetProjectCode() (the token: folderId, folder name or code depending on the link); C a new per-project documentCode field",
+   "recommendation": "A, used by SheetRecords (DocumentId and the DrawingNumber default), Register__Pdf, PdfExporter and SpecPdf, with GetProjectCode() kept as the transport token. It also fixes today's VV title blocks printing '2026/3047__Doous-01' on unnumbered sheets.",
+   "blocks": [
+    "WP-S07a-09",
+    "WP-S07a-01",
+    "WP-S07a-03",
+    "WP-S07a-07"
+   ]
+  },
+  {
+   "id": "D-S07a-14",
+   "question": "What key does a printed ValeVision QR code carry, given VV renames projects live (the worker moves VaApps/Projects/{old}/ to {new} and rewrites the master index entry's folderId, year, name and projectCode)?",
+   "options": "A projectCode (13 are shared by schemes, and a rename can rewrite it); B folderId or folder name (changes on rename; a version 5 symbol at 0.244 mm); C a permanent qrKey field in each master index entry, written once by AutomationUtil__R2Common__Lib__.py and preserved by CloudflareHandler__ProjectRename__.js",
+   "recommendation": "C - the NA resolver can key on PS01 only because NA codes never change.",
+   "blocks": [
+    "WP-S07a-05"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "TV PWA service worker picture bucket (TrueVision__Pwa__ServiceWorker__Logic__.js 1.9.15) and VV's shared Whitecardopedia worker - missing from the survey's scope",
+  "VV ?project= token semantics traced from Whitecardopedia's link routing through the loading sequence to every document use of Na__DrawData__GetProjectCode()",
+  "Quality of VV project.json identity fields measured across all 155 local projects",
+  "VV live project rename (worker + Flask) and its effect on QR keys; the VV master index writers located (AutomationUtil__R2Common__Lib__.py, CloudflareHelper__MasterIndexR2__.js) - the survey listed them as not located",
+  "Fail-open fallbacks in QR Symbol, Sheet Images Setup and ConfigState__EditorSetup's register reader",
+  "Fan-in: every TV hub file that imports the 51/53/54 folders, and the resulting ordering against S03b, S05a, S06a and S08 whole-file ports",
+  "TV tests outside the slice that stub this slice's names (HatchLineControls, VectorBooleans, SheetsNormaliseOnce, StatementSchedule, PublishedSchema)",
+  "VV's older Snapping__.js already exporting Na__LeOsnap__Snap/HideMarker (S04b shim plan)",
+  "QR address budget re-measured with TV's own encoder, including the folderId-token case (79 B, v5, 0.244 mm)"
+ ],
+ "refuted_work_packages": [],
+ "notes": "The S07a survey was high quality: every factual claim I opened (versions, line references, devlog and ledger citations, the 152/13 master-index figures, the three VV projects with sheets, the QR byte budget, the yellow/amber TV defect, the header gaps) checked out, and nothing was refuted. Its weaknesses are VV-side behaviours it did not exercise and cross-slice sequencing. Most important for the swarm: (1) VV's 'project code' is the ?project= token, which Whitecardopedia always sets to the full folderId, so a verbatim v2.71.0 port prints '2026/3047__Doous_T01_D01' everywhere. WP-S07a-01 needs the new document-code accessor (WP-S07a-09, D-S07a-13) first, and VV already leaks the token into unnumbered title blocks and SpecPdf numbers today. (2) The QR Symbol and Sheet Images Setup fail open to NA addresses when their JSON is unreadable, so 'Enabled:false' alone is not a safe ship state; fail closed plus BaseUrl ''. (3) The QR and picture render leaves must land before S03b's and S08's whole-file hub ports (WP-S07a-10). The editing modules form a cycle with S05a/S06a's PointerPress, ContextMenu and Toolbar ports and S04b's ObjectSnap shim, so schedule them in one wave or seam the picture lines. (4) The transport facade is the same thing as S09's same-name shims (D-S09-04/WP-S09-06): build it once, and use a ?t=+no-store CDN read for 'fresh R2', never FetchProjectJson (memoised, build-token cached). (5) project.json folderId/displayName are unreliable (missing or stale in 64 of 155 files), and VV renames projects live, so QR keys need a permanent index field (D-S07a-14). Corrections were also made to F05 (RenumberSheets conflicts with S03b's no-op rule; decided by D-S07a-01), F37 (Setup is port_adapted), F38/F39/F50 (Na__LeOsnap names exist in VV's Snapping__.js), F16 (missing the 'register-updated' chrome refresh) and F20 (WebViewer register entry belongs to S08). The executive summary's '58 named imports' are 58 import statements (37 distinct missing names). The report was edited in place, with a '## Verification' section appended, and a pre-verification backup is at scratchpad/parity/verify_s07a/S07a_report_before_verify.md. Unverified: runtime behaviour, live R2, GitHub Pages serving a new VCB/q/, and the bodies of the picture editing modules beyond their imports and NA strings."
+}

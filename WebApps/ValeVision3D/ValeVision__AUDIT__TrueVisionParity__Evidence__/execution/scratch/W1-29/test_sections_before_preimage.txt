@@ -1,0 +1,51 @@
+﻿ValeVision3D - the key scope and the 3D Model tab's hotkeys (W1-29 sections of Na__Test__DocumentKeys__)
+  tree under test: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-29\pre_src\02__Src__AppModules
+
+  The key scope
+  PASS  starts on the 3D model, before any reader is handed over
+  PASS  the mode controller's reader is taken
+  PASS  and asked afresh: a drawing tab is the sheet scope
+  PASS  anything but a function is refused, the reader kept
+  PASS  a name that is not a scope reads as the 3D model's
+  PASS  a reader that fails reads as the 3D model's, never deaf
+  PASS  and the reader is asked again on the next key
+  PASS  the typing test: contenteditable, text box, text area, list
+  PASS  the typing test: the page body, a button, nothing
+
+  The 3D Model tab's hotkeys
+[ValeVision3D] HotkeyHandler: 28 bindings loaded.
+  PASS  VV: the dictionary is read and the listener is on the window
+  PASS  R on the 3D Model tab resets the view and takes the key
+  FAIL  R in a plan annotation label on the 3D tab is a letter
+        got  [["reset"],true]
+        want [[],false]
+  PASS  R in a text box on the 3D tab is a letter (as before)
+  FAIL  R typed into the statement is a letter
+        got  [["reset"],true]
+        want [[],false]
+  FAIL  R on a document tab, nothing focused, does nothing
+        got  [["reset"],true]
+        want [[],false]
+  FAIL  T on a drawing tab does not put the hidden model into Walk
+        got  [["walk"],true]
+        want [[],false]
+  FAIL  1 on a drawing tab does not fly the hidden camera
+        got  [["scene1"],true]
+        want [[],false]
+
+  VV: the rest of the 3D keys, the documentation rows, and a page before the editor loads
+  PASS  VV: T on the 3D Model tab enters Walk and takes the key
+  PASS  VV: B, Y and V on the 3D Model tab still answer
+  FAIL  VV: T, R, V, B, Y, 1-9, Page Up and Page Down on a drawing tab leave the hidden camera, Walk and the carousel alone
+        got  16
+        want 0
+  FAIL  VV: and on a document tab
+        got  16
+        want 0
+  FAIL  VV: D, O, Delete and Escape on the 3D tab are documentation rows - no action, the key left to the page, no "No callback"
+        got  [[[],true,true],[[],true,true],[[],true,true],[[],true,true]]
+        want [[[],false,false],[[],false,false],[[],false,false],[[],false,false]]
+[ValeVision3D] HotkeyHandler: 28 bindings loaded.
+  PASS  VV: before the editor hands its reader over the scope reads as model, and R and T answer
+
+  8 check(s) FAILED

@@ -22,19 +22,21 @@
 //
 // WHERE THE 2D OUTLINE WIDTH WENT
 //
-// Until v2.28.0 the silhouette on a 2D viewport's backing picture was drawn at
-// RenderEffect__ProfileLines__Drawing2dEdgeWidth (1.0) in Na__AppConfig__Main.json,
-// the fixed width the live floor plan and elevation views also use - one number
-// for every viewport on every sheet.
+// Until v2.27.0 the silhouette on a 2D viewport's backing picture was drawn at the
+// drawing view config's built-in 1.0 px, the same for every viewport on every
+// sheet. Na__AppConfig__Main.json carried RenderEffect__ProfileLines__Drawing2dEdgeWidth
+// 0.55 and it was read as the bake width, but TrueVision never registered the main
+// config with the drawing view (closed 13-Sep-2026), so 0.55 only ever reached the
+// live floor plan and elevation views.
 //
-// It is now the profileLinework row's Composite__Weight, defaulting to that same
-// 1.0, in a place a person would look for it and - more to the point - a number a
-// single viewport can disagree with. The live drawing views still read the main
-// config; only a Layout Editor render reads this.
+// It is now the profileLinework row's Composite__Weight, defaulting to the 1.0 every
+// existing sheet was baked at, in a place a person would look for it and - more to
+// the point - a number a single viewport can disagree with. A drawing opened outside
+// the Layout Editor is untouched: the live views never read this.
 //
 // -----------------------------------------------------------------------------
 //
-// TWO KINDS OF WEIGHT, AND THE DIFFERENCE MATTERS
+// THREE KINDS OF WEIGHT, AND THE DIFFERENCES MATTER
 //
 //   factor   A multiplier on the sheet's master viewport lineweight. Vector
 //            work. Raising the master raises everything and the hierarchy
@@ -42,36 +44,65 @@
 //   pixels   A real pixel count in a render buffer. Screen-space effects - the
 //            Sobel silhouette, the section outline, the model's own edges in
 //            the base image - consume pixels and have no opinion about paper.
+//   percent  How much of a post pass is applied: 0 none of it, 100 all of it.
+//            Not a width at all - a dial on an effect that either happens to
+//            the finished pixels or does not. Enhance Whitecard is the first.
 //
 // A composite whose kind is 'none' draws no line and gets no control. Those rows
 // still exist in the config so the file is a complete inventory of the picture
 // rather than a selective one.
 //
+// FACTOR IS THE ONLY KIND THAT LEAVES THE RASTER ALONE. Pixels and percent both
+// change what the renderer or the post pass writes, so both belong in the raster
+// cache key; a factor thickens the vector drawing over the top and must not.
+//
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__RenderComposites__.js (1.1.0)
-// - Ported on     : 13-Sep-2026 for ValeVision3D v2.28.0
-// - Parity        : verbatim below the header
-// - Divergences   : Console prefix and this header only. What CONSUMES the pixel
-//                   weights differs (DIV-1): the profile width reaches the
-//                   composer's pass through the composer preset, the section
-//                   outline goes through the Cross Sections tool and the model's
-//                   own edges through Na__LineworkSettings - and ValeVision's
-//                   export line-width compensation still multiplies all three.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js
+// - Source version: 1.3.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - 1.2.0, the percent
+//                   kind, is TrueVision3D v2.93.0 of the same day
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy
+//                   before it was 1.1.0, ported from TrueVision3D on 13-Sep-2026 (ValeVision3D v2.28.0;
+//                   the 2.00 Context Layer default followed in v2.59.0, as in TrueVision).
+//                   TrueVision's v2.93.0 entry says NOT signed off by Adam and neither release is
+//                   recorded as tried by him; both come across under DR-01 (c) and are named so.
+// - Parity        : verbatim (the code is TrueVision 1.3.0's; the banner, the console prefix and this
+//                   note are the only differences)
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - Not in this file, but worth knowing beside it: what CONSUMES the pixel weights differs (DIV-1).
+//     The profile width reaches the composer's pass through Na__DrawView__RenderPreset__, the section
+//     outline goes through the Cross Sections tool and the model's own edges through
+//     Na__LineworkSettings - and this app's export line-width compensation still multiplies all three.
+//   - WHERE THE 2D OUTLINE WIDTH WENT, above, is TrueVision's own history (its v2.27.0). ValeVision3D
+//     made the same move in its v2.28.0, from the 1.0 its Na__AppConfig__Main.json carried in
+//     RenderEffect__ProfileLines__Drawing2dEdgeWidth; the config's Meta__WhyWeightsHere keeps that
+//     wording.
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.3.0
+// - A Depth Fog row, first in the built-in inventory as it is in the config:
+//   the one layer that sits over the projected linework. A toggle with no
+//   weight - the fog's own numbers are the drawing's, not the viewport's - so
+//   it enters no weight record and no raster token. Nothing else here changed.
+//
+// 20-Sep-2026 - Version 1.2.0
+// - A third weight kind, 'percent': how much of a post pass to apply. Enhance
+//   Whitecard carries it, so the levels and sharpen pass can be dialled from
+//   nothing to the full effect per viewport. RasterToken now takes percent as
+//   well as pixels, because a post pass does change the picture.
+//
 // 13-Sep-2026 - Version 1.1.0
 // - Base Image carries a weight: how thick the model's own edges draw in the
 //   rendered picture, 2D and 3D. RasterToken takes forThreeD, so a 3D snapshot
-//   keys only on the weights a 3D picture can show. Ported from TrueVision3D.
+//   keys only on the weights a 3D picture can show.
 //
-// 13-Sep-2026 - Version 1.0.0
-// - Initial implementation, authored in TrueVision3D 12-Sep-2026 and ported
-//   here together with 1.1.0.
+// 12-Sep-2026 - Version 1.0.0
+// - Initial implementation.
 //
 // =============================================================================
 
@@ -101,13 +132,14 @@
     // weights fall back to these.
     // ------------------------------------------------------------
     const Na__LeComposite__FALLBACK = [
+        { key : 'depthFog',          label : 'Depth Fog',               twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
         { key : 'projectedLinework', label : 'Projected Linework',      twoDOnly : true,  toggle : true,  weight : { kind : 'factor', value : 1.00, min : 0.10, max : 3.00, step : 0.05, label : 'Weight'  } },
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false, toggle : true,  weight : { kind : 'pixels', value : 1.00, min : 0.10, max : 4.00, step : 0.05, label : 'Edge px', twoDOnly : true } },
         { key : 'sectionOutline',    label : 'Section Outline',         twoDOnly : true,  toggle : false, weight : { kind : 'pixels', value : 2.00, min : 0.50, max : 8.00, step : 0.25, label : 'Cut px'  } },
         { key : 'hiddenLines',       label : 'Hidden Lines',            twoDOnly : true,  toggle : true,  weight : { kind : 'factor', value : 1.00, min : 0.10, max : 3.00, step : 0.05, label : 'Weight'  } },
         { key : 'glassOpaque',       label : 'Glass Transparency Off',  twoDOnly : false, toggle : true,  weight : { kind : 'none' } },
         { key : 'whitecard',         label : 'Whitecard',               twoDOnly : false, toggle : true,  weight : { kind : 'none' } },
-        { key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false, toggle : true,  weight : { kind : 'none' } },
+        { key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false, toggle : true,  weight : { kind : 'percent', value : 100, min : 0, max : 100, step : 5, label : 'Strength' } },
         { key : 'baseImage',         label : 'Context Layer',           twoDOnly : false, toggle : true,  weight : { kind : 'pixels', value : 2.00, min : 0.10, max : 4.00, step : 0.05, label : 'Edge px' } }
     ];
     // ------------------------------------------------------------
@@ -267,6 +299,10 @@
     // render behind it, so letting it into the raster key would re-render a
     // multi-second supersampled underlay every time someone nudged a line weight.
     //
+    // A PERCENT WEIGHT IS IN, though, alongside the pixel ones. It is a post pass
+    // over the finished raster, so moving it changes every pixel of the stored
+    // picture and the old one must not be handed back for it.
+    //
     // forThreeD narrows it again for a 3D snapshot, to the weights a 3D picture
     // can actually show. A section outline width kept from when the viewport was
     // 2D changes nothing in a scene render, and letting it in would re-render and
@@ -277,7 +313,7 @@
         if (!stored) return '';
         const keys = Object.keys(stored).filter((key) => {
             const row = Na__LeComposite__Row(key);
-            if (!row || row.weight.kind !== 'pixels') return false;
+            if (!row || (row.weight.kind !== 'pixels' && row.weight.kind !== 'percent')) return false;
             return !(forThreeD === true && (row.twoDOnly || row.weight.twoDOnly));
         }).sort();
         return keys.length === 0 ? '' : keys.map((key) => key + ':' + stored[key]).join('|');

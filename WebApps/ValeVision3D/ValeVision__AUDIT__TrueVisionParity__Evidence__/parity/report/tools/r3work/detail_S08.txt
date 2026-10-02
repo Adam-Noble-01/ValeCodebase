@@ -1,0 +1,300 @@
+### S08-F02 [transport/critical/build_vv_transport] Whitecardopedia project sync would delete every published picture (and likely thumbnails/snapshots) from R2
+TV: 
+VV: WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py
+DET: na_purge_stale_r2_images (WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:659-680) calls list_objects_v2(Bucket, Prefix=f'{r2_prefix}/') with no Delimiter and no continuation token, so it is recursive and sees only the first 1,000 keys. It builds its keep-set from wcp_dir.iterdir() (top-level local images only, :645-656) and deletes every .png/.jpg/.jpeg/.webp key whose bare file name is not in that set. It runs on...
+REC: Fix this now, independent of publishing: WP-S08-04 should run first in the whole programme. List top-level keys only (Delimiter='/') with pagination, in both the image purge and the GLB purge. Optionally also skip the 06__Layout__PublishedDocuments/, LayoutEditor/, PresentationMode/ and 00__* prefixes. This is a shared Vale pipeline, so Adam approves it (D-S08-09). The fix blocks VV's first R2 publish and S07a's sheet-image R2 writes.
+ADAPT: VV-only pipeline; TV avoids this by skipping 00__ folders and never sweeping published roots
+EVID: WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:645-656 (keep-set from iterdir), :659-680 (purge; list_objects_v2 Prefix only at :667), called :926 and :959; R2_BASE_PREFIX :101
+VER: Re-read the code. The exposure exists today for existing VV assets, not only after publishing. This raises the urgency of WP-S08-04. | The bug already affects mirrored thumbnails and snapshots, and it would also delete S07a's sheet images.
+DEP: 
+
+### S08-F07 [transport/high/port_adapted] Publish__Transport must be re-pointed at VV's Flask blueprint and VV's worker
+TV: 02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js
+DET: TV Transport 1.0.0 posts to /api/truevision/published/* on the 8090 server and reaches R2 through Na__CfApi__UploadPublished, ListPublished and DeletePublished (the generic /r2/*). VV has neither. TV's R2Ready() is synchronous and is called without await (Publish__.js:585 and the share manifest), whereas VV's worker config arrives asynchronously from Flask GET /api/editor-config.
+REC: Port with identical exports: API constant /api/valevision/published, R2 calls through the new VV client util. Prefetch the worker config in LocalReady so R2Ready answers synchronously from the cache. The restart hint names WCP/server.py.
+ADAPT: Local API base and R2 client swapped; sync R2Ready from a cached config
+EVID: TVM/LE/65__.../Publish__Transport__.js:43-46,55,98-108,202-206; TV Publish__.js:585; VVM/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js:96,233
+VER: 
+DEP: S08-F08; S08-F09; S08-F21; S08-F24
+
+### S08-F08 [transport/high/build_vv_transport] VV worker needs published-document routes (file, list, scoped delete) in VV's own storage
+TV: 80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js; 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: WCP/CloudflareWorker/src/index.js; WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js
+DET: whitecardopedia-editor-api has only semantic routes. Its asset route takes JSON base64 (25 MB cap), is guarded to Thumbnails/Linework/Snapshots, sets no-cache and bumps the global build manifest. Publishing needs raw files up to tens of MB, a list with sizes, a scoped delete and per-class Cache-Control. Key: VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/<rel>. Routes: POST .../published/file?path= (raw, about 95 MB), POST .../publishe...
+REC: New handler CloudflareHandler__PublishedDocuments__.js, with routes in index.js before the greedy save route, using the existing X-Editor-Api-Key and CORS helper (POST avoids a CORS change). Enforce the document scope server-side. Adam deploys with wrangler.
+ADAPT: - Semantic, authenticated routes instead of TV's open generic /r2/*. - Content type taken from the extension. - Cache-Control: immutable for __<10 hex> names, otherwise max-age=60 must-revalidate. No build-manifest bump. - folderId guard: either admit the three legacy folder names that contain a space (2025/FN-62104__Fenner Scheme-01/-02/-03), or r...
+EVID: WCP/CloudflareWorker/src/index.js:112-116,148,160-214; handlers/CloudflareHandler__ProjectAsset__.js:51-52,140-148; CloudflareHelper__Cors__.js:72 (GET, POST, OPTIONS)
+VER: The proposed guards would refuse three real VV projects. The document guard must match the Flask archive/prune pattern. The shared bucket was not noted.
+DEP: S08-F29; S08-F10
+
+### S08-F09 [transport/high/build_vv_transport] VV Flask mirror for local filing (list, read, write, archive, prune)
+TV: NAAPPS/ProjectVision__TrueVisionPublished__Api__.py
+VV: WCP/Server__ValeVisionPublished__Api__.py; WCP/server.py
+DET: TV's local filing is ProjectVision__TrueVisionPublished__Api__.py (448 lines): segment, project and extension guards, byte sniffing, atomic temp-then-rename writes, archive zips that are never overwritten, document-scoped prune, 2-digit year, 256 MB cap. VV's Flask registers only the scrapbook blueprint. server.py get_project_path joins ids containing '/' with no inside-the-tree check.
+REC: New WCP/Server__ValeVisionPublished__Api__.py, a port of TV's: /api/valevision/published/{list,file,archive,prune} with the same query shape, YEAR ^\d{4}$, root Projects/{year}/{folder}/06__Layout__PublishedDocuments and its own guarded resolver. Register it in server.py and restart.
+ADAPT: - Route prefix: /api/valevision/published. - YEAR_PATTERN: ^\d{4}$. - Root: WCP/Projects/{year}/{folder}/06__Layout__PublishedDocuments, behind its own guarded resolver (not get_project_path). - PROJECT_PATTERN: must admit, or explicitly refuse, the three 2025 Fenner folders whose names contain a space. - Keep unchanged: DOCUMENT_PATTERN, SEGMENT_P...
+EVID: NAAPPS/ProjectVision__TrueVisionPublished__Api__.py:39-45 routes, 86-93 patterns, 350-446 archive/prune; WCP/server.py:91-97 (blueprint), 128-160 (get_project_path)
+VER: The folder-name and document-id patterns were not called out.
+DEP: S08-F29
+
+### S08-F10 [transport/high/build_vv_transport] A published write must never bump VV's global build manifest
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js
+DET: The ProjectAsset and DrawingNotes handlers call na_write_build_manifest, which rewrites the global VaApps/Index/Na__BuildVersion__Manifest__.json. ProjectLoader appends ?v=<buildVersion> to every project.json and GLB URL. Each bump therefore makes every Vale client re-download its models, across all projects. Published files are content-hashed or short-lived JSON and need no bump.
+REC: The published handler must not call na_write_build_manifest. Set Cache-Control per file class instead: immutable for hashed names, 60 s must-revalidate for the index, manifests and element files.
+ADAPT: TV policy: ApiClient 1001-1007 (immutable vs max-age=60)
+EVID: WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectEditor__.js:59,160-171; CloudflareHandler__ProjectAsset__.js:148; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:251-254,407-408,497-519
+VER: 
+DEP: 
+
+### S08-F11 [data_schema/high/needs_decision] VV has no document id, yet it names every published folder, archive and share fallback
+TV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+DET: TV's Na__LeModel__GetDocumentId returns the stored Sheet__Fields__DocumentId, else project code + phase + number (SheetRecords 1604-1608). Published folders, archive zips, manifests, index rows, the WebViewer and the Share fallback all use it. VV has only the Drawing No. (stored, else '<code>-<order>'), no phase and no register. The PDF exporter already diverges here (VV fields.DrawingNumber vs TV fields.DocumentId).
+REC: Decide this before the first publish, and decide it once together with D-S03b-01 and S07a's register port (WP-S07a-01 switches the title block to DocumentId). - If the register/phase port is scheduled before the publisher: port TV's Na__LeModel__GetDocumentId directly and skip any interim adapter. - Otherwise: an interim VV Na__LeModel__GetDocumentId returns the stored Drawing No., falling back to the existing '<code>-<order>' default. Sanitise i...
+ADAPT: Adapter returning the drawing number; must pass the schema segment regex
+EVID: TVM/LE/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:1604-1608; VVM/LE/07__.../SheetRecords__.js:730-738; VVM/LE/60__.../PdfExporter__.js:248 vs TV :477
+VER: The same decision appears in S03b and S07a. The stricter local pattern would otherwise fail a publish half-way.
+DEP: 
+
+### S08-F15 [wiring/high/update_wiring] ModeController must never render a sheet in the viewer
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: VV's Enter (:539) and OnSheetsChanged (:779 loaded, :785 active) call SetSheet in viewer mode. TV 1.30.0 guards both. On the second path 'a phone was still rendering every viewport of the sheet it had just been told to show published'. TV also keeps its first-open veil editor-only.
+REC: Carry these seams into VV's ModeController with WP-S08-10: viewer -> ShowDrawing only, no SetSheet, no Fit; OnSheetsChanged viewer branch from TV :1124-1137. The ModeController itself belongs to the mode-controller slice.
+ADAPT: VV has no first-open veil in Enter; see S08-F26 for the loader wait
+EVID: VVM/LE/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:539-542,772-786; TV same file :733,:747-754,:1124-1137 (v2.155)
+VER: 
+DEP: S08-F14
+
+### S08-F18 [wiring/high/update_wiring] Publish entry point: TV opens Publish Drawings from the Drawing Register, which VV lacks
+TV: 02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js
+DET: Publish__Panel 1.1.0 (285 lines, styles injected inline) is imported only by Register__Editor__.js (import :90, button :539). VV has no 51__Feature__DrawingRegister. VV's Layout Editor Dev section already hosts the localhost-only 'Bake Snapshots and Linework' (:342) and 'Export PDF' (:345).
+REC: Port the Panel verbatim. Interim entry: a 'Publish drawings...' button in the VV LE Dev section via dynamic import (authoring only). Move it to the register bar if and when the register is ported (D-S08-04).
+ADAPT: Entry point only; Panel verbatim
+EVID: TVM/LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js:90,539; VVM/LE/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:342,345
+VER: 
+DEP: S08-F05
+
+### S08-F21 [transport/medium/build_vv_transport] VV client utility for published files (03__AppUtils), not a VV 80__CloudflareIntegration folder
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js
+DET: TV's Published client is a region of its CfApi client (ApiClient 977-1175: PublishedLocation, ListPublished, UploadPublished raw with a base64 fallback, DeletePublished). By design (DIV-4) VV keeps its R2 clients in 03__AppUtils: R2SaveProjectJson, R2AssetUpload and R2DrawingNotes, all using the X-Editor-Api-Key worker with the config from Flask.
+REC: New VVM/03__AppUtils/Na__AppUtils__R2PublishedDocs__.js with IsConfigured, Upload (raw POST, type from the extension), List (paginated) and Delete (document-scoped), reusing Na__AppUtils__R2FetchWorkerConfig.
+ADAPT: VV worker routes W1-W3
+EVID: TVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js:977-1175; VVM/03__AppUtils/Na__AppUtils__R2AssetUpload__.js:13-17,131-151; R2SaveProjectJson__.js:233
+VER: 
+DEP: S08-F08
+
+### S08-F22 [transport/medium/build_vv_transport] VV Flask returns index.html with HTTP 200 for any missing file
+TV: 02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js
+VV: WCP/server.py
+DET: serve_static falls back to index.html for every missing path. The reader's rule 'a 404 is an answer' cannot work on VV localhost: a missing published JSON is misread (then falls through), and a missing tier picture becomes a broken <image>, because Urls.Direct hands out only the first URL.
+REC: In WP-S08-05, return a real 404 for missing files under /Projects/, or serve published files through the new blueprint.
+ADAPT: VV server only
+EVID: WCP/server.py:956-977 (else: send_from_directory(base_dir, 'index.html')); TVM/52__.../Na__PubDoc__Urls__.js:229-310
+VER: 
+DEP: 
+
+### S08-F23 [wiring/medium/port_adapted] Reader URL order on VV localhost must start with the Flask-served copy
+TV: 02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js
+VV: 02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js
+DET: TV's Urls.For puts ResolveAssetUrl's fallback first on localhost. In TV that fallback is the same-origin repository copy; in VV it is the GitHub Pages URL. Ported verbatim, VV's reader would ask GitHub Pages first and then show the previously pushed R2 copy after a local publish.
+REC: Add a VV seam in Na__PubDoc__Urls__.For: - On localhost: ${origin}/Projects/{folderId}/{path} (Flask static) first, then R2, then GitHub Pages. - On the live site: R2 first, built from the configured R2 base rather than through Na__AppUtils__ResolveAssetUrl, then GitHub Pages. ResolveAssetUrl's hasImages_R2:false gate returns GitHub Pages only for 11 projects (S08-V02).
+ADAPT: Localhost-only URL; live order verbatim
+EVID: VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:303-307,464-475; TVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:223-236; TV Na__PubDoc__Urls__.js:189-207
+VER: 'Live order unchanged' would be wrong for 11 projects if implemented through VV's ResolveAssetUrl.
+DEP: S08-F04; S08-F22
+
+### S08-F24 [wiring/medium/update_wiring] VV ProjectLoader lacks GetProjectFolderFromUrl/GetYearFromUrl, which 52, 65 and 66 import
+TV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: TV reads ?project-folder= and ?year= (2-digit, default '26'). VV reads ?project=<code|folder|folderId> and resolves it through the R2 master index to '2026/3047__Doous'. Five TV files import the two TV helpers: Publish__, Transport, Urls, Share__Links and Share__Manifest.
+REC: Add VV-meaning facades to VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js returning the folder part and 4-digit year of NormalizeProjectFolderId(GetProjectCodeFromUrl()). The ported files then keep their imports. Document this as a DIV-4 seam.
+ADAPT: Same names, VV meaning. - VV's ?project= is normally the URL-encoded folderId (Whitecardopedia link routing). The facades can split that directly. - For a bare code or a folder name, use NormalizeProjectFolderId. It is synchronous but only correct once Na__AppUtils__InitMasterIndex() has resolved; before that it returns '2026/<code>'. This is fine ...
+EVID: TVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:92-104; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:319-351,535-548 (exports)
+VER: States the precondition, and the different meaning of GetProjectCodeFromUrl in VV.
+DEP: 
+
+### S08-F25 [wiring/medium/update_wiring] VV SheetSurface lacks ShowPublished and ZOOM_SETTLED_EVENT
+TV: 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+DET: TV SheetSurface 1.13.0 exports ShowPublished (:476-503: the same paper with a published host, the editor sheet parked, Refresh inert) and ZOOM_SETTLED_EVENT (1.10.0, v2.111). VV 1.6.0 has neither. It also has no single layer Stack: Frames, ChromeSvg, MarkupSvg, FocusSvg and Handles are separate elements.
+REC: Add an adapted ShowPublished to VV's SheetSurface (hide VV's own layers), or take it with the SheetSurface slice. Until ZOOM_SETTLED_EVENT exists, swap tiers on ZOOM_EVENT debounced by Tiers__SwapDebounceMs (220 ms).
+ADAPT: Hide VV's separate layer elements instead of TV's Stack
+EVID: TVM/LE/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:235,458-503,1040-1062 exports; VV same file :155-174, exports (no ShowPublished/ZOOM_SETTLED)
+VER: 
+DEP: 
+
+### S08-F26 [wiring/medium/update_wiring] VV loader would hold its screen 2.5 s for renders that never come in the published viewer
+TV: 
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: The VV loader keeps its screen up through Na__LeMode__WaitForFirstDrawing, which waits on Na__LeVeil__DrawingSettled(viewportCount). A published viewer renders nothing, so the wait ends only at GIVEUP_MS (2,500 ms), stacked on top of the published loading cover. TV has no loader, so there is no TV counterpart.
+REC: In viewer mode WaitForFirstDrawing resolves at once and the PubLoad cover owns the wait. This is a VV seam, recorded in the VV ledger.
+ADAPT: VV-only
+EVID: VVM/LE/05__.../ModeController__.js:595-600; VVM/LE/05__.../LoadingVeil__.js:95-97,206-234; VVM/LE/01__Core__Loader/Na__LayoutEditor__Loader__.js:373-384
+VER: 
+DEP: S08-F14
+
+### S08-F27 [wiring/medium/update_wiring] Share entry points and start-up wiring in VV
+TV: Index.html; 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js; 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js; 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js; 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js; 02_...
+DET: TV places Share in: the dock (WebViewer 1.2.0); the toolbar after Download PDF (Toolbar 1.24.0 :576-582); after Print in the specification's Read view (SpecEditor Bar 1.4.0 :204-210). Share__Open starts from Index.html :1733-1738, and the CSS is imported by the CSS index. VV loads the editor lazily, links its CSS via the loader, and has neither the na-app-scene-ready event nor Na__DrawData__IsLoaded.
+REC: Buttons in the VV Toolbar (:355) and SpecEditor Bar (:184-187). CSS in Na__LeLoad__STYLESHEETS before the WebViewer sheet. The loader starts Share__Open only when ?open= is present. Dispatch na-app-scene-ready in VV's LoadingSequence; add IsLoaded to VV 42/ProjectData.
+ADAPT: Loader-started Open; CSS via the loader list
+EVID: TV Index.html:904,1733-1738; TVM/01__AppCore/Na__AppFlow__LoadingSequence.js:443; VVM/LE/01__Core__Loader/Na__LayoutEditor__Loader__.js:125-134; VVM/01__AppCore/Na__AppFlow__LoadingSequence.js:476-488
+VER: 
+DEP: S08-F16
+
+### S08-F29 [data_schema/medium/needs_decision] Where VV's published documents live
+TV: 02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json
+VV: 02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json
+DET: TV root: NaProjectPortal/<yy>-Projects/<folder>/30__TrueVision__AppContent/06__Layout__PublishedDocuments/. VV keeps project assets directly in VaApps/Projects/{folderId}/ (PresentationMode/Thumbnails, LayoutEditor/Linework, LayoutEditor/Snapshots). VV's ResolveAssetUrl is relative to that folder, so 53's relative paths would land at VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/ with no code change.
+REC: D-S08-01 option (a): use VaApps/Projects/{folderId}/06__Layout__PublishedDocuments/ on R2 and WCP/Projects/{folderId}/06__... locally. Schema names stay verbatim; do not rename to LayoutEditor/PublishedDocuments.
+ADAPT: None if (a)
+EVID: TVM/53__.../Na__PublishedSchema__.json Folders__Root; VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:464-475; VV PLAN 5.6 R2 asset keys
+VER: 
+DEP: 
+
+### S08-F31 [wiring/medium/port_adapted] Statements and the register: share and viewer document kinds that depend on TV-only features
+TV: 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js; 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/
+DET: Share__Manifest, Button and Open import 52__Feature__StatementWriter's Statement__Data (TV-only). Open calls ModeController OpenRegister and OpenStatements, which VV lacks. The viewer lists a 'register' document. TV's missing-drawing fallback opens the Document Register.
+REC: D-S08-07 option (a): omit both kinds in VV now, keeping the Statement_ and Register key constants reserved in Links. The missing-drawing fallback opens the first sheet or the specification. Re-add when those features are ported.
+ADAPT: Kinds omitted; keys reserved
+EVID: TVM/LE/66__.../Share__Manifest__.js:96-98; Share__Open__.js:67-78; TV WebViewer__.js:207,621
+VER: 
+DEP: S08-F16
+
+### S08-F32 [transport/medium/update_wiring] The shared Vale service worker has no published cache class
+TV: 02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+VV: WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js
+DET: TV added tv-published-<token>: hashed assets cache-first with an LRU of 240, JSON network-first, PDFs not cached; it bumps the token per release. VV runs under WebApps/Na__Pwa__ServiceWorker__.js, with logic in WCP 62 (token 2026-09-18-1). Published .json/.webp/.pdf would pass through it; .png/.svg would be SWR-cached as shell. Ledger row 1189 wrongly says VV has no service worker.
+REC: Add a wpwa-published- class: patterns, owned prefix and activate keep-list. Bump the token with the release; that is Adam's call, because a bump evicts every Vale app's caches (D-S08-10).
+ADAPT: Pattern rooted at 06__Layout__PublishedDocuments on cdn.noble-architecture.com/VaApps
+EVID: TVM/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js:688-707,851-860,1128-1136; WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:229-254,391-399
+VER: 
+DEP: S08-F04
+
+### S08-F33 [wiring/medium/needs_decision] Verbatim 65 and PdfExporter depend on TV-only exports owned by other slices
+TV: 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js; 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js; 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js; 02...
+VV: 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js; 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js; 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__...
+DET: These are static imports VV cannot resolve: Na__LePaint__Plan (15/PaintOrder), BuildLayerPrimitives (MarkupBridge 1.20), BuildViewportFrame and includeFrames (SheetChrome 1.14), FacesFromRings (ShapeRings), Hatch DrawPdf, RenderFogForExport and SitePlanDrawing (Viewport2d 1.16), IsSitePlanViewport/Sheet, ImgPdf Prepare (SheetImages), VpRot (ViewportRotation), FloorAreas Na__LeArea__*, and ModelSource. Each makes the importing module fail to link.
+REC: Sequence 65 and WP-S08-14 after the owning slices (preferred). Stubs are possible for fog and site plans only (null/false). PaintOrder, BuildLayerPrimitives, BuildViewportFrame and FloorAreas cannot be stubbed without changing the published sheet (D-S08-11).
+ADAPT: Owned by other slices
+EVID: TV PdfExporter__.js:150-173 imports; Publish__Sheet__.js:58-71; Publish__Viewports__.js:65-86; VV Viewport2d export list (no RenderFogForExport/SitePlanDrawing)
+VER: 
+DEP: 
+
+### S08-F35 [test/medium/port_test] Port Na__Test__PublishedSchema__ (59 checks) with a VV fixture
+TV: 80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs
+VV: 80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs
+DET: The test walks the readable example folder. It checks that every built path exists, that the tier sizes reproduce the manifests and the version gate refuses newer and older, that no file is unaccounted for, and (region 6A) the share record. VV has no example folder. TV's AA00 example is hand-made and not yet at the final file shape.
+REC: Seed a VV fixture from TV's AA00 example (schema data only), then replace it with a real VV publish of 2026/3047__Doous after WP-S08-09. Point CONTENT/EXAMPLE at the VV fixture and region 6A at the VV share config.
+ADAPT: Fixture path; VV share config
+EVID: TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs:50-60 (CONTENT path), DEVLOG 1.1.0 region 6A; PORTAL AA00 example 39 files
+VER: 
+DEP: S08-F03
+
+### S08-F36 [test/medium/port_test] Port Na__Test__PublishedReader__ (63 checks) and its harness
+TV: 80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html
+VV: 80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html
+DET: It builds every fixture document with the real reader and fetch stubbed; it proves an unpublished drawing fetches nothing; and it statically walks the import graph to prove no renderer, projection, model loader or image exporter is reachable. It includes live-site URL checks against the NaProjectPortal CDN layout.
+REC: Port with the VV fixture. Rewrite the live-URL checks to VaApps/Projects/{folderId}/06__... Allow VV's Na__AppUtils__ResilientLoad__ leaf in the import walk, and add VV's 40/41/42/31 folders to the forbidden list.
+ADAPT: VV paths, URLs and import allowlist
+EVID: TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs:1-60 (CONTENT, READER, SCHEMA, UTILS), __Harness__.html
+VER: 
+DEP: S08-F04; S08-F35
+
+### S08-F37 [test/medium/port_test] Port Na__Test__ShareLinks__ (68 checks) without the s/ resolver region
+TV: 80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs
+VV: 80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs
+DET: The test checks the builder and parser, and the record's write order (local before R2, nothing to R2 if local fails, queueing, aliases) with the sheet model, statements and transport stood in. It also runs s/index.html's script in a sandbox against the real q/index.json. VV has no s/ or q/.
+REC: Port the builder, parser and record regions. Drop the s/ + q/ region, or replace it with a check of the ?project=<code>&open=<key> form against VV's master-index copy. Remove the statement stand-ins.
+ADAPT: No s/ region; no statements
+EVID: TV/80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs:1-60 description; TV DEVLOG v2.166 523-532
+VER: 
+DEP: S08-F16
+
+### S08-F38 [test/medium/port_test] New tests for VV's published Flask routes and worker handler (TV has none)
+TV: 
+VV: 80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py
+DET: TV has no automated test of ProjectVision__TrueVisionPublished__Api__.py or of the worker's /r2/* guards. VV's new routes carry the security boundary: path guards, the archive refusal, document-scoped delete, no manifest bump.
+REC: Add Na__Test__PublishedApi__.test.py using the Flask test client, following VV's Na__Test__ScrapbookApi__/ScrapbookServer__ pattern with sys.dont_write_bytecode. Add a node script driving the worker handler against an in-memory R2 double.
+ADAPT: VV-only
+EVID: VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py, Na__Test__ScrapbookServer__.py; VV ledger 89-92 (sys.dont_write_bytecode)
+VER: 
+DEP: S08-F08; S08-F09
+
+### S08-F40 [tooling/medium/needs_decision] No git policy for published output in the ValeCodebase repository
+TV: 
+VV: D:/10_CoreLib__ValeCodebase/.gitignore
+DET: VV's .gitignore has no rule for published folders or archive zips. Local output would live under WCP/Projects/, which is GitHub Pages content. TV's '**/00__Archive/' rule does not match '00__Archive__Revisions' either (a TV-side note). TV states that published files are pushed to R2 and not committed.
+REC: D-S08-08: ignore Projects/**/06__Layout__PublishedDocuments/ (or at least 00__Archive__Revisions/) in D:/10_CoreLib__ValeCodebase/.gitignore. Tell TV about the same gap.
+ADAPT: Repository root rule
+EVID: D:/10_CoreLib__ValeCodebase/.gitignore (no rule); NaWeb/.gitignore:111-113,151; TV Na__PubDoc__Urls__.js:28-33 (not committed)
+VER: 
+DEP: S08-F29
+
+### S08-F46 [tooling/low/backport_to_tv] TV's example fixture is not yet at the final file shape
+TV: PORTAL/26-Projects/AA00__ExampleProjectStructure/30__TrueVision__AppContent/06__Layout__PublishedDocuments/
+VV: 
+DET: v2.155 lists as NOT YET that the example folder is 'the approved version and must be brought up to the final file shape'. Its index rows still carry Document__Marks, whereas the publisher now writes PublishedDocuments__Unpublished__.json. Its share record was hand-made (v2.166).
+REC: Do not treat the AA00 example as ground truth for VV. Use it only to seed VV's schema tests, then regenerate VV's fixture from a real VV publish. Ask TV to bring its example up to date.
+ADAPT: n/a
+EVID: TV DEVLOG v2.155 1362-1363; PORTAL/26-Projects/AA00__ExampleProjectStructure/30__TrueVision__AppContent/06__Layout__PublishedDocuments/PublishedDocuments__Index__.json (Publish__MarksNote)
+VER: 
+DEP: 
+
+### S08-F47 [tooling/low/no_action] Publishing needs Chrome or Edge on the authoring machine
+TV: 02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js
+VV: ValeVision__README__.md
+DET: Publish__Raster refuses a browser that writes PNG when WebP was asked for ('publish from Chrome or Edge'), which rules out Safari. Hashing uses crypto.subtle (secure context: 127.0.0.1 qualifies). TV's raster tiers are rendered at print size on the authoring machine.
+REC: State this in VV's README and in the Publish dialog intro or Dev-section note; no code change.
+ADAPT: Documentation
+EVID: TVM/LE/65__.../Na__LayoutEditor__Publish__Raster__.js:151-167
+VER: 
+DEP: 
+
+### S08-F48 [transport/low/no_action] A project rename or delete carries the published folder correctly
+TV: 
+VV: WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js
+DET: CloudflareHandler__ProjectRename__ moves every key under the old prefix with httpMetadata preserved, so a published folder follows a renamed project and keeps its cache headers. Delete removes it. The index's informational Project__Folder goes stale until the next publish. Share links built on the project code survive, because the master index resolves the new folder.
+REC: No change. Mention it in the VV publishing README; republish after a rename to refresh Project__Folder.
+ADAPT: n/a
+EVID: WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js na_copy_object (httpMetadata, customMetadata), na_list_all_keys; CloudflareHandler__ProjectDelete__.js:126-130
+VER: 
+DEP: 
+
+### S08-V02 [wiring/medium/port_adapted] VV ResolveAssetUrl sends 11 projects to GitHub Pages only; the published reader must build its R2 URL itself
+TV: 02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js
+VV: 02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js; 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: VV's Na__AppUtils__ResolveAssetUrl returns { primary: ghUrl, fallback: ghUrl } whenever the project's master-index entry has hasImages_R2 === false. 11 of the 152 entries carry that flag; all are 2025 projects, for example 2025/BL-61732__Ball. TV's Urls__.For resolves every published path through ResolveAssetUrl. Ported that way, VV's reader would look for published files only on GitHub Pages, where they are never committed (D-S08-08 (a)). Every ...
+REC: In the VV Na__PubDoc__Urls__.For seam, build the R2 URL directly from the configured R2 base (Na__AppUtils__R2BaseUrl / AppConfig ProjectData__AssetUrls__R2BaseUrl) plus the project-relative path, ignoring hasImages_R2. Put GitHub Pages second. Do not hard-code the CDN string (VV rule 08, line 79). Add an acceptance check that a hasImages_R2:false project resolves its published index to R2 first.
+ADAPT: R2 URL from the configured base; images flag ignored for published paths
+EVID: VVM/03__AppUtils/Na__AppUtils__ProjectLoader.js:464-475 (ResolveAssetUrl, imagesOnGh gate); WCP/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json (11 entries hasImages_R2:false); TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js:194-207; VV/.cursor/rules/08-R2In...
+VER: 
+DEP: S08-F04; S08-F23
+
+### S08-V05 [wiring/medium/update_wiring] S08's seams are also specified by S03a, S03b, S07a, S09 and S06a: one owner per seam
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__She...
+DET: The same edits appear in sibling slices: - ModeController 'viewer never SetSheet' and the WaitForFirstDrawing skip: S03a (module table rows ':752-755, :1131-1138' and the wait contract). - SheetSurface ShowPublished and ZOOM_SETTLED_EVENT: inside S03b's SheetSurface 1.13.0 port. - GetDocumentId/GetPhase: S03b D-S03b-01 and S07a's register port (WP-S07a-01 switches the title block to DocumentId). - na-app-scene-ready: S09 WP-S09-08. - Sheet-image ...
+REC: Give each seam one owner: - S03a: the ModeController hunks. - S03b: SheetSurface and the SheetData document-id API. - S07a: the sheet-image folder (decided with D-S08-14). - S09: LoadingSequence.  Make WP-S08-10, WP-S08-09 and WP-S08-11 depend on those work packages instead of re-implementing the seams. Record the single decisions in WP-S08-15.
+ADAPT: Planning only
+EVID: parity/slices/S03a__LE_Config_ModeController_TabStrip_Loader.md:240,373,514,527; S03b__LE_SheetData_SheetSurface_Markup.md:245,409,536,540; S07a__LE_Register_ProjectQr_SheetImages.md:349,372,640; S09__Wiring_Integration_Surfaces.md:137,450; TVM/LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__P...
+VER: 
+DEP: S08-F15; S08-F25; S08-F11; S08-F27
+
+### S08-V06 [transport/low/build_vv_transport] Three VV project folders contain a space and fail the proposed worker and Flask guards
+TV: NAAPPS/ProjectVision__TrueVisionPublished__Api__.py
+VV: WCP/CloudflareWorker/src/handlers/CloudflareHandler__PublishedDocuments__.js; WCP/Server__ValeVisionPublished__Api__.py
+DET: 2025/FN-62104__Fenner Scheme-01, -02 and -03 have a space in the folder name. They fail TV's PROJECT_PATTERN ^[A-Za-z0-9][A-Za-z0-9_\-.]{0,119}$, which the survey's Flask port keeps. They also fail the survey's W1 folderId guard ^\d{4}/[A-Za-z0-9][A-Za-z0-9_\-.]{0,119}$, so these projects could never publish. All other 149 folder names pass.
+REC: In WP-S08-05, either admit a single interior space in the folder segment of the worker and Flask guards (never in published paths), or refuse those three projects with a stated reason ('rename the project to publish'). Add the case to Na__Test__PublishedApi__.
+ADAPT: Guard pattern only
+EVID: WCP/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json (3 of 152 folder names fail the pattern); NAAPPS/ProjectVision__TrueVisionPublished__Api__.py:87
+VER: 
+DEP: S08-F08; S08-F09
+

@@ -1,0 +1,92 @@
+--- TV@b2aa9151/Na__Elevation__ProjectJson__Data__.js
++++ VV/Na__Elevation__ProjectJson__Data__.js
+@@ -1,3 +1,3 @@
+ // =============================================================================
+-// TRUEVISION3D - ELEVATION VIEWS - PROJECT DATA
++// VALEVISION3D - ELEVATION VIEWS - PROJECT DATA
+ // =============================================================================
+@@ -54,2 +54,36 @@
+ //   camera and the drawing plane mapping.
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
++// - Source version: 1.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-10}}, whole. First ported 09-Sep-2026 for
++//                   ValeVision3D v2.19.0 (port Phase 3) as this app's 1.1.0 - records in the drawings block,
++//                   styles, exclusions, the asset slot and face-pick provenance - then 1.1.1 (10-Sep-2026:
++//                   projected linework off on a new drawing, which TrueVision's defaults say too). v2.94.0,
++//                   the depth fog, is not yet confirmed by Adam in TrueVision; it comes across under
++//                   DR-01 (c), and nothing draws the fog until W2-03.
++// - Parity        : adapted. TrueVision's code and its first-argument convention: sceneConfig is the
++//                   presentation block, read only to find a drawing's scene, and the records are read from
++//                   LayoutEditor__DrawingsData through Na__DrawData__GetElevationsArray. The normaliser and
++//                   the creator write Elevation__DepthFog, switched off, onto a record that has none
++//                   (49__System__ElevationDepthFog). DESCRIPTION and INTEGRATION are TrueVision's verbatim
++//                   and still describe its storage before v2.21.0 (records nested in the presentation block,
++//                   three dev-owned key lists, the whole presentation block saved): in both apps the records
++//                   live in LayoutEditor__DrawingsData and are saved by Na__DrawData__Save, and in ValeVision
++//                   that block is on the one ProjectData__EditorOwnedKeys list. Na__ElevData__ELEVATIONS_KEY
++//                   is TrueVision's value, the old nested key; nothing in ValeVision imports it.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - Na__ElevData__STYLE_KEYS is exported (K2 X2): this app's per-drawing style rows keep it (DR-32, D33).
++//   - Na__ElevData__SetAzimuthDeg and Na__ElevData__SetSeededFrom, with the two constants the second
++//     needs, are this app's (K2 X2), kept only because its pre-2.1.0 Elevations Dev menu editor still
++//     imports them (Pick Face, Re-pick, a change of direction) - retire with W2-05 (R0.2.11 Q-AZIMUTH (b),
++//     R6 F.8 C20). Their region sits just above Module Exports.
++//   - Elevation__SeededFrom (this app's record key, DR-32) is no longer written on read or on create -
++//     TrueVision's normaliser and creator do not know it - but a value already on a record stays on the
++//     live record, so every read and save keeps it. Only SetSeededFrom writes it now - retire with W2-05.
++// - Back-port     : TrueVision's DESCRIPTION and INTEGRATION still describe the storage before v2.21.0
++//                   (a records item for the TrueVision lane, WT-08). Otherwise none.
+ //
+@@ -857,2 +891,39 @@
+     // ------------------------------------------------------------
++
++
++// -----------------------------------------------------------------------------
++// REGION | ValeVision Only - Two Setters Its Pre-2.1.0 Dev Menu Editor Imports (Retire With W2-05)
++// -----------------------------------------------------------------------------
++
++    // MODULE CONSTANTS | Seeding Provenance (Elevation__SeededFrom, This App's Own Record Key)
++    // ------------------------------------------------------------
++    // How a record was first aimed: 'facepick', 'preset' or 'manual'. A value
++    // already on a record is kept (DR-32); only the setter below writes one -
++    // the normaliser and the creator above do not.
++    // ------------------------------------------------------------
++    const Na__ElevData__F_SEEDED_FROM = 'Elevation__SeededFrom';
++    const Na__ElevData__SEEDED_VALUES = Object.freeze(['facepick', 'preset', 'manual']);
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Set the Azimuth Directly (wrapped, whole degrees)
++    // ------------------------------------------------------------
++    function Na__ElevData__SetAzimuthDeg(elevation, degrees) {
++        if (!elevation || !Number.isFinite(degrees)) return false;
++        elevation[Na__ElevData__F_AZIMUTH] = Na__ElevData__WrapAzimuth(Math.round(degrees));
++        return true;
++    }
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Record How an Elevation Was Seeded (informational)
++    // ------------------------------------------------------------
++    function Na__ElevData__SetSeededFrom(elevation, source) {
++        if (!elevation) return false;
++        elevation[Na__ElevData__F_SEEDED_FROM] = (Na__ElevData__SEEDED_VALUES.indexOf(source) !== -1) ? source : 'manual';
++        return true;
++    }
++    // ------------------------------------------------------------
++
++// endregion -------------------------------------------------------------------
+ 
+@@ -902,3 +973,6 @@
+         Na__ElevData__GetAnnotations,
+-        Na__ElevData__GetDimensions
++        Na__ElevData__GetDimensions,
++        Na__ElevData__STYLE_KEYS,                                            // <-- ValeVision only (DR-32 D33, K2 X2)
++        Na__ElevData__SetAzimuthDeg,                                         // <-- ValeVision only: retire with W2-05 (Q-AZIMUTH, F.8 C20)
++        Na__ElevData__SetSeededFrom                                          // <-- ValeVision only: retire with W2-05 (DR-32, F.8 C20)
+     };

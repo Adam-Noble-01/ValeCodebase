@@ -1,0 +1,48 @@
+######## live
+== specpage
+  PASS  no OpenSans declared (Helvetica, Helvetica-Bold)
+  PASS  text extracts: Project Specification
+  PASS  text extracts: 3047_SPEC
+  PASS  text extracts: Rev B
+  pages 1, 2291 bytes, 445 characters of text
+exit 0
+== spec (harness, ?project=2026/3047__Doous)
+  PASS  no OpenSans declared (Helvetica, Helvetica-Bold)
+  PASS  text extracts: Project Specification
+  PASS  text extracts: 3047_SPEC
+  PASS  text extracts: Doous
+  PASS  text extracts: Rev B
+  pages 1, 2362 bytes, 471 characters of text
+== sheet
+  PASS  no OpenSans declared (Helvetica)
+  PASS  text extracts: Proposed Orangery - Elevations
+  PASS  text extracts: 3047_D02
+  PASS  text extracts: FOR PLANNING
+  PASS  text extracts: Vale Garden Houses
+  PASS  text extracts: Mr & Mrs Doous
+  PASS  text extracts: The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE
+  pages 1, 37382 bytes, 246 characters of text
+######## preview
+== specpage
+  PASS  OpenSans declared 2 time(s), each an embedded Type0 / Identity-H subset (FontFile2) with ToUnicode
+  PASS  text extracts: Project Specification
+  PASS  text extracts: 3047_SPEC
+  PASS  text extracts: Rev B
+  pages 1, 31668 bytes, 445 characters of text
+exit 0
+== spec (harness, ?project=2026/3047__Doous)
+  PASS  OpenSans declared 2 time(s), each an embedded Type0 / Identity-H subset (FontFile2) with ToUnicode
+  PASS  text extracts: Project Specification
+  PASS  text extracts: 3047_SPEC
+  PASS  text extracts: Doous
+  PASS  text extracts: Rev B
+  pages 1, 31835 bytes, 471 characters of text
+== sheet
+  PASS  OpenSans declared 1 time(s), each an embedded Type0 / Identity-H subset (FontFile2) with ToUnicode
+  PASS  text extracts: Proposed Orangery - Elevations
+  PASS  text extracts: 3047_D02
+  PASS  text extracts: FOR PLANNING
+  PASS  text extracts: Vale Garden Houses
+  PASS  text extracts: Mr & Mrs Doous
+  PASS  text extracts: The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE
+  pages 1, 53568 bytes, 246 characters of text

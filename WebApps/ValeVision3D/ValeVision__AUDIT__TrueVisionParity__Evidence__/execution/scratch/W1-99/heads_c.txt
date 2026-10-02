@@ -1,0 +1,526 @@
+﻿====================================================================================================
+W1-14 | # Port Record - W1-14: Layout Editor pure leaves B: rotation, curves, drafting-aid state, vector quality
+WP: W1-14   TV commit read: b2aa9151   TV releases covered (all 21-Sep-2026; Adam-confirmed in TV: NO for every one):
+            v2.107.0 Draft mode         - its leaf Na__LayoutEditor__DraftMode__State__.js 1.0.0 only
+                                          (TV devlog "ValeVision: Not ported. It waits for Adam's sign-off, then the question.")
+            v2.113.0 Ortho mode         - its leaf Na__LayoutEditor__OrthoMode__State__.js 1.0.0 only
+                                          ("NOT tried by Adam; NOT in ValeVision.")
+            v2.114.0 Drawing grid       - its leaf Na__LayoutEditor__DrawingGrid__State__.js 1.0.0 only
+                                          ("Adam has not tried it. Not in ValeVision.")
+            v2.130.0 Vector tools       - Na__LayoutEditor__VectorTools__Curves__.js 1.0.0 only
+                                          ("NOT tried by Adam; NOT in ValeVision.")
+            v2.136.0 Vector control     - Na__LayoutEditor__VectorQuality__.js 1.0.0 only, unwired ("The first cut (always
+                                          held) was tried by Adam and refused for its look. The Vector control that replaced
+                                          it is NOT yet confirmed by him. NOT in ValeVision.")
+            v2.138.0 Rotatable viewports - Na__LayoutEditor__ViewportRotation__.js 1.0.0 and the leaf section of
+                                          Na__Test__ViewportRotation__.test.mjs ("NOT tried by Adam; NOT in ValeVision.")
+            Cited only, no code: v2.129.0 (object snap) renamed two module names in DrawingGrid__State's INTEGRATION comment
+            without a version change. Every TV source carried "ValeVision : not yet ported - it waits for Adam's sign-off";
+            ported under DR-01 (c) and named here (C.1 row 0). None of the four held gestures (DR-40 items 7-10) is touched.
+Files (all NEW at TrueVision's paths; LF exactly as `git show` returns it; no VV history to fold in):
+  - VV 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0 (TV's version and DEVELOPMENT LOG, DR-34 (a)).
+      15,236 -> 15,548 bytes, 313 -> 318 lines, sha256 a4f9b4e88a870de0...
+  - VV 02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0.  22,217 -> 22,535 bytes, 389 -> 394 lines, sha256 f2ed6a8c957db522...
+  - VV 02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0.  4,853 -> 5,156 bytes, 107 -> 112 lines, sha256 dd393c33a333bc6a...
+  - VV 02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0.  19,650 -> 20,081 bytes, 383 -> 389 lines, sha256 35ddcdfd7be459a6...
+  - VV 02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0.  9,050 -> 9,363 bytes, 180 -> 185 lines, sha256 977556d9e51e3963...
+  - VV 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js  <- TV same path
+      TV module 1.0.0  parity verbatim  VV module 1.0.0.  12,138 -> 12,447 bytes, 240 -> 245 lines, sha256 3ee0eb41b20f03de...
+      Its one import, Na__LeCfg__GetVectorQualitySetup from ../03__Core__Config/Na__LayoutEditor__ConfigState__.js, already
+      exists in VV (W0-15: ConfigState__SheetSetup__.js:419, barrel :273/:426; AppConfig LayoutEditor__VectorQuality__Config
+      DefaultLevel "medium", ReleaseAfterMs 1200).
+    seams re-applied (all six): banner TRUEVISION3D -> VALEVISION3D (K2 H1); TrueVision's two-line PORT NOTE ("Authored
+      in / ValeVision : not yet ported") replaced by VV's (K2 H5: Ported from / Source version / Ported on {{VVREL:W1-14}} /
+      Parity verbatim / Divergences "Banner reads ValeVision3D. (No console output in this file.)" / Back-port none).
+      No console output exists in any of the six, so no prefix seam; no TrueVision__ literal, window.TrueVision__ read,
+      app-token storage key, NA marker or transport in any of them. DESCRIPTION, INTEGRATION and DEVELOPMENT LOG verbatim.
+    record keys / config keys added: none (localStorage keys and events are TV's own, K2 B1/E1, and clash with nothing
+      in VV: na-layouteditor-ortho, na-layouteditor-drawing-grid, Na__LayoutEditor__VectorLevel; events
+      na-layouteditor-draft-changed / -grid-changed / -ortho-changed / -vector-quality-changed - grep of
+      02__Src__AppModules and 03__Style__AppStylesheets finds them only in these files).
+  - VV 80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs  <- TV same path
+      TV test 1.0.1  parity adapted (the leaf section)  VV test 1.0.1 (TV's DEVELOPMENT LOG verbatim). 25,464 -> 12,922
+      bytes, 344 -> 205 lines, sha256 f73a4c52d736432d...
+      seams: banner; the opening line it prints reads "ValeVision3D - rotatable viewports" (as VV's other ported tests);
+      a PORT NOTE inserted (TV's test has none); THE HANDLES, THE WINDOW AND THE SNAP INDEX and THE CHROME AND A REAL
+      jsPDF regions (TV lines 177-335, 36 of its 52 checks) not taken - they load ViewportHandles 1.5.0, the turned
+      Window, 28__System__ObjectSnap Geometry/Index and SheetChrome's turned group, none of which VV has; W3-06 adds them
+      back whole. TV's imports (createRequire included) and browser stand-in kept as TV has them, so W3-06's change is the
+      three regions and nothing else.
+Not ported (and why): the three test regions above (W3-06, after W3-03 lands ViewportHandles 1.5.0 per OC-02); every
+  controller, panel, config JSON and stylesheet of 26/27/32 (W2-18), the rest of 37 (W2-27, W2-28, W2-41), the Vector
+  control's wiring - SheetSurface Ready/NoteRedraw, Toolbar select, Paper CSS rule (W1-28) - and every rotation consumer
+  (W3-06 and the hub ports). Package scope: leaves only, inert.
+Tests: Na__Test__ViewportRotation__ (leaf section) 16/16 PASS; Na__Verify__ModuleGraph__ 519 modules / 0 failures (import
+  targets 110, 1 documented vendor known issue, unchanged; 519 before and after - the new files are reachable from no entry
+  point); Na__Verify__Exports__ 424 files PASS (418 before + these 6)
+New or renamed cross-module exports: no. Six NEW modules (15 + 14 + 3 + 14 + 6 + 11 exports, exactly TrueVision's);
+  nothing renamed, nothing added to an existing module; nothing in VV imports them yet.
+SHARED SERVICE WORKER: 6 new modules (+1 test, never served); new exports on existing modules: none. No old/new mix can
+  break or change anything, because no loaded module imports the new files. Bump needed: no for this package alone; the
+  W6-02 precache refresh lists them once the packages that import them (W1-26 onward) make them reachable. Token NOT
+  bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none
+Hot files written (and the lock holder before you): none. Na__Test__ViewportRotation__.test.mjs is barrier-ordered
+  W1-14 -> W3-06; this package is its first editor (it did not exist in VV).
+====================================================================================================
+W1-15 | # Port Record - W1-15: Project QR code (53) switched off, with a VV ProjectLink
+WP: W1-15   TV commit read: b2aa9151   TV releases covered (only what these eight files carry):
+            v2.81.0  (20-Sep-2026, "A Drawing Can Be Scanned Into Its Own Model - Once Its Address Was Short Enough
+                      for the Title Block to Stay Thin": Encoder 1.0.0, Painter 1.0.0, ProjectLink 1.1.0, Symbol 1.1.0,
+                      Config, README, both tests)                                   Adam-confirmed in TV: NO
+                      (TV devlog: "Not yet signed off by Adam. Not in ValeVision, which has no 53__ folder.")
+            v2.100.0 (21-Sep-2026, the Project Portal block: only the README's Shape__Qr section here)
+                                                                                    Adam-confirmed in TV: NO
+                      (TV devlog: "NOT YET TRIED BY ADAM. Not in ValeVision yet")
+            v2.120.0 (21-Sep-2026, the Portal block's grey: Symbol 1.2.0, Config PortalDarkColour, README, test 1.1.0
+                      section 6, the Decode test's two inks)                       Adam-confirmed in TV: NO
+                      (TV devlog: "NOT tried by Adam; NOT in ValeVision")
+            v2.155.0 (23-Sep-2026, Phase 0 of publishing: the folder moved to 51__System__LayoutEditor/53__Feature__
+                      ProjectQrCode, ProjectLink's and Symbol's ../../ specifiers, the test's depth-proof staging)
+                                                                                    Adam-confirmed in TV: YES
+                      (TV devlog: "CONFIRMED by Adam 23-Sep-2026")
+            R5 also lists W1-15 against v2.162.0 and v2.166.0: they change none of these files (consumers - the
+            Statement Writer's Hub section and Share links - "Project QR 50 - unchanged"); W4-12 / W4-08 carry them.
+            Ported under DR-01 (c) and named here. None of the four held gestures (DR-40 items 7-10) is in these files.
+Files (all NEW, LF, UTF-8; built by scratch/W1-15/port_projectqr.py from TV's bytes at the pin with asserted edits):
+  - VV 02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js
+        <- TV same path  TV module 1.0.0  parity verbatim  VV module 1.0.0
+    seams re-applied: banner VALEVISION3D (K2 H1); console prefix [ValeVision3D ProjectQr] x1 (K2 C1); PORT NOTE
+    (K2 H5, TV's own PORT NOTE carried as a Lineage field: Vale Lantern Designer origin); DESCRIPTION line 17
+    lost TV's example address (its /q/ resolver on its own website, K2 V2) and keeps the byte count.
+    Everything below the header is TV's byte for byte apart from the prefix (checked by the port script).
+    TV lines differing: 2, 17-18, 54-61 (PORT NOTE), 797.   41,334 bytes  sha256 a2ab4f8c9075c3dc...
+  - VV .../53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js  <- TV same path  TV 1.0.0  verbatim  VV 1.0.0
+    seams: banner; PORT NOTE (TV's authorship note as Lineage). Below the header TV's byte for byte.
+    TV lines differing: 2, 37-41.   12,381 bytes  sha256 c9bac4d9dd0f8fea...
+  - VV .../53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js  <- TV same path  TV 1.2.0  parity ADAPTED  VV 1.2.0
+    seams: banner; console prefix x3; PORT NOTE; FAIL CLOSED (S07a-V02, package adaptation):
+      IsEnabled = config read AND ProjectQr__Enabled === true (TV: true when the file could not be read);
+      FALLBACKS baseUrl '' and indexUrl '' (TV: its resolver on its own website and ../../../../../q/index.json) -
+      kept '' for good, because Na__ProjectQr__Text() reads an EMPTY BaseUrl in the file as absent and falls back;
+      the index check's console line names this folder's README instead of TV's ProjectVision build script;
+      comments on Ready / IsEnabled and the DESCRIPTION's address and fallback bullets say what VV does.
+    TV lines differing: 2, 24-32, 45-46, 101-103, 153-154, 166, 169-171, +4 comment lines before 185, 186,
+    246-247, 357 (373 of TV's 397 lines kept).   25,326 bytes  sha256 d66f18fd9192765c...
+  - VV .../53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js  <- TV same path  TV 1.1.0  ADAPTED  VV 1.1.0
+    seams: banner; PORT NOTE; VV IDENTITY (package adaptation, S07a-F29, S03b-V02):
+      Na__QrLink__CurrentProject = { projectCode : the master-index entry's permanent qrKey (DR-12 recommendation;
+      W5-05 writes the keys), projectFolder / year : Na__AppUtils__GetProjectFolderFromUrl / GetYearFromUrl (W0-11,
+      master index, four-digit year) } - never the ?project= token, never the bare project code; no key -> '' ->
+      no code (no entry has a key yet: a second guard behind the empty BaseUrl);
+      new private helper Na__QrLink__ResolverKey reads the loader's memoised index once
+      (Na__AppUtils__InitMasterIndex - imported in place of Na__AppUtils__GetProjectCodeFromUrl), asked only once a
+      folder is known (so it never starts an index fetch of its own);
+      new Module Start region: a page already showing a found project reads the index at load, so the first sheet
+      painted carries its code (window-guarded: nothing runs in Node);
+      header address sections rewritten for VV (no NA address, no /na-apps/ path; the key, never the token; port
+      8000; "the ValeVision address lives in that one page"). BuildUrl and CurrentUrl are TV's line for line
+      (CurrentUrl's comment names VV's pair).
+    TV lines differing: 2, 16-18, 25-53 (partly kept), 58-63, 86-88, 96, +vars after 104, 109-127 region,
+    169-171, +Module Start before 183 (168 of TV's 196 lines kept).   16,215 bytes  sha256 5e6b9df450be346b...
+  - VV .../53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json  <- TV same path (as of v2.120.0)  ADAPTED
+    values changed (K2 V1/V2, DR-12 (A), DR-43): ProjectQr__Enabled false; Link BaseUrl ""; Link IndexUrl "";
+    notes rewritten: Description, EnabledNote, BaseUrlNote, QueryPatternNote, LengthNote, IndexUrlNote; one VV
+    sentence appended to Symbol MinModuleMmNote (the Vale candidate would trip the 0.28 floor; DR-12 pairs it with
+    0.265). Every other key and value is TV's (checked key by key; no duplicate key). QueryPattern "?{projectCode}",
+    colours #000000 / #595959 / #ffffff, QuietZoneModules 2, MinModuleMm 0.28 and the note's words are TV's
+    (D-S07a-06 A: the note names no app).
+    record keys / config keys added: ProjectQr__PortedFrom (provenance, read by no code; same convention as
+    W1-16's Meta__PortedFrom - a .json cannot carry a PORT NOTE or a VVREL placeholder).   11,930 bytes  sha256 c023c7ef...
+  - VV .../53__Feature__ProjectQrCode/README__ProjectQrCode__.md  <- TV same path  REWRITTEN for VV (package:
+    "README rewritten"): switched off three times over; what will be printed; the address budget for Vale (TV 42 B v3
+    0.303 mm; GitHub Pages candidate 52-53 B v4 0.270 mm; token-keyed 79 B v5 0.244 mm; short domain ~21 B v2); the
+    permanent qrKey; the never-break rules for VV's future resolver; the W5-05 switch-on steps; TV's call shapes,
+    Portal block rules and proofs kept as TV's text; provenance paragraph at the end. No NA address.
+    14,848 bytes  sha256 d6f349e33980f40b...
+  - VV 80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__.test.mjs  <- TV same path  TV 1.1.0  ADAPTED  VV 1.1.0
+    seams: banner; PORT NOTE; sections 1, 5, 6 are TV's checks (5 paints a 42-byte version-3 reference symbol
+    where TV painted its PS01 code); 2-4 rebuilt (TV's were built on its own printed address and resolver):
+      2 the shipped config builds no address; TV's address rules proved on DR-12's Vale candidate
+        (https://adam-noble-01.github.io/ValeCodebase/q/?3047 - shipped nowhere: 52 B, version 4); the ?project=
+        token as a key is version 5; the 42-byte reference;
+      3 the floor: version 3 clears 0.28; the candidate (0.270) and the token form (0.244) do not;
+      4 both switches off, both addresses empty, no master-index entry keyed (reads WCP's local master index
+        read-only), resolver-index check prints skip until W5-05 (the plan's "skipped while Enabled:false");
+      7 NEW - the seams: fail closed (config 404, config answered by a 200 page, config as shipped) and the VV
+        identity (folder/year from the index, the qrKey as the code, no key / unknown project -> no code,
+        switched on with a .test resolver it encodes and decodes back);
+    VV's ProjectLoader staged with its ResilientLoad helper (S07a-F52).   41,428 bytes  sha256 bb52a698bad038e6...
+  - VV 80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__Decode__.py  <- TV same path (as of v2.120.0)
+    verbatim apart from the banner and the PORT NOTE (Source version names 1.1.0, the version of the suite it
+    belongs to - TV's file carries none of its own).   6,117 bytes  sha256 f02892c776805568...
+Not ported (and why):
+  - TV's resolver q/index.html and q/index.json at its website root: NA's resolver (K2 V2). VV's own resolver, its
+    index and the permanent qrKey are W5-05 (held: hard gate DR-12).
+  - Section 4 of TV's test as written (q/index.json against TV's project portal): NA's resolver; W5-05 rewrites
+    section 4 against the Vale resolver (it owns the test's re-run).
+  - TitleBlock__QrCell and TitleBlock__Modern 1.5.0 -> W1-26 (OC-01); ShapeGeometry's Shape__Qr and SheetChrome's
+    'qr' primitive -> W1-26; the Portal parametric element and Na__Test__ScrapbookProjectQr__ -> W2-38; the
+    parametric panel (imports Na__QrLink__CurrentProject) -> W3-14; the Statement Writer's Hub section -> W4-12
+    (excluded from DEFINITIONS, DR-43).
+Tests: Na__Test__ProjectQr__ 62/62 PASS (sections 1-3 and 5-6: 24 + 9 + 5 + 4 + 6 = 48 checks; section 4: 4 checks
+  + 1 skip; section 7: 10 checks), 22 cases dumped; Na__Test__ProjectQr__Decode__ PASS - 22 cases x 2 inks, wrong
+  reads 0, unread 0. Mutation control 5/5 planted faults caught, clean copy 62/62. TV baseline (TV's own test on TV's
+  files at the pin, session scratchpad): 45 passed, 1 failed (its q/ folder is not beside that copy).
+  Na__Verify__ModuleGraph__ 526 modules / 0 failures (unchanged: nothing reaches the new modules), import targets
+  110 with 1 documented known issue (unchanged); Na__Verify__Exports__ 459 files PASS (was 455; the folder alone
+  4/4 PASS).
+New or renamed cross-module exports: yes - 4 NEW modules with TV's exports, names exactly TV's:
+  Na__QrEnc__Encode/MergeRuns/MaxBytes; Na__QrPaint__ModuleSize/SvgGroup/SvgDocument/DrawPdf;
+  Na__ProjectQr__READY_EVENT/Ready/IsEnabled/GetSetup/GetUrl/GetSymbol/GetNote/VerifyEntry/CheckPrint;
+  Na__QrLink__CurrentProject/BuildUrl/CurrentUrl. Nothing renamed; no export added to or removed from any existing
+  module. Window event (TV's name, K2 E1): na-projectqr-ready, dispatched by Symbol once something imports it
+  (no listener in VV yet; TV's only listener is the Statement page).
+SHARED SERVICE WORKER: 4 new modules + 1 config JSON + 1 README; no new export on any existing module; nothing imports
+  or fetches them yet, so a warm client holding any mix of old and new files sees no difference. Bump needed: no (not
+  for this package; W6-02 consolidates the precache refresh). Token NOT bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none. ProjectLoader (W0-11) is only imported, never edited.
+Hot files written (and the lock holder before you): none (hot_files []; eight new files W1-15 alone owns).
+====================================================================================================
+W1-16 | # Port Record - W1-16: Sheet Images render leaves (54), ahead of the shared-core ports
+WP: W1-16   TV commit read: b2aa9151   TV releases covered: v2.116.0 (21-Sep-2026, "Sheet Images: a Picture on a
+            Drawing Is Filed Under That Drawing's Number, Wherever the Number Goes") and v2.121.0 (21-Sep-2026, "Sheet
+            Pictures Are Stored at Print Size, Not Render Size") - the render half of LE/54 only.
+            Adam-confirmed in TV:
+              v2.116.0 - NOT signed off in writing. Tried by Adam: the TV devlog's Verified section records "Adam's own
+                         run on 8090" and his frame comment ("the border feels too heavy") was applied; there is no
+                         sign-off line.
+              v2.121.0 - NO. TV devlog, last line of the entry: "NOT signed off by Adam; NOT in ValeVision."
+            TV's TrueVision__PLAN__SheetImages__.md section 9 at the pin: "ValeVision port | OPEN - offer after Adam
+            confirms". Ported under DR-01 (c) and named here. None of the four held gestures (DR-40 items 7-10) is in
+            these files.
+Files (all NEW, LF exactly as `git show` returns TV's text; folder 02__Src__AppModules/51__System__LayoutEditor/
+       54__Feature__SheetImages/, registered as LE/54 shared in ValeVision__NOTES__FolderNumberRegistry__.md):
+  - VV .../Na__LayoutEditor__SheetImages__Setup__.js     <- TV same path  TV module 1.1.0  parity ADAPTED   VV module 1.1.0
+      seams re-applied: banner VALEVISION3D (K2 H1); console prefix [ValeVision3D LayoutEditor] x1 (K2 C1); PORT NOTE
+      (K2 H5); the Sources PagesBaseUrl fallback 'https://www.noble-architecture.com' -> this app's GitHub Pages base
+      'https://adam-noble-01.github.io/ValeCodebase/WebApps' (S07a-V02; package adaptation "VV Pages-base ...
+      fallbacks; fails CLOSED to no address"). Frame fallbacks unchanged (#555041, DR-13 (a)).
+      TV lines differing: 2, 76, 184 only.  12,274 bytes, sha256 27ad7454d9bf...
+  - VV .../Na__LayoutEditor__SheetImages__Geometry__.js  <- TV same path  TV module 1.1.0  parity verbatim  VV module 1.1.0
+      seams: banner; PORT NOTE. TV lines differing: 2.  26,894 bytes, sha256 bb338d8631a6...
+  - VV .../Na__LayoutEditor__SheetImages__Painter__.js   <- TV same path  TV module 1.0.0  parity verbatim  VV module 1.0.0
+      seams: banner; console prefix x1; PORT NOTE. TV lines differing: 2, 197.  13,455 bytes, sha256 448317e0b742...
+  - VV .../Na__LayoutEditor__SheetImages__Paint__.js     <- TV same path  TV module 1.0.0  parity verbatim  VV module 1.0.0
+      seams: banner; PORT NOTE. TV lines differing: 2.  9,778 bytes, sha256 5b2bdb9626a2...
+  - VV .../Na__LayoutEditor__SheetImages__Source__.js    <- TV same path  TV module 1.0.0  parity verbatim  VV module 1.0.0
+      seams: banner; console prefix x2; PORT NOTE. Transport (K2 R6, DIV-4): its two imports are TV's lines verbatim and
+      resolve to VV's own modules at TV's paths - Na__AppUtils__IsRunningOnLocalhost (VV ProjectLoader) and
+      Na__CfApi__SheetImageLocation (W0-12's facade, VV body: VaApps/Projects/<folderId>/05__Layout__DrawingDocs__Images/
+      <doc id>/<file> on the CDN, the Flask/Pages repository copy, folder from the master index). No code change was
+      needed; the divergence is recorded in the PORT NOTE. TV lines differing: 2, 150, 179.  17,276 bytes,
+      sha256 05b87ec73831...
+  - VV .../Na__LayoutEditor__SheetImages__Pdf__.js       <- TV same path  TV module 1.0.0  parity verbatim  VV module 1.0.0
+      seams: banner; console prefix x2; PORT NOTE. TV lines differing: 2, 76, 90.  6,569 bytes, sha256 026ad698965e...
+  - VV .../Na__LayoutEditor__SheetImages__Encode__.js    <- TV same path  TV module 1.1.0  parity verbatim  VV module 1.1.0
+      seams: banner; PORT NOTE. TV lines differing: 2.  22,088 bytes, sha256 002d9083f762...
+  - VV .../Na__LayoutEditor__SheetImages__Config__.json  <- TV same path  TV Meta 1.1.0   parity ADAPTED   VV Meta 1.1.0
+      seams: Sources__PagesBaseUrl -> 'https://adam-noble-01.github.io/ValeCodebase/WebApps' (K2 V1/V2);
+      Meta__Folders rewritten for VV (VaApps/Projects/<folderId>/ on R2, WebApps/Whitecardopedia/Projects/<folderId>/
+      locally, VV document id example 3047_D01 per DR-11, "never by the Whitecardopedia sync", the DR-29 no-commit
+      note) - TV's text named <project>/30__TrueVision__AppContent/... and RB05_T01_D01.
+      record keys / config keys added: Meta__PortedFrom (Meta block, read by no code) - the JSON's PORT NOTE (see 1d).
+      Every other key and value is TV's, proven key by key by the port script. 14,678 bytes, sha256 0d20e1a0098f...
+Not ported (and why):
+  - The other nine files of LE/54 (the core, Store, Publish, Insert, Handles, Crop, Menu, Panel, stylesheet): W3-02
+    (editing set), W3-18 (Store, Publish, stylesheet), W3-09 (switch-on) own them.
+  - TV's Na__Test__SheetImages__.test.mjs is NOT landed in 80__Testing__PrototypeEnvironment: wp_canonical
+    test_ownership names W3-09 as its porter and W1-16 as "sections run earlier". Its Geometry and Painter regions
+    were run from a scratch copy (below); its Record (needs SheetRecords 1.39.0, W1-19) and Save Step (needs Publish,
+    W3-18) regions were not.
+  - No wiring: nothing imports these modules yet (only two @delegate comments name the 54 folder). SheetRecords 1.39.0
+    (W1-19) imports Geometry, SheetChrome 1.14.0 (W1-26) imports Painter, ShapeGeometry 1.9.0 (W1-26) imports Paint,
+    PdfExporter 1.12.0 taken whole (W3-16) imports Pdf; Setup's Ready() joins the mode controller's first-open wait
+    with W3-09.
+Tests: TV Na__Test__SheetImages__ (pin b2aa9151) Geometry 42/42 + Painter 8/8 = 50/50 PASS against VV's tree (scratch
+  copy; the 40 Record / Save Step checks cut); mutation control 4/4 planted faults caught, clean copy passes;
+  e2e harness (the render set + facade + ProjectLoader at their browser URLs) 67/67 PASS incl. the TV-Setup control;
+  Na__Test__TransportFacade__ 175/175 PASS; the other 10 VV node tests exit 0.
+  Na__Verify__ModuleGraph__ 520 modules / 0 failures (unchanged count: nothing imports the leaves), import targets 110,
+  1 documented vendor known issue (unchanged); Na__Verify__Exports__ 440 files PASS (the 7 new modules alone: 7 PASS).
+New or renamed cross-module exports: yes - 7 NEW modules with TV's exports, names exactly TV's (Na__LeImgCfg__* 9,
+  Na__LeImgGeo__* 21, Na__LeImgPaint__* 8, Na__LeImgDraw__* 4, Na__LeImgSrc__* 11, Na__LeImgPdf__* 1, Na__LeImgEnc__* 6).
+  Nothing renamed; no export added to or removed from any existing module.
+  Window event (TV's name, verbatim, K2 E1): na-layouteditor-sheetimages-source (Na__LeImgSrc__CHANGED_EVENT), dispatched
+  by Source once an importer loads it; its listener, the feature core, lands with W3-02 (R3 catalogue (e)).
+SHARED SERVICE WORKER: 7 new modules + 1 config JSON; no new export on any existing module; nothing imports or fetches
+  them yet, so a warm client holding any mix of old and new files sees no difference. The sheet-picture cache bucket
+  (wpwa-images, WP-S07a-11) is already in W0-08's prepared worker package. Bump needed: no (not for this package; the
+  W0 renumber deploy already needs one, W6-02 consolidates). Token NOT bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none. The W0-12 facade is only imported, never edited.
+Hot files written (and the lock holder before you): none (hot_files []; eight new files W1-16 alone owns).
+====================================================================================================
+W1-17 | # Port Record - W1-17: Hatch patterns leaf and the app-root hatch library
+WP: W1-17   TV commit read: b2aa9151   TV releases covered (Adam-confirmed in TV: NO for every one but v2.150.0):
+            site plan composites work of 20-Sep-2026 (TrueVision__PLAN__SitePlanComposites__.md P6 "Hatch generator +
+              two patterns + indexes", HatchPatterns 1.0.0-1.1.0, the Site Plan pack 1.0.0 with Mixed Woodland and
+              Ponds & Lakes); first named in TV's devlog by v2.89.0 (Token, TilePolylines) and v2.90.0 (SvgPaint,
+              DrawPdf moved into the module)                                    - not confirmed (no sign-off line;
+                                                                                  the plan's P10 "Adam's sign-off, then
+                                                                                  offer the ValeVision port" is open)
+            v2.101.0 (21-Sep) HatchPatterns 1.2.0 (a pattern's own ink); Site Plan pack 1.1.0: Grassland and Rough
+              Grassland 1.0.0, Mixed Woodland 1.0.1                            - "NOT YET TRIED BY ADAM"
+            v2.126.0 (21-Sep) HatchPatterns 1.3.0 (a use's own line pt and colour, seam copies); the Construction
+              Materials pack 1.0.0 (index + 14); root index 1.1.0 (Construction first) - "NOT tried by Adam"
+            v2.150.0 (22-Sep) HatchPatterns 1.4.0 (DrawPdf even-odd holes)    - its entry says NOT tried, but
+                                                                                  v2.151.0 opens with Adam having tried
+                                                                                  it ("It works INCREDIBLE!", TV devlog
+                                                                                  :1485): tried by Adam
+            v2.164.0 (29-Sep) HatchPatterns 1.5.0 (TileMarks for the site legend) - "NOT tried by Adam"
+            UNLOGGED: Gravel 1.0.0 and the Site Plan pack index 1.2.0 (29-Sep-2026; in no TV devlog release at the pin -
+              TV git 55014c6a "Minor")                                          - not confirmed
+            Ported under DR-01 (c); none of the four held gestures (DR-40 items 7-10) is touched.
+Files (all NEW at TrueVision's paths; LF exactly as `git show` returns it; nothing staged, all `??`):
+  - VV 02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js
+      <- TV same path   TV module 1.5.0   parity verbatim   VV module 1.5.0 (TV's version and DEVELOPMENT LOG, DR-34 (a))
+      56,224 -> 56,888 bytes, 997 -> 1,009 lines, sha256 3b45a3ae82c3b64a...
+      seams re-applied: banner TRUEVISION3D -> VALEVISION3D (K2 H1); console prefixes [TrueVision3D] -> [ValeVision3D]
+        x3 (:281, :301, :313) and [TrueVision3D LayoutEditor] -> [ValeVision3D LayoutEditor] x2 (:712, :918) (K2 C1);
+        a ValeVision PORT NOTE inserted before TrueVision's DEVELOPMENT LOG (:36-47; TrueVision's file has none, K2 H5,
+        S05b b10). DESCRIPTION, INTEGRATION, every code line and the DEVELOPMENT LOG are TrueVision's verbatim.
+      record keys / config keys added: none (the record field names Viewport__SitePlanHatches / Hatches__Categories
+        and the Hatch__* fields are TrueVision's own, K2 K1; no config, storage key or event)
+  - VV 52__LayoutEditor__HatchPatternLibrary/HatchLibrary__Index__.json  <- TV same path   Meta 1.1.0   parity verbatim
+      + header   2,148 -> 2,850 bytes, 19 -> 20 lines, sha256 2f85f26a9e3e3480...
+      seams: one line, "Meta__PortedFrom", after Meta__Author - the JSON form of the PORT NOTE (JSON has no comments;
+        precedent W1-16's SheetImages config, ScrapbookCustom and ModelLayers configs). Every TrueVision key, both pack
+        rows and their ORDER unchanged: TrueVision's index already lists Construction Materials first (Brickwork the
+        default) and the Site Plan pack second, which is exactly the order the package's adaptation and DR-19's default
+        ask for - so the "pack order" adaptation is a no-op.
+  - VV 52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/ (15 files: HatchPack__Index__ 1.0.0 +
+      14 patterns)  <- TV same paths   verbatim, byte for byte (sha256 equal to git show at the pin)
+  - VV 52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/ (6 files: HatchPack__Index__ 1.2.0 + Grassland,
+      Gravel, MixedWoodland, PondsAndLakes, RoughGrassland)  <- TV same paths   verbatim, byte for byte. Shipped because
+      site plans port dormant (DR-08 (B)); DR-19's default is "verbatim panel and both packs".
+Not ported (and why):
+  - LE/36 Na__LayoutEditor__Styles__Patterns__.css - HELD BACK (section 2): no home exists until W2-29 lands
+    Panel__Patterns, so landing it now fails G4 (stylesheet-home) on this package's own file.
+  - 52__.../OS_Symbol__Examples__.png and OS_Symbol__Examples__Woodland&Water__.png (2.5 MB) - authoring reference
+    sheets nothing fetches (HatchPatterns names one only in a comment, VV :164); not in vv_targets; DR-29 commits JSON
+    only; S05b c2 "do not copy".
+  - LE/36 Na__LayoutEditor__Panel__Patterns__.js - W2-29 (with the ModeController Ready chain and registration).
+  - Na__Test__HatchLineControls__.test.mjs - W3-12 owns it (F.5.3); tests_to_port is empty for W1-17.
+Tests: package harness acceptance_check.mjs 24/24 PASS on the live files (20 against TrueVision's module and library at
+  the pin, 4 through the Flask server); mutation_check.py 6/6 (control passes, 5 mutants fail); VV node suite 10/10
+  exit 0 (sanity); Na__Verify__ModuleGraph__ 520 modules / 0 failures (520 before); Na__Verify__Exports__ 441 files
+  PASS (440 before)
+New or renamed cross-module exports: no. One NEW module with exactly TrueVision's 21 exports; nothing renamed, nothing
+  added to an existing module; nothing in ValeVision imports it yet.
+SHARED SERVICE WORKER: 1 new module and 22 new static JSON files; new exports on existing modules: none. No loaded
+  module imports the module and nothing fetches the library, so a warm client holding a mix of old and new files
+  sees no difference. Bump needed: no. (When W2-29 wires it, note the module fetches the library with
+  cache:'no-store', exactly as TrueVision does, so precaching the JSON buys nothing.) Token NOT bumped; worker NOT
+  edited.
+Transport touched (WCP server.py / CloudflareWorker): none. The library is static files the module finds relative to
+  its own URL (new URL('../../../', import.meta.url) + 52__LayoutEditor__HatchPatternLibrary); Flask's existing
+  GET /ValeVision3D/<path> (server.py:1148-1165, send_from_directory) serves them; no route, no R2 key, no facade
+  call, no NaProjectPortal key.
+Hot files written (and the lock holder before you): none (hot_file_ownership.json names none of these files).
+====================================================================================================
+W1-18 | # Port Record - W1-18: GradientTool 1.1.0 and LineStyleTool 1.1.0
+WP: W1-18   TV commit read: b2aa9151   TV releases covered (each file's own release, from TV's devlog read at the pin):
+              v2.150.0 (22-Sep-2026) GradientTool 1.1.0 - DrawPdf(doc, points, gradient, holes): every ring traced
+                into the clip, clipped even-odd                                Adam-confirmed in TV: NO for this change
+                (v2.150.0's own entry: "NOT tried by Adam. NOT in ValeVision"; v2.151.0 records Adam trying v2.150.0 in
+                the app - "It works INCREDIBLE!" - which was the Boolean tools; no record names the gradient's PDF clip)
+              v2.152.0 (23-Sep-2026) LineStyleTool 1.1.0 - BuildRows / RefreshRows / RegisterControls take an optional
+                { prefix, dashedLabel, dashedTitle }                           Adam-confirmed in TV: NO ("NOT tried by
+                Adam. ... NOT in ValeVision.")
+            TV commits: GradientTool 1.1.0 is a2e0a836 (22-Sep-2026, "Minor", +21/-6), LineStyleTool 1.1.0 is b24f33a9
+            (committed 23-Sep-2026 under the v2.155.0 heading, +42/-20); neither file changed again up to the pin.
+            Both ported under DR-01 (c): in dependency order (ShapeRings, W1-13, first), named here, flagged by the
+            scribe. TV's LineStyleTool PORT NOTE held the VV port for Adam's sign-off; DR-01 (c) covers it and the VV
+            PORT NOTE says so. No gesture change (DR-40 items 7-10) is touched.
+Files (whole-file takes at the pin, LF exactly as git show returns it; scratch port_w1_18.py, hash-guarded):
+  - VV 02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js
+      (existing, whole file)  <- TV same path  TV module 1.1.0  parity verbatim  VV module 1.0.0 -> 1.1.0 (TV's
+      version and log, DR-34 (a)).  44,609 bytes CRLF -> 45,495 bytes LF (TV 44,918), sha256 592f14c7436a6a98...
+      seams re-applied: banner VALEVISION3D (H1); console prefix [ValeVision3D LayoutEditor] x2 (C1, Ready's two
+      warnings); TV's PORT NOTE block ("Ported from : n/a - authored in TrueVision3D", "Ported to : ValeVision3D
+      51__System__LayoutEditor/...") replaced by VV's (H5): Ported from / Source version 1.1.0 (TrueVision3D v2.150.0,
+      22-Sep-2026; read at b2aa9151) / Ported on 02-Oct-2026 for ValeVision3D {{VVREL:W1-18}} with VV's history in one
+      line (1.0.0 from TrueVision3D v2.29.0 on 13-Sep-2026, ValeVision3D v2.26.0) / Parity verbatim / Divergences:
+      banner and console prefix / Back-port none. VV's own INTEGRATION wording ("waits on Ready alongside the editor's
+      own config") gives way to TV's ("with the other configs") - true in VV (ModeController :828 Promise.all).
+      record keys / config keys added: none (Shape__Gradient unchanged; the config JSON untouched)
+      new import: Na__LeRings__Spans from ../15__Core__Markup/Na__LayoutEditor__ShapeRings__.js (W1-13's leaf, no
+      imports of its own - no cycle; G1 522 -> 523 modules because ShapeRings now has a consumer)
+  - VV 02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
+      (existing, whole file)  <- TV same path  TV module 1.1.0  parity verbatim  VV module 1.0.0 -> 1.1.0.
+      30,026 bytes CRLF -> 31,484 bytes LF (TV 30,697), sha256 2a6ad457da763411...
+      seams re-applied: banner (H1); console prefix x2 (C1); TV's PORT NOTE ("Authored in : TrueVision3D first",
+      "ValeVision : waiting on sign-off ...") replaced by VV's (H5): Source version 1.1.0 (TrueVision3D v2.152.0,
+      23-Sep-2026; read at b2aa9151), Ported on 02-Oct-2026 {{VVREL:W1-18}} with VV's history in one line (1.0.0 from
+      TrueVision3D on 14-Sep-2026, ValeVision3D v2.40.0), the DR-01 (c) sentence, Back-port: TV's stale note is a TV
+      record fix for WT-08. VV's 1.0.0 log line ("Ported from TrueVision3D: ... Config JSON identical.") gives way to
+      TV's log verbatim (H6). record keys / config keys added: none (Shape__LineStyle unchanged; config untouched)
+Not ported (and why):
+  - Na__LayoutEditor__GradientTool__Config__.json and Na__LayoutEditor__LineStyleTool__Config__.json: no action, by
+    the acceptance - VV's are the same git blobs as TV's at the pin (e5aff2fa..., 718325c9...); byte-identical before
+    and after (sha256 6dc10dbd..., 676bd077...; git status: unmodified).
+  - Callers of the new parameters, by design: SheetChrome 1.14.0 passes a holed shape's holes to DrawPdf (W1-26);
+    Panel__Dimensions 1.7.0 passes { prefix : 'dim', dashedLabel, dashedTitle } (W3-12). Until they land both new
+    parameters have no caller in ValeVision, so behaviour is unchanged (proved below).
+  - TV tests: none to port (tests_to_port is empty). The six TV tests that name these modules stub them
+    (HatchLineControls W3-12, LayerStack W1-28, ScrapbookProjectQr W2-38, SheetImages W3-09, SitePlanComposites W2-14,
+    VectorBooleans W3-07 - test_ownership); none runs their bodies, so this package's own harness is the direct proof.
+Tests: scratch acceptance_w1_18.mjs 47/47 PASS on the live files (and 47/47 on the rehearsal copies before landing;
+  planted defects caught); port_w1_18.py --verify 0 problems (live = TV + the seams, both ways); node --check 2/2;
+  VV node suite 15/15 exit 0 (final run).  Na__Verify__ModuleGraph__ 526 modules / 0 failures (final; 523 right after
+  landing, 522 before); Na__Verify__Exports__ 455 files PASS (final; 453 right after landing)
+New or renamed cross-module exports: no. Both export lists are unchanged from 1.0.0 and equal TV's at the pin (16 and
+  12 names). Three existing exports take an optional extra argument: Na__LeDash__BuildRows(body, options),
+  Na__LeDash__RefreshRows(body, state, options), Na__LeDash__RegisterControls(host, options); Na__LeGrad__DrawPdf(doc,
+  points, gradient, holes). Left out, each does exactly what 1.0.0 did.
+SHARED SERVICE WORKER: 0 new modules; new exports on existing modules: none. One existing module (ShapeRings, landed
+  by W1-13) becomes reachable at run time through GradientTool's new static import. Any warm-client mix of old and
+  new files links and behaves the same: no export changed, ShapeRings exists on the server, and every ValeVision
+  caller passes no options and no holes. Bump needed: no, not for this package. The shared precache lists none of
+  these files (grep of WCP 62__Feature__AppInstallability: no match). Token NOT bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none
+Hot files written (and the lock holder before you): none - the package's hot_files is empty and
+  hot_file_ownership.json has no entry for either file (W1-18 is their only editor in the plan).
+====================================================================================================
+W1-23 | # Port Record - W1-23: Render signature alignment and the Describe stub (no behaviour change)
+WP: W1-23   TV commit read: b2aa9151   TV releases covered (signatures and call shapes only - no feature ported):
+            v2.32.0 (13-Sep-2026, Model Source: the modelSourceId slot on Render2d / Render3d / GetModelRoot / the two
+                     fingerprints, Describe().modelSource, EnsureLinework's modelSource and waited)
+            v2.94.0 (20-Sep-2026, Elevation Depth Fog: the depthFog slot on Render2d only)
+            v2.64.0 (18-Sep-2026, stillWanted) and v2.50.0 (14-Sep-2026, Render3d viewWindow): already in ValeVision
+                     (VV v2.57.0 and SnapshotRenderer 1.5.0); only their argument POSITIONS move to TrueVision's.
+            Adam-confirmed in TV: none of the four carries a confirmation line either way in TV's devlog at the pin
+            (v2.32.0 :13479-13610, v2.94.0 :6950-7118, v2.64.0 :10612-10685, v2.50.0 :12020-12115; v2.94.0 lists
+            "NOT tested: a real save"). Treated as NOT confirmed and named here for the W1-99 scribe (DR-01 (c)).
+            No DR-40 gesture is involved.
+Files (all hunks into ValeVision's own sequence; CRLF kept - every file was and is pure CRLF):
+  - VV 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+      <- TV same path, module 1.13.0 (v2.161.0) - signatures at TV :434, :516, :527, :863, :991
+      parity diverged (DIV-1, unchanged)   VV module 1.7.0 -> 1.7.1   38,636 -> 43,712 bytes, sha256 0b63f7f1a3c7e700
+      Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, modelSourceId,
+      stillWanted, depthFog); Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights,
+      modelSourceId, viewWindow, stillWanted); GetModelRoot / GetModelFingerprint / GetPipelineFingerprint(modelSourceId).
+      modelSourceId is taken and not used (DR-09 (a): the live model); a depthFog source answers null before the queue.
+  - VV .../20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js  <- TV same path 1.2.0 (v2.140.0), Describe :165
+      parity adapted   VV 1.0.0 -> 1.0.1   6,824 -> 9,702 bytes, sha256 79db5eccd2a121de
+      Describe returns { source, definition, window, modelSource } with modelSource = the package's stub, a new object
+      per call from a private helper Na__LeVp2d__LiveModelSource (not exported).
+  - VV .../20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js  <- TV same path 1.4.0 (v2.140.0), :314, :322
+      parity adapted   VV 1.1.0 -> 1.1.1   17,132 -> 18,810 bytes, sha256 f24672a049f05946
+      ScheduleUnderlay: phaseId = described.modelSource.renderId; Render2d(..., weights, phaseId, () => !state.parked).
+  - VV .../20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js  <- TV same path 1.2.0 (v2.95.0), :132-135
+      parity adapted   VV 1.1.0 -> 1.1.1   23,067 -> 25,258 bytes, sha256 88c0c6a6c2793089
+      EnsureLinework(definition, onPhase, force, modelSource, waited); the fingerprint asked for the Model Source's
+      renderId (null -> the live fingerprint, as before). No wait: VV has no phase to wait for.
+  - VV .../20__System__Viewports/Na__LayoutEditor__Viewport2d__.js  <- TV same path 1.16.0 (v2.164.0), :343-447, :528-558, :596
+      parity adapted   VV 1.8.0 -> 1.8.1   24,100 -> 26,088 bytes, sha256 14acfcca485b6b10
+      Fill / ForceRender / RenderForExport hand the Model Source where TV's do (renderId to Render2d and the pipeline
+      fingerprint, the whole Model Source to EnsureLinework). No phase waiting, fog, doors or site plans (W2-16).
+  - VV .../20__System__Viewports/Na__LayoutEditor__Viewport3d__.js  <- TV same path 1.8.1 (v2.161.0), :425, :433
+      parity adapted   VV 1.6.1 -> 1.6.2   41,093 -> 42,645 bytes, sha256 9524c6159f1a49ef
+      RenderNow: const renderId = null; Render3d(..., weights, renderId, view, stillWanted). Fingerprint unchanged
+      (GetModelFingerprint() - the new slot left empty = the live model).
+  - VV .../60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js  <- TV same path 1.12.0 (v2.160.0), :428
+      parity adapted   VV 1.2.0 -> 1.2.1   19,928 -> 21,165 bytes, sha256 3bd517ccdff0eba7
+      :213 -> EnsureLinework(described.definition, null, false, described.modelSource) - TV's line exactly.
+    seams re-applied (every file): the change is a hunk into ValeVision's own module, so ValeVision's banner, console
+      prefix and identity are untouched; each PORT NOTE gains K2 H5 fields (Twin, Source version, Ported on with
+      {{VVREL:W1-23}}, Divergences bullets naming what of TV's later versions is still not here) and each log a newest-
+      first entry. The vv_adaptations stub is exactly { groupId: null, label: '', storedId: null, explicit: false,
+      missing: false, isLive: true, renderId: null, status: 'live' }. No TrueVision__ literal, window.TrueVision__,
+      NA marker, storage key, event or config key added.
+    record keys / config keys added: none.
+Not ported (and why): every TV feature behind the new slots - design phases (EnterPhase / ExitPhase / PhaseFingerprints /
+  OnPhaseChanged / GetModelRoot(id) over PhaseLibrary: W2-15), the depth fog image route (W2-12 / W2-15), door pose,
+  Hide swings, Draft guards, site plans, Enhance strength, linework modifiers (W2-09 / W2-13 / W2-15 / W2-16); TV's
+  phase waiting in Fill / Frame / ForceRender / RenderForExport (Na__LeSource__WaitFor - ModelSource lands whole in
+  W2-16); TV's Viewport3d Na__LeSource__Resolve(viewport).renderId (no ModelSource module yet: a literal null with a
+  comment). Package scope: signatures and call shapes only, no whole-file take (vv_adaptations).
+Tests: tests_to_port is empty. Package harness (scratch/W1-23/w1_23_harness.mjs) - before vs live 288/288 events IDENTICAL,
+  contract checks 15/15 PASS; mutation check 10/10 (control matches, 9 mutants caught). Na__Verify__ModuleGraph__ 526
+  modules / 0 failures (import targets 110, 1 documented known issue, unchanged); Na__Verify__Exports__ 459 files PASS.
+New or renamed cross-module exports: no. No export added, renamed or removed (Na__LeVp2d__LiveModelSource is private).
+  CHANGED across module boundaries: the positional signatures of Na__LeSnap__Render2d (9 -> 11 parameters) and
+  Na__LeSnap__Render3d (9 -> 10), optional modelSourceId on Na__LeSnap__GetModelRoot / GetModelFingerprint /
+  GetPipelineFingerprint, two optional trailing parameters on Na__LeVp2d__EnsureLinework, and one more field on the
+  object Na__LeVp2d__Describe returns. Every VV caller moved in this package (caller list re-checked by grep of
+  02__Src__AppModules and 80__Testing__PrototypeEnvironment: only these seven files call them).
+SHARED SERVICE WORKER: 0 new modules; new exports on existing modules: none. But signatures that cross module
+  boundaries changed, so a warm deployed client mixing cached and new copies links WITHOUT an error and misbehaves
+  (proved by the mutation check): an old Viewport3d with the new SnapshotRenderer renders a zoomed 3D viewport's
+  whole picture (and the PDF's), an old Frame lets a parked sheet's queued render run, an old Window with the new
+  Viewport2d throws reading modelSource.renderId and the 2D frames stay empty. Bump needed: YES at deploy (Adam's
+  call, DR-07; the same reason TV gave for its own v2.32.0 bump, "signatures that cross module boundaries changed").
+  The seven files are not in the shell precache list; localhost is network-first, so Adam's local testing is
+  unaffected. Token NOT bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none. Read-only GETs on Adam's Flask only (served_check.py).
+Hot files written (and the lock holder before you):
+  SnapshotRenderer - W0-02 -> W1-23 -> W2-15 (W0-02 done in Wave 0; its renumber edits were the pre-image).
+  PdfExporter      - W0-02 -> W1-23 -> W1-24 -> W1-25 -> W1-28 -> W3-16: W1-23 is the first W1 holder; W1-24 is next.
+  Viewport2d, Viewport2d__Frame, Viewport2d__Linework, Viewport3d - W1-23 -> W2-16 (wave barrier).
+  Viewport2d__Window (not in this package's hot_files list, but hot_file_ownership.json lists it) - W1-23 -> W2-16.
+  Pre-images (sha256 in scratch/W1-23/sha256__before.txt) were unchanged at write time (hash-checked by --apply).
+====================================================================================================
+W1-24 | # Port Record - W1-24: PdfExporter interim parity: FAST picture packing, strict mode and the LoadLibrary split
+WP: W1-24   TV commit read: b2aa9151 (one kept line also checked at b6baf301, see Files)
+TV releases covered (only the PDF exporter hunks named here - nothing else of these releases is ported):
+  v2.155.0 (23-Sep-2026) PdfExporter 1.11.0: every viewport picture packed 'FAST' (the Sub predictor) through
+           Na__LePdf__AddPicture; options.pictureCompression overrides it.
+           Adam-confirmed in TV: YES for this part - TV devlog :1360-1361 "PDF fix: the re-published D02 and PS01 D01
+           through the Download PDF code show the Sub predictor on every viewport picture. CONFIRMED by Adam in Chrome
+           23-Sep-2026." (The release's publishing half is "NOT yet ... NOT in ValeVision", :1362-1363: not ported here.)
+  unversioned, TV commit b6baf301 (19-Sep-2026, the bulk commit that brought the Drawing Register; no TV devlog heading
+           names it, S08 B5): the options argument through BuildDocument / DrawViewport / ExportSheet, options.strict
+           (TV's register export passes { strict : true }, the publisher { strict : false, pictureCompression : 'FAST' }),
+           and await doc.save(name, { returnPromise : true }).  Adam-confirmed: no line either way -> NOT confirmed.
+  PdfExporter 1.4.0 (14-Sep-2026; no TV devlog heading names it, S08 B5): the LoadLibrary / EnsureJsPdf split - the
+           split only; its Open Sans half (PdfFonts) is W1-25's.  Adam-confirmed: no line -> NOT confirmed.
+  v2.95.0 (20-Sep-2026, Statement Writer): Na__LePdf__LoadLibrary exported (TV commit 62dade1c).
+           Adam-confirmed: NO - TV devlog :6943 "NOT CONFIRMED BY ADAM".
+  No DR-40 gesture is involved.
+Files:
+  - VV 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+      <- TV same path, TV module 1.12.0 (v2.160.0) read at b2aa9151: the 1.11.0 hunks, the options/strict/save hunks
+         and the LoadLibrary split + export
+      parity adapted   VV module 1.2.1 -> 1.2.2   21,165 -> 25,122 bytes, sha256 d1b5385e70f1387c (pure CRLF, 404 lines)
+      seams re-applied: none needed - a hunk replay into ValeVision's own module, so its banner, console prefix
+        '[ValeVision3D LayoutEditor]', subject 'ValeVision3D sheet ...', file-name code (fields.DrawingNumber) and paint
+        path (viewports by layer rank, then sheet markup, then chrome) are untouched. Of the 40 code lines added, 28 are
+        TrueVision3D's lines at b2aa9151 verbatim, 1 is TrueVision3D's line at b6baf301 (the viewport loop with options,
+        which TV's 1.7.0 paint plan later replaced: this app keeps that loop until W1-28), 2 are declared ValeVision3D
+        lines (EnsureJsPdf's header and its return line: no Open Sans wait yet), 9 blank/rule lines
+        (tv_parity_check.py). PORT NOTE: "Ported on" gains the {{VVREL:W1-24}} line; Divergences rewritten (EnsureJsPdf
+        without the fonts wait; "Not here yet" now lists 1.2.0/1.12.0, 1.4.0, 1.6.0, 1.7.0, 1.8.0, 1.9.0, 1.10.0 by
+        name); DEVELOPMENT LOG gains 1.2.2 (newest first).
+      record keys / config keys added: none.
+Not ported (and why): the fog picture's AddPicture call and the site plan branch's strict check (no fog or site plans in
+  this app yet: W2-12/W2-16 and W3-16); EnsureJsPdf's await of Na__LePdfFonts__EnsureLoaded, putOnlyUsedFonts and
+  Install (PdfFonts is W1-25's); the paint plan and frames-over-viewports (W1-28); turned viewports, Sheet Images, note
+  regions, the 1.10.0 toast wording (W3-06 / W3-09 / W3-11 / W3-16); fields.DocumentId in the file name (W3-16, W1-12).
+Tests: tests_to_port is empty. Package harnesses (scratch/W1-24/): w1_24_contract.mjs 22/22 on the live file (the
+  pre-image 8/22 - it fails exactly the 14 checks this package changes); default path before vs live IDENTICAL, 133
+  events, after normalising the two documented differences; mutation_check.py control clean + 9/9 mutants caught;
+  w1_24_realpdf.mjs + w1_24_pdfcheck.py (real jsPDF 4.1.0) PASS - /Predictor 11 and Sub on every row of every picture,
+  pixels identical; w1_24_chrome.mjs + w1_24_chromecheck.py (Chromium's own PDF viewer) PASS.
+  Na__Verify__ModuleGraph__ 527 modules / 0 failures (import targets 110, 1 documented known issue, unchanged);
+  Na__Verify__Exports__ 459 files PASS.
+New or renamed cross-module exports: yes - Na__LePdf__LoadLibrary (new, additive; no ValeVision3D module imports it yet).
+  Changed across module boundaries, all backward compatible: Na__LePdf__BuildDocument(sheet, options) and
+  Na__LePdf__ExportSheet(sheet, showToast, options) gain an optional trailing argument; Na__LePdf__EnsureJsPdf is now
+  async (still a promise of the jsPDF constructor). Every VV caller (Toolbar :276, WebViewer :294, Dev menu :345 via the
+  loader, ModeController :553, SpecPdf :399) passes what it passed before.
+SHARED SERVICE WORKER: 0 new modules; new exports on existing modules: Na__LePdf__LoadLibrary (PdfExporter). Nothing in
+  ValeVision3D imports it yet and every signature change is an optional trailing argument, so a warm client holding old
+  and new copies links and behaves. Bump needed: no, not for this package alone - the first ValeVision3D importer of
+  Na__LePdf__LoadLibrary (TrueVision3D's statement PDF, W4-12) will need one, for the reason TV gave at v2.95.0 (TV devlog
+  :6932-6935). The exporter is not in the shell precache list (no match in WCP 62__Feature__AppInstallability);
+  localhost is network-first. Token NOT bumped; worker NOT edited.
+Transport touched (WCP server.py / CloudflareWorker): none. Read-only GETs on Adam's Flask only (served_check.py).
+Hot files written (and the lock holder before you):
+  PdfExporter - W0-02 -> W1-23 -> W1-24 -> W1-25 -> W1-28 -> W3-16. W1-23 held it before me (done; its Port Record).
+  Pre-image at my write = W1-23's written hash 3bd517ccdff0eba7 (re-checked by build_w1_24.py --apply). Next: W1-25.

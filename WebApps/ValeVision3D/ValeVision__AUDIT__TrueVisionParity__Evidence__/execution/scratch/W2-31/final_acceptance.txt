@@ -1,0 +1,52 @@
+W2-31 acceptance - source: D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D
+  PASS units link and load (Bar, State, Builders, SpecLockstep, Statement leaf)
+  PASS the bar builds with no Share button (1.3.0; Share is 1.4.0, W4-08)
+  PASS lockstep on, question up -> "Out of step with the file" (failed)
+  PASS   ... with the out-of-step alert above the groups
+  PASS   ... and the file-date hover ("last changed today at 11:48:07")
+  PASS lockstep on, question up while syncing -> still "Out of step with the file"
+  PASS lockstep on, writing the file -> "Saving..." (syncing)
+  PASS lockstep on, edits the autosave has not written -> "Unsaved changes" (dirty)
+  PASS lockstep on, file written, cloud not -> "Saved to file, not synced"
+  PASS   ... no out-of-step alert when there is no question
+  PASS lockstep on, in step with file and cloud -> the cloud state ("Synced ...")
+  PASS lockstep off -> the old wording "Unsynced - kept in this browser", no hover
+  PASS lockstep on but no file read yet -> the old wording, no hover
+  PASS lockstep off, never synced -> "Not in the cloud yet"
+  PASS OC-09: the summary leads with the project's own code (3047), not the ?project= token
+  PASS OC-09: the document number defaults from the project's own code
+  PASS OC-09: with no project code known the summary shows no code (never the folder id)
+  PASS Mount answers true once
+  PASS   ... and false the second time (one card per host)
+  PASS nothing is built until there is a question
+  PASS a conflict raises the card over the host
+  PASS   ... "both" lead names the file's time
+  PASS   ... what differs names the codes
+  PASS   ... the newer copy (app) is badged and has the focus
+  PASS   ... the file answer names this app's notes file
+  PASS Escape does nothing (no way out but an answer)
+  PASS Tab moves between the two answers only
+  PASS "Load the specification file" answers ResolveConflict('file') and the card goes
+  PASS asked again: the file-only lead, the file badged
+  PASS answered some other way (a reload): the card goes
+  PASS MC imports StartWatch and StopWatch from the SpecData barrel
+  PASS MC imports Na__LeSpecLock__Mount from SpecLockstep
+  PASS MC Build mounts the card exactly once, only when editable
+  PASS MC Build: the web viewer's branch (which returns) never mounts it
+  PASS MC Build: mounted straight after the specification page
+  PASS MC Enter: StartWatch once, in the open-from-the-3D-view block, guarded off the viewer
+  PASS MC Enter: no StartWatch on the return from the specification page
+  PASS MC Leave: StopWatch straight after the Active guard
+  PASS MC: StopWatch nowhere else, StartWatch nowhere else
+  PASS MC: the open/return paths still call TrueVision's EnterUnder -> Enter (OpenSpecification from the 3D view starts the watch through Enter)
+W2-31 acceptance: 40/40 PASS
+  caught   Bar reads the ?project= token (OC-09 undone)
+  caught   Bar 1.2.0 status (no out-of-step state)
+  caught   Bar disk-first wording ignores the lockstep switch
+  caught   Bar without the out-of-step alert
+  caught   Card answers the wrong copy
+  caught   MC mounts the card in every session
+  caught   MC starts the watch in the web viewer
+  caught   MC starts the watch on the return from the specification
+  caught   MC never stops the watch
+W2-31 mutants: 9/9 caught

@@ -1,0 +1,106 @@
+﻿boot /ValeVision3D/index.html?project=2026/3047__Doous  watched 78 s
+snapshot: {"title":"ValeVision3D","events":["na-app-scene-ready"],"canvases":1,"bodyClasses":"na-presentation-mode-active","loadingVisible":[],"tabStrip":false,"watchedSeconds":78}
+requests: 499; 2xx/3xx 446; 4xx/5xx 0; aborted 53
+  aborted (off-machine) GET www.noble-architecture.com  x3
+  aborted (off-machine) GET cdn.noble-architecture.com  x44
+  aborted (off-machine) GET adam-noble-01.github.io  x1
+  aborted (off-machine) GET whitecardopedia-editor-api.adam-fb3.workers.dev  x1
+  aborted (off-machine) GET raw.githubusercontent.com  x4
+console: 156 line(s); errors 68; warnings 37
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load OrbitHelperCube: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/ValeVision3D/04__Lib__Third
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for MainBuildingModel__ProposedDoors: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/V
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for SiteBoundaries: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/ValeVision3D/04__Li
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for LandscapeEnvironment: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/ValeVision3D/
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for MainBuildingModel__ProposedDoors: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:80
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for SiteBoundaries: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/ValeVision3D/04
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for MainBuildingModel__ProposedFloors: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for MainBuildingModel__ProposedRoofs: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/V
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for MainBuildingModel__ProposedWalls: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000/V
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for MainBuildingModel__ProposedFloors: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for MainBuildingModel__ProposedRoofs: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:80
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for MainBuildingModel__ProposedWalls: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:80
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Mesh for MainBuildingModel__ProposedWindows: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:8000
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] Failed to load Linework for MainBuildingModel__ProposedWindows: TypeError: Failed to fetch
+    at FileLoader.load (http://localhost:8000/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js:44161:3)
+    at GLTFLoader.load (http://localhost:
+  error: Failed to load resource: net::ERR_FAILED
+  error: [ValeVision3D] DataLib load failed — MaxEngine materials unavailable, keeping current materials: Error: Network error fetching Na__DataLib__CoreIndex__Materials__: Failed to fetch
+    at Na__DataLib__FetchOne (http://localhost:8000/ValeVision3D/02__Src__AppModules/01__AppCore/AppCore__DataLib__Loade
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED
+  error: Failed to load resource: net::ERR_FAILED

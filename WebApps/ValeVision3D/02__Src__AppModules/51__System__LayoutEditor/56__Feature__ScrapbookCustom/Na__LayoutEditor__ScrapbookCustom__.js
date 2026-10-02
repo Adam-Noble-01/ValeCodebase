@@ -23,7 +23,7 @@
 //   parametric element's viewport link (Na__LeParam__Portable). A dimension
 //   that read its drawing's scale is told so outright, as a copy is, so it
 //   reads the scale of the sheet it lands on. Viewports are refused: a
-//   viewport carries a scene and a snapshot, and both are its project's.
+//   viewport carries a scene, a snapshot and a model source.
 // - A SCALE BAR INSIDE AN ITEM STAYS A SCALE BAR. Its Group__Parametric block
 //   rides on the group record, and after the drop the viewport link module
 //   links it to the drawing it landed beside.
@@ -40,21 +40,28 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js,
-//                   its 1.0.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.69.0
-// - Parity        : verbatim in every code region but one string: the description an item file carries names this app
-// - Divergences   : Wording only. The item document is TrueVision's, key for key, so an item
-//                   file copied by hand from one app's library folder to the other's drops
-//                   there as it does at home. Needed first: this app's item clipboard had no
-//                   InsertSet and could not land a dimension (both arrived with this port).
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js
+// - Source version: 1.0.0 (TrueVision3D v2.85.0, 19-Sep-2026, with the unversioned measured-room hunk of
+//                   TrueVision3D v2.104.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 20-Sep-2026 (1.0.0, ValeVision3D v2.69.0); whole again on 02-Oct-2026 for
+//                   ValeVision3D v2.71.4, taking the measured-room hunk: a Shape__Area keeps its
+//                   name and loses its group and hand-set scale on the way out of a project.
+// - Parity        : verbatim but for one string
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - The description an item file carries (Meta__Description in Capture) names this app and its
+//     local development server. The item document is otherwise TrueVision's, key for key, so an
+//     item file copied by hand from one app's library folder to the other's drops there as it does
+//     at home.
+// - Back-port     : none. TrueVision's log has no entry for its v2.104.0 measured-room hunk (a records
+//                   note for the TrueVision lane, WT-04).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.0.0.
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation: the config, the index, the item cache, Capture,
+//   BuildSet, Insert, Save and Delete.
 //
 // =============================================================================
 
@@ -421,6 +428,16 @@
         if (kind === 'shape') {
             copy.Shape__Points = (Array.isArray(copy.Shape__Points) ? copy.Shape__Points : []).map((p) => [ Na__LeScrapCustom__Round(p[0] + dx), Na__LeScrapCustom__Round(p[1] + dy) ]);
             delete copy.Shape__LayerId;
+            // A MEASURED ROOM KEEPS ITS NAME AND LOSES THE REST. The group it
+            // was filed under belongs to the sheet it came from, and a scale
+            // set by hand was set for a drawing this item will never see
+            // again - dropped into another project it measures itself at
+            // whatever is under it, which is the only answer that can be
+            // right. The same reasoning as a leader's note id above.
+            if (copy.Shape__Area && typeof copy.Shape__Area === 'object') {
+                delete copy.Shape__Area.Area__Group;
+                delete copy.Shape__Area.Area__ScaleDenominator;
+            }
         }
         if (kind === 'annotation') {
             shift('Annotation__PosXMm', 'Annotation__PosYMm');

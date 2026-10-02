@@ -109,7 +109,7 @@
     import { Na__DoorAnimation__Update }  from '../25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     import { Na__DoorProximity__Update }  from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     import { Na__CameraFollow__Update }   from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js';
-    import { Na__DistanceCulling__Update } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+    import { Na__DistanceCulling__Update } from '../05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Path Visualizer Suppression

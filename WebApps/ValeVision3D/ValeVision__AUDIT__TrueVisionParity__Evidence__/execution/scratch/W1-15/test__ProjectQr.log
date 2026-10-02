@@ -1,0 +1,82 @@
+
+1. Every version from 1 to 10 reads back through the separate decoder
+  ok    version 1, longest payload (14 bytes)
+  ok    version 1, shortest payload (1 bytes)
+  ok    version 2, longest payload (26 bytes)
+  ok    version 2, shortest payload (15 bytes)
+  ok    version 3, longest payload (42 bytes)
+  ok    version 3, shortest payload (27 bytes)
+  ok    version 4, longest payload (62 bytes)
+  ok    version 4, shortest payload (43 bytes)
+  ok    version 5, longest payload (84 bytes)
+  ok    version 5, shortest payload (63 bytes)
+  ok    version 6, longest payload (106 bytes)
+  ok    version 6, shortest payload (85 bytes)
+  ok    version 7, longest payload (122 bytes)
+  ok    version 7, shortest payload (107 bytes)
+  ok    version 8, longest payload (152 bytes)
+  ok    version 8, shortest payload (123 bytes)
+  ok    version 9, longest payload (180 bytes)
+  ok    version 9, shortest payload (153 bytes)
+  ok    version 10, longest payload (213 bytes)
+  ok    version 10, shortest payload (181 bytes)
+  ok    the cases between them exercise more than one mask (0, 1, 2, 3, 4, 6)
+  ok    accents, a euro sign and an emoji go through as UTF-8
+  ok    214 bytes is refused rather than truncated
+  ok    an empty string is refused
+
+2. The address a drawing carries: none from the shipped config, and the rules a Vale address will follow
+  ok    the shipped config builds no address, even for a project with every token: there is no Vale resolver yet (BaseUrl empty, DR-12 (A))
+  ok    a Vale key 3047 at the candidate is https://adam-noble-01.github.io/ValeCodebase/q/?3047
+  ok    which is 52 bytes, ten over the 42 a version 3 symbol holds: version 4, 33 modules
+  ok    and reads back through the decoder
+  ok    it is never the address bar: no localhost in it
+  ok    a project with no code draws no address
+  ok    a code is URL-encoded, not pasted
+  ok    keyed by the address bar's ?project= token it would be 79 bytes: version 5, 37 modules
+  ok    a 42 byte address is a version 3 symbol, 29 modules, and reads back
+
+3. The shipped title block against the shipped floor
+  ok    strip 10 mm, quiet zone 2 modules: a version 3 code is 8.79 mm at 0.303 mm a module
+  ok    which clears the 0.28 mm floor
+  ok    the Vale candidate is version 4 at 0.270 mm, which does NOT - so the guard would say so (DR-12 pairs that address with a 0.265 mm floor)
+  ok    keyed by the token it would print 0.244 mm, under it too
+  ok    TrueVision's full app address in the same strip would have printed 0.189 mm, far under it
+
+4. ValeVision ships the code switched off: no resolver, no index, no keys
+  ok    ProjectQr__Enabled is false as shipped (DR-12 (A))
+  ok    and the title block's own switch, LayoutEditor__TitleBlock__QrCellEnabled, is false as well
+  ok    there is no resolver to point at: the base address and the index address are both empty
+  ok    153 master-index entries, none with a resolver key yet, so no project has a code to print
+  skip  the resolver's index against the project folders: ValeVision has no QR resolver yet (DR-12); package W5-05 builds it and rewrites this section
+
+5. One path on every surface
+  ok    SVG: one path holding every run (218), crisp edged, light square first
+  ok    SVG: a colour that is not a colour cannot get through
+  ok    HTML: the viewBox carries four modules of quiet zone on every side
+  ok    PDF: the light square is painted, every run joins ONE path, and fill() paints it once
+
+6. Black for a document's own code, a softer grey for the Portal block's
+  ok    a document's own code - the title block's - is still black
+  ok    the Portal block's code is hsl(0, 0%, 35%), which is #595959 (Adam, 21-Sep-2026)
+  ok    the black against the light colour is 100 per cent symbol contrast, over the 70 of grade A
+  ok    the Portal grey against the light colour is 90 per cent symbol contrast, over the 70 of grade A
+  ok    GetSetup hands the Portal grey out as symbol.portalDarkColour, and the black as symbol.darkColour
+  ok    with the config unreadable, the built-in fallbacks give the same two colours
+
+7. ValeVision's seams: a config that cannot be read draws no code, and the project comes from the master index
+  ok    before the loader's master index has settled nothing is known - no folder, no year, no key: never a guess
+  ok    on ?project=2026/3047__Doous the link reads folder 3047__Doous and year 2026 from the master index, and the entry's permanent key as the code - not the token
+  ok    config missing (404): nothing landed and the system is OFF - no address and no symbol, though the project on screen has a key
+  ok    ...and the built-in fallbacks name no resolver and no index
+  ok    config answered by the app's page (200, not JSON): OFF, no symbol
+  ok    config read as shipped: it landed, and it is OFF - no symbol
+  ok    switched on with a test resolver, the code carries that resolver and the project's key: https://qr.example.test/q/?test-key-3047
+  ok    ...and the same symbol object comes back until the address changes
+  ok    a project whose master-index entry has no key draws no code, even switched on
+  ok    nor does a project the master index does not list
+
+  wrote 22 cases to C:/Users/adamw/AppData/Local/Temp/claude/C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins/a1674149-918e-4d62-a79a-e7961f105155/scratchpad/W1-15__live_cases.json
+
+62 passed, 0 failed
+

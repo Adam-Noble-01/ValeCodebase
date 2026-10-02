@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "28-Sep-2026 at 15:19",
+    "generatedAt": "02-Oct-2026 at 17:32",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2130,7 +2130,35 @@
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
             "imageCount": 8,
-            "lastSynced": "28-Sep-2026 at 15:19"
+            "lastSynced": "02-Oct-2026 at 16:57"
+        },
+        {
+            "folderId": "2026/64348__Mathison",
+            "year": "2026",
+            "projectCode": "64348",
+            "name": "Mathison",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 3,
+            "lastSynced": "01-Oct-2026 at 18:12"
+        },
+        {
+            "folderId": "2026/64135__Holt",
+            "year": "2026",
+            "projectCode": "64135",
+            "name": "Holt",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 8,
+            "lastSynced": "02-Oct-2026 at 17:32"
         }
     ]
 }

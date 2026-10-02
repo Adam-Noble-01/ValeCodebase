@@ -1,0 +1,41 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - DEV MENU CONTROLS
++// VALEVISION3D - PROJECTED LINEWORK - DEV MENU CONTROLS
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__DevMenu__Controls__.js
+@@ -28,12 +28,16 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim, bar 1.1.0
+-// - Divergences   : Console prefix, header and folder numbers; the three
+-//                   3D-matching readouts of 1.1.0, authored here first.
+-// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off.
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
++//                   Designer's VghLantern__ProjectedEdges__ToolbarButton__.mjs (purpose only) of 07-Aug-2026;
++//                   ValeVision's own 1.1.0 (13-Sep-2026, the backend picker wording) is a different 1.1.0);
++//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
++// - Source version: 1.1.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+@@ -404,7 +408,7 @@
+                 : '';
+             Na__PlDev__LastNote = 'Diff: cpu ' + cpuMs + ' ms, ' + rival + ' ' + rivalMs + ' ms' + verdict + '. Both sides ran without the 3D-matching rules (linework first, seams occlude, flush joins). See the console table.';
+         } catch (diffError) {
+-            console.error('[TrueVision3D ProjectedLinework] Diff failed:', diffError);
++            console.error('[ValeVision3D ProjectedLinework] Diff failed:', diffError);
+             Na__PlDev__LastNote = 'Diff failed - see console.';
+         } finally {
+             Na__PlDev__Busy = false;

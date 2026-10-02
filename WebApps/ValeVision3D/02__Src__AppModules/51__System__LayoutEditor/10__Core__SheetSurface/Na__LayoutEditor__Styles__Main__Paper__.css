@@ -6,6 +6,32 @@
  * - Ported from : split out of Na__LayoutEditor__Styles__Main__.css (15-Sep-2026, ValeVision3D v2.47.0), rules moved verbatim
  * - Parity      : as Na__LayoutEditor__Styles__Main__.css; the same split applies to TrueVision's copy
  * - Loads       : linked by Na__LayoutEditor__Loader__.js straight after Styles__Main, so the cascade order is unchanged
+ * - Regions     : 02-Oct-2026 for ValeVision3D v2.71.3: "Paper and Its Layers" (with "An Open Container Fades
+ *                 the Rest of the Sheet") and "Viewport Frames" are TrueVision3D's, verbatim (its sheet carries no
+ *                 version; read at b2aa9151, TrueVision3D v2.172.0) - the stack (v2.106.0), the zoom hold (v2.111.0),
+ *                 the fade on each slot and frame (v2.142.0), clear frames carried by a translate (v2.106.0,
+ *                 v2.137.0), the depth fog image (v2.94.0) and the vector hold (v2.136.0). This sheet's own fade
+ *                 rule (the viewports box, the chrome and the markup at once) went with them.
+ * - Context menu: 02-Oct-2026 for ValeVision3D v2.71.4: the menu's mixed, hinted, hint, submenu, open
+ *                 and flyout rules and the hover tooltip (.na-le-hovertip, [hidden], __lead) are TrueVision3D's,
+ *                 verbatim, at TrueVision's positions (read at b2aa9151: ContextMenu 1.1.0, v2.123.0;
+ *                 SheetTools__HoverTooltip 1.1.0, v2.144.0).
+ * - Object snap : 02-Oct-2026 for ValeVision3D v2.71.4: the snap marker's rules (.na-le-osnap with its
+ *                 bordered, tinted box, the vertex, dimension and viewport tones, [hidden], the clipped --mid
+ *                 triangle and the --infer ring) are gone from this sheet, as TrueVision's went at v2.129.0:
+ *                 the marker is styled by 28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css,
+ *                 linked straight after this sheet. The region they shared is TrueVision3D's "Linework
+ *                 Progress and the Hover Tooltip", its title and note verbatim (read at b2aa9151).
+ * - Grips       : 02-Oct-2026 for ValeVision3D v2.71.4: the rubber band and the rubber box (2 px,
+ *                 the box laid out by Grips PlaceBox), the point grips' states (.na-le-grip--free, --bound,
+ *                 --online, and picked with its shadow and, on the drawing, its green edge) and the insert
+ *                 diamond with no rotate (Grips Place turns it inline) are TrueVision3D's, verbatim, landed
+ *                 with Grips 1.12.0 in the same change (read at b2aa9151: v2.129.0, v2.137.0, a2e0a836).
+ * - Carry       : 02-Oct-2026 for ValeVision3D v2.71.4: TrueVision3D's VIEWPORT CARRY rules
+ *                 (.na-le-frame--carried, .na-le-carry-base, .na-le-track-point with its two strokes,
+ *                 .na-le-track-guide --x / --y and the [hidden] rule), verbatim at TrueVision's position,
+ *                 the end of "Grips and Inference" (read at b2aa9151: ViewportSnapMove 1.6.0, v2.28.0 -
+ *                 v2.138.0). Nothing puts those classes on the page until the W3 hub carries a viewport.
  */
 
 
@@ -39,6 +65,17 @@
     display                            : none;
 }
 
+/* ZOOM NOW, REDRAW WHEN IT RESTS. While a wheel or pinch zoom is under way   */
+/* (Na__LeSurface__NoteZoomGesture) the paper is held as one composited layer, */
+/* so a zoom step scales the picture already drawn instead of rasterising     */
+/* every line, fill and picture on the sheet again. The class comes off when   */
+/* the zoom settles and the sheet is drawn once, crisp, at its new zoom.       */
+/* LayoutEditor__Navigation__HoldPaperWhileZooming false never puts it on.     */
+.na-le-paper--zooming {
+    will-change                        : transform;
+}
+
+.na-le-paper__stack,
 .na-le-paper__viewports,
 .na-le-paper__chrome,
 .na-le-paper__markup,
@@ -51,9 +88,16 @@
     height                             : 100%;
 }
 
-.na-le-paper__viewports  { z-index : 1; }
-.na-le-paper__chrome     { z-index : 2; pointer-events : none; }
-.na-le-paper__markup     { z-index : 3; pointer-events : none; }
+/* THE STACK is the sheet in the Layers list's order, top of the list      */
+/* frontmost: the viewport frames and the SVG slots of chrome and markup,  */
+/* each given its depth inline by the surface (RefreshStack). It is the    */
+/* one stacking context they share. The frames' own box must NOT be one -  */
+/* z-index auto - or every frame would stack as a single block again and   */
+/* a layer under the Viewports layer would still draw over the drawing.    */
+.na-le-paper__stack      { z-index : 1; }
+.na-le-paper__viewports  { z-index : auto; }
+.na-le-paper__chrome     { pointer-events : none; }
+.na-le-paper__markup     { pointer-events : none; }
 .na-le-paper__focus      { z-index : 4; pointer-events : none; }
 .na-le-paper__handles    { z-index : 5; pointer-events : none; }
 
@@ -72,6 +116,35 @@
     white-space                        : pre;
 }
 
+/* ----------------------------------------------------------------- */
+/* REGION  |  An Open Container Fades the Rest of the Sheet           */
+/* ----------------------------------------------------------------- */
+
+/* SketchUp's rule, on paper. While a vector or a group is open for editing */
+/* the whole sheet drops back - the viewport pictures, the border and title */
+/* block, and all the markup - and the contents of the open container are   */
+/* drawn again at full strength in the focus layer above them. The drawing  */
+/* stays legible enough to work against; nothing outside the container can  */
+/* be picked up while it is open, and the fade is what says so.             */
+/*                                                                         */
+/* The amount is set on the paper element from the EditScope block of       */
+/* Na__LayoutEditor__AppConfig__.json; the value here is the fallback.      */
+
+/* EACH PART OF THE STACK FADES ON ITS OWN: every SVG slot, and every       */
+/* viewport frame the open container does not hold. A group may hold        */
+/* viewports, and an opacity on the stack would dim those with the rest -   */
+/* no child can undo its parent's opacity. The surface marks the frames a   */
+/* group holds (na-le-frame--in-scope) and they stay at full strength. The  */
+/* frames' own box still takes no fade and no stacking context, so frames   */
+/* and slots keep their order under the fade.                             */
+.na-le-paper--scoped .na-le-paper__slot,
+.na-le-paper--scoped .na-le-frame:not(.na-le-frame--in-scope) {
+    opacity                            : var(--na-le-scope-fade, 0.25);
+    transition                         : opacity 120ms ease-out;
+}
+
+/* endregion ------------------------------------------------------- */
+
 /* endregion ------------------------------------------------------- */
 
 
@@ -79,15 +152,62 @@
 /* REGION  |  Viewport Frames                                        */
 /* ----------------------------------------------------------------- */
 
+/* A FRAME IS CLEAR where its drawing is. The picture a viewport renders   */
+/* is opaque and covers what is under it as it should; a vector-only one   */
+/* (Base Image off) is its linework and nothing else - which is also all  */
+/* the PDF has ever printed. Painted white, it hid whatever a lower layer  */
+/* put under it, so a floor area moved beneath the Viewports layer vanished */
+/* instead of tinting the room under the plan's lines.                     */
+/*                                                                         */
+/* WHERE A FRAME SITS IS NOT HERE: the sheet surface's RefreshFrames keeps  */
+/* it at the paper's corner (left 0, top 0, inline) and carries it to its   */
+/* place by a translate. left and top cannot place it: they are rounded to  */
+/* a whole device pixel BEFORE the paper's scale(zoom), which multiplies    */
+/* the difference - at 32x a drawing was painted 8 pixels from its own      */
+/* corners, beside every dimension and vector snapped to it.               */
 .na-le-frame {
     position                           : absolute;
     overflow                           : hidden;
-    background                         : #ffffff;
+    background                         : transparent;
     box-sizing                         : border-box;
 }
 
 .na-le-frame[hidden] {
     display                            : none;
+}
+
+/* A DRAWING HELD AS A LAYER OF ITS OWN (the toolbar's Vector control,       */
+/* Na__LayoutEditor__VectorQuality__, which sets the body class: always at   */
+/* Low, while the sheet is being redrawn at Medium, never at High).          */
+/*                                                                          */
+/* A plan's linework is tens of thousands of vector segments, sharing one    */
+/* painted layer with everything drawn over it. The markup above a drawing   */
+/* is swapped as a whole SVG the size of the page, so a dimension line       */
+/* following the cursor, a note or a vertex being dragged, made the browser  */
+/* draw every line of the plan again, every frame: 3.5 frames a second on    */
+/* RB05's ground floor plan (38,500 segments) at 8x over its densest part,   */
+/* GPU flat out. Held, what changes above the drawing costs it nothing: 60.  */
+/*                                                                          */
+/* THE PRICE IS THE LOOK, which is why it is a choice and lets go at rest.   */
+/* A held drawing is a picture the browser scales: a touch softer, fine      */
+/* parallel lines running together.                                         */
+/*                                                                          */
+/* will-change: OPACITY, NOT TRANSFORM. The transform hint tells the browser */
+/* to keep the layer at the scale it was first drawn at, so a drawing held   */
+/* at Fit and wheeled in to 8x was the Fit picture blown up (sharpness 3.5   */
+/* against 10.2 unheld, and worse the deeper the zoom) - Adam, of the first  */
+/* version: "unbelievably fast now, but it looks super shit". The opacity    */
+/* hint makes the same layer and no such promise: it is drawn again at each  */
+/* zoom (9.5 against 10.2).                                                  */
+/*                                                                          */
+/* THE FRAME, NOT THE LINEWORK INSIDE IT. .na-le-frame__linework promoted    */
+/* alone sits on a sub-pixel offset of its own, and Draft's one-pixel lines  */
+/* came out grey: 35% less ink.                                             */
+/*                                                                          */
+/* NOT IN THE WEB VIEWER: nothing is dragged over a drawing there, and a     */
+/* phone's layer budget is not a desktop's.                                 */
+body.na-le-vector-hold:not(.na-le-viewer--active) .na-le-frame--2d {
+    will-change                        : opacity;
 }
 
 .na-le-frame__body {
@@ -109,6 +229,26 @@
 
 .na-le-frame__underlay[hidden],
 .na-le-frame__snapshot[hidden] {
+    display                            : none;
+}
+
+/* A drawing's depth fog: a paper-coloured image whose ALPHA is the fog,
+   placed like the underlay but made AFTER the linework in the frame body,
+   so it fades the vectors as well as the picture. No blend mode and no
+   z-index - source-over in document order is the whole of it, which is
+   what the PDF does with the same image. */
+.na-le-frame__fog {
+    position                           : absolute;
+    top                                : 0;
+    left                               : 0;
+    display                            : block;
+    max-width                          : none;
+    pointer-events                     : none;
+    user-select                        : none;
+    image-rendering                    : auto;
+}
+
+.na-le-frame__fog[hidden] {
     display                            : none;
 }
 
@@ -185,7 +325,7 @@
 .na-le-rubber-band {
     position                           : absolute;
     height                             : 0;
-    border-top                         : 1px dashed #336699;
+    border-top                         : 2px dashed #336699;
     transform-origin                   : 0 0;
     pointer-events                     : none;
 }
@@ -206,12 +346,13 @@
 
 /* The rectangle tool's rubber box: the four edges the rectangle will     */
 /* have, dashed like the band, and solid while Shift holds it square.     */
-/* The edge width is set inline, counter-scaled like the grips.           */
+/* Laid out at its size on screen and scaled back (Grips PlaceBox), so    */
+/* the edge is a true 2 px at any zoom and centred on the rectangle.      */
 
 .na-le-rubber-box {
     position                           : absolute;
     box-sizing                         : border-box;
-    border                             : 1px dashed #336699;
+    border                             : 2px dashed #336699;
     pointer-events                     : none;
 }
 
@@ -293,48 +434,13 @@
 
 
 /* ----------------------------------------------------------------- */
-/* REGION  |  Snap Marker and Linework Progress                      */
+/* REGION  |  Linework Progress and the Hover Tooltip                */
 /* ----------------------------------------------------------------- */
 
-/* Square for an endpoint, triangle for a midpoint (the AutoCAD glyphs);
-   size and border are written inline, counter-scaled by the zoom.
-   THE COLOUR SAYS WHICH TOOL IS SNAPPING, the glyph what it found: blue
-   for vertices (the Draw and Rectangle tools, vertex grips), orange for
-   dimensions (the Dimension tool, its grips, its line inference), purple
-   for viewports (carrying one by a point). Each tone is one RGB triple,
-   so the border, the tint and the midpoint fill all follow it. */
-.na-le-osnap {
-    --na-le-osnap-rgb                  : 37, 99, 235;
-    position                           : absolute;
-    box-sizing                         : border-box;
-    border                             : 1.5px solid rgb(var(--na-le-osnap-rgb));
-    background                         : rgba(var(--na-le-osnap-rgb), 0.12);
-    pointer-events                     : none;
-    z-index                            : 6;
-}
-
-.na-le-osnap--vertex {
-    --na-le-osnap-rgb                  : 37, 99, 235;
-}
-
-.na-le-osnap--dimension {
-    --na-le-osnap-rgb                  : 234, 88, 12;
-}
-
-.na-le-osnap--viewport {
-    --na-le-osnap-rgb                  : 147, 51, 234;
-}
-
-.na-le-osnap[hidden] {
-    display                            : none;
-}
-
-.na-le-osnap--mid {
-    border-radius                      : 0;
-    clip-path                          : polygon(50% 0, 100% 100%, 0 100%);
-    background                         : rgba(var(--na-le-osnap-rgb), 0.55);
-    border                             : none;
-}
+/* THE SNAP MARKER'S RULES HAVE MOVED, with the rest of the snapping, to
+   28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css. Its
+   colour used to say which TOOL was snapping; it now says what was snapped
+   TO, and its shapes are SVG glyphs rather than a bordered box. */
 
 .na-le-frame__progress {
     position                           : absolute;
@@ -353,6 +459,35 @@
 
 .na-le-frame__progress[hidden] {
     display                            : none;
+}
+
+/* HOVER TOOLTIP | Fixed to the viewport, not the paper, so it tracks the
+   pointer through Na__LayoutEditor__SheetTools__HoverTooltip__ regardless of
+   zoom or scroll. Below the 1200 the header's menus use, above everything
+   else on the sheet. */
+.na-le-hovertip {
+    position                           : fixed;
+    padding                            : 4px 8px;
+    border-radius                      : 4px;
+    background                         : rgba(23, 43, 58, 0.92);
+    color                              : #ffffff;
+    font-size                          : 11px;
+    line-height                        : 1.35;
+    max-width                          : 260px;
+    pointer-events                     : none;
+    z-index                            : 1000;
+}
+
+.na-le-hovertip[hidden] {
+    display                            : none;
+}
+
+/* A LEAD before the words: a specification bubble's code before its note's
+   title (Na__LayoutEditor__SheetTools__NoteTooltip__). */
+.na-le-hovertip__lead {
+    margin-right                       : 6px;
+    font-weight                        : 700;
+    letter-spacing                     : 0.02em;
 }
 
 /* endregion ------------------------------------------------------- */
@@ -480,6 +615,68 @@
     background                         : rgba(23, 43, 58, 0.14);
 }
 
+/* SOME OF THE SELECTION, NOT ALL OF IT: a ring where the dot would be. The   */
+/* Layer flyout rings every layer holding part of a selection spread across  */
+/* several, and dots the one layer holding all of it.                        */
+.na-le-menu__item--mixed::before {
+    content                            : "";
+    position                           : absolute;
+    left                               : 11px;
+    top                                : 50%;
+    width                              : 8px;
+    height                             : 8px;
+    box-sizing                         : border-box;
+    border                             : 1.5px solid #1a7fc4;
+    border-radius                      : 50%;
+    transform                          : translateY(-50%);
+}
+
+/* A ROW WITH A HINT: its label, then muted words at the far end - the layer */
+/* the item sits on, or what a layer in the flyout is (Hidden, Locked).      */
+.na-le-menu__item--hinted {
+    display                            : flex;
+    align-items                        : baseline;
+    gap                                : 18px;
+}
+
+.na-le-menu__hint {
+    margin-left                        : auto;
+    color                              : #8a96a0;
+    font-size                          : 0.92em;
+}
+
+/* A ROW THAT OPENS A FLYOUT: a chevron at the far end, and the row stays    */
+/* lit while its flyout is open, so the eye can follow the one to the other. */
+.na-le-menu__item--submenu {
+    padding-right                      : 30px;
+}
+
+.na-le-menu__item--submenu::after {
+    content                            : "";
+    position                           : absolute;
+    right                              : 13px;
+    top                                : 50%;
+    width                              : 5px;
+    height                             : 5px;
+    border-top                         : 1.5px solid currentColor;
+    border-right                       : 1.5px solid currentColor;
+    opacity                            : 0.55;
+    transform                          : translateY(-50%) rotate(45deg);
+}
+
+.na-le-menu__item--open,
+.na-le-menu__item--open:hover:not(:disabled) {
+    background                         : #e3eaf1;
+}
+
+/* THE FLYOUT is a second card, over the first where the two meet. A sheet  */
+/* with a long Layers list scrolls inside it rather than off the window.    */
+.na-le-menu--flyout {
+    z-index                            : 1201;
+    max-height                         : calc(100vh - 8px);
+    overflow-y                         : auto;
+}
+
 /* endregion ------------------------------------------------------- */
 
 
@@ -528,31 +725,6 @@
     transform-origin                   : 0 0;
 }
 
-/* A Shift-click on a vector's edge inserts a vertex here. The diamond is  */
-/* the same size as a vertex grip, rotated, so it reads as "a new corner". */
-/* Ported from TrueVision3D v2.45.0. */
-
-/* ----------------------------------------------------------------- */
-/* REGION  |  An Open Container Fades the Rest of the Sheet           */
-/* ----------------------------------------------------------------- */
-
-/* SketchUp's rule, on paper. While a vector, a dimension or a group is open */
-/* for editing the whole sheet drops back - the viewport pictures, the       */
-/* border and title block, and all the markup - and the contents of the open */
-/* container are drawn again at full strength in the focus layer above them. */
-/* The drawing stays legible enough to work against; nothing outside the     */
-/* container can be picked up while it is open, and the fade is what says so.*/
-/*                                                                          */
-/* The amount is set on the paper element from the EditScope block of        */
-/* Na__LayoutEditor__AppConfig__.json; the value here is the fallback.       */
-
-.na-le-paper--scoped .na-le-paper__viewports,
-.na-le-paper--scoped .na-le-paper__chrome,
-.na-le-paper--scoped .na-le-paper__markup {
-    opacity                            : var(--na-le-scope-fade, 0.25);
-    transition                         : opacity 120ms ease-out;
-}
-
 /* BLUE IS A POINT YOU COULD TAKE HOLD OF; RED IS ONE YOU HAVE. A picked  */
 /* grip - clicked, or swept up by a box drawn inside the vector - is drawn */
 /* solid red, so a run of them reads at a glance across a drawing and it   */
@@ -560,24 +732,60 @@
 /* every grip shape: a vector's square vertices and a dimension's measured */
 /* points, dimension line and value alike, so the two read the same way.   */
 
+/* A POINT GRIP SAYS WHERE ITS POINT STANDS (Na__LeGrips__StateOf): a       */
+/* vector's vertices and a dimension's two measured points. GREEN is on    */
+/* the drawing - solid on a corner, a middle or a crossing of a viewport's */
+/* linework, a ring on one of its lines at no particular place. BLUE is on */
+/* nothing. So a run of corners can be checked at a glance for the one     */
+/* that only LOOKS as if it is on the wall. Solid, with a white edge and a */
+/* hair of shadow round it, so each reads over black linework and over     */
+/* white paper alike. The grips are laid out at their real size and scaled */
+/* back by a transform (Na__LeGrips__Place), so these one-pixel edges are  */
+/* one pixel at any zoom - and carried to their point by the same          */
+/* transform, since left and top are rounded before the zoom multiplies.   */
+
+.na-le-grip--free,
+.na-le-grip--bound,
+.na-le-grip--online {
+    border-color                       : #ffffff;
+    box-shadow                         : 0 0 0 1px rgba(23, 43, 58, 0.45);
+}
+
+.na-le-grip--free {
+    background                         : #2563eb;
+}
+
+.na-le-grip--bound {
+    background                         : #16a34a;
+}
+
+.na-le-grip--online {
+    background                         : #ffffff;
+    border                             : 2px solid #16a34a;
+}
+
 .na-le-grip--picked {
     background                         : #e01b24;
     border-color                       : #ffffff;
+    box-shadow                         : 0 0 0 1px rgba(23, 43, 58, 0.45);
 }
 
-/* endregion ------------------------------------------------------- */
+/* IN HAND AND ON THE DRAWING: red, with the green as its edge, so a point */
+/* dragged onto a corner says so before it is let go of.                   */
+
+.na-le-grip--picked.na-le-grip--bound,
+.na-le-grip--picked.na-le-grip--online {
+    border                             : 2px solid #16a34a;
+}
+
+/* A Shift-click on a vector's edge inserts a vertex here. The diamond is  */
+/* the same size as a vertex grip, turned 45 degrees (inline, with its     */
+/* counter-scale), so it reads as "a new corner".                          */
 
 .na-le-grip--insert {
     background                         : #336699;
     border-color                       : #ffffff;
-    transform                          : rotate(45deg);
     z-index                            : 6;
-}
-
-.na-le-osnap--infer {
-    border-radius                      : 50%;
-    border-style                       : solid;
-    background                         : transparent;
 }
 
 /* EYEDROPPER | Two boxes on the handles layer: the violet one is the object
@@ -627,6 +835,81 @@
 @keyframes na-le-dropper-flash {
     0%   { opacity : 1; }
     100% { opacity : 0; }
+}
+
+/* VIEWPORT CARRY | A viewport moved by a point on its own linework
+   (Na__LayoutEditor__ViewportSnapMove__). The carried frame multiplies, so
+   the drawing underneath shows through it and can be aimed at. The ring
+   marks the carried point, a cross marks each acquired tracking point, and
+   a guide runs from a tracking point to the carried one: red when level,
+   green when plumb - the axis-lock colours. The frame's outline, the ring
+   and the crosses are the viewport purple of the snap marker while a
+   viewport is carried. Sizes and stroke widths are counter-scaled in the
+   module, so these rules carry colour and nothing that changes with zoom.  */
+
+.na-le-frame--carried {
+    mix-blend-mode                     : multiply;
+    outline                            : 1px dashed #9333ea;
+}
+
+.na-le-carry-base {
+    position                           : absolute;
+    box-sizing                         : border-box;
+    border                             : 1.5px solid #9333ea;
+    border-radius                      : 50%;
+    background                         : rgba(147, 51, 234, 0.18);
+    pointer-events                     : none;
+    z-index                            : 6;
+}
+
+.na-le-track-point {
+    position                           : absolute;
+    pointer-events                     : none;
+    z-index                            : 6;
+    --na-le-track-stroke               : 1.5px;
+}
+
+.na-le-track-point::before,
+.na-le-track-point::after {
+    content                            : '';
+    position                           : absolute;
+    background                         : #9333ea;
+}
+
+.na-le-track-point::before {
+    left                               : 0;
+    right                              : 0;
+    top                                : 50%;
+    height                             : var(--na-le-track-stroke);
+    transform                          : translateY(-50%);
+}
+
+.na-le-track-point::after {
+    top                                : 0;
+    bottom                             : 0;
+    left                               : 50%;
+    width                              : var(--na-le-track-stroke);
+    transform                          : translateX(-50%);
+}
+
+.na-le-track-guide {
+    position                           : absolute;
+    box-sizing                         : content-box;
+    pointer-events                     : none;
+    z-index                            : 5;
+}
+
+.na-le-track-guide--x {
+    border-top                         : 1px dashed #c0392b;
+}
+
+.na-le-track-guide--y {
+    border-left                        : 1px dashed #2e7d32;
+}
+
+.na-le-carry-base[hidden],
+.na-le-track-guide[hidden] {
+    display                            : none;
 }
 
 /* endregion ------------------------------------------------------- */

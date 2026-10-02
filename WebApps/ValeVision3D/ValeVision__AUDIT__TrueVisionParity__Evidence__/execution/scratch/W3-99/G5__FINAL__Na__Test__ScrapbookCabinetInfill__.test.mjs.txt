@@ -1,0 +1,81 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ScrapbookCabinetInfill__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - parametric scrapbook cabinet infill
+  PASS  the lines are #333333 at 0.15 pt, dashed 0.9 pt on 0.9 pt (0.32 mm, as the record keeps it)
+  PASS  the words are Open Sans Regular 6 pt (2.1167 mm) in #333333, in a #fcfcfc box
+  PASS  the fill underneath is white, and a dropped infill has it off
+  PASS  the fill's rule is Soft Black at 0.3 pt - Adam's Vectors standard
+  PASS  the words offered are Adam's five, in his order, then Shelving from his screenshot - and Storage is what a drop says
+  PASS  fill off: three vectors and one text - the two lines of the cross, the box, the words
+  PASS  the first vector is the cross's first line and its first point is the origin
+  PASS  the cross runs exactly corner to corner: (0,0)-(36,12) and (36,0)-(0,12)
+  PASS  both lines are drawn in the house line: #333333, 0.15 pt, dashed 0.32 on 0.32, unfilled
+  PASS  the box is filled #fcfcfc under the same dashed #333333 0.15 pt rule
+  PASS  fill on: exactly one vector more, and it is the FIRST - painted under everything
+  PASS  ...ruled round in Soft Black at 0.3 pt, so the white does not read as a hole
+  PASS  the fill's first point is still the origin, and it covers the infill exactly
+  PASS  behind the fill the order is unchanged: cross, cross, box, words
+  PASS  across: the box round Storage is 8.978 x 3.034 mm, as on NP03
+  PASS  the box is centred on the cabinet
+  PASS  the words are one centred record at the house size, level, their baseline 0.856 mm below the box's middle
+  PASS  Shelving's box is 9.631 mm, as on NP03
+  PASS  an infill taller than it is wide turns its words a quarter turn back: they read UP the sheet
+  PASS  its box stands upright, 3.034 wide and 8.978 tall, centred on the cabinet
+  PASS  its baseline is 0.856 mm to the RIGHT of the box's middle - the words' feet face right - and level with the middle along it
+  PASS  told to, a tall infill keeps its words across, and a wide one turns them up
+  PASS  a square infill reads across
+  PASS  Pantry Unit in a 600 mm square unit at 1:50 breaks over two lines
+  PASS  Full Height Storage breaks "Full Height / Storage", never "Full / Height Storage"
+  PASS  Full Height Storage stays on one line where it fits (36 x 12)
+  PASS  a two-line box is one line height deeper (1.2 x 2.1167 mm) and stays centred
+  PASS  its first baseline sits half a line height above where one line's would
+  PASS  a single word is never cut, however small the cabinet
+  PASS  the break follows the editor's own line spacing when it gives one
+  PASS  with no measurer at all (Node, or before the editor hands one over) it still draws
+  PASS  typed words win over the listed word
+  PASS  clearing them puts the listed word back
+  PASS  labelOf says which it is
+  PASS  a size keeps four decimals, and so does the text size (6 pt is 2.1167 mm)
+  PASS  a style that IS the house style is not stored, whatever its case
+  PASS  normalising twice changes nothing
+  PASS  a real choice is kept - a colour, a solid line (null), no box fill (null) - and nonsense is not
+  PASS  the kept choices are what gets drawn
+  PASS  the base point is the bottom left corner - (0, height) from the top left origin, paper y running down
+  PASS  the other three corners are grips, named, each ON its corner
+  PASS  no stretch arrow, no slide, no link socket
+  PASS  the options arrow stands just off the right of the label's box, level with its middle - beside the words, not on a corner
+  PASS  ...and beside a label that reads across, too
+  PASS  bottom right, dragged free: both sides step by 0.1 mm and the top left stays put
+  PASS  top right: the bottom left - the base point - stays put, and the origin moves down to the new top
+  PASS  top left: the bottom right stays put, and the origin moves to the new corner
+  PASS  a corner snapped to the drawing is kept where it was snapped, and the one held does not creep
+  PASS  a corner dragged past the one held stops at the least size, the held corner still where it was
+  PASS  the base point is not a corner to drag: it moves the infill
+  PASS  dragging a corner leaves every other choice as it was
+  PASS  the triangle lists the six words with the one in use ticked, then the fill, then the three runs
+  PASS  picking a word clears any typed over it; the fill entry toggles
+  PASS  no word is ticked while typed words are in force
+  PASS  members exactly as built adopt nothing
+  PASS  the fill's colour and rule weight, the cross's colour and dash, the box's rule and the words' colour are read back
+  PASS  no geometry is read back
+  PASS  the rebuild keeps them, and puts the bent line back corner to corner
+  PASS  the fill's rule can be taken off by hand and kept, same as the box's
+  PASS  ...and the rebuild draws the fill with no rule, the box's still stroked
+  PASS  a colour set back to the house one takes its key off again
+  PASS  words typed over the label inside the group become its own words
+  PASS  a label the type broke over lines is not mistaken for typed words
+  PASS  members deleted by hand do not make the others read as something else
+  PASS  a box drawn to the estimate is found not to fit the real words
+  PASS  a box drawn to the real words fits
+  PASS  an upright one is measured along its height
+  PASS  a box taken away by hand is not a reason to rebuild
+  PASS  the type is CabinetInfill, never tied to a drawing, held by a base point and fitted by its corners
+  PASS  its build puts the origin first, as the engine requires
+  PASS  the library offers it on architectural sheets, sized 1800 x 600 real when dropped on a drawing
+  PASS  which at 1:50 is exactly the 36 x 12 mm a tile is drawn at
+  PASS  the group tag calls it Cabinet Infill
+  PASS  every word the panel, the menu and the grip ask for is in the config
+
+  PASS - every check passed.

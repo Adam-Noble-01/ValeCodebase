@@ -1,0 +1,6 @@
+    # Collect current IMG## source PNGs (exclude our generated thumbnails)
+    img_pattern   = re.compile(r'^IMG\d{2,3}.*__WhitecardImage__.*\.png$', re.IGNORECASE)
+    source_images = sorted(
+        f.name for f in wcp_project_dir.iterdir()
+        if f.is_file() and img_pattern.match(f.name) and '__Thumbnail__524p__' not in f.name
+    )

@@ -28,24 +28,48 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ConfigAccess__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026 (created 06-Aug-2026)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__ConfigAccess__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.0.1 (18-Sep-2026) was TrueVision's 1.1.1);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151), with GetLineworkModifiers,
+//                   which TrueVision added unlogged on 20-21 Sep-2026 (the commits of TrueVision3D v2.95.0
+//                   and v2.98.0)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
 // - Parity        : adapted
 // - Divergences   :
-//   - Config path resolved from import.meta.url; keys carry the ValeVision three-stage prefixes.
-//   - Typed getters per block instead of raw Section reads; Main.json override for the exclusion tokens.
-//   - No view list: a drawing record IS the view.
-// - Back-port     : none pending.
+//   - Banner and console prefix read ValeVision3D.
+//   - The LineworkModifier fallbacks name ValeVision__LineworkModifier__FineDetail / VeryFineDetail
+//     (TrueVision__ in TrueVision): a runtime owner key carries the app's token (K2 K3), as in the JSON.
+//   - The fallback buildToken is this app's own, '2026-10-02-tv-parity', equal to
+//     ProjectedLinework__Model__BuildToken in the shipped JSON (DR-31 (4)). TrueVision's fallback
+//     ('2026-09-21-storey-swings') lags its own JSON ('2026-09-23-flush-tolerance'), which its
+//     Na__Test__StoreyBand__ reports (S02b-F33); this app's copy of that test checks the two are equal.
+// - Back-port     : TrueVision: set the fallback build token equal to the JSON's, and correct the heading
+//                   above GetAnnotationSetup, which reads "Get the Model Sampling Setup" (kept here as
+//                   TrueVision wrote it; WP-S02b-10R item 2, TrueVision lane).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 18-Sep-2026 - Version 1.0.1
+// 21-Sep-2026 - Version 1.2.0
+// - GetStoreySetup answers the storey rule for plans: on unless the config
+//   says false, the category prefix that names a storey, the tolerance a
+//   line may sit under its storey's floor, and the annotation tokens kept to
+//   a plan's storey. The fallbacks carry all four, and the build token that
+//   re-projects every plan drawn with other storeys' swings on it.
+//
+// 18-Sep-2026 - Version 1.1.1
 // - GetAnnotationSetup answers the annotation category tokens and its Enabled
 //   flag (on unless the config says false). The fallbacks carry both, and the
 //   build token that re-projects every linework asset rendered before
-//   annotation linework existed. Ported from TrueVision3D ConfigAccess 1.1.1.
+//   annotation linework existed.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - GetProjectionSetup answers hideFlushJoins and seamsOcclude (each on unless
+//   the config says false) and lineworkFirst (off unless the config turns it
+//   on). The fallbacks carry all three, and the build token that retires every
+//   linework asset rendered under the old rules.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -74,6 +98,9 @@
         logTimings              : true,
         angleThresholdDegrees   : 50,
         includeIntersections    : true,
+        lineworkFirst           : false,
+        seamsOcclude            : true,
+        hideFlushJoins          : true,
         intersectionMaxInstances : 400,
         intersectionMaxPairs     : 20000,
         intersectionSelfMaxTriangles : 60000,
@@ -103,7 +130,17 @@
         skipObjectNames         : ['OrbitHelperCube', 'Na__GridLine', 'Na__FogPlane', 'Na__Billboard', 'Na__ElevGizmo', 'DrawingCut__'],
         annotationEnabled       : true,
         annotationTokens        : ['Linetype__'],
-        buildToken              : '2026-09-18-linetype-annotation',
+        storeysEnabled          : true,
+        storeyCategoryPrefix    : 'Storey__',
+        storeyFloorToleranceMm  : 500,
+        storeyAnnotationTokens  : ['Linetype__DoorSwings', 'Linetype__ClearanceLines'],
+        lineworkModifiers       : [
+            { TagName : '76__LineworkModifier__FineDetail__Walls',                  OwnerKey : 'ValeVision__LineworkModifier__FineDetail' },
+            { TagName : '77__LineworkModifier__FineDetail__WindowsAndJoinery',      OwnerKey : 'ValeVision__LineworkModifier__FineDetail' },
+            { TagName : '78__LineworkModifier__VeryFineDetail__Walls',              OwnerKey : 'ValeVision__LineworkModifier__VeryFineDetail' },
+            { TagName : '79__LineworkModifier__VeryFineDetail__WindowsAndJoinery',  OwnerKey : 'ValeVision__LineworkModifier__VeryFineDetail' }
+        ],
+        buildToken              : '2026-10-02-tv-parity',
         transparentOccludes     : false,
         transparentOpacityBelow : 0.999,
         appearance              : {
@@ -258,6 +295,9 @@
         return {
             angleThresholdDegrees    : Na__PlCfg__Num('Projection', 'AngleThresholdDegrees',    F.angleThresholdDegrees),
             includeIntersectionEdges : Na__PlCfg__Val('Projection', 'IncludeIntersectionEdges', F.includeIntersections) === true,
+            lineworkFirst            : Na__PlCfg__Val('Projection', 'LineworkFirst',            F.lineworkFirst) === true,
+            seamsOcclude             : Na__PlCfg__Val('Projection', 'SeamsOcclude',             F.seamsOcclude) !== false,
+            hideFlushJoins           : Na__PlCfg__Val('Projection', 'HideFlushJoins',           F.hideFlushJoins) !== false,
             intersectionMaxInstances : Na__PlCfg__Num('Projection', 'IntersectionMaxInstances',     F.intersectionMaxInstances),
             intersectionMaxPairs     : Na__PlCfg__Num('Projection', 'IntersectionMaxPairs',         F.intersectionMaxPairs),
             intersectionSelfMaxTriangles : Na__PlCfg__Num('Projection', 'IntersectionSelfMaxTriangles', F.intersectionSelfMaxTriangles),
@@ -360,7 +400,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Get the Annotation Setup (linetype linework)
+    // FUNCTION | Get the Model Sampling Setup
     // ------------------------------------------------------------
     function Na__PlCfg__GetAnnotationSetup() {
         const F      = Na__PlCfg__FALLBACKS;
@@ -369,6 +409,47 @@
             enabled       : Na__PlCfg__Val('Annotation', 'Enabled', F.annotationEnabled) !== false,
             categoryTokens: Array.isArray(tokens) ? tokens.slice() : F.annotationTokens.slice()
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Storey Rule for Plans
+    // ------------------------------------------------------------
+    // A plan draws the door swings, and the storey-bound annotation, of the
+    // storey its cut passes through and no other. categoryPrefix names a
+    // storey's category groups (Storey__<Key>__<Element>, as the storey toggle
+    // reads them); floorToleranceMm is how far under its storey's measured
+    // floor a line may sit and still belong to it; annotationTokens pick the
+    // annotation categories kept to a storey - the ones drawn flat on a floor.
+    // ------------------------------------------------------------
+    function Na__PlCfg__GetStoreySetup() {
+        const F      = Na__PlCfg__FALLBACKS;
+        const prefix = Na__PlCfg__Val('Storeys', 'CategoryPrefix', F.storeyCategoryPrefix);
+        const tokens = Na__PlCfg__Val('Storeys', 'AnnotationTokens', null);
+        return {
+            enabled          : Na__PlCfg__Val('Storeys', 'Enabled', F.storeysEnabled) !== false,
+            categoryPrefix   : (typeof prefix === 'string' && prefix.length > 0) ? prefix : F.storeyCategoryPrefix,
+            floorToleranceMm : Math.max(0, Na__PlCfg__Num('Storeys', 'FloorToleranceMm', F.storeyFloorToleranceMm)),
+            annotationTokens : Array.isArray(tokens) ? tokens.slice() : F.storeyAnnotationTokens.slice()
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Nested Linework Modifier Tags (SSOT 76-79 range)
+    // ------------------------------------------------------------
+    // Each row is { TagName, OwnerKey }: TagName is the exact nested SketchUp
+    // tag name, matched as the LEADING run of a mesh's own node name (the
+    // GlbBuilder writes '<TagName>::<MaterialName>', but three.js strips the
+    // '::' when it loads, so what is matched is the prefix, not a split),
+    // OwnerKey is the style row it should draw under in
+    // Na__LayoutEditor__ModelLayers__Config__.json instead of its parent
+    // category's style. See Na__DataLib__CoreIndex__Tags__.json ->
+    // LineworkModifierConfig for the SketchUp/exporter side of this.
+    // ------------------------------------------------------------
+    function Na__PlCfg__GetLineworkModifiers() {
+        const list = Na__PlCfg__Val('LineworkModifiers', 'Tags', null);
+        return Array.isArray(list) ? list.slice() : Na__PlCfg__FALLBACKS.lineworkModifiers.slice();
     }
     // ------------------------------------------------------------
 
@@ -418,6 +499,8 @@
         Na__PlCfg__GetDefaultExclusionTokens,
         Na__PlCfg__GetSkipObjectNames,
         Na__PlCfg__GetAnnotationSetup,
+        Na__PlCfg__GetStoreySetup,
+        Na__PlCfg__GetLineworkModifiers,
         Na__PlCfg__GetModelSetup,
         Na__PlCfg__GetLabel
     };

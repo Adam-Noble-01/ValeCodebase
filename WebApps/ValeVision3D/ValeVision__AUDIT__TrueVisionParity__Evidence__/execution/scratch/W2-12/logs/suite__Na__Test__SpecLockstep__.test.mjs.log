@@ -1,0 +1,106 @@
+﻿
+ValeVision3D - the specification in lockstep with its local file
+
+  Loading and the autosave
+[ValeVision3D] Layout Editor: project specification loaded from the cloud (2 note(s)).
+  PASS  the lockstep is on (localhost, editable, LockstepEnabled)
+  PASS  loaded in step with the file: nothing asked, nothing unsaved
+  PASS  ...and the file's own date is known (the server's Last-Modified)
+  PASS  a look finds it in step
+  PASS  an edit: the app is ahead of the file until the autosave
+  PASS  the autosave writes it to the file once the editing pauses
+  PASS  ...in step with the file now, and STILL unsynced against the cloud
+  PASS  ...R2 is not touched by the autosave
+
+  An agent writes the file (the app has nothing unsaved)
+[ValeVision3D] Layout Editor: the specification file changed outside the app (nothing in the app is unsaved) - asking which to keep.
+  PASS  the next look sees it: file ahead
+  PASS  ...and asks: kind file, the file badged newer
+  PASS  ...saying which note only the file holds
+  PASS  ...the question is announced
+  PASS  ...Sync is off while it stands
+  PASS  Enter (WriteLocalCopy) is held, not written
+  PASS  Sync refuses
+  PASS  ...nothing written anywhere: the agent's file is intact, R2 untouched
+  PASS  "Load the file"
+  PASS  ...the app now holds the agent's note
+  PASS  ...the question is gone, in step with the file
+  PASS  ...the app's copy it replaced is kept in this browser
+  PASS  ...and it reads as UNSYNCED, so Save Sheets sends the agent's note to R2
+  PASS  Save Sheets' Sync writes it to R2, and the file
+  PASS  ...nothing unsynced, in step with the file
+
+  Both move
+[ValeVision3D] Layout Editor: the specification file changed outside the app (and the app has changes of its own) - asking which to keep.
+  PASS  the autosave looks first and writes nothing
+  PASS  ...asked: both moved
+  PASS  ...the note worded differently is named
+  PASS  "Keep the app's copy"
+  PASS  ...the file now holds the app's copy
+  PASS  ...the file's version it replaced is kept in this browser
+  PASS  ...in step, nothing asked
+
+  Both arrive at the same words
+  PASS  a look takes the file as saved: nothing asked
+
+  The file moves while Sync is writing R2
+[ValeVision3D] Layout Editor: the specification file changed outside the app (nothing in the app is unsaved) - asking which to keep.
+  PASS  R2 is written
+  PASS  ...but the file the agent wrote meanwhile is not written over
+  PASS  ...it is asked about instead, naming the revision
+  PASS  "Load the file": revision B, and unsynced (R2 still has A)
+
+  The next session: a draft this browser kept, and a file an agent changed since
+[ValeVision3D] Layout Editor: this browser holds a specification draft that differs from the local file - asking which to keep.
+[ValeVision3D] Layout Editor: project specification loaded from the repository (3 note(s)).
+  PASS  the draft is ASKED about, not put back
+  PASS  ...no "restored" toast
+  PASS  ...the app shows the file meanwhile, and the file is untouched
+  PASS  ...the question is announced after the load
+  PASS  "Keep the app's copy": the draft goes in and reaches the file
+  PASS  ...the agent's file is kept in this browser
+[ValeVision3D] Layout Editor: this browser holds a specification draft that differs from the local file - asking which to keep.
+[ValeVision3D] Layout Editor: project specification loaded from the repository (3 note(s)).
+  PASS  asked again for another draft; "Load the file" keeps the file
+  PASS  ...and the draft it did not take is kept in this browser
+
+  Reload Local
+  PASS  reloads with no question when nothing in the app would be lost
+  PASS  ...and the agent's edit reads UNSYNCED, so Sync is on (it used to read as synced)
+
+  A note written by hand with no id
+[ValeVision3D] Layout Editor: the specification file changed outside the app (nothing in the app is unsaved) - asking which to keep.
+  PASS  asked once
+  PASS  the autosave gives the file its id
+  PASS  ...and the watch does not ask again, look after look
+
+  Off localhost
+  PASS  no lockstep and no local file: WriteLocalCopy is skipped, as before
+
+  ValeVision: LockstepEnabled false - the last save wins, as before the lockstep
+[ValeVision3D] Layout Editor: unsynced specification draft restored from this browser.
+[ValeVision3D] Layout Editor: project specification loaded from the repository (4 note(s)).
+  PASS  the lockstep is off: nothing is asked on load
+  PASS  ...the browser draft is put back unasked, with its toast
+  PASS  ...no autosave writes the file
+  PASS  ...Sync writes R2 and the file without looking: the agent's revision is written over
+
+  ValeVision: off localhost nothing reaches the local server
+[ValeVision3D] Layout Editor: project specification loaded from the cdn (4 note(s)).
+  PASS  the public copy is read from the CDN
+  PASS  ...no lockstep, and Sync is closed
+  PASS  ...an edit, Enter and Sync: WriteLocalCopy skipped, Sync refused
+  PASS  ...the local server was never called, and R2 was not written
+
+  ValeVision: who writes R2 and the file (the source)
+  PASS  no specification unit reaches R2DrawingNotes (Na__R2Notes__* or its file)
+  PASS  R2 is written by the Transport unit alone (Na__CfApi__WriteProjectFile)
+  PASS  the local file is written by the Lockstep unit alone (Na__LocalMirror__WriteSiblingFile)
+  PASS  ...and the Transport unit's Sync reaches the file only through MirrorLocal with a look
+
+  ValeVision: the barrel
+  PASS  exports WriteLocalCopy and the lockstep API
+  PASS  ...and LOCATE_EVENT
+
+  ALL PASSED
+

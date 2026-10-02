@@ -1,0 +1,57 @@
+TrueVision3D - sheet images
+
+  Geometry
+  PASS  the box of four corners
+  PASS  a crop of the whole picture is no crop
+  PASS  a crop is held inside the picture
+  PASS  a crop turned inside out is put the right way round
+  PASS  a crop thinner than the smallest span is widened about its middle
+  PASS  the kept part of a 3840 x 2160 picture, cropped to its middle half across
+  PASS  a crop cuts the kept part out of the same place
+  PASS  and taking it off puts the whole picture back where it was
+  PASS  the whole picture behind a crop
+  PASS  bottom right dragged out: top left stays
+  PASS  and the picture doubles on its diagonal, unstretched
+  PASS  a pointer off the diagonal still keeps the proportions
+  PASS  top left dragged in: bottom right stays
+  PASS  and it halves
+  PASS  dragged past the fixed corner, it stops at the smallest size, never turns over
+  PASS  a snap point lines up the edge that leaves the corner nearest the pointer (the side here)
+  PASS  or the bottom edge, when that one does
+  PASS  a snapped corner still keeps the proportions
+  PASS  a sound picture is left exactly as it is
+  PASS  a stretched picture keeps its top left and width and gets its height back
+  PASS  a composed document id is the folder
+  PASS  a typed id is made safe
+  PASS  the archive name is never handed out
+  PASS  nothing left takes the sheet id
+  PASS  a stored name: the dropped name, then the hash
+  PASS  and it is recognised as ours
+  PASS  somebody's own file is not
+  PASS  a name with nothing readable is still a name
+  PASS  100 mm wide at 300 dpi
+  PASS  never above the pixels it has
+  PASS  3840 px across 162.56 mm prints at 600 dpi
+  PASS  196.4 mm at 300 dpi: 2320 x 1305, whole steps of 16:9
+  PASS  the larger of two places decides
+  PASS  never above the original
+  PASS  never above the storage edge, capped as the drop caps it
+  PASS  a crop keeps the whole picture, at the density the kept half needs
+  PASS  a thumbnail is not stored below 256 px
+  PASS  awkward proportions round to the nearest pixel
+  PASS  no drawing shows it: nothing to size
+  PASS  headroom 1.25: a quarter more
+  PASS  within 5% of the stored size: not cut again
+  PASS  further than 5% either way: cut again
+
+  Painter
+  PASS  the kept part is the viewBox, in the stored file's pixels
+  PASS  a soft shadow: a Gaussian drop shadow of the picture's box
+  PASS  cast by a box that carries the filter
+  PASS  shadow first, then the picture, then the frame over its edge
+  PASS  the lighter frame rule is centred on the picture's own box
+  PASS  frame off: no rule and no shadow
+  PASS  frame off: an empty box is left for Draft mode to outline
+  PASS  a missing picture is a placeholder with its name, escaped
+
+Every check passed

@@ -1,0 +1,528 @@
+03__AppUtils/Na__AppUtils__ConfirmDialog.js:27:// - Ported from   : ValeVision3D 03__AppUtils/Na__AppUtils__ConfirmDialog.js
+03__AppUtils/Na__AppUtils__ConfirmDialog.js:29:// - Parity        : verbatim
+03__AppUtils/Na__AppUtils__ConfirmDialog.js:31:// - Back-port     : n/a (this IS the back-port)
+03__AppUtils/Na__AppUtils__DevGate__.js:37:// - Ported from   : none. TrueVision original, implementing plan decision TD01.
+03__AppUtils/Na__AppUtils__DevGate__.js:39:// - Parity        : new
+03__AppUtils/Na__AppUtils__DevGate__.js:42:// - Back-port     : candidate.
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:24:// - Ported from   : ValeVision3D 03__AppUtils/Na__AppUtils__R2AssetUpload__.js 1.0.0
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:26:// - Parity        : diverged (identical signature, different transport)
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:37:// - Back-port     : no.
+05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js:121:// - Ported from   : ValeVision3D 05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js 1.0.1
+05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js:123:// - Parity        : verbatim apart from the app name in this header and in the
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:101:// - Ported from   : ValeVision3D 31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js 1.0.0
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:103:// - Parity        : diverged (identical patterns, jitter maths and accumulation)
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:112:// - Back-port     : YES. ValeVision should take this file and have its video studio
+05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js:56:// - Ported from   : ValeVision3D 05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js 1.0.0
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:64:// - Ported from   : ValeVision3D 06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js 1.0.0 (v2.71.0)
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:66:// - Parity        : verbatim
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:68:// - Back-port     : n/a (this IS the port).
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:49:// - Ported from   : ValeVision3D 21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js 1.0.0 (v2.71.0)
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:51:// - Parity        : verbatim
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:53:// - Back-port     : n/a (this IS the port).
+30__System__ImageExport/Na__ImageExport__AsyncYield__.js:28:// - Ported from   : ValeVision3D 30__System__ImageExport/Na__ImageExport__AsyncYield__.js
+30__System__ImageExport/Na__ImageExport__AsyncYield__.js:30:// - Parity        : verbatim
+30__System__ImageExport/Na__ImageExport__AsyncYield__.js:32:// - Back-port     : n/a (this IS the back-port)
+30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js:64:// - Ported from   : ValeVision3D 30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js 1.2.0
+30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js:66:// - Parity        : diverged (identical tile plan, gutter, sub-frustum and restore discipline)
+30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js:75:// - Back-port     : the supersampling is worth carrying back; the callback route is not.
+30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js:38:// - Ported from   : ValeVision3D 30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js 1.0.0
+30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js:40:// - Parity        : verbatim (the maths is identical; a sheet from either app tiles the same)
+30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js:42:// - Back-port     : n/a (this IS the back-port)
+40__System__DrawingViewCore/Na__DrawView__ConfigState__.js:39:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__ConfigState__.js 1.0.0
+40__System__DrawingViewCore/Na__DrawView__ConfigState__.js:41:// - Parity        : verbatim
+40__System__DrawingViewCore/Na__DrawView__ConfigState__.js:51:// - Back-port     : n/a (this IS the back-port)
+40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:45:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:47:// - Parity        : verbatim
+40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:49:// - Back-port     : n/a (this IS the back-port)
+40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:41:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js 1.1.0
+40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:43:// - Parity        : adapted
+40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:52:// - Back-port     : no. ValeVision's gate is correct for ValeVision.
+40__System__DrawingViewCore/Na__DrawView__ProjectData__.js:43:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__ProjectData__.js 1.0.1
+40__System__DrawingViewCore/Na__DrawView__ProjectData__.js:45:// - Parity        : adapted
+40__System__DrawingViewCore/Na__DrawView__ProjectData__.js:64:// - Back-port     : no for (1) to (3), every one a fact about TrueVision's transport or history.
+40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:49:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:51:// - Parity        : adapted (was verbatim until 20-Sep-2026)
+40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:55:// - Back-port     : n/a (this IS the back-port)
+40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js:31:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js 1.2.0
+40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js:34:// - Parity        : diverged (identical exports, opposite render route)
+40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js:40:// - Back-port     : no.
+40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js:42:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js 1.0.0
+40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js:44:// - Parity        : adapted (was verbatim until 20-Sep-2026)
+40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js:52:// - Back-port     : (2) goes back with the Floor Plans and Elevations menu rebuild.
+40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:33:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js 1.2.0
+40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:35:// - Parity        : diverged (interface identical, implementation is a pass-through)
+40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:43:// - Back-port     : no. The thinness is the point.
+40__System__DrawingViewCore/Na__DrawView__StyleRows__.js:28:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__StyleRows__.js 1.0.0
+40__System__DrawingViewCore/Na__DrawView__StyleRows__.js:30:// - Parity        : verbatim
+40__System__DrawingViewCore/Na__DrawView__StyleRows__.js:32:// - Back-port     : n/a (this IS the back-port)
+40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:16: * - Ported from : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css (scene row rules)
+40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:18: * - Parity      : verbatim (relocated to the drawing core so Phase 2 has them before the elevation sheet exists)
+40__System__DrawingViewCore/Na__DrawView__Transitions__.js:36:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__Transitions__.js 1.0.0
+40__System__DrawingViewCore/Na__DrawView__Transitions__.js:38:// - Parity        : adapted
+40__System__DrawingViewCore/Na__DrawView__Transitions__.js:48:// - Back-port     : check ValeVision's SetOrbitMode really leaves Walk before assuming parity.
+41__System__SectionCutEngine/Na__SectionCut__SceneData__.js:37:// - Ported from   : ValeVision3D 41__System__CrossSectionView/Na__CrossSectionView__SceneData.js 1.1.0
+41__System__SectionCutEngine/Na__SectionCut__SceneData__.js:39:// - Parity        : adapted
+41__System__SectionCutEngine/Na__SectionCut__SceneData__.js:46:// - Back-port     : no. ValeVision already has this.
+41__System__SectionCutEngine/Na__SectionCut__Serialize__.js:28:// - Ported from   : ValeVision3D 41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js
+41__System__SectionCutEngine/Na__SectionCut__Serialize__.js:32:// - Parity        : adapted (schema verbatim, engine calls differ)
+41__System__SectionCutEngine/Na__SectionCut__Serialize__.js:47:// - Back-port     : no. ValeVision already has this.
+44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:29:// - Ported from   : ValeVision3D 45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js
+44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:31:// - Parity        : verbatim
+44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:33:// - Back-port     : n/a (this IS the back-port)
+44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:28:// - Ported from   : ValeVision3D 45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js
+44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:30:// - Parity        : verbatim
+44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:32:// - Back-port     : n/a (this IS the back-port)
+45__System__ElevationViews/Na__Elevation__FacePick__.js:39:// - Ported from   : ValeVision3D 46__System__ElevationViews/Na__Elevation__FacePick__.js
+45__System__ElevationViews/Na__Elevation__FacePick__.js:41:// - Parity        : verbatim
+45__System__ElevationViews/Na__Elevation__FacePick__.js:43:// - Back-port     : n/a (this IS the back-port)
+45__System__ElevationViews/Na__Elevation__GizmoGrip__.js:36:// - Ported from   : ValeVision3D 46__System__ElevationViews/Na__Elevation__GizmoGrip__.js
+45__System__ElevationViews/Na__Elevation__GizmoGrip__.js:38:// - Parity        : verbatim
+45__System__ElevationViews/Na__Elevation__GizmoGrip__.js:40:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:44:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:46:// - Parity        : verbatim, bar 1.2.0
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:49:// - Back-port     : 1.2.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:111:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:113:// - Parity        : verbatim, bar 1.2.0
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:116:// - Back-port     : 1.2.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:65:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:67:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:69:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:31:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:33:// - Parity        : verbatim, bar 1.1.0
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:36:// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:73:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:75:// - Parity        : verbatim, bar 1.3.0
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:78:// - Back-port     : 1.3.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:31:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:33:// - Parity        : verbatim, bar 1.1.0
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:36:// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:66:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:68:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:70:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js:59:// - Ported from   : n/a - authored in TrueVision3D
+50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js:60:// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:61:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:63:// - Parity        : verbatim, bar 1.3.0
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:66:// - Back-port     : 1.3.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:31:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:33:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:35:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:76:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:78:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:80:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js:57:// - Ported from   : n/a - authored in TrueVision3D
+50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js:58:// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:45:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:47:// - Parity        : verbatim, bar 1.1.0 and 1.2.0
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:51:// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off; 1.2.0 ported 18-Sep-2026 as ValeVision3D v2.57.0 (its 1.1.0).
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:56:// - Ported from   : n/a - authored in TrueVision3D
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:57:// - Back-port     : done - ValeVision3D v2.30.0 (13-Sep-2026), verbatim below the
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:39:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:41:// - Parity        : verbatim, but for the folder FetchAsset reads from
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:45:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:48:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:50:// - Parity        : verbatim, bar 1.2.0, 1.3.0 and 1.4.0
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:56:// - Back-port     : 1.3.0 and 1.4.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:41:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:43:// - Parity        : verbatim, bar 1.2.0 to 1.4.0
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:46:// - Back-port     : 1.2.0 to 1.4.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:65:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:67:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:69:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:70:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:72:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:74:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:46:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:48:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:50:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:50:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:52:// - Parity        : verbatim, bar 1.1.0
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:55:// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js:52:// - Ported from   : n/a - authored in TrueVision3D
+50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js:53:// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off (rides with the
+50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css:6: * - Ported from : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Styles__Main__.css
+50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css:8: * - Parity      : adapted (layer rules only; toolbar button and progress overlay not carried; Dev menu rows added)
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:39:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:41:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:43:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:50:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:52:// - Parity        : verbatim, bar 1.1.0 and 1.2.0
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:55:// - Back-port     : 1.1.0 and 1.2.0 PENDING to ValeVision3D, on Adam's sign-off.
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:83:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:85:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:87:// - Back-port     : n/a (this IS the back-port)
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:59:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:61:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:63:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:45:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ConfigState__.js
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:47:// - Parity        : verbatim
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:49:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:29:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:30:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:34:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:31:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:34:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:33:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:36:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:35:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:36:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:28:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:33:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:53:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:54:// - Back-port     : PENDING to ValeVision3D.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:41:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ModeController__.js
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:43:// - Parity        : verbatim
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:45:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:56:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__TabStrip__.js
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:58:// - Parity        : diverged (2.0.0 - the compact strip and the drawings menu are TrueVision's; ValeVision still shows a tab per sheet)
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:60:// - Back-port     : PENDING to ValeVision3D (offer after Adam's sign-off).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:27:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Assets__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:29:// - Parity        : verbatim, but for the folder Load reads from
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:33:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:55:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__AutoSave__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:57:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:60:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:40:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__History__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:42:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:44:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:28:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ScaleManager__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:30:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:32:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:29:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetLayout__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:31:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:33:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:126:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetModel__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:128:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:131:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:28:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:31:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:33:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:36:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:39:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:40:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:42:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:30:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:31:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:33:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:30:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:31:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:33:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:38:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:39:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:41:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:41:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:42:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:44:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:32:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:33:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:35:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:40:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:41:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:27:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetRecords__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:29:// - Parity        : verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:31:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:47:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Controls__Pc__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:49:// - Parity        : verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:52:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:42:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Controls__TouchScreen__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:44:// - Parity        : verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:46:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:40:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Navigation__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:42:// - Parity        : verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:44:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:39:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetChrome__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:41:// - Parity        : verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:40:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetSurface__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:42:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:45:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:6: * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (stage and paper rules)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:8: * - Parity      : adapted (tab strip, frames, handles, rubber band and inline editor are TrueVision's)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Main__.css (15-Sep-2026, TrueVision3D v2.55.0), rules moved verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:7: * - Parity      : the split ValeVision3D made in v2.47.0; ValeVision's copy holds the same regions
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:36: * - Ported from : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:37: * - Back-port   : offer to ValeVision3D with the register tab. ValeVision
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:27:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__TitleBlock__Classic__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:29:// - Parity        : verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:31:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:52:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__TitleBlock__Modern__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:54:// - Parity        : verbatim until v1.2.0
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:58:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:60:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__DimensionGeometry__.js
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:62:// - Parity        : verbatim to 1.0.0
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:64:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:34:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__MarkupBridge__.js
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:36:// - Parity        : verbatim
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:38:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:38:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ShapeGeometry__.js
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:40:// - Parity        : verbatim
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:42:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:41:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:42:// - Back-port     : PENDING to ValeVision3D.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js:52:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js:53:// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:32:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__RasterQuality__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:34:// - Parity        : verbatim
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:36:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:61:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Viewport2d__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:63:// - Parity        : verbatim
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:65:// - Back-port     : n/a (this IS the back-port); 1.5.1 ported 13-Sep-2026 as ValeVision3D v2.28.0
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:45:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:46:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:51:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:40:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:41:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:47:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js:44:// - Ported from   : none (TrueVision-only: site plan drawings)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js:45:// - Parity        : n/a
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js:47:// - Back-port     : goes to ValeVision3D with the site plan feature, if that is ever ported
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:36:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:37:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:56:// - Parity         : authored in TrueVision first
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:43:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Viewport3d__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:45:// - Parity        : adapted
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:50:// - Back-port     : n/a (this IS the back-port); 1.4.0 ported 13-Sep-2026 as ValeVision3D v2.28.0;
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:94:// - Parity         : authored in TrueVision first, back-port to follow
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:40:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ViewportHandles__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:42:// - Parity        : verbatim
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:44:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:47:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:48:// - Back-port     : done - ValeVision3D v2.30.0 (13-Sep-2026). Module and config
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:57:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Enhance__.js
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:59:// - Parity        : verbatim
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:61:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:32:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:33:// - Back-port     : done - ValeVision3D v2.30.0 (13-Sep-2026). The module ported
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:62:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:63:// - Back-port     : ported 13-Sep-2026 as ValeVision3D v2.28.0. Module verbatim,
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js:42:// - Ported from   : none (TrueVision-only: site plan drawings)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js:43:// - Parity        : n/a
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js:45:// - Back-port     : goes to ValeVision3D with the site plan feature, if that is ever ported
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:35:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SnapshotRenderer__.js
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:37:// - Parity        : verbatim
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:43:// - Back-port     : n/a (this IS the back-port); 1.5.0 ported 13-Sep-2026 as ValeVision3D v2.28.0, through ValeVision's own width consumers (DIV-1)
+51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js:76:// - Parity         : authored in TrueVision first, back-port to follow
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:40:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__AxisLock__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:42:// - Parity        : verbatim
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:44:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:39:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ContextMenu__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:41:// - Parity        : verbatim
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:113:// - Parity         : adapted (ValeVision has no Viewport__ShowFrame yet, so that trait stays here)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:51:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Grips__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:53:// - Parity        : verbatim
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:55:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:139:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetTools__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:141:// - Parity        : verbatim
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:143:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:36:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:37:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:39:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:45:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:46:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:48:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:47:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:48:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:50:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:46:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:47:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:49:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:71:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:72:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:74:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:53:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:54:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:56:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:43:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:44:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:46:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:48:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:49:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:51:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:62:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__DimensionTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:64:// - Parity        : verbatim to 1.1.0
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:66:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:104:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:107:// - Parity        : verbatim (the ValeVision copy differs in its header and console
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:62:// - Parity         : verbatim (header only)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:48:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ShapeTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:50:// - Parity        : verbatim
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:52:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:39:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__TextTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:41:// - Parity        : verbatim
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:43:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:36:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__PanelHost__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:38:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:40:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:34:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Dimensions__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:36:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:38:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:42:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Layers__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:44:// - Parity        : verbatim; v1.1.0 authored here first and ported to ValeVision on 13-Sep-2026
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:46:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:36:// - Ported from   : n/a - authored in TrueVision3D
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:37:// - Back-port     : done - ValeVision3D v2.30.0 (13-Sep-2026), verbatim below the header.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:53:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Shapes__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:55:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:58:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:34:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Sheet__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:36:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:38:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js:37:// - Ported from   : none (TrueVision-only: site plan drawings)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js:38:// - Parity        : n/a
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js:40:// - Back-port     : goes to ValeVision3D with the site plan feature, if that is ever ported
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:33:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Styles__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:35:// - Parity        : verbatim until 1.6.0; 1.6.0 and 1.6.1 authored in TrueVision3D
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:37:// - Back-port     : 1.6.0 and 1.6.1 ported 13-Sep-2026 as ValeVision3D v2.28.0 (verbatim below the header).
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:26:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Text__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:28:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:30:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:49:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__ViewportSettings__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:51:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:53:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css:6: * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (panel column rules)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css:8: * - Parity      : adapted (foldable sections with height grips, delegated controls, layer rows)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:26:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Toolbar__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:28:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:30:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:35:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:36:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:41:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:34:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:39:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:35:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:36:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:40:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js:86:// - Ported from   : the Statement Writer's lockstep (TrueVision3D v2.157.0),
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:42:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:43:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:47:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:52:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:53:// - Parity        : adapted, as the Transport region already was
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:59:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:37:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:38:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:40:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:32:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:33:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:35:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:27:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:28:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:30:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:31:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:34:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:33:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:36:// - Back-port     : offer to ValeVision3D with the short tab names.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:34:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:37:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:28:// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:31:// - Back-port     : n/a (ValeVision3D's copy is already split into the same units)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js:45:// - Ported from   : the Statement Writer's question (Na__LayoutEditor__
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:43:// - Ported from   : n/a (TrueVision3D first, 17-Sep-2026)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:44:// - Back-port     : offer to ValeVision3D with the revision fields.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Specification__.css (15-Sep-2026, TrueVision3D v2.55.0), rules moved verbatim
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:7: * - Parity      : the split ValeVision3D made in v2.47.0; ValeVision's copy holds the same regions
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Specification__.css (15-Sep-2026, TrueVision3D v2.55.0), rules moved verbatim
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css:7: * - Parity      : the split ValeVision3D made in v2.47.0; ValeVision's copy holds the same regions
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js:29:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js:30:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js:26:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js:27:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js:25:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js:26:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js:25:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js:26:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js:25:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js:26:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js:34:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js:35:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js:33:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js:34:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js:25:// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js:26:// - Back-port     : offer to ValeVision3D with the register tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js:57:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js:58:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js:43:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js:44:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js:49:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026). The shape follows
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js:52:// - Back-port     : offer to ValeVision3D with the statement tab; this is the
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js:53:// - Ported from   : the filename-trusting idea in ProjectVision__DasBuilder__,
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js:57:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js:50:// - Ported from   : n/a (TrueVision3D first, 23-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js:51:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js:52:// - Ported from   : n/a (TrueVision3D first, 29-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js:53:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js:46:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js:47:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js:41:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js:42:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js:43:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js:44:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js:47:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js:48:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js:43:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js:44:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js:50:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026). The bar, the pills
+51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js:53:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js:46:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js:47:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js:49:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js:50:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js:56:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js:57:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js:44:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js:45:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js:41:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js:42:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js:55:// - Ported from   : PlanVision DesignAccessStatement__HtmlViewer__ (18-Jul-2026),
+51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js:57:// - Parity        : the tiling, the page cap and the two presets are the same
+51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js:62:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js:49:// - Ported from   : the shape of ProjectVision__DasBuilder__ (18-Jul-2026),
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js:55:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js:59:// - Ported from   : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js:60:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js:69:// - Ported from   : n/a (TrueVision3D first, 29-Sep-2026); the page shape is
+51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js:71:// - Back-port     : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css:19: * - Ported from : n/a (TrueVision3D first, 20-Sep-2026)
+51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css:20: * - Back-port   : offer to ValeVision3D with the statement tab.
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js:55:// - Ported from   : Vale Lantern Designer 03__AppUtils/VghLantern__AppUtils__QrEncoder__.js
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js:57:// - Parity        : the algorithm verbatim
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:35:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__PdfExporter__.js
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:37:// - Parity        : verbatim
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:39:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:39:// - Ported from   : n/a (TrueVision3D first, 17-Sep-2026)
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:40:// - Back-port     : offer to ValeVision3D with the exporter change.
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js:47:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js:48:// - Back-port     : candidate.
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js:60:// - Ported from   : none. TrueVision original, after the Project QR Code's
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js:63:// - Back-port     : candidate (ValeVision has no web viewer and no q folder).
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js:61:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js:62:// - Back-port     : candidate (ValeVision has no publishing system yet).
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js:49:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js:50:// - Back-port     : candidate.
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:25:// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__DevMenu__Controls__.js
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:27:// - Parity        : verbatim
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:29:// - Back-port     : n/a (this IS the back-port)
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css:16: * - Ported from : none. TrueVision original.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:52:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:53:// - Back-port     : candidate (ValeVision has no web viewer).
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:41:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:42:// - Back-port     : candidate (ValeVision has no web viewer).
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:45:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:46:// - Back-port     : candidate (ValeVision has no web viewer).
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:50:// - Ported from   : none. TrueVision original.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:51:// - Back-port     : candidate (ValeVision has no web viewer).
+70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js:26:// - Ported from   : ValeVision3D 70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js 1.0.0

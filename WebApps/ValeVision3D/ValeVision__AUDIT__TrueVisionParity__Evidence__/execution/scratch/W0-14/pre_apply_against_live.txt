@@ -1,0 +1,70 @@
+﻿ValeVision3D - W0-14 asset upload contract, asset gates and thumbnail call shape
+  files under test : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules
+  master index     : 153 entries (Whitecardopedia local copy, read only)
+1. R2AssetUpload on localhost: the non-throwing contract (acceptance 1)
+  FAIL  no worker config: resolves, never throws  -> "Error: Worker config unavailable - check Flask is running and Token__CloudflareAPI.env has EDITOR_WORKER_URL and EDITOR_API_KEY."
+  FAIL  no worker config: r2Success false, no URL, the reason given
+  FAIL  no worker config: one red toast, nothing sent to the worker  -> []
+  FAIL  success: resolves with TrueVision's five fields  -> {"r2Success":true,"localSuccess":true,"relativePath":"PresentationMode/Thumbnails/Scene_010.webp","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_010.webp"}
+  FAIL  success: r2Success true, localSuccess true, relUrl = the path, error null  -> {"r2Success":true,"localSuccess":true,"relativePath":"PresentationMode/Thumbnails/Scene_010.webp","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_010.webp"}
+  FAIL  worker refuses: resolves, never throws  -> "Error: Asset path not allowed: stub"
+  FAIL  worker refuses: { r2Success:false, localSuccess:false, publicUrl:null, relUrl:null, error }
+  FAIL  worker refuses: no mirror, no green toast, one red toast  -> []
+  FAIL  network down: resolves with r2Success false, never throws  -> "TypeError: Failed to fetch (stub offline)"
+  FAIL  mirror fails: still stored (r2Success true), localSuccess false, relUrl set  -> {"r2Success":true,"localSuccess":false,"relativePath":"PresentationMode/Thumbnails/Scene_010.webp","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_010.webp"}
+  FAIL  refused path "LayoutEditor/Other/x.webp": r2Success false, red toast, no request  -> "Error: Asset path not allowed: LayoutEditor/Other/x.webp"
+  FAIL  refused path "../x.webp": r2Success false, red toast, no request  -> "Error: Asset path not allowed: ../x.webp"
+  FAIL  refused path "PresentationMode/Thumbnails/a/b.webp": r2Success false, red toast, no request  -> "Error: Asset path not allowed: PresentationMode/Thumbnails/a/b.webp"
+  FAIL  refused path "PresentationMode/Thumbnails/x.json": r2Success false, red toast, no request  -> {"r2Success":true,"localSuccess":true,"relativePath":"PresentationMode/Thumbnails/x.json","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/x.json"}
+  FAIL  refused path "LayoutEditor\\Linework\\x.json": r2Success false, red toast, no request  -> "Error: Asset path not allowed: LayoutEditor\\Linework\\x.json"
+  FAIL  refused path "NaProjectPortal/26-Projects/x.webp": r2Success false, red toast, no request  -> "Error: Asset path not allowed: NaProjectPortal/26-Projects/x.webp"
+  FAIL  refused path "": r2Success false, red toast, no request  -> "Error: Asset path not allowed: "
+  FAIL  refused path undefined: r2Success false, red toast, no request  -> "Error: Asset path not allowed: undefined"
+  FAIL  refused path null: r2Success false, red toast, no request  -> "Error: Asset path not allowed: null"
+  FAIL  refused path 42: r2Success false, red toast, no request  -> "Error: Asset path not allowed: 42"
+  FAIL  project code null: r2Success false, no request  -> "Error: Could not resolve folderId for projectCode: null"
+  FAIL  project code "": r2Success false, no request  -> "Error: Could not resolve folderId for projectCode: "
+  FAIL  project code undefined: r2Success false, no request  -> "Error: Could not resolve folderId for projectCode: undefined"
+  FAIL  project code 3047: r2Success false, no request  -> "TypeError: projectCode.replace is not a function"
+  FAIL  project code {}: r2Success false, no request  -> "TypeError: projectCode.replace is not a function"
+2. The path guard, one row per asset kind (vv_adaptations)
+  FAIL  refused: "PresentationMode/Thumbnails/Scene_010.json"
+  FAIL  the only path the worker would take and this refuses is a json thumbnail  -> []
+3. Off localhost with authoring unlocked: nothing attempted, nothing said (acceptance 1)
+  FAIL  R2AssetUpload: a silent skipped result  -> {"r2Success":true,"localSuccess":true,"relativePath":"PresentationMode/Thumbnails/Scene_010.webp","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_010.webp"}
+  FAIL  R2AssetUpload: no request, no toast, no console line  -> {"calls":["https://worker.w0-14.test/api/editor/projects/2026%2F3047__Doous/assets","https://adam-noble-01.github.io/api/projects/2026/3047__Doous/assets"],"toasts":[{"message":"Asset saved to R2","isError":false}],"console":[]}
+4. Layout Editor Assets on localhost: the gate, the upload and the record rule (acceptance 1)
+  FAIL  a stored snapshot reports r2Success true  -> {"r2Success":true,"localSuccess":true,"relativePath":"LayoutEditor/Snapshots/Sheet_1__VP_1__fp_abc.webp","publicUrl":"https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_1__VP_1__fp_abc.webp"}
+  FAIL  a refused snapshot upload resolves (no throw) with r2Success false  -> "null"
+5. Snapshots and linework read back from VaApps/Projects/{folderId} (acceptance 2)
+6. Thumbnail renderer: TrueVision's call shape (acceptance 3)
+  FAIL  CaptureAndUpload(id): one R2AssetUpload call
+  FAIL  ... with PresentationMode/Thumbnails/<id>.webp
+  FAIL  ... for the active scene set's project code
+  FAIL  ... a webp Blob at the default 480 px, no toast  -> {"widths":[]}
+  FAIL  ... and answers ok with the relUrl a caller writes on its scene  -> {"ok":false,"error":"missing scene id or project code"}
+  FAIL  CaptureAndUpload(id, 512): the same path and project code  -> {"payload":{},"projectCode":512,"relativePath":"PresentationMode/Thumbnails/Scene_010.webp","argc":4}
+  FAIL  ... 512 is the thumbnail's width  -> [480]
+  FAIL  CaptureAndUpload(id, 0): default width, code still resolved  -> []
+  FAIL  CaptureAndUpload(id, -5): default width, code still resolved  -> [480]
+  FAIL  CaptureAndUpload(id, NaN): default width, code still resolved  -> []
+  FAIL  CaptureAndUpload(id, Infinity): default width, code still resolved  -> [480]
+  FAIL  no active scene set: the URL's project code (?project=3047)
+  FAIL  the batch walk writes every scene's thumbnail (3 of 3)  -> [{"PresentationMode__Scene__Id":"Scene_001"},{"PresentationMode__Scene__Id":"Scene_002"},{"PresentationMode__Scene__Id":"Scene_003"}]
+  FAIL  an upload with r2Success false answers ok false with its error  -> {"ok":false,"error":"missing scene id or project code"}
+7. Thumbnail renderer: the three-argument form is unchanged (acceptance 3, git HEAD as reference)
+  FAIL  the one intended change: a non-throwing failure is ok false (HEAD would have said ok true)  -> {"head":{"value":{"ok":true,"relUrl":"PresentationMode/Thumbnails/Scene_023.webp","publicUrl":null},"calls":[{"projectCode":"3047","relativePath":"PresentationMode/Thumbnails/Scene_023.webp","sameToast":true,"argc":4,"type":"image/webp","size":480}],"widths":[480]},"new":{"value":{"ok":true,"relUrl":"PresentationMode/Thumbnails/Scene_023.webp","publicUrl":null},"calls":[{"projectCode":"3047","relativePath":"PresentationMode/Thumbnails/Scene_023.webp","sameToast":true,"argc":4,"type":"image/webp","size":480}],"widths":[480]}}
+8. Through the real R2AssetUpload: the renderer's TrueVision shape on localhost
+  FAIL  CaptureAndUpload(id, 256) posts PresentationMode/Thumbnails/Scene_030.webp for 2026/3047__Doous
+  FAIL  ... and answers ok with its relUrl  -> {"ok":false,"error":"projectCode.replace is not a function"}
+9. Headers and PORT NOTEs (acceptance 4)
+  FAIL  R2AssetUpload's MODULE line equals TrueVision's [F.8 C18]  -> "// MODULE     : R2AssetUpload"
+  FAIL  R2ASSET: PORT NOTE carries {{VVREL:W0-14}}
+  FAIL  THUMB: PORT NOTE carries {{VVREL:W0-14}}
+  FAIL  ASSETS: PORT NOTE carries {{VVREL:W0-14}}
+  FAIL  PERSIST: PORT NOTE carries {{VVREL:W0-14}}
+  FAIL  Persistence PORT NOTE records the gate, the DB name and the Description
+  FAIL  Assets PORT NOTE records the gate
+  FAIL  R2AssetUpload PORT NOTE records the silent skip off localhost
+
+FAIL - 75 passed, 56 failed.

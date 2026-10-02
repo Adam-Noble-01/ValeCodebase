@@ -1,0 +1,14 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs --files 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+(exit 1, 0.09 s)
+
+ValeVision3D - port notes, module logs and release placeholders
+  app root : C:\Users\adamw\AppData\Local\Temp\claude\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\a1674149-918e-4d62-a79a-e7961f105155\scratchpad\w0_04_tree
+  checked  : 1 named file(s) - 1 PORT NOTE(s), 1 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+      FAIL  :49    placeholder-bad      malformed release placeholder "{{VVREL:x}}": it must be the VVREL placeholder with a package id such as W0-04
+
+  PENDING  1 release placeholder(s) in 1 file(s), for the wave's Parity Scribe: W0-06 x1
+
+  RESULT: FAIL (1 fail, 0 warn, 1 pending)

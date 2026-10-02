@@ -1,0 +1,36 @@
+[ValeVision3D ProjectQr] Config unreadable - using built-in defaults. TypeError: fetch failed
+    at node:internal/deps/undici/undici:15157:13
+    at async file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js:187:38 {
+  [cause]: Error: not implemented... yet...
+      at makeNetworkError (node:internal/deps/undici/undici:9618:35)
+      at schemeFetch (node:internal/deps/undici/undici:11014:34)
+      at node:internal/deps/undici/undici:10863:26
+      at mainFetch (node:internal/deps/undici/undici:10882:11)
+      at fetching (node:internal/deps/undici/undici:10830:7)
+      at fetch (node:internal/deps/undici/undici:10699:20)
+      at fetch (node:internal/deps/undici/undici:15155:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:75:12)
+      at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js:187:44
+      at Na__ProjectQr__Ready (file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js:202:15)
+}
+  PASS Preview: imports in node against VV's real dependencies
+  PASS Preview: exports equal TrueVision's (9)
+  PASS Targets: imports in node against VV's real dependencies
+  PASS Targets: exports equal TrueVision's (19)
+  PASS CircleTool: imports in node against VV's real dependencies
+  PASS CircleTool: exports equal TrueVision's (9)
+  PASS ArcTool: imports in node against VV's real dependencies
+  PASS ArcTool: exports equal TrueVision's (9)
+  PASS TrimTool: imports in node against VV's real dependencies
+  PASS TrimTool: exports equal TrueVision's (6)
+  PASS JoinTool: imports in node against VV's real dependencies
+  PASS JoinTool: exports equal TrueVision's (9)
+  PASS no global added by importing the six
+  PASS Preview: no top-level call or page access
+  PASS Targets: no top-level call or page access
+  PASS CircleTool: no top-level call or page access
+  PASS ArcTool: no top-level call or page access
+  PASS TrimTool: no top-level call or page access
+  PASS JoinTool: no top-level call or page access
+
+RESULT: PASS (19 pass, 0 fail)

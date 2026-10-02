@@ -1,0 +1,378 @@
+﻿====================================================================================================
+W1-16 headings: 1. Decisions taken inside the brief (for the orchestrator's eye) | 2. Acceptance items | 3. Gates and tests (VV app root; final state; logs in `execution/scratch/W1-16/`) | 4. Records notes for the W1-99 scribe | 5. Follow-ups
+------------------------------------------------------------
+## 1. Decisions taken inside the brief (for the orchestrator's eye)
+
+
+a. **The Pages base is `https://adam-noble-01.github.io/ValeCodebase/WebApps`, not R3 catalogue (c)'s
+   `.../WebApps/Whitecardopedia`.** Source builds its last-resort URL as `PagesBaseUrl + '/' + location.relative`, and
+   W0-12's facade answers `relative` = `Whitecardopedia/Projects/<folderId>/05__Layout__DrawingDocs__Images/...` (the
+   path under `WebApps/`). R3's value predates the facade and would double the `Whitecardopedia` segment. W0-12's own
+   test names `PAGES_ORIGIN + '/ValeCodebase/WebApps'` as "The Sheet Images config's PagesBaseUrl" and proves
+   base + '/' + relative = the repository URL; my e2e harness proves the same on the landed files (the Pages candidate
+   equals the repository copy and is de-duplicated, exactly as in TV).
+b. **"Fails CLOSED to no address" read as "no Noble Architecture address".** S07a-V02's recommendation for Setup is
+   "Setup's PagesBaseUrl fallback is VV's Pages base"; the acceptance item is "no NA address appears with the config
+   unreadable". An empty fallback was not used: Setup's `Value()` refuses '' anyway, and Source would then build a
+   root-relative `/Whitecardopedia/Projects/...` URL (a seam in Source the package does not list). With VV's base the
+   fallback still equals the shipped config, TV's design rule (proven: every reader answers identically with the config
+   readable, 404, network error, or Flask's index.html).
+c. **Source takes no `Na__CfApi__IsConfigured` import.** The package's adaptation names it, but TV's Source 1.0.0
+   imports only `SheetImageLocation` and `IsRunningOnLocalhost`; adding an import would be an unlisted difference (P3).
+   The facade exports `IsConfigured` (verified at :586 / :1479); Publish (W3-18) is its user.
+d. **The config's PORT NOTE is a `Meta__PortedFrom` field.** JSON carries no comment, and a VVREL placeholder in a
+   .json fails `Na__Verify__PortNotes__` (placeholder-code: it would reach the page), so the field names the TV path,
+   Meta 1.1.0, v2.121.0, the pin, the date and "parity package W1-16", with no placeholder for the scribe. Same
+   convention as VV's ScrapbookCustom and ModelLayers configs (`Meta__PortedFrom`).
+e. **TV's NA examples in code comments are kept verbatim** (Geometry FolderFor comment "RB05_T01_D01", Encode
+   DESCRIPTION "RB03_T01_V10__..."): K2 H4 / P3 keep TV's DESCRIPTION and comments; they never reach a Vale user and
+   G4 passes. Geometry's PORT NOTE (Parity line) says so and gives the Vale form (3047_D01, DR-11). The config's
+   Meta__Folders example WAS changed to 3047_D01 because that sentence had to be rewritten for the folder anyway (W0-18's
+   blueprint uses the same example). Config notes citing NP03, EB03, RB05 (TV's measurements) and "the dark bronze of
+   the title block" are kept verbatim - see follow-up F1.
+------------------------------------------------------------
+## 4. Records notes for the W1-99 scribe
+
+
+- Placeholders to resolve: 7 x `{{VVREL:W1-16}}` - Setup :29, Geometry :29, Painter :36, Paint :27, Source :43,
+  Pdf :30, Encode :39 (all on the PORT NOTE "Ported on" line). The config JSON has none (1d).
+- Devlog wording: "Sheet Images render leaves, inert (LE/54: Setup, Geometry, Painter, Paint, Source, Pdf, Encode,
+  Config) ported from TrueVision3D v2.116.0 and v2.121.0 - v2.121.0 NOT signed off by Adam in TrueVision; v2.116.0
+  tried by Adam on his own server, no sign-off line. Nothing imports them yet."
+- Ledger Module Register: 8 new rows (VV path = TV path; TV source ver 1.1.0 / 1.1.0 / 1.0.0 / 1.0.0 / 1.0.0 / 1.0.0 /
+  1.1.0 / Meta 1.1.0; parity adapted for Setup and Config, verbatim for the rest; Transport: Source through the VV facade
+  (DIV-4); Loaded by: none yet). Release Watermark: v2.116.0 and v2.121.0 rows -> the render half ported in this wave;
+  the editing/storage half stays open for W3-02 / W3-18 / W3-09.
+------------------------------------------------------------
+## 5. Follow-ups
+
+
+- **F1 (Adam, DR-13):** the frame keeps TV's bronze `#555041` rule (default (a)). VV's title-block ink is `#172b3a`, so
+  the config's Frame__Description ("a rule in the dark bronze of the title block") describes TrueVision's title block,
+  not ValeVision's. If Adam picks (b) a Vale frame colour, change `Frame__Colour` in the config, the Frame colour
+  fallback in Setup and the hex fallback in Painter's `Rgb` together, and reword that note.
+- **F2 (Adam, DR-29):** no picture is committed, so the GitHub Pages fallback in Source finds nothing and on the live
+  site R2 is the only source of a sheet picture. Answering "commit pictures" makes the Pages copy real with no code
+  change (the URL is already right).
+- **F3 (orchestrator / plan):** R3 catalogue (c) row for `..SheetImages__Config__.json` and S07a-F44 give
+  `Sources__PagesBaseUrl` = `.../WebApps/Whitecardopedia`; W0-12's facade contract makes it `.../WebApps` (1a). Worth a
+  note where the plan is read again (W3-09 / W3-18 briefs).
+- **F4 (W3-09, Adam's in-app checklist when switched on):** (a) a picture dropped on a sheet draws at once, framed, with
+  the soft shadow; (b) on localhost it is read from the Flask copy first; (c) the read-only web build reads it from R2;
+  (d) Download PDF prints it at 300 dpi with the shadow PNG; (e) a project with no drawings, and Layout Mode off, are
+  unchanged. (Saving pictures to R2 waits on W0-07 being applied and worker 1.6.0 deployed - P12.)
+
+Restore (if ever needed): the eight files are new and nothing else in the repository was touched, so removing the
+folder `02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/` restores the tree exactly (their hashes
+are in `scratch/W1-16/written__sha256.json`). Scripts (re-runnable, read TrueVision only at the pin): `port_sheetimages.py`
+(hash-guarded, all checks before any write, `--dry-run`), `make_test_copy.py`, `mutation_control.py`, `e2e_sources.mjs`,
+`extract_tv.py`, `tv_devlog_lines.py`, `tv_devlog_grep.py`. TrueVision copies and test copies were kept in the session
+scratchpad outside the repository and deleted afterwards (they carry TrueVision / NA text).
+====================================================================================================
+W1-17 headings: 1. How it was done | 2. The stylesheet: why it is held back, and the proposed correction | 3. Acceptance items | 4. Gates and tests (VV app root; logs in `execution/scratch/W1-17/`) | 5. Records notes for the W1-99 scribe | 6. Follow-ups
+------------------------------------------------------------
+## 2. The stylesheet: why it is held back, and the proposed correction
+
+
+TrueVision loads `Na__LayoutEditor__Styles__Patterns__.css` from one place only: `Na__LePanelPatterns__Register()` in
+`Na__LayoutEditor__Panel__Patterns__.js` (TV :361-366, `new URL('./Na__LayoutEditor__Styles__Patterns__.css',
+import.meta.url)`), which W2-29 lands. R3 C.2 (b) records it as "self-linked ... nothing to register" and forbids
+pre-registering a sheet anywhere else. W0-04's G4 lint (`Na__Verify__ParityNaming__.mjs`, STYLESHEET HOMES) fails any
+Layout Editor stylesheet with no home, and its baseline never holds folder or stylesheet findings.
+
+Proof, on a throwaway root with the live verifier (`scratch/W1-17/g4_stylesheet_home_experiment.py`,
+`test__g4_stylesheet_home_experiment.log`):
+- A. the module + the stylesheet, nothing linking it (W1-17 as planned): **exit 1, `FAIL ... Styles__Patterns__.css
+  stylesheet-home (K2 S5, R3 C.2 (b))`**;
+- B. the same plus a stand-in panel linking it exactly as TrueVision's Panel__Patterns does: **exit 0, PASS**.
+
+Landing it would therefore fail G4 on this package's own file at every run until W2-29 (a whole wave), blocking the W1
+wave gate; the only other homes (the loader list, the CSS index, index.html) are hot files outside this package and
+would give the sheet two homes once W2-29 lands. So nothing was written for it, and the live tree has no such file.
+
+**Proposed orchestrator correction (OC):** move `LE/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css`
+from W1-17's `edits` to W2-29's, so it lands in the same change as the panel that links it. The ValeVision copy is
+TrueVision's text with the banner token swapped (`port_w1_17.py --stage <dir>` builds it; the CSS has no console
+output). Two things W2-29 will need decided:
+- **Source version.** TrueVision's stylesheet carries no module version and no log (27 lines; created 20-Sep-2026 with
+  the Patterns panel - TV git 62dade1c, unchanged to the pin; TV plan SitePlanComposites P7a; first devlog mention of
+  the panel v2.89.0). `Na__Verify__PortNotes__.mjs` requires both an x.y.z module version and a v2.N.N app version on a
+  "Ported from : TrueVision3D" note, so a truthful "unversioned" line FAILs `source-version-form` unless the PORT NOTE
+  also carries a `- Legacy : <reason>` field (which turns it into a WARN). Inventing "1.0.0" would be wrong; the
+  Legacy field is the honest route, or the orchestrator's ruling.
+- **Header form.** Put the PORT NOTE inside TrueVision's single `/* ... */` block, before its closing rule, as
+  `Na__PlanDimensions__Styles__.css` does; the G4 banner check accepts the `   VALEVISION3D - ...` line 2 (proved in
+  experiment A: no banner finding).
+------------------------------------------------------------
+## 5. Records notes for the W1-99 scribe
+
+
+- Placeholder to resolve (1 x `{{VVREL:W1-17}}`): `Na__LayoutEditor__HatchPatterns__.js:39` (the PORT NOTE "Ported on"
+  line). The root index cannot hold a placeholder (JSON: `Na__Verify__PortNotes__` fails one outside a comment), so its
+  `Meta__PortedFrom` says "parity package W1-17", as W1-16's SheetImages config does; optionally replace that phrase
+  with the allocated version.
+- Devlog wording: "The hatch pattern module (TrueVision 1.5.0) and TrueVision's whole hatch library land at
+  TrueVision's paths, inert: the Construction Materials pack (14 patterns, Brickwork first) and the Site Plan pack (5,
+  shipped because site plans port dormant, DR-08 (B), DR-19) from TrueVision3D v2.89.0-v2.164.0 - none confirmed by
+  Adam in TrueVision except v2.150.0's holes, and the Gravel pattern unlogged there. Nothing imports the module yet, so
+  nothing changes on screen, in a saved sheet or in a PDF. The Patterns panel's stylesheet waits for the panel (W2-29)."
+- Ledger Module Register row (new): `VV 02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js`
+  = TV path; TV source ver 1.5.0 (v2.164.0); TV current ver 1.5.0; Parity verbatim; Divergences: banner and console
+  prefixes; Open TV versions: none; Loaded by: nothing yet - importers land with W1-19 (SheetRecords), W1-20
+  (SheetModel__Viewports), W1-26 (SheetChrome), W2-16 (Viewport2d__SitePlan), W2-29 (Panel__Patterns and the
+  ModeController Ready chain), W2-39 (SiteLegendLink), W3-12 (Panel__Shapes), W3-14 (Panel__ScrapbookParametric),
+  W3-16 (PdfExporter), W5-03 (ModeController convergence) (`execution/port_order_map.md`); Transport: none (static
+  app-root library). Library rows: `52__LayoutEditor__HatchPatternLibrary/` root index Meta 1.1.0 (header only),
+  Construction pack 1.0.0 + 14 and Site Plan pack 1.2.0 + 5 verbatim. The ledger's subfolder table gains LE/36.
+- Release Watermark: v2.89.0, v2.90.0 (the hatch module's parts), v2.101.0, v2.126.0 (hatch module, Construction pack
+  and root index), v2.150.0 (HatchPatterns 1.4.0) and v2.164.0 (HatchPatterns 1.5.0) gain partial rows; the unlogged
+  29-Sep Gravel / Site Plan pack 1.2.0 change has no release to hang on - name it in the entry.
+- SHARED SERVICE WORKER paragraph: "adds 1 module and 22 static JSON files and no new export on any existing module;
+  nothing loaded imports the module or fetches the library, so a warm client holding a mix of old and new files sees no
+  difference. The token is still Adam's call; it was not bumped."
+------------------------------------------------------------
+## 6. Follow-ups
+
+
+- **F1 (orchestrator, before W2-29 is dispatched):** apply the correction in section 2 - move
+  `Na__LayoutEditor__Styles__Patterns__.css` to W2-29 and rule on its Source version line (a `- Legacy :` field, or
+  the orchestrator's choice).
+- **F2 (Adam, live host):** after you commit and push, open
+  `https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/HatchLibrary__Index__.json`
+  - it should answer with the JSON (acceptance 1b).
+- **F3 (Adam, decisions already on file):** every TrueVision release this package carries is unconfirmed by you in
+  TrueVision except v2.150.0 (DR-01 (c) ported them inert and names them); TrueVision's own site plan composites plan
+  still lists "P10 - Adam's sign-off, then offer the ValeVision port" as open. The Site Plan pack ships only because
+  DR-08 defaults to (B); if you answer DR-08 (C) or DR-19 (a), the `05__SitePlanHatches` folder and its row in the root
+  index come out together (the panel and every pattern list follow the index).
+- **F4 (records, informational):** TrueVision's HatchPatterns carries no PORT NOTE block at all (S05b b10); the
+  ValeVision copy now has one. The root index's `Meta__EmptyPacks` note describes empty folders (01, 03, 04) that exist
+  only on Adam's TrueVision disk - git keeps them in neither app; harmless, kept verbatim.
+- **F5 (Adam, in-app checklist - nothing here should change):** open 3047__Doous and the drawing editor - it loads as
+  before, no console error, no request for the hatch module or library; Save Sheets with no edit on localhost -
+  `project.json` unchanged; a project with no drawings opens; a sheet's PDF is unchanged; the read-only web view and
+  Layout Mode off behave as before.
+
+Restore (if ever needed): delete the 23 new files - the module (and its folder `36__System__HatchPatternTools`, which
+holds nothing else) and the whole `52__LayoutEditor__HatchPatternLibrary` folder; their hashes are in
+`scratch/W1-17/sha256__written.txt`. Scripts: `extract_tv.py` and `extract_tv_devlog.py` (re-read the TV sources from
+the pin into `scratch/W1-17/tv/`), `port_w1_17.py` (`--stage`, `--write` hash-guarded new files only, `--check`),
+`acceptance_check.mjs` (needs `extract_tv.py` first), `mutation_check.py` (needs `port_w1_17.py --stage
+scratch/W1-17/stage` first), `g4_stylesheet_home_experiment.py` (needs the stage too). The TrueVision copies and the
+staged set used during the work were deleted from scratch afterwards (they carry TrueVision text and the two 2.5 MB
+reference PNGs); the scripts re-create them.
+====================================================================================================
+W1-18 headings: 1. What changed, exactly | 2. Acceptance items | 3. Gates and tests (VV app root; logs in `execution/scratch/W1-18/`) | 4. Decisions applied (all on their K1 defaults) | 5. Records notes for the W1-99 scribe | 6. Follow-ups
+------------------------------------------------------------
+## 5. Records notes for the W1-99 scribe
+
+
+- Placeholders to resolve (2 x `{{VVREL:W1-18}}`): `02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:106`
+  and `.../Na__LayoutEditor__LineStyleTool__.js:78`.
+- Devlog wording: "GradientTool 1.1.0 (TrueVision3D v2.150.0) and LineStyleTool 1.1.0 (v2.152.0) taken whole - neither
+  confirmed by Adam in TV; no behaviour change in ValeVision until SheetChrome 1.14.0 (W1-26) passes holes and
+  Panel__Dimensions 1.7.0 (W3-12) passes the 'dim' prefix".
+- Ledger Module Register: two rows (VV 1.1.0 = TV 1.1.0, parity verbatim, loaded by the mode controller's Ready and
+  the existing consumers, transport none). Closes S05b c1 rows "drifted (5)" and "drifted (10)".
+- Release Watermark: v2.150.0 and v2.152.0 gain their GradientTool / LineStyleTool thirds only (each release carries
+  far more - its other modules are other packages').
+- TV-side record items for the TrueVision lane (WT-08, Adam's approval, DR-36), not done here: TV's LineStyleTool
+  PORT NOTE still holds the VV port for sign-off although VV has carried 1.0.0 since v2.40.0 (S05b b10, WP-S05b-11);
+  TV's GradientTool PORT NOTE names VV's pre-v2.55 path and 1.0.0, and its 1.1.0 log entry ends "not in ValeVision".
+------------------------------------------------------------
+## 6. Follow-ups
+
+
+- **F1 (Adam, DR-01):** confirm in TrueVision, or not, v2.150.0's even-odd gradient clip (a holed vector with a
+  gradient, exported to PDF) and v2.152.0's dimension Line pt and Dashed lines; until then the scribe lists them as
+  unconfirmed. Neither changes anything a ValeVision user can see until W1-26 / W3-12 land.
+- **F2 (Adam, in-app checklist; nothing should look different):** open 2026/3047__Doous, a drawing with a vector on a
+  vector layer. Vectors panel: "Dashed edges" sits under the edge rows, off; ticking it opens Style / preview / Scale /
+  Dash mm / Gap mm; Dash-dot adds Mark mm, Dotted renames Dash mm to Dot mm; unticking hides the block; Edges off hides
+  the toggle. Gradient: tick Gradient on a closed vector, alpha to white, export the PDF - the fade prints clipped to
+  the outline exactly as before. Save Sheets (localhost: R2 then disk), a project with no drawings, Layout Mode off -
+  as before. DEFERRED to the orchestrator's smoke test.
+- **F3 (orchestrator, for W1-26 / W3-12):** both prerequisites are in place - `Na__LeGrad__DrawPdf(doc, points,
+  gradient, holes)` and `Na__LeDash__BuildRows / RefreshRows / RegisterControls(..., { prefix : 'dim', dashedLabel,
+  dashedTitle })`.
+- **F4 (orchestrator, harness note for PDF packages such as W1-24 / W3-16):** jsPDF 4.1.0 writes a compressed
+  document's page stream uncompressed when `output()` is called a second time on the same document
+  (`scratch/W1-18/probe_output_twice.cjs`); byte comparisons must output each document once.
+- Nothing to deploy for this package, and no service-worker token needed by it. Two small `na-drafts-*` folders were
+  left in the OS temp folder by my two DrawingDrafts runs while AutoNameText was missing (TV's test makes them before
+  loading; W1-06 documented this).
+
+Restore (if ever needed): `python -B scratch/W1-18/port_w1_18.py --restore` puts the pre-port bytes back from
+`scratch/W1-18/vv_before/` (sha256 in `sha256__before.txt`), and refuses a file edited after this port. Scripts:
+`extract_tv.py` (never overwrites the snapshot), `port_w1_18.py` (`--dry-run`, `--out <dir>`, `--verify`,
+`--restore`), `diff_vv_tv.py`, `vv_vs_tv_parent.py`, `devlog_releases.py`, `devlog_find.py`, `acceptance_w1_18.mjs`
+(`--new <dir>`), `make_planted.py`, the probes `probe_jspdf.cjs`, `probe_output_twice.cjs`, `probe_bytes_diff.mjs`, and
+`cleanup_scratch.py`. The TrueVision copies read at the pin (`tv/`) and the rehearsal / planted copies were removed
+afterwards by `cleanup_scratch.py`; re-create them with `extract_tv.py`, `port_w1_18.py --out rehearsal` and
+`make_planted.py` before re-running the scripts that read them.
+====================================================================================================
+W1-23 headings: 1. How it was done | 2. Acceptance items | 3. Gates and tests (VV app root; logs in `execution/scratch/W1-23/`) | 4. Files changed, one line each (what and why) | 5. Records notes for the W1-99 scribe | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 5. Records notes for the W1-99 scribe
+
+
+- Placeholders (14 x `{{VVREL:W1-23}}`, each in a PORT NOTE "Ported on" line and a log heading):
+  SnapshotRenderer :43, :64; Viewport2d__Window :41, :55; Viewport2d__Frame :50, :63; Viewport2d__Linework :43, :57;
+  Viewport2d :58, :74; Viewport3d :49, :62; PdfExporter :36, :48. Module steps are patch steps (1.7.1, 1.0.1, 1.1.1,
+  1.1.1, 1.8.1, 1.6.2, 1.2.1), as the W0 and other W1 packages used.
+- Devlog wording: "The Layout Editor's render calls take TrueVision3D's arguments in TrueVision3D's positions -
+  Render2d (..., weights, modelSourceId, stillWanted, depthFog), Render3d (..., weights, modelSourceId, viewWindow,
+  stillWanted), an optional design phase on the model root and both fingerprints, EnsureLinework's modelSource and
+  waited - and Describe hands back a Model Source that is always the live model. ValeVision3D has no design phases
+  and no depth fog yet, so nothing renders, keys or prints differently; the point is that TrueVision3D's callers
+  can now be ported without handing a 3D render its stillWanted as the view window. Signatures from TrueVision3D
+  v2.32.0 and v2.94.0 (positions of v2.64.0 and v2.50.0), none of them confirmed by Adam in TrueVision."
+- SHARED SERVICE WORKER paragraph: "adds no module and no export, but changes the positional signatures of
+  Render2d and Render3d and what Describe returns, which cross module boundaries: a warm client mixing old and new
+  copies would link and then draw a zoomed 3D viewport whole, or leave 2D frames empty. The token is still Adam's
+  call; it was not bumped. It must move at deploy."
+- Ledger: Module Register rows for the seven files - Parity unchanged (SnapshotRenderer diverged DIV-1; the others
+  adapted), Source version as in each PORT NOTE, Open TV versions as each PORT NOTE's "Not here yet" bullet;
+  Release Watermark: v2.32.0 and v2.94.0 gain a partial row (signature slots only).
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test (acceptance 2 and 3, browser half)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`:
+   open the drawing editor on sheet "Elevations Test" - no console error; the 2D elevation draws its underlay and
+   linework and the 3D viewport its picture, as before. Zoom the 3D viewport to 150% (Viewport panel or a corner
+   drag): the frame stays sharp and shows only its window, never the whole picture shrunk. Switch sheets or tabs while
+   viewports are still rendering: nothing renders for a sheet that has gone. Download the PDF: same underlay, vectors
+   and 3D picture as before (at 150% the picture fills the frame). Save Sheets with no edit on localhost:
+   `project.json` byte-identical (no snapshot re-stamped, so the 3D key is unchanged). In DevTools:
+   `const vp2 = await import('/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js'); const sm = await import('/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js'); sm.Na__LeModel__GetSheets().flatMap(s => s.Sheet__Viewports).filter(v => v.Viewport__Kind === '2d').map(v => vp2.Na__LeVp2d__Describe(v).modelSource.renderId)`
+   answers `[null]`.
+2. **Service-worker token at deploy (DR-07):** this package changes call signatures across modules with no new
+   file, so only a token bump stops a warm deployed client mixing old and new copies (section header). Localhost is
+   network-first and unaffected.
+3. **For W2-15 (SnapshotRenderer):** the `if (depthFog) return Promise.resolve(null);` line after the IsReady check is
+   this package's interim answer to a fog request; TV's fog route (Na__ElevFog__SetSource, the renderFrame switch,
+   Enhance skipped for a fog image) replaces it. modelSourceId is accepted and ignored in Render2d / Render3d /
+   GetModelRoot / both fingerprints; W2-15's phase lines (EnterPhase / ExitPhase / PhaseFingerprints / OnPhaseChanged,
+   GetModelRoot(id) over the uninitialised PhaseLibrary) are what give it meaning. The PORT NOTE's Divergences list
+   what DIV-1 keeps.
+4. **For W2-16 (the viewport units whole):** the call shapes now match TV's at every site this package touched, so the
+   whole-file takes change only what TV adds (phase waiting, fog, doors, Draft, site plans, rotation);
+   `Na__LeVp2d__LiveModelSource` and Viewport3d's `const renderId = null` go when ModelSource lands whole (TV's
+   `Na__LeSource__Resolve`).
+5. **For W1-24 (next PdfExporter holder):** pre-image for its lock is sha256 3bd517ccdff0eba7...; the PORT NOTE now
+   has the H5 twin form and a 1.2.1 log entry - continue the sequence from there.
+6. **Foreign, for the orchestrator:** `Na__Test__LoaderFacade__` fails 2 checks since W1-32 declared
+   `Na__LeMode__VIEW_REGISTER` / `VIEW_STATEMENT` in the ModeController while W1-31's Loader has no CheckNames rows
+   for them (the test prints the two rows to add). One of those two packages owns the fix.
+7. **TrueVision releases named (DR-01 (c)):** v2.32.0, v2.94.0 (slots only), v2.64.0 and v2.50.0 (positions only) - no
+   confirmation line either way in TV's devlog.
+
+Restore if ever needed: `python -B scratch/W1-23/build_w1_23.py --restore` puts the seven pre-images back (it refuses a
+file anyone has changed since this package wrote it; written hashes in `scratch/W1-23/sha256__written.txt`). Scratch
+(`execution/scratch/W1-23/`): `build_w1_23.py`, `before/`, `candidate/`, `w1_23_changes.diff`, `w1_23_harness.mjs` with
+`harness__before.json` / `__candidate.json` / `__live.json`, `mutation_check.py` and `mutants/`, `served_check.py`, the
+gate and test logs, `extract_tv.py` and `tv_devlog_grep.py`. The TrueVision copies used during the work were deleted
+from scratch afterwards (they carry TrueVision / NA text); `extract_tv.py` re-creates them from the pin.
+====================================================================================================
+W1-24 headings: 1. How it was done | 2. Acceptance items | 3. Gates and tests (VV app root; logs in `execution/scratch/W1-24/logs/`) | 4. Files changed, one line each (what and why) | 5. Records notes for the W1-99 scribe | 6. Follow-ups for Adam (and the orchestrator)
+------------------------------------------------------------
+## 5. Records notes for the W1-99 scribe
+
+
+- Placeholders (2 x `{{VVREL:W1-24}}`): PdfExporter :38 (PORT NOTE "Ported on") and :54 (log heading 1.2.2). W1-23's two in the
+  same file (:36, :69) are unchanged. Module step 1.2.1 -> 1.2.2 (patch, as W1-23 and the other W1 packages).
+- Devlog wording: "Sheet PDFs pack every viewport picture the way TrueVision3D does since its PDF exporter 1.11.0 - 'FAST', the
+  Sub predictor - because Chrome's PDF viewer (and Android's) paints black blocks and streaks over a Paeth picture over 60 MB
+  decoded. Same pixels, larger files. The exporter also takes TrueVision3D's options (strict, which stops on a missing drawing
+  or a failed 3D render instead of leaving the frame empty, and pictureCompression), loads jsPDF through LoadLibrary, which it
+  now exports, and waits for the save before saying the PDF is downloaded. Nothing passes the options yet, so Download PDF
+  behaves as before apart from the packing. From TrueVision3D v2.155.0 (the PDF fix confirmed by Adam in Chrome, 23-Sep-2026),
+  its unversioned 19-Sep exporter options (not confirmed), PdfExporter 1.4.0's LoadLibrary split (not confirmed) and v2.95.0's
+  LoadLibrary export (not confirmed)."
+- SHARED SERVICE WORKER paragraph: "adds no module and one export on an existing module (Na__LePdf__LoadLibrary, which nothing
+  imports yet); BuildDocument and ExportSheet take an optional extra argument and EnsureJsPdf is now async, so a warm client
+  holding a mix of old and new copies links and exports as before. The token is still Adam's call; it was not bumped. The first
+  importer of LoadLibrary (the statement PDF, W4-12) will need a bump."
+- Ledger: Module Register row for the exporter - VV 1.2.2, Source version 1.12.0 (unchanged), Parity adapted, Open TV versions
+  1.2.0, 1.4.0, 1.6.0, 1.7.0, 1.8.0, 1.9.0, 1.10.0, 1.12.0 (as the PORT NOTE); Release Watermark: v2.155.0 gains a partial row
+  (PdfExporter 1.11.0 picture packing only; publishing not ported); v2.95.0 a partial row (the LoadLibrary export only).
+------------------------------------------------------------
+## 6. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test (acceptance 1b, the real-sheet half)** on `http://localhost:8000/ValeVision3D/index.html?project=2026/3047__Doous`:
+   open the drawing editor, Download PDF of "Elevations Test" - it downloads, the toast says "PDF downloaded." once the file is
+   handed over, and the PDF looks as before (underlay, vectors, 3D picture), only larger. If a sheet with a big plan underlay
+   exists (a large 2D frame at the export raster level), its PDF must open in Chrome with no black blocks or streaks. To see the
+   defect and the fix with your own eyes, open these two in Chrome: `execution/scratch/W1-24/pdf/before__big.pdf` (the old
+   packing - garbled) and `execution/scratch/W1-24/pdf/live__big.pdf` (this package - clean). The specification PDF still
+   downloads (it reaches jsPDF through EnsureJsPdf).
+2. **PDFs get larger** (the price TrueVision accepted at v2.155.0): every viewport picture is packed for speed, not size.
+3. **TrueVision's strict mode treats a deliberately empty 3D frame as a failure.** With `{ strict : true }`, a 3D viewport whose
+   base image is switched off (or that has no scene) answers null from RenderForExport and throws "A 3D viewport could not be
+   rendered." - TrueVision's own RenderForExport does the same. Ported exactly as TrueVision (DR-37 item (3) rule); it matters
+   only once a strict caller lands (TrueVision's register "export all" passes `{ strict : true }`; here W4-10). Worth a word to
+   TrueVision if that is not intended.
+4. **For W1-25 (next PdfExporter holder):** pre-image for its lock is sha256 d1b5385e70f1387c (25,122 bytes, CRLF). EnsureJsPdf
+   has TrueVision's shape minus the fonts: W1-25 puts back `await Na__LePdfFonts__EnsureLoaded();` before `return JsPdf;` (in place
+   of the trailing comment), TV's header "Make Sure jsPDF Exists and Open Sans Is Ready to Embed", the PdfFonts import,
+   `putOnlyUsedFonts : true` and `Na__LePdfFonts__Install(doc)` in BuildDocument, and deletes the Divergences bullet "EnsureJsPdf
+   answers what LoadLibrary answers" (and "1.4.0 (Open Sans)" from "Not here yet").
+5. **For W1-28 (paint plan):** the viewport loop already carries `options`; TV's paint-plan step line is
+   `await Na__LePdf__DrawViewport(doc, sheet, step.viewport, options);` - the options thread through unchanged.
+6. **For W3-16 (whole file):** the fog picture's `Na__LePdf__AddPicture` call and the site-plan strict check arrive with the take.
+7. **Foreign, for the orchestrator:** `Na__Test__LoaderFacade__` fails 2 checks (VIEW_REGISTER / VIEW_STATEMENT CheckNames rows) -
+   W1-31's Loader vs W1-32's ModeController; one of those packages owns the fix (as W1-23 reported).
+8. **TrueVision releases named (DR-01 (c)):** v2.155.0 (PDF fix confirmed by Adam in Chrome), the unversioned 19-Sep options
+   (not confirmed), PdfExporter 1.4.0's split (not confirmed), v2.95.0's export (not confirmed).
+
+Restore if ever needed: `python -B scratch/W1-24/build_w1_24.py --restore` puts the pre-image back (it refuses a file anyone has
+changed since this package wrote it; written hash in `scratch/W1-24/sha256__written.txt`). Scratch (`execution/scratch/W1-24/`):
+`build_w1_24.py`, `before/`, `candidate/`, `tv_parity_check.py`, `w1_24_contract.mjs` (+ `logs/contract__*.json`),
+`mutation_check.py` and `mutants/`, `w1_24_realpdf.mjs`, `w1_24_pdfcheck.py`, `w1_24_chrome.mjs`, `w1_24_chromecheck.py`,
+`pdf/` (the PDFs, their source pictures and the Chromium screenshots), `served_check.py`, `run_vv_node_suite.py`, the gate and
+test logs and `logs/w1_24_changes.diff` (+63 / -13 lines). The TrueVision copies used during the work were deleted from scratch
+afterwards (they carry TrueVision / NA text); `extract_tv.py` re-creates them from the pin.
+====================================================================================================
+W1-29 headings: 1. What was run, in order | 2. Acceptance items | 3. Tests and gates (from the VV app root, final state) | 4. Files changed, one line each (what and why) | 5. TrueVision source and the pin | 6. TV releases ported (DR-01 (c): ported and named) | 7. Follow-ups for Adam (and the orchestrator) | 8. Files written by this package
+------------------------------------------------------------
+## 6. TV releases ported (DR-01 (c): ported and named)
+
+
+- **v2.110.0** (21-Sep-2026) - KeyScope 1.0.0 (leaf, scopes, reader, typing test) and Na__Hotkeys__Manager 2.1.0's scope guard and contenteditable test, replayed into VV's handler. Adam-confirmed in TV: **no** ("NOT tried by Adam; NOT in ValeVision").
+- **v2.115.0** (21-Sep-2026) - KeyScope 1.1.0 (ControlKeepsKey; its header names the three per-tab key files). Adam-confirmed in TV: **no** (no confirmation line). ControlKeepsKey is inert in VV until W1-36 (Controls__Pc) and W3-03 (SheetTools Keyboard) import it.
+- No DR-40 gesture change is touched.
+------------------------------------------------------------
+## 7. Follow-ups for Adam (and the orchestrator)
+
+
+1. **Smoke test, now** (acceptance 1): see the table in section 2. Today's visible change on the 3D tab is small: D, O, Delete and Escape are no longer swallowed (Escape reaches the page again), the console stops printing "No callback", and a plan annotation label being edited keeps R, B, T, Y, V and the digits as letters.
+2. **Smoke test after W1-32** (acceptance 2): open a drawing, press T, R, V, B, Y, 1-9, Page Up and Page Down - the hidden camera must not move, Walk must stay off and the views carousel must not toggle; T, R and V still pick Text, Rectangle and Select on the sheet. Then the Specification tab: R, B, T typed into a field stay letters (as before) and nothing moves behind.
+3. **For W1-32 (ModeController, and the porter of `Na__Test__DocumentKeys__`)**: add TV's `Na__LeMode__KeyScope` reader (`:653-656`) and `Na__KeyScope__Follow(Na__LeMode__KeyScope)` in Initialize (`:1182`) - KeyScope exists at `../../03__AppUtils/Na__AppUtils__KeyScope__.js`, TV's own specifier. TV's test loads `10__NavigationAndCameras/Na__Hotkeys__Manager.js`, which VV does not have (DR-33): lift the 3D section and the VV checks from `scratch/W1-29/Na__Test__DocumentKeys__.W1-29-sections.test.mjs` (the handler fetches its own dictionary, so fetch must answer it before TV's later DocumentKeys section replaces `globalThis.fetch`; the handler fetches once, at Initialize).
+4. **Page Up / Page Down interim** (R3 f4, S03a-V03): once W1-32 hands the reader over, Page Up / Page Down on a drawing tab stop reaching the 3D handler and fall to the browser until W1-36's Controls__Pc 1.4.0 answers `Nav__PreviousSheet` / `Nav__NextSheet`. Keep W1-36 in the same wave as W1-32, as planned.
+5. **For W6-02 (shared worker precache refresh)**: add `ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js` (see the SHARED SERVICE WORKER note: the offline first-load edge).
+6. **Scribe placeholders `{{VVREL:W1-29}}`** (3): `03__AppUtils/Na__AppUtils__KeyScope__.js:70` (PORT NOTE Ported on), `03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:39` (PORT NOTE Ported on) and `:58` (log 1.0.2 heading).
+7. **Foreign, for the orchestrator**: `Na__Test__DrawingDrafts__.test.mjs` (W1-06) fails until W1-10 lands `45__System__ElevationViews/Na__Elevation__AutoNameText__.js`; nothing for W1-29 to do.
+8. Informational: the handler's `DispatchAction` keeps its "No callback" warning (as its TV twin does); HandleKeyDown no longer reaches it for an unregistered action. VV's own Walk / Fly keyboards and other listeners are not gated by this package (TV gated only its Manager in v2.110.0).
+====================================================================================================
+W1-30 headings: 1. What was run, in order | 2. Acceptance items | 3. Tests and gates (from the VV app root, final state) | 4. Files changed, one line each (what and why) | 5. TrueVision source and the pin | 6. TV releases ported (DR-01 (c): ported and named) | 7. Follow-ups for Adam (and the orchestrator) | 8. Files written by this package
+------------------------------------------------------------
+## 6. TV releases ported (DR-01 (c): ported and named)
+
+
+- **v2.110.0** (21-Sep-2026) - DocumentKeys 1.0.0: the documents' keyboard and its key map (Doc__Save Ctrl+S, Doc__ToggleSource Ctrl+/ or Ctrl+?, Doc__ToggleMono Ctrl+. or Ctrl+>, the PageKeys catalogue). Adam-confirmed in TV: **no** ("NOT tried by Adam; NOT in ValeVision", `:5572`).
+- **v2.112.0** (21-Sep-2026) - DocumentKeys 1.0.1, documentation only (the Drawing Register registers Doc__Save; the register's code arrives with W4-10). Adam-confirmed in TV: **no** (he asked for the release's fixes; the entry still closes "NOT tried by Adam; NOT in ValeVision", `:5401`).
+- **v2.115.0** (21-Sep-2026) - DocumentKeys 1.1.0: the key map renamed `Na__Hotkeys__DocumentTabs__.json`. Adam-confirmed in TV: **no** (no confirmation line).
+- No DR-40 gesture change is touched.
+------------------------------------------------------------
+## 7. Follow-ups for Adam (and the orchestrator)
+
+
+1. **For W1-32 (ModeController; the porter of `Na__Test__DocumentKeys__`)**: add TV's import `{ Na__LeDocKeys__Ready, Na__LeDocKeys__Initialize }` from `'../31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js'` (TV `:390`, the specifier resolves in VV now), `Na__LeDocKeys__Ready()` in the editor's `Promise.all` at TV's relative position (`:1193`; it never rejects - V5 proves a 404 and a network failure both resolve to the built-in bindings), and `Na__LeDocKeys__Initialize()` (`:1211`), beside the KeyScope reader and Follow that W1-29 left for it. The DocumentKeys sections of TV's test pass verbatim against VV's module (37/37): lift them, with W1-29's adapted 3D section, from `scratch/W1-30/` and `scratch/W1-29/`.
+2. **Smoke test after W1-32 (acceptance 1b, in the browser)** on `?project=2026/3047__Doous`: open the Specification; type r, b, t, y and 1 into a note field - each types and nothing moves behind; with nothing focused, R and T do nothing; press Ctrl+S - the sheets save and the specification syncs, as before (the console shows no `[ValeVision3D LayoutEditor] Document key map unavailable` line; the network tab shows one GET of `Na__Hotkeys__DocumentTabs__.json`). The "held key acts once" and "Command counts as Ctrl" behaviours belong to a document that registers an action (the Drawing Register from W4-10, the Statements from W4-12), so they become visible in the app only then; they are proven here at unit level.
+3. **Two TV-identical details of the Specification's own Ctrl+S (by reading; not exercised; nothing for this package to change)**: (a) nothing registers for the Specification, so Command+S on a Mac goes on to the mode controller's save, whose drawing-tab key map binds `Edit__Save` to Ctrl only and does not fold Command into Ctrl (TV's own `Setup__MetaIsCtrlNote` says the drawing tools' map does not) - on a Mac, Command+S on the Specification is the browser's, in TrueVision as here; (b) the mode controller's save returns on a repeat before `preventDefault` (VV ModeController `:629`, TV `:855`), and the document keyboard leaves a key nobody registered for untaken, so a long hold of Ctrl+S on the Specification saves once and its repeats reach the browser. Both are for Adam's judgement (TrueVision lane, DR-36), not regressions.
+4. **Key-map prose (optional, Adam's call)**: S05a-F07 suggested adapting the key map's prose (Scopes, each binding's Documents text, PageKeys) to ValeVision's tabs; the canonical package lists no vv_adaptations and R3 C.2 rules the file verbatim, so it is TV's text. It describes the Statements and the Drawing Register, which ValeVision gains in W4 (the Statements switched off, DR-10); it is a config description no user sees.
+5. **For W6-02 (shared worker precache refresh)**: list the new module and `Na__Hotkeys__DocumentTabs__.json` (the module is lazily linked through the mode controller from W1-32).
+6. **Scribe placeholder `{{VVREL:W1-30}}`** (1): `02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js:63` (PORT NOTE Ported on). The scribe's devlog entry should also add the ledger Module Register rows for `31__System__DocumentKeys` (both files) and name v2.110.0, v2.112.0 and v2.115.0 as unconfirmed.
+7. **Foreign, for the orchestrator**: `Na__Test__DrawingDrafts__.test.mjs` (W1-06) fails until W1-10 lands `45__System__ElevationViews/Na__Elevation__AutoNameText__.js`; `Na__Test__LoaderFacade__.test.mjs` (W1-31) fails one check on the phrase in the DESCRIPTION comment at `01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js:51`. Nothing for W1-30 to do.

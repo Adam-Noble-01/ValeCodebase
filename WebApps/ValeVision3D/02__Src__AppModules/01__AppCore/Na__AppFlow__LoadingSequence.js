@@ -12,6 +12,10 @@
 // DESCRIPTION:
 // - Initialises scene lighting and the render pipeline composer.
 // - Resolves model URLs from the URL query parameter or config defaults.
+// - On localhost, overlays the editor-owned keys (the app config's
+//   ProjectData__EditorOwnedKeys) from R2 onto the local server's copy of
+//   project.json, and registers the project data it runs with the transport
+//   facade (Na__CfApi) before anything is dispatched.
 // - Loads the OrbitHelperCube GLB and sets the orbit target from its centre.
 // - Re-applies any saved camera / orbit target values from project.json.
 // - Boot camera pose (position/rotation/FOV) AND the resting orbit target
@@ -23,8 +27,19 @@
 //   deliberately placed orbit target (see ShouldUseSceneOrbitTarget).
 // - Loads all scene models via the multi-model loader.
 // - Runs the PBR materials second-pass if the materials system is enabled.
+// - Reveals the scene and dispatches na-app-scene-ready (once per load) when
+//   the models are on screen.
 // - Initialises door animations and walk-mode collision meshes.
 // - Starts the RAF render loop (including walk mode, door proximity updates).
+// - Switches the interactive overlays (authoring aids such as the drawing
+//   planes) on for the live 3D frame only - never on a 2D drawing, never in
+//   a Video Studio preview - and off again as every frame ends.
+// - Ends every frame by arming what comes next, whatever the frame did: a
+//   frame that throws is reported and the loop carries on; a held engine (a
+//   Layout Editor sheet) paints nothing and asks for nothing; a progressive
+//   refinement that stops getting anywhere for 2.5 s restarts itself and
+//   says what it found, and a part-finished one left with nothing
+//   scheduled is picked up again a second later.
 // - Attaches the window resize handler.
 //
 // Context Object (Na__AppFlow__StartLoadingSequence argument):
@@ -37,7 +52,96 @@
 //
 // -----------------------------------------------------------------------------
 //
+// PORT NOTE:
+// - Ported from   : TrueVision3D 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js - hunks only: the
+//                   localhost R2 overlay of the editor-owned keys and the transport facade's merge base (TrueVision3D
+//                   v2.7.1), sceneConfig in the drawings dispatch (v2.21.0), na-app-scene-ready (v2.8.0), the
+//                   interactive overlay frame - BeginFrame on the 3D path, EndFrame in the tick's finally (v2.82.0)
+//                   - and the render loop's guards: the engine-hold stand-down, the thrown-frame guard,
+//                   ArmNextFrame with the stranded-burst recovery, the 2.5 s refinement watchdog and no
+//                   timestamp passed to planFrame (v2.58.2); the rest of the file is ValeVision's own
+// - Source version: 1.3.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151)
+// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.1; the interactive overlay frame 01-Oct-2026 for
+//                   ValeVision3D v2.71.2; the render loop's guards 02-Oct-2026 for ValeVision3D v2.71.4
+// - Parity        : diverged (two independent lines since 24-Feb-2026, TrueVision 1.3.1 and ValeVision 1.7.x: never
+//                   taken whole; TrueVision's hunks are replayed into ValeVision's sequence)
+// - Divergences   :
+//   - ValeVision's own sequence: dual render engine, resilient loads and the load watchdog, the SketchUp launch
+//     scene and orbit pivot swap, cross-section, Video Studio and fog-plane wiring, the 2D drawing branch of the
+//     render loop. Not taken from TrueVision: model groups and the design-phase library (1.3.0; DR-09 - the
+//     library is at TrueVision's path but this sequence never initialises it), the legacy project fetch, the
+//     PWA project-name refinement, its fog effect, and its per-project cull distance and FOV overrides.
+//   - The interactive overlay frame begins only while Video Studio's preview is not playing (DR-32), so
+//     authoring overlays stay out of the preview as they stay out of every export; TrueVision has no Video
+//     Studio.
+//   - The engine hold is ValeVision's (K2 E2): the pause and resume events feed this sequence's own hold
+//     set, ScheduleFrame refuses while it holds a reason, and the pause listener cancels a pending frame and
+//     the refinement wake-up. TrueVision's stand-down at the top of RenderFrame asks that set as well as
+//     Na__RenderLoop__IsPaused (whose mirror also holds a pause taken before these listeners existed), and
+//     remembers the frame, because ValeVision's resume paints one frame only when one was asked for
+//     meanwhile; TrueVision's Resume always asks for one. The tick no longer checks the hold itself:
+//     TrueVision's shape, every tick ending in ArmNextFrame. The watchdog's held flag reports either hold.
+//   - The transport facade is ValeVision's (DIV-4): Na__CfApi__Initialize is async and is started here, with the
+//     app config, once the master index has settled; TrueVision's Index.html starts it with its Worker URL.
+//   - The overlay list is the app config's ProjectData__EditorOwnedKeys - the one list the sync tools and the
+//     Worker's merge-keys guard read too - not a constant in this file; it overlays the local server's copy, waits
+//     at most the fetch timeout, is skipped when the list is absent or R2's copy names another projectCode, and
+//     names the keys R2 changed.
+//   - The merge base is registered only when a project is open, before the first project dispatch.
+//   - Dispatch order and keys stay ValeVision's: the drawings block goes before the scenes, { block, projectCode }
+//     plus TrueVision's sceneConfig; the section bindings keep { sceneData } and are sent only when present (DIV-2).
+// - Back-port     : the bounded overlay wait (TrueVision's overlay read has no time limit) and the two editor-owned
+//                   keys its overlay list lacks (CrossSection__SceneData, LayoutEditor__DrawingRegister) - offered
+//                   with the TrueVision lane (DR-36), not done here.
+//
+// -----------------------------------------------------------------------------
+//
 // DEVELOPMENT LOG:
+// 02-Oct-2026 - Version 1.7.3 (the progressive-render loop guards, v2.71.4)
+// - The rest of TrueVision v2.58.2's render-loop fix (its EnsureBuffer floor
+//   came across at ValeVision3D v2.54.0). Every tick now ends in
+//   Na__RenderLoop__ArmNextFrame, from a finally: a frame that throws is
+//   reported ("Render frame failed; the loop carries on") instead of
+//   taking the loop down, and no early return can abandon a refinement
+//   burst. A part-finished burst left with nothing scheduled restarts after
+//   1 s, and Na__RenderLoop__WatchRefineProgress restarts a burst whose
+//   sample count has not moved for 2.5 s and logs what it found (count,
+//   what the refiner asked for, frame rate, composer buffer size, pixel
+//   ratios, active reasons, hold, visibility).
+// - The engine hold stands the refiner down at the top of RenderFrame
+//   (Na__RenderLoop__IsPaused or this sequence's own hold set): a held
+//   engine paints nothing and asks for nothing - a hold taken before the
+//   loop's listeners existed included - and the resume paints one frame.
+//   The tick's own hold check moved there.
+// - planFrame is passed no timestamp: the refiner reads performance.now()
+//   itself (ProgressiveRefine 1.0.2).
+//
+// 01-Oct-2026 - Version 1.7.2 (interactive overlay frame, v2.71.2)
+// - The render loop brackets the live 3D frame for the interactive overlays
+//   (Na__RenderLoop__InteractiveOverlays__, TrueVision v2.82.0): BeginFrame
+//   straight after the 2D drawing branch unless Video Studio's preview is
+//   playing, and EndFrame in a finally round RenderFrame, so every frame
+//   ends it, a thrown one included. With nothing registered both calls touch
+//   nothing and every frame draws exactly as before.
+//
+// 01-Oct-2026 - Version 1.7.1 (TrueVision transport wiring, v2.71.1)
+// - Starts the transport facade (Na__CfApi__Initialize, with the app config)
+//   once the master index has settled.
+// - On localhost, overlays the app config's ProjectData__EditorOwnedKeys from
+//   R2 onto the local server's copy of project.json before anything reads it
+//   (TrueVision's Na__DevSavedKeys overlay, v2.7.1): R2 is the source of
+//   truth for the keys the editor writes. Waits at most the fetch timeout,
+//   refuses an R2 copy that names another project, is never fatal, and logs
+//   which keys R2 changed.
+// - Registers the project data the session runs with
+//   Na__CfApi__SetLoadedProjectData before the first project dispatch.
+// - na-layouteditor-drawingsdata-loaded also carries sceneConfig (the raw
+//   presentation block), as TrueVision's does (v2.21.0).
+// - Dispatches na-app-scene-ready at the end of ShowScene, once the canvas is
+//   visible (TrueVision v2.8.0).
+// - DEVELOPMENT LOG re-ordered newest first, TrueVision's direction (the
+//   text of every entry is unchanged).
+//
 // 28-Sep-2026 - Per-scene lighting (v2.71.0)
 // - The lighting setup also receives the app config's Scene__PerSceneLighting
 //   block, and hands both lights to Na__Scene__PerSceneLighting__.
@@ -54,15 +158,6 @@
 // - Render loop: a 2D drawing branch ahead of the 3D work, rendered by the
 // - drawing composer preset; resize hands off to the floor plan controller.
 //
-// 09-Jul-2026 - Version 1.5.2
-// - Single/zero-scene orbit pivot fix: boot camera apply now passes
-//   applyOrbitTarget: Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(...)
-//   into ApplySceneCameraState. Projects with fewer than 2 SketchUp scenes (and
-//   no explicit PresentationMode scenes) no longer have their OrbitHelperCube /
-//   saved OrbitHelperCube__Position target silently overridden by the single
-//   scene's camera.target — camera position/rotation/FOV still apply as before.
-//   Carousel-eligible projects (>=2 scenes, or explicit scenes) are unaffected.
-//
 // 10-Jul-2026 - Version 1.5.3
 // - Corrected orbit-pivot handling. The resting view must frame the exact
 //   SketchUp shot, which means controls.target MUST hold the scene's own
@@ -75,6 +170,15 @@
 //   here at boot; carousel card/prev/next arm it too). SketchUp-derived scenes
 //   arm the swap; explicit authored scenes keep their own target as the pivot.
 //   Supersedes the short-lived applyOrbitTarget-gating approach.
+//
+// 09-Jul-2026 - Version 1.5.2
+// - Single/zero-scene orbit pivot fix: boot camera apply now passes
+//   applyOrbitTarget: Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(...)
+//   into ApplySceneCameraState. Projects with fewer than 2 SketchUp scenes (and
+//   no explicit PresentationMode scenes) no longer have their OrbitHelperCube /
+//   saved OrbitHelperCube__Position target silently overridden by the single
+//   scene's camera.target — camera position/rotation/FOV still apply as before.
+//   Carousel-eligible projects (>=2 scenes, or explicit scenes) are unaffected.
 //
 // 01-Jul-2026 - Version 1.5.1
 // - Boot camera apply now also re-applies the launch scene's
@@ -99,39 +203,11 @@
 //   GLB file the exporter bundled them into (e.g. when range 9 falls back into
 //   the LandscapeEnvironment file).
 //
-// 24-Feb-2026 - Version 1.0.0
-// - Extracted from index.html inline script block (lines 604-849).
-// - Na__UiFeature__UpdateStatus and Na__UiFeature__ShowScene moved to private
-//   module functions; both now use document.getElementById directly.
-// - Na__AppFlow__StartLoadingSequence refactored to accept a context object
-//   instead of closing over index.html scope variables.
-// - Na__RenderPipeline__State written back to context.pipelineRef.current
-//   so the ImageExportControls lazy getter in index.html can read it.
-//
-// 09-Jun-2026 - Version 1.1.0
-// - Added Fly Mode branch to RenderFrame (Na__FlyMode__Update + door proximity).
-// - Reads Navmode__EnabledModes from project.json and forwards to
-//   Na__NavigationModes__State for dynamic Tools menu and hotkey gating.
-//   (21-Aug-2026: now forwarded unconditionally — an absent block means every
-//    mode stays enabled, so the event must still fire to reveal the UI.)
-//
-// 10-Jun-2026 - Version 1.2.0
-// - Dual render engine support: PureEngine (default, unchanged) vs MaxEngine
-//   (PBR + SSAO, per-model opt-in via project.json RenderEngine__Config).
-// - Engine-aware composer builder with live runtime switching
-//   (na-render-engine-switch event) and engine-aware materials application
-//   (PureEngine local library vs MaxEngine DataLib SSOT from GitHub).
-// - RenderFrame gains optional MaxEngine calls: updateAoUniforms,
-//   monitorAoFrame, renderDepthPrePass, and distance culling update.
-// - Door animation init order unchanged (materials swap -> door registry scan)
-//   so doors work identically under both engines.
-//
-// 10-Jun-2026 - Version 1.2.1
-// - Door animation init now uses token-based category collection (TrueVision
-//   parity): matches CategoryNameTokens against loaded Map keys and resolves
-//   mesh/linework roots from children via userData.Na__ModelType. The previous
-//   includes('MeshModel') key check could never match v4 category keys and is
-//   removed. Multiple door categories (e.g. per-storey) all register.
+// 11-Jun-2026 - Version 1.4.0
+// - Presentation Mode: reads PresentationMode__SavedCameraScenes from project.json
+//   and dispatches 'na-presentation-mode-scenes-loaded' with sceneConfig + projectCode
+//   when the section is present, enabled, and contains at least one valid scene.
+//   Projects without this section are unaffected.
 //
 // 11-Jun-2026 - Version 1.3.0
 // - PWA stability fix: imports Na__ResilientLoad__ and Na__LoadWatchdog__ modules.
@@ -145,11 +221,39 @@
 // - LoadAllModels receives a status+progress wrapper so watchdog stall clock resets
 //   on each file.
 //
-// 11-Jun-2026 - Version 1.4.0
-// - Presentation Mode: reads PresentationMode__SavedCameraScenes from project.json
-//   and dispatches 'na-presentation-mode-scenes-loaded' with sceneConfig + projectCode
-//   when the section is present, enabled, and contains at least one valid scene.
-//   Projects without this section are unaffected.
+// 10-Jun-2026 - Version 1.2.1
+// - Door animation init now uses token-based category collection (TrueVision
+//   parity): matches CategoryNameTokens against loaded Map keys and resolves
+//   mesh/linework roots from children via userData.Na__ModelType. The previous
+//   includes('MeshModel') key check could never match v4 category keys and is
+//   removed. Multiple door categories (e.g. per-storey) all register.
+//
+// 10-Jun-2026 - Version 1.2.0
+// - Dual render engine support: PureEngine (default, unchanged) vs MaxEngine
+//   (PBR + SSAO, per-model opt-in via project.json RenderEngine__Config).
+// - Engine-aware composer builder with live runtime switching
+//   (na-render-engine-switch event) and engine-aware materials application
+//   (PureEngine local library vs MaxEngine DataLib SSOT from GitHub).
+// - RenderFrame gains optional MaxEngine calls: updateAoUniforms,
+//   monitorAoFrame, renderDepthPrePass, and distance culling update.
+// - Door animation init order unchanged (materials swap -> door registry scan)
+//   so doors work identically under both engines.
+//
+// 09-Jun-2026 - Version 1.1.0
+// - Added Fly Mode branch to RenderFrame (Na__FlyMode__Update + door proximity).
+// - Reads Navmode__EnabledModes from project.json and forwards to
+//   Na__NavigationModes__State for dynamic Tools menu and hotkey gating.
+//   (21-Aug-2026: now forwarded unconditionally — an absent block means every
+//    mode stays enabled, so the event must still fire to reveal the UI.)
+//
+// 24-Feb-2026 - Version 1.0.0
+// - Extracted from index.html inline script block (lines 604-849).
+// - Na__UiFeature__UpdateStatus and Na__UiFeature__ShowScene moved to private
+//   module functions; both now use document.getElementById directly.
+// - Na__AppFlow__StartLoadingSequence refactored to accept a context object
+//   instead of closing over index.html scope variables.
+// - Na__RenderPipeline__State written back to context.pipelineRef.current
+//   so the ImageExportControls lazy getter in index.html can read it.
 //
 // =============================================================================
 
@@ -213,7 +317,7 @@
         Na__DistanceCulling__RegisterModelGroups,
         Na__DistanceCulling__Update,
         Na__DistanceCulling__SetEnabled
-    } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+    } from '../05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Math Utils
@@ -348,6 +452,7 @@
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import {
+        Na__AppUtils__IsRunningOnLocalhost,
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls,
@@ -356,6 +461,17 @@
         Na__AppUtils__InitBuildManifest,
         Na__AppUtils__ResolveAssetUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Cloudflare R2 API Client (source-of-truth project data)
+    // @delegate: ../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+    // ------------------------------------------------------------
+    import {
+        Na__CfApi__Initialize,
+        Na__CfApi__IsConfigured,
+        Na__CfApi__ReadProjectData,
+        Na__CfApi__SetLoadedProjectData
+    } from '../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | SketchUp To ValeVision Animation Scene Bridge
@@ -396,8 +512,19 @@
         NA__REQUEST_ACTIVE_RENDER_EVENT,
         NA__STOP_ACTIVE_RENDER_EVENT,
         NA__PAUSE_RENDER_LOOP_EVENT,
-        NA__RESUME_RENDER_LOOP_EVENT
+        NA__RESUME_RENDER_LOOP_EVENT,
+        Na__RenderLoop__IsPaused
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Interactive Overlays (authoring aids drawn in the live 3D frame and nowhere else)
+    // ------------------------------------------------------------
+    // @delegate: ../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js
+    // ------------------------------------------------------------
+    import {
+        Na__InteractiveOverlays__BeginFrame,
+        Na__InteractiveOverlays__EndFrame
+    } from '../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Progressive Refinement (Idle-Time Supersampling)
@@ -417,16 +544,16 @@
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing View Core, Floor Plans and Elevations (2D drawings own the frame while active)
-    // @delegate: ../42__System__DrawingViewCore/
-    // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
-    // @delegate: ../46__System__ElevationViews/Na__Elevation__ModeController__.js
+    // @delegate: ../40__System__DrawingViewCore/
+    // @delegate: ../42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+    // @delegate: ../45__System__ElevationViews/Na__Elevation__ModeController__.js
     // ------------------------------------------------------------
-    import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
-    import { Na__DrawView__ComposerPreset__RenderFrame } from '../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
-    import { Na__DrawMarkup__SyncFrame } from '../42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
-    import { Na__DrawData__LOADED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
-    import { Na__FloorPlanMode__HandleResize } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
-    import { Na__ElevationMode__HandleResize } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+    import { Na__DrawView__GetCamera } from '../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+    import { Na__DrawView__RenderPreset__RenderFrame } from '../40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js';
+    import { Na__DrawMarkup__SyncFrame } from '../40__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
+    import { Na__DrawData__LOADED_EVENT } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__FloorPlanMode__HandleResize } from '../42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+    import { Na__ElevationMode__HandleResize } from '../45__System__ElevationViews/Na__Elevation__ModeController__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework Overlay (registered to the drawing camera per frame)
@@ -496,6 +623,8 @@
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
         }
+
+        window.dispatchEvent(new CustomEvent('na-app-scene-ready'));         // <-- Model is loaded and visible; post-load UI may appear
     }
     // ------------------------------------------------------------
 
@@ -534,6 +663,116 @@
         loadingOverlay.appendChild(errorIcon);                               // <-- Append icon
         loadingOverlay.appendChild(errorMsg);                                // <-- Append message
         loadingOverlay.appendChild(retryBtn);                                // <-- Append retry button
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Editor-Owned Keys Overlay (localhost)
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | One JSON Value as Text, Its Object Keys Sorted
+    // ------------------------------------------------------------
+    // Two copies of one block written by different savers can list the same
+    // keys in a different order; only a real difference is reported.
+    // ------------------------------------------------------------
+    function Na__AppFlow__CanonicalJson(value) {
+        return JSON.stringify(value, (key, inner) => {
+            if (!inner || typeof inner !== 'object' || Array.isArray(inner)) return inner;
+            return Object.keys(inner).sort().reduce((sorted, name) => {
+                sorted[name] = inner[name];
+                return sorted;
+            }, {});
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Overlay the Editor-Owned Keys From R2 (localhost source of truth)
+    // ------------------------------------------------------------
+    // TrueVision's Na__DevSavedKeys overlay (v2.7.1) with ValeVision's list.
+    // The editor writes R2 first, so the local server's copy of project.json
+    // can fall behind it (a failed local mirror, a save from another
+    // machine). Each key of the app config's ProjectData__EditorOwnedKeys
+    // list that R2 holds replaces the local value IN PLACE, so every reader
+    // of this load's copy sees it; a listed key R2 lacks keeps the local
+    // value, and every other key (models, images, the project's identity)
+    // stays the local copy's, so a partial R2 copy can never break model
+    // loading. Never fatal and never longer than timeoutMs: a missing list,
+    // no editor worker, a failed, missing or slow read all leave the local
+    // copy as it is, saying why in the console. Resolves to the names of the
+    // keys whose value R2 changed.
+    // ------------------------------------------------------------
+    async function Na__AppFlow__OverlayEditorOwnedKeys(projectData, appConfig, transportReady, timeoutMs) {
+        const listBlock = (appConfig && appConfig.ProjectData__EditorOwnedKeys) || null;
+        const ownedKeys = (listBlock && Array.isArray(listBlock.ProjectData__EditorOwnedKeys__Keys))
+            ? listBlock.ProjectData__EditorOwnedKeys__Keys.filter((key) => typeof key === 'string' && key.length > 0)
+            : [];
+        if (!projectData || typeof projectData !== 'object') return [];
+        if (ownedKeys.length === 0) {
+            console.warn('[ValeVision3D] No ProjectData__EditorOwnedKeys list in the app config - project.json is used as the local server gave it.');
+            return [];
+        }
+
+        // READ R2'S COPY | the worker's project route or the CDN copy, fresh (the facade decides), raced against the budget
+        const budgetMs    = (Number.isFinite(timeoutMs) && timeoutMs > 0) ? timeoutMs : 15000;
+        let   budgetTimer = null;
+        const budget      = new Promise((done) => {
+            budgetTimer = setTimeout(() => done({ ok : false, timedOut : true }), budgetMs);
+        });
+        const r2Read      = (async () => {
+            await transportReady;                                            // <-- The worker config and its route list
+            if (!Na__CfApi__IsConfigured()) return { ok : false, notConfigured : true };
+            return Na__CfApi__ReadProjectData();
+        })();
+
+        let r2Result = null;
+        try {
+            r2Result = await Promise.race([ r2Read, budget ]);
+        } catch (error) {
+            r2Result = { ok : false, error : (error && error.message) || String(error) };
+        } finally {
+            clearTimeout(budgetTimer);
+        }
+
+        if (!r2Result || r2Result.timedOut) {
+            console.warn(`[ValeVision3D] R2 did not answer within ${Math.round(budgetMs / 100) / 10} s - project.json is used as the local server gave it.`);
+            return [];
+        }
+        if (r2Result.notConfigured) {
+            console.info('[ValeVision3D] No editor worker for this project - project.json is used as the local server gave it.');
+            return [];
+        }
+        if (!r2Result.ok) {
+            console.warn(`[ValeVision3D] Could not read project.json from R2 (${r2Result.error || 'no answer'}) - it is used as the local server gave it.`);
+            return [];
+        }
+        if (r2Result.missing || !r2Result.data || typeof r2Result.data !== 'object') {
+            console.info('[ValeVision3D] R2 holds no project.json for this project yet - it is used as the local server gave it.');
+            return [];
+        }
+
+        // SAME PROJECT? | never graft another project's keys (both copies carry the project's own code)
+        const r2Data      = r2Result.data;
+        const localCode   = projectData.projectCode;
+        const r2Code      = r2Data.projectCode;
+        if (localCode !== undefined && localCode !== null && r2Code !== undefined && r2Code !== null && String(localCode) !== String(r2Code)) {
+            console.warn(`[ValeVision3D] R2's project.json is project ${r2Code}, the local copy is ${localCode} - project.json is used as the local server gave it.`);
+            return [];
+        }
+
+        // OVERLAY | each listed key R2 holds takes R2's value (TrueVision's rule)
+        const changedKeys = [];
+        ownedKeys.forEach((key) => {
+            if (r2Data[key] === undefined) return;                           // <-- A key R2 lacks keeps the local value
+            if (Na__AppFlow__CanonicalJson(r2Data[key]) !== Na__AppFlow__CanonicalJson(projectData[key])) changedKeys.push(key);
+            projectData[key] = r2Data[key];                                  // <-- Overlay the R2 value
+        });
+        console.log('[ValeVision3D] Overlaid editor-owned keys from R2 (localhost source of truth) - '
+            + (changedKeys.length ? `R2 differed from the local copy in ${changedKeys.join(', ')}.` : 'the local copy already matched.'));
+        return changedKeys;
     }
     // ------------------------------------------------------------
 
@@ -675,7 +914,25 @@
                 Na__UiFeature__UpdateStatus('Loading project data...');
                 Na__LoadWatchdog__NotifyProgress();                           // <-- Reset stall clock on meaningful step
                 await Na__AppUtils__InitMasterIndex();                        // <-- Ensure index maps are ready for year/asset-home resolution
+                const Na__Transport__Ready = Na__CfApi__Initialize(Na__FullAppConfig); // <-- Start the transport facade (memoised; the editor worker is asked on localhost only)
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode, Na__Config__Resilience); // <-- Resilient + memoised
+
+                // OVERLAY THE EDITOR-OWNED KEYS FROM R2 (localhost only; R2 is the source of truth)
+                // The editor writes R2 first, so this machine's copy can be
+                // behind it. Each listed key R2 holds replaces the local value
+                // on this object before anything below reads it; the models,
+                // images and identity stay the local copy's.
+                // @delegate: ../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+                if (Na__AppUtils__IsRunningOnLocalhost()) {
+                    const Na__Overlay__TimeoutMs = (Na__Config__Resilience && Na__Config__Resilience.LoadResilience__Config__FetchTimeoutMs) || 15000; // <-- One fetch's budget
+                    await Na__AppFlow__OverlayEditorOwnedKeys(projectData, Na__FullAppConfig, Na__Transport__Ready, Na__Overlay__TimeoutMs);
+                    Na__LoadWatchdog__NotifyProgress();                       // <-- Reset stall clock after the R2 read
+                }
+
+                // REGISTER THE PROJECT DATA THIS SESSION RUNS (the facade's merge base)
+                // Before the first project dispatch below, so every listener
+                // and every later save sees the document the app is running.
+                Na__CfApi__SetLoadedProjectData(projectData);
 
                 // STORE PROJECT DATA AND CAMERA CONFIG (supports both key formats)
                 Na__Saved__ProjectData         = projectData;                // <-- Hoisted for ResolveDefaultLaunchScene after orbit cube loads
@@ -724,9 +981,16 @@
                 }
 
                 // LOAD DRAWINGS DATA (floor plans, elevations, sheets; absent block = empty skeleton)
-                // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+                // sceneConfig is the raw presentation block, as TrueVision sends it:
+                // the migration source for drawings saved inside it before
+                // TrueVision v2.21.0 (none in ValeVision; harmless here).
+                // @delegate: ../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js
                 window.dispatchEvent(new CustomEvent(Na__DrawData__LOADED_EVENT, {
-                    detail: { block: projectData.LayoutEditor__DrawingsData || null, projectCode: projectCode }
+                    detail: {
+                        block       : projectData.LayoutEditor__DrawingsData || null,
+                        sceneConfig : projectData.PresentationMode__SavedCameraScenes || null,
+                        projectCode : projectCode
+                    }
                 }));
 
                 // LOAD SKETCHUP-NATIVE SECTION PLANES (per-scene, captured by the cloud sync plugin)
@@ -1198,6 +1462,26 @@
         Na__ProgressiveRefine__SetActive(Na__RenderLoop__Refiner);            // <-- The Visual Effects panel polls it from here
         let Na__RenderLoop__RefineWakeHandle = null;                         // <-- Pending debounce timer (settle wake-up)
 
+        // CONSTANT | How Long to Leave a Stranded Refinement Before Restarting It
+        // ---------------------------------------------------------------
+        // Comfortably longer than the settle debounce, because this is a safety
+        // net and not a schedule: it must never race the ordinary wake-up and
+        // steal a burst that was about to carry on by itself.
+        // ---------------------------------------------------------------
+        const Na__RenderLoop__STRANDED_RECOVERY_MS = 1000;
+        // ---------------------------------------------------------------
+
+        // STATE | Watching a Refinement Actually Get Somewhere
+        // ---------------------------------------------------------------
+        // Comfortably longer than a chunk. The budget is 100ms and a cold first
+        // chunk on a heavy model measured 260ms, so a count that has not moved
+        // for two and a half seconds is stuck rather than busy.
+        // ---------------------------------------------------------------
+        const Na__RenderLoop__NO_PROGRESS_MS   = 2500;
+        let   Na__RenderLoop__RefineSeenSamples = 0;                         // <-- Sample count at the last look
+        let   Na__RenderLoop__RefineSeenAt      = 0;                         // <-- When it was last seen to change (0: not watching)
+        // ---------------------------------------------------------------
+
         // SUB FUNCTION | Cancel a Pending Refinement Wake-Up
         // ---------------------------------------------------------------
         function Na__RenderLoop__CancelRefineWake() {
@@ -1310,22 +1594,53 @@
         // ---------------------------------------------------------------
 
         function Na__RenderLoop__RenderFrame(deltaMs) {
+            // ENGINE HELD | The third stand-down point (TrueVision v2.58.2). A
+            // Layout Editor sheet has taken a hold, and a held engine paints
+            // NOTHING: a sheet that owns the screen is never drawn over, by the
+            // frame or by the refiner. This loop's own hold set, fed by the
+            // pause and resume events, already keeps frames from being
+            // scheduled; Na__RenderLoop__IsPaused is asked as well because its
+            // mirror holds a pause taken before these listeners existed - a
+            // sheet opened while the models were still loading. suspend()
+            // rather than reset(), because a held engine must ask for no frames
+            // of its own until the holder lets go. The frame is remembered, so
+            // the resume paints one the moment the last hold clears.
+            if (Na__RenderLoop__IsPaused() || Na__RenderLoop__PauseReasons.size > 0) {
+                Na__RenderLoop__PendingWhilePaused = true;                   // <-- The resume paints one frame
+                Na__RenderLoop__Refiner.suspend();
+                return false;                                                // <-- Idle until the last hold lifts
+            }
+
             // 2D DRAWING MODE | A floor plan or elevation owns the viewport.
             // Checked FIRST so none of the 3D per-frame work runs: walk/fly
             // physics, orbit updates, door proximity, billboards, fog uniforms
             // and distance culling are meaningless on a drawing. The composer
             // preset renders the frame (2D normals pre-pass, composer, section
             // overlay) through the ortho camera; the markup layers reproject.
-            // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js
+            // @delegate: ../40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js
             const Na__Drawing__Camera = Na__DrawView__GetCamera();
             if (Na__Drawing__Camera) {
                 Na__RenderLoop__Refiner.suspend();                           // <-- A sheet owns the screen; this pass is the 3D viewport only
-                if (!Na__DrawView__ComposerPreset__RenderFrame()) {
+                if (!Na__DrawView__RenderPreset__RenderFrame()) {
                     Na__Renderer__Main.render(Na__Scene__Main, Na__Drawing__Camera); // <-- Preset not up yet: plain render
                 }
                 Na__DrawMarkup__SyncFrame();                                 // <-- Reproject the markup onto the new view
                 Na__PlOverlay__SyncFrame();                                  // <-- Register the projected linework overlay (port Phase 4)
                 return Na__RenderLoop__ActiveReasons.size > 0;               // <-- Only pan/zoom keeps frames coming
+            }
+
+            // INTERACTIVE 3D FRAME | The only frame an authoring overlay is drawn in.
+            // The drawing planes sit in the main scene, and the main scene is also
+            // rendered by a sheet's 3D viewport, a thumbnail, a still and a video
+            // export. They are invisible by default and switched on HERE - past the
+            // hold and past the 2D drawing, so neither can ever show one - and
+            // switched off again in the tick's finally. A render path nobody has
+            // written yet therefore cannot print a plane.
+            // NOT IN A VIDEO STUDIO PREVIEW. The preview is the video being made,
+            // drawn through this same frame, and authoring aids stay out of it as
+            // they stay out of the video export.
+            if (!Na__VideoStudio__Preview__IsPlaying()) {
+                Na__InteractiveOverlays__BeginFrame();
             }
 
             if (Na__VideoStudio__Preview__IsPlaying()) {
@@ -1360,17 +1675,25 @@
                 // moving the camera, which the stillness test cannot see. The
                 // legacy 2D elevation camera is in there deliberately: this
                 // pass is the 3D viewport only, and the drawing views run
-                // through their own composer preset.
+                // through their own composer preset. A render hold is not
+                // tested here: it stands the refiner down at the top of this
+                // function, before any of the per-frame work, so by the time
+                // control reaches this line the engine is known not to be held.
                 // ---------------------------------------------------------
                 const Na__Refine__SceneBusy = Na__VideoStudio__Preview__IsPlaying()
                     || Na__DoorAnimation__HasActiveAnimations()
                     || Na__RenderLoop__OrbitTrailingFrames > 0
                     || Na__RenderLoop__ElevationActive;
 
+                // NO TIMESTAMP IS PASSED, deliberately. The only one this loop
+                // has is the animation frame's, which is when the frame BEGAN,
+                // and the refiner measures everything else with performance.now().
+                // Handing it the frame clock put its settle test on a different
+                // clock from its own wake-up scheduler, which is what jammed the
+                // refinement part-way. It reads the one clock itself now.
                 const Na__Refine__FrameMode = Na__RenderLoop__Refiner.planFrame({
                     camera    : Na__RenderLoop__ActiveCamera,
-                    sceneBusy : Na__Refine__SceneBusy,
-                    now       : Na__RenderLoop__PrevTimestamp                 // <-- Already this frame's timestamp (Tick set it)
+                    sceneBusy : Na__Refine__SceneBusy
                 });
 
                 let Na__Refine__DidDraw = false;
@@ -1457,17 +1780,82 @@
                 || Na__RenderLoop__ActiveReasons.size > 0;
         }
 
-        function Na__RenderLoop__Tick(timestamp) {
-            Na__RenderLoop__FrameHandle = null;
-            Na__RenderLoop__CancelRefineWake();                              // <-- A frame is running; any pending wake-up is spent
-            if (Na__RenderLoop__PauseReasons.size > 0) { Na__RenderLoop__PendingWhilePaused = true; return; }  // <-- A frame scheduled before the hold began
+        // SUB FUNCTION | Notice a Refinement That Has Stopped Getting Anywhere
+        // ---------------------------------------------------------------
+        // The stranded-burst check below only runs when the refiner asks for
+        // NOTHING, and the clock-mismatch stall did the opposite: it asked for
+        // another frame every time and then refused to use it. A part-finished
+        // total that has not grown for this long is wrong whichever way it got
+        // there, so this watches the count rather than the answer. Restarting
+        // the run is always safe - the worst case is sixteen samples drawn
+        // twice - and the warning means a stall of this shape can never be
+        // silent again.
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__WatchRefineProgress() {
+            const status = Na__RenderLoop__Refiner.getStatus();
 
-            const now     = timestamp || performance.now();                  // <-- Current timestamp
-            const deltaMs = now - Na__RenderLoop__PrevTimestamp;             // <-- Time since last frame
-            Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
+            if (!status.enabled || status.converged || !(status.samplesDone > 0)) {
+                Na__RenderLoop__RefineSeenSamples = status.samplesDone;       // <-- Nothing in flight; keep the marker honest
+                Na__RenderLoop__RefineSeenAt      = 0;
+                return;
+            }
 
-            const keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
-            if (document.hidden) return;
+            const now = performance.now();
+
+            if (status.samplesDone !== Na__RenderLoop__RefineSeenSamples) {   // <-- It moved; the run is healthy
+                Na__RenderLoop__RefineSeenSamples = status.samplesDone;
+                Na__RenderLoop__RefineSeenAt      = now;
+                return;
+            }
+
+            if (Na__RenderLoop__RefineSeenAt === 0) {                         // <-- First sighting at this count
+                Na__RenderLoop__RefineSeenAt = now;
+                return;
+            }
+
+            if ((now - Na__RenderLoop__RefineSeenAt) < Na__RenderLoop__NO_PROGRESS_MS) return;
+
+            // THE ROOT CAUSE IS STILL OPEN, so this says everything needed to
+            // close it: how far it got, what the refiner was asking for while
+            // it sat there, and whether the loop was being held open by
+            // something. A stall that reports itself is a stall that gets fixed.
+            const pending = Na__RenderLoop__Refiner.getPendingWork();
+            console.warn('[ValeVision3D] Progressive refinement stalled at '
+                + status.samplesDone + ' of ' + status.sampleCount + '; restarting the run.',
+                { wanted    : pending.wanted,
+                  delayMs   : pending.delayMs,
+                  fps       : Math.round(status.fps),
+                  readBuffer : (Na__RenderComposer__Main && Na__RenderComposer__Main.readBuffer)
+                      ? Na__RenderComposer__Main.readBuffer.width + 'x' + Na__RenderComposer__Main.readBuffer.height
+                      : null,                                                 // <-- A fractional size here is the buffer-rebuild stall
+                  pixelRatio : Na__Renderer__Main.getPixelRatio(),
+                  dpr        : window.devicePixelRatio,
+                  activeReasons : Array.from(Na__RenderLoop__ActiveReasons),
+                  trailing  : Na__RenderLoop__OrbitTrailingFrames,
+                  held      : Na__RenderLoop__IsPaused() || Na__RenderLoop__PauseReasons.size > 0,
+                  hidden    : document.hidden });
+            Na__RenderLoop__RefineSeenSamples = 0;
+            Na__RenderLoop__RefineSeenAt      = 0;
+            Na__RenderLoop__Refiner.reset();                                  // <-- Fresh run; RequestRenderOnce would recurse through here
+            Na__RenderLoop__ScheduleFrame();
+        }
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Arm Whatever Comes After This Frame
+        // ---------------------------------------------------------------
+        // EVERY tick ends here, on every path, which is the whole point of it
+        // being its own function. A burst of refinement only stays alive
+        // because the tick that ends a chunk asks for the next one, so a tick
+        // that returns early - or throws - abandons the burst with no frame
+        // pending and no wake-up armed, and nothing ever comes back for it.
+        // That is what left the Visual Effects readout frozen part-way through
+        // a run, "6 of 16" for ever on a machine fast enough to fit six samples
+        // into the first chunk. Arming is now unconditional.
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__ArmNextFrame(keepRendering) {
+            if (document.hidden) return;                                     // <-- visibilitychange re-arms on the way back
+
+            Na__RenderLoop__WatchRefineProgress();                           // <-- Runs on every path, moving or idle
 
             if (keepRendering) {
                 Na__RenderLoop__ScheduleFrame();                             // <-- Something is still moving
@@ -1482,17 +1870,61 @@
             // loop stops exactly as it always did, with the canvas holding the
             // refined image and the GPU switched off.
             const Na__Refine__Pending = Na__RenderLoop__Refiner.getPendingWork();
-            if (!Na__Refine__Pending.wanted) return;
 
-            if (Na__Refine__Pending.delayMs <= 0) {
-                Na__RenderLoop__ScheduleFrame();                             // <-- Mid-burst: straight back for the next chunk
+            if (Na__Refine__Pending.wanted) {
+                if (Na__Refine__Pending.delayMs <= 0) {
+                    Na__RenderLoop__ScheduleFrame();                         // <-- Mid-burst: straight back for the next chunk
+                    return;
+                }
+                Na__RenderLoop__RefineWakeHandle = window.setTimeout(() => {
+                    Na__RenderLoop__RefineWakeHandle = null;
+                    Na__RenderLoop__ScheduleFrame();                         // <-- Debounce served; begin refining
+                }, Na__Refine__Pending.delayMs);
                 return;
             }
 
+            // STRANDED BURST | Nothing was armed, yet a part-finished total is
+            // on the canvas. Every legitimate stand-down - a 2D sheet, an engine
+            // hold, the tab going away, a camera nudge - throws the total away
+            // as it stands down, so a count between one and fifteen with nothing
+            // scheduled is a state the refiner should never be able to reach.
+            // It costs one wake-up to make it recoverable instead of permanent,
+            // and because a resting app always reads zero or converged, this can
+            // never turn into a loop that wakes itself for ever.
+            const Na__Refine__Status = Na__RenderLoop__Refiner.getStatus();
+            if (!Na__Refine__Status.enabled) return;
+            if (Na__Refine__Status.converged) return;
+            if (!(Na__Refine__Status.samplesDone > 0)) return;
+
             Na__RenderLoop__RefineWakeHandle = window.setTimeout(() => {
                 Na__RenderLoop__RefineWakeHandle = null;
-                Na__RenderLoop__ScheduleFrame();                             // <-- Debounce served; begin refining
-            }, Na__Refine__Pending.delayMs);
+                Na__RenderLoop__RequestRenderOnce();                          // <-- Start the run again rather than leave it half done
+            }, Na__RenderLoop__STRANDED_RECOVERY_MS);
+        }
+        // ---------------------------------------------------------------
+
+        function Na__RenderLoop__Tick(timestamp) {
+            Na__RenderLoop__FrameHandle = null;
+            Na__RenderLoop__CancelRefineWake();                              // <-- A frame is running; any pending wake-up is spent
+
+            const now     = timestamp || performance.now();                  // <-- Current timestamp
+            const deltaMs = now - Na__RenderLoop__PrevTimestamp;             // <-- Time since last frame
+            Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
+
+            // A THROWN FRAME MUST NOT STOP THE LOOP. Without this, one bad frame
+            // - a pass with no buffer, a model swapped mid-render - takes the
+            // whole render loop with it: the tick unwinds before it can ask for
+            // another, and the viewport freezes until something else happens to
+            // request a redraw. The error is still reported, once per frame.
+            let keepRendering = false;
+            try {
+                keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
+            } catch (error) {
+                console.error('[ValeVision3D] Render frame failed; the loop carries on:', error);
+            } finally {
+                Na__InteractiveOverlays__EndFrame();                         // <-- Every path, thrown frames included: no overlay outlives its frame
+                Na__RenderLoop__ArmNextFrame(keepRendering);
+            }
         }
 
         window.addEventListener(NA__REQUEST_RENDER_EVENT, Na__RenderLoop__RequestRenderOnce);

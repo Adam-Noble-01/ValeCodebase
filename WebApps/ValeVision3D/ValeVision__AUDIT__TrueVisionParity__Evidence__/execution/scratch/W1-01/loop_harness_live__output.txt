@@ -1,0 +1,62 @@
+﻿W1-01 loop harness - pre-image against live
+  PASS  pre: the loading sequence booted without throwing
+  PASS  pre: the render loop scheduled its tick (one RAF callback)
+  PASS  live: the loading sequence booted without throwing
+  PASS  live: the render loop scheduled its tick (one RAF callback)
+  PASS  A1 identical call sequence, pre-image vs live (nothing registered: live 3D frame)
+  PASS  A1 identical outcome (thrown or not)
+  PASS  A2 identical call sequence, pre-image vs live (nothing registered: 2D drawing frame)
+  PASS  A2 identical outcome (thrown or not)
+  PASS  A3 identical call sequence, pre-image vs live (nothing registered: Video Studio preview frame)
+  PASS  A3 identical outcome (thrown or not)
+  PASS  A4 identical call sequence, pre-image vs live (nothing registered: held frame (Layout Editor hold))
+  PASS  A4 identical outcome (thrown or not)
+  PASS  A5 identical call sequence, pre-image vs live (nothing registered: live 3D frame after the hold)
+  PASS  A5 identical outcome (thrown or not)
+  PASS  A6 identical call sequence, pre-image vs live (nothing registered: a frame that throws after the 3D work began)
+  PASS  A6 identical outcome (thrown or not)
+  PASS  A7 identical call sequence, pre-image vs live (nothing registered: live 3D frame after the throw)
+  PASS  A7 identical outcome (thrown or not)
+  PASS  A1 a live 3D frame drew through the composer
+  PASS  A2 a drawing frame drew through the drawing preset, not the composer
+  PASS  A3 a Video Studio frame advanced the preview and drew through the composer
+  PASS  A4 a held frame drew nothing
+  PASS  A6 a frame that throws still propagates its error, as before (W2-07 owns the guard)
+  PASS  B0 registering hides the group at once
+  PASS  B1 wanted between frames is still invisible (wanted is not visible)
+  PASS  B2 visible in every draw of the live 3D frame
+  PASS  B2 ...and invisible again once the frame has ended
+  PASS  B3 invisible on a 2D drawing frame
+  PASS  B4 invisible in a Video Studio preview frame (DR-32)
+  PASS  B5 invisible to an export (or a thumbnail) rendered between frames
+  PASS  B6 a held frame draws nothing and leaves it invisible
+  PASS  B7 invisible to a sheet render while the Layout Editor holds the loop
+  PASS  B8 visible again in the first live 3D frame after the hold
+  PASS  B9 a frame that throws after BeginFrame still ends it: invisible afterwards
+  PASS  B10 the next live 3D frame shows it again
+  PASS  B11 not wanted: invisible even in a live 3D frame
+  PASS  B12 unregistering hands it back invisible
+  PASS  B13 unregistered: a live 3D frame no longer shows it
+  PASS  contrast: in the pre-image a registered, wanted group never shows (nothing begins a frame)
+  PASS  pre-image Invalidation has no IsPaused (the name this package adds)
+  PASS  live Invalidation exports IsPaused
+  PASS  C1 Pause("LayoutEditor"): IsPaused true and the loop held
+  PASS  C1 Pause("Export"): IsPaused true and the loop held
+  PASS  C1 Resume("LayoutEditor"): IsPaused true and the loop held
+  PASS  C1 Resume("Export"): IsPaused false and the loop painted
+  PASS  C1 Pause(): IsPaused true and the loop held
+  PASS  C1 Resume("undefined"): IsPaused false and the loop painted
+  PASS  C1 Pause(null): IsPaused true and the loop held
+  PASS  C1 Resume(""): IsPaused false and the loop painted
+  PASS  C1 Pause(""): IsPaused true and the loop held
+  PASS  C1 Resume(null): IsPaused false and the loop painted
+  PASS  C1 Pause(0): IsPaused true and the loop held
+  PASS  C1 Resume(false): IsPaused false and the loop painted
+  PASS  C1 Resume("never-paused"): IsPaused false and the loop painted
+  PASS  C1 Pause("a"): IsPaused true and the loop held
+  PASS  C1 Pause("a"): IsPaused true and the loop held
+  PASS  C1 Resume("a"): IsPaused false and the loop painted
+  PASS  C1 IsPaused already reads true inside every pause listener (mirrored before the dispatch)
+  PASS  C1 IsPaused already reads the new count inside every resume listener
+
+59 passed, 0 failed

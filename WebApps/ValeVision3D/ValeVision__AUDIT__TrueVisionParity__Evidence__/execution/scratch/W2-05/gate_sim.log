@@ -1,0 +1,7 @@
+﻿  PASS the landed index.html gives the gate ["naCrossSectionToolDevItem","naCrossSectionToolDevToggle","naCrossSectionToolDevPanel","naCrossSectionToolDevEnableCheck","naCrossSectionToolDevSave"] and the 48 panel ["naCrossSectionDevItem","naCrossSectionDevToggle","naCrossSectionDevPanel"]
+  PASS both initialise on localhost and both items are revealed
+  PASS each toggle opens and closes only its own panel (no DOM id collision)
+[CrossSectionDevMenu] Cross section config saved (enabled: true)
+  PASS Enable For This Project switches the tool on live; Save Cross Section Config asks, then writes CrossSection__Config { Enabled true, style } through the R2-first save; the project-load sync still finds the checkbox
+
+4 checks, ALL PASSED

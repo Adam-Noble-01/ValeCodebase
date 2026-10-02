@@ -1,0 +1,531 @@
+// =============================================================================
+// TRUEVISION3D - MODEL TOGGLE CONTROLS
+// =============================================================================
+//
+// FILE       : Na__UiFeature__ModelToggle__Controls.js
+// NAMESPACE  : Na__UiFeature
+// MODULE     : ModelToggle Controls
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Dynamic category visibility toggle buttons for loaded model groups
+// CREATED    : 10-Feb-2026
+//
+// DESCRIPTION:
+// - Reads the loaded model groups Map (category -> THREE.Group) from the
+//   multi-model loader and dynamically generates toggle buttons for each.
+// - Pairs Mesh + Linework models per category into a single toggle.
+// - Maps internal category keys to user-friendly display names.
+// - Automatically creates buttons for any new categories added in the future
+//   (furniture, vegetation, scene context, etc.) without code changes.
+// - Integrates into the existing Tools dropdown panel in the TrueVision3D UI.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 18-Sep-2026
+// - Display names for the eight Linetype__ categories, and then no buttons for
+//   them: a projection-only category is not drawn in 3D, so a 3D toggle would
+//   look inert while taking its lines off every drawing. They stay registered,
+//   so the Model Layers panel still lists them. The names are kept for the
+//   console, the Other group's labels and anything else that resolves a key.
+//
+// 13-Sep-2026
+// - BorrowRegistry and RestoreRegistry. A Layout Editor render of a design
+//   phase the 3D view does not hold lends the category map to that phase, so
+//   every visibility call made during the render acts on the model actually
+//   being drawn. The dev buttons are left alone meanwhile, and BuildButtons
+//   now replaces the map instead of clearing it, so a lent map is never
+//   emptied in place.
+//
+// =============================================================================
+
+
+import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants and Category Display Names
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Category Key -> User-Friendly Display Name Map
+    // ------------------------------------------------------------
+    // Maps TrueVision category keys (from GLB filenames) to readable labels.
+    // Any category NOT in this map gets an auto-generated label from its key.
+    // ------------------------------------------------------------
+    const Na__ModelToggle__DisplayNames = {
+        "TrueVision__MainBuildingModel__Existing"              : "Existing Building",
+        "TrueVision__MainBuildingModel__ExistingWalls"         : "Existing Walls",
+        "TrueVision__MainBuildingModel__ExistingFloors"        : "Existing Floors",
+        "TrueVision__MainBuildingModel__ExistingRoofs"         : "Existing Roofs",
+        "TrueVision__MainBuildingModel__ExistingWindows"       : "Existing Windows",
+        "TrueVision__MainBuildingModel__ExistingDoors"         : "Existing Doors",
+        "TrueVision__MainBuildingModel__ExistingStairs"        : "Existing Staircase",
+        "TrueVision__MainBuildingModel__ExistingFixtures"      : "Existing Fixtures",
+        "TrueVision__MainBuildingModel__ExistingFurniture"     : "Existing Furniture",
+        "TrueVision__MainBuildingModel__ExistingInteriorDecor" : "Existing Interior Decor",
+        "TrueVision__MainBuildingModel__Proposed"              : "Design Proposal",
+        "TrueVision__MainBuildingModel__ProposedWalls"         : "Proposed Walls",
+        "TrueVision__MainBuildingModel__ProposedFloors"        : "Proposed Floors",
+        "TrueVision__MainBuildingModel__ProposedRoofs"         : "Proposed Roofs",
+        "TrueVision__MainBuildingModel__ProposedWindows"       : "Proposed Windows",
+        "TrueVision__MainBuildingModel__ProposedDoors"         : "Proposed Doors",
+        "TrueVision__MainBuildingModel__ProposedStairs"        : "Proposed Staircase",
+        "TrueVision__MainBuildingModel__ProposedFixtures"      : "Proposed Fixtures",
+        "TrueVision__MainBuildingModel__ProposedFurniture"     : "Proposed Furniture",
+        "TrueVision__MainBuildingModel__ProposedInteriorDecor" : "Proposed Interior Decor",
+        "TrueVision__SiteBoundaries"                   : "Site Boundaries",        // <-- Tag 08 (conditional: shown only when boundary GLBs exist)
+        "TrueVision__LandscapeEnvironment"             : "Landscape",              // <-- Tag 07
+        "TrueVision__SiteVegetation2D"                 : "Site Vegetation 2D",     // <-- Tag 09 (2D camera-follow billboards)
+        "TrueVision__GroundFloorFurniture"             : "Ground Floor Furniture", // <-- Tag 30-38
+        "TrueVision__GroundFloorDecor"                 : "Ground Floor Decor",     // <-- Tag 39
+        "TrueVision__FirstFloorFurniture"              : "First Floor Furniture",  // <-- Tag 40-48
+        "TrueVision__FirstFloorDecor"                  : "First Floor Decor",      // <-- Tag 49
+        "TrueVision__Vegetation"                       : "Vegetation",             // <-- Tag 50-59
+        "TrueVision__SceneContextual"                  : "Scene Context",          // <-- Tag 60-70
+
+        // LINETYPE LINEWORK | One linework-only GLB per SketchUp linetype tag. Named
+        // here so the toggle reads as the drawing word rather than the tag name, and
+        // so a person can see at a glance whether the lines they tagged actually landed.
+        "TrueVision__Linetype__DashedLines"            : "Lines - Dashed",
+        "TrueVision__Linetype__CentreLines"            : "Lines - Centre",
+        "TrueVision__Linetype__DottedLines"            : "Lines - Dotted",
+        "TrueVision__Linetype__DoorSwings"             : "Lines - Door Swings",
+        "TrueVision__Linetype__ClearanceLines"         : "Lines - Clearances",
+        "TrueVision__Linetype__OverheadObjects"        : "Lines - Overhead Objects",
+        "TrueVision__Linetype__BuildingJoins"          : "Lines - Building Joins",
+        "TrueVision__Linetype__ElementsForRemoval"     : "Lines - Elements For Removal"
+    };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Toggle Panel DOM IDs
+    // ------------------------------------------------------------
+    const Na__ModelToggle__PanelId     = "naModelTogglePanel";            // <-- Toggle panel container ID
+    const Na__ModelToggle__ListId      = "naModelToggleList";             // <-- Toggle buttons list ID
+    const Na__ModelToggle__ButtonClass = "na-model-toggle__button";       // <-- Toggle button CSS class
+    const Na__ModelToggle__ActiveClass = "na-model-toggle__button--active";  // <-- Active state CSS class
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Display Name Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Resolve Category Key to User-Friendly Display Name
+    // ---------------------------------------------------------------
+    function Na__ModelToggle__ResolveDisplayName(categoryKey) {
+        if (Na__ModelToggle__DisplayNames[categoryKey]) {
+            return Na__ModelToggle__DisplayNames[categoryKey];            // <-- Return mapped display name
+        }
+
+        // AUTO-GENERATE | Strip TrueVision__ prefix and humanize
+        const stripped = categoryKey.replace('TrueVision__', '');         // <-- Remove namespace prefix
+        const humanized = stripped
+            .replace(/__/g, ' - ')                                       // <-- Double underscores to dashes
+            .replace(/([a-z])([A-Z])/g, '$1 $2');                        // <-- CamelCase to spaces
+        return humanized;                                                // <-- Return auto-generated label
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Toggle State Management
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Internal Toggle State
+    // ------------------------------------------------------------
+    let Na__ModelToggle__StateMap = new Map();                            // <-- Map of category -> { group, visible }
+    let Na__ModelToggle__SubmenuWired = false;                            // <-- Guard against duplicate submenu listeners
+    let Na__ModelToggle__Generation = 0;                                  // <-- Bumped each time the 3D view rebuilds the map
+    let Na__ModelToggle__Borrowed = false;                                // <-- A render has lent the map to another design phase
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Toggle Category Visibility
+    // ------------------------------------------------------------
+    function Na__ModelToggle__SetCategoryVisibility(categoryKey, visible) {
+        const state = Na__ModelToggle__StateMap.get(categoryKey);         // <-- Look up state entry
+        if (!state) return;                                              // <-- Guard against missing category
+
+        state.visible       = visible;                                   // <-- Update internal state
+        state.group.visible = visible;                                   // <-- Set THREE.Group visibility
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Toggle Category On/Off (Flip Current State)
+    // ------------------------------------------------------------
+    function Na__ModelToggle__ToggleCategory(categoryKey) {
+        const state = Na__ModelToggle__StateMap.get(categoryKey);         // <-- Look up state entry
+        if (!state) return;                                              // <-- Guard against missing category
+
+        const newVisible = !state.visible;                               // <-- Flip visibility
+        Na__ModelToggle__SetCategoryVisibility(categoryKey, newVisible);  // <-- Apply new visibility
+        return newVisible;                                               // <-- Return new state for button update
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Sync a Category Button's Active Class to a Visibility State
+    // ---------------------------------------------------------------
+    function Na__ModelToggle__SyncButtonState(categoryKey, visible) {
+        if (Na__ModelToggle__Borrowed) return;                           // <-- The buttons are the 3D view's; a borrowed map is another model's
+        const listContainer = document.getElementById(Na__ModelToggle__ListId);  // <-- Button list container
+        if (!listContainer) return;
+        const button = listContainer.querySelector(
+            `.${Na__ModelToggle__ButtonClass}[data-category="${CSS.escape(categoryKey)}"]`
+        );                                                               // <-- Locate the matching toggle button
+        if (!button) return;
+        button.classList.toggle(Na__ModelToggle__ActiveClass, visible);  // <-- Reflect the new visibility in the UI
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Read Current Category Visibility as a Serializable Snapshot
+    // ------------------------------------------------------------
+    // Reads the LIVE group.visible flag (authoritative), so it captures the
+    // true state even when the Storey/Floor-Isolate systems mutated visibility
+    // directly without going through this module's cached flags.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__GetVisibilityState() {
+        const snapshot = {};
+        Na__ModelToggle__StateMap.forEach((entry, categoryKey) => {
+            const visible = entry && entry.group ? entry.group.visible !== false : true;  // <-- Live truth from THREE.Group
+            snapshot[categoryKey] = visible;                             // <-- Stable categoryKey -> boolean
+        });
+        return snapshot;
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Force All Loaded Categories Visible (Clean Baseline)
+    // ------------------------------------------------------------
+    // Used as a reset baseline before re-applying a saved scene snapshot, so no
+    // category left hidden by a previous scene can linger into the next one.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__SetAllCategoriesVisible() {
+        Na__ModelToggle__StateMap.forEach((entry, categoryKey) => {
+            entry.visible = true;                                        // <-- Update cached flag
+            if (entry.group) entry.group.visible = true;               // <-- Show THREE.Group
+            Na__ModelToggle__SyncButtonState(categoryKey, true);       // <-- Keep dev button UI in sync
+        });
+        Na__RenderLoop__RequestRender();                                 // <-- Single frame redraw after batch reset
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Re-Apply a Saved Category Visibility Snapshot
+    // ------------------------------------------------------------
+    // Sets each loaded category group to the saved boolean and refreshes the
+    // toggle button UI. Unknown / missing categories are ignored so older
+    // snapshots remain forwards-compatible after model changes.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__ApplyVisibilityState(visibilityState) {
+        if (!visibilityState || typeof visibilityState !== 'object') return;
+
+        Object.keys(visibilityState).forEach((categoryKey) => {
+            const entry = Na__ModelToggle__StateMap.get(categoryKey);    // <-- Resolve by stable category key
+            if (!entry) return;                                          // <-- Skip categories not present this session
+
+            const visible       = visibilityState[categoryKey] !== false;
+            entry.visible       = visible;                               // <-- Update cached flag
+            if (entry.group) entry.group.visible = visible;             // <-- Apply to THREE.Group
+            Na__ModelToggle__SyncButtonState(categoryKey, visible);     // <-- Keep dev button UI in sync
+        });
+
+        Na__RenderLoop__RequestRender();                                 // <-- Single frame redraw after batch apply
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Dynamic UI Button Generation
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Build Toggle Buttons from Loaded Groups Map
+    // ------------------------------------------------------------
+    // THE STATE MAP IS FILLED BEFORE THE BUTTONS, and independently of them.
+    // It used to be filled inside the button loop, behind an early return when
+    // the dev menu's list container was missing from the page - which was fine
+    // while the map served only those buttons. It no longer does: the Layout
+    // Editor's Context Layer toggle and its per-viewport Model Layers panel
+    // both read this map, and both ship to everyone. A production page that
+    // dropped the dev markup would have left them silently controlling
+    // nothing, which is the worst of the available failures because it looks
+    // like the toggle simply has no effect on that model.
+    function Na__ModelToggle__BuildButtons(loadedGroups) {
+        // A NEW MAP, NOT A CLEARED ONE. A render that has borrowed the registry
+        // for another design phase holds the previous map object; clearing it
+        // in place would empty that phase's categories out from under the
+        // render. The generation tells RestoreRegistry this map now stands.
+        Na__ModelToggle__StateMap = new Map();                           // <-- Drop stale category references
+        Na__ModelToggle__Generation += 1;
+        Na__ModelToggle__Borrowed = false;
+        if (loadedGroups) {
+            loadedGroups.forEach((group, categoryKey) => {
+                Na__ModelToggle__StateMap.set(categoryKey, {
+                    group   : group,                                     // <-- THREE.Group reference
+                    visible : true                                       // <-- Default: visible
+                });
+            });
+        }
+
+        const listContainer = document.getElementById(Na__ModelToggle__ListId);  // <-- Get button list container
+        if (!listContainer) {
+            console.warn('[TrueVision3D] Model toggle list container not found - categories registered, dev buttons skipped');
+            return;                                                      // <-- No dev UI, but the map above is live
+        }
+
+        listContainer.innerHTML = '';                                    // <-- Clear any existing buttons
+
+        if (!loadedGroups || loadedGroups.size === 0) {
+            listContainer.style.display = 'none';                        // <-- Hide if no groups
+            return;
+        }
+
+        // BUILD A BUTTON FOR EACH LOADED CATEGORY
+        // A PROJECTION-ONLY CATEGORY GETS NO BUTTON. Its linework is loaded with
+        // material.visible false and no 3D render draws it, so a 3D toggle would
+        // appear to do nothing while quietly taking the lines off every drawing.
+        // It stays in the map above, so the Layout Editor's Model Layers panel -
+        // which is where a drawing layer belongs - still lists and controls it.
+        let buttonCount = 0;
+        loadedGroups.forEach((group, categoryKey) => {
+            if (group && group.userData && group.userData.Na__LineworkProjectionOnly === true) return;
+            buttonCount += 1;
+
+            // CREATE BUTTON ELEMENT
+            const displayName = Na__ModelToggle__ResolveDisplayName(categoryKey);  // <-- Resolve friendly name
+            const button      = document.createElement('button');        // <-- Create button element
+            button.className  = `${Na__ModelToggle__ButtonClass} ${Na__ModelToggle__ActiveClass}`;  // <-- Set classes (active by default)
+            button.textContent = displayName;                            // <-- Set button label
+            button.dataset.category = categoryKey;                       // <-- Store category key in data attribute
+
+            // CLICK HANDLER | Toggle visibility and update button state
+            button.addEventListener('click', () => {
+                const nowVisible = Na__ModelToggle__ToggleCategory(categoryKey);  // <-- Toggle visibility
+                if (nowVisible) {
+                    button.classList.add(Na__ModelToggle__ActiveClass);   // <-- Add active class
+                } else {
+                    button.classList.remove(Na__ModelToggle__ActiveClass);  // <-- Remove active class
+                }
+                Na__RenderLoop__RequestRender();                          // <-- Redraw after category visibility changes
+            });
+
+            listContainer.appendChild(button);                           // <-- Add button to container
+        });
+
+        if (buttonCount === 0) listContainer.style.display = 'none';     // <-- Every category was projection only
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Initialization
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Initialize Model Toggle Controls
+    // ------------------------------------------------------------
+    // Call after Na__ModelLoader__LoadAllModels completes.
+    // Accepts the loadedGroups Map returned by the multi-model loader.
+    // ------------------------------------------------------------
+    function Na__UiFeature__InitializeModelToggleControls(loadedGroups) {
+        if (!loadedGroups || loadedGroups.size === 0) {
+            console.log('[TrueVision3D] No model groups for toggle controls');
+            return;                                                      // <-- Exit if nothing to toggle
+        }
+
+        Na__ModelToggle__BuildButtons(loadedGroups);                     // <-- Build dynamic toggle buttons
+        
+        // INITIALIZE TOGGLE BUTTON
+        const toggleButton = document.getElementById('naModelToggleButton');  // <-- Get toggle button element
+        const panel = document.getElementById(Na__ModelToggle__PanelId);     // <-- Get panel container
+        
+        if (toggleButton && panel && !Na__ModelToggle__SubmenuWired) {
+            toggleButton.addEventListener('click', () => {
+                const isOpen = panel.classList.contains('is-open');      // <-- Check current panel state
+                panel.classList.toggle('is-open', !isOpen);            // <-- Toggle panel visibility
+            });
+            Na__ModelToggle__SubmenuWired = true;
+        }
+        
+        console.log(`[TrueVision3D] Model toggle controls initialized for ${loadedGroups.size} categories`);
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+
+// -----------------------------------------------------------------------------
+// REGION | Drawing and Sheet Visibility Control (re-alignment Phase E)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Snapshot Every Category's Visibility
+    // ------------------------------------------------------------
+    // ValeVision's name for GetVisibilityState. Aliased rather than renamed
+    // because both names now have callers, and the shared Layout Editor modules
+    // use this one - a rename would fork them.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__CaptureVisibilityMap() {
+        return Na__ModelToggle__GetVisibilityState();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore a Snapshot Taken by CaptureVisibilityMap
+    // ------------------------------------------------------------
+    function Na__ModelToggle__ApplySceneLayerVisibility(visibilityState) {
+        return Na__ModelToggle__ApplyVisibilityState(visibilityState);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Every Category the Model Actually Loaded
+    // ------------------------------------------------------------
+    // In load order, which is the order the loader's priority list puts them
+    // in. The Layout Editor's Model Layers panel lists these and nothing else:
+    // a category with no GLB behind it is not a choice anyone can make.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__GetCategoryKeys() {
+        const keys = [];
+        Na__ModelToggle__StateMap.forEach((entry, categoryKey) => keys.push(categoryKey));
+        return keys;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show or Hide One Category by Its Exact Key
+    // ------------------------------------------------------------
+    // THE EXACT-KEY SETTER, EXPORTED. The token matcher below is exported
+    // under the plain SetCategoryVisibility name because the shared Layout
+    // Editor modules call it with ValeVision's shorter category words, and it
+    // is right for them. It is wrong for anything naming a TrueVision category
+    // in full: "TrueVision__MainBuildingModel__Existing" is a substring of
+    // nine longer keys, so hiding the existing building by token would take
+    // its walls, roofs, windows and the rest with it. Anything holding a real
+    // category key wants this one.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__SetCategoryVisibleByKey(categoryKey, visible) {
+        const entry = Na__ModelToggle__StateMap.get(categoryKey);
+        if (!entry) return false;                                        // <-- Not loaded this session: nothing to hide
+        const wanted  = visible !== false;
+        entry.visible = wanted;
+        if (entry.group) entry.group.visible = wanted;
+        Na__ModelToggle__SyncButtonState(categoryKey, wanted);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show or Hide One Category by Key or Token
+    // ------------------------------------------------------------
+    // NOTE: a second, exact-key SetCategoryVisibility already exists above and
+    // is used internally by the toggle buttons. It is left alone. This one is
+    // the TOKEN matcher the shared Layout Editor modules need, and it is
+    // exported under the plain name they import.
+    // The Context Layer style toggle takes the existing building, the site
+    // boundaries, the landscape and the entourage out of a viewport's render,
+    // leaving the proposal on its own.
+    //
+    // MATCHES BY TOKEN, not by exact key. The shared caller names categories the
+    // ValeVision way ("Landscape", "Entourage") while a TrueVision category key
+    // is the full SketchUp path ("TrueVision__LandscapeEnvironment"). An exact
+    // match would silently hide nothing and the toggle would look broken rather
+    // than fail. Returns how many categories were actually changed, so a caller
+    // can tell "nothing matched" from "nothing to do".
+    // ------------------------------------------------------------
+    function Na__ModelToggle__SetCategoryVisibleByToken(categoryKeyOrToken, visible) {
+        if (!categoryKeyOrToken) return 0;
+        const token   = String(categoryKeyOrToken).toLowerCase();
+        const wanted  = visible !== false;
+        let   changed = 0;
+
+        Na__ModelToggle__StateMap.forEach((entry, categoryKey) => {
+            if (String(categoryKey).toLowerCase().indexOf(token) === -1) return;
+            entry.visible = wanted;
+            if (entry.group) entry.group.visible = wanted;
+            Na__ModelToggle__SyncButtonState(categoryKey, wanted);
+            changed += 1;
+        });
+
+        if (changed > 0) Na__RenderLoop__RequestRender();
+        return changed;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Lend the Registry to Another Design Phase for One Render
+    // ------------------------------------------------------------
+    // The Layout Editor can draw a design phase the 3D view does not hold, by
+    // putting that phase's model into the scene for the length of one render.
+    // Everything that render asks of this module - the Context Layer, the Model
+    // Layers hides, a scene's saved layer map, the capture that puts them back -
+    // must then act on THAT phase's category groups, or it hides categories of
+    // a model that is not even in the scene while the one being drawn keeps them.
+    //
+    // loadedGroups is the loader's category Map for the phase. Returns a token
+    // for RestoreRegistry. The dev toggle buttons are left alone throughout:
+    // they describe the 3D view.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__BorrowRegistry(loadedGroups) {
+        const token    = { map : Na__ModelToggle__StateMap, generation : Na__ModelToggle__Generation, borrowed : Na__ModelToggle__Borrowed };
+        const borrowed = new Map();
+        if (loadedGroups && typeof loadedGroups.forEach === 'function') {
+            loadedGroups.forEach((group, categoryKey) => {
+                borrowed.set(categoryKey, { group : group, visible : group.visible !== false });
+            });
+        }
+        Na__ModelToggle__StateMap = borrowed;
+        Na__ModelToggle__Borrowed = true;
+        return token;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand the Registry Back
+    // ------------------------------------------------------------
+    // Returns false, and leaves the registry as it is, when the 3D view rebuilt
+    // it during the borrow (a Design Phase switch): that map is the true one.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__RestoreRegistry(token) {
+        if (!token) return false;
+        if (token.generation !== Na__ModelToggle__Generation) return false;
+        Na__ModelToggle__StateMap = token.map;
+        Na__ModelToggle__Borrowed = token.borrowed === true;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Model Toggle Controls API
+    // ------------------------------------------------------------
+    export {
+        Na__UiFeature__InitializeModelToggleControls,
+        Na__ModelToggle__GetVisibilityState,
+        Na__ModelToggle__ApplyVisibilityState,
+        Na__ModelToggle__SetAllCategoriesVisible,
+        Na__ModelToggle__CaptureVisibilityMap,
+        Na__ModelToggle__ApplySceneLayerVisibility,
+        Na__ModelToggle__GetCategoryKeys,
+        Na__ModelToggle__SetCategoryVisibleByKey,
+        Na__ModelToggle__BorrowRegistry,
+        Na__ModelToggle__RestoreRegistry,
+        Na__ModelToggle__SetCategoryVisibleByToken as Na__ModelToggle__SetCategoryVisibility
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+

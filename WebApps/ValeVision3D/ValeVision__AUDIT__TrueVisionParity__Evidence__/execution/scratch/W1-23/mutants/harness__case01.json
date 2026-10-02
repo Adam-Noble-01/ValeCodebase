@@ -1,0 +1,3176 @@
+{
+ "label": "candidate + Na__LayoutEditor__Viewport2d__Window__.js=before,Na__LayoutEditor__Viewport2d__Frame__.js=before,Na__LayoutEditor__Viewport2d__Linework__.js=before,Na__LayoutEditor__Viewport2d__.js=before,Na__LayoutEditor__Viewport3d__.js=before,Na__LayoutEditor__PdfExporter__.js=before",
+ "events": [
+  {
+   "s": "S1",
+   "k": "PlStage.Describe",
+   "d": "#ModelRoot"
+  },
+  {
+   "s": "S1",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fp": "(undefined)"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlStore.Load",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fingerprint": "fp|qqcehs|pipeline-fp-123",
+    "key": "ck|qqcehs|pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S1",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S1",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     13.587218175850287,
+     1.967766334667233,
+     5
+    ],
+    "position": [
+     13.587218175850287,
+     1.967766334667233,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S1",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 626,
+    "targetWidth": 1108,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S1",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S1",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S1",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S1",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S1",
+   "k": "state2",
+   "d": {
+    "classesKey": "ck|qqcehs|pipeline-fp-123",
+    "lineworkKey": "ck|qqcehs|pipeline-fp-123|true|50|0.3|edgeTok#compTok",
+    "parked": false,
+    "renderedKey": "qqcehs|pipeline-fp-123|13587|-1968|9236|5219|true|true|true|true||mlTok|medium",
+    "renderedWindow": {
+     "HeightMm": 5218.662672122541,
+     "OriginX": 8969.374885313773,
+     "OriginY": -4577.0976707285035,
+     "WidthMm": 9235.686581073025
+    },
+    "underlay": "data:image/png;w=1108;h=626",
+    "wantedKey": "qqcehs|pipeline-fp-123|13587|-1968|9236|5219|true|true|true|true||mlTok|medium"
+   }
+  },
+  {
+   "s": "S2",
+   "k": "PlStage.Describe",
+   "d": "#ModelRoot"
+  },
+  {
+   "s": "S2",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S2",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S2",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": "fn"
+   }
+  },
+  {
+   "s": "S2",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S2",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S2",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S2",
+   "k": "fingerprint",
+   "d": "47eaht"
+  },
+  {
+   "s": "S2",
+   "k": "img",
+   "d": {
+    "hidden": false,
+    "src": "data:image/png;w=1104;h=617",
+    "style": {
+     "height": "360.0026942845667px",
+     "left": "0px",
+     "top": "0px",
+     "width": "644.1943101156176px"
+    }
+   }
+  },
+  {
+   "s": "S3",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S3",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S3",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": "fn"
+   }
+  },
+  {
+   "s": "S3",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S3",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S3",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S3",
+   "k": "fingerprint",
+   "d": "18zj2wo"
+  },
+  {
+   "s": "S3",
+   "k": "exportRect",
+   "d": {
+    "HeightMm": 102.85791265273335,
+    "WidthMm": 184.05551717589069,
+    "X": 0,
+    "Y": 0
+   }
+  },
+  {
+   "s": "S3",
+   "k": "img",
+   "d": {
+    "hidden": false,
+    "src": "data:image/png;w=1104;h=617",
+    "style": {
+     "height": "360.0026942845667px",
+     "left": "0px",
+     "top": "0px",
+     "width": "644.1943101156174px"
+    }
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fp": "(undefined)"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlStore.Load",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fingerprint": "fp|qqcehs|pipeline-fp-123",
+    "key": "ck|qqcehs|pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S4",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     13,
+     2,
+     5
+    ],
+    "position": [
+     13,
+     2,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S4",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 626,
+    "targetWidth": 1108,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fp": "(undefined)"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlStore.Load",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fingerprint": "fp|qqcehs|pipeline-fp-123",
+    "key": "ck|qqcehs|pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S4",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "queue",
+   "d": {
+    "outstanding": 2
+   }
+  },
+  {
+   "s": "S4",
+   "k": "parkedB",
+   "d": true
+  },
+  {
+   "s": "S4",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S4",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S4",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     14,
+     2.1,
+     5
+    ],
+    "position": [
+     14,
+     2.1,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S4",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 626,
+    "targetWidth": 1108,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S4",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S4",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S4",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S4",
+   "k": "renders",
+   "d": 2
+  },
+  {
+   "s": "S4",
+   "k": "stateA",
+   "d": {
+    "classesKey": "ck|qqcehs|pipeline-fp-123",
+    "lineworkKey": "ck|qqcehs|pipeline-fp-123|true|50|0.3|edgeTok#compTok",
+    "parked": false,
+    "renderedKey": "qqcehs|pipeline-fp-123|13000|-2000|9236|5219|true|true|true|true||mlTok|medium",
+    "renderedWindow": {
+     "HeightMm": 5218.662672122541,
+     "OriginX": 8382.156709463488,
+     "OriginY": -4609.33133606127,
+     "WidthMm": 9235.686581073025
+    },
+    "underlay": "data:image/png;w=1108;h=626",
+    "wantedKey": "qqcehs|pipeline-fp-123|13000|-2000|9236|5219|true|true|true|true||mlTok|medium"
+   }
+  },
+  {
+   "s": "S4",
+   "k": "stateB(parked)",
+   "d": {
+    "classesKey": "ck|qqcehs|pipeline-fp-123",
+    "lineworkKey": "ck|qqcehs|pipeline-fp-123|true|50|0.3|edgeTok#compTok",
+    "parked": true,
+    "renderedKey": "qqcehs|pipeline-fp-123|14000|-2100|9236|5219|true|true|true|true||mlTok|medium",
+    "renderedWindow": {
+     "HeightMm": 5218.662672122541,
+     "OriginX": 9382.156709463488,
+     "OriginY": -4709.33133606127,
+     "WidthMm": 9235.686581073025
+    },
+    "underlay": "data:image/png;w=1108;h=626",
+    "wantedKey": "qqcehs|pipeline-fp-123|14000|-2100|9236|5219|true|true|true|true||mlTok|medium"
+   }
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S5",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": "fn"
+   }
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 2
+   }
+  },
+  {
+   "s": "S5",
+   "k": "parkedD",
+   "d": true
+  },
+  {
+   "s": "S5",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S5",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S5",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": "fn"
+   }
+  },
+  {
+   "s": "S5",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S5",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S5",
+   "k": "renders",
+   "d": 2
+  },
+  {
+   "s": "S5",
+   "k": "stateD(parked)",
+   "d": {
+    "dataUrl": "data:image/png;w=1104;h=617",
+    "key": "169lvi8",
+    "parked": true,
+    "px": {
+     "h": 617,
+     "samples": 2,
+     "w": 1104
+    },
+    "renderOk": true,
+    "win": {
+     "u0": 0.07407407407407407,
+     "u1": 0.7557611747255211,
+     "v0": 0.05555555555555555,
+     "v1": 0.6269884036262964
+    }
+   }
+  },
+  {
+   "s": "S6",
+   "k": "jsPDF.new",
+   "d": {
+    "compress": true,
+    "format": [
+     420,
+     297
+    ],
+    "orientation": "landscape",
+    "unit": "mm"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setProperties",
+   "d": {
+    "author": "a",
+    "creator": "c",
+    "subject": "ValeVision3D sheet A3 landscape, scale 1:50",
+    "title": "Elevations Test"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf.save",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.rect",
+   "d": [
+    17.726983949907236,
+    16.929521475495157,
+    184.7137316214605,
+    104.37325344245082,
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S6",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     13.587218175850287,
+     1.967766334667233,
+     5
+    ],
+    "position": [
+     13.587218175850287,
+     1.967766334667233,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 4,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 1252,
+    "targetWidth": 2217,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.addImage",
+   "d": [
+    "data:image/png;w=2217;h=1252",
+    "PNG",
+    17.726983949907236,
+    16.929521475495157,
+    184.7137316214605,
+    104.37325344245082
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fp": "(undefined)"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlStore.Load",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fingerprint": "fp|qqcehs|pipeline-fp-123",
+    "key": "ck|qqcehs|pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "not callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    119,
+    119,
+    119
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.07620004799999999
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [
+     1.2,
+     1.2
+    ],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    102.339486,
+    60.471475,
+    114.339486,
+    76.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.1058334
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    98.339486,
+    58.471475,
+    118.339486,
+    58.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    118.339486,
+    58.471475,
+    118.339486,
+    78.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    34,
+    34,
+    34
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.1058334
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    100.339486,
+    62.471475,
+    116.339486,
+    62.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf.restore",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.save",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.rect",
+   "d": [
+    209.7638924134711,
+    16.10650259760942,
+    184.05551717589069,
+    102.85791265273335,
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S6",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 4,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 1234,
+    "targetWidth": 2209,
+    "viewWindow": null
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.addImage",
+   "d": [
+    "data:image/png;w=2209;h=1234",
+    "PNG",
+    209.7638924134711,
+    16.10650259760942,
+    184.05551717589069,
+    102.85791265273335
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.restore",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf",
+   "d": {
+    "filename": "sheet.pdf"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "jsPDF.new",
+   "d": {
+    "compress": true,
+    "format": [
+     420,
+     297
+    ],
+    "orientation": "landscape",
+    "unit": "mm"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setProperties",
+   "d": {
+    "author": "a",
+    "creator": "c",
+    "subject": "ValeVision3D sheet A3 landscape, scale 1:50",
+    "title": "Elevations Test"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf.save",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.rect",
+   "d": [
+    17.726983949907236,
+    16.929521475495157,
+    184.7137316214605,
+    104.37325344245082,
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S6",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     13.587218175850287,
+     1.967766334667233,
+     5
+    ],
+    "position": [
+     13.587218175850287,
+     1.967766334667233,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 4,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 1252,
+    "targetWidth": 2217,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.addImage",
+   "d": [
+    "data:image/png;w=2217;h=1252",
+    "PNG",
+    17.726983949907236,
+    16.929521475495157,
+    184.7137316214605,
+    104.37325344245082
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.GetCached",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fp": "(undefined)"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlStore.Load",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "fingerprint": "fp|qqcehs|pipeline-fp-123",
+    "key": "ck|qqcehs|pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "not callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S6",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    119,
+    119,
+    119
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.07620004799999999
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [
+     1.2,
+     1.2
+    ],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    102.339486,
+    60.471475,
+    114.339486,
+    76.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.1058334
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    98.339486,
+    58.471475,
+    118.339486,
+    58.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    118.339486,
+    58.471475,
+    118.339486,
+    78.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setDrawColor",
+   "d": [
+    34,
+    34,
+    34
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineWidth",
+   "d": 0.1058334
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineCap",
+   "d": "round"
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.line",
+   "d": [
+    100.339486,
+    62.471475,
+    116.339486,
+    62.471475
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setLineDashPattern",
+   "d": [
+    [],
+    0
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf.restore",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.save",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.rect",
+   "d": [
+    209.7638924134711,
+    16.10650259760942,
+    184.05551717589069,
+    102.85791265273335,
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S6",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 4,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 1234,
+    "targetWidth": 2209,
+    "viewWindow": null
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S6",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.addImage",
+   "d": [
+    "data:image/png;w=2209;h=1234",
+    "PNG",
+    209.7638924134711,
+    16.10650259760942,
+    184.05551717589069,
+    102.85791265273335
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.restore",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf",
+   "d": {
+    "filename": "sheet.pdf"
+   }
+  },
+  {
+   "s": "S7",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S7",
+   "k": "PlView.Fingerprint",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S7",
+   "k": "PlPipe.RenderDefinition",
+   "d": {
+    "abort": null,
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "onPhase": "callable",
+    "options": null
+   }
+  },
+  {
+   "s": "S7",
+   "k": "PlPipe.Remember",
+   "d": [
+    "pipe-ck",
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "authored": "typed[4]",
+     "hidden": "typed[4]",
+     "section": "typed[0]",
+     "visible": "typed[8]"
+    },
+    "pipe-fp",
+    "render"
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "PlStore.RememberRender",
+   "d": [
+    {
+     "Kind": "elevation",
+     "Record": {
+      "Elevation__Annotations": [],
+      "Elevation__AzimuthDeg": 90,
+      "Elevation__CameraTargetMm": {
+       "PosHeight": 1621,
+       "PosRun": 10780
+      },
+      "Elevation__CameraZoom": 4.363493111652619,
+      "Elevation__Dimensions": [],
+      "Elevation__Enabled": true,
+      "Elevation__ExcludeCategoryTokens": null,
+      "Elevation__Id": "Elevation_002",
+      "Elevation__LineworkAsset": null,
+      "Elevation__Mode": "elevation",
+      "Elevation__Name": "TEST ELEVATION",
+      "Elevation__Order": 1,
+      "Elevation__PlaneOriginMm": {
+       "PosX": 0,
+       "PosZ": 0
+      },
+      "Elevation__SceneId": "Scene_008",
+      "Elevation__SeededFrom": "manual",
+      "Elevation__Styles": {
+       "Styles__GlassOpaque": true,
+       "Styles__HiddenLines": false,
+       "Styles__ProfileLinework": false,
+       "Styles__ProjectedLinework": false,
+       "Styles__Whitecard": false
+      },
+      "Elevation__ViewDepthMm": null
+     },
+     "RecordHash": "qqcehs",
+     "ViewKey": "elevation:Elevation_002"
+    },
+    {
+     "CacheKey": "pipe-ck",
+     "Classes": {
+      "authored": "typed[4]",
+      "hidden": "typed[4]",
+      "section": "typed[0]",
+      "visible": "typed[8]"
+     },
+     "Fingerprint": "pipe-fp",
+     "Report": {}
+    }
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "PlView.CacheKey",
+   "d": {
+    "def": "elevation:Elevation_002",
+    "hash": "qqcehs",
+    "modelFp": "pipeline-fp-123"
+   }
+  },
+  {
+   "s": "S7",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S7",
+   "k": "SceneLighting.Defaults",
+   "d": [
+    {
+     "requestRender": false
+    }
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "Section.Suspend",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    2
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "Transitions.Suspend",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "RenderPreset.Enter",
+   "d": {
+    "edgeWidthPx": 1.25,
+    "frustum": [
+     -4.617843290536513,
+     4.617843290536513,
+     2.6093313360612704,
+     -2.6093313360612704,
+     0.01,
+     500
+    ],
+    "lookedAt": [
+     13.587218175850287,
+     1.967766334667233,
+     5
+    ],
+    "position": [
+     13.587218175850287,
+     1.967766334667233,
+     55
+    ],
+    "styles": {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    },
+    "up": [
+     0,
+     1,
+     0
+    ]
+   }
+  },
+  {
+   "s": "S7",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": true,
+     "profileLinework": true,
+     "projectedLinework": true,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "Section.Reapply",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "#ExportOverrides",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 626,
+    "targetWidth": 1108,
+    "viewWindow": "(absent)"
+   }
+  },
+  {
+   "s": "S7",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "RenderPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "Section.Release",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "CrossSection.SetLineWidth",
+   "d": [
+    1.5
+   ]
+  },
+  {
+   "s": "S7",
+   "k": "Transitions.Resume",
+   "d": []
+  },
+  {
+   "s": "S7",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S7",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S7",
+   "k": "forced",
+   "d": true
+  },
+  {
+   "s": "S7",
+   "k": "state2",
+   "d": {
+    "classesKey": "ck|qqcehs|pipeline-fp-123",
+    "lineworkKey": "ck|qqcehs|pipeline-fp-123|true|50|0.3|edgeTok#compTok",
+    "parked": false,
+    "renderedKey": "qqcehs|pipeline-fp-123|13587|-1968|9236|5219|true|true|true|true||mlTok|medium",
+    "renderedWindow": {
+     "HeightMm": 5218.662672122541,
+     "OriginX": 8969.374885313773,
+     "OriginY": -4577.0976707285035,
+     "WidthMm": 9235.686581073025
+    },
+    "underlay": "data:image/png;w=1108;h=626",
+    "wantedKey": "qqcehs|pipeline-fp-123|13587|-1968|9236|5219|true|true|true|true||mlTok|medium"
+   }
+  },
+  {
+   "s": "end",
+   "k": "unstubbed",
+   "d": []
+  }
+ ]
+}

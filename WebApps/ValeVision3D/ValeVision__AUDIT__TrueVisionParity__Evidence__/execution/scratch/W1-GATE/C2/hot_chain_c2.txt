@@ -1,0 +1,51 @@
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+   W1 serial order: W1-31(W1a) -> W1-33(W1a) -> W1-34(W1a) -> W1-21(cont)   | all editors: W0-02, W1-31, W1-33, W1-34, W1-21, W2-19, W2-18, W2-17, W3-09, W4-08, W4-10, W4-09, W4-13, W5-02, W5-03, W5-07
+   live: sha1 0a390e66 sha256 0972d43de02eff50  67488 B  CRLF 1100 / LF 0  mtime 02-Oct 05:22:01  | live hash stated by: W1-21
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+   W1 serial order: W1-32(W1a) -> W1-34(W1a) -> W1-35(W1a) -> W1-22(cont) -> W1-25(cont)   | all editors: W0-03, W0-15, W0-16, W1-32, W1-34, W1-35, W1-22, W1-25, W2-14, W2-29, W2-36, W3-07, W3-09, W3-10, W5-01, W5-05, W5-07
+   live: sha1 543b7919 sha256 854cc86b4ee2c194  173986 B  CRLF 0 / LF 1332  mtime 02-Oct 07:18:58  | live hash stated by: W1-26
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+   W1 serial order: W1-22(cont)   | all editors: W0-15, W0-16, W1-22
+   live: sha1 c6739f68 sha256 ba44e8b42d61a243  39300 B  CRLF 0 / LF 606  mtime 02-Oct 07:18:58  | live hash stated by: W1-26
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+   W1 serial order: W1-32(W1a) -> W1-33(W1a) -> W1-34(W1a) -> W1-36(cont)   | all editors: W0-02, W1-32, W1-33, W1-34, W1-36, W2-19, W2-29, W2-31, W2-35, W2-16, W3-05, W3-07, W3-09, W3-10, W3-11, W4-10, W4-09, W4-13, W5-03, W5-07
+   live: sha1 26a24216 sha256 1f3a1fa85ccedeba  82885 B  CRLF 1242 / LF 0  mtime 02-Oct 09:08:12  | live hash stated by: W1-36
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+   W1 serial order: W1-07(cont)   | all editors: W0-02, W0-08, W1-07
+   live: sha1 037e6cce sha256 553bd5bbe7a10e16  39256 B  CRLF 0 / LF 675  mtime 02-Oct 05:52:47  | live hash stated by: W1-07
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+   W1 serial order: W1-21(cont)   | all editors: W0-02, W0-06, W1-21
+   live: sha1 b5786aa7 sha256 18b5ccd28ca9d48e  20690 B  CRLF 0 / LF 371  mtime 02-Oct 05:22:01  | live hash stated by: W1-21
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+   W1 serial order: W1-21(cont)   | all editors: W0-02, W1-21, W4-07
+   live: sha1 c795e861 sha256 4254c29cc793b3e8  47943 B  CRLF 0 / LF 922  mtime 02-Oct 05:22:01  | live hash stated by: W1-21
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+   W1 serial order: W1-19(cont)   | all editors: W0-02, W1-19
+   live: sha1 f98593fb sha256 57922a0366f1a684  115459 B  CRLF 0 / LF 1797  mtime 02-Oct 04:03:40  | live hash stated by: W1-19
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js
+   W1 serial order: W1-36(cont)   | all editors: W0-03, W1-36
+   live: sha1 9e123697 sha256 6eeda8a9a4f3b5f3  30350 B  CRLF 0 / LF 544  mtime 02-Oct 09:08:12  | live hash stated by: W1-36
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js
+   W1 serial order: W1-36(cont)   | all editors: W0-03, W1-36
+   live: sha1 5ec2690c sha256 22cf50c5535fdc4b  17548 B  CRLF 0 / LF 352  mtime 02-Oct 09:08:12  | live hash stated by: W1-36
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css
+   W1 serial order: W1-28(cont)   | all editors: W1-28, W2-20, W2-19, W2-24, W2-25, W5-02
+   live: sha1 6a923cd2 sha256 a12bbdf6f855a4da  31088 B  CRLF 730 / LF 0  mtime 02-Oct 08:37:14  | live hash stated by: W1-28
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+   W1 serial order: W1-28(cont)   | all editors: W0-02, W1-28
+   live: sha1 e9a5992a sha256 e78b1671cbbd8b0c  63257 B  CRLF 0 / LF 1078  mtime 02-Oct 08:37:14  | live hash stated by: W1-28
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+   W1 serial order: W1-25(cont)   | all editors: W0-02, W0-03, W0-12, W1-25
+   live: sha1 b4cc24b3 sha256 e007b11fcfa890d8  25670 B  CRLF 0 / LF 465  mtime 02-Oct 06:27:46  | live hash stated by: W1-25
+WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+   W1 serial order: W1-23(W1a) -> W1-24(W1a) -> W1-25(cont) -> W1-28(cont)   | all editors: W0-02, W1-23, W1-24, W1-25, W1-28, W3-16
+   live: sha1 4d103048 sha256 f35e86c7eaf23631  28251 B  CRLF 448 / LF 0  mtime 02-Oct 08:37:14  | live hash stated by: W1-28
+WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+   W1 serial order: W1-06(W1a) -> W1-37(cont)   | all editors: W0-02, W1-06, W1-37, W2-01, W2-03, W2-34, W4-11, W5-02, W5-04, W6-03
+   live: sha1 74711196 sha256 f5c691f5e6b5761d  6668 B  CRLF 121 / LF 0  mtime 02-Oct 03:50:44  | live hash stated by: W1-37
+WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html
+   W1 serial order: W1-22(cont)   | all editors: W0-16, W1-22
+   live: sha1 ba334f2f sha256 2dd1b5d9c0a432e8  13130 B  CRLF 202 / LF 0  mtime 02-Oct 05:57:35  | live hash stated by: W1-22
+WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs
+   W1 serial order: W1-22(cont) -> W1-26(cont)   | all editors: W1-22, W1-26
+   live: sha1 06883696 sha256 aac29a00291781a7  20303 B  CRLF 0 / LF 270  mtime 02-Oct 07:18:58  | live hash stated by: W1-26

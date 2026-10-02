@@ -1,0 +1,310 @@
+### S07b-F07 [transport/critical/port_adapted] Transport unit is the single VV seam - rewrite it on VV's worker and Flask
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js
+DET: Statement__Data__Transport__.js 1.1.0 (434 lines; v2.95, v2.157 modifiedIso + ReadStatementLocal) is the unit TV's own port note names 'the unit that would need its own bucket paths'. It imports TV CfApi (/r2/* on NaProjectPortal/, :82-90) and LocalMirror (ProjectVision :8090 routes, :92-99) and builds repo/CDN/R2 locations from ?project-folder and ?year. None of that exists or should exist in VV (DIV-4).
+REC: Decide D-S07b-10 first. Under (a), the same-name shims recommended by D-S09-04 and D-S07a-08, port this unit verbatim: it imports VV's Na__CfApi__* and Na__LocalMirror__* shims (WP-S09-06), whose statement functions are built on the new worker routes (S07b-F27) and Flask blueprint (S07b-F26) and return 404-honest local URLs (S07b-F29). Under (b), rewrite the body on Na__AppUtils__R2StatementDocs__ as originally proposed, keeping all 15 exports an...
+ADAPT: same export list; body on Na__AppUtils__R2StatementDocs__ + blueprint; no CfApi/LocalMirror
+EVID: Transport__.js port note :48-53; imports :79-100; exports :415-431. VV pattern: VVM/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js (worker GET/POST with key, CDN fallback, Flask mirror).
+VER: S09 (D-S09-04, WP-S09-06) and S07a (D-S07a-08) plan same-name shims that include the statement CfApi/LocalMirror functions. S07b's rewrite would duplicate that transport.
+DEP: S07b-F26; S07b-F27; S07b-F28; S07b-F30
+
+### S07b-F21 [data_schema/medium/port_adapted] Standard sections config JSON carries NA words
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json
+VV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json
+DET: Standard__Config__.json (191 lines) holds every standard-section word: the NA logo URL, 'Prepared By: Mr Adam Noble of Noble Architecture', UK planning header fields, the TrueVision hub copy (published through TrueVision 3D, Noble Architecture's own platform), the footer copyright 'Noble Architecture', schedule columns and finishes rules. Commit b884e290 (30-Sep) reworded it after the last devlog entry.
+REC: Port the structure unchanged, with Vale words: an absolute Vale logo URL (to be confirmed), a Vale 'Prepared By' default, 'Vale Garden Houses' copyright, and the hub per D-S07b-06. Keep the UK planning field names per D-S07b-04.
+ADAPT: 
+EVID: Runtime brand scan: 49 hits in Standard__Config__.json. git show b884e290 changed TrueVisionHub__LeadParagraphs/CloseParagraphs.
+VER: 
+DEP: S07b-F24
+
+### S07b-F26 [transport/critical/build_vv_transport] VV Flask blueprint for statement files
+TV: NAAPPS/ProjectVision__TrueVisionStatements__Api__.py; NAAPPS/ProjectVision__LocalServer__Main__.py
+VV: WCP/Server__ValeVisionStatements__Api__.py; WCP/server.py
+DET: TV's NAAPPS/ProjectVision__TrueVisionStatements__Api__.py (451 lines) provides tree, file, image, folder, move and delete routes fenced to one statements folder. Patterns are checked after path resolution, sizes are capped, pictures are never overwritten, and delete needs confirm equal to path. The index is written through LocalServer's sibling route (:103-105). VV's Flask (WCP/server.py) registers only the scrapbook blueprint (:96) and has no st...
+REC: Create WCP/Server__ValeVisionStatements__Api__.py as an adapted port, the way Server__ValeVisionScrapbook__Api__ was done. Root it at Projects/{year}/{folder}/10__StatementDocs via get_project_path, use the prefix /api/valevision/statements and keep TV's rules. Add index GET/POST and a file GET that returns Last-Modified, or a 404 JSON when missing. Register it in server.py.
+ADAPT: 
+EVID: TV API constants :68-84, routes :177-449. VV server.py :92-96 blueprint registration. Scrapbook API port note: adapted (folder, prefix, blueprint name).
+VER: 
+DEP: S07b-F30
+
+### S07b-F27 [transport/critical/build_vv_transport] VV worker handler for statement R2 reads and writes
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: WCP/CloudflareWorker/src/handlers/CloudflareHandler__StatementDocs__.js; WCP/CloudflareWorker/src/index.js
+DET: Publish writes the markdown, HTML and pictures to R2, and the index too. TV uses the generic, unauthenticated /r2/write over NaProjectPortal/. VV's worker (whitecardopedia-editor-api) routes per document and checks X-Editor-Api-Key. Its ProjectAsset handler allows only PresentationMode/Thumbnails and LayoutEditor Linework/Snapshots paths (webp/png/json), so no existing VV route can take statement files.
+REC: Add CloudflareHandler__StatementDocs__.js with GET/POST /api/editor/projects/{folderId}/statements/index and /statements/file?path= (text or base64 body, contentType). Guard keys to VaApps/Projects/{folderId}/10__StatementDocs/ using TV's segment, suffix and depth rules, with a 25 MB cap. Route it in index.js before the generic save route. Adam deploys.
+ADAPT: 
+EVID: VV worker index.js key check :112-116 and :148, routes :190-214; ProjectAsset handler PATH_GUARD :51, MAX_BYTES 25 MB :52.
+VER: 
+DEP: S07b-F30
+
+### S07b-F28 [transport/high/build_vv_transport] VV client module Na__AppUtils__R2StatementDocs__
+TV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js; 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__R2StatementDocs__.js
+DET: TV's statement modules reach the cloud through CfApi (7 functions) and disk through LocalMirror (6 functions). VV has neither. VV's pattern is one AppUtils module per document: R2DrawingNotes does a worker GET/POST with the key from /api/editor-config, falls back to the CDN, and mirrors to Flask.
+REC: Build this only if D-S07b-10 chooses (b), per-document clients. Under (a), the same statement functions live in VV's same-name shims (WP-S09-06), and this module is not created: VVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js (IsConfigured, ProjectFileLocation, Read/WriteProjectFile, StatementFileLocation, Read/WriteStatementFile) and VVM/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js (WriteSiblingFile, StatementTree, ...
+ADAPT: 
+EVID: Transport imports CfApi :82-90 and LocalMirror :92-99. VV R2DrawingNotes header :12-19 (ReadCloud, Write, WriteLocal, ReadLocal); R2SaveProjectJson exports R2FetchWorkerConfig.
+VER: Cross-slice transport strategy (D-S09-04, D-S07a-08).
+DEP: S07b-F26; S07b-F27
+
+### S07b-F29 [transport/high/build_vv_transport] VV catch-all static route answers a missing file with index.html and HTTP 200
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js
+VV: WCP/server.py
+DET: WCP/server.py serve_static (:956-977) answers any missing file with index.html and HTTP 200. TV's FetchText treats only 404/403 as missing, and Publish__Images reads originals by URL. Through this route a missing statement would load the Whitecardopedia index page as its text, and a missing picture would be uploaded as HTML. TV's static server returns real 404s, so the problem is VV-specific.
+REC: Never read statement files through the catch-all route. Use the blueprint's file GET (404 JSON plus Last-Modified), or /Whitecardopedia/Projects/..., which returns a 404 JSON when the file is missing (server.py :899-912). Add a test that a missing file reads as missing.
+ADAPT: 
+EVID: server.py :966-977: when the file is not found it returns send_from_directory(base_dir, 'index.html'). Transport__.js FetchText :134-143.
+VER: 
+DEP: S07b-F26
+
+### S07b-F30 [data_schema/high/build_vv_transport] VV storage layout: statements folder, index file, R2 keys, CDN
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: TV stores statements at <project>/30__TrueVision__AppContent/10__StatementDocs/<folder>/<file>, with the index TrueVision__StatementDocs__.json beside TrueVision__ProjectData__.json. R2 is NaProjectPortal/{yy}-Projects/{folder}/... and the CDN is cdn.noble-architecture.com/NaProjectPortal/.... VV keeps project documents beside project.json under WCP/Projects/{year}/{folder}/ and in R2 under VaApps/Projects/{folderId}/ (e.g. ValeVision__DrawingNot...
+REC: VV layout (D-S07b-03): Projects/{year}/{folder}/10__StatementDocs/; index ValeVision__StatementDocs__.json beside project.json; R2 VaApps/Projects/{folderId}/10__StatementDocs/...; CDN cdn.noble-architecture.com/VaApps/Projects/{folderId}/.... Set FolderName and IndexFileName in config, and keep the in-folder conventions.
+ADAPT: 
+EVID: TV CfApi :509-534, :616-676. VV R2DrawingNotes CDN base https://cdn.noble-architecture.com/VaApps/Projects; VV server get_project_path :128-160.
+VER: 
+DEP: 
+
+### S07b-F31 [wiring/high/update_wiring] Config block, GetStatementSetup and tab labels missing in VV
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState...
+DET: Eight statement modules call Na__LeCfg__GetStatementSetup, which VV lacks: VV EditorSetup 1.0.0 exports only 7 readers (:209-217). VV AppConfig has no LayoutEditor__Statement__Config block (TV :1271-1330: 37 keys including PdfPresets, Html2CanvasScriptPath and LockstepPollMs), and no StatementsTab/StatementsTabTitle labels (TV :595-596).
+REC: If WP-S03a-01 (TV AppConfig + six ConfigState files with VV seams) lands first, it brings TV's LayoutEditor__Statement__Config, the StatementsTab labels and EditorSetup 1.6.0's GetStatementSetup with TV values. This item then reduces to setting the VV values: IndexFileName ValeVision__StatementDocs__.json, StylesheetUrl on VV's public origin (to verify), Html2CanvasScriptPath, plus the optional Enabled switch. Otherwise add the block, the two lab...
+ADAPT: 
+EVID: TV AppConfig :1271-1330 and :595-596; TV EditorSetup :170-210; TV ConfigState__ :293, :429.
+VER: Overlaps with WP-S03a-01 (Config foundation).
+DEP: 
+
+### S07b-F32 [wiring/high/update_wiring] ModeController has no statement view
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: TV ModeController 1.32.0 imports Page Mount/Show/Hide and Data OPEN_EVENT/Initialize (:361-363) and declares VIEW_STATEMENT (:431). It initialises and mounts the page for editor and viewer alike, before the viewer branch (:503-504). It hides the page on every other open (:691, :766, :901, :933), opens it with EnterUnder (:942-972) and listens for OPEN_EVENT (:1230). VV ModeController 1.18.0 has only sheet and spec views (:287-288) and returns ear...
+REC: Add the statement lines as part of the ModeController/TabStrip slice's port, mounting before the viewer branch. Until VV has the register, leave Na__LeRegEd__Hide out of OpenStatements and record that in the PORT NOTE.
+ADAPT: 
+EVID: Line refs above; TV devlog v2.158 (EnterUnder, quiet entry) and v2.166 (options).
+VER: 
+DEP: ModeController 1.30-1.32 port (EnterUnder); S07b-F12
+
+### S07b-F33 [wiring/high/update_wiring] VV loader facade and TabStrip need the statements view
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js; 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js
+DET: VV's TabStrip may import only the loader facade (TabStrip :103-131). The facade mirrors the editor's view names (VIEW_SHEET/VIEW_SPEC :115-116), checks them against the editor (CheckNames :284-290) and exposes OpenSpecification via WithEditor. TV TabStrip 2.0.0 builds the Design Statements tab from VIEW_STATEMENT and OpenStatements (:155, :159, :358-361). VV TabStrip 1.5.0 has per-sheet tabs and no statements tab.
+REC: The facade additions are already scoped by WP-S03a-05 (Loader 1.2) and WP-S09-03: Na__LeLoad__VIEW_STATEMENT, the CheckNames row and OpenStatements(options) via WithEditor, plus exports. The tab is scoped by WP-S03a-06 / WP-S10-04 (TabStrip 2.0.0). This slice supplies the statement names and the Enabled switch check and must not add them again in WP-S07b-08. The loader facade is also the entry point for shared statement links (S07b-V07).
+ADAPT: 
+EVID: VV Loader :108-133 constants/STYLESHEETS, :284-290 CheckNames; VV TabStrip imports :108-131.
+VER: Overlaps with packages owned by S03a, S09 and S10.
+DEP: S07b-F32; TabStrip 2.0.0 port
+
+### S07b-F34 [wiring/critical/update_wiring] Keyboard: VV's 3D hotkeys would eat statement typing, and Backspace navigates back
+TV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js; 02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js
+DET: VV's global hotkey handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js 1.0.0) treats only input, textarea and select as typing (:53-56, :92). It calls preventDefault() on a match before dispatching (:96), and matches bare keys case-insensitively, without Shift. The dictionary (02__AppData/Na__ValeVision__HotkeysDictionary__.json) gives: - Swallowed bare keys: r, b, t, y, v, 1-9, PageUp and PageDown. - Also swallowed: d, o, Delete a...
+REC: Before WP-S07b-05C ships, land KeyScope and the HotkeyHandler gate: one owner among WP-S03a-03 / WP-S05a-01 / WP-S09-05. VV's handler must act only in the model scope and use Na__KeyScope__IsTypingTarget, which counts contenteditable. Also land DocumentKeys 1.1.0 + Na__Hotkeys__DocumentTabs__.json (WP-S03a-09 / WP-S05a-02), and have the ModeController hand over the scope reader. Acceptance: typed r, b, t, y, v, d, o, 1, Delete and Escape stay in ...
+ADAPT: 
+EVID: VV HotkeyHandler :53-56, :92, :96; dictionary :180-189 (Backspace, AltKey true), :191-200 (F, Alt+Shift), :202-311 (D, O, Arrows, Alt, Shift, Ctrl+Z, Ctrl+Y, Ctrl+C/V, Delete, Escape 'Contextual'); VV index.html :1792-1809 callback map (no Contextual callback); TV Statement Page has no root stopProp...
+VER: The dictionary has Backspace with AltKey true and F with Alt+Shift, and the d/o/Delete/Escape 'Contextual' entries also match and are preventDefault-ed. The survey's 'Backspace would navigate back' is wrong, and its key list was incomplete. | Exact evidence for the corrected key list. | Owners alrea...
+DEP: DocumentKeys + KeyScope port
+
+### S07b-F35 [wiring/high/update_wiring] Document Sharing and Statement Data depend on each other; keep Share__Open off VV start-up
+TV: 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js; 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js; 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__...
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: The Page imports Share__Button__ (Share in Read). Share__Open__ (:78), Share__Manifest__ (:97-98) and Share__Button__ (:71) import Statement Data back (EnsureLoaded, List, CHANGED_EVENT), and the manifest re-records share links when a statement is published (:450-462). TV starts Share__Open__ from Index.html at start-up (:904). Doing the same in VV would pull Statement Data and its transport onto the start-up path, which defeats the lazy loader.
+REC: Port Statement Data before or with DocumentSharing (WP-S08-11). Never start Share__Open__ from VV's index.html. Because the editor is lazy, a shared link must itself trigger the load: add a boot-time check of the share parameter that imports nothing from the editor and calls the loader facade (OpenStatements / OpenSpecification / OpenRegister) when a link is present. Share__Open__ then runs inside the loaded editor (S07b-V07, coordinate with WP-S...
+ADAPT: 
+EVID: Line refs above; VV Loader header: editor modules are only ever import()ed.
+VER: 'Start it through the loader once the editor has loaded' is circular for a shared link, because the link is what should load the editor (TV Share__Open__ :67-69, :276, :317-333).
+DEP: S07b-F05; DocumentSharing port
+
+### S07b-F36 [wiring/medium/update_wiring] Project QR Code is a static import of the page, the publisher and the hub
+TV: 02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js
+VV: 
+DET: The Page and Publish import Na__ProjectQr__Ready and READY_EVENT. The hub imports Symbol, Painter and ProjectLink (53__Feature__ProjectQrCode: Symbol 1.2.0, Encoder, Painter, ProjectLink; about 1,682 lines). Because these are static imports, the module must exist in VV even if the hub is excluded, and Publish waits on its config.
+REC: Sequence after the ProjectQrCode port (another slice). Its short-address base must be VV's own, since VV has no /q/ resolver yet. With no symbol, the hub leaves its access panel out by design.
+ADAPT: 
+EVID: Page imports :158; Publish imports :97 (not :111); TrueVisionHub imports Symbol, Painter and ProjectLink; Registry imports the Hub (:140), so the Editor and Cards reach QR too; ProjectQr Symbol baseUrl https://www.noble-architecture.com/q/ (:101) and indexUrl ../../../../../q/index.json (:103).
+VER: Line reference corrected and the transitive reach added.
+DEP: ProjectQrCode port
+
+### S07b-F37 [wiring/medium/update_wiring] Na__LePdf__LoadLibrary export missing in VV PdfExporter
+TV: 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+DET: The statement PDF imports Na__LePdf__LoadLibrary (TV PdfExporter 1.12.0 :192-205, exported at :579 as 'jsPDF ALONE, for the statement PDF'). VV PdfExporter 1.2.0 has the same function under the name Na__LePdf__EnsureJsPdf (:97-112) and exports only EnsureJsPdf, BuildDocument and ExportSheet (:332-336). VV's jsPDF is 4.1.0 at the legacy 35__System__PageLayoutSystem path (AppConfig :402).
+REC: If the PdfExporter port has not landed, add a one-line alias export (Na__LePdf__LoadLibrary = Na__LePdf__EnsureJsPdf) to VV's PdfExporter, which is a hot file.
+ADAPT: 
+EVID: Line refs above.
+VER: 
+DEP: 
+
+### S07b-F38 [tooling/medium/port_verbatim] Vendor html2canvas 1.4.1 into VV
+TV: 04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js
+VV: 04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js; 04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md
+DET: The statement PDF and two harnesses load html2canvas 1.4.1 from 04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js (LayoutEditor__Statement__Html2CanvasScriptPath). VV's version-locked folder has only 01 three.js, 02 mesh-bvh, 03 clipper2 and 04 edge-projection.
+REC: Vendor TV's html2canvas.umd.js at the same path in VV and note it in Vale__Dependencies__VersionLock__README__.md. It is a classic script, not an import-map entry. WP-S09-10 also plans this vendor move 'when the Statement Writer lands': give it one owner.
+ADAPT: 
+EVID: TV AppConfig :1330; ls VV 04__Lib__ThirdParty__VersionLocked.
+VER: Overlaps with WP-S09-10.
+DEP: 
+
+### S07b-F39 [tooling/medium/update_wiring] Bump VV's service worker token with the release
+TV: 02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js
+VV: WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js
+DET: VV runs under the WebApps-level service worker, whose logic is WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js. Deployed JS/CSS are served stale-while-revalidate under PWA_SW_VERSION_TOKEN (:229, '2026-09-18-1'). New modules, edited importers (ModeController, Loader, TabStrip) and the self-injected statement CSS would hit the stale-stylesheet fault TV hit in v2.97 unless the token is bumped.
+REC: Bump the token in the release that adds the tab. Optionally add the two statement stylesheets to PWA_SW_SHELL_PRECACHE_RELATIVE (:260), as TV does (:763-764).
+ADAPT: 
+EVID: VV SW logic :229 token, :260 precache list, :96-103 localhost network-first note; TV SW :763-764.
+VER: 
+DEP: 
+
+### S07b-F40 [tooling/high/port_adapted] .gitignore allowlist for VV statement folders
+TV: ../../.gitignore (NaWeb root)
+VV: D:/10_CoreLib__ValeCodebase/.gitignore
+DET: A statement folder holds photography; RB05's is 713 MB. TV's .gitignore (:115-136) allowlists only .md, .html and .json under na-project-portal/**/10__StatementDocs/**, and ignores 00__Archive, 00__Archived and 00__Images. VV's repo .gitignore has no such rule, so the first statement under WCP/Projects would leave its photography one 'git add' away from the repository and GitHub Pages.
+REC: Add the same allowlist for WebApps/Whitecardopedia/Projects/**/10__StatementDocs/** (plus the 00__ parking folders) to the VV repo's root .gitignore before any VV statement exists.
+ADAPT: 
+EVID: TV NaWeb .gitignore :115-136; D:/10_CoreLib__ValeCodebase/.gitignore has no Projects image rules beyond one glb line.
+VER: 
+DEP: 
+
+### S07b-F44 [wiring/low/port_adapted] VV has no project display-name source (TrueVision__Pwa__ProjectContext)
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+DET: The hub reads the project display name from window.TrueVision__Pwa__ProjectContext (TrueVisionHub__.js :206), which is a TV PWA global. VV never defines it. VV's own SpecPdf__.js (:147) already has the same dead reference, so VV's spec PDF never shows a project name.
+REC: Give VV one project-name source (project.json projectName via the presentation-mode project JSON) and use it in both the hub and SpecPdf.
+ADAPT: 
+EVID: VV 50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js :145-149; grep finds no TrueVision__Pwa__ProjectContext definition in VV or WCP.
+VER: 
+DEP: 
+
+### S07b-F45 [test/high/port_test] Seven node suites must run on a VV fixture, not live project files
+TV: 80__Testing__PrototypeEnvironment/Na__Test__StatementLockstep__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementRoundTrip__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementFigureTitle__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.test.mjs; ...
+VV: 80__Testing__PrototypeEnvironment
+DET: Seven node suites copy the real modules into a scratch ES tree: Lockstep 28, RoundTrip, FigureTitle 32, Standard 47, Schedule 64, Finishes 59 and Publish 87 checks (1,907 lines). Five of them read the live RB05 statement, and on 01-Oct they fail 2, 1, 5, 1 and 3 checks respectively (re-run by the verifier, identical result). The causes are CRLF, edited content, and a stale hub-wording expectation at Standard :249. Standard, Schedule, Finishes and...
+REC: Port all seven against a committed VV fixture statement, never a live project file. The fixture needs headings, sections, dividers, figures with titles and a crop, a comparison table, the house header and footer blocks, and a CRLF twin. Point Publish's CDN base at VaApps/Projects.
+ADAPT: 
+EVID: TV run 01-Oct (TEMP redirected): Lockstep and Publish PASS; RoundTrip 2, FigureTitle 1, Standard 5, Schedule 1, Finishes 3 FAIL.
+VER: Standard has 47 checks (42 pass + 5 fail), not 45, and the suites' external copy lists were missing.
+DEP: S07b-F10
+
+### S07b-F46 [test/medium/port_test] Six browser harnesses and the reference Typora CSS
+TV: 80__Testing__PrototypeEnvironment/Na__Test__StatementDomRoundTrip__.html; 80__Testing__PrototypeEnvironment/Na__Test__StatementTyping__.html; 80__Testing__PrototypeEnvironment/Na__Test__StatementFigure__.html; 80__Testing__PrototypeEnvironment/Na__Test__StatementTypography__.html; 80__Testing__Proto...
+VV: 80__Testing__PrototypeEnvironment
+DET: Six browser harnesses prove what node cannot: DomRoundTrip 175, Typing 229, Figure 284, Typography 235 (plus Na__Test__Reference__TyporaTheme__.css, 545), Standard 77 and Finishes 105 lines. They cover real contenteditable typing with trusted keys, figure markup rules, typography against the real theme, and standard sections rasterised through html2canvas. They load modules by relative path and read RB05 from na-project-portal; Standard.html also...
+REC: Port them to VV's 80__Testing__PrototypeEnvironment, pointing ?statement= at the VV fixture and serving through WCP Flask. Drop the TV PWA script and keep the reference CSS verbatim.
+ADAPT: 
+EVID: Harness headers; DomRoundTrip :132-133 RB05 URL; Finishes.html :38 RB05 path.
+VER: 
+DEP: S07b-F45; S07b-F41
+
+### S07b-F47 [test/medium/port_test] Statement end-to-end test server
+TV: 80__Testing__PrototypeEnvironment/Na__Test__StatementServer__.py
+VV: 80__Testing__PrototypeEnvironment
+DET: Na__Test__StatementServer__.py (240 lines) serves the repository uncached and registers the real statements blueprint against a throwaway copy of a project's statements folder: markdown is copied and photography hard-linked. It answers /api/health and the sibling index route. It cannot stop Cloudflare writes.
+REC: Port it as a VV test server that imports WCP/Server__ValeVisionStatements__Api__.py against a temp Projects root, answers /api/check-localhost and /api/editor-config with a fake key, and blocks worker writes.
+ADAPT: 
+EVID: Server header :12-35; blueprint registration :130; health :134; sibling route :139.
+VER: 
+DEP: S07b-F26
+
+### S07b-F48 [test/low/port_test] Export and module-graph verification gates the port
+TV: 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs
+VV: 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs; 80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs
+DET: TV verifies every statement release with Na__Verify__Exports__.mjs (542 files at v2.172) and Na__Verify__ModuleGraph__.mjs; VV has both. The TV-graph closure from Statement__Page__.js is 274-276 files with 115-117 absent in VV. That number counts the feature's own 30 files and is dominated by TV PdfExporter 1.12.0's closure, which VV does not need, because the statement PDF only takes LoadLibrary and VV aliases its own EnsureJsPdf (S07b-F37). Wit...
+REC: Run both VV verifiers after every statement WP and treat a missing export as a blocker. Gate WP-S07b-05 on the prerequisite slices having landed, or on agreed stubs.
+ADAPT: 
+EVID: Closure script from Statement__Page__.js: 274 files, 115 VV-missing; VV 80__Testing__PrototypeEnvironment has Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs.
+VER: Recomputed (verify_s07b/closure.py, closure_vv.py). The survey's figure overstates the VV prerequisites by a factor of about 7.
+DEP: 
+
+### S07b-F56 [data_schema/medium/port_verbatim] Index schema and statement folder conventions stay identical
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js
+VV: 
+DET: Several formats are app-neutral: the index document (Statement__* keys; Doc__Id, Folder, File, Title, PublishedIso; Doc__Images with Img__Src, Path, Url, Bytes, Width, Height, SourceWidth, SourceHeight), the standard-section marker format, the figure-block markup, and the in-folder conventions (02_StatementDocs__Content__Images, 01_Images__ReferenceImages, and 00__Images parking with its manifest).
+REC: Keep them identical in VV so a statement folder can move between the apps and the same tests apply. Only the index file name differs (ValeVision__StatementDocs__.json).
+ADAPT: 
+EVID: Data__Index__.js keys; Publish__.js :291-301 Doc__Images fields; TV NOTES sections 1, 16 and 17.
+VER: 
+DEP: S07b-F30
+
+### S07b-F57 [wiring/medium/update_wiring] No direct import of Sheet Images, Spell Check or Colour Palette; a transitive dependency on the Published Schema, Published Documents and Document Publishing through DocumentSharing
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter
+VV: 
+DET: The 33 files import none of 54__Feature__SheetImages, 55__Feature__SpellCheck, 54__Feature__ColourPalette, 52__System__Layout__PublishedDocuments, 53__Data__Layout__PublishedSchema or 65__Feature__DocumentPublishing directly. For spelling they use the browser's own spellcheck (Editor :243, Cards :502). In TV, SheetImages and ColourPalette are reached only through TV PdfExporter 1.12.0, which VV does not need. But the Page's static Share__Button__...
+REC: The 52/53/54/55/65 slices do not depend on this one and can go ahead independently. In the other direction, WP-S07b-05C depends on S08's WP-S08-07 (Published schema), WP-S08-08 (Published reader 52), WP-S08-09 (Publisher 65) and WP-S08-11 (Document sharing), or on agreed stubs, through Share__Button__ -> Share__Manifest__.
+ADAPT: 
+EVID: Import extraction of all 33 files; grep 'statement' in 52/53/65/80 folders: only the PublishedSchema ShareLinks note.
+VER: The page's static closure reaches 52, 53 and 65 through Share__Button__ and Share__Manifest__. | Transitive closure from Statement__Page__.js (verify_s07b/closure_vv.py, chains.py). | The dependency direction was missing. | There is a real ordering dependency to schedule; no_action understated it. |...
+DEP: 
+
+### S07b-V01 [transport/critical/build_vv_transport] VV's project sync deletes every published statement picture from R2
+TV: 
+VV: WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py
+DET: WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py na_purge_stale_r2_images (:659-680; called at :926 and :959 on every sync) lists VaApps/Projects/{folderId}/ with no Delimiter (first 1,000 keys, unpaginated). It then deletes every .png/.jpg/.jpeg/.webp whose bare file name is not a top-level image of the local project folder (na_collect_local_image_names :645-656 uses iterdir()). The statement layout in S07b-F30 put...
+REC: Fix before the first VV statement Publish, through WP-S08-04: purge top-level keys only (Delimiter='/'), which protects 10__StatementDocs/ along with the other sub-folders, and add a 10__StatementDocs/ key to its dry-run acceptance. If WP-S08-04 chooses a skip-list instead, 10__StatementDocs/ and 00__* must be on it.
+ADAPT: 
+EVID: Sync script :645-680 (purge logic), :926 and :959 (call sites), :921-924 (r2_prefix = VaApps/Projects/{full_year}/{folder}); S08 report lines 450-458 and WP-S08-04.
+VER: 
+DEP: WP-S08-04
+
+### S07b-V02 [data_schema/high/port_adapted] Statement file names would carry the raw ?project= folder id as {code}, slash included
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js
+DET: Na__LeStmt__NameFor and Rename (Data__.js :833-842, :929-937) pass Na__LeStmt__ProjectCode || Na__DrawData__GetProjectCode() as {code}, and Na__LeStmtIdx__NameFor (Data__Index__.js :239-251) writes String(code) unsanitised into '{code}_T{tranche}_S{number}__{project}__{title}__.md'. VV's Na__DrawData__GetProjectCode() (42/Na__DrawView__ProjectData__.js :224-229) is the loading sequence's raw ?project= value (Na__AppFlow__LoadingSequence.js :672, ...
+REC: In the Data adaptation, use a VV code for {code}: the numeric prefix of the normalised folder (NormalizeProjectFolderId(...) last segment before '__' -> '3047') or project.json projectCode. Use the folder name minus that prefix for {project} ('Doous'). Follow the same rule D-S07a-03 settles for Vale Document IDs (13 codes are shared by scheme variants). Better: back-port a config-driven code/name derivation to TV (S07b-F51) so Data__ ports verbat...
+ADAPT: {code} from the folder's numeric prefix or project.json projectCode; {project} from the folder name minus the code
+EVID: Data__.js :833-842, :929-937; Data__Index__.js :239-251; VV ProjectData :224-229; LoadingSequence :672, :729; ValeVisionLinkRouting :52-54; WCP/Projects/2026/3047__Doous/project.json.
+VER: 
+DEP: S07b-F05; D-S07a-03
+
+### S07b-V04 [transport/medium/build_vv_transport] Statement worker routes: store without caching and do not bump the shared build manifest per file
+TV: 
+VV: WCP/CloudflareWorker/src/handlers/CloudflareHandler__StatementDocs__.js; WCP/CloudflareWorker/src/index.js
+DET: VV's CloudflareHandler__DrawingNotes__ stores with httpMetadata.cacheControl 'no-cache, max-age=0' and calls na_write_build_manifest on every POST (:120-140). That rewrites VaApps/Index/Na__BuildVersion__Manifest__.json with a new unix-time buildVersion (ProjectEditor handler :160-171). VV's ProjectLoader appends that buildVersion as ?v= to every project.json and GLB URL (Na__AppUtils__WithBuildToken :249-252, used at :407-408, :514, :519), so ea...
+REC: In CloudflareHandler__StatementDocs__ (or the shim's worker routes): store the index, md and html with cacheControl 'no-cache, max-age=0', the DrawingNotes convention, so a re-publish shows at once. Store pictures with an explicit policy. Do not call na_write_build_manifest per write; at most once, on the index write that Publish makes last, or not at all. Add both rules to WP-S07b-03's acceptance.
+ADAPT: 
+EVID: WCP/CloudflareWorker/src/handlers/CloudflareHandler__DrawingNotes__.js :120-140; CloudflareHandler__ProjectEditor__.js :160-171; VV ProjectLoader :56-66, :249-252, :407-408, :514-519.
+VER: 
+DEP: S07b-F27
+
+### S07b-V05 [wiring/high/update_wiring] WP-05, WP-06 and WP-07 cannot land separately; the writing surface needs ProjectQrCode
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter
+VV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter
+DET: Internal import graph (01-Oct): - Page__ imports Publish__ (07), Standard__Registry__ and Standard__DrawingSchedule__Live__ (09). - Editor__ and Editor__Cards__ import Standard__Registry__. - The Registry imports all six section modules, including TrueVisionHub__, which statically imports ProjectQr Symbol, Painter and ProjectLink. - Publish__ imports the Registry and ProjectQr Symbol. So the original WP-S07b-05 (Page, Editor, Cards...) can neithe...
+REC: Re-cut the packages: - WP-S07b-05A: the pure modules, landed inert. - WP-S07b-05B: Data, Transport, Reader and Manager, after the transport and config. - WP-S07b-05C: Registry, Hub, Editor, Cards, Figure, Pdf, Publish, Publish__Images and Page, in one landing after QR, sharing, keys and the menu renderer. Run Na__Verify__ModuleGraph__.mjs after each.
+ADAPT: 
+EVID: Page__.js imports :126-167 (Publish :148, Registry :156, Live :157); Registry :140-143; Editor and Cards import the Registry; Publish :96-97; verify_s07b/internal_graph.py output.
+VER: 
+DEP: WP-S07a-04; WP-S08-11
+
+### S07b-V07 [wiring/medium/update_wiring] A shared statement link must itself load VV's lazy editor
+TV: 02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js; Index.html
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js; index.html
+DET: TV starts Share__Open__ at boot (Index.html :904 import, :1738 call). Share__Open__ imports the ModeController directly (:67-69), reads the open parameter through Share__Links, waits for Na__LeMode__Ready and calls Na__LeMode__OpenStatements({statementId, view:'read'}) (:276, :283, :317-333). S07b-F35 says VV must start Share__Open__ 'through the loader once the editor has loaded', which is circular: in VV nothing loads the editor until a tab is ...
+REC: VV needs a boot-time check of the share parameter that does not import the editor graph (a small leaf, or the loader facade). When a link is present, it calls the loader (Na__LeLoad__OpenStatements / OpenSpecification / OpenRegister, or one generic facade entry) to load the editor; Share__Open__ then runs inside the loaded editor. Own it in WP-S08-11 / WP-S09-12 (index wiring for 66 'via the loader facade'); S07b only supplies the statement entry...
+ADAPT: 
+EVID: TV Index.html :904, :1734-1738; Share__Open__.js :67-89, :270-290, :317-341; VV Loader header (editor modules are only ever import()ed).
+VER: 
+DEP: WP-S08-11; WP-S09-12; WP-S03a-05
+
+### S07b-V09 [test/low/port_test] VV node suites need the QR port, VV's ProjectLoader seam and a VV address bar
+TV: 80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementSchedule__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__StatementPublish__.test.mjs
+VV: 80__Testing__PrototypeEnvironment
+DET: Four suites copy TV's 03__AppUtils/Na__AppUtils__ProjectLoader.js into their scratch tree and simulate TV's address bar: Standard, Schedule, Finishes, Publish (Standard :76-83: ?project=RB05&project-folder=RB05__WestFarm&year=26). The Standard suite also copies the whole 51__System__LayoutEditor/53__Feature__ProjectQrCode folder (:72) and checks the QR module size (:260-265). In VV these suites cannot run until the QR port exists and the ProjectL...
+REC: In WP-S07b-09: point the copy lists at VV paths (VV ProjectLoader with facades, VV QR folder), simulate a VV address, and sequence the Standard suite after WP-S07a-04. RoundTrip, FigureTitle and Lockstep need only feature files and can run as soon as WP-S07b-05A (and WP-S06b-01) lands.
+ADAPT: 
+EVID: Na__Test__StatementStandard__.test.mjs :66-83, :260-265; copy lists of Schedule, Finishes and Publish (each names 03__AppUtils/Na__AppUtils__ProjectLoader.js).
+VER: 
+DEP: WP-S07a-04
+
+### S07b-V10 [test/low/port_test] Off-localhost acceptance needs a port other than 8000/8090
+TV: 
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: WP-S07b-06's acceptance reads the Read view 'off localhost (*.localhost host)'. VV's Na__AppUtils__IsRunningOnLocalhost (ProjectLoader :303-307) returns true for port 8000 whatever the hostname (TV's for 8000 and 8090), and WCP Flask binds 127.0.0.1:8000 (server.py :74-75). A *.localhost host served by WCP Flask therefore still counts as localhost. TV proved its reader from 'reader.localhost:8864' (devlog v2.171 :106-110).
+REC: State the acceptance as 'served on a *.localhost host at a port other than 8000/8090 (e.g. reader.localhost:8864), with every non-read request aborted', in WP-S07b-05C and WP-S07b-09.
+ADAPT: 
+EVID: VV ProjectLoader :303-307; TV ProjectLoader :67-71; WCP server.py :74-75; TV devlog :106-110.
+VER: 
+DEP: 
+

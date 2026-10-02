@@ -1,0 +1,438 @@
+@@@@ mc_01_portnote OLD
+// PORT NOTE:
+// - Ported from   : ValeVision3D 42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js (mode pattern) and Lantern Designer 30__System__DrawingEditorMode
+// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
+// - Parity        : new
+// - Divergences   : n/a
+// - Back-port     : none.
+//
+@@@@ mc_01_portnote NEW
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5), from ValeVision3D
+//                   42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js (mode pattern) and
+//                   Lantern Designer 30__System__DrawingEditorMode
+// - Twin          : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/
+//                   Na__LayoutEditor__ModeController__.js, taken from this file for TrueVision3D v2.21.0
+//                   (10-Sep-2026). Its later work comes back hunk by hunk: the feature-independent hunks
+//                   first (1.18.1 below), then each feature's own hunk with that feature, then one
+//                   convergence pass against TrueVision's whole file.
+// - Source version: 1.32.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151) - the hunks the 1.18.1
+//                   entry names. Every other difference from that file is a seam listed here or a hunk
+//                   that arrives with its own feature.
+// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-32}}
+// - Parity        : adapted (hunk replay; not yet whole)
+// - Divergences   :
+//   - Console prefix [ValeVision3D].
+//   - Imported and initialised by Na__LayoutEditor__Loader__ the first time the editor is needed,
+//     never at start-up (INTEGRATION above): the loader is a permanent ValeVision seam.
+//   - The per-project Layout Mode switch: IsAvailable, IsLayoutModeOn and SetLayoutMode (exported),
+//     the Enter guard on IsAvailable and the leave-on-unavailable rule in OnSheetsChanged.
+//   - WaitForFirstDrawing (exported) is the loader screen's wait; TrueVision's first-open veil is
+//     not called yet.
+//   - The scene-broadcast listeners (na-presentation-mode-scenes-loaded / -cleared, 1.15.1): the
+//     Viewport panel's Scene lists follow scenes added while a sheet is open.
+//   - Na__LeOsnap__Clear comes from 30__System__SheetTools/Na__LayoutEditor__Snapping__.js until
+//     object snap moves to 28__System__ObjectSnap.
+//   - OpenRegister and OpenStatements refuse (false, and a warning) while this build has no
+//     Drawing Register and no Statement Writer; each feature's port puts TrueVision's body in.
+//   - Not yet taken, each arriving with its feature: the register and statements pages, the
+//     first-open veil, the sheet keyboard's restart and Page Up / Page Down, the drawing grid and
+//     axes, vector tools, sheet images, floor areas, patterns, site plans and design phases, the
+//     specification lockstep, note regions, the left column's two tabs, the published viewer's
+//     guards, and SectionForKind's site plan, floor area and picture rules.
+// - Back-port     : the scene-broadcast Viewport refresh (1.15.1) is offered to TrueVision through the
+//                   TrueVision lane, which waits for Adam's approval.
+//
+@@@@ mc_02_log_top OLD
+// DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.18.0
+@@@@ mc_02_log_top NEW
+// DEVELOPMENT LOG:
+// 02-Oct-2026 - Version 1.18.1 (TrueVision's feature-independent hunks, {{VVREL:W1-32}})
+// - THREE TOOL SETS, THREE KEYBOARDS. The app's key scope
+//   (Na__AppUtils__KeyScope__) follows this module: Na__LeMode__KeyScope is
+//   handed over once, at initialisation, and asked on every key - the 3D
+//   Model tab's keys with the editor closed, the drawing tools' on a drawing
+//   tab, the documents' own on the Project Specification - so the 3D
+//   hotkeys stop answering under a drawing. The documents' keyboard
+//   (31__System__DocumentKeys) is waited on with the other configs and
+//   started here. From TrueVision3D 1.22.0 (v2.110.0).
+// - WALK AND FLY ARE LEFT WHEN THE EDITOR OPENS. Transitions now leaves them
+//   only when asked, and Enter asks: SuspendThreeD({ returnToOrbit : true }).
+//   From TrueVision3D 1.23.0 (v2.112.0).
+// - A VIEWPORT FOLDS THE GROUP. SectionForKind(kind, items) answers a section
+//   id, FOLD_GROUP or null, so selecting a viewport folds Text, Dimensions,
+//   Vectors and Leaders instead of leaving them open over the drawing, and
+//   clearing the selection still leaves the folds alone. From TrueVision3D
+//   1.21.0 (v2.106.0), without its site plan, floor area and picture rules,
+//   which come with those features.
+// - THE DOCUMENT VIEWS' NAMES AND WAY IN. EnterUnder opens the first sheet
+//   under a document tab quietly (its Quiet flag is the first-open veil's to
+//   read). VIEW_REGISTER and VIEW_STATEMENT are declared, and OpenRegister
+//   and OpenStatements refuse while this build has neither page; Enter takes
+//   any view that is not a sheet as a document lying over it. From
+//   TrueVision3D 1.30.0 (v2.158.0) and 1.32.0 (v2.166.0).
+// - PreloadMetrics returns its promise, so a cover can wait on the fonts
+//   rather than guess (TrueVision3D v2.83.0).
+// - The right column's Properties tab carries hover text (TrueVision3D
+//   1.20.0, v2.91.0).
+// - The two oldest log entries are put in date order.
+//
+// 20-Sep-2026 - Version 1.18.0
+@@@@ mc_03_log_bottom OLD
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 5.
+//
+// 10-Sep-2026 - Version 1.1.0
+// - Tools & Settings and Dev Tools menus hidden while a drawing tab is open,
+//   and collapsed on entry, so they are only ever used on the 3D Model tab.
+//
+// =============================================================================
+@@@@ mc_03_log_bottom NEW
+// 10-Sep-2026 - Version 1.1.0
+// - Tools & Settings and Dev Tools menus hidden while a drawing tab is open,
+//   and collapsed on entry, so they are only ever used on the 3D Model tab.
+//
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 5.
+//
+// =============================================================================
+@@@@ mc_04_imports OLD
+    import { Na__DrawData__GetLayoutModeEnabled, Na__DrawData__SetLayoutModeEnabled } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The Web Viewer (what a session that cannot author gets instead)
+@@@@ mc_04_imports NEW
+    import { Na__DrawData__GetLayoutModeEnabled, Na__DrawData__SetLayoutModeEnabled } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Which Keyboard Is Live, and the Documents' Own
+    // ------------------------------------------------------------
+    // @delegate: ../../03__AppUtils/Na__AppUtils__KeyScope__.js
+    // @delegate: ../31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js
+    // ------------------------------------------------------------
+    import { Na__KeyScope__MODEL, Na__KeyScope__SHEET, Na__KeyScope__DOCUMENT, Na__KeyScope__Follow } from '../../03__AppUtils/Na__AppUtils__KeyScope__.js';
+    import { Na__LeDocKeys__Ready, Na__LeDocKeys__Initialize } from '../31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The Web Viewer (what a session that cannot author gets instead)
+@@@@ mc_05_views OLD
+    const Na__LeMode__VIEW_SHEET    = 'sheet';           // <-- A drawing tab: the sheet, its panels and its tools
+    const Na__LeMode__VIEW_SPEC     = 'spec';            // <-- The Project Specification tab, over the sheet
+@@@@ mc_05_views NEW
+    const Na__LeMode__VIEW_SHEET    = 'sheet';           // <-- A drawing tab: the sheet, its panels and its tools
+    const Na__LeMode__VIEW_REGISTER = 'register';
+    const Na__LeMode__VIEW_SPEC     = 'spec';            // <-- The Project Specification tab, over the sheet
+    const Na__LeMode__VIEW_STATEMENT = 'statement';      // <-- The Statements tab, over the sheet as the specification is
+@@@@ mc_06_quiet OLD
+    let Na__LeMode__Metrics   = false;    // <-- The PDF library's text metrics have been asked for
+    // ------------------------------------------------------------
+@@@@ mc_06_quiet NEW
+    let Na__LeMode__Metrics   = false;    // <-- The PDF library's text metrics have been asked for
+    let Na__LeMode__Quiet     = false;    // <-- A document tab pressed from the 3D view: the first sheet opens underneath it without the first-open veil
+    // ------------------------------------------------------------
+@@@@ mc_07_tabhint OLD
+        Na__LePanels__RegisterTab('right', { id : 'properties', title : Na__LeCfg__GetLabel('PanelTabProperties', 'Properties') });   // <-- First, so every section that names no tab is on it
+@@@@ mc_07_tabhint NEW
+        Na__LePanels__RegisterTab('right', { id : 'properties', title : Na__LeCfg__GetLabel('PanelTabProperties', 'Properties'), hint : Na__LeCfg__GetLabel('PanelTabPropertiesHint', 'The settings of what is selected on the sheet, or of the next thing each tool places.') });   // <-- First, so every section that names no tab is on it
+@@@@ mc_08_preload_keyscope OLD
+    // HELPER FUNCTION | Load the PDF Library's Text Metrics Once, Then Redraw the Paper
+    // ------------------------------------------------------------
+    function Na__LeMode__PreloadMetrics() {
+        if (Na__LeMode__Metrics) return;
+        Na__LeMode__Metrics = true;
+        Na__LePdf__EnsureJsPdf().then(() => {
+            if (!Na__LeMode__Active) return;
+            Na__LeSurface__Refresh('chrome');
+            Na__LeSurface__Refresh('markup');
+        }).catch(() => { Na__LeMode__Metrics = false; });                        // <-- Estimates meanwhile; the next entry asks again
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Announce
+@@@@ mc_08_preload_keyscope NEW
+    // HELPER FUNCTION | Load the PDF Library's Text Metrics Once, Then Redraw the Paper
+    // ------------------------------------------------------------
+    // The notes margin wraps its text by measured widths and the title block
+    // truncates by them. Until jsPDF and the Open Sans cuts have loaded both
+    // fall back to an average character width, so a note could break in one
+    // place on screen and in another in the PDF. Asked for on the first
+    // entry; the chrome and the markup redraw once they land.
+    // ------------------------------------------------------------
+    // RETURNS THE PROMISE so the first-open overlay can wait on the same work
+    // rather than on a guess at how long it takes. A later call returns null:
+    // the load has already been asked for and nobody is waiting on it twice.
+    function Na__LeMode__PreloadMetrics() {
+        if (Na__LeMode__Metrics) return null;
+        Na__LeMode__Metrics = true;
+        return Na__LePdf__EnsureJsPdf().then(() => {
+            if (!Na__LeMode__Active) return;
+            Na__LeSurface__Refresh('chrome');
+            Na__LeSurface__Refresh('markup');
+        }).catch(() => { Na__LeMode__Metrics = false; });                        // <-- Estimates meanwhile; the next entry asks again
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Which Keyboard Belongs to What Is on Screen
+    // ------------------------------------------------------------
+    // Handed to Na__AppUtils__KeyScope__ once and asked on every key, so it
+    // is read from the state rather than set by each way in and out: no path
+    // - a tab, a usage chip, a sheet deleted from under the editor, a tab
+    // that fails half way through opening - can leave the wrong keyboard
+    // live. A drawing tab is the drawing tools'; the specification, the
+    // register and the statements are the documents'.
+    // ------------------------------------------------------------
+    function Na__LeMode__KeyScope() {
+        if (!Na__LeMode__Active) return Na__KeyScope__MODEL;
+        return Na__LeMode__View === Na__LeMode__VIEW_SHEET ? Na__KeyScope__SHEET : Na__KeyScope__DOCUMENT;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Announce
+@@@@ mc_09_fromspec OLD
+        const current   = Na__LeModel__GetActiveSheet();
+        const fromSpec  = Na__LeMode__Active && Na__LeMode__View === Na__LeMode__VIEW_SPEC;
+        const sameSheet = fromSpec && !!current && current.Sheet__Id === sheet.Sheet__Id;
+@@@@ mc_09_fromspec NEW
+        const current  = Na__LeModel__GetActiveSheet();
+        const fromSpec = Na__LeMode__Active && Na__LeMode__View !== Na__LeMode__VIEW_SHEET;
+        const sameSheet = fromSpec && !!current && current.Sheet__Id === sheet.Sheet__Id;
+@@@@ mc_10_suspend OLD
+            Na__DrawView__Transitions__SuspendThreeD();                     // <-- Orbit and distance culling let go, as in a drawing
+@@@@ mc_10_suspend NEW
+            Na__DrawView__Transitions__SuspendThreeD({ returnToOrbit : true });   // <-- Walk or Fly left for Orbit, the whole exit; orbit and distance culling let go, as in a drawing
+@@@@ mc_11_loads OLD
+        void Na__LeSpec__EnsureLoaded();                                   // <-- The specification is read when the drawing editor first opens, never before
+        Na__LeMode__PreloadMetrics();
+@@@@ mc_11_loads NEW
+        const specLoad    = Na__LeSpec__EnsureLoaded();                    // <-- The specification is read when the drawing editor first opens, never before
+        const metricsLoad = Na__LeMode__PreloadMetrics();
+@@@@ mc_12_leave OLD
+        void Na__LeVeil__ReturnTo3d();
+        Na__LeMode__Dispatch();
+        return true;
+    }
+@@@@ mc_12_leave NEW
+        void Na__LeVeil__ReturnTo3d();
+
+        Na__LeMode__Dispatch();
+        return true;
+    }
+@@@@ mc_13_enterunder OLD
+        void Na__LeToolbar__Save();                                              // <-- The Save Sheets action itself, busy guard and toast included
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show the Project Specification Tab
+@@@@ mc_13_enterunder NEW
+        void Na__LeToolbar__Save();                                              // <-- The Save Sheets action itself, busy guard and toast included
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Open the First Sheet Underneath a Document Tab
+    // ------------------------------------------------------------
+    // The register, the statements and the specification lie over a sheet,
+    // so a document tab pressed from the 3D view opens the first sheet under
+    // itself - QUIETLY. The editor's first-open veil ("Your Drawings Are
+    // Loading", z-index 40) sits over the register and the statements (12),
+    // so it would cover the page the reader asked for while a sheet nobody
+    // asked for rendered beneath it. The veil answers once per session, so
+    // leaving it here keeps it for the first drawing tab, where it belongs.
+    // ------------------------------------------------------------
+    function Na__LeMode__EnterUnder() {
+        if (Na__LeMode__Active) return true;
+        Na__LeMode__Quiet = true;
+        try { return Na__LeMode__Enter(null); }
+        finally { Na__LeMode__Quiet = false; }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show the Project Specification Tab
+@@@@ mc_14_open_docs OLD
+    // FUNCTION | State
+    // ------------------------------------------------------------
+    function Na__LeMode__IsActive() { return Na__LeMode__Active; }
+    function Na__LeMode__Ready()    { return Na__LeMode__ReadyOnce || Promise.resolve(false); }
+    function Na__LeMode__GetView()  { return Na__LeMode__View; }
+    // ------------------------------------------------------------
+@@@@ mc_14_open_docs NEW
+    // FUNCTION | State
+    // ------------------------------------------------------------
+    // FUNCTION | Open the Pack Register Beside the Specification
+    // ------------------------------------------------------------
+    // options: { view : 'read' } from a shared link (66__Feature__DocumentSharing),
+    // handed to the register as it is shown. Every other caller passes none.
+    // ------------------------------------------------------------
+    // REFUSED IN THIS BUILD, WHICH HAS NO DRAWING REGISTER YET
+    // (51__Feature__DrawingRegister): nothing opens underneath, nothing
+    // changes, and the caller hears false. The loader refuses the same view
+    // before the editor is even fetched (Na__LeLoad__HasFeature), so only a
+    // caller inside the editor gets this far. The register's own port puts
+    // TrueVision's body here.
+    // ------------------------------------------------------------
+    function Na__LeMode__OpenRegister(options) {
+        console.warn('[ValeVision3D] Layout Editor: this build has no Drawing Register, so OpenRegister was refused.');
+        return false;
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Show the Statements Tab
+    // ------------------------------------------------------------
+    // Over the sheet, exactly as the specification is: the sheet stays laid
+    // out underneath, its tools and keys stand down, and a text field still
+    // open on the paper is committed first so nothing typed is dropped.
+    // A request while no drawing tab is open opens the first sheet under it.
+    //
+    // THE VIEWER GETS THE SAME PAGE. It was mounted read-only, so a reader
+    // sees the statement and no authoring surface at all - there is no
+    // separate viewer route to keep in step.
+    //
+    // options: { statementId, view : 'read' } from a shared link
+    // (66__Feature__DocumentSharing), handed to the page. Every other caller
+    // passes none.
+    // ------------------------------------------------------------
+    // REFUSED IN THIS BUILD, WHICH HAS NO STATEMENT WRITER YET
+    // (52__Feature__StatementWriter): nothing opens underneath, nothing
+    // changes, and the caller hears false. The loader refuses the same view
+    // before the editor is even fetched (Na__LeLoad__HasFeature), so only a
+    // caller inside the editor gets this far. The Statement Writer's own port
+    // puts TrueVision's body here.
+    // ------------------------------------------------------------
+    function Na__LeMode__OpenStatements(options) {
+        console.warn('[ValeVision3D] Layout Editor: this build has no Statement Writer, so OpenStatements was refused.');
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    function Na__LeMode__IsActive() { return Na__LeMode__Active; }
+    function Na__LeMode__Ready()    { return Na__LeMode__ReadyOnce || Promise.resolve(false); }
+    function Na__LeMode__GetView()  { return Na__LeMode__View; }
+    // ------------------------------------------------------------
+@@@@ mc_15_sectionforkind OLD
+    // HELPER FUNCTION | The Section That Edits a Kind of Sheet Item
+    // ------------------------------------------------------------
+    // The selection side of PanelFor, which answers the same question for a
+    // change announcement. A kind with no section of its own - a viewport, a
+    // group - answers null and the folds are left alone.
+    // ------------------------------------------------------------
+    function Na__LeMode__SectionForKind(kind) {
+        if (kind === 'annotation') return 'text';
+        if (kind === 'dimension')  return 'dimensions';
+        if (kind === 'shape')      return 'shapes';
+        if (kind === 'leader')     return 'leaders';
+        return null;
+    }
+    // ------------------------------------------------------------
+@@@@ mc_15_sectionforkind NEW
+    // MODULE CONSTANTS | The Answer That Folds the Whole Group
+    // ------------------------------------------------------------
+    const Na__LeMode__FOLD_GROUP = '';                                          // <-- Not null, which leaves the folds alone
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Section That Edits a Kind of Sheet Item
+    // ------------------------------------------------------------
+    // The selection side of PanelFor, which answers the same question for a
+    // change announcement. Three kinds of answer:
+    //   a section id   open it and fold the rest of the group
+    //   FOLD_GROUP     no section of the group edits this: fold them all
+    //   null           leave the folds alone (a group, anything unknown)
+    // ------------------------------------------------------------
+    function Na__LeMode__SectionForKind(kind, items) {
+        if (kind === 'annotation') return 'text';
+        if (kind === 'dimension')  return 'dimensions';
+        if (kind === 'shape')      return 'shapes';
+        if (kind === 'leader')     return 'leaders';
+        // A VIEWPORT FOLDS THE GROUP. Its own section is not one of them, and
+        // leaving the markup sections as they were - the choice made in
+        // TrueVision3D v2.57.0 - left Text, Dimensions, Vectors and Leaders
+        // standing open over a selected drawing, which is the clutter the
+        // group exists to prevent. Adam: "They should only be open when
+        // active."
+        if (kind === 'viewport')   return Na__LeMode__FOLD_GROUP;
+        return null;
+    }
+    // ------------------------------------------------------------
+@@@@ mc_16_focus OLD
+    function Na__LeMode__FocusPanelFor(kind) {
+        if (!Na__LeMode__Active || !Na__LeCfg__GetPanelSetup().focusOnSelect) return false;
+        const section = Na__LeMode__SectionForKind(kind);
+        return section ? Na__LePanels__FocusSection(section) : false;
+    }
+    function Na__LeMode__FocusPanelForSelection() {
+        const items = Na__LeModel__GetSelectionItems();
+        if (!items.length) return false;                                        // <-- Nothing selected: the folds are the user's again
+        const kinds = new Set(Na__LeGroup__Expand(Na__LeModel__GetActiveSheet(), items).map((item) => item.kind));
+        kinds.delete('group');
+        if (kinds.size !== 1) return false;                                     // <-- Mixed: no one panel describes it
+        return Na__LeMode__FocusPanelFor(kinds.values().next().value);
+    }
+@@@@ mc_16_focus NEW
+    function Na__LeMode__FocusPanelFor(kind, items) {
+        if (!Na__LeMode__Active || !Na__LeCfg__GetPanelSetup().focusOnSelect) return false;
+        const section = Na__LeMode__SectionForKind(kind, items);
+        if (section === null) return false;                                     // <-- Nothing to say: the folds stay as they are
+        return Na__LePanels__FocusSection(section || null);                     // <-- FOLD_GROUP: no id folds the whole group
+    }
+    function Na__LeMode__FocusPanelForSelection() {
+        const items = Na__LeModel__GetSelectionItems();
+        if (!items.length) return false;                                        // <-- Nothing selected: the folds are the user's again
+        const opened = Na__LeGroup__Expand(Na__LeModel__GetActiveSheet(), items);
+        const kinds  = new Set(opened.map((item) => item.kind));
+        kinds.delete('group');
+        if (kinds.size !== 1) return false;                                     // <-- Mixed: no one panel describes it
+        return Na__LeMode__FocusPanelFor(kinds.values().next().value, opened);
+    }
+@@@@ mc_17_follow OLD
+        Na__LeMode__Context = context;
+        Na__LeCfg__SetAppConfig(context.appConfig || null);
+@@@@ mc_17_follow NEW
+        Na__LeMode__Context = context;
+        Na__KeyScope__Follow(Na__LeMode__KeyScope);                              // <-- Which keyboard is live is this module's to answer, asked afresh on every key
+        Na__LeCfg__SetAppConfig(context.appConfig || null);
+@@@@ mc_18_ready OLD
+        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeEdge__Ready(), Na__LeComposite__Ready(), Na__LeGrad__Ready(), Na__LeDash__Ready(), Na__DrawCfg__Load() ]).then(() => {   // <-- None of the six rejects, so a missing file cannot hold the editor back
+@@@@ mc_18_ready NEW
+        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeEdge__Ready(), Na__LeComposite__Ready(), Na__LeGrad__Ready(), Na__LeDash__Ready(), Na__LeDocKeys__Ready(), Na__DrawCfg__Load() ]).then(() => {   // <-- None of the seven rejects, so a missing file cannot hold the editor back
+@@@@ mc_19_dockeys_init OLD
+            window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
+            document.addEventListener('keydown', Na__LeMode__OnSaveKey, true);   // <-- Ctrl+S on the sheet and the specification alike; capture, so it is answered before the browser is told
+@@@@ mc_19_dockeys_init NEW
+            window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
+            Na__LeDocKeys__Initialize();                                     // <-- The documents' own keyboard: on the window in the capture phase, so it hears a key before anything else
+            document.addEventListener('keydown', Na__LeMode__OnSaveKey, true);   // <-- Ctrl+S on the sheet and the specification alike; capture, so it is answered before the browser is told
+@@@@ mc_20_spec_comment OLD
+            window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);
+            window.addEventListener(Na__LeSpec__CHANGED_EVENT, () => {
+@@@@ mc_20_spec_comment NEW
+            window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);
+            // THE SPECIFICATION CHANGED: bubble codes and notes margins redraw, and
+            // the two panels that describe them. Covered by the specification's
+            // own page, the sheet catches up when a sheet tab is chosen again.
+            window.addEventListener(Na__LeSpec__CHANGED_EVENT, () => {
+@@@@ mc_21_exports_views OLD
+        Na__LeMode__VIEW_SHEET,
+        Na__LeMode__VIEW_SPEC,
+        Na__LeMode__Initialize,
+@@@@ mc_21_exports_views NEW
+        Na__LeMode__VIEW_SHEET,
+        Na__LeMode__VIEW_SPEC,
+        Na__LeMode__VIEW_REGISTER,
+        Na__LeMode__VIEW_STATEMENT,
+        Na__LeMode__Initialize,
+@@@@ mc_22_exports_open OLD
+        Na__LeMode__OpenSpecification,
+        Na__LeMode__IsActive,
+@@@@ mc_22_exports_open NEW
+        Na__LeMode__OpenSpecification,
+        Na__LeMode__OpenRegister,
+        Na__LeMode__OpenStatements,
+        Na__LeMode__IsActive,
+@@@@ END

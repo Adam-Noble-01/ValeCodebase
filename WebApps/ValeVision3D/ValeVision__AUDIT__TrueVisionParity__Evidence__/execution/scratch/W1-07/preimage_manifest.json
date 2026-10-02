@@ -1,0 +1,24 @@
+{
+  "owned": {
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js": {
+      "sha1": "ed2011441796fd430b0e81524a018dccf7ff6f7b",
+      "bytes": 26713,
+      "lines": 477,
+      "crlf": 477,
+      "lf_only": 0
+    }
+  },
+  "new": {
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs": {
+      "exists": false
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs": {
+      "exists": false
+    }
+  },
+  "pin_ok": true,
+  "in_baseline_dirty": [],
+  "git_status": [
+    " M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+  ]
+}

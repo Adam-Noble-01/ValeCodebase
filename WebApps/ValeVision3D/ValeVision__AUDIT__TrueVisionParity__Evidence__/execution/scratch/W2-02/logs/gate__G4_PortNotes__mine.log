@@ -1,0 +1,19 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 2 named file(s) - 1 PORT NOTE(s), 2 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 1 since rewritten (their full checks apply)
+
+  PENDING  3 release placeholder(s) in 2 file(s), for the wave's Parity Scribe: W2-02 x3
+      02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:81  {{VVREL:W2-02}}
+      02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:107  {{VVREL:W2-02}}
+      02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js:40  {{VVREL:W2-02}}
+
+  Baseline entries that no longer apply (the file was written since 01-Oct-2026):
+      02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js
+
+  WATERMARK  TrueVision D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode at b2aa9151 (git)
+  The TrueVision DEVELOPMENT LOG entries dated after this app's newest log entry (the S11 c.1 rule; same-day entries are not flagged):
+    02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js
+        this app 02-Oct-2026 | TrueVision 1.0.0 | after: -
+
+  RESULT: PASS (0 fail, 0 warn, 3 pending)

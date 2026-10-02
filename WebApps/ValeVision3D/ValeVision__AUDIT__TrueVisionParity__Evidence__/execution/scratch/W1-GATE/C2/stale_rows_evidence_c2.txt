@@ -1,0 +1,19 @@
+Style/Description                                  EQUAL   (this app: str; TrueVision: str)
+Style/FontFamily                                   EQUAL   (this app: str; TrueVision: str)
+Style/TitleValueWeightNote                         EQUAL   (this app: str; TrueVision: str)
+TitleBlock/Rows                                    EQUAL   (this app: list; TrueVision: list)
+TitleBlock/ClassicFieldAnchors/A3/DrawingNumber    EQUAL   (this app: absent; TrueVision: absent)
+Scales/Description                                 EQUAL   (this app: str; TrueVision: str)
+Scales/AvailableScaleDenominators                  EQUAL   (this app: list; TrueVision: list)
+Pdf/Description                                    EQUAL   (this app: str; TrueVision: str)
+TitleBlock/RowsNote                                DIFFERS   (this app: str; TrueVision: str)
+
+TitleBlock/RowsNote word diff (TrueVision -> this app): 359 / 366 words, ratio 0.954
+  replace TV: <3 TrueVision word(s)>
+          VV: a surname
+  replace TV: <8 TrueVision word(s)>
+          VV: a 58 character postal address, house number to postcode
+  replace TV: <1 TrueVision word(s)>
+          VV: landscape, beside this app's 34 mm logo cell,
+  replace TV: <1 TrueVision word(s)>
+          VV: 104

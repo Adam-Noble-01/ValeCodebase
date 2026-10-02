@@ -37,18 +37,30 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js,
-//                   its 1.0.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
-// - Parity        : verbatim - every code region is byte for byte TrueVision's
-// - Divergences   : Header, console prefix and folder numbers only.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js
+// - Source version: 1.1.0 (TrueVision3D v2.96.0, 20-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before
+//                   it was 1.0.0 (ValeVision3D v2.68.0, 20-Sep-2026). TrueVision's v2.96.0 entry
+//                   says "Adam has not tried it": ported under DR-01 (c) and named. The checker
+//                   fill (#858585, v2.96.0) is a config value, ScaleBar__FillColour.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.0.0.
+// 20-Sep-2026 - Version 1.1.0
+// - PaperMm: the three sizes a built bar takes on the paper - its height, one
+//   division and the whole length - exported so the drawing title can work
+//   out where a bar stood away to its right begins and ends without building
+//   it. The arithmetic is Metrics', which has not moved; this is a normalised
+//   doorway onto it.
+//
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation: the standards, the solver, the checker, the
+//   split first division, the numerals and the stretch.
 //
 // =============================================================================
 
@@ -70,7 +82,7 @@
     const Na__LeParamBar__STEPS     = Object.freeze([ 1, 2, 5, 10, 20, 50, 100 ]);        // <-- Every how many divisions a crowded bar is numbered
     const Na__LeParamBar__EPSILON   = 1e-6;
     const Na__LeParamBar__FALLBACK  = Object.freeze({
-        Rows : 2, RowHeightMm : 1, FillColour : '#666666', StrokeColour : '#172b3a', StrokePt : 0.2,
+        Rows : 2, RowHeightMm : 1, FillColour : '#858585', StrokeColour : '#172b3a', StrokePt : 0.2,
         TextColour : '#172b3a', TextWeight : 400, EndTextSizeMm : 2.5, MidTextSizeMm : 2, TextBaselineBelowBarMm : 5.314, MinLabelSpacingMm : 7,
         TargetLengthMm : 100, TargetDivisionMm : 20, MinDivisions : 1, MaxDivisions : 40, MinSubdivisionPaperMm : 1.5,
         DefaultScaleDenominator : 50
@@ -226,6 +238,20 @@
             splitMm    : splitMm,
             splits     : (params.SubdivideFirst && splitMm >= Na__LeParamBar__Number(config, 'MinSubdivisionPaperMm')) ? Math.round(params.DivisionMm / params.SubdivisionMm) : 0   // <-- Sub-cells too small to read are not drawn
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Three Sizes a Bar Takes on the Paper: { heightMm, divisionMm, lengthMm }
+    // ------------------------------------------------------------
+    // Metrics' arithmetic, behind a door that normalises first, so a caller
+    // outside this module can ask where a bar begins and ends without
+    // building one. The drawing title asks, to stand a bar away to its right
+    // and to work the stretch backwards from its far end.
+    // ------------------------------------------------------------
+    function Na__LeParamBar__PaperMm(config, params) {
+        const metrics = Na__LeParamBar__Metrics(config, Na__LeParamBar__Normalise(config, params));
+        return { heightMm : metrics.heightMm, divisionMm : metrics.divisionMm, lengthMm : metrics.lengthMm };
     }
     // ------------------------------------------------------------
 
@@ -428,6 +454,7 @@
         Na__LeParamBar__TYPE,
         Na__LeParamBar__Standard,
         Na__LeParamBar__Normalise,
+        Na__LeParamBar__PaperMm,
         Na__LeParamBar__Build,
         Na__LeParamBar__Handles,
         Na__LeParamBar__StretchTo,

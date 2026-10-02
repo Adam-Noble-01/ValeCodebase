@@ -1,0 +1,6 @@
+﻿js           checked  91  failures 0
+py           checked   1  failures 0
+json         checked  32  failures 0
+html-inline  checked   2  failures 0
+other        checked  11  failures 0
+line endings: LF 115, CRLF 22, mixed 0 []; BOM 0 []

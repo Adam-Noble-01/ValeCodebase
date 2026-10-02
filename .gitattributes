@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Statement documents keep LF in the working tree on every checkout (K1 DR-37
+# item 1). The Statement Writer's markdown tokeniser reads LF only: a statement
+# checked out with CRLF (core.autocrlf=true, as on this machine) would render
+# with no headings, rules or tables. A statement's markdown, its HTML and its
+# JSON are therefore text with eol=lf whatever the checkout's own setting.
+WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.md text eol=lf
+WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.html text eol=lf
+WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.json text eol=lf

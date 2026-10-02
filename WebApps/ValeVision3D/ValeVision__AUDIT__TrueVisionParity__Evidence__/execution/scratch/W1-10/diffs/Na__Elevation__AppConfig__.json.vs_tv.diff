@@ -1,0 +1,67 @@
+--- TV@b2aa9151/Na__Elevation__AppConfig__.json
++++ VV/Na__Elevation__AppConfig__.json
+@@ -1,3 +1,3 @@
+ {
+-    "ElevationViews__Description": "Configuration for the Elevation Views system - the developer-authored 2D elevation and section drawings that sit alongside the floor plans. Per-project elevation definitions live in the project's own TrueVision__ProjectData__.json, nested inside PresentationMode__SavedCameraScenes so they ride the existing R2 dev-key sync path exactly as the floor plans do. All distance values are integer millimetres and are converted to Three.js units in code.",
++    "ElevationViews__Description": "Configuration for the Elevation Views system - the developer-authored 2D elevation and section drawings that sit alongside the floor plans. Per-project elevation definitions live in the project's own project.json, inside the LayoutEditor__DrawingsData block exactly as the floor plans. All distance values are integer millimetres and are converted to Three.js units in code.",
+     "ElevationViews__Enabled": true,
+@@ -27,3 +27,3 @@
+     "ElevationViews__Plane__Config": {
+-        "ElevationViews__Plane__Description": "The vertical drawing plane. It always passes through the origin point below and faces the viewer. In Elevation mode it cuts nothing and simply marks where a section would be taken; in Section mode everything between the viewer and the plane is removed. The X and Z sliders move the plane bodily through the model, which is the whole of the setup - there is no face picking and no dragging in the 3D view.",
++        "ElevationViews__Plane__Description": "The vertical drawing plane. It always passes through the origin point below and faces the viewer. In Elevation mode it cuts nothing and simply marks where a section would be taken; in Section mode everything between the viewer and the plane is removed. The X and Z sliders move the plane bodily through the model and are the precise way to set it; Pick Face seeds the bearing and the plane from a clicked wall, and the gizmo can be dragged along its normal, both landing in these same numbers.",
+         "ElevationViews__Plane__DefaultOriginXMm": 0,
+@@ -37,3 +37,3 @@
+     "ElevationViews__Gizmo__Config": {
+-        "ElevationViews__Gizmo__Description": "The 3D marker shown while an elevation is being set up, so the author can see where the plane sits and which way it looks before previewing anything. It is sized from the model bounds plus a margin rather than from a fixed size, so it reads correctly on a garden room and on a full house. It is removed entirely the moment the drawing itself is opened - a translucent plane hanging in front of an elevation would print.",
++        "ElevationViews__Gizmo__Description": "The 3D marker shown while an elevation is being set up, so the author can see where the plane sits and which way it looks before previewing anything, and can drag it along its normal to move the plane. It is sized from the model bounds plus a margin rather than from a fixed size, so it reads correctly on a garden room and on a full house. It is removed entirely the moment the drawing itself is opened - a translucent plane hanging in front of an elevation would print.",
+         "ElevationViews__Gizmo__MarginMm": 3000,
+@@ -73,6 +73,8 @@
+     "ElevationViews__SceneGroup__Config": {
+-        "ElevationViews__SceneGroup__Description": "Where a newly created elevation scene is filed. Resolution follows the floor plan rule exactly: a group named Elevations wins, then the configured group id, then the first enabled group. A matched group that is switched off is switched on, because an elevation filed into a hidden group would never reach the carousel.",
++        "ElevationViews__SceneGroup__Description": "Where a newly created elevation scene is filed. Resolution follows the floor plan rule exactly: a group named Elevations wins, then the configured group id, then the first enabled group. A matched group that is switched off is switched on, because an elevation filed into a hidden group would never reach the carousel. A section-mode drawing files into the section target instead, so the Elevations and Cross Sections groups always hold what their names say.",
+         "ElevationViews__SceneGroup__TargetGroupName": "Elevations",
+         "ElevationViews__SceneGroup__TargetGroupId": "Group_005",
+-        "ElevationViews__SceneGroup__AutoEnableTargetGroup": true
++        "ElevationViews__SceneGroup__AutoEnableTargetGroup": true,
++        "ElevationViews__SceneGroup__SectionTargetGroupName": "Cross Sections",
++        "ElevationViews__SceneGroup__SectionTargetGroupId": "Group_006"
+     },
+@@ -89,2 +91,4 @@
+         "ElevationViews__Labels__FacingStatementNorthNotSet": "Direction not known yet - set north under Dev Tools > North Direction and this will say which elevation it is.",
++        "ElevationViews__Labels__PresetNameFormat": "{preset} Elevation",
++        "ElevationViews__Labels__DirectionFieldLabel": "Viewed from",
+         "ElevationViews__Labels__PlaneControlsCaption": "Plane in the 3D view",
+@@ -107,7 +111,26 @@
+         "ElevationViews__Labels__DeleteLabel": "Delete Elevation",
++        "ElevationViews__Labels__ThumbnailLabel": "Save Thumbnail",
++        "ElevationViews__Labels__BakeThumbnailsLabel": "Bake Missing Thumbnails",
++        "ElevationViews__Labels__DeleteElevationPrompt": "Delete the elevation \"{name}\"? Its scene, annotations and dimensions go with it.",
++        "ElevationViews__Labels__SaveLabel": "Save Elevations",
++        "ElevationViews__Labels__SavedMessage": "Elevations saved to R2.",
++        "ElevationViews__Labels__SaveFailedMessage": "Elevation save failed - see console.",
+         "ElevationViews__Labels__NoModelMessage": "Load a model before adding elevations.",
+-        "ElevationViews__Labels__CutDepthReadoutFormat": "cut {depth} mm into the model"
++        "ElevationViews__Labels__CutDepthReadoutFormat": "cut {depth} mm into the model",
++        "ElevationViews__Labels__PickFaceLabel": "Pick Face",
++        "ElevationViews__Labels__RepickLabel": "Re-pick",
++        "ElevationViews__Labels__PickCancelLabel": "Cancel Pick",
++        "ElevationViews__Labels__PickingHint": "Click a wall in the 3D view to aim the elevation at it. Escape cancels.",
++        "ElevationViews__Labels__PickNeeds3dMessage": "Leave the drawing first - a face is picked in the 3D view.",
++        "ElevationViews__Labels__GripHint": "The plane in the 3D view shows where the drawing is taken from. It follows whichever elevation you are editing, and you can drag it along its arrows.",
++        "ElevationViews__Labels__StylesTitle": "Styles",
++        "ElevationViews__Labels__StyleProjectedLineworkLabel": "Projected Linework",
++        "ElevationViews__Labels__StyleProfileLineworkLabel": "Profile Linework Effect",
++        "ElevationViews__Labels__StyleGlassOpaqueLabel": "Glass Transparency Off",
++        "ElevationViews__Labels__StyleWhitecardLabel": "Whitecard",
++        "ElevationViews__Labels__ExclusionsFieldLabel": "Exclude",
++        "ElevationViews__Labels__ExclusionsPlaceholder": "Default list"
+     },
+     "ElevationViews__FacePick__Config": {
+-        "ElevationViews__FacePick__Description": "Seeding an elevation by clicking a wall (D16). The threshold is in pixels: picking is a click, not a drag, and without it every tiny tremble during the press reads as an orbit and the pick never fires.",
++        "ElevationViews__FacePick__Description": "Pick Face and Re-pick: click a wall in the 3D view to aim an elevation at it. The bearing is the wall's outward normal as a compass bearing and the plane passes through the clicked point. A press that travels more than the threshold is an orbit drag, not a pick.",
+         "ElevationViews__FacePick__ClickThresholdPx": 4,
+@@ -116,3 +139,3 @@
+     "ElevationViews__Grip__Config": {
+-        "ElevationViews__Grip__Description": "Dragging the drawing plane by its gizmo (D16). Each drag step recomputes the cut, which is the expensive part, so it is throttled rather than run per pointer event.",
++        "ElevationViews__Grip__Description": "Dragging the plane gizmo along its normal. The section is recut at this cadence while dragging and exactly on release.",
+         "ElevationViews__Grip__DragRecomputeMs": 90

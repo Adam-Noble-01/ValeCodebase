@@ -1,0 +1,15 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs --verbose --files 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json 80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 7 named file(s) - 6 PORT NOTE(s), 6 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded
+
+  PENDING  6 release placeholder(s) in 6 file(s), for the wave's Parity Scribe: W1-27 x6
+      02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js:45  {{VVREL:W1-27}}
+      02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js:43  {{VVREL:W1-27}}
+      02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js:44  {{VVREL:W1-27}}
+      02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js:37  {{VVREL:W1-27}}
+      02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js:45  {{VVREL:W1-27}}
+      80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs:36  {{VVREL:W1-27}}
+
+  RESULT: PASS (0 fail, 0 warn, 6 pending)

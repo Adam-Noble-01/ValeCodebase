@@ -1,0 +1,21 @@
+(records-exempt wrapper: HISTORY = (DEVLOG|PARITY__TrueVisionLedger|__PLAN__|__AUDIT__TrueVisionParity__|__WORKING_MEMORY__TrueVisionParity__))
+K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked: css @import 28, new URL 34, path strings 152, folder tokens 11
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+  FAIL G1 retired name  02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:13  // - Loads hotkey bindings from Na__ValeVision__HotkeysDictionary__.json via fetch.
+  FAIL G1 retired name  02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:28  // - Dictionary: 02__AppData/Na__ValeVision__HotkeysDictionary__.json
+  FAIL G1 retired name  02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:116  const dictionaryPath = '02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json'; // <-- Path to hotkey dictionary
+  FAIL G1 retired name  02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:22  //   Na__ValeVision__HotkeysDictionary__.json so the panel stays in sync
+  FAIL G1 retired name  02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:84  const Na__NavHelp__HotkeyDictPath = '02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json'; // <-- Source JSON for keybo
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:277  "LayoutEditor__Selection__Description"     : "How a press finds things on the paper. HitToleranceMm is paper millimetres at 100 percent (it 
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:457  "LayoutEditor__Measurements__Description"   : "The Measurements box at the bottom right of the sheet (Na__LayoutEditor__Measurements__), Ske
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:154  // - Owns Na__LayoutEditor__KeyMappings__.json as well, and answers what a
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:13  // - Fetches Na__LayoutEditor__KeyMappings__.json and holds the parsed key map
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:63  const Na__LeCfg__KeyMapUrl  = new URL('./Na__LayoutEditor__KeyMappings__.json', import.meta.url);
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:154  // Na__LayoutEditor__KeyMappings__.json and nothing else. A user personalisation
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:19  //   in Na__LayoutEditor__KeyMappings__.json through the config state, so a
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:29  //   value is read from Na__LayoutEditor__KeyMappings__.json through the config
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:56  // - The keys come from Na__LayoutEditor__KeyMappings__.json (MeasurementsBox)
+  FAIL G1 retired name  index.html:1261  <!-- UI SECTION | Keyboard Shortcuts (populated from Na__ValeVision__HotkeysDictionary__.json) -->
+  FAIL G1 retired name  index.html:1776  // @delegate: ./02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json
+RESULT: FAIL (16 fail, 1 warn)

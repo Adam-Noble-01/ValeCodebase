@@ -1,0 +1,7 @@
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 634 shipped files (02__Src__AppModules, 03__Style__AppStylesheets, the root pages) and 68 test-folder files (banner only); 75 folders against the registry; 17 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01; 1 since rewritten (their full checks apply)
+
+  RESULT: PASS (0 fail, 0 warn)

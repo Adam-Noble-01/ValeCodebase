@@ -45,21 +45,55 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Pipeline__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : adapted (split)
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__Pipeline__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0 (10-Sep-2026) followed, and ForgetCollections (unlogged, v2.57.0));
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.5.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim. The optional model root and fingerprint of 1.2.0 (TrueVision3D v2.32.0, its
+//                   design phases) come across as TrueVision wrote them (DR-09 (a)): no caller in this app
+//                   passes either, so every render describes and collects the live model as before; the two
+//                   comments that name TrueVision as their caller are kept. The VV-only consumers
+//                   (Na__PlOverlay__SyncFrame each drawing frame, Na__PlStore__BakeBeforeSave in the drawing
+//                   editors, Na__PlExport__Apply in image export, the na-model-visibility-changed dispatch)
+//                   live in their own host files and are untouched (S02b-V01).
 // - Divergences   :
-//   - One drawing on screen at a time instead of surfaces; jobs come from the mode controllers' events.
-//   - Fingerprint from the model state and the record hash instead of the lantern JSON.
-//   - Persistence is an R2 asset per drawing (Na__ProjectedLinework__Persistence__), not a lantern block.
-//   - The raster preview pass is not run on screen (the composer render is the underlay).
-//   - Triangle ceiling with a graceful refusal; four line classes painted.
-// - Back-port     : none pending.
+//   - Banner and console prefix read ValeVision3D.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.5.0
+// - One storey per plan. The collection key carries the storey a posed plan
+//   is cut through, because the read now stands open only that storey's
+//   doors: plans on two storeys never share a read. The door swing append
+//   takes a tally of the swings left off because they stand on another
+//   storey, and the report and the timings line name the plan's storey and
+//   count what was left off it (door swings, and storey-bound annotation from
+//   the backend).
+//
+// 14-Sep-2026 - Version 1.4.0
+// - Door pose. The collection key carries a definition's door pose, so a plan
+//   read with its doors open never reuses a collection read with them as
+//   modelled, or with a different door shut. A render of such a definition
+//   adds the door swings the collection traced to its visible class
+//   (Na__ProjectedLinework__DoorPose__), and the report and the timings line
+//   count them.
+//
+// 14-Sep-2026 - Version 1.3.0
+// - The collection key carries the linework first rule, so a Diff (rule off)
+//   and a kept render (rule on) never share a cached intersection pass. The
+//   report and the timings line say whether the rule ran, and for how many
+//   categories, whether seams occluded and whether flush joins were hidden.
+//
+// 13-Sep-2026 - Version 1.2.0
+// - RenderDefinition takes an optional model root and GetCached an optional
+//   model fingerprint, so a Layout Editor viewport can project a design phase
+//   the 3D view does not hold. Every existing caller passes neither and is
+//   unchanged.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - A finished render is kept in the browser store as well as in memory.
 //
@@ -85,8 +119,11 @@
     import {
         Na__PlView__FromActiveDrawing,
         Na__PlView__CacheKey,
-        Na__PlView__Fingerprint
+        Na__PlView__Fingerprint,
+        Na__PlView__Hash
     } from './Na__ProjectedLinework__ViewDefinition__.js';
+    import { Na__PlDoors__AppendSwings, Na__PlDoors__StoreyBand } from './Na__ProjectedLinework__DoorPose__.js';
+    import { Na__PlStorey__Describe } from './Na__ProjectedLinework__Storeys__.js';
     import { Na__PlStage__Describe } from './Na__ProjectedLinework__ModelStage__.js';
     import { Na__ProjectedLinework__WebGpuBackend__ProbeHardware } from './Na__ProjectedLinework__WebGpuBackend__.js';
     import {
@@ -107,9 +144,9 @@
 
     // MODULE IMPORTS | Events From the Drawing Systems
     // ------------------------------------------------------------
-    import { Na__FpMode__CHANGED_EVENT } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
-    import { Na__ElevMode__CHANGED_EVENT } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
-    import { Na__DrawData__CHANGED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__FpMode__CHANGED_EVENT } from '../42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+    import { Na__ElevMode__CHANGED_EVENT } from '../45__System__ElevationViews/Na__Elevation__ModeController__.js';
+    import { Na__DrawData__CHANGED_EVENT } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -194,11 +231,17 @@
 
     // HELPER FUNCTION | The Key the Collection Cache Uses
     // ------------------------------------------------------------
-    // Everything that changes which instances are read: the model state, the
-    // exclusion list and the occluder rule.
+    // Everything that changes which instances are read, or what the cached
+    // intersection pass finds: the model state, the exclusion list, the
+    // occluder rule, the linework first rule, the door pose (the doors a
+    // Layout Editor plan reads open, and the swings traced while they are)
+    // and the storey a posed plan is cut through (only its doors stand open).
     // ------------------------------------------------------------
-    function Na__PlPipe__CollectionKey(definition, modelFingerprint) {
-        return modelFingerprint + '|' + definition.ExcludeTokens.join(',') + '|' + (definition.Styles.glassOpaque ? 'g1' : 'g0');
+    function Na__PlPipe__CollectionKey(definition, modelFingerprint, options, storeyBand) {
+        return modelFingerprint + '|' + definition.ExcludeTokens.join(',') + '|' + (definition.Styles.glassOpaque ? 'g1' : 'g0') +
+            '|' + ((options && options.LineworkFirst === true) ? 'lf1' : 'lf0') +
+            (definition.DoorPose ? '|dp' + Na__PlView__Hash(JSON.stringify(definition.DoorPose)) : '') +   // <-- Appended only when set, so every other key is unchanged
+            (storeyBand ? '|st' + storeyBand.Keys.join('+') : '');               // <-- Plans on different storeys stand different doors open, so never share a read
     }
     // ------------------------------------------------------------
 
@@ -212,6 +255,12 @@
             (report.CollectReused ? 'model reused' : (report.TriangleTotal + ' triangles read in ' + report.CollectMs + ' ms')) +
             ' | ' + report.OccluderCount + ' occluders, ' + report.EdgeCount + ' edges' +
             (report.IntersectionCount ? (', ' + report.IntersectionCount + ' cut lines') : '') +
+            ' | ' + (report.LineworkFirst ? ('linework first, ' + report.LineworkCategoryCount + ' categories') : 'every mesh crease') +
+            (report.SeamsOcclude ? ', seams occlude' : ', seams open') +
+            (report.HideFlushJoins ? ', flush joins hidden' : ', flush joins drawn') +
+            (report.DoorSwingCount ? ', ' + report.DoorSwingCount + ' door swing segments' : '') +
+            (report.Storey ? ' | storey ' + Na__PlStorey__Describe(report.Storey) + ', left off from other storeys: ' +
+                report.DoorSwingsOffStorey + ' door swing and ' + report.Storey.AnnotationOffStorey + ' annotation segments' : '') +
             ' | ' + report.SegmentCount + ' segments in ' + report.ProjectMs + ' ms | total ' + report.TotalMs + ' ms'
         );
         if (report.Phases && report.Phases.length) console.table(report.Phases);
@@ -283,14 +332,17 @@
 
     // HELPER FUNCTION | Get or Build the Collected Model for a Definition
     // ------------------------------------------------------------
-    async function Na__PlPipe__GetCollection(definition, modelFingerprint, options, report, onPhase) {
-        const key = Na__PlPipe__CollectionKey(definition, modelFingerprint);
+    // modelRoot is the root the fingerprint was read from; see RenderDefinition.
+    // ------------------------------------------------------------
+    async function Na__PlPipe__GetCollection(definition, modelFingerprint, options, report, onPhase, modelRoot) {
+        const root = modelRoot || Na__PlPipe__ModelRoot;
+        const key  = Na__PlPipe__CollectionKey(definition, modelFingerprint, options, Na__PlDoors__StoreyBand(root, definition.DoorPose, definition.Cut));
         let collected = Na__PlPipe__Collections.get(key);
 
         if (collected) {
             report.CollectReused = true;
         } else {
-            collected = await Na__PlProjector__Collect(Na__PlPipe__ModelRoot, definition, options, onPhase);
+            collected = await Na__PlProjector__Collect(root, definition, options, onPhase);
             Na__PlPipe__Collections.set(key, collected);
             Na__PlPipe__Bound(Na__PlPipe__Collections, Na__PlPipe__MAX_COLLECTIONS);
             report.CollectMs     = collected.Report.CollectMs;
@@ -317,9 +369,16 @@
     // in flight would steal each other's replies. Every call queues behind
     // the previous one; an abandoned render rejects quickly and the queue
     // moves on.
+    //
+    // modelRoot (TrueVision) projects a model other than the live one: a
+    // design phase the Layout Editor holds off-scene. Omitted, it is the model
+    // root the pipeline was initialised with, exactly as before. The model is
+    // described and collected from the SAME root in one synchronous run, so
+    // the fingerprint, the collection key and the cache key all name the
+    // model that was actually read.
     // ------------------------------------------------------------
-    function Na__PlPipe__RenderDefinition(definition, options, abortSignal, onPhase) {
-        const run = Na__PlPipe__Chain.then(() => Na__PlPipe__RenderDefinitionNow(definition, options, abortSignal, onPhase));
+    function Na__PlPipe__RenderDefinition(definition, options, abortSignal, onPhase, modelRoot) {
+        const run = Na__PlPipe__Chain.then(() => Na__PlPipe__RenderDefinitionNow(definition, options, abortSignal, onPhase, modelRoot));
         Na__PlPipe__Chain = run.catch(() => {});                                 // <-- A failure never blocks the next render
         return run;
     }
@@ -328,13 +387,16 @@
 
     // HELPER FUNCTION | The Render Itself, Once the Queue Reaches It
     // ------------------------------------------------------------
-    async function Na__PlPipe__RenderDefinitionNow(definition, options, abortSignal, onPhase) {
+    async function Na__PlPipe__RenderDefinitionNow(definition, options, abortSignal, onPhase, modelRoot) {
         const startedAt = performance.now();
-        const described = Na__PlStage__Describe(Na__PlPipe__ModelRoot);
+        const root      = modelRoot || Na__PlPipe__ModelRoot;                   // <-- Another design phase, or the live model
+        const described = Na__PlStage__Describe(root);
         const settings  = options || Na__PlProjector__BuildOptions(definition);
         const report    = {
             Backend : settings.Backend, CollectReused : false, CollectMs : 0, TriangleTotal : described.TriangleTotal,
-            IntersectionCount : 0, OccluderCount : 0, EdgeCount : 0, SegmentCount : 0, ProjectMs : 0, TotalMs : 0, Phases : []
+            IntersectionCount : 0, OccluderCount : 0, EdgeCount : 0, SegmentCount : 0, ProjectMs : 0, TotalMs : 0, Phases : [],
+            LineworkFirst : settings.LineworkFirst === true, LineworkCategoryCount : 0, SeamsOcclude : settings.SeamsOcclude === true,
+            HideFlushJoins : settings.HideFlushJoins === true, DoorSwingCount : 0, DoorSwingsOffStorey : 0, Storey : null
         };
 
         if (described.TriangleTotal > settings.MaxTriangles) {
@@ -346,7 +408,8 @@
         const signal = abortSignal || new AbortController().signal;
         if (signal.aborted) throw new DOMException('Projection aborted', 'AbortError');
 
-        const collected = await Na__PlPipe__GetCollection(definition, described.Fingerprint, settings, report, onPhase);
+        const collected = await Na__PlPipe__GetCollection(definition, described.Fingerprint, settings, report, onPhase, root);
+        report.LineworkCategoryCount = collected.LineworkCategories ? collected.LineworkCategories.size : 0;
         if (signal.aborted) throw new DOMException('Projection aborted', 'AbortError');
 
         const sampled = Na__PlProjector__Sample(collected, definition, onPhase);
@@ -360,6 +423,15 @@
         report.Phases        = projection.Phases;
         report.OccluderCount = projection.OccluderCount;
         report.EdgeCount     = projection.EdgeCount;
+        report.Storey        = projection.Storey || null;                        // <-- A plan's storey, when the model has two or more
+        // DOOR SWINGS | The arc each open hinged door of a posed plan sweeps, on
+        // the visible class with the door's category, before anything counts or
+        // keeps the classes - the doors of the plan's own storey only.
+        if (definition.DoorPose && collected.DoorSwings) {
+            const tally = { OffStorey : 0 };
+            report.DoorSwingCount      = Na__PlDoors__AppendSwings(projection.Classes, collected, definition, settings, tally);
+            report.DoorSwingsOffStorey = tally.OffStorey;
+        }
         report.SegmentCount  = Na__PlPipe__CountSegments(projection.Classes);
 
         return {
@@ -590,9 +662,12 @@
 
     // FUNCTION | Read a Cached Result by Definition and Model State (null when absent)
     // ------------------------------------------------------------
-    function Na__PlPipe__GetCached(definition) {
-        const modelFingerprint = Na__PlStage__Describe(Na__PlPipe__ModelRoot).Fingerprint;
-        const entry = Na__PlPipe__Results.get(Na__PlView__CacheKey(definition, modelFingerprint));
+    // modelFingerprint (TrueVision) names a model other than the live one - a
+    // design phase held off-scene. Omitted, the live model is described.
+    // ------------------------------------------------------------
+    function Na__PlPipe__GetCached(definition, modelFingerprint) {
+        const fingerprint = modelFingerprint || Na__PlStage__Describe(Na__PlPipe__ModelRoot).Fingerprint;
+        const entry = Na__PlPipe__Results.get(Na__PlView__CacheKey(definition, fingerprint));
         return entry ? entry.Classes : null;
     }
     // ------------------------------------------------------------

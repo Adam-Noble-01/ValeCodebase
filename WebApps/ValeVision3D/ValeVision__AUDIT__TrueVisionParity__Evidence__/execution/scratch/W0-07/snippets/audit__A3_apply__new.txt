@@ -1,0 +1,8 @@
+    # PROJECT.JSON | R2's editor-owned keys are kept and mirrored locally; nothing is uploaded if R2 cannot be read (DR-06)
+    if local['projectJson'] and (force or record['missingProjectJson']):
+        key    = f"{prefix}/{r2lib.PROJECT_JSON_FILENAME}"
+        result = r2lib.na_upload_project_json_preserving_editor_keys(client, bucket, local['projectJson'], key)
+        if result['uploaded']:
+            uploaded += 1
+        colour = COLOR_GREEN if result['ok'] else COLOR_YELLOW
+        print(f"    {colour}{folder_id}: {result['message']}{COLOR_RESET}")

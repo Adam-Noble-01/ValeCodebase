@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- W0-16 SCRATCH HARNESS (never shipped). Served by run_harnesses.mjs at the ValeVision3D app root
+     (a virtual URL: the browser's requests are answered from disk, no server runs), so every relative
+     path in the Layout Editor's config resolves exactly as it does from index.html.
+     It drives the REAL modules: the config, the sheet chrome's asset loader and the PDF exporter.
+     jsPDF is NOT preloaded here, so Na__LePdf__EnsureJsPdf has to inject it from the configured path. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>W0-16 classic PDF harness</title>
+</head>
+<body>
+<pre id="out">running...</pre>
+<script type="importmap">
+{
+    "imports": {
+        "three"                        : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+        "three/addons/"                : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+        "three/webgpu"                 : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.webgpu.js",
+        "three/tsl"                    : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.tsl.js",
+        "three-mesh-bvh"               : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/index.js",
+        "three-mesh-bvh/worker"        : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/workers/index.js",
+        "three-mesh-bvh/webgpu"        : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/webgpu/index.js",
+        "clipper2-js"                  : "./04__Lib__ThirdParty__VersionLocked/03__Vendor__Clipper2Js__v0.9.0/fesm2020/clipper2-js.mjs",
+        "three-edge-projection"        : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/index.js",
+        "three-edge-projection/worker" : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+        "three-edge-projection/webgpu" : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/webgpu/index.js"
+    }
+}
+</script>
+<script type="module">
+import { Na__LeModel__GetFields }      from './02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
+import { Na__LeCfg__Ready,
+         Na__LeCfg__GetTitleBlockSetup,
+         Na__LeCfg__GetPdfSetup }      from './02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+import { Na__LeChrome__LoadAsset }     from './02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js';
+import { Na__LePdf__BuildDocument }    from './02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js';
+
+const log = [];
+const say = (line) => { log.push(line); document.getElementById('out').textContent = log.join('\n'); };
+
+function sheet(style, paper, orientation) {
+    return {
+        Sheet__Id          : 'Sheet_W016_' + style,
+        Sheet__Name        : 'D01 - Classic Check',
+        Sheet__Order       : 1,
+        Sheet__PaperSize   : paper,
+        Sheet__Orientation : orientation,
+        Sheet__TitleBlockStyle : style,
+        Sheet__CommonFields : false,
+        Sheet__Fields      : {
+            Sheet__Fields__Client        : 'Mordaunt',
+            Sheet__Fields__SiteAddress   : 'The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE',
+            Sheet__Fields__Title         : 'Proposed Orangery - Elevations',
+            Sheet__Fields__DrawingNumber : '57079-01',
+            Sheet__Fields__Revision      : 'B',
+            Sheet__Fields__Status        : 'FOR PLANNING'
+        },
+        Sheet__Layers      : [],
+        Sheet__Viewports   : [],
+        Sheet__Annotations : [], Sheet__Dimensions : [], Sheet__Shapes : [],
+        Sheet__Leaders : [], Sheet__Groups : []
+    };
+}
+
+function pdfFacts(bytes) {
+    const text = new TextDecoder('latin1').decode(bytes);
+    const images = [];
+    const re = /\/Subtype\s*\/Image[\s\S]{0,400}?\/Width\s+(\d+)[\s\S]{0,200}?\/Height\s+(\d+)/g;
+    let m;
+    while ((m = re.exec(text)) !== null) images.push([ Number(m[1]), Number(m[2]) ]);
+    return { header : text.slice(0, 8), bytes : bytes.length, images : images,
+             producer : (/\/Producer\s*\(([^)]*)\)/.exec(text) || [])[1] || null,
+             creator  : (/\/Creator\s*\(([^)]*)\)/.exec(text) || [])[1] || null };
+}
+
+(async () => {
+    const result = { ok : false };
+    try {
+        await Na__LeCfg__Ready();
+        const tb  = Na__LeCfg__GetTitleBlockSetup();
+        const pdf = Na__LeCfg__GetPdfSetup();
+        result.classicScanAssets = tb.classicScanAssets;
+        result.jsPdfScriptPath   = pdf.jsPdfScriptPath;
+        say('config ClassicScanAssets.A3 : ' + tb.classicScanAssets.A3);
+        say('config jsPdfScriptPath      : ' + pdf.jsPdfScriptPath);
+        say('jsPDF before export         : ' + !!(window.jspdf && window.jspdf.jsPDF));
+
+        const scan = await Na__LeChrome__LoadAsset(tb.classicScanAssets.A3);
+        result.scanLoaded = !!scan;
+        result.scanDataUrlBytes = scan ? scan.length : 0;
+        say('classic scan loaded         : ' + !!scan + (scan ? ' (' + scan.length + ' chars of data URL)' : ''));
+
+        const classic = await Na__LePdf__BuildDocument(sheet('classic', 'A3', 'landscape'));
+        const classicBytes = new Uint8Array(classic.doc.output('arraybuffer'));
+        result.classic = Object.assign({ filename : classic.filename }, pdfFacts(classicBytes));
+        result.jsPdfAfter = !!(window.jspdf && window.jspdf.jsPDF);
+        say('jsPDF after export          : ' + result.jsPdfAfter);
+        say('CLASSIC A3 PDF              : ' + JSON.stringify(result.classic));
+
+        const modern = await Na__LePdf__BuildDocument(sheet('modern', 'A3', 'landscape'));
+        const modernBytes = new Uint8Array(modern.doc.output('arraybuffer'));
+        result.modern = Object.assign({ filename : modern.filename }, pdfFacts(modernBytes));
+        say('MODERN A3 PDF               : ' + JSON.stringify(result.modern));
+
+        const classicA1 = await Na__LePdf__BuildDocument(sheet('classic', 'A1', 'landscape'));
+        result.classicA1 = Object.assign({ filename : classicA1.filename }, pdfFacts(new Uint8Array(classicA1.doc.output('arraybuffer'))));
+        say('CLASSIC A1 PDF              : ' + JSON.stringify(result.classicA1));
+
+        result.ok = true;
+        say('DONE');
+    } catch (error) {
+        result.error = String(error && error.stack ? error.stack : error);
+        say('ERROR: ' + result.error);
+    }
+    window.__W0_16 = result;
+})();
+</script>
+</body>
+</html>

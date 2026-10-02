@@ -1,0 +1,85 @@
+##### Na__LayoutEditor__PanelHost__.js vs TrueVision at the pin: 18 added, 6 removed
+--- TV@b2aa9151
++++ VV candidate
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - PANEL HOST
++// VALEVISION3D - LAYOUT EDITOR - PANEL HOST
+@@ -36,5 +36,17 @@
+-// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__PanelHost__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim
+-// - Divergences   : Console prefix, header and folder numbers; column tabs (1.4.0), TrueVision first on 19-Sep-2026.
+-// - Back-port     : n/a (this IS the back-port)
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, after Lantern Designer
++//                   30__System__DrawingEditorMode's panel columns); TrueVision3D took it for v2.21.0
++//                   (10-Sep-2026); since ported back whole from TrueVision3D 1.6.0 (HEAD b2aa9151)
++// - Source version: 1.6.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-38}} - whole, with TrueVision's log. This
++//                   app's own 1.0.0-1.4.0 (09-Sep-2026 to 20-Sep-2026) had taken AdvancedToggle (its
++//                   1.1.0), SliderRow (its 1.2.0), SetFolded, FocusSection and the selection helpers
++//                   (1.3.0) and the column tabs (1.4.0) from TrueVision, and lacked LinkedPairRow and
++//                   ShowLink (TrueVision 1.2.0), the tab hover text (1.5.0), the Colour Palette attach
++//                   (1.6.0) and the slider's number box.
++// - Parity        : verbatim (the code is TrueVision 1.6.0's; the banner and this note are the only
++//                   differences)
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none. TrueVision's log has no entry for the slider's number box (SliderRow and
++//                   ShowSlider, in its commit d76d7638 of 21-Sep-2026, with v2.123.0): a records note
++//                   for the TrueVision lane (WT-04), not made here.
+##### Na__LayoutEditor__PanelHost__.js vs this app's pre-image: 173 added, 33 removed
+
+##### Na__LayoutEditor__Styles__Panels__.css vs TrueVision at the pin: 19 added, 4 removed
+--- TV@b2aa9151
++++ VV candidate
+@@ -2 +2 @@
+-/* REGION  |  TrueVision3D - Layout Editor Styles (panels)            */
++/* REGION  |  ValeVision3D - Layout Editor Styles (panels)            */
+@@ -6,3 +6,18 @@
+- * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (panel column rules)
+- * - Ported on   : 09-Sep-2026 for TrueVision3D v2.21.0 (port Phase 5)
+- * - Parity      : adapted (foldable sections with height grips, delegated controls, layer rows)
++ * - Authored in   : ValeVision3D first (09-Sep-2026, v2.21.0, port Phase 5: Lantern Designer's
++ *                   30__System__DrawingEditorMode panel column rules, adapted for foldable sections with
++ *                   height grips, delegated controls and layer rows); TrueVision3D took it for v2.21.0
++ *                   (10-Sep-2026); since ported back whole from TrueVision3D (HEAD b2aa9151)
++ * - Source version: none of its own - the sheet as TrueVision3D v2.154.0 left it (23-Sep-2026, commit
++ *                   b24f33a9; read at b2aa9151)
++ * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-38}} - whole. This app's copy was last
++ *                   brought level in its v2.68.0 (20-Sep-2026: the Scrapbook and Column Tabs regions);
++ *                   it lacked the Linked Pair region, the slider's number box and suffix, the wrapping
++ *                   Scale buttons and their tight variant, the inline check, the Ref button and one red
++ *                   for Off, Unlock and Ref.
++ * - Parity        : verbatim (every rule and comment is TrueVision's; the banner and this note are the
++ *                   only differences). Two comments speak for TrueVision: the sheet name field's code
++ *                   is "the Drawing Register's" (here the sheet's Drawing No. until the register lands)
++ *                   and the offer is "the project admin record" (here the project record).
++ * - Divergences   :
++ *   - Banner reads ValeVision3D.
++ * - Back-port     : none.
+##### Na__LayoutEditor__Styles__Panels__.css vs this app's pre-image: 210 added, 21 removed
+
+##### Na__Test__ColourPalette__.test.mjs vs TrueVision at the pin: 17 added, 1 removed
+--- TV@b2aa9151
++++ VV candidate
+@@ -2 +2 @@
+-// TRUEVISION3D - TEST - COLOUR PALETTE
++// VALEVISION3D - TEST - COLOUR PALETTE
+@@ -31,0 +32,16 @@
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs
++// - Source version: 1.1.0 (TrueVision3D v2.133.0, 21-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-38}}
++// - Parity        : verbatim (every check is TrueVision's; the banner and this note are the only
++//                   differences). It reads this app's own files: the palette package W1-37 landed,
++//                   named Vale Garden Houses Standard (DR-20) - the test finds the palette by its key,
++//                   never its name - this app's panel host and its CSS index. The greys are checked
++//                   against the Edge Materials SSOT where this machine has it, as in TrueVision; where
++//                   it has not, that one check says SKIP.
++// - Divergences   :
++//   - Banner reads ValeVision3D.
++// - Back-port     : none.
+

@@ -1,0 +1,10 @@
+﻿value    MarginNotes/Description                  VV:has     TV:has     -> equal
+value    Labels/NoSheets                          VV:has     TV:has     -> equal
+value    Labels/TabsPreviousTitle                 VV:has     TV:has     -> equal
+value    Labels/TabsNextTitle                     VV:has     TV:has     -> equal
+value    Labels/SpecificationTab                  VV:has     TV:has     -> equal
+vv-only  Labels/MarginToggle                      VV:absent  TV:absent  -> absent in both
+vv-only  Labels/MarginToggleTitle                 VV:absent  TV:absent  -> absent in both
+value    Panels/FocusNote                         VV:has     TV:has     -> DIFFER
+           VV: "AccordionSections are the sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited - a viewport folds the whole grou
+           TV: "AccordionSections are the sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited - a room opens Floor Areas, a sit

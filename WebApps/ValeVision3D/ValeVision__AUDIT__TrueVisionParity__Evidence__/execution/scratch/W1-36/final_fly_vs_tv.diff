@@ -1,0 +1,121 @@
+--- tv/Na__UiFeature__FlyModeControls.js	2026-10-02 08:51:07.735567700 +0100
++++ /dev/fd/63	2026-10-02 09:12:04.000000000 +0100
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - FLY MODE UI CONTROLS
++// VALEVISION3D - FLY MODE UI CONTROLS
+ // =============================================================================
+ //
+ // FILE       : Na__UiFeature__FlyModeControls.js
+@@ -7,7 +7,7 @@
+ // MODULE     : FlyModeControls
+ // AUTHOR     : Adam Noble - Noble Architecture
+ // PURPOSE    : Fly mode system initialisation and toggle orchestration
+-// CREATED    : 25-May-2026
++// CREATED    : 09-Jun-2026
+ //
+ // DESCRIPTION:
+ // - Initialises the fly mode camera engine and re-uses the existing door
+@@ -19,6 +19,7 @@
+ //   fly mode and fires optional caller-supplied UI callbacks so the index
+ //   shell can update its own status indicators without this module knowing
+ //   anything about them.
++// - Ported from TrueVision3D (25-May-2026).
+ //
+ // INTEGRATION:
+ // - Call Na__UiFeature__InitializeFlyModeSystem() after scene, camera,
+@@ -28,14 +29,42 @@
+ //
+ // -----------------------------------------------------------------------------
+ //
+-// DEVELOPMENT LOG:
+-// 25-May-2026 - Version 1.0.0
+-// - Initial implementation mirroring the Walk Mode controls module.
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js
++//                   (its 1.0.0 of 25-May-2026, as this file's 1.0.0 on 09-Jun-2026); TrueVision's later work
++//                   comes back hunk by hunk
++// - Source version: 1.0.1 (TrueVision3D v2.112.0, 21-Sep-2026; read at b2aa9151) - its render-loop release,
++//                   the one hunk the 1.1.1 entry names
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-36}}
++// - Parity        : adapted (hunk replay; this app's own 1.1.0 stays)
++// - Divergences   :
++//   - FOV compensation (this app's 1.1.0): Initialize takes a seventh argument, fovCompensationConfig,
++//     and the orbit-to-fly transition is handed the camera, the fly FOV and the compensation scale, so
++//     the fly config is read before the transition rather than after it succeeds.
++//   - The header is this app's: CREATED is its port date, DESCRIPTION names the port, and the log keeps
++//     this app's versions. Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : the FOV compensation could be offered to TrueVision through the TrueVision lane
++//                   (DR-36); not done here.
++//
++// -----------------------------------------------------------------------------
+ //
+-// 21-Sep-2026 - Version 1.0.1
++// DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.1.1 ({{VVREL:W1-36}})
+ // - Leaving Fly now stops the 'fly-mode' active render it asked for on the
+ //   way in. Nothing ever stopped it, so after one flight the render loop kept
+-//   drawing every frame for the rest of the session, idle or not.
++//   drawing every frame for the rest of the session, idle or not; the Walk
++//   controls already let theirs go. From TrueVision3D 1.0.1 (v2.112.0).
++// - The log runs newest first, as the logs of files ported from TrueVision
++//   do.
++//
++// 09-Jun-2026 - Version 1.1.0
++// - Added FOV compensation: passes camera ref + fly FOV to ModeTransition so
++//   the camera is nudged forward before activation to counteract the apparent
++//   zoom-out from the wider fly FOV compared to the orbit lens.
++//
++// 09-Jun-2026 - Version 1.0.0
++// - Ported from TrueVision3D Na__UiFeature__FlyModeControls.js.
++// - Re-headered for ValeVision3D namespace.
+ //
+ // =============================================================================
+ 
+@@ -102,6 +131,7 @@
+     let Na__UiFeature__FlyMode__Renderer               = null;   // <-- Renderer instance
+     let Na__UiFeature__FlyMode__UseTouch               = false;  // <-- Device uses touch controls
+     let Na__UiFeature__FlyMode__DoorProximityEnabled   = true;   // <-- Allow proximity door opening
++    let Na__UiFeature__FlyMode__FovCompScale           = 0;      // <-- FOV compensation scale (0 = disabled)
+     // ------------------------------------------------------------
+ 
+ // endregion -------------------------------------------------------------------
+@@ -113,7 +143,7 @@
+ 
+     // FUNCTION | Initialize Fly Mode System
+     // ------------------------------------------------------------
+-    function Na__UiFeature__InitializeFlyModeSystem(scene, camera, renderer, controls, flyConfig, useTouchControls) {
++    function Na__UiFeature__InitializeFlyModeSystem(scene, camera, renderer, controls, flyConfig, useTouchControls, fovCompensationConfig) {
+         Na__FlyMode__Initialize(scene, camera, renderer.domElement, flyConfig);  // <-- Init fly camera engine
+ 
+         // Door proximity is a shared system: it will already be initialised by
+@@ -132,6 +162,12 @@
+         if (flyConfig && typeof flyConfig.Navmode__FlyMode__DoorProximityEnabled === 'boolean') {
+             Na__UiFeature__FlyMode__DoorProximityEnabled = flyConfig.Navmode__FlyMode__DoorProximityEnabled;
+         }
++
++        if (fovCompensationConfig && fovCompensationConfig.Navmode__FovCompensation__Enabled) {
++            Na__UiFeature__FlyMode__FovCompScale = Number.isFinite(fovCompensationConfig.Navmode__FovCompensation__Scale)
++                ? fovCompensationConfig.Navmode__FovCompensation__Scale
++                : 0.65;
++        }
+     }
+     // ------------------------------------------------------------
+ 
+@@ -164,9 +200,14 @@
+             if (onDeactivate) onDeactivate();                                    // <-- Fire caller UI callback
+         } else {
+             // ACTIVATE FLY MODE
+-            const activated = Na__ModeTransition__OrbitToFly(Na__UiFeature__FlyMode__Controls);
++            const flyConfig = Na__FlyMode__GetConfig();                          // <-- Read fly config for FOV compensation
++            const activated = Na__ModeTransition__OrbitToFly(
++                Na__UiFeature__FlyMode__Controls,
++                Na__UiFeature__FlyMode__Camera,                                  // <-- Camera ref (orbit FOV read before activation)
++                flyConfig.horizontalFovDeg,                                      // <-- Fly FOV (target FOV for compensation calc)
++                Na__UiFeature__FlyMode__FovCompScale                             // <-- FOV compensation scale (0 = disabled)
++            );
+             if (activated) {
+-                const flyConfig = Na__FlyMode__GetConfig();                      // <-- Get current fly config
+                 if (Na__UiFeature__FlyMode__UseTouch) {
+                     Na__FlyModeTouch__Activate(Na__UiFeature__FlyMode__Renderer.domElement, flyConfig);
+                 } else {

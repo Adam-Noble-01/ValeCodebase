@@ -1,0 +1,544 @@
+{
+  "pin": "b2aa9151",
+  "importers": {
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__ReadProjectData",
+          "Na__CfApi__SetLoadedProjectData"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ReadProjectData",
+        "Na__CfApi__SetLoadedProjectData"
+      ]
+    },
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js": {
+      "imports": {},
+      "identifiers": [
+        "Na__LocalMirror__DeleteStatement",
+        "Na__LocalMirror__DrawingsBaseHeader",
+        "Na__LocalMirror__DrawingsFingerprint",
+        "Na__LocalMirror__IsProjectVisionServer",
+        "Na__LocalMirror__Locate",
+        "Na__LocalMirror__MakeStatementFolder",
+        "Na__LocalMirror__MergeKeys",
+        "Na__LocalMirror__MergeKeysNow",
+        "Na__LocalMirror__MergeQueue",
+        "Na__LocalMirror__MoveStatement",
+        "Na__LocalMirror__PortalDir",
+        "Na__LocalMirror__PostJson",
+        "Na__LocalMirror__Result",
+        "Na__LocalMirror__ServerService",
+        "Na__LocalMirror__SiblingFiles",
+        "Na__LocalMirror__StatementPost",
+        "Na__LocalMirror__StatementTree",
+        "Na__LocalMirror__TvContentDir",
+        "Na__LocalMirror__TvDataFile",
+        "Na__LocalMirror__WriteSiblingFile",
+        "Na__LocalMirror__WriteStatementFile"
+      ]
+    },
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__WriteProjectAsset"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__WriteProjectAsset"
+      ]
+    },
+    "02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__MergeAndSaveKeys",
+          "Na__CfApi__DeleteProjectKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__DeleteProjectKeys",
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__MergeAndSaveKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/11__CameraUtils/Na__UiFeature__ViewModeFov__DevControls.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__GetLoadedProjectData",
+          "Na__CfApi__MergeAndSaveKeys",
+          "Na__CfApi__DeleteProjectKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__DeleteProjectKeys",
+        "Na__CfApi__GetLoadedProjectData",
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__MergeAndSaveKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__BuildContentCdnUrl"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__BuildContentCdnUrl"
+      ]
+    },
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__WriteThumbnailWebp"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__WriteThumbnailWebp"
+      ]
+    },
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__MergeAndSaveKeys"
+        ],
+        "LocalMirror": [
+          "Na__LocalMirror__MergeKeys",
+          "Na__LocalMirror__DrawingsFingerprint"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__MergeAndSaveKeys",
+        "Na__LocalMirror__DrawingsFingerprint",
+        "Na__LocalMirror__MergeKeys"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__AdminFileLocation",
+          "Na__CfApi__PlansFileLocation"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__AdminFileLocation",
+        "Na__CfApi__PlansFileLocation"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetLoadedProjectData"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetLoadedProjectData"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetLoadedProjectData"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetLoadedProjectData"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js": {
+      "imports": {
+        "LocalMirror": [
+          "Na__LocalMirror__WriteSiblingFile"
+        ],
+        "ApiClient": [
+          "Na__CfApi__ProjectFileLocation"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__ProjectFileLocation",
+        "Na__LocalMirror__WriteSiblingFile"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__ProjectFileLocation",
+          "Na__CfApi__ReadProjectFile",
+          "Na__CfApi__WriteProjectFile"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ProjectFileLocation",
+        "Na__CfApi__ReadProjectFile",
+        "Na__CfApi__WriteProjectFile"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetLoadedProjectData",
+          "Na__CfApi__MergeAndSaveKeys",
+          "Na__CfApi__ReadProjectData",
+          "Na__CfApi__ProjectFileLocation"
+        ],
+        "LocalMirror": [
+          "Na__LocalMirror__MergeKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetLoadedProjectData",
+        "Na__CfApi__MergeAndSaveKeys",
+        "Na__CfApi__ProjectFileLocation",
+        "Na__CfApi__ReadProjectData",
+        "Na__LocalMirror__MergeKeys"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetLoadedProjectData"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetLoadedProjectData"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js": {
+      "imports": {
+        "LocalMirror": [
+          "Na__LocalMirror__MergeKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__LocalMirror__MergeKeys"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__ProjectFileLocation",
+          "Na__CfApi__ReadProjectFile",
+          "Na__CfApi__WriteProjectFile",
+          "Na__CfApi__StatementFileLocation",
+          "Na__CfApi__ReadStatementFile",
+          "Na__CfApi__WriteStatementFile"
+        ],
+        "LocalMirror": [
+          "Na__LocalMirror__WriteSiblingFile",
+          "Na__LocalMirror__StatementTree",
+          "Na__LocalMirror__WriteStatementFile",
+          "Na__LocalMirror__MakeStatementFolder",
+          "Na__LocalMirror__MoveStatement",
+          "Na__LocalMirror__DeleteStatement"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ProjectFileLocation",
+        "Na__CfApi__ReadProjectFile",
+        "Na__CfApi__ReadStatementFile",
+        "Na__CfApi__StatementFileLocation",
+        "Na__CfApi__WriteProjectFile",
+        "Na__CfApi__WriteStatementFile",
+        "Na__LocalMirror__DeleteStatement",
+        "Na__LocalMirror__MakeStatementFolder",
+        "Na__LocalMirror__MoveStatement",
+        "Na__LocalMirror__StatementTree",
+        "Na__LocalMirror__WriteSiblingFile",
+        "Na__LocalMirror__WriteStatementFile"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__StatementFileLocation",
+          "Na__CfApi__WriteStatementFile"
+        ],
+        "LocalMirror": [
+          "Na__LocalMirror__WriteStatementFile"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__StatementFileLocation",
+        "Na__CfApi__WriteStatementFile",
+        "Na__LocalMirror__WriteStatementFile"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__StatementFileLocation",
+          "Na__CfApi__WriteStatementFile"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__StatementFileLocation",
+        "Na__CfApi__WriteStatementFile"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__SHEET_IMAGES_ARCHIVE",
+          "Na__CfApi__ListSheetImages",
+          "Na__CfApi__UploadSheetImage",
+          "Na__CfApi__CopySheetImage",
+          "Na__CfApi__DeleteSheetImage"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__CopySheetImage",
+        "Na__CfApi__DeleteSheetImage",
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ListSheetImages",
+        "Na__CfApi__SHEET_IMAGES_ARCHIVE",
+        "Na__CfApi__UploadSheetImage"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__SheetImageLocation"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__SheetImageLocation"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetLoadedProjectData"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetLoadedProjectData"
+      ]
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__IsConfigured",
+          "Na__CfApi__UploadPublished",
+          "Na__CfApi__ListPublished",
+          "Na__CfApi__DeletePublished"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__DeletePublished",
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ListPublished",
+        "Na__CfApi__UploadPublished"
+      ]
+    },
+    "02__Src__AppModules/70__System__DevTools/Na__UiFeature__AssetCullDistance__DevControls.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__GetLoadedProjectData",
+          "Na__CfApi__MergeAndSaveKeys",
+          "Na__CfApi__DeleteProjectKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__DeleteProjectKeys",
+        "Na__CfApi__GetLoadedProjectData",
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__GetProjectContext",
+          "Na__CfApi__MergeAndSaveKeys"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__MergeAndSaveKeys"
+      ]
+    },
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js": {
+      "imports": {},
+      "identifiers": [
+        "Na__CfApi__AdminContentDir",
+        "Na__CfApi__AdminFileLocation",
+        "Na__CfApi__AdminFileNames",
+        "Na__CfApi__AssetPathPattern",
+        "Na__CfApi__BlobToBase64",
+        "Na__CfApi__BuildContentCdnUrl",
+        "Na__CfApi__BuildProjectDataKey",
+        "Na__CfApi__BuildThumbnailKey",
+        "Na__CfApi__CdnBaseUrl",
+        "Na__CfApi__CopyMissing",
+        "Na__CfApi__CopySheetImage",
+        "Na__CfApi__DeleteProjectKeys",
+        "Na__CfApi__DeletePublished",
+        "Na__CfApi__DeleteSheetImage",
+        "Na__CfApi__GetLoadedProjectData",
+        "Na__CfApi__GetProjectContext",
+        "Na__CfApi__Initialize",
+        "Na__CfApi__IsConfigured",
+        "Na__CfApi__ListPublished",
+        "Na__CfApi__ListSheetImages",
+        "Na__CfApi__LoadedProjectData",
+        "Na__CfApi__MergeAndSaveKeys",
+        "Na__CfApi__MergeAndSaveKeysNow",
+        "Na__CfApi__MergeQueue",
+        "Na__CfApi__PUBLISHED_ARCHIVE",
+        "Na__CfApi__PUBLISHED_DIR",
+        "Na__CfApi__PlansContentDir",
+        "Na__CfApi__PlansFileLocation",
+        "Na__CfApi__PlansFileNames",
+        "Na__CfApi__ProjectFileLocation",
+        "Na__CfApi__ProjectFileNames",
+        "Na__CfApi__PublishedExtension",
+        "Na__CfApi__PublishedHashed",
+        "Na__CfApi__PublishedImmutable",
+        "Na__CfApi__PublishedLocation",
+        "Na__CfApi__PublishedMutable",
+        "Na__CfApi__PublishedPrefix",
+        "Na__CfApi__PublishedSegment",
+        "Na__CfApi__PublishedType",
+        "Na__CfApi__R2Prefix",
+        "Na__CfApi__RawUploadMissing",
+        "Na__CfApi__ReadKey",
+        "Na__CfApi__ReadProjectData",
+        "Na__CfApi__ReadProjectFile",
+        "Na__CfApi__ReadStatementFile",
+        "Na__CfApi__ResolveMergeBase",
+        "Na__CfApi__SHEET_IMAGES_ARCHIVE",
+        "Na__CfApi__SHEET_IMAGES_DIR",
+        "Na__CfApi__SetLoadedProjectData",
+        "Na__CfApi__SheetImageCache",
+        "Na__CfApi__SheetImageFile",
+        "Na__CfApi__SheetImageFolder",
+        "Na__CfApi__SheetImageLocation",
+        "Na__CfApi__SheetImagesPrefix",
+        "Na__CfApi__StatementFileLocation",
+        "Na__CfApi__StatementMaxDepth",
+        "Na__CfApi__StatementSegment",
+        "Na__CfApi__StatementSuffixes",
+        "Na__CfApi__StatementsDir",
+        "Na__CfApi__ThumbsDir",
+        "Na__CfApi__TvContentDir",
+        "Na__CfApi__TvDataFilename",
+        "Na__CfApi__UploadPublished",
+        "Na__CfApi__UploadSheetImage",
+        "Na__CfApi__WorkerBaseUrl",
+        "Na__CfApi__WriteKey",
+        "Na__CfApi__WriteProjectAsset",
+        "Na__CfApi__WriteProjectData",
+        "Na__CfApi__WriteProjectFile",
+        "Na__CfApi__WriteStatementFile",
+        "Na__CfApi__WriteThumbnailWebp"
+      ]
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs": {
+      "imports": {},
+      "identifiers": []
+    },
+    "Index.html": {
+      "imports": {
+        "ApiClient": [
+          "Na__CfApi__Initialize"
+        ]
+      },
+      "identifiers": [
+        "Na__CfApi__Initialize"
+      ]
+    }
+  },
+  "union": {
+    "ApiClient": [
+      "Na__CfApi__AdminFileLocation",
+      "Na__CfApi__BuildContentCdnUrl",
+      "Na__CfApi__CopySheetImage",
+      "Na__CfApi__DeleteProjectKeys",
+      "Na__CfApi__DeletePublished",
+      "Na__CfApi__DeleteSheetImage",
+      "Na__CfApi__GetLoadedProjectData",
+      "Na__CfApi__GetProjectContext",
+      "Na__CfApi__Initialize",
+      "Na__CfApi__IsConfigured",
+      "Na__CfApi__ListPublished",
+      "Na__CfApi__ListSheetImages",
+      "Na__CfApi__MergeAndSaveKeys",
+      "Na__CfApi__PlansFileLocation",
+      "Na__CfApi__ProjectFileLocation",
+      "Na__CfApi__ReadProjectData",
+      "Na__CfApi__ReadProjectFile",
+      "Na__CfApi__ReadStatementFile",
+      "Na__CfApi__SHEET_IMAGES_ARCHIVE",
+      "Na__CfApi__SetLoadedProjectData",
+      "Na__CfApi__SheetImageLocation",
+      "Na__CfApi__StatementFileLocation",
+      "Na__CfApi__UploadPublished",
+      "Na__CfApi__UploadSheetImage",
+      "Na__CfApi__WriteProjectAsset",
+      "Na__CfApi__WriteProjectFile",
+      "Na__CfApi__WriteStatementFile",
+      "Na__CfApi__WriteThumbnailWebp"
+    ],
+    "LocalMirror": [
+      "Na__LocalMirror__DeleteStatement",
+      "Na__LocalMirror__DrawingsFingerprint",
+      "Na__LocalMirror__MakeStatementFolder",
+      "Na__LocalMirror__MergeKeys",
+      "Na__LocalMirror__MoveStatement",
+      "Na__LocalMirror__StatementTree",
+      "Na__LocalMirror__WriteSiblingFile",
+      "Na__LocalMirror__WriteStatementFile"
+    ]
+  },
+  "dynamic_imports": []
+}

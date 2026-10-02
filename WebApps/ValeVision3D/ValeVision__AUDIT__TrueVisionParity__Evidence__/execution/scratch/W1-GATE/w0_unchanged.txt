@@ -1,0 +1,35 @@
+﻿W0 checkpoint paths still dirty: 189; equal to the W0 checkpoint: 161; changed since: 25; not comparable: 3
+changed since W0 but mtime says untouched in W1 (would be a defect): 0 []
+mtime says touched in W1 but content equal to W0 (rewritten with the same bytes): 0 []
+
+== W0 paths changed in W1 ==
+  WebApps/ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
+  WebApps/ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json
+  WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js
+  WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+  WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js
+  WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css
+  WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json
+  WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js
+  WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
+  WebApps/ValeVision3D/02__Src__AppModules/46__System__NorthDirection/Na__North__AppConfig__.json
+  WebApps/ValeVision3D/02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js
+  WebApps/ValeVision3D/02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js
+  WebApps/ValeVision3D/02__Src__AppModules/46__System__NorthDirection/Na__North__ProjectJson__Data__.js
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+  WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+
+== not comparable ==
+  WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js  (header not in W0 patch: diff --git a/WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js b/WebAp)
+  WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css  (header not in W0 patch: diff --git a/WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css b/)
+  WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css  (header not in W0 patch: diff --git a/WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css b/)

@@ -1,0 +1,3 @@
+﻿/api/check-localhost -> 200
+200  02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js served == disk (sha256 d1b5385e70f1387c)
+200  04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js served == disk (1201403 bytes)

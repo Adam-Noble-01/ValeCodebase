@@ -1,0 +1,7 @@
+﻿OK   control (unmutated)                              exit 0 (expected 0)
+OK   pack order swapped in the root index             exit 1 (expected 1)  first failing check: two packs, Construction Materials first, Site Plan second
+OK   one Brickwork placement moved                    exit 1 (expected 1)  first failing check: packs, order and every parsed pattern identical to TrueVision's
+OK   points-to-mm constant changed in the module      exit 1 (expected 1)  first failing check: SvgPaint identical for all 19 patterns
+OK   Site Plan pack index missing                     exit 1 (expected 1)  first failing check: ValeVision library loads: every request answered (17 files, all 200)
+OK   console prefix left as another app's             exit 1 (expected 1)  first failing check: console: one line, "[ValeVision3D] Hatch patterns: 19 pattern(s) in 2 pack
+result: PASS

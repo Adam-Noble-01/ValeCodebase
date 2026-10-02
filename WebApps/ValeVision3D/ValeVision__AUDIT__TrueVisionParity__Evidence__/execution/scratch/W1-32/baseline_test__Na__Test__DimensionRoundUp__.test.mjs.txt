@@ -1,0 +1,24 @@
+﻿ValeVision3D - dimension round up to 5 mm
+  PASS  6,413 reads 6,415, marked (the screenshot)
+  PASS  6,416 reads 6,420: always UP, never to the nearest
+  PASS  6,411 reads 6,415, not 6,410
+  PASS  6,412.6 prints 6,413 at 0 decimals, so reads 6,415
+  PASS  2,810 stays 2,810, unmarked
+  PASS  8,320 stays 8,320, unmarked
+  PASS  0 stays 0, unmarked
+  PASS  2,810.0000004 (snap noise) stays 2,810, unmarked
+  PASS  2,809.9999996 (snap noise) stays 2,810, unmarked
+  PASS  56.2 mm of paper x 50 stays 2,810, unmarked
+  PASS  2,810.4 prints 2,810 at 0 decimals: stays, unmarked
+  PASS  2,810.5 prints 2,811 at 0 decimals: reads 2,815
+  PASS  6,413.27 at 1 decimal reads 6,415, marked
+  PASS  2,810.04 at 1 decimal prints 2,810.0: stays
+  PASS  2,810.06 at 1 decimal prints 2,810.1: reads 2,815
+  PASS  A negative value rounds its size: -6,413 reads 6,415
+  PASS  A 2.5 step: 1,001 reads 1,002.5
+  PASS  A 0.05 step at 2 decimals: 12.35 stays
+  PASS  A 10 step: 6,413 reads 6,420
+  PASS  A step of 0 rounds nothing
+  PASS  A missing step rounds nothing
+
+Every check passed.

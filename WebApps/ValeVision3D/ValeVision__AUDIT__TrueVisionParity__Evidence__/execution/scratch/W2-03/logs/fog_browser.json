@@ -1,0 +1,508 @@
+{
+  "when": "2026-10-02T10:11:55.353Z",
+  "old": false,
+  "out": {
+    "checks": [
+      {
+        "name": "S.1 RenderFrame draws (preset active, plain render route)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "name": "S.2 a drawing with its fog OFF: every pixel equal to no fog source at all",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "name": "S.3 the poche (the cut room, drawn by the section overlay AFTER the fog) stays solid",
+        "pass": true,
+        "detail": {
+          "off": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "on": [
+            80,
+            80,
+            80,
+            255
+          ]
+        }
+      },
+      {
+        "name": "S.4 a surface in front of Depth (0.3 m behind the plane) is untouched",
+        "pass": true,
+        "detail": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            64,
+            64,
+            64,
+            255
+          ]
+        }
+      },
+      {
+        "name": "S.5 a surface inside the fade (2.75 m) is lifted part of the way to the paper",
+        "pass": true,
+        "detail": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            131,
+            131,
+            131,
+            255
+          ]
+        }
+      },
+      {
+        "name": "S.6 a surface past End (11 m) has faded into the paper",
+        "pass": true,
+        "detail": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      {
+        "name": "S.7 empty paper stays paper",
+        "pass": true,
+        "detail": {
+          "off": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      {
+        "name": "S.8 nothing outside the two blocks behind Depth changes at all (cap, near block, paper)",
+        "pass": true,
+        "detail": 0
+      },
+      {
+        "name": "S.9 a perspective camera gets no fog (every pixel as without a source)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "name": "S.10 no WebGL error",
+        "pass": true,
+        "detail": 0
+      },
+      {
+        "name": "T.1 the card thumbnail is captured from the fogged frame (far faded, mid lifted, poche solid)",
+        "pass": true,
+        "detail": {
+          "blob": 730,
+          "far": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "mid": [
+            131,
+            131,
+            131,
+            255
+          ],
+          "cap": [
+            80,
+            80,
+            80,
+            255
+          ]
+        }
+      },
+      {
+        "name": "D.1 the Dev row builds (caption, Off/On, three number boxes, readout) and writes through its accessors",
+        "pass": true,
+        "detail": {
+          "built": true,
+          "inputs": 3,
+          "buttons": 2,
+          "flow": {
+            "enabled": true,
+            "start": 2500,
+            "changes": 2,
+            "readout": "fog from 2500 to 15000 mm behind the plane - 50% by half way"
+          }
+        }
+      },
+      {
+        "name": "E.1 an export of the drawing runs one tile with one section overlay",
+        "pass": true,
+        "detail": {
+          "w": 320,
+          "h": 200,
+          "fogCalls": 1,
+          "overlayCalls": 1
+        }
+      },
+      {
+        "name": "E.2 export with the fog OFF: every pixel equal to no fog source",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "name": "E.3 the export raster carries the fog: far block faded, mid lifted, near and paper untouched",
+        "pass": true,
+        "detail": {
+          "cap": {
+            "off": [
+              80,
+              80,
+              80,
+              255
+            ],
+            "on": [
+              80,
+              80,
+              80,
+              255
+            ]
+          },
+          "near": {
+            "off": [
+              64,
+              64,
+              64,
+              255
+            ],
+            "on": [
+              64,
+              64,
+              64,
+              255
+            ]
+          },
+          "mid": {
+            "off": [
+              64,
+              64,
+              64,
+              255
+            ],
+            "on": [
+              131,
+              131,
+              131,
+              255
+            ]
+          },
+          "far": {
+            "off": [
+              64,
+              64,
+              64,
+              255
+            ],
+            "on": [
+              255,
+              255,
+              255,
+              255
+            ]
+          },
+          "paper": {
+            "off": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "on": [
+              255,
+              255,
+              255,
+              255
+            ]
+          }
+        }
+      },
+      {
+        "name": "E.4 ...and the poche stays solid (the section overlay drawn after the fog)",
+        "pass": true,
+        "detail": {
+          "off": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "on": [
+            80,
+            80,
+            80,
+            255
+          ]
+        }
+      },
+      {
+        "name": "E.5 per tile: the fog drawn once and the section overlay once",
+        "pass": true,
+        "detail": {
+          "fogCalls": 1,
+          "overlayCalls": 1
+        }
+      },
+      {
+        "name": "E.6 the export matches the screen (same fogged colours at the same points)",
+        "pass": true,
+        "detail": {
+          "exportMid": [
+            131,
+            131,
+            131,
+            255
+          ],
+          "screenMid": [
+            131,
+            131,
+            131,
+            255
+          ]
+        }
+      }
+    ],
+    "info": {
+      "samples": {
+        "cap": {
+          "off": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "on": [
+            80,
+            80,
+            80,
+            255
+          ]
+        },
+        "near": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            64,
+            64,
+            64,
+            255
+          ]
+        },
+        "mid": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            131,
+            131,
+            131,
+            255
+          ]
+        },
+        "far": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "paper": {
+          "off": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      "glError": 0,
+      "thumbnail": {
+        "blob": 730,
+        "far": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "mid": [
+          131,
+          131,
+          131,
+          255
+        ],
+        "cap": [
+          80,
+          80,
+          80,
+          255
+        ]
+      },
+      "devRow": {
+        "built": true,
+        "inputs": 3,
+        "buttons": 2,
+        "flow": {
+          "enabled": true,
+          "start": 2500,
+          "changes": 2,
+          "readout": "fog from 2500 to 15000 mm behind the plane - 50% by half way"
+        }
+      },
+      "exportOff": {
+        "w": 320,
+        "h": 200,
+        "fogCalls": 1,
+        "overlayCalls": 1
+      },
+      "exportSamples": {
+        "cap": {
+          "off": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "on": [
+            80,
+            80,
+            80,
+            255
+          ]
+        },
+        "near": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            64,
+            64,
+            64,
+            255
+          ]
+        },
+        "mid": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            131,
+            131,
+            131,
+            255
+          ]
+        },
+        "far": {
+          "off": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "paper": {
+          "off": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "on": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      "exportOn": {
+        "fogCalls": 1,
+        "overlayCalls": 1
+      },
+      "mode": "landed"
+    },
+    "hashes": {
+      "frameNull": "176e4775:64000",
+      "frameOff": "176e4775:64000",
+      "exportOff": "e9634f75:256000"
+    }
+  },
+  "aborted": [],
+  "console": [
+    "log: [ValeVision3D] Cross Section View system initialized",
+    "log: [CrossSection] Section added: Upright Section 1",
+    "warning: [ValeVision3D] Drawing preset: composer not ready, rendering the drawing unstyled.",
+    "warning: [ValeVision3D] 2D Profile Lines: render targets not available from pipeline",
+    "warning: [ValeVision3D] Elevation depth fog: the camera is not a parallel one - no fog drawn.",
+    "warning: [.WebGL-0x154400bfa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x154400bfa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x154400bfa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x154400bfa200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently"
+  ]
+}

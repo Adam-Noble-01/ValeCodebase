@@ -1,0 +1,752 @@
+{
+ "slice_id": "S01",
+ "claims_checked": 172,
+ "confirmed_ids": [
+  "S01-F02",
+  "S01-F03",
+  "S01-F04",
+  "S01-F05",
+  "S01-F07",
+  "S01-F10",
+  "S01-F11",
+  "S01-F12",
+  "S01-F13",
+  "S01-F15",
+  "S01-F16",
+  "S01-F17",
+  "S01-F18",
+  "S01-F19",
+  "S01-F20",
+  "S01-F21",
+  "S01-F23",
+  "S01-F24",
+  "S01-F25",
+  "S01-F26",
+  "S01-F27",
+  "S01-F28",
+  "S01-F29",
+  "S01-F30",
+  "S01-F31",
+  "S01-F32",
+  "S01-F33",
+  "S01-F34",
+  "S01-F35",
+  "S01-F39",
+  "S01-F40",
+  "S01-F41",
+  "S01-F43",
+  "S01-F46",
+  "S01-F47",
+  "S01-F50",
+  "S01-F51",
+  "S01-F53",
+  "S01-F54",
+  "S01-F55",
+  "S01-F56",
+  "S01-F57",
+  "S01-F58",
+  "S01-F59",
+  "S01-F62",
+  "S01-F63",
+  "S01-F65",
+  "WP-S01-02",
+  "WP-S01-05",
+  "WP-S01-07",
+  "WP-S01-09"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S01-F01",
+   "field": "detail",
+   "new_value": "VV holds DrawingViewCore/FloorPlanViews/PlanAnnotations/PlanDimensions/ElevationViews/NorthDirection at 42/43/44/45/46/47; TV holds them at 40/42/43/44/45/46, so seven TV numbers name a different VV system. Cause: VV plan D05 (legacy 40 and 41 were occupied). Of the 249 paired drawing files in 40-55, only 69 sit at paths that differ by the folder number (VV 42..47 = 15+10+8+15+13+8 pairs); the 180 pairs in 50 and 51 already share paths. 67 VV files (235 references) in src, styles, tests and index.html contain an old VV folder name (25 inside the moved folders, 41 elsewhere in src/styles/tests, index.html with 27); the devlog, ledger and plan hold 34 more references that are history. The renumber reverses a recorded decision on BOTH sides: VV plan D05, and TV plan section 4 (lines 288-291, 'Ported files keep their ValeVision names verbatim ... with the folder number translated (4.1)') and 4.1 (line 306, 'Fixed for the whole of this work'). S02a (D-S02a-01) and S09 (D-S09-02) independently recommend the same renumber. Until it lands, every TV->VV port of these folders needs path rewriting.",
+   "reason": "The survey's '249 pairs differ only by path prefix' and '106 files reference these folder names' are wrong: only the 69 pairs in the six renumbered folders differ by path, and the 106-file list also counted 39 files that only mention TV paths in PORT NOTEs or 41__System__CrossSectionView. The finding also omitted that TV's own plan fixed the translated map."
+  },
+  {
+   "id": "S01-F01",
+   "field": "evidence",
+   "new_value": "TV/TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md:288-291 (section 4) and :304-321 (section 4.1); VV/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:53 (D05); parity/verify_s01/renumber_touch_verified.txt (67 files + 3 history docs, 269 references); ref/drift_summary.json (pairs per folder); S02a D-S02a-01, S09 D-S09-02",
+   "reason": "Replaces the 106-file list (s01work/vv_renumber_touch_files.txt), which over-counts."
+  },
+  {
+   "id": "S01-F01",
+   "field": "recommendation",
+   "new_value": "One atomic release (WP-S01-01R) before any other port, once Adam confirms D-S01-01 and D-S01-15 (the renumber reverses VV D05 and TV plan 4/4.1). Vacate 40 first (S01-F02; target number per D-S01-13), git mv 42->40, 43->42, 44->43, 45->44, 46->45, 47->46, rewrite the full old folder names in the 67 files of parity/verify_s01/renumber_touch_verified.txt in one pass (each name is unique, so the pass is collision-safe), bump the WCP SW token, add a ledger 'Folder renumbering' section and dated revision notes to VV D05 (and to TV plan 4/4.1 if D-S01-12 allows TV edits).",
+   "reason": "Adds the decision dependency and the verified touch list."
+  },
+  {
+   "id": "S01-F02",
+   "field": "recommendation",
+   "new_value": "Move the folder inside WP-S01-01R to 91__System__2dElevationsView (S01's choice: 9x is outside every range TV grows in; S02a's D-S02a-04 proposes 39 instead - D-S01-13 settles it), or retire it (D-S01-02). Fix the hard-coded config path at Na__ElevationView__SystemLogic.js:67; its only other references are index.html:1375-1376 (imports), ComposerPreset__.js:91,93 (moves with S01-F03) and a PORT NOTE comment in 46/Na__Elevation__FacePick__.js:39. Register the chosen number.",
+   "reason": "Cross-slice conflict with S02a on the target number; importer list verified complete."
+  },
+  {
+   "id": "S01-F06",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "Not a verbatim port: the Bounds__ PORT NOTE says VV's category keys differ (config token lists change), Grip__ supersedes VV's own GizmoGrip/FacePick, and Grip__ imports Na__RenderLoop__IsPaused, which VV lacks."
+  },
+  {
+   "id": "S01-F06",
+   "field": "detail",
+   "new_value": "TV v2.82.0-v2.84.0: every plan and elevation gets a visible, grabbable, snappable plane (9 files, 3,967 lines; Overlay 1.1.0, others 1.0.0; every PORT NOTE 'ValeVision : not yet ported'). Not verbatim: (1) Na__DrawingPlanes__Bounds__.js PORT NOTE (:48-50) says VV's category keys differ, so the token lists in Na__DrawingPlanes__AppConfig__.json:12-14 (MainBuildingModel, Storey__, LandscapeEnvironment) must be set to VV's keys; (2) Na__DrawingPlanes__Grip__.js PORT NOTE (:60-61) says it supersedes Na__Elevation__GizmoGrip__ and Na__Elevation__FacePick__ in VV when ported - VV wires both from index.html:1417-1418 and its Elevation DevMenu editor 1.0.0; (3) TV's importers of 47 are 42/Na__FloorPlan__DevMenu__Editor__.js (2.0.0) and 45/Na__Elevation__DevMenu__Editor__.js (2.1.0), whose VV copies are 1.0.0, so 47 lands together with those editors; (4) Grip imports Na__RenderLoop__IsPaused (:83, :204, :706), which VV's Invalidation lacks (S01-V01). Overlay__ imports 05/Na__RenderLoop__InteractiveOverlays__.js (TV-only, 170 lines), also imported by 46 CompassGizmo__. TV Index.html:913-915 imports it and :1742 initialises it; its Dev-menu stylesheet is at TV CSS index :123. The VV folder number is taken by NorthDirection until the renumber. Storage keys Na__DrawingPlanes__Shown and __Snap are shared.",
+   "reason": "Adds the adaptation points, the TV importers and the missing IsPaused dependency, all verified in the TV files."
+  },
+  {
+   "id": "S01-F06",
+   "field": "recommendation",
+   "new_value": "Port at TV's path after WP-S01-01R together with TV's 42/45 DevMenu editors, with InteractiveOverlays at 05__RenderPipeline/ and Na__RenderLoop__IsPaused added first (WP-S01-10). Set the config token lists to VV category keys (PORT NOTE Divergences); retire VV's GizmoGrip/FacePick wiring as Grip's PORT NOTE says, unless Adam wants them kept; add the index.html imports and initialisation in TV order and the Dev-menu stylesheet to VV's CSS index.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F08",
+   "field": "detail",
+   "new_value": "TV v2.94.0-v2.103.0: per-drawing depth fog (8 files, 2,203 lines). TV files outside 49 that import it: 01/Na__AppFlow__LoadingSequence.js, 21/Na__PresentationMode__Thumbnail__Renderer.js, 40/Na__DrawView__RenderPreset__.js (DIV-1: in VV this lands in ComposerPreset), 45/Na__Elevation__DevMenu__RowBuilders__.js (DevMenu__Row__), 45/Na__Elevation__ModeController__.js, 45/Na__Elevation__ProjectJson__Data__.js (RecordData__), LE/20/Na__LayoutEditor__Viewport2d__DepthFog__.js (ConfigState__, Maths__; TV-only, 145 lines) and LE/25/Na__LayoutEditor__SnapshotRenderer__.js (:232 SetSource, RenderLayerFrame), plus TV's CSS index (:130) and Index.html:919 (initialised at :1777). Viewport2d__Frame__ carries TV-only exports PlaceFog, RenderFog, ScheduleFog and ClearFog. The RenderLayer PORT NOTE (:71-73) says VV keeps its composer running, so the two calls land in different places there. Unrelated to VV's 29__System__FogPlaneSystem (a 3D fog plane).",
+   "reason": "The survey listed only the LE consumers; the wiring surface is nine TV files outside 49, including LoadingSequence, the 21 thumbnail renderer and the DIV-1 preset."
+  },
+  {
+   "id": "S01-F09",
+   "field": "detail",
+   "new_value": "TV v2.155.0 publishing: reader (52), shared contract (53), publisher LE/65, share manifest LE/66. TV's LE/80 Na__LayoutEditor__WebViewer__.js:96-100 imports 52 (Document__, LoadingScreen__, Urls__) and LE/66 Share__Manifest__ imports Urls__, so TV's web viewer cannot be ported without 52/53 (S01-V06). The schema refers to NA's example folder (Na__PublishedSchema__.json:10 Meta__SchemaRef 'na-project-portal/26-Projects/AA00__ExampleProjectStructure/30__TrueVision__AppContent/06__Layout__PublishedDocuments'); version messages say 'TrueVision'; the reader's URLs read R2 through the CDN, or the repo copy on localhost. TV added a 'tv-published-' service-worker cache (DEVLOG:1328); the shared WCP SW has no equivalent rule. Na__PubDoc__Styles__Main__.css has no runtime link in TV; it is linked by 80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html:43 and listed in the 52 README.",
+   "reason": "Adds the WebViewer dependency and the SW cache, and corrects 'referenced by nothing' for the PubDoc stylesheet."
+  },
+  {
+   "id": "S01-F14",
+   "field": "detail",
+   "new_value": "TV 1.2.0 (v2.39.0-v2.146.0) writes saved keys and sibling files to the repo copy through the ProjectVision server: it reads the project data fresh from disk, merges the saved top-level keys client-side and POSTs the whole document to /api/projects/<code> (:18-22); sibling files go to /api/projects/<code>/files/<name>; statements to /api/truevision/statements/*; plus a drawings-fingerprint route, header X-TrueVision-Drawings-Base (:108), a 409 save guard and server backups (v2.146.0). Importers (6): 40 DrawView__ProjectData__ (MergeKeys, DrawingsFingerprint), LE/51 Register__Data__ and Transactions__, LE/50 SpecData__Lockstep__, LE/52 Statement__Data__Transport__ and Publish__. VV already has most of the transport underneath: WCP/server.py serves GET/POST /api/projects/<folder_id> (:408/:439, whole project.json write), GET/POST /api/projects/<folder_id>/drawing-notes (:790, ValeVision__DrawingNotes__.json whole-file), POST /assets (:752), /presentation-thumbnail/<scene_id> (:708), visibility/rename/delete (:493/:560/:649) and /api/editor-config (:334); VV's 03/Na__AppUtils__R2SaveProjectJson__.js already does 'Phase 1 R2 via worker, Phase 2 local mirror via Flask' (:15-18, :155). Missing in VV: a generic sibling-file route, the drawings fingerprint with its 409 guard and backups, the statements routes, and a health probe with a service name.",
+   "reason": "The survey said VV's Flask server has 'only GET /api/projects/<code> and the scrapbook blueprint'; server.py has a full set of project write routes and VV's client already mirrors saves locally."
+  },
+  {
+   "id": "S01-F14",
+   "field": "recommendation",
+   "new_value": "Create VV 03/Na__AppUtils__LocalProjectMirror__.js at TV's path with TV's export names (MergeKeys, DrawingsFingerprint, WriteSiblingFile, WriteStatementFile, StatementTree, MakeStatementFolder, MoveStatement, DeleteStatement). MergeKeys = read project.json, merge, POST the existing /api/projects/<folder_id>; WriteSiblingFile = the existing /drawing-notes route for the notes file plus a new generic sibling route. Add only the missing routes (fingerprint with 409 and backups, statements) as WCP blueprints named per R14, with header X-ValeVision-Drawings-Base. Route semantics belong to the transport slice.",
+   "reason": "Reuse the routes VV already has."
+  },
+  {
+   "id": "S01-F22",
+   "field": "detail",
+   "new_value": "The only NAMESPACE divergence among the 232 paired JS/CSS drawing files: TV 'Na__DrawView__SectionAdapter' drives Na__SectionCut__*; VV 'Na__DrawSection' drives 41 CrossSectionView, with 5 private Na__DrawSection__* helpers. The 13 export names are identical. TV PORT NOTE: 'diverged (interface identical, implementation is a pass-through)'. SectionAdapter is not the only DIV-2 seam: TV LE/25 SnapshotRenderer imports three 41 modules directly - Na__SectionCut__Serialize__ (:213 Serialize, Apply), Na__SectionCut__ConfigState__ (:223 GetAppearance, SetAppearance) and Na__SectionCut__Engine__ (:244 SetModelRoot) - while VV's imports CrossSectionView SystemLogic (:162, :173).",
+   "reason": "The SnapshotRenderer DIV-2 seam includes SetModelRoot, which the proposed SectionAdapter back-port must also cover."
+  },
+  {
+   "id": "S01-F36",
+   "field": "detail",
+   "new_value": "TV v2.155.0 (publisher LE/65, authoring only) and v2.166.0 (Share button and link manifest LE/66). They use /api/truevision/published (NAAPPS ProjectVision__TrueVisionPublished__Api__.py), the ApiClient published functions, the share base 'https://www.noble-architecture.com/s/' (Share__Config__.json:16) and the example-structure reference. Share__Open__ is imported at TV Index.html:904 and initialised at :1734; event na-app-scene-ready; Styles__Share__ is in TV's CSS index (:173). VV already has its own share-link feature, 02__Src__AppModules/61__Feature__ShareProjectLink: Na__Feature__ShareProjectLink__UrlGeneratorLogic__.js builds absolute ValeVision3D URLs (the app address plus ?project=<code>) and the folder emails them - the natural VV host for document links in place of NA's /s/ resolver.",
+   "reason": "The survey did not mention VV's existing 61 ShareProjectLink, which changes the realistic options for D-S01-10."
+  },
+  {
+   "id": "S01-F36",
+   "field": "recommendation",
+   "new_value": "Port at TV paths with 52 and 53 (S01-F09), after the transport facade, using /api/valevision/published and a WCP blueprint. For the share base prefer VV's own URL scheme (61 ShareProjectLink: the app address plus ?project=<code>, extended with a document parameter) over a new resolver, or ship Share off (D-S01-10). Add the index.html import and initialisation and the loader STYLESHEETS entry.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F37",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "ModelSource__ depends on design phases VV does not have, PlanDoors__ on door exports VV lacks, PdfFonts__ on NA's font host; only the remaining units port verbatim."
+  },
+  {
+   "id": "S01-F37",
+   "field": "detail",
+   "new_value": "TV-only units in shared LE subfolders: 07 SheetRecords__LeaderlessNotes__ (v2.147.0), SheetRecords__NoteRegions__ (v2.143.0); 15 DimensionRounding__ (v2.139.0), PaintOrder__ (v2.106.0), ShapeRings__ (v2.150.0); 20 ModelSource__ (v2.32.0), PlanDoors__ (v2.42.0), VectorQuality__ (v2.136.0), ViewportRotation__ (v2.138.0); 30 LayerMenu__ (v2.123.0), SheetTools__CopyDrag__ (v2.117.0), HoverTooltip__ and NoteTooltip__ (v2.144.0); 60 PdfFonts__. 14 LE files, 3,861 lines, plus 26/Na__ModelGroup__PhaseLibrary__.js (602) = 4,463 (the survey's 4,705 does not reproduce). Not all verbatim: ModelSource__ resolves each viewport's DESIGN PHASE through PhaseLibrary, which registers the project's modelGroups - a TV-only project-data concept (S01-V03; TV PORT NOTEs at 50/Na__ProjectedLinework__Pipeline__.js:53, LE/20/Na__LayoutEditor__Viewport3d__.js:47 and ViewportIdentity__.js:59 say VV has no model groups). PlanDoors__ needs 50 DoorPose, 25 FindDoorGroups, six ClickToOpenDoors exports VV lacks (S01-V02) and a VV swing category key (TV LE AppConfig:351 'TrueVision__Linetype__DoorSwings'). PdfFonts__ fetches TTF cuts from NA's host (LayoutEditor__Pdf__FontCdnBase, TV LE AppConfig:502) and needs a Pdf config block (ledger 1169 records VV's lack as deliberate). Ledger 1165 records ModelSource, PlanDoors and ViewportSnapMove as 'simply absent' in VV.",
+   "reason": "Adds the design-phase, door and font-host dependencies that make the survey's port_verbatim wrong for three of the fourteen units; corrects the line total."
+  },
+  {
+   "id": "S01-F37",
+   "field": "recommendation",
+   "new_value": "Port the units with the features that own them, at TV's names. DimensionRounding, PaintOrder, ShapeRings, LeaderlessNotes, NoteRegions, VectorQuality, ViewportRotation, LayerMenu, CopyDrag, HoverTooltip and NoteTooltip can go verbatim (header seams only). ModelSource__ and PhaseLibrary wait for D-S01-14 (single-phase behaviour or stubs). PlanDoors__ goes with DoorPose and the ClickToOpenDoors exports, with the swing key set to VV's category. PdfFonts__ waits for a Vale font-host decision (D-S01-10).",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F38",
+   "field": "title",
+   "new_value": "TV-only Specification and notes units in LE/50 + CabinetInfill (9 files)",
+   "reason": "The finding lists nine files (NoteRegions x3, Panel__MarginNotes__Leaderless, Panel__MarginNotes__Regions, SpecData__Lockstep, SpecLockstep, SpecMargin__Column, CabinetInfill); 4,856 lines confirmed."
+  },
+  {
+   "id": "S01-F42",
+   "field": "detail",
+   "new_value": "Naming seams to re-apply when TV's whole file replaces VV's: (1) banner app name; (2) [ValeVision3D ...] console prefix; (3) PORT NOTE and devlog line; (4) DIV-1 ComposerPreset/RenderPreset (unless D-S01-06); (5) DIV-2 41 imports in SnapshotRenderer (three TV 41 modules) and SectionAdapter; (6) loader and Layout Mode VV-only exports (S01-F41); (7) brand config values (logo, DrawnBy, Pdf Author/Creator, Specification FileName); (8) transport imports (S01-F13/F14/F15); (9) ValeVision__ category keys; (10) Styles__Boot__ placement of tab-strip CSS; (11) index.html lowercase in comments; (12) app-named window globals - window.TrueVision__Pwa__ProjectContext and window.TrueVision__Pwa__HasUnsavedWork (S01-V04, S01-V05); (13) design-phase code paths (modelGroups, PhaseLibrary, Viewport__ModelSourceId) until D-S01-14 (S01-V03); (14) names missing from shared VV modules - Na__RenderLoop__IsPaused, three ModelToggle names, six Na__DoorAnim__ names (S01-V01, S01-V02). Counts confirmed: 127 drifted at the same path (50: 14, 51: 113) + 29 drifted and renumbered (VV 42: 8, 43: 7, 44: 1, 45: 2, 46: 8, 47: 3).",
+   "reason": "The checklist missed three seam classes found by the verifier's independent import graph."
+  },
+  {
+   "id": "S01-F44",
+   "field": "detail",
+   "new_value": "TV: NaProjectPortal/<yy>-Projects/<code>/30__TrueVision__AppContent/TrueVision__ProjectData__.json plus siblings TrueVision__DrawingNotes__.json, TrueVision__ProjectSpecification__.json (legacy), TrueVision__StatementDocs__.json, TrueVision__SitePlanData__Manifest__.json, and sub-folders 05__Layout__DrawingDocs__Images and 06__Layout__PublishedDocuments. VV: VaApps/Projects/<folderId>/project.json (ProjectLoader.js:407) plus ValeVision__DrawingNotes__.json (R2DrawingNotes__.js:54); VV's LE config already swaps Specification__FileName (AppConfig:406). Both apps share ONE R2 bucket and CDN: TV's worker na-truevision-api (80__CloudflareIntegration/CloudflareWorker/wrangler.toml:24,35) and VV's whitecardopedia-editor-api (WCP/CloudflareWorker/wrangler.jsonc:16,24-25) both bind bucket 'noble-architecture-cdn', served at cdn.noble-architecture.com. Isolation is by prefix and worker only: TV guards generic /r2/* routes with R2_PREFIX 'NaProjectPortal/' (wrangler.toml:41,50); VV's handlers each hard-code 'VaApps/Projects/{folderId}/...' keys and expose no generic R2 route.",
+   "reason": "Adds the shared-bucket fact, which makes prefix discipline a correctness rule, not only a naming rule."
+  },
+  {
+   "id": "S01-F44",
+   "field": "recommendation",
+   "new_value": "R13: VV keeps its own worker, prefix and project.json. Every TV sibling file name swaps TrueVision__ for ValeVision__; TV's numbered content sub-folders keep their exact names under VaApps/Projects/<folderId>/. Because the bucket is shared, no VV code may build a NaProjectPortal/ key, and every new VV key needs a VV worker handler that writes only under VaApps/Projects/<folderId>/. The transport slice confirms the R2 keys.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F45",
+   "field": "detail",
+   "new_value": "TV: NAAPPS/ProjectVision__LocalServer__Main__.py (port 8090) with __TrueVisionPublished__, __Scrapbook__, __SheetImages__, __Statements__, __UserConfig__ and ProjectManager APIs; routes /api/truevision/...; probe /api/health with service 'na-projectvision-local-dev'; header X-TrueVision-Drawings-Base. VV: WCP/server.py (port 8000) with one blueprint (Server__ValeVisionScrapbook__Api__.py, /api/valevision/scrapbook) AND app routes in server.py itself: GET/POST /api/projects/<folder_id> (:408/:439), /drawing-notes (:790), /assets (:752), /presentation-thumbnail/<scene_id> (:708), /visibility (:493), /rename (:560), /delete (:649), /api/editor-config (:334), /api/projects/discover (:824) and the probe /api/check-localhost answering {isLocalhost:true} (:322). The naming precedent for new routes is VV LE/56 ScrapbookCustom__Transport__ (its PORT NOTE).",
+   "reason": "The survey described VV's server as having only GET /api/projects/<code> plus the scrapbook blueprint."
+  },
+  {
+   "id": "S01-F45",
+   "field": "recommendation",
+   "new_value": "R14 for every new VV route: /api/valevision/<feature>, a blueprint WCP/Server__ValeVision<Feature>__Api__.py registered in WCP/server.py, probe /api/check-localhost, headers X-ValeVision-*, label 'local development server'. Reuse the existing /api/projects routes for the project merge and the notes file; new: published, sheet-images, statements, user-config/spellings, generic sibling files, drawings fingerprint (409 guard, backups).",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F48",
+   "field": "detail",
+   "new_value": "639 TV banners ('TRUEVISION3D - ...') and 432 VV banners ('VALEVISION3D - ...'); 3 of 278 paired banners differ after the app name (PlanDimensions__Data__, ProjectJson__SceneData, StaticExport__TiledRenderer). Console prefixes mirror each other ([TrueVision3D LayoutEditor] / [ValeVision3D LayoutEditor]). Three TrueVision identity leaks exist in VV: LE/50/Na__LayoutEditor__SpecPdf__.js:431 prints '[TrueVision3D LayoutEditor] The specification could not be downloaded.'; 45/Na__PlanDimensions__Styles__.css:8 carries the banner 'TRUEVISION3D - PLAN DIMENSIONS - STYLES' (and its PORT NOTE precedes the banner); LE/50/Na__LayoutEditor__SpecPdf__.js:147 reads window.TrueVision__Pwa__ProjectContext, which VV never defines, so VV's specification PDF never carries the project name (S01-V04).",
+   "reason": "Two further leaks found by grepping VV src for TRUEVISION3D and TrueVision__ outside comments."
+  },
+  {
+   "id": "S01-F48",
+   "field": "recommendation",
+   "new_value": "R7/R9: swap the app name and keep TV's text. Fix SpecPdf__.js:431 and the PlanDimensions__Styles__.css banner in WP-S01-03R; replace the :147 global read with the accessor of WP-S01-11. Align the PlanDimensions__Data__ banner when that file is re-ported.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F49",
+   "field": "detail",
+   "new_value": "NA-only values in TV config and code: QR base 'https://www.noble-architecture.com/q/' (LE/53 Na__ProjectQr__Config__.json:10); share base '/s/' (LE/66 Share__Config__.json:16); the statement stylesheet on TV's live site (LE AppConfig:1298); the PDF font host 'https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/' (LayoutEditor__Pdf__FontCdnBase, LE AppConfig:502); statement header and letterhead images on noble-architecture.com; the NA logo path (AppConfig:59; VV already uses its Vale logo); the 'TrueVision 3D Project Hub' standard section; 'Noble Architecture Ltd' in Register__Pdf__ and AppConfig:496. Not every noble-architecture.com URL is NA-only: VV's own R2 CDN (cdn.noble-architecture.com/VaApps/..., VV Na__AppConfig__Main.json:365,368,370; ProjectLoader.js:92,111,127) and VV's web fonts (www.noble-architecture.com/assets/..., Na__CoreUi__Styles__Fonts__.css:12,23) are hosted there.",
+   "reason": "Adds the PDF font host, and prevents a lint or a reviewer from treating VV's legitimate noble-architecture.com URLs as leaks."
+  },
+  {
+   "id": "S01-F49",
+   "field": "recommendation",
+   "new_value": "R15: brand values live in config only. Each NA-only value needs a Vale equivalent (a VV public host, Vale letterhead, a font host) or the feature ships off in VV (D-S01-10). The lint (WP-S01-08R) fails on the NA-only markers (NaProjectPortal, 30__TrueVision__AppContent, /na-apps/30__TrueVision__CoreAppCode, /q/, /s/) and allow-lists VV's cdn.noble-architecture.com/VaApps and www.noble-architecture.com/assets URLs.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F52",
+   "field": "detail",
+   "new_value": "VV has no SW of its own: it registers WCP's shared one (VV index.html:34-44 loads the WCP PWA scripts, including Whitecardopedia__Pwa__ServiceWorker__Registrar__.js; the SW entry is the WebApps-root stub Na__Pwa__ServiceWorker__.js, which importScripts the logic file and is served by WCP/server.py:915). WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js precaches VV shell files (:276-352), including 05/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js (:318) and the 29 FogPlaneSystem files, and holds PWA_SW_VERSION_TOKEN at :229 ('2026-09-18-1'). WebApps/live_sw.js is a tracked OLDER copy of the logic (token '2026-09-10-6' at :68), yet the WCP devlog (LOG__Whitecardopedia__DEVLOG.md:405,439) calls it 'the file the browser actually registers' - which file the deployed site registers is unverified. The registrar reloads open pages on every SW update without checking unsaved editor work (S01-V05). The drawing folders 40-47 are not in the precache list.",
+   "reason": "live_sw.js is not a current copy, the registered entry is the stub, and the registrar's reload behaviour matters for every token bump."
+  },
+  {
+   "id": "S01-F52",
+   "field": "recommendation",
+   "new_value": "WP-S01-01R bumps the token in the logic file and, once it is confirmed which file the deployed site registers, in live_sw.js too if that one is live. If D-S01-07 moves DistanceCulling, update precache line 318. Do not move 29 (S01-F58). Land WP-S01-11 (unsaved-work hold) before or with the first token bump that ships editor changes. The WCP files are hot files outside VV.",
+   "reason": "Follows from the corrected detail."
+  },
+  {
+   "id": "S01-F60",
+   "field": "detail",
+   "new_value": "(1) Ledger 29 ('scene editor splits ... all landed'), 34-35 (closed) and 1218 (still asked for) treat the SceneRowBuilders/SceneReorder splits as back-ported or pending; TV v2.68.2 deleted them as dead code and declared VV's split deliberate (DEVLOG:9813-9836). (2) Ledger 44-49 says VV has no Verify scripts; it has both (ledger 868). (3) Ledger 1230 lists the loader as a pending back-port; ledger 1244 says it is not a candidate. (4) Ledger 1189 says 'ValeVision has no service worker or installability module, so there is no shell cache to evict' - wrong: VV registers WCP's shared SW (VV index.html:44) and its shell is precached (WCP SW logic :276-352); the same claim sits in VV LE/07/Na__LayoutEditor__AutoSave__.js PORT NOTE :48-53. (5) Stale TV PORT NOTEs: 'ValeVision has no web viewer' in LE/80 WebViewer__.js:53, WebViewer__Drawings__.js:42, WebViewer__Spec__.js:46, WebViewer__TouchControls__.js:51, LE/66 Share__Links__.js:63 and Styles__Share__.css:6; 'ValeVision has no north system' in 45/Na__Elevation__AutoName__.js:51 and AutoNameText__.js:34 (VV has had 47 NorthDirection since v2.67.0). (6) TV plan TD04 says Classic is not ported; TV has TitleBlock__Classic__.js and its own scan. (7) VV plan D05, and TV plan section 4 (:288-291) and 4.1, are superseded by the renumber if D-S01-01 is approved.",
+   "reason": "Adds ledger 29 and 1189, the AutoSave PORT NOTE, the full list of stale TV notes and the TV plan sections the renumber supersedes."
+  },
+  {
+   "id": "S01-F61",
+   "field": "detail",
+   "new_value": "TV root: TrueVision__DEVLOG__, README__, 12 PLAN__ docs (DraftMode, DrawingMenus, DrawingPlanes, ElevationDepthFog, FloorAreas, PublishingSystem, ScrapbookSystem, SheetImages, SitePlanComposites, SitePlanDrawings, ValeVisionRealign__DrawingSystems, VectorTools), 6 NOTES__, 3 TASKS__, plus DEPENDENCY_CHART.md and __StupidProof__Plan__Fix__ProfileLines__GPU__Drain__.md outside the convention. VV root: ValeVision__DEVLOG__, README__, PARITY__TrueVisionLedger__, PLAN__TrueVisionPort__LayoutEditor__, plus TASK__25-Jun-2026__SketchUpToGlb__.md, Research__RubySceneData__RIPDOWN__.md and install-guide.html outside the convention. App-root content: TV 50__TrueVision__UserConfig and 52__LayoutEditor__HatchPatternLibrary are missing in VV; 51__LayoutEditor__UserScrapbookContent matches (same NN__ScrapbookItems__Name category pattern and 00__Deleted__Quarantine folder in both servers: WCP Server__ValeVisionScrapbook__Api__.py:81-85, NAAPPS ProjectVision__TrueVisionScrapbook__Api__.py:71-75).",
+   "reason": "TV has 12 PLAN docs, not 13; adds the out-of-convention root files and confirms the scrapbook content-folder parity."
+  },
+  {
+   "id": "S01-F64",
+   "field": "detail",
+   "new_value": "(1) Route SnapshotRenderer's section serialize, apply, appearance AND model-root calls through Na__DrawView__SectionAdapter__ in both apps (TV SnapshotRenderer imports Na__SectionCut__Serialize__ :213, Na__SectionCut__ConfigState__ :223 and Na__SectionCut__Engine__ SetModelRoot :244); DIV-2 is then confined to SectionAdapter. (2) One helper Na__AppUtils__ProjectStorageFolderId() replacing the GetYearFromUrl + GetProjectFolderFromUrl pairs (11 and 12 drawing/LE files). (3) App-neutral keys: Na__LayoutEditor__Statement* storage keys, the spellings JSON root key, model category prefixes and the API path read from config. (4) A project display-name accessor replacing the window.TrueVision__Pwa__ProjectContext reads in the LE (S01-V04) and a neutral unsaved-work flag for both PWA registrars (S01-V05).",
+   "reason": "Item 1 missed SetModelRoot; items for the PWA globals added."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S01-V01",
+   "category": "wiring",
+   "title": "Na__RenderLoop__IsPaused missing in VV; VV's render-loop hold is event-based",
+   "detail": "TV 05/Na__RenderLoop__Invalidation.js keeps the hold reasons inside the module and exports Na__RenderLoop__Pause, Resume and IsPaused (:71, :88). TV LoadingSequence (:305, :1144) and 47/Na__DrawingPlanes__Grip__.js (:83, :204, :706) read IsPaused. VV's Invalidation 1.1.0 exports Pause and Resume as dispatchers of the VV-only events na-pause-render-loop / na-resume-render-loop, and VV's LoadingSequence owns the reason set (:1181, :1507-1514); there is no IsPaused. The survey's W1 listed Invalidation as present with no change. A verbatim 47 port fails at module load.",
+   "recommendation": "Add Na__RenderLoop__IsPaused at TV's name to VV's Invalidation by mirroring the reason set inside the module (Pause/Resume already pass through it), keeping VV's events; PORT NOTE 'adapted'. Do it in WP-S01-10, before the 47 port. Alternative: adopt TV's module-level hold and LoadingSequence check (a larger change to a hot file).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TV 02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js:71,88; TV 47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js:83,204,706; TV 01__AppCore/Na__AppFlow__LoadingSequence.js:305,1144; VV 05__RenderPipeline/Na__RenderLoop__Invalidation.js export block (Pause, Resume, no IsPaused); VV 01__AppCore/Na__AppFlow__LoadingSequence.js:1181,1507-1514; parity/verify_s01/surface.txt",
+   "tv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "tv_version": "Invalidation (no version line; Pause/Resume/IsPaused region)",
+   "vv_version": "Invalidation 1.1.0",
+   "depends_on": [],
+   "est_lines": 15,
+   "vv_adaptation": "Keep VV's event dispatch; add the module-side mirror and IsPaused."
+  },
+  {
+   "id": "S01-V02",
+   "category": "wiring",
+   "title": "Shared VV modules lack TV export names: ModelToggle x3, ClickToOpenDoors x6",
+   "detail": "26/Na__UiFeature__ModelToggle__Controls.js: TV exports Na__ModelToggle__SetCategoryVisibleByKey, Na__ModelToggle__BorrowRegistry and Na__ModelToggle__RestoreRegistry, imported by TV LE/25 Na__LayoutEditor__SnapshotRenderer__.js:212 and used at :602 (hidden layers by exact key), :784 and :815 (phase staging); VV's export block (:409-415) has none of them. 25/3dObjectIInteraction__Animation__ClickToOpenDoors__.js: TV exports Na__DoorAnim__ApplyPanelTransform, ComputePanelLocalPose, DescribeDoors, GetLiveProgress, MOD_TYPE_FIXED and MOD_TYPE_ROT_ONLY, used by 50/Na__ProjectedLinework__DoorPose__.js; VV's copy (1,308 lines vs TV 1,490) has none. The survey's W1 called both files 'present at the same path, no change'.",
+   "recommendation": "Add the names at TV's paths with the SnapshotRenderer (S04a) and DoorPose (S02b) ports, tracked by WP-S01-10. BorrowRegistry/RestoreRegistry matter only with design phases (D-S01-14). Until then those ports carry an import seam listed in their PORT NOTE.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TV 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:212,602,784,815; VV 26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js:409-415; parity/verify_s01/surface.txt (independent import graph)",
+   "tv_paths": [
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js"
+   ],
+   "depends_on": [
+    "D-S01-14"
+   ]
+  },
+  {
+   "id": "S01-V03",
+   "category": "decision",
+   "title": "Design phases (modelGroups) are TrueVision-only; ModelSource and PhaseLibrary cannot port verbatim",
+   "detail": "TV project data can hold several design phases ('modelGroups'; TV ProjectLoader :175-196 with HasModelGroups, ExtractModelGroup, GetActiveGroupIndex, FetchTrueVisionProjectData, none exported by VV), switched by a Design Phase menu (TV Index.html:202-205, 338-341; 26/Na__UiFeature__ModelGroupSelector.js, Na__UiFeature__ModelGroupTransitionOverlay__.js) and registered for drawings by 26/Na__ModelGroup__PhaseLibrary__.js (602 lines). TV's LE uses it in ModelSource__, SnapshotRenderer (phase staging, BorrowRegistry, pins), ViewportIdentity, ModeController and the PL Pipeline, and TV's own PORT NOTEs say VV has no model groups (50/Na__ProjectedLinework__Pipeline__.js:53, LE/20/Na__LayoutEditor__Viewport3d__.js:47, LE/20/Na__LayoutEditor__ViewportIdentity__.js:59). VV has no phases: no modelGroups in project.json handling, no menu; VV's Na__LoadedModelGroups are category groups, not phases.",
+   "recommendation": "Decide D-S01-14. Recommended (a): VV stays single-phase. Verify that PhaseLibrary and ModelSource reduce to 'the live model' when a project has no modelGroups; if they do, port them at TV's paths with a PORT NOTE; if not, carry thin single-phase stubs at TV's paths exporting TV's names. Never port TV's Design Phase menu without option (b), which adds modelGroups to VV's project.json through the VV exporter.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "TV 03__AppUtils/Na__AppUtils__ProjectLoader.js:175-196; TV 26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js header (:9-41); TV Index.html:202-205,338-341; TV PORT NOTEs at 50 Pipeline:53, LE/20 Viewport3d:47, ViewportIdentity:59; VV ProjectLoader exports (no model-group functions)",
+   "tv_paths": [
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js",
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelGroupSelector.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "depends_on": [
+    "D-S01-14"
+   ]
+  },
+  {
+   "id": "S01-V04",
+   "category": "wiring",
+   "title": "TV LE reads TV PWA globals for the project's display name; VV has no such global",
+   "detail": "window.TrueVision__Pwa__ProjectContext is read by TV LE/50/Na__LayoutEditor__SpecDocument__.js:161, LE/50/Na__LayoutEditor__SpecPdf__.js, LE/51/Na__LayoutEditor__Register__Pdf__.js:213, LE/57/Na__LayoutEditor__Panel__ScrapbookParametric__.js:290 and the Statement TrueVisionHub standard section, and is set by TV's 62 PWA modules and LoadingSequence :383. WCP's PWA (which VV uses) defines no such global. VV LE/50/Na__LayoutEditor__SpecPdf__.js:147 already reads the TV global, so VV's specification PDF never carries the project name. VV knows the name elsewhere (64/Na__Feature__BreadcrumbNav__Controls.js:161-162 reads projectJson.projectName).",
+   "recommendation": "Add a module accessor at a neutral name (e.g. Na__DrawData__GetProjectDisplayName in 40/Na__DrawView__ProjectData__.js) with a VV body over project.json, and use it instead of the global in VV SpecPdf now and in every ported TV file; offer the accessor to TV (D-S01-04). Rule R21: VV never reads a window.TrueVision__* global. Tracked by WP-S01-11.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "evidence": "TV LE/50 SpecDocument__.js:161, LE/51 Register__Pdf__.js:213, LE/57 Panel__ScrapbookParametric__.js:290, 01 LoadingSequence.js:383; VV LE/50 SpecPdf__.js:147; VV 64 BreadcrumbNav__Controls.js:161-162",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "depends_on": [
+    "D-S01-04"
+   ],
+   "est_lines": 40,
+   "vv_adaptation": "Body reads VV project.json projectName (as BreadcrumbNav does)."
+  },
+  {
+   "id": "S01-V05",
+   "category": "wiring",
+   "title": "WCP's shared SW registrar can reload a VV editor with unsaved sheets",
+   "detail": "WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js:108-150 reloads every controlled page once on controllerchange, deferring only while window.Na__LoadWatchdog__IsLoadingActive is true. TV's registrar also holds while window.TrueVision__Pwa__HasUnsavedWork is true (TV 62/TrueVision__Pwa__ServiceWorker__Registrar__.js:59,133-134,167). VV AutoSave exports Na__LeAuto__HasUnsavedWork but publishes nothing, and its PORT NOTE (LE/07/Na__LayoutEditor__AutoSave__.js:48-53) says VV 'has no service worker' - wrong: VV index.html:44 loads the WCP registrar. Every SW token bump (WP-S01-01R and most ports) can therefore reload an open VV Layout Editor that has unsaved work.",
+   "recommendation": "VV AutoSave publishes a neutral flag (e.g. window.Na__Pwa__HasUnsavedWork = Na__LeAuto__HasUnsavedWork) and WCP's registrar holds the reload while it returns true (WCP is a hot file outside VV). Correct the AutoSave PORT NOTE and ledger row 1189 in the same change. Tracked by WP-S01-11; land it before or with the first token bump that ships editor changes.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "WCP Whitecardopedia__Pwa__ServiceWorker__Registrar__.js:108-150; TV TrueVision__Pwa__ServiceWorker__Registrar__.js:59,133-134,167; VV LE/07 Na__LayoutEditor__AutoSave__.js:48-53,345; VV index.html:44; ledger :1189",
+   "tv_paths": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"
+   ],
+   "depends_on": [],
+   "est_lines": 20
+  },
+  {
+   "id": "S01-V06",
+   "category": "ui",
+   "title": "TV's web viewer now depends on 52/53 and shows published files only",
+   "detail": "TV LE/80/Na__LayoutEditor__WebViewer__.js:96-100 imports 52 PubDoc (Document__, LoadingScreen__, Urls__). Since TV v2.155.0 (DEVLOG:1266-1331) the public web viewer shows baked files and renders nothing; drawings are published from the authoring machine (LE/65) and the viewer reads them from R2 through the CDN. VV's WebViewer 1.1.0 (VV v2.58.0, ported from TV v2.65.0) renders sheets live through the editor and exports PDFs with PdfExporter. Porting TV's WebViewer therefore drags in 52, 53, 65 and the transport facade, and changes what VV's public site does (and what it costs older phones, the reason TV made the change).",
+   "recommendation": "Adam decides (D-S01-16): (a) adopt TV's published-only viewer, porting 52, 53, 65 and 66 with VV storage; or (b) keep VV's live viewer as a documented divergence and port only the viewer files that do not import 52. Until decided, the LE/80 WebViewer files are not whole-file ports.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "TV 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:96-100; TV DEVLOG v2.155.0 (1266-1331); VV 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js imports (:81-95, 1.1.0); VV DEVLOG v2.58.0",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js",
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js"
+   ],
+   "tv_version": "v2.155.0",
+   "vv_version": "WebViewer 1.1.0 (v2.58.0)",
+   "depends_on": [
+    "D-S01-16",
+    "S01-F09",
+    "S01-F13"
+   ]
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S01-01",
+   "reason": "Superseded by WP-S01-01R: same scope, but the touch count (106 files) and the acceptance pairing count (98) were wrong (67 files + 3 history docs; 69 shared pairs), three listed hot files contain no old folder name (05/Na__RenderEffect__SectionClipping__State.js, 21/Na__PresentationMode__DevMenu__ScenePersistence__.js, 41/Na__CrossSectionView__SystemLogic.js), live_sw.js is an older copy whose role is unconfirmed, and the legacy-40 target conflicts with S02a (D-S01-13)."
+  },
+  {
+   "id": "WP-S01-03",
+   "reason": "Superseded by WP-S01-03R: its acceptance ('grep for KeyMappings__ finds 0 references') cannot pass because TV keeps the internal LayoutEditor__KeyMappings__* keys inside Na__Hotkeys__DrawingTabs__.json, it missed comment references (index.html:1261,1776 and five LE files) and it missed the TRUEVISION3D banner in 45/Na__PlanDimensions__Styles__.css."
+  },
+  {
+   "id": "WP-S01-04",
+   "reason": "Superseded by WP-S01-04R: its hot files miss three of VV's 11 Snapping__ importers (30/SheetTools__, 30/SheetTools__ContextMenu__, 30/SheetTools__Keyboard__) and it does not deal with the Na__LeOsnap__TONE_* imports, which TV's ObjectSnap no longer exports."
+  },
+  {
+   "id": "WP-S01-06",
+   "reason": "Superseded by WP-S01-06R: it assumed VV's Flask server lacks write routes; WCP/server.py already has POST /api/projects/<folder_id>, /drawing-notes, /assets and others, which the VV LocalProjectMirror should wrap."
+  },
+  {
+   "id": "WP-S01-08",
+   "reason": "Superseded by WP-S01-08R: rule (3) would fail on VV's legitimate cdn.noble-architecture.com/VaApps and www.noble-architecture.com/assets URLs; the corrected lint targets NA-only markers and TrueVision window globals."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S01-01R",
+   "title": "Drawing-system folder renumber to TV numbers (atomic, first) - corrected",
+   "scope": "(1) Move 40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js to 05__RenderPipeline/ and repoint 42/Na__DrawView__ComposerPreset__.js:91,93 and 40/Na__ElevationView__SystemLogic.js:47. (2) Move the legacy folder to the number D-S01-13 settles (91 recommended) or retire it (D-S01-02); fix SystemLogic.js:67 and index.html:1375-1376. (3) git mv in order: 42__System__DrawingViewCore->40__, 43__System__FloorPlanViews->42__, 44__System__PlanAnnotations->43__, 45__System__PlanDimensions->44__, 46__System__ElevationViews->45__, 47__System__NorthDirection->46__ (71 files). (4) Rewrite every full old folder name (the six VV names and 40__System__2dElevationsView) in one pass over the 67 files of parity/verify_s01/renumber_touch_verified.txt (235 references: 25 files inside the moved folders, 41 elsewhere in src/styles/tests, index.html); devlog, ledger and plan rows are history. (5) Rename 03/Na__AppUtils__SnapshotHistory__.js to Na__AppUtils__SnapshotHistory.js and repoint 44 History:63,65 and 45 History:59,61. (6) If D-S01-06: ComposerPreset -> 40/Na__DrawView__RenderPreset__.js with Na__DrawView__RenderPreset__* exports (importers LoadingSequence:425,1319; FloorPlan ModeController:123; Elevation ModeController:115; SnapshotRenderer:132; index.html:1412). (7) If D-S01-07: DistanceCulling to 05/ (importers LoadingSequence:216, 31 FrameRenderer:112, 31 Timeline__Thumbnails:117, 42 Transitions__:63; WCP precache :318). (8) Bump PWA_SW_VERSION_TOKEN in the WCP logic file (:229); confirm whether WebApps/live_sw.js (token 2026-09-10-6) is what the deployed site registers before bumping it too; land WP-S01-11 first if possible. (9) VV devlog entry (re-read the devlog top first), ledger 'Folder renumbering' section with the old->new map, dated revision note on VV plan D05 and, if D-S01-12 allows, on TV plan section 4/4.1.",
+   "depends_on": [
+    "D-S01-01",
+    "D-S01-02",
+    "D-S01-13",
+    "D-S01-15"
+   ],
+   "size": "L",
+   "acceptance": [
+    "No hit for 42__System__DrawingViewCore, 43__System__FloorPlanViews, 44__System__PlanAnnotations, 45__System__PlanDimensions, 46__System__ElevationViews, 47__System__NorthDirection or 40__System__2dElevationsView in VV 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment or index.html (devlog, ledger and plan history exempt)",
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs and Na__Verify__Exports__.mjs pass",
+    "git diff -M --stat shows every moved file as a rename",
+    "With an identity folder map all 69 shared drawing files in 40 and 42-46 pair with TV by identical relative path (70 if D-S01-06 renames ComposerPreset to RenderPreset); only VV's ThumbnailBake (and ComposerPreset without D-S01-06) and TV's TV-only files stay unpaired",
+    "Adam's checklist: app loads; a floor plan, an elevation and a section open from the carousel; a sheet renders; PDF downloads; the North compass, the Dev-menu drawing panels and the legacy Elevation View still work"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/40__System__2dElevationsView/ -> 91__System__2dElevationsView/ (or the D-S01-13 number)",
+    "02__Src__AppModules/42__System__DrawingViewCore/ -> 40__System__DrawingViewCore/",
+    "02__Src__AppModules/43__System__FloorPlanViews/ -> 42__System__FloorPlanViews/",
+    "02__Src__AppModules/44__System__PlanAnnotations/ -> 43__System__PlanAnnotations/",
+    "02__Src__AppModules/45__System__PlanDimensions/ -> 44__System__PlanDimensions/",
+    "02__Src__AppModules/46__System__ElevationViews/ -> 45__System__ElevationViews/",
+    "02__Src__AppModules/47__System__NorthDirection/ -> 46__System__NorthDirection/",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__2dProfileLines__.js (moved in)",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js (renamed)"
+   ],
+   "hot_files": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md",
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js",
+    "../live_sw.js (only if confirmed live)"
+   ],
+   "risk": "Highest-contention package: it touches every drawing file and 41 files outside them. It must land alone, before any other port into 40-49. Folder 40 must be vacated first. A partial rewrite breaks module resolution app-wide, so run both Verify scripts before commit. A token bump without WP-S01-11 can reload open editors with unsaved work.",
+   "tests_to_port": [
+    "(none new) run VV Na__Verify__ModuleGraph__.mjs, Na__Verify__Exports__.mjs and every Na__Test__*.test.mjs; Na__Test__NorthCompass__.test.mjs:53 names the folder"
+   ]
+  },
+  {
+   "id": "WP-S01-03R",
+   "title": "Hotkey file renames and identity hygiene - corrected",
+   "scope": "Rename LE/03__Core__Config/Na__LayoutEditor__KeyMappings__.json to Na__Hotkeys__DrawingTabs__.json (keep its internal LayoutEditor__KeyMappings__* keys, as TV did) and repoint ConfigState__KeyMap__.js:63; update the comments naming the file at ConfigState__.js:154, ConfigState__KeyMap__.js:13,154, 10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:19, Na__LayoutEditor__Controls__TouchScreen__.js:29, 30__System__SheetTools/Na__LayoutEditor__Measurements__.js:56 and the LE AppConfig descriptions at :277 and :457. Rename 02__AppData/Na__ValeVision__HotkeysDictionary__.json to Na__Hotkeys__3dModelTab__.json, keeping the root key Na__ValeVision__HotkeysDictionary, and repoint 03/Na__AppUtils__ValeVision__HotkeyHandler__.js:116 (+ :13, :28), 10/Na__UiFeature__NavigationHelpPanel__Controls.js:84 (+ :22) and the index.html comments at :1261 and :1776. Identity hygiene: the console prefix at LE/50/Na__LayoutEditor__SpecPdf__.js:431 and the banner of Na__PlanDimensions__Styles__.css (45/ now, 44/ after WP-S01-01R; line 8 'TRUEVISION3D - PLAN DIMENSIONS - STYLES', with the PORT NOTE moved after the banner as elsewhere).",
+   "depends_on": [
+    "WP-S01-01R"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Drawing-tab keys (V, M, T, D, L, R, Delete, Escape, arrows) and 3D keys (R, B, T, Y, 1-9, Page Up/Down) work as before",
+    "The navigation help panel lists the 3D keys",
+    "No reference to the FILE names Na__LayoutEditor__KeyMappings__.json or Na__ValeVision__HotkeysDictionary__.json outside devlog and ledger history (the JSON's internal LayoutEditor__KeyMappings__* keys stay)",
+    "No '[TrueVision3D' prefix and no 'TRUEVISION3D' banner in VV 02__Src__AppModules or 03__Style__AppStylesheets ('Ported from TrueVision3D' PORT NOTE lines excepted)"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json (renamed)",
+    "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json (renamed)"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json",
+    "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json"
+   ],
+   "hot_files": [
+    "index.html",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js"
+   ],
+   "risk": "Low. ConfigState__KeyMap__ is rewritten again when TV's 1.11.0 is ported; keep this change minimal.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs (once KeyScope and the keyboard units are ported)"
+   ]
+  },
+  {
+   "id": "WP-S01-04R",
+   "title": "Retire VV Snapping__ in favour of TV 28__System__ObjectSnap - corrected",
+   "scope": "Together with the LE-tools slice's ObjectSnap port: create LE/28__System__ObjectSnap/ with TV's 16 files; delete LE/30__System__SheetTools/Na__LayoutEditor__Snapping__.js; repoint all 11 VV importers (05/Na__LayoutEditor__ModeController__, 30/Na__LayoutEditor__SheetTools__, 30/SheetTools__ContextMenu__, 30/SheetTools__HitResolution__, 30/SheetTools__Keyboard__, 30/SheetTools__PointerDrag__, 35/DimensionTool__, 35/LeaderTool__, 35/RectangleTool__, 35/ShapeTool__, 40/Toolbar__) to __Search__, __Marker__ and __State__; drop the Na__LeOsnap__TONE_* imports (PointerDrag:137, DimensionTool) - TV's Na__LeOsnap__Snap ignores a string 4th argument (ObjectSnap__Search__.js:505-511) but the missing export would fail at load; remove the VV-only Na__LeTools__SnapShapeTranslation from HitResolution (now ObjectSnap__Moves__); add Styles__ObjectSnap__ to Na__LeLoad__STYLESHEETS before WebViewer; keep the storage key na-layouteditor-osnap.",
+   "depends_on": [
+    "WP-S01-01R",
+    "WP-S01-03R"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Verify__Exports__ resolves every Na__LeOsnap__ name",
+    "F3 toggles object snap and keeps the stored state from before the change",
+    "Snap markers show in their target colours; the Snap dropdown opens from the toolbar arrow",
+    "No reference to Na__LayoutEditor__Snapping__ or Na__LeOsnap__TONE_ outside history"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/ (16 files)"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js (deleted)"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "risk": "Medium. It touches the sheet-tools core that most LE tool ports also edit; serialize with the LE-tools slice packages.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs"
+   ]
+  },
+  {
+   "id": "WP-S01-06R",
+   "title": "Transport and identity facade scaffold (names and paths) - corrected",
+   "scope": "Create VVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js exporting TV's Na__CfApi__* names (at minimum the 21 used by drawing and LE files) with VV bodies over whitecardopedia-editor-api: VV's worker has route-specific handlers (no generic /r2/*), so each body calls an existing VV route or a new VV handler, and every key sits under VaApps/Projects/<folderId>/ (the R2 bucket noble-architecture-cdn is shared with TV). Create VVM/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js with TV's Na__LocalMirror__* names wrapping the routes WCP/server.py already has: MergeKeys = read project.json, merge keys client-side, POST /api/projects/<folder_id> (:439); WriteSiblingFile for the notes file = POST /api/projects/<folder_id>/drawing-notes (:790). Add only the missing routes as WCP blueprints per R14: generic sibling files, drawings fingerprint with the 409 guard and backups, statements. Add the ProjectLoader names GetProjectFolderFromUrl and GetYearFromUrl with VV semantics, or take the TV back-port (D-S01-04). PORT NOTEs read 'Parity: diverged (VV transport)'. The transport slice owns route semantics and R2 keys.",
+   "depends_on": [
+    "D-S01-03",
+    "WP-S01-01R"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Na__Verify__Exports__ resolves every Na__CfApi__ and Na__LocalMirror__ name imported by ported TV files",
+    "On localhost a drawings save reaches WCP/server.py and the repo copy of project.json; on the live site it reaches whitecardopedia-editor-api under VaApps/Projects/<folderId>/",
+    "No literal NaProjectPortal, 30__TrueVision__AppContent or /api/truevision in VV"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js (new)",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js (new)",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js",
+    "../Whitecardopedia/server.py",
+    "../Whitecardopedia/CloudflareWorker/src/index.js",
+    "index.html"
+   ],
+   "risk": "High. Writes to live storage in a bucket shared with TrueVision; Adam tests and deploys the worker. Overlaps the transport slice, so the planner should merge the two.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py (adapt routes)"
+   ]
+  },
+  {
+   "id": "WP-S01-08R",
+   "title": "Parity naming lint for the swarm - corrected",
+   "scope": "Add VV/80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs. It checks: (1) every file in 40-55 and LE has the 'VALEVISION3D - ' banner and a FILE: line equal to its file name; (2) no '[TrueVision3D' console prefix and no 'TRUEVISION3D' banner; (3) no TrueVision__ literal, window.TrueVision__ global, /api/truevision, NaProjectPortal, 30__TrueVision__AppContent, /na-apps/30__TrueVision__CoreAppCode, noble-architecture.com/q/ or noble-architecture.com/s/ outside an allow-list (PORT NOTE 'Ported from' lines, history); cdn.noble-architecture.com/VaApps/ and www.noble-architecture.com/assets/ are VV's own and allowed; (4) every top-level folder number is in the registry; (5) every LE .css file is in Na__LeLoad__STYLESHEETS or linked by a module; (6) every VV path in 40-55 exists in TV or is listed as VV-only. Offer the same script to TV.",
+   "depends_on": [
+    "WP-S01-01R",
+    "WP-S01-05"
+   ],
+   "size": "M",
+   "acceptance": [
+    "The lint runs clean on VV after WP-S01-01R and WP-S01-03R (with V04's SpecPdf fix from WP-S01-11)",
+    "It fails on a planted TrueVision__ literal, a planted window.TrueVision__ read and an unregistered folder number",
+    "It passes VV's existing cdn.noble-architecture.com/VaApps and font URLs"
+   ],
+   "files_vv": [
+    "80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs (new)"
+   ],
+   "hot_files": [],
+   "risk": "Low. The allow-list must cover the documented permanent divergences and VV's own NA-hosted infrastructure.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S01-10",
+   "title": "Shared-module export parity for the drawing system (IsPaused, ModelToggle, DoorAnim)",
+   "scope": "Add Na__RenderLoop__IsPaused to VV 05/Na__RenderLoop__Invalidation.js by mirroring the hold reasons inside the module while keeping VV's na-pause/resume-render-loop events (S01-V01). With the SnapshotRenderer and DoorPose ports, add TV's Na__ModelToggle__SetCategoryVisibleByKey, BorrowRegistry and RestoreRegistry to 26/Na__UiFeature__ModelToggle__Controls.js and TV's six Na__DoorAnim__* exports to 25/3dObjectIInteraction__Animation__ClickToOpenDoors__.js (S01-V02), at TV's names, VV bodies where the internals differ; BorrowRegistry/RestoreRegistry per D-S01-14.",
+   "depends_on": [
+    "WP-S01-01R"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Na__Verify__Exports__ resolves Na__RenderLoop__IsPaused, the three ModelToggle names and the six Na__DoorAnim__ names for every ported importer",
+    "A sheet still idles the 3D engine (Pause/Resume) and IsPaused answers true while a sheet is open"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js",
+    "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js"
+   ],
+   "risk": "Low to medium: Invalidation is imported app-wide; keep the existing exports and events unchanged.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S01-11",
+   "title": "PWA seams the Layout Editor needs from WCP (unsaved-work hold, project display name)",
+   "scope": "(1) VV LE/07/Na__LayoutEditor__AutoSave__.js publishes a neutral flag (e.g. window.Na__Pwa__HasUnsavedWork = Na__LeAuto__HasUnsavedWork) and WCP's Whitecardopedia__Pwa__ServiceWorker__Registrar__.js holds its controllerchange reload while that flag returns true, alongside the existing Na__LoadWatchdog__IsLoadingActive check (S01-V05); correct the AutoSave PORT NOTE (:48-53) and ledger row 1189. (2) Add a project display-name accessor (e.g. Na__DrawData__GetProjectDisplayName in 40/Na__DrawView__ProjectData__.js, VV body over project.json projectName as BreadcrumbNav does) and use it in VV LE/50/Na__LayoutEditor__SpecPdf__.js:147 instead of window.TrueVision__Pwa__ProjectContext; every later port of a TV file that reads that global uses the accessor (S01-V04). Offer both to TV (D-S01-04).",
+   "depends_on": [
+    "WP-S01-01R"
+   ],
+   "size": "S",
+   "acceptance": [
+    "With unsaved sheet edits open, a service-worker update does not reload the page; after a save it does",
+    "The specification PDF shows the project name",
+    "grep finds no window.TrueVision__ in VV src"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js"
+   ],
+   "hot_files": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js"
+   ],
+   "risk": "Low. The WCP registrar also serves Whitecardopedia; the new check must be a no-op where the flag is absent.",
+   "tests_to_port": []
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S01-13",
+   "question": "Where does VV's legacy 40__System__2dElevationsView go, and where does Na__RenderEffect__2dProfileLines__.js go? S01 and S02a disagree.",
+   "options": "(a) S01: 91__System__2dElevationsView, and 2dProfileLines to 05__RenderPipeline/ beside Na__RenderEffect__ProfileLines__.js. (b) S02a D-S02a-04: 39__System__2dElevationsView, or retire the tool and move 2dProfileLines into 40__System__DrawingViewCore. (c) Retire the tool now (D-S01-02 (b)) and still move 2dProfileLines to 05.",
+   "recommendation": "(a). 9x keeps legacy out of every range TV is growing in, and an Na__RenderEffect__* file belongs with the render-effect family in 05 (a file's folder follows its base name).",
+   "blocks": [
+    "WP-S01-01R",
+    "S01-F02",
+    "S01-F03"
+   ]
+  },
+  {
+   "id": "D-S01-14",
+   "question": "Design phases: VV has no modelGroups; TV's Model Source, PhaseLibrary and phase staging assume them. What does VV do?",
+   "options": "(a) Stay single-phase: port PhaseLibrary/ModelSource only if they reduce cleanly to 'the live model' with no modelGroups, else thin stubs at TV's names; no Design Phase menu. (b) Adopt modelGroups in VV project.json through the VV exporter and port the whole design-phase layer (26 ModelGroupSelector, TransitionOverlay, ProjectLoader functions, PhaseLibrary, ModelSource).",
+   "recommendation": "(a) now; revisit (b) only if Vale projects need existing-versus-proposed drawings from separate models.",
+   "blocks": [
+    "S01-V03",
+    "S01-F37",
+    "S01-V02"
+   ]
+  },
+  {
+   "id": "D-S01-15",
+   "question": "The renumber reverses VV plan D05 and TV plan section 4 ('folder number translated (4.1)') and 4.1 ('Fixed for the whole of this work'). Confirm it, and confirm that 'its own R2 Worker and file structure' in the brief means VV's storage layout (VaApps/Projects/<folderId>/project.json), not its source tree.",
+   "options": "(a) Yes: renumber, revise both plans with dated notes. (b) No: keep the translated map and rewrite paths on every port.",
+   "recommendation": "(a). The brief asks for an identical drawing system; S01, S02a and S09 all reach the renumber independently.",
+   "blocks": [
+    "WP-S01-01R",
+    "D-S01-01"
+   ]
+  },
+  {
+   "id": "D-S01-16",
+   "question": "TV's web viewer (LE/80) now shows only published files and imports 52 PubDoc; VV's still renders live. Which does VV's public site use?",
+   "options": "(a) Adopt TV's published-only viewer: port 52, 53, 65, 66 with VV storage and the transport facade. (b) Keep VV's live viewer as a documented divergence and port only viewer files that do not import 52.",
+   "recommendation": "Adam's call. (a) is the identical experience and is what TV adopted to stop phones crashing; it costs the publishing pipeline and VV worker handlers. Until decided, the LE/80 viewer files are not whole-file ports.",
+   "blocks": [
+    "S01-V06",
+    "S01-F09",
+    "S01-F36"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "The survey's S01__NamingTaxonomy.md was never written; the verifier rebuilt it from the survey JSON with in-place corrections and a Verification section",
+  "Renumber touch list recomputed: 67 files (235 references) plus 3 history docs, saved as parity/verify_s01/renumber_touch_verified.txt",
+  "Outside-folder dependency surface recomputed with an independent import graph (verify_s01/graph.py, surface.py): names missing from shared VV modules (Na__RenderLoop__IsPaused; ModelToggle x3; ClickToOpenDoors Na__DoorAnim__ x6) - S01-V01, S01-V02",
+  "Design-phase (modelGroups) layer behind ModelSource/PhaseLibrary identified as TV-only - S01-V03",
+  "TV PWA globals used by the LE (ProjectContext, HasUnsavedWork) versus WCP's PWA, including the registrar's unsaved-work reload risk - S01-V04, S01-V05",
+  "TV LE/80 WebViewer's dependency on 52/53 and its published-only behaviour - S01-V06",
+  "VV Flask route inventory (server.py app routes besides the scrapbook blueprint) and VV's existing two-phase local mirror",
+  "Shared R2 bucket noble-architecture-cdn and CDN host for both workers; prefix-only isolation",
+  "Additional identity leaks: 45/Na__PlanDimensions__Styles__.css banner, SpecPdf__.js:147 TrueVision global",
+  "Additional stale records: ledger 29 and 1189, VV AutoSave PORT NOTE, eight stale TV PORT NOTEs ('no web viewer', 'no north system')",
+  "WCP live_sw.js is an older tracked copy (token 2026-09-10-6); the registered SW is the WebApps-root stub",
+  "Cross-slice conflict on the legacy 40 destination (S01 91 vs S02a 39) recorded as D-S01-13",
+  "Out-of-scope areas reviewed and marked no-action: TV-only 15 LineworkColours/InstanceConsolidation, 07 DefaultFogEffect, 11 ViewModeFov, 21 Visibility__StateCapture, 26 storey/model-group UI, 70 dev controls, TV CSS SceneInspector/PwaInstallability/CacheAndStorage; VV-only 01 GpuLifecycle/LoadWatchdog, 03 LoadingOverlay/ResilientLoad, 10 OrbitPivot, 11 VerticalCorrection, 30 LineworkSettings controls, 70 ProfileLines/RenderEngine dev controls; root 60__DistributionEmails (VV file name casing 'ValeVision3d'), 79/90/95 tool folders, VV test GLB fixtures named Lawrence__TrueVision__*",
+  "Vendored libraries and import maps compared: clipper2-js, three-edge-projection util and jsPDF identical ignoring whitespace; import maps identical"
+ ],
+ "notes": "S01 was accurate where it counted and well evidenced: all 30 critical/high findings were checked and none is refuted. The folder map, LE subfolder inventory (file and line counts exact), namespace/export divergences (1 namespace diff; 18 VV-only / 269 TV-only names, exact), rename importer lists, jsPDF and title-scan facts, hotkey renames, the Snapping retirement and header-fold parity all reproduce. Defects, now corrected in the rebuilt report (the survey's markdown file was missing): (1) inflated renumber counts - 106 files -> 67 files + 3 history docs, '249 pairs differ by path' -> 69 - and the renumber also reverses TV plan section 4/4.1, not only VV D05; (2) W1's 'present, no change' list missed names VV lacks in modules it has (Na__RenderLoop__IsPaused, three ModelToggle exports, six DoorAnim exports); (3) VV's Flask already has project, notes and asset write routes and a two-phase mirror - the survey said 'only GET'; (4) design phases (modelGroups) are TV-only, so ModelSource/PhaseLibrary and 47 DrawingPlanes are not verbatim ports (F06, F37 actions changed to port_adapted); (5) two PWA seams: TV LE reads window.TrueVision__Pwa__ProjectContext (already leaked into VV SpecPdf), and WCP's registrar reloads VV pages on SW updates without checking unsaved editor work; (6) TV's web viewer now imports 52 and shows published files only. Five WPs superseded by R versions (01, 03, 04, 06, 08) with corrected scope, hot files and acceptance; two WPs and four decisions added. Watch: the S01 vs S02a conflict on the legacy 40 target (91 vs 39) and 2dProfileLines destination; both workers share the R2 bucket noble-architecture-cdn, so a verbatim TV key builder in VV could write under NaProjectPortal/; the lint must not ban noble-architecture.com wholesale (VV's CDN and fonts live there); confirm which SW file the deployed site registers before relying on token bumps. Unverified: whether PhaseLibrary degrades to a single phase without modelGroups; byte-level content drift (other slices)."
+}

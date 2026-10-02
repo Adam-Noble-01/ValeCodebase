@@ -35,7 +35,8 @@
 //
 // - THE FINGERPRINT. The model state plus the parts of the record that change
 //   the geometry: datum or plane, depth, azimuth and origin, the occluder
-//   rule (Glass Transparency Off), hidden lines and the exclusion list. The
+//   rule (Glass Transparency Off), hidden lines, the exclusion list and, on a
+//   Layout Editor plan, elevation or section, the door pose. The
 //   name, the saved framing and the other style toggles are left out so
 //   renaming or reframing a drawing never discards its linework.
 //
@@ -46,17 +47,40 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Projector__.mjs (basis table only)
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : new
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__Projector__.mjs (basis table only) of 07-Aug-2026;
+//                   it stayed at 1.0.0 here until this port);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.48.1, 14-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim. A definition built outside the Layout Editor carries DoorPose null, which the
+//                   record hash leaves out, so every existing hash is unchanged. Flags reads both the
+//                   record's Styles__X and the viewport's x spelling; this app's GetStyles answers the
+//                   viewport spelling, so the value read is the same as before.
 // - Divergences   :
-//   - Basis derived from the record instead of a fixed table; cut and fingerprint carried on the definition.
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - Elevations shut their doors. FromElevation takes the fourth argument
+//   FromPlan takes: a Layout Editor elevation or section passes the shut pose
+//   { Shut : true }, normalised onto the definition as DoorPose and folded
+//   into the record hash, so every door is drawn shut whatever the 3D view
+//   shows, and linework read before this - with whatever doors the 3D view
+//   had open - is never reused. A plan's pose normalises exactly as before,
+//   so a plan's hash is unchanged.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Door pose. FromPlan takes a fourth argument, the door pose a Layout Editor
+//   plan viewport draws with: every door open bar the keys in Closed, with or
+//   without swing arcs. It is normalised onto the definition as DoorPose and
+//   folded into the record hash, so a plan with its doors open, or with one
+//   shut, never shares linework with the plan as modelled. Every other
+//   definition carries DoorPose null and hashes exactly as before.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -74,8 +98,8 @@
 
     // MODULE IMPORTS | Drawing Records (plans and elevations)
     // ------------------------------------------------------------
-    // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
-    // @delegate: ../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
+    // @delegate: ../42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+    // @delegate: ../45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
     // ------------------------------------------------------------
     import {
         Na__FpData__GetFloorPlans,
@@ -83,7 +107,7 @@
         Na__FpData__GetViewDepthMm,
         Na__FpData__GetStyles,
         Na__FpData__GetExcludeTokens
-    } from '../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+    } from '../42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
     import {
         Na__ElevData__GetElevations,
         Na__ElevData__GetAxes,
@@ -92,13 +116,13 @@
         Na__ElevData__IsSection,
         Na__ElevData__GetStyles,
         Na__ElevData__GetExcludeTokens
-    } from '../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+    } from '../45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Mode Controllers (which drawing is on screen)
     // ------------------------------------------------------------
-    import { Na__FloorPlanMode__GetActivePlan } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
-    import { Na__ElevationMode__GetActiveElevation } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+    import { Na__FloorPlanMode__GetActivePlan } from '../42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+    import { Na__ElevationMode__GetActiveElevation } from '../45__System__ElevationViews/Na__Elevation__ModeController__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Config (default exclusions)
@@ -250,32 +274,32 @@
 
     // HELPER FUNCTION | Reduce the Style Toggles to the Flags the Engine Reads
     // ------------------------------------------------------------
-    // THE OVERRIDE IS WHAT LETS A SHEET VIEWPORT DIFFER FROM ITS DRAWING.
-    // Without it the projection takes its flags from the drawing record alone,
-    // so a Render Composites toggle on a viewport changes the raster picture
-    // behind the linework and not the linework itself - the vectors keep whatever
-    // the drawing record said. A toggle that half works is harder to trust than
-    // one that does nothing, because the half that works suggests the other half
-    // should be believed too.
-    //
-    // Only the viewport spelling is read here, on purpose. This app writes and
-    // reads `glassOpaque` everywhere - the records through Na__FpData__GetStyles,
-    // the viewports through Viewport__Styles - so there is one convention and
-    // nothing to reconcile.
     function Na__PlView__Flags(styles, override) {
-        const base = styles   || {};
+        const base = styles || {};
         const over = override || {};
 
-        const pick = (key, fallback) => {
-            if (typeof over[key] === 'boolean') return over[key];
-            if (typeof base[key] === 'boolean') return base[key];
+        // The drawing record spells these `Styles__GlassOpaque`; a Layout Editor
+        // viewport spells them `glassOpaque`. Both are read, and the viewport's
+        // value wins where it has one - a Render Composites toggle that changed
+        // the raster picture but not the linework drawn over it is a toggle that
+        // half works, which is harder to trust than one that does nothing.
+        const read = (source, recordKey, viewportKey) => {
+            if (typeof source[recordKey]   === 'boolean') return source[recordKey];
+            if (typeof source[viewportKey] === 'boolean') return source[viewportKey];
+            return undefined;
+        };
+        const pick = (recordKey, viewportKey, fallback) => {
+            const fromOverride = read(over, recordKey, viewportKey);
+            if (fromOverride !== undefined) return fromOverride;
+            const fromBase = read(base, recordKey, viewportKey);
+            if (fromBase !== undefined) return fromBase;
             return fallback;
         };
 
         return {
-            projectedLinework : pick('projectedLinework', true),
-            hiddenLines       : pick('hiddenLines',       false),
-            glassOpaque       : pick('glassOpaque',       false)
+            projectedLinework : pick('Styles__ProjectedLinework', 'projectedLinework', true),
+            hiddenLines       : pick('Styles__HiddenLines',       'hiddenLines',       false),
+            glassOpaque       : pick('Styles__GlassOpaque',       'glassOpaque',       false)
         };
     }
     // ------------------------------------------------------------
@@ -303,15 +327,42 @@
             c : definition.Cut,
             g : definition.Styles.glassOpaque,
             h : definition.Styles.hiddenLines,
-            x : definition.ExcludeTokens
+            x : definition.ExcludeTokens,
+            d : definition.DoorPose || undefined                                 // <-- Absent unless set: JSON leaves it out, so every other hash is unchanged
         }));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Reduce a Door Pose to What Changes the Drawing
+    // ------------------------------------------------------------
+    // null draws the doors as the model holds them, which is every drawing
+    // outside the Layout Editor. { Shut : true } draws every door shut: a
+    // Layout Editor elevation or section, with no door to list and no swing to
+    // trace. Otherwise { Closed, Swings, SwingStepDegrees }, a Layout Editor
+    // plan: every door drawn open bar the keys in Closed (sorted and unique, so
+    // the same set always hashes the same), with a swing arc per open hinged
+    // leaf while Swings is on. Na__ProjectedLinework__DoorPose__ reads it.
+    // ------------------------------------------------------------
+    function Na__PlView__DoorPose(pose) {
+        if (!pose || typeof pose !== 'object') return null;
+        if (pose.Shut === true) return { Shut : true };                          // <-- Every door shut: nothing else changes the drawing
+        const keys = Array.isArray(pose.Closed) ? pose.Closed.filter((key) => typeof key === 'string' && key.length > 0) : [];
+        const step = Number(pose.SwingStepDegrees);
+        return {
+            Closed           : Array.from(new Set(keys)).sort(),
+            Swings           : pose.Swings !== false,
+            SwingStepDegrees : Number.isFinite(step) ? Math.min(45, Math.max(1, step)) : 5
+        };
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Build the View Definition for a Floor Plan
     // ------------------------------------------------------------
-    function Na__PlView__FromPlan(plan, stylesOverride, extraExcludeTokens) {
+    // doorPose (Layout Editor plans only) stands the doors as the viewport
+    // wants them; omitted, the doors are drawn as the model holds them.
+    function Na__PlView__FromPlan(plan, stylesOverride, extraExcludeTokens, doorPose) {
         if (!plan) return null;
         const basis = Na__PlView__PlanBasis();
 
@@ -327,6 +378,7 @@
             Cut           : Na__PlView__PlanCut(plan),
             Styles        : Na__PlView__Flags(Na__FpData__GetStyles(plan), stylesOverride),
             ExcludeTokens : Na__PlView__Tokens(Na__FpData__GetExcludeTokens(plan), extraExcludeTokens),
+            DoorPose      : Na__PlView__DoorPose(doorPose),
             RecordHash    : null
         };
         definition.RecordHash = Na__PlView__RecordHash(definition);
@@ -337,7 +389,9 @@
 
     // FUNCTION | Build the View Definition for an Elevation or Section
     // ------------------------------------------------------------
-    function Na__PlView__FromElevation(elevation, stylesOverride, extraExcludeTokens) {
+    // doorPose (Layout Editor elevations and sections only) is the shut pose,
+    // { Shut : true }; omitted, the doors are drawn as the model holds them.
+    function Na__PlView__FromElevation(elevation, stylesOverride, extraExcludeTokens, doorPose) {
         if (!elevation) return null;
         const axes  = Na__ElevData__GetAxes(elevation);
         const basis = Na__PlView__ElevationBasis(axes);
@@ -354,6 +408,7 @@
             Cut           : Na__PlView__ElevationCut(elevation, axes),
             Styles        : Na__PlView__Flags(Na__ElevData__GetStyles(elevation), stylesOverride),
             ExcludeTokens : Na__PlView__Tokens(Na__ElevData__GetExcludeTokens(elevation), extraExcludeTokens),
+            DoorPose      : Na__PlView__DoorPose(doorPose),
             RecordHash    : null
         };
         definition.RecordHash = Na__PlView__RecordHash(definition);

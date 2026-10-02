@@ -1,0 +1,89 @@
+{
+ "vv_root": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D",
+ "files": {
+  "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json": {
+   "sha1": "ed3bd584d58e6350dbe7e2b3cd3779cd210aa115",
+   "bytes": 13991,
+   "eol": "LF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json": {
+   "sha1": "79f113487b10b15491092a0aa92978251f7a8115",
+   "bytes": 37081,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js": {
+   "sha1": "67d2b7c9820f85b841dad843e32aec6bf1099ee7",
+   "bytes": 9228,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js": {
+   "sha1": "4527e3048c0eaf4bb93e693f0dcacc1c48ca4fb6",
+   "bytes": 7389,
+   "eol": "LF",
+   "bom": false
+  },
+  "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js": {
+   "sha1": "b15a4c53204b750b29cc1e1e2b69a77fd73c8df6",
+   "bytes": 19926,
+   "eol": "LF",
+   "bom": false
+  },
+  "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css": {
+   "sha1": "7dd24b87b40074a7aa89d70dcc2c5727593c5ef3",
+   "bytes": 18742,
+   "eol": "LF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+   "sha1": "7863ec2aa9bd08a33d26d0b2874d284c6c6e488d",
+   "bytes": 107198,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js": {
+   "sha1": "8b310f58794aeaac0598113b4b6432df088115d7",
+   "bytes": 17568,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js": {
+   "sha1": "439937f53ef9739a4f9baaac97177fefd0abae6b",
+   "bytes": 26475,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js": {
+   "sha1": "4ed37d57741751b811025b07fbeed14493968d5d",
+   "bytes": 21171,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js": {
+   "sha1": "1f03ead1fca779d4bc643188ef1620385609ae7b",
+   "bytes": 16839,
+   "eol": "LF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js": {
+   "sha1": "9c6649dcb71b8516fcbd6ad8c0c025a58ed7d6c8",
+   "bytes": 57614,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js": {
+   "sha1": "b79870ba16e7be111dcffdd77eaf5844fc17e341",
+   "bytes": 24510,
+   "eol": "CRLF",
+   "bom": false
+  },
+  "index.html": {
+   "sha1": "fa8348483dea2dfd656a9759b585bab5d91c3b8e",
+   "bytes": 173353,
+   "eol": "CRLF",
+   "bom": false
+  }
+ }
+}

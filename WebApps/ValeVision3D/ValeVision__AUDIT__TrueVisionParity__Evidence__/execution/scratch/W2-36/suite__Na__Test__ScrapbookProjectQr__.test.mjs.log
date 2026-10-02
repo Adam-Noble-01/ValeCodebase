@@ -1,0 +1,27 @@
+ValeVision3D - parametric scrapbook project portal block
+  PASS  the first record is the code's box, and its first point is the origin
+  PASS  the code is ONE record, not one per module: a box carrying a Shape__Qr block
+  PASS  nothing else on the sheet carries a code
+  PASS  the block encodes nothing and names no project in the record: the painter asks the QR system
+  PASS  the box is square
+  PASS  the size list is the config's, in order, and 20 mm is the default a tile drops (Adam, 21-Sep-2026)
+  PASS  every size in the list keeps the 2 modules of clear paper the QR system asks for
+  PASS  the clear zone is the SAME number of modules at every size, which is what a fraction buys
+  PASS  every size in the list prints a module far above the 0.28 mm floor a phone needs
+  PASS  the standard 30 mm size is one of the sizes offered
+  PASS  at 30 mm the box is 34.2 mm and the margin 2.1 mm - three and a half times the code the title block prints
+  PASS  a block dropped from the Scrapbook is 20 mm, one of the sizes offered
+  PASS  the body text is 2.2 mm - the paragraph and the bullets - and the caption 1.5 (Adam, 21-Sep-2026)
+  PASS  the list runs to 30 mm and no further: past that the code stops being a detail on the sheet
+  PASS  the compact block is the code, the button, the handset and its island: four vectors
+  PASS  the handset is a slim phone, at least half again as tall as it is wide
+  PASS  the island is a solid pill, filled and unruled, in the top quarter of the handset
+  PASS  it letters the button, the caption, the heading, the project and the four bullets
+file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs:186
+        /phone/i.test(config.ProjectQr__CaptionText) && /tablet/i.test(config.ProjectQr__CaptionText) && /camera/i.test(config.ProjectQr__CaptionText), config.ProjectQr__CaptionText);
+                             ^
+
+TypeError: Cannot read properties of undefined (reading 'ProjectQr__CaptionText')
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs:186:30
+
+Node.js v22.23.2

@@ -1,0 +1,4 @@
+#   are recomputed at load by Na__AppData__ProjectLoader.js, so this is file
+#   hygiene rather than a live fix.
+#
+# =============================================================================

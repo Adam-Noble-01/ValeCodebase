@@ -1,0 +1,422 @@
+{
+    "modelDefaults": {
+        "modelUrls": [
+            "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-01__BaseMeshModel__1.2.0__.glb",
+            "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.2.0__.glb"
+        ]
+    },
+    "Scene__Default__CameraConfig": {
+        "Scene__Default__CameraConfig__Fov": 45,
+        "Scene__Default__CameraConfig__Near": 0.1,
+        "Scene__Default__CameraConfig__Far": 1000
+    },
+    "Scene__Default__LightingConfig": {
+        "Scene__Default__LightingConfig__Description"          : "The lighting every scene uses unless it carries its own override (see Scene__PerSceneLighting). Intensities are three.js light intensities. The sun is the directional light, the only light that casts shadows: it sits at DirectionalPos, integer millimetres from the model origin, and shines towards the origin, so only its direction shades the faces while its distance keeps the shadow camera clear of the model. A scene's Rotation turns it about the vertical axis from this position and its Height sets its angle above the horizon. ShadowsEnabled false fades the sun's shadows out rather than switching shadow casting off, so no material has to recompile.",
+        "Scene__Default__LightingConfig__AmbientIntensity"     : 2.8,
+        "Scene__Default__LightingConfig__DirectionalIntensity" : 0.5,
+        "Scene__Default__LightingConfig__DirectionalPosXMm"    : 50000,
+        "Scene__Default__LightingConfig__DirectionalPosYMm"    : 100000,
+        "Scene__Default__LightingConfig__DirectionalPosZMm"    : 40000,
+        "Scene__Default__LightingConfig__ShadowsEnabled"       : true
+    },
+    "Scene__PerSceneLighting": {
+        "Scene__PerSceneLighting__Description"             : "Per-scene lighting, authored in the Dev menu (Presentation Mode Scenes, a scene's Advanced section, Lighting). A scene stores only the settings that differ from Scene__Default__LightingConfig, under PresentationMode__Scene__Lighting in project.json, so every setting it leaves alone keeps following the default. Rotation is in degrees clockwise seen from above, 0 being the default direction; Height is the sun's angle above the horizon. Plans and elevations always use the default lighting. BlendDuringFlight eases one scene's lighting into the next over the camera flight; false cuts to it as the flight starts. The Min and Max values bound the Dev menu sliders. Enabled false ignores every stored override and hides the controls, without deleting anything.",
+        "Scene__PerSceneLighting__Enabled"                 : true,
+        "Scene__PerSceneLighting__BlendDuringFlight"       : true,
+        "Scene__PerSceneLighting__HeightMinDeg"            : 10,
+        "Scene__PerSceneLighting__HeightMaxDeg"            : 90,
+        "Scene__PerSceneLighting__DirectionalIntensityMax" : 3.0,
+        "Scene__PerSceneLighting__AmbientIntensityMax"     : 6.0
+    },
+    "Scene__Default__ControlsConfig": {
+        "Scene__Default__ControlsConfig__MovementSpeed"   : 0.5,
+        "Scene__Default__ControlsConfig__ElevationSpeed"  : 0.5,
+        "Scene__Default__ControlsConfig__EnableWASD"      : true,
+        "Scene__Default__ControlsConfig__EnableDamping"   : false,
+        "Scene__Default__ControlsConfig__StatusHideDelay" : 3000
+    },
+    "Scene__GroundPlane": {
+        "Scene__GroundPlane__Enabled": false,
+        "Scene__GroundPlane__Size": 500,
+        "Scene__GroundPlane__yAxisOffset": -0.05,
+        "Scene__GroundPlane__ShadowOpacity": 0.1
+    },
+    "models": {
+        "baseMesh": {
+            "material": {
+                "whiteColor": 16777215,
+                "roughness": 1.0,
+                "metalness": 0.0,
+                "polygonOffsetFactor": 2,
+                "polygonOffsetUnits": 2,
+                "emissiveBoost": 3355443,
+                "textureEmissive": 4473924,
+                "exemptTextureEmissiveIntensity": 0.01,
+                "exemptTextureEmissiveColor": 16777215
+            }
+        },
+        "RenderConfig__Linework": {
+            "RenderConfig__Linework__EdgeColor"           : 1315860,
+            "RenderConfig__Linework__LineWidth"           : 0.8,
+            "RenderConfig__Linework__PolygonOffsetFactor" : -4,
+            "RenderConfig__Linework__PolygonOffsetUnits"  : -4,
+            "RenderConfig__Linework__RenderOrder"         : 999,
+            "RenderConfig__Linework__DepthBias"           : 0.00015,
+            "RenderConfig__Linework__ProjectionOnlyCategoryTokens" : ["Linetype__"],
+            "RenderConfig__Linework__ProjectionOnlyNote"  : "Model categories whose linework belongs to 2D DRAWINGS ONLY. The SketchUp linetype tags - dashed, dotted, centre, door swings, clearances, overhead extents, building joins, demolition - say what a line MEANS on a drawing, and mean nothing in a 3D render: drawn there they sit in mid air, and on a drawing that shows a rendered underlay they appear twice, solid in the raster beneath their own dashes. Their fat lines are therefore loaded with material.visible false, so no 3D render draws them - the viewer, the image export and the Layout Editor raster alike - while the objects stay in the scene graph at full visibility for the projected linework pipeline to read. Matched case-insensitively as substrings of the category name; empty the list to draw them in 3D again."
+        }
+    },
+    "RenderEffect__ProfileLines": {
+        "RenderEffect__ProfileLines__Description"        : "Profile lines render silhouette edges around curved/rounded geometry, similar to SketchUp profile lines.",
+        "RenderEffect__ProfileLines__Enabled"              : true,
+        "RenderEffect__ProfileLines__EdgeColor"            : 4210752,
+        "RenderEffect__ProfileLines__EdgeThresholdNormal"  : 0.2,
+        "RenderEffect__ProfileLines__EdgeThresholdDepth"   : 0.002,
+        "RenderEffect__ProfileLines__EdgeWidth"            : 0.20,
+        "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.15,
+        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.40,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0,
+        "RenderEffect__ProfileLines__Drawing2dDescription"   : "Profile lines on 2D drawings (floor plans, elevations, sections). Rendered through the ortho-aware pre-pass at a fixed width; null colour and threshold fall back to the 3D values above.",
+        "RenderEffect__ProfileLines__Drawing2dEnabled"       : true,
+        "RenderEffect__ProfileLines__Drawing2dEdgeColor"     : null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeThresholdNormal": null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeWidth"     : 1.0
+    },
+    "RenderEngine__Config": {
+        "RenderEngine__Config__Description"                : "Dual render engine system. PureEngine = original lightweight whitecard pipeline (ALWAYS the default). MaxEngine = full PBR + SSAO pipeline ported from TrueVision (per-model opt-in). Per-model overrides live in project.json under the same key; this global default applies when project.json has no RenderEngine__Config.",
+        "RenderEngine__Active"                             : "PureEngine"
+    },
+    "RenderEffect__ProgressiveRefine": {
+        "RenderEffect__ProgressiveRefine__Description": "Idle-time supersampled anti-aliasing for the LIVE 3D viewport, on both engines. Costs nothing while the camera moves. Once the camera has held still for SettleDebounceMs the render loop keeps going instead of idling, redrawing the same frame with sub-pixel jitter and averaging, until the viewport holds a full SampleCount image. Image and video export do their own supersampling and are not affected by anything here. The 2D drawing views are excluded.",
+        "RenderEffect__ProgressiveRefine__Enabled": true,
+        "RenderEffect__ProgressiveRefine__SampleCount": 16,
+        "RenderEffect__ProgressiveRefine__PresentMilestones": [8, 16],
+        "RenderEffect__ProgressiveRefine__SettleDebounceMs": 90,
+        "RenderEffect__ProgressiveRefine__ChunkBudgetMs": 100,
+        "RenderEffect__ProgressiveRefine__MaxChunkSamples": 8,
+        "RenderEffect__ProgressiveRefine__StillnessPositionMm": 1,
+        "RenderEffect__ProgressiveRefine__StillnessRotationDeg": 0.01
+    },
+    "RenderEffect__AmbientOcclusion": {
+        "RenderEffect__AmbientOcclusion__Description"      : "Screen-space ambient occlusion. MAXENGINE ONLY — never constructed under PureEngine. All distance values are integer millimeters; convert to 3D units in code. DebugMode: 0=off, 1=raw depth, 2=linear Z, 3=normals, 4=raw AO.",
+        "RenderEffect__AmbientOcclusion__Enabled"          : true,
+        "RenderEffect__AmbientOcclusion__CullDistanceNote" : "CullDistanceMm skips the kernel for pixels further than this from the CAMERA, and fades over the last 20% (so 50000 means full strength to 40m, gone by 50m). Because it measures camera distance, every pixel crosses it at once: set it below the orbit range and the whole image loses its shading together as you pull back, which reads as the effect switching off rather than falling away. Keep it at or above Navmode__MouseControls__OrbitMaxDistanceMm for that reason. It was 8000 until 19-Sep-2026, which was inside the orbit range. Measured cost of 8000 -> 50000 on an RTX 3080 at 2560x1440: under 0.15ms per frame. 0 disables culling entirely.",
+        "RenderEffect__AmbientOcclusion__RadiusMm"         : 100,
+        "RenderEffect__AmbientOcclusion__Intensity"        : 1.2,
+        "RenderEffect__AmbientOcclusion__Bias"             : 0.005,
+        "RenderEffect__AmbientOcclusion__Samples"          : 8,
+        "RenderEffect__AmbientOcclusion__SamplesWhileMoving" : 4,
+        "RenderEffect__AmbientOcclusion__CullDistanceMm"   : 50000,
+        "RenderEffect__AmbientOcclusion__BlurRadius"       : 1.0,
+        "RenderEffect__AmbientOcclusion__FpsThreshold"     : 24,
+        "RenderEffect__AmbientOcclusion__FpsSampleFrames"  : 120,
+        "RenderEffect__AmbientOcclusion__PerformanceMonitorStartupDelayMs" : 3000,
+        "RenderEffect__AmbientOcclusion__DebugMode"        : 0
+    },
+    "Scene__Environment": {
+        "Scene__Environment__Description"                  : "HDR environment map for MaxEngine PBR reflections (glass/mirrors). MAXENGINE ONLY. Optimised 1024p version of the TrueVision HDRI (1.46 MB vs 24.5 MB 4k original) — reflections-only use means visually identical. Loaded lazily — only fetched when MaxEngine activates. Glass realism: BrightnessMultiplier darkens the DataLib glass colour before reflections are added; RoughnessOverride sharpens reflections; OpacityOverride (null = use DataLib value) raises glass presence. GlassBrightnessMultiplier is intentionally near-black (0.25^6, chosen 10-Jul-2026 after the multi-door glass-darkening compounding bug was fixed) so the near-zero diffuse colour lets the sharp env-map reflection dominate — this is the preferred 'dark mirror glass' look, applied uniformly to every glass mesh now that the compounding bug is fixed.",
+        "Scene__Environment__Enabled"                      : true,
+        "Scene__Environment__HdriUrl"                      : "./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr",
+        "Scene__Environment__Intensity"                    : 1.0,
+        "Scene__Environment__ApplyToScene"                 : false,
+        "Scene__Environment__UseAsBackground"              : false,
+        "Scene__Environment__MirrorOnly"                   : true,
+        "Scene__Environment__MirrorMaterialName"           : "MAT140__Mirror__ClearDefault",
+        "Scene__Environment__MirrorEnvMapIntensity"        : 1.0,
+        "Scene__Environment__MirrorBrightnessBoost"        : 1.0,
+        "Scene__Environment__MirrorRoughnessOverride"      : 0.14,
+        "Scene__Environment__GlassEnabled"                 : true,
+        "Scene__Environment__GlassMaterialName"            : "MAT101__Glass__ClearDefault",
+        "Scene__Environment__GlassEnvMapIntensity"         : 1.0,
+        "Scene__Environment__GlassBrightnessMultiplier"    : 0.000244140625,
+        "Scene__Environment__GlassRoughnessOverride"       : 0.03,
+        "Scene__Environment__GlassOpacityOverride"         : null
+    },
+    "RenderEffect__DistanceCulling": {
+        "RenderEffect__DistanceCulling__Description"       : "Per-item distance culling for furniture/decor categories. MAXENGINE ONLY, optional, off by default. All distance values are integer millimeters; convert to 3D units in code.",
+        "RenderEffect__DistanceCulling__Enabled"           : false,
+        "RenderEffect__DistanceCulling__CullDistanceMm"    : 25000,
+        "RenderEffect__DistanceCulling__CategoryNameTokens": ["Furniture", "InteriorDecor", "Decor"]
+    },
+    "cameraLens": {
+        "minFocalLengthMM": 24,
+        "maxFocalLengthMM": 75,
+        "defaultFocalLengthMM": 45,
+        "sensorHeightMM": 24
+    },
+    "ImageExport__Config": {
+        "ImageExport__Config__Description"              : "Configuration for the WebGL viewport image export tool. Aspect ratios are W:H format strings. Resolutions are pixel height values.",
+        "ImageExport__Config__CustomEnabled"            : true,
+        "ImageExport__Config__AspectRatios"             : ["3:2", "4:3", "16:9"],
+        "ImageExport__Config__DefaultAspectIndex"       : 0,
+        "ImageExport__Config__Resolutions"              : [1024, 2048, 4096, 8192],
+        "ImageExport__Config__DefaultResolutionIndex"   : 2,
+        "ImageExport__Config__AntiAliasSamples"         : 16,
+        "ImageExport__Config__AntiAliasSamplesNote"     : "Renders each tile this many times with sub-pixel camera jitter and averages the results, so a near-horizontal eaves or a sub-pixel glazing bar records how much of each pixel it really covers instead of winning or losing the pixel outright. Only 1 (off), 2, 4, 8 and 16 exist; anything else rounds down. Resolution is not a substitute - a bigger image gets smaller steps, not fewer - and FXAA cannot repair it, because a step on a two-degree line is longer than FXAA can see along. 16 because a still is one frame and whitecard line work is the case that needs every level. The cost is linear: 16 samples is 16 renders."
+    },
+    "ExportRenderLayers__Config": {
+        "ExportRenderLayers__Config__Description"                : "Localhost Dev-menu structural render layer exporter (Qwen conditioning maps). All distances are integer millimetres; thresholds are unitless shader values. Aspect ratios and resolutions are deliberately reused from ImageExport__Config so a structural map always drops beside a normal ValeVision export without resizing.",
+        "ExportRenderLayers__Config__Enabled"                    : true,
+        "ExportRenderLayers__Config__PreviewMaxLongEdgePx"       : 1600,
+        "ExportRenderLayers__Config__TileInteriorDesktopPx"      : 2048,
+        "ExportRenderLayers__Config__TileInteriorIosPx"          : 1536,
+        "ExportRenderLayers__Config__TileGutterPx"               : 32,
+        "ExportRenderLayers__Config__MaxExportDimensionPx"       : 8192,
+        "ExportRenderLayers__Config__ExcludeNameTokensNote"      : "Case-insensitive substrings matched against each object name AND its category. Any structural mesh that matches is excluded from every structural pass. This exists for sky domes and backdrop planes: a mesh that encloses the camera reads as geometry everywhere, so the Silhouette mask comes out solid, the Normal buffer never shows its background and Depth loses the sky. It looks harmless in a Beauty render because it is white. Use the Scene Inspector to find the offending object name and add a token here.",
+        "ExportRenderLayers__Config__ExcludeNameTokens"          : ["Sky", "Backdrop", "Dome", "Horizon"],
+        "ExportRenderLayers__Config__DefaultPassIds"             : ["BeautyRender", "ClayRender", "DepthMap", "NormalBuffer", "CannyEdges", "LineArt"],
+        "ExportRenderLayers__Config__DepthPaddingRatio"          : 0.02,
+        "ExportRenderLayers__Config__DepthInvert"                : false,
+        "ExportRenderLayers__Config__DepthMinRangeMm"            : 1000,
+        "ExportRenderLayers__Config__DepthProbeNote"             : "The depth range is measured from a low-resolution render of the actual scene rather than from bounding boxes, because a landscape plane straddling the camera collapses the near end onto the camera near plane and pushes the far end to the horizon. The percentiles are the contrast lever: tighter values give the building more of the 0-255 range and clip the nearest ground to white and the horizon to black, which is normal for a depth map. Widen them toward 0 and 1 to keep the full site gradient instead.",
+        "ExportRenderLayers__Config__DepthProbeEnabled"          : true,
+        "ExportRenderLayers__Config__DepthProbeLongEdgePx"       : 256,
+        "ExportRenderLayers__Config__DepthProbeLowPercentile"    : 0.02,
+        "ExportRenderLayers__Config__DepthProbeHighPercentile"   : 0.98,
+        "ExportRenderLayers__Config__CannyDepthWeight"           : 1.0,
+        "ExportRenderLayers__Config__CannyNormalWeight"          : 0.85,
+        "ExportRenderLayers__Config__CannyLuminanceWeight"       : 0.15,
+        "ExportRenderLayers__Config__CannyThresholdLow"          : 0.12,
+        "ExportRenderLayers__Config__CannyThresholdHigh"         : 0.32,
+        "ExportRenderLayers__Config__LineArtLineWidthPx"         : 1.6,
+        "ExportRenderLayers__Config__GrayIncludeLinework"        : false,
+        "ExportRenderLayers__Config__GrayBaseColourHex"          : "#b4b4b4",
+        "ExportRenderLayers__Config__GrayRoughness"              : 0.85,
+        "ExportRenderLayers__Config__ClayColourHex"              : "#f2f0ec",
+        "ExportRenderLayers__Config__ClayRoughness"              : 0.9,
+        "ExportRenderLayers__Config__AoRadiusMm"                 : 900,
+        "ExportRenderLayers__Config__AoIntensity"                : 1.1,
+        "ExportRenderLayers__Config__AoSampleCount"              : 16,
+        "ExportRenderLayers__Config__BackgroundColourEdgesHex"   : "#000000",
+        "ExportRenderLayers__Config__BackgroundColourLineArtHex" : "#ffffff",
+        "ExportRenderLayers__Config__BackgroundColourMasksHex"   : "#000000",
+        "ExportRenderLayers__Config__BackgroundColourNormalHex"  : "#8080ff",
+        "ExportRenderLayers__Config__PreferFileSystemAccess"     : true,
+        "ExportRenderLayers__Config__YieldEveryNTiles"           : 1
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Description"                       : "Global defaults. Walk and Fly are ON for every model; a project opts out by storing an explicit false under the same key in project.json (dev menu, Navigation Modes). Orbit is always available.",
+        "Navmode__EnabledModes__Walk"                              : true,
+        "Navmode__EnabledModes__Fly"                               : true
+    },
+    "Navmode__FovCompensation": {
+        "Navmode__FovCompensation__Description"                    : "Compensates for the FOV change when entering walk or fly mode. The orbit lens is typically narrow; walk/fly use a wider FOV which makes the scene appear to jump back. Compensation moves the camera/capsule forward so the apparent visual scale of the scene is preserved. Scale 1.0 = full mathematical compensation; 0.0 = disabled. 0.65 is recommended as a starting value.",
+        "Navmode__FovCompensation__Enabled"                        : true,
+        "Navmode__FovCompensation__Scale"                          : 0.65
+    },
+    "Navmode__Settings": {
+        "Navmode__Settings__Description": "All navmode values are integer millimeters where noted; convert to 3D units in code.",
+        "Navmode__MouseControls": {
+            "Navmode__MouseControls__EnableWASD"         : true,
+            "Navmode__MouseControls__MovementSpeedMm"    : 50,
+            "Navmode__MouseControls__ElevationSpeedMm"   : 50,
+            "Navmode__MouseControls__OrbitMinDistanceMm" : 200,
+            "Navmode__MouseControls__OrbitMaxDistanceMm" : 60000,
+            "Navmode__MouseControls__ZoomStepMm"         : 250,
+            "Navmode__MouseControls__OrbitMinCameraYMm"  : 0
+        },
+        "Navmode__IpadControls": {
+            "Navmode__IpadControls__EnableWASD"                 : false,
+            "Navmode__IpadControls__MovementSpeedMm"            : 50,
+            "Navmode__IpadControls__ElevationSpeedMm"           : 50,
+            "Navmode__IpadControls__OrbitMinDistanceMm"         : 200,
+            "Navmode__IpadControls__OrbitMaxDistanceMm"         : 50000,
+            "Navmode__IpadControls__OrbitMaxDistanceMultiplier" : 2.5,
+            "Navmode__IpadControls__OrbitMinCameraYMm"          : 0
+        },
+        "Navmode__WalkMode": {
+            "Navmode__WalkMode__Description"                       : "First-person walk mode settings. All distance values are integer millimeters; convert to 3D units in code.",
+            "Navmode__WalkMode__EyeHeightMm"                       : 1620,
+            "Navmode__WalkMode__CapsuleHeightMm"                   : 1800,
+            "Navmode__WalkMode__CapsuleRadiusMm"                   : 280,
+            "Navmode__WalkMode__HorizontalFovDeg"                  : 50,
+            "Navmode__WalkMode__MovementSpeedMmPerSec"             : 3500,
+            "Navmode__WalkMode__SprintMultiplier"                  : 1.8,
+            "Navmode__WalkMode__GravityMmPerSecSq"                 : 9810,
+            "Navmode__WalkMode__MaxStepHeightMm"                   : 350,
+            "Navmode__WalkMode__MouseSensitivity"                  : 0.002,
+            "Navmode__WalkMode__DoorProximityThresholdMm"          : 6500
+        },
+        "Navmode__FlyMode": {
+            "Navmode__FlyMode__Description"                        : "Free-fly camera mode settings. All distance values are integer millimeters; convert to 3D units in code.",
+            "Navmode__FlyMode__HorizontalFovDeg"                   : 50,
+            "Navmode__FlyMode__MovementSpeedMmPerSec"              : 5000,
+            "Navmode__FlyMode__VerticalSpeedMmPerSec"              : 4000,
+            "Navmode__FlyMode__BoostMultiplier"                    : 3.0,
+            "Navmode__FlyMode__SlowMultiplier"                     : 0.25,
+            "Navmode__FlyMode__MouseSensitivity"                   : 0.0018,
+            "Navmode__FlyMode__KeyboardRotateRadPerSec"            : 1.4,
+            "Navmode__FlyMode__MovementDampingFactor"              : 12.0,
+            "Navmode__FlyMode__DoorProximityEnabled"               : true,
+            "Navmode__FlyMode__DoorProximityThresholdMm"           : 6500
+        }
+    },
+    "Navmode__Damping": {
+        "Navmode__Damping__Description"        : "Orbit-controls damping settings. Factor values are unitless scalar values (not millimeters).",
+        "Navmode__Damping__Mouse": {
+            "Navmode__Damping__Mouse__Enabled" : false,
+            "Navmode__Damping__Mouse__Factor"  : 0.08
+        },
+        "Navmode__Damping__Ipad": {
+            "Navmode__Damping__Ipad__Enabled"  : true,
+            "Navmode__Damping__Ipad__Factor"   : 0.08
+        }
+    },
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX"       : 36025,
+            "Camera__DefaultPos__PosY"       : 2898,
+            "Camera__DefaultPos__PosZ"       : 7246
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX"  : -0.0387,
+            "Camera__DefaultRotation__RotY"  : 0.5919,
+            "Camera__DefaultRotation__RotZ"  : 0.0216
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov"       : 29.8628
+        }
+    },
+    "Dev__DeveloperMode": {
+        "Dev__DeveloperMode__Description": "All Dev__DefaultCube values are integer millimeters; convert to 3D units in code.",
+        "Dev__DefaultCube": {
+            "Dev__DefaultCube__Visible"  : false,
+            "Dev__DefaultCube__SizeInMm" : 1000,
+            "Dev__DefaultCube__Colour"   : "#1e3a4f",
+            "Dev__DefaultCube__PozX"     : 20000,
+            "Dev__DefaultCube__PozZ"     : -10000,
+            "Dev__DefaultCube__PozY"     : 2000
+        },
+        "OrbitHelperCube__Debug__Visible": false
+    },
+    "ImageExport__PostProcessEffects": {
+        "ImageExport__PostProcessEffects__Description"  : "All post process effects applied to the image export before download are configured here.",
+        "ImageExport__PostProcessEffects__Enabled"      : true,
+        "ImageExport__PostProcessEffects__Config": [
+            {
+                "ImageExport__PostProcessEffects__Levels": {
+                    "ImageExport__PostProcessEffects__Levels__Enabled"     : true,
+                    "ImageExport__PostProcessEffects__Levels__Order"       : 1,
+                    "ImageExport__PostProcessEffects__Levels__Parameters"  : [
+                        {
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Black"  :  0,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__White"  :  230,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Gamma"  :  1.0
+                        }
+                    ]
+                }
+            },
+            {
+                "ImageExport__PostProcessEffects__HighPassSharpen": {
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Enabled"   : true,
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Order"     : 2,
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Parameters": [
+                        {
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__Radius"   : 2.0,
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__BlendMode": "Overlay",
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__Opacity"  : 1.0
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "MaterialsSystem__Config": {
+        "MaterialsSystem__Config__Description"         : "Configuration for the PBR materials swap system. When enabled, GLB material names matching the library are replaced with PBR materials. Unmatched materials retain the whitecard appearance.",
+        "MaterialsSystem__Config__Enabled"             : true,
+        "MaterialsSystem__Config__LibraryUrl"          : "./02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json",
+        "MaterialsSystem__Config__FallbackToWhitecard" : true,
+        "MaterialsSystem__Config__PolygonOffsetFactor" : 2,
+        "MaterialsSystem__Config__PolygonOffsetUnits"  : 2
+    },
+    "3dObject__InteractionsSystem": {
+        "3dObject__Interaction__DoorAnimation": {
+            "3dObject__Interaction__DoorAnimation__Description"               : "Interactive door animation settings for click and Walk/Fly proximity. ROT_ONLY, ROT_MVE, MVE_ONLY, and FIXED panels share one multi-panel engine. Explicitly token-matched ExteriorDoubleDoor ADRs animate per leaf; interior, bifold, sliding, and unknown ADRs remain lockstep.",
+            "3dObject__Interaction__DoorAnimation__Enabled"                   : true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs"       : 600,
+            "3dObject__Interaction__DoorAnimation__BifoldDurationMultiplier"  : 3.0,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"        : 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"          : 4,
+            "3dObject__Interaction__DoorAnimation__MultiPanelEnabled"         : true,
+            "3dObject__Interaction__DoorAnimation__InteriorRotationInverted"  : false,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelsEnabled"  : true,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelAdrNameTokens": [
+                "ExteriorDoubleDoor"
+            ],
+            "3dObject__Interaction__DoorAnimation__CategoryNameTokens"        : [
+                "ProposedDoors",
+                "ExistingDoors"
+            ]
+        },
+        "3dObject__Interaction__CameraFollowComponents": {
+            "3dObject__Interaction__CameraFollow__Description"          : "2D camera-follow billboard components exported from SketchUp with CameraFollowBillboard glTF extras. All loaded categories are scanned for billboard nodes (the baked extras flag is the source of truth), so behaviour is robust to which category GLB the exporter bundled them into.",
+            "3dObject__Interaction__CameraFollow__Enabled"             : true,
+            "3dObject__Interaction__CameraFollow__RotationAxis"        : "Y",
+            "3dObject__Interaction__CameraFollow__YawOnly"             : true,
+            "3dObject__Interaction__CameraFollow__FlatShadingEnabled"  : true,
+            "3dObject__Interaction__CameraFollow__DefaultShadeFlatness": 0.85,
+            "3dObject__Interaction__CameraFollow__FlatShadingNote"     : "Master switch for per-component flat shading. The flatness amount itself (0=full directional, 1=fully flat) is data-driven per component via the Components DataLib (Behaviours.ShadeFlatness) and baked into each billboard's glTF node extras as shadeFlatness. DefaultShadeFlatness is the fallback applied to billboards whose GLB predates the exporter field (no baked shadeFlatness) so existing models flatten without a re-export; any baked per-component value overrides it. Set FlatShadingEnabled to false to globally ignore flatness and render all billboards with normal directional lighting."
+        }
+    },
+    "ProjectData__AssetUrls": {
+        "ProjectData__AssetUrls__Description"       : "Base URLs for project.json and image assets. R2 is tried first; if it fails the GH Pages base is used as fallback. Kept here as SSOT — do not hardcode in modules.",
+        "ProjectData__AssetUrls__R2BaseUrl"         : "https://cdn.noble-architecture.com/VaApps/Projects",
+        "ProjectData__AssetUrls__GhBaseUrl"         : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
+        "ProjectData__AssetUrls__FallbackToastMsg"  : "Failed to fetch live assets — using static assets instead.",
+        "ProjectData__AssetUrls__IndexUrl"          : "https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json",
+        "ProjectData__AssetUrls__IndexFallbackUrl"  : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json",
+        "ProjectData__AssetUrls__BuildManifestUrl"  : "https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json"
+    },
+    "ProjectData__EditorOwnedKeys": {
+        "ProjectData__EditorOwnedKeys__Description" : "The one list of top-level project.json keys the ValeVision editor owns (dev menus, presentation scenes, cross sections, the Layout Editor). The editor writes them to R2 first, so the local copy can fall behind. Anything that writes project.json whole keeps each listed key that R2 holds from R2's copy: the Whitecardopedia SketchUp cloud sync and the R2 audit/backfill tool (Whitecardopedia/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py) do so, then write the merged document locally too; the sync still re-points IMG-slot scene thumbnails inside R2's copy of PresentationMode__SavedCameraScenes. The editor worker's merge-keys guard and the localhost load overlay take their key lists from here as well. A new top-level key the editor writes joins this list in the same change, or a sync from another machine drops it. Never list a pipeline key (projectCode, projectName, folderId, basePath, images, allImages, displayImages, thumbnailImage, valeVision_ModelUrls, ValeVison3D__SketchUpCameraData): the sync tools refuse a list that does.",
+        "ProjectData__EditorOwnedKeys__Keys"        : [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "LayoutEditor__DrawingRegister",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "Navmode__OrbitMaxDistanceMm",
+            "Camera__DefaultPosition",
+            "OrbitHelperCube__Position",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config",
+            "GridLine__Grid__Offset__Config"
+        ]
+    },
+    "LoadResilience__Config": {
+        "LoadResilience__Config__Description"           : "Timeouts, retries, and concurrency caps for the load pipeline. All time values are milliseconds. Bump these on slow-CDN deployments; do NOT hardcode in modules.",
+        "LoadResilience__Config__ConfigFetchTimeoutMs"  : 10000,
+        "LoadResilience__Config__FetchTimeoutMs"        : 15000,
+        "LoadResilience__Config__GltfTimeoutMs"         : 45000,
+        "LoadResilience__Config__RetryCount"            : 2,
+        "LoadResilience__Config__RetryBaseDelayMs"      : 1000,
+        "LoadResilience__Config__GlbConcurrencyCap"     : 3,
+        "LoadResilience__Config__WatchdogBudgetMs"      : 120000,
+        "LoadResilience__Config__WatchdogStallThresholdMs" : 30000
+    },
+
+    "DrawingView__Config": {
+        "DrawingView__Config__Description"       : "Shared by every 2D drawing (floor plans, elevations, sections). The paper colour behind a drawing, the section cap fill and profile line the drawing cut is drawn with (the Doous look), and the flight timings into and out of a drawing. System-owned defaults live in 40__System__DrawingViewCore/Na__DrawView__AppConfig__.json.",
+        "DrawingView__Config__BackgroundColour"  : "#ffffff",
+        "DrawingView__Config__SectionFillColour" : "#505050",
+        "DrawingView__Config__SectionLineColour" : "#505050",
+        "DrawingView__Config__SectionLineWidthPx": 2,
+        "DrawingView__Config__TransitionIntoMs"  : 1400,
+        "DrawingView__Config__TransitionOutOfMs" : 1400
+    },
+
+    "ProjectedLinework__Config": {
+        "ProjectedLinework__Config__Description"                  : "Projected linework on drawings (port Phase 4). Category tokens matched against model group names are left out of the projection unless a drawing record overrides the list.",
+        "ProjectedLinework__Config__Exclusions__DefaultCategoryTokens": ["Planting", "Trees", "People", "Vehicles", "Furniture", "Decor"]
+    },
+
+    "LayoutEditor__Config": {
+        "LayoutEditor__Config__Description"   : "Layout Editor (port Phase 5). Authoring is localhost-only (or an explicitly unlocked device); everywhere else the drawings and the project specification are shown by the read-only web viewer, which builds no panel columns or toolbar at all. The tab strip is the same one the editor has. Switch the viewer off in LayoutEditor__WebViewer__Config in Na__LayoutEditor__AppConfig__.json to hand the web build back the read-only editor.",
+        "LayoutEditor__Config__ReadOnlyOnWeb" : true
+    }
+}
+

@@ -1,0 +1,35 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - VIEW DEFINITION
++// VALEVISION3D - PROJECTED LINEWORK - VIEW DEFINITION
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__ViewDefinition__.js
+@@ -47,12 +47,19 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim, bar 1.1.0 and 1.2.0
+-// - Divergences   : Console prefix, header and folder numbers; the door poses
+-//                   of 1.1.0 and 1.2.0, authored here first.
+-// - Back-port     : 1.1.0 and 1.2.0 PENDING to ValeVision3D, on Adam's sign-off.
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
++//                   Designer's VghLantern__ProjectedEdges__Projector__.mjs (basis table only) of 07-Aug-2026;
++//                   it stayed at 1.0.0 here until this port);
++//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
++// - Source version: 1.2.0 (TrueVision3D v2.48.1, 14-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
++// - Parity        : verbatim. A definition built outside the Layout Editor carries DoorPose null, which the
++//                   record hash leaves out, so every existing hash is unchanged. Flags reads both the
++//                   record's Styles__X and the viewport's x spelling; this app's GetStyles answers the
++//                   viewport spelling, so the value read is the same as before.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //

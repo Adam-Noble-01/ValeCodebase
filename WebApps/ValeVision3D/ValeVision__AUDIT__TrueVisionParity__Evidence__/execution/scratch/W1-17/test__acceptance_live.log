@@ -1,0 +1,54 @@
+﻿W1-17 acceptance check
+  TrueVision (pin b2aa9151): D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-17\tv\02__Src__AppModules\51__System__LayoutEditor\36__System__HatchPatternTools\Na__LayoutEditor__HatchPatterns__.js
+  ValeVision               : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\51__System__LayoutEditor\36__System__HatchPatternTools\Na__LayoutEditor__HatchPatterns__.js
+
+  PASS  exports identical (21 names)
+  PASS  nothing loaded at import (IsLoaded false, no request, no console line)
+  PASS  ValeVision library loads: every request answered (22 files, all 200)
+  PASS  every request asks cache:no-store, as TrueVision's
+  PASS  two packs, Construction Materials first, Site Plan second
+  PASS  14 + 5 patterns (19)
+  PASS  the first pattern of the first pack is Brickwork (what Hatch with nothing chosen takes)
+  PASS  Construction pack swatch ink #333333; Site Plan pack none
+  PASS  packs, order and every parsed pattern identical to TrueVision's
+  PASS  request sequence identical to TrueVision's (same files, same order, serial)
+  PASS  console: one line, "[ValeVision3D] Hatch patterns: 19 pattern(s) in 2 pack(s)."
+  PASS  console identical to TrueVision's but for the app token
+  PASS  SvgPaint identical for all 19 patterns
+  PASS  SwatchMarkup identical for all 19 patterns
+  PASS  TilePolylines identical for all 19 patterns
+  PASS  TileMarks identical for all 19 patterns
+  PASS  PatternDef (a site plan at 1:500) identical for all 19 patterns
+  PASS  DrawPdf call log identical for all 19 patterns, and every one stamps lines
+  PASS  DrawPdf with a hole (even-odd clip) identical for all 19 patterns
+  PASS  clamps and token as TrueVision's (null, null, 20, null, hatch:none)
+
+  over HTTP: http://localhost:8000/ValeVision3D/
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/HatchLibrary__Index__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/HatchPack__Index__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Brickwork__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Blockwork__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Concrete__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Hardcore__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Earth__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__ScreedAndRender__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationQuilt__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationRigid__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__TimberGrain__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Metal__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BrickCoursing__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BlockCoursing__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__RoofTilesPlain__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__CladdingBoards__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/HatchPack__Index__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__MixedWoodland__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__PondsAndLakes__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Grassland__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__RoughGrassland__.json
+        200  http://localhost:8000/ValeVision3D/52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Gravel__.json
+  PASS  HTTP: every file the module asks for answers 200 (22)
+  PASS  HTTP: HatchLibrary__Index__.json is the first request and answers 200
+  PASS  HTTP: the library the module loads is identical to the disk load
+  PASS  HTTP: console line as on disk
+
+RESULT: PASS (24 passed, 0 failed)

@@ -1,0 +1,5 @@
+clean copy                           exit 0  as expected  []
+storage floor 256 -> 255 px          exit 1  as expected  ['FAIL  a thumbnail is not stored below 256 px']
+corner scale ignores the snap        exit 1  as expected  ['FAIL  a snap point lines up the edge that leaves the corner nearest the pointer (the side here)', 'FAIL  or the bottom edge, when that one does']
+frame drawn under the picture        exit 1  as expected  ['FAIL  shadow first, then the picture, then the frame over its edge']
+placeholder caption not escaped      exit 1  as expected  ['FAIL  a missing picture is a placeholder with its name, escaped']

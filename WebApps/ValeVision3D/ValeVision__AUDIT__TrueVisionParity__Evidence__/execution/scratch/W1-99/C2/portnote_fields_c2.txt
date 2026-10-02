@@ -1,0 +1,336 @@
+== 02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js
+   Ported from    TrueVision3D 02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js
+   Source version 1.0.1 (TrueVision3D v2.112.0, 21-Sep-2026; read at b2aa9151) - its render-loop release, the one hunk the 1.1.1 entry names
+   Parity         adapted (hunk replay; this app's own 1.1.0 stays)
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            02-Oct-2026 1.1.1 (v2.71.3)
+== 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+   Ported from    TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+   Source version 1.1.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+   Parity         adapted
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3, whole; first ported 09-Sep-2026 for ValeVision3D v2.18.0 (port Phase 2) as 1.0.0, logic unchanged, imports repointed
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.45.0). No TrueVision twin:
+   Parity         new - a permanent ValeVision seam (DR-24 (a))
+   Ported on      01-Oct-2026 for ValeVision3D v2.71.2 (the entry points above; the loader itself is this app's); 02-Oct-2026 for ValeVision3D v2.71.2 (the first open: the body class at the press, the hand-over to the first-open veil); 02-Oct-2026 for ValeVision3D v2.71.2 (TrueVision's tab strip 2.0.0 reads the editor through this facade alone); 02-Oct-2026 for ValeVision3D v2.71.3 (the sheet model's own late start; the drawing number
+   log            02-Oct-2026 1.1.4 (v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+== 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+   Authored in    ValeVision3D first (1.0.0, split out of Na__LayoutEditor__ConfigState__.js on
+   Source version 1.9.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+   Parity         adapted
+   Ported on      01-Oct-2026 for ValeVision3D v2.71.1; the title block rows (the Document ID row and the Rev cell's prefix) and the 1:200 scale came level with TrueVision on 02-Oct-2026 for ValeVision3D v2.71.3; the style font fallback came level (Open Sans first, the chrome measuring and printing in the embedded cuts) and the logo's stand-in text reader was added on 02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.9.0
+== 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5), from ValeVision3D
+   Source version 1.32.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151) - the hunks the 1.18.1, 1.18.2, 1.18.3 and 1.18.4 entries name. Every other difference from that file is a seam listed here or a hunk that arrives with its own feature.
+   Parity         adapted (hunk replay; not yet whole)
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.2; 02-Oct-2026 for ValeVision3D v2.71.2 (the first-open veil); 02-Oct-2026 for ValeVision3D v2.71.2 (the specification under its own tab); 02-Oct-2026 for ValeVision3D v2.71.3 (the drawing tabs' keyboard: its restart, and Page Up / Page Down)
+   log            02-Oct-2026 1.18.4 (the drawing tabs' keyboard, v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.7 port Phase 5); TrueVision3D took it
+   Source version 1.5.0 (TrueVision3D v2.146.0, 22-Sep-2026; read at b2aa9151), with the Drawing Register's transaction hooks its log does not record: Suspend, Resume and the 'register-updated' ignore (19-Sep-2026, git b6baf301) and DiscardSavedDraft (19-Sep-2026, git 32767407)
+   Parity         adapted - TrueVision's file; the banner, the console prefix, the unsaved-work flag's name with the two comments that describe its reader, and this note are the only differences. The draft key waits for the project's sheets (1.4.0), so nothing reads or writes a draft against the empty block. A draft records the drawings it grew from and is judged before it goes back (1.5.0): grown from the drawings loaded, it is put b
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.5.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+   Source version 1.21.0 (TrueVision3D v2.70.0, 19-Sep-2026; read at b2aa9151); both rules are unchanged there to SheetRecords 1.39.0
+   Parity         adapted - behaviour verbatim; the split into a leaf is ValeVision's own, because TrueVision's tab strip imports the sheet model directly and has no loader facade to serve.
+   Ported on      19-Sep-2026 for ValeVision3D v2.61.0; header brought to the K2 H5 form on 02-Oct-2026 for ValeVision3D v2.71.3
+   log            02-Oct-2026 1.0.1 (v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+   Source version 1.0.0 (TrueVision3D v2.40.0, 14-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - the header brought level with TrueVision's; the code was already its own, ported 14-Sep-2026 for ValeVision3D v2.35.0.
+   log            14-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.7 port Phase 5, after the plan
+   Source version 1.7.0 (TrueVision3D v2.104.0, 21-Sep-2026; read at b2aa9151)
+   Legacy         TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34 (a)), gives 1.3.0 twice -
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. A notes margin change ('margin', 1.4.0) and a floor area change ('areas', 1.7.0) are steps now (DR-40 item 4): this app's copy left both out, so a margin change was no step and the next step swallowed it. The register-updated rewrite of kept steps (1.6.0) waits for the Drawing Register (DR-11). Ported under DR-01 (c): the Port Record nam
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3, in one change with the facade 1.35.1
+   log            21-Sep-2026 1.7.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.2.0 (TrueVision3D v2.36.0, 14-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - the header brought level with TrueVision's; the code was already its own.
+   log            14-Sep-2026 1.2.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0 port Phase 5); TrueVision3D took it
+   Source version 1.35.1 (TrueVision3D v2.147.0, 22-Sep-2026; read at b2aa9151), with the Drawing Register's two hooks its log does not record, NotifyRegister and FinishRegisterDeletion (19-Sep-2026, git b6baf301 and 32767407)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. Initialize listens on the drawings change event alone and announces a load that landed before it (1.35.0), so the loader no longer announces it again (the loader's 1.1.4). Save hands the drawings save a report and says where the sheets went (1.11.0, 1.29.0). AnnounceRestore lives here now, not in the Sheets unit. NotifyRegister and Finis
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3, in one change with the Sheets unit 1.4.0, History 1.7.0 and the loader's late start
+   log            22-Sep-2026 1.35.1
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js
+   Source version 1.0.0 (TrueVision3D v2.74.0, 19-Sep-2026; read at b2aa9151)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. The DESCRIPTION, MIGRATION and INTEGRATION are TrueVision's words, "TrueVision used to store them per sheet" included: so did this app, until v2.65.0.
+   Ported on      20-Sep-2026 for ValeVision3D v2.65.0 (the Common title block fields); header taken whole from TrueVision on 02-Oct-2026 for ValeVision3D v2.71.3
+   log            19-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.0.0 (TrueVision3D v2.55.0, 15-Sep-2026; read at b2aa9151)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            15-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.3.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151): PruneGroups learned leaders and dimensions in v2.141.0 and viewports in v2.142.0
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. PruneGroups knows the viewport, leader and dimension members the sheet records keep since SheetRecords 1.39.0 (GROUP_KINDS): the two land in one release, or the first delete anywhere on a sheet would strip them from every group. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed 
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.3.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.4.0 (TrueVision3D v2.127.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. TrueVision's own note held 1.3.0 and 1.4.0 for Adam's sign-off, not given yet. DeleteLayer now re-homes the vectors of a deleted layer (1.1.0); this app's 1.0.0 left them naming a layer that was gone. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.4.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.2.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.2.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.6.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151), with the edit TrueVision's log for this file does not record: the hatch on CreateShape and UpdateShape (v2.90.0, 20-Sep-2026, git 62dade1c)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. InsertShape now writes the layer it falls back to (1.4.0): this app's 1.0.0 kept a record's id for a layer the sheet did not have. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.6.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.4.0 (TrueVision3D v2.147.0, 22-Sep-2026; read at b2aa9151)
+   Parity         adapted - TrueVision's file with the one seam below and nothing else. The DESCRIPTION's "TrueVision only" and the log's "not yet in ValeVision" are TrueVision's words, kept as written: this app has the whole unit now, the site plan tab groups dormant with site plans (DR-08 (B)). AnnounceRestore moved to the facade, as in TrueVision. A tab's code is cut from the drawing number with its default ("D01"), as TrueVision's
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3, in one change with the facade 1.35.1
+   log            22-Sep-2026 1.4.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.2.0 (TrueVision3D v2.136.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim - TrueVision's file; the banner, the console prefix and this note are the only differences. The DESCRIPTION's "TrueVision only" and the log's "not yet in ValeVision" are TrueVision's words, kept as written: this app has the drawing types and Revision now (the drawing types are dormant with site plans, DR-08 (B)). Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has 
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.2.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.2.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151), with the edit TrueVision's log for this file does not record: linePt and dash on CreateDimension and UpdateDimension (v2.152.0, 23-Sep-2026, git b24f33a9)
+   Parity         verbatim - TrueVision's file; the banner and this note are the only differences. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.2.0
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js
+   Authored in    ValeVision3D first (1.0.0, 15-Sep-2026, v2.47.0: split out of
+   Source version 1.4.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151), with the site plan patch keys TrueVision's log for this file does not record: sitePlanStoreId (git bef15277, 20-Sep-2026) and sitePlanPlanType, sitePlanComposites and sitePlanHatch (v2.89.0, 20-Sep-2026, git 62dade1c)
+   Parity         verbatim - TrueVision's file; the banner, the console prefix and this note are the only differences. The site plan paths are dormant here: no viewport of this app is a site plan until a Vale pipeline exists (DR-08 (B)). "TrueVision only" in the DESCRIPTION is TrueVision's word for IsSitePlanViewport, kept as written. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not c
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.4.0 (TrueVision)
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.0 port Phase 5: split from
+   Source version 1.39.0 (TrueVision3D v2.152.0, 23-Sep-2026; read at b2aa9151), with the two edits TrueVision's log for this file does not record: Asset__Samples (v2.58.2, 17-Sep-2026, git 5665508c) and the projected edges' Category__LineTypeScale and Category__FillHex (git 55014c6a, 29-Sep-2026, named in no release)
+   Parity         adapted - TrueVision's file with the four seams below and nothing else. Ported under DR-01 (c): Adam has confirmed none of the TrueVision releases it carries in TrueVision itself; the Port Record names them.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            23-Sep-2026 1.39.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.4.0 (TrueVision3D v2.115.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.1.0 (14-Sep-2026, TrueVision's 3D viewport zoom wheel, v2.50.0). The wheel's steps are now gathered into one zoom a frame, each a zoom gesture step (1.2.0, v2.111.0); Page Up and Page Down ask the mode controller for the drawing before or after this one (1.3.0, v2.112.0); a press on the stage takes the keyboard, and a focused control keeps only t
+   log            21-Sep-2026 1.4.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.1.0 (TrueVision3D v2.111.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.0.0 (10-Sep-2026); a pinch step is now a zoom gesture step, held until the pinch rests.
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.3.0 (TrueVision3D v2.135.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.1.0 (10-Sep-2026, the gesture handling lifted out into the two control modules). A wheel or pinch step is now a zoom gesture step that the sheet surface settles once (1.2.0, TrueVision3D v2.111.0), and the ceiling follows the authoring gate: 6400% where this session may author, 800% for every reader (1.3.0). INTEGRATION now has TrueVision's
+   log            21-Sep-2026 1.3.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.14.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.5.0 (15-Sep-2026): TrueVision's 1.6.0 code with 1.8.0's FitCaptionFont (ValeVision3D v2.54.1), measuring and printing every run in jsPDF's Helvetica. Text is now measured and printed in the Open Sans cuts the PDF embeds (Na__LayoutEditor__PdfFonts__).
+   log            22-Sep-2026 1.14.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+   Source version 1.13.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim (code); one comment reworded, below
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.6.0 (18-Sep-2026, TrueVision's viewport cache, v2.57.0): every viewport frame in one box under one chrome SVG and one markup SVG. The sheet is now one stack in the Layers list's order; a zoom gesture settles once (NoteZoomGesture, which the navigation module calls from W1-36), frames are carried by a translate and turn with their viewport, the ve
+   log            22-Sep-2026 1.13.0 (TrueVision)
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css
+   Ported from    split out of Na__LayoutEditor__Styles__Main__.css (15-Sep-2026, ValeVision3D v2.47.0), rules moved verbatim
+   Parity         as Na__LayoutEditor__Styles__Main__.css; the same split applies to TrueVision's copy
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+   Source version none of its own - the sheet as TrueVision3D v2.72.0 wrote it (19-Sep-2026; read at b2aa9151)
+   Legacy         a stylesheet carries no module version, so the Source version names the release
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. The tokens were already TrueVision's (ported 19-Sep-2026 for ValeVision3D v2.60.0); the header now is too.
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+   Source version 1.2.0 (TrueVision3D v2.109.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.0.0 (20-Sep-2026, ValeVision3D v2.66.0): TrueVision's 1.1.0 code, without Widen. Widen is exported for TitleBlock__Modern__ 1.5.0, which takes it when it lands.
+   log            21-Sep-2026 1.2.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5: the title block scan of
+   Source version 1.0.0 (TrueVision3D v2.21.0, 10-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - the header brought level with TrueVision's; the code was already identical. The scan it paints is Vale's own, from this app's asset root (TitleBlock ClassicScanAssets), never TrueVision's placeholder.
+   log            09-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from the title block region
+   Source version 1.5.0 (TrueVision3D v2.109.0, 21-Sep-2026; read at b2aa9151)
+   Parity         adapted
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.2.0 (20-Sep-2026, ValeVision3D v2.66.0): TrueVision's 1.2.0 with 1.4.0's floor and this app's own logo text. New here: the Rev cell's "Revision" prefix, a fifth more for the fixed cells on A2 and A1, and the QR cell - solved first, but switched off (DR-12).
+   log            21-Sep-2026 1.5.0
+== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from this app's own
+   Source version 1.6.0 (TrueVision3D v2.152.0, 23-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.2.0 (14-Sep-2026): TrueVision's 1.1.0 (ortho, v2.31.0) and 1.3.0 to 1.5.1 (the text leader, ValeVision3D v2.37.0) without 1.2.0's fixed-length extension lines, which come across now with 1.6.0's dashed rules.
+   log            23-Sep-2026 1.6.0
+== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js
+   Source version 1.4.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was TrueVision's 1.2.0 (1.0.0 ported 14-Sep-2026 as v2.38.0; 1.1.0's leader box 18-Sep-2026; RegisterLabeller 20-Sep-2026): vectors, text and nested groups. Leaders, dimensions and viewports now group as well (1.3.0, 1.4.0).
+   log            22-Sep-2026 1.4.0
+== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+   Source version 1.3.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.0.0 (14-Sep-2026, ValeVision3D v2.32.0) with 1.1.0's code resolver. 1.2.0 (the broken-link halo) and 1.3.0 (the note resolver), which TrueVision's note held for their own sign-off, come across in dependency order (DR-01 (c)): both answer nothing until the specification registers their resolvers, and the halo is drawn only for a caller that
+   log            22-Sep-2026 1.3.0
+== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from this app's
+   Source version 1.20.0 (TrueVision3D v2.152.0, 23-Sep-2026; read at b2aa9151)
+   Legacy         TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), names 1.12.0 twice (17-Sep-2026
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.10.0 (17-Sep-2026): TrueVision's 1.12.0 painting every kind across the whole sheet in one pass, all of it over every viewport, with its own dimension shape (no fixed-length extension lines). Markup is now painted and hit tested a layer at a time in the Layers list's order (Na__LayoutEditor__PaintOrder__), and TrueVision's 1.13.0-1.20.0 come with
+   log            23-Sep-2026 1.20.0
+== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+   Authored in    ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5); TrueVision3D took it
+   Source version 1.9.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was its 1.5.0 (14-Sep-2026), TrueVision's 1.5.0. A box carrying Shape__Qr paints the project's code only while the Project QR Code system is switched on, which it is not here (DR-12).
+   log            22-Sep-2026 1.9.0
+== 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js
+   Authored in    ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, after Lantern Designer
+   Source version 1.6.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim (the code is TrueVision 1.6.0's; the banner and this note are the only differences)
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole, with TrueVision's log. This app's own 1.0.0-1.4.0 (09-Sep-2026 to 20-Sep-2026) had taken AdvancedToggle (its 1.1.0), SliderRow (its 1.2.0), SetFolded, FocusSection and the selection helpers (1.3.0) and the column tabs (1.4.0) from TrueVision, and lacked LinkedPairRow and ShowLink (TrueVision 1.2.0), the tab hover text (1.5.0), the Colour Palette attach
+   log            21-Sep-2026 1.6.0
+== 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css
+   Authored in    ValeVision3D first (09-Sep-2026, v2.21.0, port Phase 5: Lantern Designer's
+   Source version none of its own - the sheet as TrueVision3D v2.154.0 left it (23-Sep-2026, commit b24f33a9; read at b2aa9151)
+   Parity         verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences). Two comments speak for TrueVision: the sheet name field's code is "the Drawing Register's" (here the sheet's Drawing No. until the register lands) and the offer is "the project admin record" (here the project record).
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - whole. This app's copy was last brought level in its v2.68.0 (20-Sep-2026: the Scrapbook and Column Tabs regions); it lacked the Linked Pair region, the slider's number box and suffix, the wrapping Scale buttons and their tight variant, the inline check, the Ref button and one red for Off, Unlock and Ref.
+== 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js
+   Authored in    TrueVision3D first (14-Sep-2026, v2.51.0)
+   log            02-Oct-2026 1.0.1 (the document code, v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+   Source version 1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; read at b2aa9151)
+   Parity         adapted
+   Ported on      17-Sep-2026 for ValeVision3D v2.56.0; taken whole 02-Oct-2026 for ValeVision3D v2.71.3, with Na__LayoutEditor__PdfFonts__: the Open Sans cuts are in memory before a line is measured and installed in the document, as TrueVision's are, and the save is awaited. This app's copy before it was its 1.0.2 (01-Oct-2026, v2.71.1): TrueVision's 1.0.0 without the two font lines and the awaited save, set in Helvetica, with the di
+   log            17-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js
+   Ported from    TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js,
+   Source version 1.2.0 (TrueVision3D v2.85.0, 20-Sep-2026), with 1.2.1's ScaleCell (TrueVision3D v2.106.0, 21-Sep-2026); read at b2aa9151
+   Parity         verbatim - every code region is TrueVision's 1.2.1; its 1.2.2 (a tie to a turned viewport, v2.138.0) comes with the whole-file take (W2-37)
+   Ported on      20-Sep-2026 for ValeVision3D v2.68.0; 1.2.1's ScaleCell 02-Oct-2026 for ValeVision3D v2.71.3, with the sheet surface's layer stack that made it necessary
+   log            02-Oct-2026 1.0.1 (TrueVision3D's 1.2.1, v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+   Ported from    ValeVision3D 35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js and Lantern Designer SheetChrome DrawToPdf
+   Source version 1.12.0 (TrueVision3D v2.160.0, 23-Sep-2026; read at HEAD b2aa9151)
+   Parity         adapted
+   Ported on      09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5); the linework call's shape 01-Oct-2026 for ValeVision3D v2.71.2; the picture packing (1.11.0), the strict and pictureCompression options, LoadLibrary and the awaited save 02-Oct-2026 for ValeVision3D v2.71.2; the Open Sans cuts (1.4.0, with Na__LayoutEditor__PdfFonts__) 02-Oct-2026 for ValeVision3D v2.71.3; the Layers list's paint order (1.7.0) 02-Oct-2026 for ValeV
+   log            02-Oct-2026 1.2.4 (TrueVision3D's paint order, v2.71.3)
+== 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+   Source version 1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; read at b2aa9151)
+   Parity         verbatim. As in TrueVision it looks nothing up: each caller hands it the code and the project code its document prints (the sheet exporter, the specification).
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - the header brought level with TrueVision's; the code was already its own, ported 17-Sep-2026 for ValeVision3D v2.55.0.
+   log            17-Sep-2026 1.0.0
+== 03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css
+== 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+== 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js
+   Source version 1.0.0 (TrueVision3D v2.104.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas: nothing in this app imports it yet. The sheet model's facade re-exports it from TrueVision's 1.35.1 on, and Floor Areas, its only caller, switches on later (DR-14 (A)). TrueVision's floor area plan still waits for Adam's sign-off. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js
+   Source version 1.0.0 (TrueVision3D v2.81.0, 20-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - new here, and SWITCHED OFF: TitleBlock QrCellEnabled is false and so is the Project QR Code system's ProjectQr__Enabled (DR-12), so Solve answers null and the fields keep the whole strip, as they always have.
+   log            19-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js
+   Source version 1.2.2 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas switches on (DR-14 (A)): only the Floor Areas tool, menu and label beside it import it until the mode controller registers the panel and calls Ready - the one thing that fetches the config. TrueVision's floor area plan keeps its ValeVision phase open until Adam has signed Floor Areas off; ported under DR-01 (c) - the Port Record names every TrueVision release it carries that Adam
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.2.2
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js
+   Source version 1.1.0 (TrueVision3D v2.125.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas switches on (DR-14 (A)): only the Floor Areas module beside it imports it, and nothing imports that yet. Na__Test__FloorAreas__ proves it in Node. TrueVision's floor area plan keeps its ValeVision phase open until Adam has signed Floor Areas off; ported under DR-01 (c) - the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js
+   Source version 1.1.1 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas switches on (DR-14 (A)): nothing in this app imports it until the sheet tools' context menu is TrueVision's. TrueVision's floor area plan keeps its ValeVision phase open until Adam has signed Floor Areas off; ported under DR-01 (c) - the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueVision itself.
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            22-Sep-2026 1.1.1
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js
+   Source version 1.1.0 (TrueVision3D v2.125.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas switches on (DR-14 (A)): nothing in this app imports it until MarkupBridge is TrueVision's (1.20.0); until then a room on a sheet (Shape__Area, kept by SheetRecords) draws as its plain vector, with no label. TrueVision's floor area plan keeps its ValeVision phase open until Adam has signed Floor Areas off; ported under DR-01 (c) - the Port Record names every TrueVision release it
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js
+   Source version 1.0.0 (TrueVision3D v2.104.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim, and inert until Floor Areas switches on (DR-14 (A)): nothing in this app imports it until the sheet tools hub and the Measurements box are TrueVision's, and the A key reaches it only then. It hands this app's Draw and Rectangle tools the room block and the Floor Areas layer, which they honour from ShapeTool 1.7.0 and RectangleTool 1.3.0 on. TrueVision's floor area plan keeps its ValeVision phase open until 
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.0.0
+== 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
+   Ported from    TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
+   Source version 1.0.0 (TrueVision3D v2.54.0, 14-Sep-2026; read at b2aa9151)
+   Parity         verbatim (the code is TrueVision 1.0.0's; the banner, the three console prefixes and this note are the only differences)
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3 - the whole file, new in this app.
+   log            14-Sep-2026 1.0.0
+== 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js
+   Ported from    TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js
+   Source version 1.0.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.0.0
+== 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json
+== 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js
+   Ported from    TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js
+   Source version 1.1.0 (TrueVision3D v2.133.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js
+   Ported from    TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js
+   Source version 1.1.0 (TrueVision3D v2.133.0, 21-Sep-2026; read at b2aa9151)
+   Parity         verbatim
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+   log            21-Sep-2026 1.1.0
+== 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css
+   Ported from    TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css
+   Source version none of its own - the sheet as TrueVision3D v2.133.0 left it (21-Sep-2026, commit 7ab70638; read at b2aa9151)
+   Legacy         TrueVision's copy of this sheet has no module version, so the Source version names
+   Parity         verbatim (the rules are TrueVision's; the banner and this note are the only differences)
+   Ported on      02-Oct-2026 for ValeVision3D v2.71.3
+== 02__Src__AppModules/54__Feature__ColourPalette/README__ColourPalette__.md

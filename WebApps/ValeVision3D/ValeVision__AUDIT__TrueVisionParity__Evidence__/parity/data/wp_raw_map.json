@@ -1,0 +1,3032 @@
+{
+ "id": "K3",
+ "generated": "01-Oct-2026",
+ "description": "Every live raw work package (data/work_packages.json) mapped to exactly one canonical K3 package (its primary owner), or dropped with a reason; split_into lists the other canonical packages that carry part of it; retired_aliases maps the raw ids the verifiers refuted (still referenced by raw depends_on lists and K1 blocks) to their live replacements.",
+ "raw_count": 221,
+ "map": {
+  "WP-S01-01R": {
+   "canonical": "W0-02",
+   "split_into": [],
+   "raw_title": "Drawing-system folder renumber to TV numbers (atomic, first) - corrected",
+   "raw_slice": "S01",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S01-02": {
+   "canonical": "W0-16",
+   "split_into": [],
+   "raw_title": "Move the Layout Editor's jsPDF and Classic title-block scan out of 35__System__PageLayoutSystem",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S01-03R": {
+   "canonical": "W0-03",
+   "split_into": [],
+   "raw_title": "Hotkey file renames and identity hygiene - corrected",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S01-04R": {
+   "canonical": "W2-19",
+   "split_into": [],
+   "raw_title": "Retire VV Snapping__ in favour of TV 28__System__ObjectSnap - corrected",
+   "raw_slice": "S01",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S01-05": {
+   "canonical": "W0-06",
+   "split_into": [],
+   "raw_title": "Documentation, registry and ledger alignment",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S01-06R": {
+   "canonical": "W0-12",
+   "split_into": [],
+   "raw_title": "Transport and identity facade scaffold (names and paths) - corrected",
+   "raw_slice": "S01",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S01-07": {
+   "canonical": "W0-18",
+   "split_into": [
+    "W1-17"
+   ],
+   "raw_title": "App-root content folders (user config and hatch library)",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S01-08R": {
+   "canonical": "W0-04",
+   "split_into": [],
+   "raw_title": "Parity naming lint for the swarm - corrected",
+   "raw_slice": "S01",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S01-09": {
+   "canonical": "W6-03",
+   "split_into": [],
+   "raw_title": "(Deferred) EmailWorkers renumber off TV/WCP 62",
+   "raw_slice": "S01",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S01-10": {
+   "canonical": "W1-01",
+   "split_into": [],
+   "raw_title": "Shared-module export parity for the drawing system (IsPaused, ModelToggle, DoorAnim)",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S01-11": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "PWA seams the Layout Editor needs from WCP (unsaved-work hold, project display name)",
+   "raw_slice": "S01",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-01": {
+   "canonical": "W0-02",
+   "split_into": [],
+   "raw_title": "Renumber VV drawing folders to TV numbers",
+   "raw_slice": "S02a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S02a-02": {
+   "canonical": "W1-01",
+   "split_into": [],
+   "raw_title": "Interactive overlays registry and render-loop pause query",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-03": {
+   "canonical": "W1-05",
+   "split_into": [],
+   "raw_title": "Drawings data seam: payload guard, save steps, IsLoaded, report",
+   "raw_slice": "S02a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02a-04": {
+   "canonical": "W1-06",
+   "split_into": [],
+   "raw_title": "Draft core: DraftMaths, DrawingUsage, DevRowShell, DraftGuard, RowAccordion, staged rename, modal",
+   "raw_slice": "S02a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02a-05": {
+   "canonical": "W1-08",
+   "split_into": [],
+   "raw_title": "Floor plan storey level and TV data-module convention",
+   "raw_slice": "S02a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02a-06": {
+   "canonical": "W1-10",
+   "split_into": [],
+   "raw_title": "Elevation auto-name, identity statement and data-module convention",
+   "raw_slice": "S02a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02a-07": {
+   "canonical": "W2-01",
+   "split_into": [
+    "W2-40"
+   ],
+   "raw_title": "Drawing Planes system",
+   "raw_slice": "S02a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S02a-08": {
+   "canonical": "W2-04",
+   "split_into": [
+    "W2-05"
+   ],
+   "raw_title": "Floor Plans and Elevations Dev menu rebuild (TV 2.x)",
+   "raw_slice": "S02a",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S02a-09": {
+   "canonical": "W2-05",
+   "split_into": [],
+   "raw_title": "Cross Sections placeholder panel",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-10": {
+   "canonical": "W1-11",
+   "split_into": [],
+   "raw_title": "North Show Compass (TV 1.1.0 whole)",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-11": {
+   "canonical": "W1-04",
+   "split_into": [],
+   "raw_title": "Transitions 1.1.0 (walk exit only when asked)",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-12": {
+   "canonical": "W0-02",
+   "split_into": [],
+   "raw_title": "Rename ComposerPreset to RenderPreset (DIV-1 kept inside)",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-13": {
+   "canonical": "W2-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledger, PORT NOTEs and TV back-port memo",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02a-16": {
+   "canonical": "W0-14",
+   "split_into": [],
+   "raw_title": "Thumbnail capture accepts TV's call shape (also fixes VV's Update All Thumbnails)",
+   "raw_slice": "S02a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02b-01": {
+   "canonical": "W1-02",
+   "split_into": [],
+   "raw_title": "Door module to the TrueVision 1.9.0 contract (VV 25)",
+   "raw_slice": "S02b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02b-02R": {
+   "canonical": "W2-06",
+   "split_into": [
+    "W2-43"
+   ],
+   "raw_title": "Projected linework folder 50 to TV HEAD (corrected: Persistence untouched, gated on folder numbers)",
+   "raw_slice": "S02b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S02b-04R": {
+   "canonical": "W2-03",
+   "split_into": [
+    "W1-09",
+    "W1-10"
+   ],
+   "raw_title": "Elevation Depth Fog core and 3D wiring (corrected export hook, acceptance and ownership)",
+   "raw_slice": "S02b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S02b-08": {
+   "canonical": "W6-01",
+   "split_into": [],
+   "raw_title": "Port the slice tests",
+   "raw_slice": "S02b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02b-09": {
+   "canonical": "W2-99",
+   "split_into": [],
+   "raw_title": "Ledger, PORT NOTEs, headers and devlog",
+   "raw_slice": "S02b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S02b-10R": {
+   "canonical": "WT-01",
+   "split_into": [
+    "WT-09"
+   ],
+   "raw_title": "TV-side back-ports, complete (TV only, on Adam's approval, one session with WP-S09-14)",
+   "raw_slice": "S02b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S02b-11": {
+   "canonical": "W1-03",
+   "split_into": [],
+   "raw_title": "Cross-slice prerequisites for drawing quality (05 and 15)",
+   "raw_slice": "S02b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-02": {
+   "canonical": "W0-15",
+   "split_into": [],
+   "raw_title": "Drawing-tab key map: rename and KeyMap 1.11.0, atomically",
+   "raw_slice": "S03a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03a-05": {
+   "canonical": "W1-31",
+   "split_into": [
+    "W1-33"
+   ],
+   "raw_title": "Loader 1.2: facade additions and the first-open wait contract",
+   "raw_slice": "S03a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03a-06": {
+   "canonical": "W1-34",
+   "split_into": [],
+   "raw_title": "Tab strip 2.0.0 through the loader",
+   "raw_slice": "S03a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03a-07": {
+   "canonical": "W0-04",
+   "split_into": [],
+   "raw_title": "Loader stylesheet registration (recurring) and parity test",
+   "raw_slice": "S03a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-08": {
+   "canonical": "W2-17",
+   "split_into": [],
+   "raw_title": "Dev menu alignment",
+   "raw_slice": "S03a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-09": {
+   "canonical": "W1-30",
+   "split_into": [],
+   "raw_title": "Document keyboard (31__System__DocumentKeys)",
+   "raw_slice": "S03a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-10": {
+   "canonical": "W1-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Port notes, ledger rows and TV back-ports",
+   "raw_slice": "S03a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-12": {
+   "canonical": "W5-03",
+   "split_into": [],
+   "raw_title": "Per-feature mode controller hunks (template applied by each feature slice)",
+   "raw_slice": "S03a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03a-V01": {
+   "canonical": "W0-15",
+   "split_into": [],
+   "raw_title": "Config foundation, sequenced (replaces WP-S03a-01)",
+   "raw_slice": "S03a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S03a-V02": {
+   "canonical": "W0-16",
+   "split_into": [],
+   "raw_title": "Library and asset placement by copy (replaces WP-S03a-11)",
+   "raw_slice": "S03a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03a-V03": {
+   "canonical": "W1-29",
+   "split_into": [],
+   "raw_title": "Key scope and the 3D hotkey guard (replaces WP-S03a-03)",
+   "raw_slice": "S03a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03a-V04": {
+   "canonical": "W1-32",
+   "split_into": [],
+   "raw_title": "Mode controller core realignment (replaces WP-S03a-04)",
+   "raw_slice": "S03a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S03b-01": {
+   "canonical": null,
+   "split_into": [],
+   "raw_title": "Immediate VV correctness fixes (optional bridge)",
+   "raw_slice": "S03b",
+   "raw_size": "S",
+   "status": "dropped"
+  },
+  "WP-S03b-02R": {
+   "canonical": "W1-13",
+   "split_into": [],
+   "raw_title": "Pure leaves: NoteRegions and LeaderlessNotes records, PaintOrder and MeasureParse now; ShapeRings and DimensionRounding after sign-off",
+   "raw_slice": "S03b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03b-03R": {
+   "canonical": "W1-19",
+   "split_into": [
+    "W1-20"
+   ],
+   "raw_title": "Sheet record schema and model units to TV level, incl. the layer-stack restack (corrected acceptance)",
+   "raw_slice": "S03b",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S03b-04": {
+   "canonical": "W1-21",
+   "split_into": [],
+   "raw_title": "SheetModel facade, Sheets unit, History and the late start (one change)",
+   "raw_slice": "S03b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S03b-05": {
+   "canonical": "W1-07",
+   "split_into": [
+    "W1-05"
+   ],
+   "raw_title": "Draft guard and the project-file guards (TV v2.145/v2.146), with the transport slice",
+   "raw_slice": "S03b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03b-06R": {
+   "canonical": "W1-26",
+   "split_into": [],
+   "raw_title": "Chrome primitives and markup geometry, with a VV ProjectLink and the Open Sans re-measure",
+   "raw_slice": "S03b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S03b-07R": {
+   "canonical": "W1-28",
+   "split_into": [],
+   "raw_title": "Paint order: the Layers list is the stack (switch on PaintOrder's consumers), corrected prerequisites",
+   "raw_slice": "S03b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S03b-08": {
+   "canonical": "W1-22",
+   "split_into": [],
+   "raw_title": "Title blocks: Cells Widen, Modern 1.5.0, QR end cell, Classic asset relocation",
+   "raw_slice": "S03b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03b-09R": {
+   "canonical": "W1-36",
+   "split_into": [],
+   "raw_title": "Navigation and controls (zoom gesture, authoring zoom, Page Up/Down, keyboard focus) with KeyScope gating VV's 3D hotkeys",
+   "raw_slice": "S03b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03b-10": {
+   "canonical": "W1-22",
+   "split_into": [
+    "W1-13"
+   ],
+   "raw_title": "Scale list and header re-sync (ScaleManager 1.2.1, code-identical files, divergence notes)",
+   "raw_slice": "S03b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S03b-11": {
+   "canonical": "W5-02",
+   "split_into": [],
+   "raw_title": "Stylesheets: Main without the tab strip, Paper regions with their owners, tab menu into Boot",
+   "raw_slice": "S03b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S03b-12": {
+   "canonical": "W1-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledger and documentation",
+   "raw_slice": "S03b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-01R": {
+   "canonical": "W1-23",
+   "split_into": [
+    "W1-14"
+   ],
+   "raw_title": "Enabling leaves and render signature alignment (Describe stub)",
+   "raw_slice": "S04a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04a-02": {
+   "canonical": "W2-09",
+   "split_into": [
+    "W2-15",
+    "W2-16"
+   ],
+   "raw_title": "Render style quick wins: Enhance strength and the percent weight",
+   "raw_slice": "S04a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-03R": {
+   "canonical": "W3-06",
+   "split_into": [],
+   "raw_title": "Rotatable viewports (corrected scope and hot files)",
+   "raw_slice": "S04a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04a-04": {
+   "canonical": "W1-28",
+   "split_into": [
+    "W1-14"
+   ],
+   "raw_title": "Vector quality control",
+   "raw_slice": "S04a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-05R": {
+   "canonical": "W2-16",
+   "split_into": [
+    "W1-01",
+    "W2-15"
+   ],
+   "raw_title": "Model Source, dormant (adapted ModelSource, hunk replays)",
+   "raw_slice": "S04a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04a-06": {
+   "canonical": "W2-11",
+   "split_into": [
+    "W2-15",
+    "W2-16"
+   ],
+   "raw_title": "Plan doors and Hide swings",
+   "raw_slice": "S04a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04a-07R": {
+   "canonical": "W2-12",
+   "split_into": [
+    "W2-15",
+    "W2-16"
+   ],
+   "raw_title": "Depth fog on sheets (with the section depth route)",
+   "raw_slice": "S04a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04a-08R": {
+   "canonical": "W2-13",
+   "split_into": [
+    "W2-15",
+    "W2-16"
+   ],
+   "raw_title": "Linework modifiers and per-viewport Line scale (hunk replay; fixture-tested)",
+   "raw_slice": "S04a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04a-09": {
+   "canonical": "W2-10",
+   "split_into": [],
+   "raw_title": "Viewport titles: storey level and typed names",
+   "raw_slice": "S04a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-10R": {
+   "canonical": "W2-14",
+   "split_into": [
+    "W1-13",
+    "W2-16"
+   ],
+   "raw_title": "Site plans, client side, dormant (corrected transport, tab strip and ModelSource swap)",
+   "raw_slice": "S04a",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S04a-11R": {
+   "canonical": "W5-06",
+   "split_into": [],
+   "raw_title": "Vale site plan data pipeline (outside the app root; no exporter naming change)",
+   "raw_slice": "S04a",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S04a-12": {
+   "canonical": "W2-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledger and header hygiene",
+   "raw_slice": "S04a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-13R": {
+   "canonical": "WT-04",
+   "split_into": [],
+   "raw_title": "Back-ports to TV (entourage silhouettes, Add Viewport refresh in full)",
+   "raw_slice": "S04a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04a-14": {
+   "canonical": "W2-16",
+   "split_into": [],
+   "raw_title": "Whole-file convergence of the shared viewport and style units",
+   "raw_slice": "S04a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04a-15": {
+   "canonical": "W2-02",
+   "split_into": [
+    "W2-15",
+    "WT-02"
+   ],
+   "raw_title": "Section calls through the DIV-2 adapter, both apps",
+   "raw_slice": "S04a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-01": {
+   "canonical": "W1-14",
+   "split_into": [],
+   "raw_title": "Port the pure leaves the object snap imports",
+   "raw_slice": "S04b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04b-02R": {
+   "canonical": "W2-19",
+   "split_into": [],
+   "raw_title": "Add the exports the drafting aids import (seams), corrected",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-03": {
+   "canonical": "W2-18",
+   "split_into": [],
+   "raw_title": "Port the Ortho mode folder",
+   "raw_slice": "S04b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04b-04": {
+   "canonical": "W2-18",
+   "split_into": [
+    "W2-16"
+   ],
+   "raw_title": "Port Draft mode with its render guards",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-05": {
+   "canonical": "W2-18",
+   "split_into": [],
+   "raw_title": "Port the Drawing Grid folder",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-06R": {
+   "canonical": "W2-19",
+   "split_into": [
+    "W2-42"
+   ],
+   "raw_title": "Port the Object Snap core with a cycle-free switch-over",
+   "raw_slice": "S04b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04b-07": {
+   "canonical": "W2-26",
+   "split_into": [],
+   "raw_title": "Move the drawing tools onto the new snap, Ortho and the grid",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-08": {
+   "canonical": "W3-03",
+   "split_into": [],
+   "raw_title": "Wire the sheet-tools pointer paths to the new snap",
+   "raw_slice": "S04b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04b-09": {
+   "canonical": "W3-05",
+   "split_into": [],
+   "raw_title": "Wire keys, toolbar and mode controller; delete Snapping__.js",
+   "raw_slice": "S04b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04b-10": {
+   "canonical": "W2-18",
+   "split_into": [],
+   "raw_title": "Port the Drawing Axes folder",
+   "raw_slice": "S04b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04b-11R": {
+   "canonical": "W2-25",
+   "split_into": [
+    "W3-04"
+   ],
+   "raw_title": "Port the viewport snap move (carry by a linework point), corrected",
+   "raw_slice": "S04b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04b-12": {
+   "canonical": "W2-25",
+   "split_into": [
+    "W3-04"
+   ],
+   "raw_title": "Port the Move Anchor (Ctrl+click)",
+   "raw_slice": "S04b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S04b-13": {
+   "canonical": "W2-24",
+   "split_into": [],
+   "raw_title": "Paint grips and frames on their points (cross-slice gate)",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-14": {
+   "canonical": "W2-19",
+   "split_into": [],
+   "raw_title": "Port the drafting-aid test harness and suites",
+   "raw_slice": "S04b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S04b-15": {
+   "canonical": "W3-99",
+   "split_into": [],
+   "raw_title": "Update the ledger, devlog and port notes",
+   "raw_slice": "S04b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S04b-16": {
+   "canonical": "W0-01",
+   "split_into": [],
+   "raw_title": "Shared service worker note and token decision for every wave of this slice",
+   "raw_slice": "S04b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05a-03": {
+   "canonical": "W2-20",
+   "split_into": [],
+   "raw_title": "Context menu flyouts and the hover tooltip",
+   "raw_slice": "S05a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05a-06": {
+   "canonical": "W2-21",
+   "split_into": [],
+   "raw_title": "Leaf modules, first set",
+   "raw_slice": "S05a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S05a-07Ra": {
+   "canonical": "W2-23",
+   "split_into": [],
+   "raw_title": "Measurements box 1.10.0 (first half of the old WP-S05a-07)",
+   "raw_slice": "S05a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S05a-07Rb": {
+   "canonical": "W2-24",
+   "split_into": [],
+   "raw_title": "Grips 1.12.0 and its CSS (second half of the old WP-S05a-07)",
+   "raw_slice": "S05a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S05a-08R": {
+   "canonical": "W3-03",
+   "split_into": [
+    "W3-01",
+    "W3-04"
+   ],
+   "raw_title": "The hub, atomically, landing with the Sheet Images hooks (replaces WP-S05a-08)",
+   "raw_slice": "S05a",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S05a-09": {
+   "canonical": "W6-01",
+   "split_into": [],
+   "raw_title": "Port the 12 test harnesses",
+   "raw_slice": "S05a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S05a-10": {
+   "canonical": "W3-08",
+   "split_into": [],
+   "raw_title": "Retire VV's Snapping module",
+   "raw_slice": "S05a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05a-11": {
+   "canonical": "W3-99",
+   "split_into": [],
+   "raw_title": "Ledger, devlog and PORT NOTEs",
+   "raw_slice": "S05a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05b-01": {
+   "canonical": "W1-17",
+   "split_into": [
+    "W1-13",
+    "W2-27"
+   ],
+   "raw_title": "Leaves and hatch library content (no wiring)",
+   "raw_slice": "S05b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S05b-02": {
+   "canonical": "W1-14",
+   "split_into": [],
+   "raw_title": "Prerequisite leaves owned by other slices (coordination)",
+   "raw_slice": "S05b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05b-07": {
+   "canonical": "W2-26",
+   "split_into": [],
+   "raw_title": "Drawing tools onto Object Snap, grid and ortho (verbatim bodies)",
+   "raw_slice": "S05b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S05b-10": {
+   "canonical": "W6-01",
+   "split_into": [],
+   "raw_title": "Tests",
+   "raw_slice": "S05b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S05b-11": {
+   "canonical": "W3-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledgers, devlogs and TV doc back-port notes",
+   "raw_slice": "S05b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05b-V1": {
+   "canonical": "W1-18",
+   "split_into": [],
+   "raw_title": "GradientTool 1.1.0 and LineStyleTool 1.1.0 (S05b-owned drawing-tool leaves)",
+   "raw_slice": "S05b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05b-V2": {
+   "canonical": "W2-29",
+   "split_into": [],
+   "raw_title": "Patterns panel and the hatch ready chain",
+   "raw_slice": "S05b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S05b-V3": {
+   "canonical": "W2-28",
+   "split_into": [
+    "W2-41"
+   ],
+   "raw_title": "The 37 interactive units, adapter and Vector Tools panel landed inert",
+   "raw_slice": "S05b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S05b-V4": {
+   "canonical": "W3-07",
+   "split_into": [],
+   "raw_title": "Vector tools and Booleans switched on (one cross-slice release)",
+   "raw_slice": "S05b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06a-01": {
+   "canonical": "W2-36",
+   "split_into": [],
+   "raw_title": "Dependency-free panel fixes",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-02": {
+   "canonical": "W1-38",
+   "split_into": [],
+   "raw_title": "PanelHost 1.6.0 and the panel stylesheet",
+   "raw_slice": "S06a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06a-03v": {
+   "canonical": "W1-35",
+   "split_into": [],
+   "raw_title": "Toolbar, subtractive phase (corrected)",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-04v": {
+   "canonical": "W1-32",
+   "split_into": [],
+   "raw_title": "Panel focus wiring and tab hover text (corrected)",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-05v": {
+   "canonical": "W2-37",
+   "split_into": [
+    "W2-38",
+    "W2-39",
+    "W3-14"
+   ],
+   "raw_title": "Parametric Scrapbook to the TV v2.134 state, plus Cabinet Infill (corrected)",
+   "raw_slice": "S06a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06a-06": {
+   "canonical": "W2-35",
+   "split_into": [],
+   "raw_title": "Specification Scrapbook (LE/58)",
+   "raw_slice": "S06a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06a-07": {
+   "canonical": "W3-12",
+   "split_into": [],
+   "raw_title": "Dimensions and Vectors panels to TV",
+   "raw_slice": "S06a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06a-08v": {
+   "canonical": "W3-15",
+   "split_into": [],
+   "raw_title": "Viewport panel to TV 1.10.0 (corrected)",
+   "raw_slice": "S06a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06a-09": {
+   "canonical": "W3-13",
+   "split_into": [],
+   "raw_title": "Layers Ref switch and ViewportLink 1.5.0",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-10v": {
+   "canonical": "W5-01",
+   "split_into": [],
+   "raw_title": "Toolbar, final verbatim port to TV 1.24.0 (corrected)",
+   "raw_slice": "S06a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06a-11": {
+   "canonical": "WT-04",
+   "split_into": [],
+   "raw_title": "Back-ports to TrueVision",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-12": {
+   "canonical": "W3-99",
+   "split_into": [],
+   "raw_title": "Ledger, devlog and service worker",
+   "raw_slice": "S06a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06a-13": {
+   "canonical": "W3-17",
+   "split_into": [
+    "W3-14"
+   ],
+   "raw_title": "Area Schedule element (with Floor Areas)",
+   "raw_slice": "S06a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06b-01": {
+   "canonical": "W2-30",
+   "split_into": [],
+   "raw_title": "Specification lockstep core and transport",
+   "raw_slice": "S06b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06b-02": {
+   "canonical": "W0-09",
+   "split_into": [],
+   "raw_title": "Flask drawing-notes route hardening",
+   "raw_slice": "S06b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06b-03": {
+   "canonical": "W2-31",
+   "split_into": [],
+   "raw_title": "Lockstep question card, bar status and wiring",
+   "raw_slice": "S06b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06b-04": {
+   "canonical": "W2-30",
+   "split_into": [
+    "W1-26"
+   ],
+   "raw_title": "Specification links: broken-link and note resolvers",
+   "raw_slice": "S06b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06b-05": {
+   "canonical": "W1-21",
+   "split_into": [],
+   "raw_title": "Notes margin data layer: regions and leaderless records, model, undo, config",
+   "raw_slice": "S06b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06b-06": {
+   "canonical": "W2-32",
+   "split_into": [],
+   "raw_title": "Margin layout, regions placement, leaderless panel file, margin grip",
+   "raw_slice": "S06b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06b-07a": {
+   "canonical": "W2-22",
+   "split_into": [],
+   "raw_title": "Region tool module ahead of the SheetTools hub",
+   "raw_slice": "S06b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06b-07b": {
+   "canonical": "W3-11",
+   "split_into": [],
+   "raw_title": "Overspill note regions UI: grips, regions panel, margin panel 1.2.0",
+   "raw_slice": "S06b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06b-08": {
+   "canonical": "W1-37",
+   "split_into": [],
+   "raw_title": "Colour Palette feature and wiring",
+   "raw_slice": "S06b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S06b-09": {
+   "canonical": "W2-34",
+   "split_into": [],
+   "raw_title": "Spell Check, user dictionary and the Flask user-config route",
+   "raw_slice": "S06b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06b-10a": {
+   "canonical": "W1-27",
+   "split_into": [],
+   "raw_title": "Floor Areas core modules ahead of the hub and MarkupBridge ports",
+   "raw_slice": "S06b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S06b-10b": {
+   "canonical": "W3-10",
+   "split_into": [],
+   "raw_title": "Floor Areas activation: panel, schedules, label grip, wiring",
+   "raw_slice": "S06b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S06b-13": {
+   "canonical": "W3-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledgers and port notes for this slice",
+   "raw_slice": "S06b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S07a-01": {
+   "canonical": "W1-22",
+   "split_into": [
+    "W1-13"
+   ],
+   "raw_title": "Document ID schema and register configuration in VV core",
+   "raw_slice": "S07a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S07a-02": {
+   "canonical": "W0-12",
+   "split_into": [
+    "W1-05"
+   ],
+   "raw_title": "VV transport for the register and the drawings save contract",
+   "raw_slice": "S07a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07a-03": {
+   "canonical": "W4-10",
+   "split_into": [
+    "W4-18"
+   ],
+   "raw_title": "Port the Drawing Register and wire it into VV",
+   "raw_slice": "S07a",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S07a-04": {
+   "canonical": "W1-15",
+   "split_into": [],
+   "raw_title": "Port the Project QR Code with its title block and shape hooks (switched off)",
+   "raw_slice": "S07a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07a-05": {
+   "canonical": "W5-05",
+   "split_into": [],
+   "raw_title": "VV QR resolver outside the app (decision-gated)",
+   "raw_slice": "S07a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07a-06": {
+   "canonical": "W0-18",
+   "split_into": [
+    "W0-10"
+   ],
+   "raw_title": "VV transport for sheet images: Flask blueprint, worker routes, client facade",
+   "raw_slice": "S07a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07a-07": {
+   "canonical": "W3-02",
+   "split_into": [
+    "W3-09",
+    "W3-18"
+   ],
+   "raw_title": "Port Sheet Images and its editor hooks",
+   "raw_slice": "S07a",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S07a-08": {
+   "canonical": "W4-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledgers, TV back-ports and final verification",
+   "raw_slice": "S07a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S07a-09": {
+   "canonical": "W1-12",
+   "split_into": [],
+   "raw_title": "VV document project code accessor",
+   "raw_slice": "S07a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S07a-10": {
+   "canonical": "W1-16",
+   "split_into": [
+    "W1-15"
+   ],
+   "raw_title": "QR and picture render leaves, ahead of the shared-core ports",
+   "raw_slice": "S07a",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07a-11": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "Shared Vale service worker: a sheet-pictures cache bucket",
+   "raw_slice": "S07a",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S07b-02": {
+   "canonical": "WT-03",
+   "split_into": [],
+   "raw_title": "TV-side back-port prep (optional, recommended; TV repo)",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-03": {
+   "canonical": "W0-19",
+   "split_into": [
+    "W0-10"
+   ],
+   "raw_title": "VV statement transport: worker handler, Flask blueprint, AppUtils client",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-04": {
+   "canonical": "W0-15",
+   "split_into": [],
+   "raw_title": "Environment and config prerequisites",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-05A": {
+   "canonical": "W4-04",
+   "split_into": [
+    "W4-05",
+    "W4-15",
+    "W4-16"
+   ],
+   "raw_title": "Pure statement modules, landed inert",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-05B": {
+   "canonical": "W4-06",
+   "split_into": [],
+   "raw_title": "Statement data, transport binding, reader and manager",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-05C": {
+   "canonical": "W4-12",
+   "split_into": [],
+   "raw_title": "Standard registry, hub, writing surface, PDF, publish and the Statements page (one landing)",
+   "raw_slice": "S07b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S07b-08": {
+   "canonical": "W4-13",
+   "split_into": [],
+   "raw_title": "Wiring into VV's Layout Editor (ModeController, loader, tab strip, SW)",
+   "raw_slice": "S07b",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S07b-09": {
+   "canonical": "W4-14",
+   "split_into": [],
+   "raw_title": "Tests, fixtures and the statement test server",
+   "raw_slice": "S07b",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S07b-10": {
+   "canonical": "W4-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledger, devlog and notes",
+   "raw_slice": "S07b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S07b-11": {
+   "canonical": "W4-11",
+   "split_into": [],
+   "raw_title": "Context-menu renderer leaf and stylesheet",
+   "raw_slice": "S07b",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-01": {
+   "canonical": "W0-16",
+   "split_into": [],
+   "raw_title": "Move jsPDF into the version-locked vendor folder",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-02": {
+   "canonical": "W1-24",
+   "split_into": [],
+   "raw_title": "PdfExporter interim parity: FAST picture packing and publish options",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-03": {
+   "canonical": "W1-25",
+   "split_into": [],
+   "raw_title": "Embedded PDF fonts (after D-S08-03)",
+   "raw_slice": "S08",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S08-04": {
+   "canonical": "W0-07",
+   "split_into": [],
+   "raw_title": "Stop the Whitecardopedia sync deleting sub-folder pictures on R2",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-05": {
+   "canonical": "W0-19",
+   "split_into": [
+    "W0-10"
+   ],
+   "raw_title": "VV server side: published-document worker routes and the Flask mirror",
+   "raw_slice": "S08",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S08-06": {
+   "canonical": "W0-11",
+   "split_into": [],
+   "raw_title": "VV client transport utility and ProjectLoader facades",
+   "raw_slice": "S08",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S08-07": {
+   "canonical": "W4-01",
+   "split_into": [],
+   "raw_title": "Published schema (53) and the VV fixture",
+   "raw_slice": "S08",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S08-08": {
+   "canonical": "W4-02",
+   "split_into": [
+    "W4-17"
+   ],
+   "raw_title": "Published reader (52)",
+   "raw_slice": "S08",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S08-09": {
+   "canonical": "W4-03",
+   "split_into": [
+    "W4-07"
+   ],
+   "raw_title": "Publisher (65) and its interim entry point",
+   "raw_slice": "S08",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S08-10": {
+   "canonical": "W4-09",
+   "split_into": [],
+   "raw_title": "The web viewer shows published drawings",
+   "raw_slice": "S08",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S08-11": {
+   "canonical": "W4-08",
+   "split_into": [
+    "W4-07"
+   ],
+   "raw_title": "Document sharing (66) and the Share buttons",
+   "raw_slice": "S08",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S08-12": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "Published cache class in the shared Vale service worker",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-13": {
+   "canonical": "W4-99",
+   "split_into": [
+    "WT-08"
+   ],
+   "raw_title": "Ledger and documentation (both sides)",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S08-14": {
+   "canonical": "W3-16",
+   "split_into": [],
+   "raw_title": "PdfExporter full re-sync to TV 1.12.0",
+   "raw_slice": "S08",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S08-15": {
+   "canonical": "W0-01",
+   "split_into": [],
+   "raw_title": "Cross-slice decision gate for publishing and sharing",
+   "raw_slice": "S08",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-01": {
+   "canonical": "W0-17",
+   "split_into": [],
+   "raw_title": "index.html start-up order aligned with TrueVision",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-02": {
+   "canonical": "W0-04",
+   "split_into": [],
+   "raw_title": "Harness hygiene: string false positive and facade-name check",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-03": {
+   "canonical": "W1-31",
+   "split_into": [],
+   "raw_title": "Loader facade and stylesheet list extended for TV's editor entry points",
+   "raw_slice": "S09",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S09-04": {
+   "canonical": "W5-02",
+   "split_into": [],
+   "raw_title": "Stylesheet registration rules (Boot, CSS index, loader list)",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-06": {
+   "canonical": "W0-12",
+   "split_into": [],
+   "raw_title": "Transport shims with TV's names over VV's worker and Flask",
+   "raw_slice": "S09",
+   "raw_size": "XL",
+   "status": "mapped"
+  },
+  "WP-S09-07": {
+   "canonical": "W1-01",
+   "split_into": [],
+   "raw_title": "Shared-module prerequisites outside the drawing folders",
+   "raw_slice": "S09",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S09-08": {
+   "canonical": "W2-03",
+   "split_into": [
+    "W0-13"
+   ],
+   "raw_title": "Loading-sequence seams for TV features",
+   "raw_slice": "S09",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S09-09R": {
+   "canonical": "W2-08",
+   "split_into": [],
+   "raw_title": "Main config alignment for drawing blocks (replaces WP-S09-09)",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-10": {
+   "canonical": "W0-16",
+   "split_into": [
+    "W0-02"
+   ],
+   "raw_title": "Vendor, asset and file-name moves",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-11R": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "Shared service worker: refresh fix, precache and token policy (replaces WP-S09-11)",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-12R": {
+   "canonical": "W2-01",
+   "split_into": [],
+   "raw_title": "index.html wiring for each TV-only system as it lands (replaces WP-S09-12)",
+   "raw_slice": "S09",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S09-13": {
+   "canonical": "W0-06",
+   "split_into": [],
+   "raw_title": "Ledger and devlog corrections",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S09-14": {
+   "canonical": "WT-12",
+   "split_into": [],
+   "raw_title": "TrueVision back-ports found by this slice (separate TV session)",
+   "raw_slice": "S09",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-01": {
+   "canonical": "W1-33",
+   "split_into": [],
+   "raw_title": "Veil CSS to TV's two-mode region",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-02": {
+   "canonical": "W1-35",
+   "split_into": [],
+   "raw_title": "Toolbar slimmed to TV (Notes, Undo, Redo, Fit, 100% removed)",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-03R": {
+   "canonical": "W1-33",
+   "split_into": [],
+   "raw_title": "First-open veil and fold, exactly as TV (verifier replacement for WP-S10-03)",
+   "raw_slice": "S10",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S10-04R": {
+   "canonical": "W1-34",
+   "split_into": [],
+   "raw_title": "Compact tab strip (TV TabStrip 2.0.0) with the Drawings menu (verifier replacement for WP-S10-04)",
+   "raw_slice": "S10",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S10-05": {
+   "canonical": "W0-04",
+   "split_into": [],
+   "raw_title": "UI parity gate script",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-06": {
+   "canonical": "W1-38",
+   "split_into": [
+    "W1-32"
+   ],
+   "raw_title": "Panels look: TV Styles__Panels verbatim and PanelHost tab hints",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-07R": {
+   "canonical": "WT-05",
+   "split_into": [],
+   "raw_title": "Confirm dialog to TrueVision, TV-side (verifier replacement for WP-S10-07)",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-08R": {
+   "canonical": "W0-06",
+   "split_into": [
+    "W1-33"
+   ],
+   "raw_title": "Ledger, headers and service-worker records (verifier replacement for WP-S10-08)",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-09": {
+   "canonical": "W1-25",
+   "split_into": [],
+   "raw_title": "Fonts: Open Sans Medium and a Vale-owned font source",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-10": {
+   "canonical": "WT-07",
+   "split_into": [],
+   "raw_title": "Toast offset and 3D canvas clearance (per decisions)",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-11": {
+   "canonical": "W2-20",
+   "split_into": [],
+   "raw_title": "Context-menu flyouts, Layer row, hover and note tooltips",
+   "raw_slice": "S10",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S10-12": {
+   "canonical": "W5-01",
+   "split_into": [],
+   "raw_title": "Toolbar full parity with TV 1.24.0",
+   "raw_slice": "S10",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S10-13": {
+   "canonical": "W4-02",
+   "split_into": [
+    "W4-09"
+   ],
+   "raw_title": "Published drawings loading screen",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S10-14": {
+   "canonical": "W5-04",
+   "split_into": [],
+   "raw_title": "Optional 3D-tab ports (full screen 76, Cache & Storage, Scene Inspector split)",
+   "raw_slice": "S10",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S10-15": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "Shared Whitecardopedia registrar brought up to TV's registrar 1.1.0-1.3.0 (verifier, new)",
+   "raw_slice": "S10",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-01": {
+   "canonical": "W0-06",
+   "split_into": [],
+   "raw_title": "Parity ledger reconciliation and restructure",
+   "raw_slice": "S11",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S11-02": {
+   "canonical": "W0-06",
+   "split_into": [],
+   "raw_title": "ValeVision devlog and module-header hygiene",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-03": {
+   "canonical": "W0-04",
+   "split_into": [],
+   "raw_title": "Port-note and watermark verifier (Na__Verify__PortNotes__)",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-04": {
+   "canonical": "W0-99",
+   "split_into": [],
+   "raw_title": "Parity Scribe pass (recurring, once per wave)",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-05": {
+   "canonical": "W2-07",
+   "split_into": [],
+   "raw_title": "Progressive-render remainder of TV v2.58.2",
+   "raw_slice": "S11",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S11-06": {
+   "canonical": "WT-06",
+   "split_into": [
+    "WT-04",
+    "WT-05"
+   ],
+   "raw_title": "ValeVision -> TrueVision back-ports (TV side, only with Adam's approval)",
+   "raw_slice": "S11",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S11-07": {
+   "canonical": "WT-08",
+   "split_into": [],
+   "raw_title": "TrueVision record hygiene (TV side, only with Adam's approval)",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-08": {
+   "canonical": "W0-05",
+   "split_into": [],
+   "raw_title": "Port-order map from the TV import graph (leaves first, hubs last)",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S11-09": {
+   "canonical": "WT-01",
+   "split_into": [
+    "WT-09"
+   ],
+   "raw_title": "Finish TV's half-landed VV back-ports: PlanDimensions split and per-drawing Styles/Exclusions rows (TV side, Adam's approval only)",
+   "raw_slice": "S11",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-01": {
+   "canonical": "W0-07",
+   "split_into": [],
+   "raw_title": "Sync pipeline safety: top-level purge and editor-key preservation",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-02": {
+   "canonical": "W0-11",
+   "split_into": [],
+   "raw_title": "ProjectLoader identity helpers and localhost repository fallback",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-03": {
+   "canonical": "W0-09",
+   "split_into": [],
+   "raw_title": "Flask persistence core and shared helper",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-04": {
+   "canonical": "W0-10",
+   "split_into": [],
+   "raw_title": "Worker 1.6.0: project GET, merge-keys, guarded project-files family",
+   "raw_slice": "S12",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S12-05": {
+   "canonical": "W0-12",
+   "split_into": [],
+   "raw_title": "VV transport facade: Na__CfApi and Na__LocalMirror",
+   "raw_slice": "S12",
+   "raw_size": "L",
+   "status": "mapped"
+  },
+  "WP-S12-06": {
+   "canonical": "W0-13",
+   "split_into": [],
+   "raw_title": "Loading-sequence wiring and the editor-owned overlay",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-07": {
+   "canonical": "W1-05",
+   "split_into": [],
+   "raw_title": "ProjectData 1.6.0 transport port (coordinate with S02a WP-S02a-15)",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-08": {
+   "canonical": "W1-07",
+   "split_into": [],
+   "raw_title": "AutoSave 1.5.0 and DevMenu Modal 1.2.0 (coordinate with S03b WP-S03b-05)",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-10": {
+   "canonical": "W1-12",
+   "split_into": [],
+   "raw_title": "ProjectRecord reads the project root",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-11": {
+   "canonical": "W0-18",
+   "split_into": [],
+   "raw_title": "Sheet-images Flask blueprint (with S07a)",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-12": {
+   "canonical": "W0-19",
+   "split_into": [],
+   "raw_title": "Published-documents Flask blueprint (with S08)",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-13": {
+   "canonical": "W0-19",
+   "split_into": [],
+   "raw_title": "Statements Flask blueprint (with S07b, if statements are ported)",
+   "raw_slice": "S12",
+   "raw_size": "M",
+   "status": "mapped"
+  },
+  "WP-S12-14": {
+   "canonical": "W0-18",
+   "split_into": [],
+   "raw_title": "User-config (spellings) Flask blueprint (with S06a/S06b)",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-15": {
+   "canonical": "W0-08",
+   "split_into": [],
+   "raw_title": "Cache hygiene: manifest bump policy and service-worker classification",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-16": {
+   "canonical": "W2-33",
+   "split_into": [],
+   "raw_title": "Retire or realign VV-only transport clients",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-17": {
+   "canonical": "W0-99",
+   "split_into": [],
+   "raw_title": "Ledger, PORT NOTEs and docs for the transport",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-V09R": {
+   "canonical": "W0-14",
+   "split_into": [],
+   "raw_title": "Asset modules ported with VV's gate, and the upload failure contract",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  },
+  "WP-S12-V18": {
+   "canonical": "W0-12",
+   "split_into": [],
+   "raw_title": "Project display name for printed documents and the title block",
+   "raw_slice": "S12",
+   "raw_size": "S",
+   "status": "mapped"
+  }
+ },
+ "dropped": {
+  "WP-S03b-01": "Optional bridge (TV-format records read through a VV adapter) made unnecessary: the same-wave whole-file ports take History 1.7.0 (W1-21), Layers 1.4.0 and Shapes 1.6.0 (W1-20) and MarkupBridge 1.20.0 (W1-28), so no interim bridge is ever live (DR-05 rule: no throwaway stubs)."
+ },
+ "split_notes": {
+  "WP-S01-07": [
+   "W1-17"
+  ],
+  "WP-S02a-07": [
+   "W2-40"
+  ],
+  "WP-S02a-08": [
+   "W2-05"
+  ],
+  "WP-S02a-13": [
+   "WT-08"
+  ],
+  "WP-S02b-02R": [
+   "W2-43"
+  ],
+  "WP-S02b-04R": [
+   "W1-09",
+   "W1-10"
+  ],
+  "WP-S02b-10R": [
+   "WT-09"
+  ],
+  "WP-S03a-05": [
+   "W1-33"
+  ],
+  "WP-S03a-10": [
+   "WT-08"
+  ],
+  "WP-S03b-03R": [
+   "W1-20"
+  ],
+  "WP-S03b-05": [
+   "W1-05"
+  ],
+  "WP-S03b-10": [
+   "W1-13"
+  ],
+  "WP-S03b-12": [
+   "WT-08"
+  ],
+  "WP-S04a-01R": [
+   "W1-14"
+  ],
+  "WP-S04a-02": [
+   "W2-15",
+   "W2-16"
+  ],
+  "WP-S04a-04": [
+   "W1-14"
+  ],
+  "WP-S04a-05R": [
+   "W1-01",
+   "W2-15"
+  ],
+  "WP-S04a-06": [
+   "W2-15",
+   "W2-16"
+  ],
+  "WP-S04a-07R": [
+   "W2-15",
+   "W2-16"
+  ],
+  "WP-S04a-08R": [
+   "W2-15",
+   "W2-16"
+  ],
+  "WP-S04a-10R": [
+   "W1-13",
+   "W2-16"
+  ],
+  "WP-S04a-12": [
+   "WT-08"
+  ],
+  "WP-S04a-15": [
+   "W2-15",
+   "WT-02"
+  ],
+  "WP-S04b-04": [
+   "W2-16"
+  ],
+  "WP-S04b-06R": [
+   "W2-42"
+  ],
+  "WP-S04b-11R": [
+   "W3-04"
+  ],
+  "WP-S04b-12": [
+   "W3-04"
+  ],
+  "WP-S05a-08R": [
+   "W3-01",
+   "W3-04"
+  ],
+  "WP-S05b-01": [
+   "W1-13",
+   "W2-27"
+  ],
+  "WP-S05b-11": [
+   "WT-08"
+  ],
+  "WP-S05b-V3": [
+   "W2-41"
+  ],
+  "WP-S06a-05v": [
+   "W2-38",
+   "W2-39",
+   "W3-14"
+  ],
+  "WP-S06a-13": [
+   "W3-14"
+  ],
+  "WP-S06b-04": [
+   "W1-26"
+  ],
+  "WP-S06b-13": [
+   "WT-08"
+  ],
+  "WP-S07a-01": [
+   "W1-13"
+  ],
+  "WP-S07a-02": [
+   "W1-05"
+  ],
+  "WP-S07a-03": [
+   "W4-18"
+  ],
+  "WP-S07a-06": [
+   "W0-10"
+  ],
+  "WP-S07a-07": [
+   "W3-09",
+   "W3-18"
+  ],
+  "WP-S07a-08": [
+   "WT-08"
+  ],
+  "WP-S07a-10": [
+   "W1-15"
+  ],
+  "WP-S07b-03": [
+   "W0-10"
+  ],
+  "WP-S07b-05A": [
+   "W4-05",
+   "W4-15",
+   "W4-16"
+  ],
+  "WP-S07b-10": [
+   "WT-08"
+  ],
+  "WP-S08-05": [
+   "W0-10"
+  ],
+  "WP-S08-08": [
+   "W4-17"
+  ],
+  "WP-S08-09": [
+   "W4-07"
+  ],
+  "WP-S08-11": [
+   "W4-07"
+  ],
+  "WP-S08-13": [
+   "WT-08"
+  ],
+  "WP-S09-08": [
+   "W0-13"
+  ],
+  "WP-S09-10": [
+   "W0-02"
+  ],
+  "WP-S10-06": [
+   "W1-32"
+  ],
+  "WP-S10-08R": [
+   "W1-33"
+  ],
+  "WP-S10-13": [
+   "W4-09"
+  ],
+  "WP-S11-06": [
+   "WT-04",
+   "WT-05"
+  ],
+  "WP-S11-09": [
+   "WT-09"
+  ]
+ },
+ "retired_aliases": {
+  "WP-S01-01": {
+   "replaced_by": [
+    "WP-S01-01R"
+   ],
+   "canonical": [
+    "W0-02"
+   ],
+   "referenced_by": [
+    "DR-02",
+    "DR-03",
+    "DR-04",
+    "WP-S01-05",
+    "WP-S01-07"
+   ],
+   "verifier_reason": "Superseded by WP-S01-01R: same scope, but the touch count (106 files) and the acceptance pairing count (98) were wrong (67 files + 3 history docs; 69 shared pairs), three listed hot files contain no old folder name (05/Na__RenderEffect__SectionClipping__State.js, 21/Na__PresentationMode__DevMenu__ScenePersistence__.js, 41/Na__CrossSectionView__SystemLogic.js), live_sw.js is an older copy whose role is unconfirmed, and the legacy-40 target conflicts with S02a (D-S01-13)."
+  },
+  "WP-S01-03": {
+   "replaced_by": [
+    "WP-S01-03R"
+   ],
+   "canonical": [
+    "W0-03"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S01-03R: its acceptance ('grep for KeyMappings__ finds 0 references') cannot pass because TV keeps the internal LayoutEditor__KeyMappings__* keys inside Na__Hotkeys__DrawingTabs__.json, it missed comment references (index.html:1261,1776 and five LE files) and it missed the TRUEVISION3D banner in 45/Na__PlanDimensions__Styles__.css."
+  },
+  "WP-S01-04": {
+   "replaced_by": [
+    "WP-S01-04R"
+   ],
+   "canonical": [
+    "W2-19"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S01-04R: its hot files miss three of VV's 11 Snapping__ importers (30/SheetTools__, 30/SheetTools__ContextMenu__, 30/SheetTools__Keyboard__) and it does not deal with the Na__LeOsnap__TONE_* imports, which TV's ObjectSnap no longer exports."
+  },
+  "WP-S01-06": {
+   "replaced_by": [
+    "WP-S01-06R"
+   ],
+   "canonical": [
+    "W0-12"
+   ],
+   "referenced_by": [
+    "DR-27",
+    "WP-S01-07"
+   ],
+   "verifier_reason": "Superseded by WP-S01-06R: it assumed VV's Flask server lacks write routes; WCP/server.py already has POST /api/projects/<folder_id>, /drawing-notes, /assets and others, which the VV LocalProjectMirror should wrap."
+  },
+  "WP-S01-08": {
+   "replaced_by": [
+    "WP-S01-08R"
+   ],
+   "canonical": [
+    "W0-04"
+   ],
+   "referenced_by": [
+    "DR-03"
+   ],
+   "verifier_reason": "Superseded by WP-S01-08R: rule (3) would fail on VV's legitimate cdn.noble-architecture.com/VaApps and www.noble-architecture.com/assets URLs; the corrected lint targets NA-only markers and TrueVision window globals."
+  },
+  "WP-S02a-14": {
+   "replaced_by": [
+    "WP-S02b-04R"
+   ],
+   "canonical": [
+    "W2-03"
+   ],
+   "referenced_by": [
+    "DR-32"
+   ],
+   "verifier_reason": "Duplicate. WP-S02b-04 already scopes every item: the 49 port, the 41 depth-only cap export, the 42 SectionAdapter pass-through, the ComposerPreset RenderFrame fog call, the elevation data GetDepthFog/SetDepthFog/GetDepthFogPlane, the ModeController SetSource/clear, and the row builder and editor fog block. WP-S02b-05 covers LE Viewport2d__DepthFog. Keep S02a-F34/F57 as input to those WPs."
+  },
+  "WP-S02a-15": {
+   "replaced_by": [
+    "WP-S03b-05"
+   ],
+   "canonical": [
+    "W1-07"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Duplicate. WP-S03b-05 already scopes ProjectData 1.6.0 (GetBase, WhenBaseKnown, CheckBase, SAVED_ISO_KEY), the base header through R2SaveProjectJson, and the WCP/server.py fingerprint route with 409 and backups, with a 32-check Python test. WP-S09-06 lists the same Flask routes. Keep S02a-F06 as evidence."
+  },
+  "WP-S02b-02": {
+   "replaced_by": [
+    "WP-S02b-02R"
+   ],
+   "canonical": [
+    "W2-06"
+   ],
+   "referenced_by": [
+    "DR-09",
+    "DR-16",
+    "DR-31",
+    "DR-34",
+    "WP-S02b-08",
+    "WP-S02b-09"
+   ],
+   "verifier_reason": "Superseded by WP-S02b-02R. Its Persistence scope (DevGate gate) is wrong for VV: the gate is a VV data-path seam, and TV's Persistence would not link in VV. It also lacks the folder-number gate, the StoreyBand token acceptance and a check that the VV-only integrations survive."
+  },
+  "WP-S02b-03": {
+   "replaced_by": [
+    "WP-S06b-08"
+   ],
+   "canonical": [
+    "W1-37"
+   ],
+   "referenced_by": [
+    "WP-S02b-09"
+   ],
+   "verifier_reason": "Duplicate of WP-S06b-08 (Colour Palette), which already carries the 44 Toolbar hunk and lists the file as a hot file."
+  },
+  "WP-S02b-04": {
+   "replaced_by": [
+    "WP-S02b-04R"
+   ],
+   "canonical": [
+    "W2-03"
+   ],
+   "referenced_by": [
+    "DR-02",
+    "DR-15",
+    "WP-S02b-08",
+    "WP-S02b-09"
+   ],
+   "verifier_reason": "Superseded by WP-S02b-04R. The export hook spec would draw the section overlay twice per tile, and the acceptance wrongly expects projected vectors to fade on screen and in image exports. It also omits the LE underlay fog guard (D6) and the overlap with WP-S02a-14 and WP-S09-08/12."
+  },
+  "WP-S02b-05": {
+   "replaced_by": [
+    "WP-S04a-07R"
+   ],
+   "canonical": [
+    "W2-12"
+   ],
+   "referenced_by": [
+    "DR-15"
+   ],
+   "verifier_reason": "Duplicate of WP-S04a-07 (Depth fog on sheets), which owns the same LE files and the VV TiledRenderer callback route."
+  },
+  "WP-S02b-06": {
+   "replaced_by": [
+    "WP-S04a-06"
+   ],
+   "canonical": [
+    "W2-11"
+   ],
+   "referenced_by": [
+    "DR-16",
+    "WP-S02b-08"
+   ],
+   "verifier_reason": "Duplicate of WP-S04a-06 (Plan doors and Hide swings). Keep S02b's notes as acceptance input."
+  },
+  "WP-S02b-07": {
+   "replaced_by": [
+    "WP-S04a-08R"
+   ],
+   "canonical": [
+    "W2-13"
+   ],
+   "referenced_by": [
+    "DR-31"
+   ],
+   "verifier_reason": "Subset of WP-S04a-08 (Linework modifiers and model-layer hygiene), which also covers the raster side."
+  },
+  "WP-S02b-10": {
+   "replaced_by": [
+    "WP-S02b-10R"
+   ],
+   "canonical": [
+    "WT-01"
+   ],
+   "referenced_by": [
+    "DR-42"
+   ],
+   "verifier_reason": "Superseded by WP-S02b-10R. Its hot-file list named 6 of the roughly 17 TV files the rewire touches, and it omits the StoreyBand token fix and the merge with WP-S09-14."
+  },
+  "WP-S03a-01": {
+   "replaced_by": [
+    "WP-S03a-V01"
+   ],
+   "canonical": [
+    "W0-15"
+   ],
+   "referenced_by": [
+    "WP-S03a-02"
+   ],
+   "verifier_reason": "Its scope says 'the six ConfigState files' with the barrel taken whole, while KeyMap 1.11.0 lands later in WP-S03a-02. TV's barrel statically imports ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier and IsCopyDragKey from the KeyMap unit (TV ConfigState__.js:236-253). On VV's KeyMap 1.0.0, module linking fails and the editor never loads, so the WP's own acceptance ('an existing VV sheet opens unchanged') cannot pass. Replaced by WP-S03a-V01."
+  },
+  "WP-S03a-03": {
+   "replaced_by": [
+    "WP-S03a-V03"
+   ],
+   "canonical": [
+    "W1-29"
+   ],
+   "referenced_by": [
+    "DR-33",
+    "WP-S03a-09"
+   ],
+   "verifier_reason": "Its 3D-dictionary rename updates only the handler's fetch path (:116). The navigation help panel (10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:84) fetches the same file and would lose every shortcut row. The WP also misses the dispatched documentation rows (S03a-V04), the Page Up/Down interim before Controls__Pc answers Nav__PreviousSheet/NextSheet, and the shared service-worker token step. Replaced by WP-S03a-V03."
+  },
+  "WP-S03a-04": {
+   "replaced_by": [
+    "WP-S03a-V04"
+   ],
+   "canonical": [
+    "W1-32"
+   ],
+   "referenced_by": [
+    "WP-S03a-05",
+    "WP-S03a-09",
+    "WP-S03a-12"
+   ],
+   "verifier_reason": "Its Walk acceptance ('opening a drawing while walking leaves Walk; the toolbar reads Orbit') already passes on VV today, because VV's SuspendThreeD always exits Walk; it proves nothing. The returnToOrbit option matters only with S02a's Transitions 1.1.0 opt-in, which must also reach VV's floor plan and elevation entries (S03a-V03). The WP also omits TV 1.21.0's feature-independent rule that selecting a viewport folds the markup group (S03a-V02). Replaced by WP-S03a-V04."
+  },
+  "WP-S03a-11": {
+   "replaced_by": [
+    "WP-S03a-V02"
+   ],
+   "canonical": [
+    "W0-16"
+   ],
+   "referenced_by": [
+    "DR-29"
+   ],
+   "verifier_reason": "'Move' breaks VV's live legacy page layout. 30__System__ImageExport (:627) opens 35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html, which loads jspdf.umd.js (script tag :40) and PageLayoutSystem__TitleBlock__A3__.png by relative path. Its acceptance grep ('no module still references 35 for these three assets') cannot pass while 35 exists. Replaced by WP-S03a-V02 (copy)."
+  },
+  "WP-S03b-02": {
+   "replaced_by": [
+    "WP-S03b-02R"
+   ],
+   "canonical": [
+    "W1-13"
+   ],
+   "referenced_by": [
+    "WP-S06b-07a"
+   ],
+   "verifier_reason": "Superseded by WP-S03b-02R (same scope): ShapeRings and DimensionRounding carry TV PORT NOTEs saying the VV port waits for Adam's sign-off (D-S03b-11), which the original did not gate."
+  },
+  "WP-S03b-03": {
+   "replaced_by": [
+    "WP-S03b-03R"
+   ],
+   "canonical": [
+    "W1-19"
+   ],
+   "referenced_by": [
+    "DR-08",
+    "DR-11",
+    "DR-14",
+    "DR-42",
+    "WP-S03b-04",
+    "WP-S06b-10a"
+   ],
+   "verifier_reason": "Superseded by WP-S03b-03R (same scope): acceptance 2 was wrong - TV's normaliser also adds Asset__Samples: null to snapshot assets and Viewport__Styles.depthFog once configured, and the comparison must be against VV's current normalised output, not the file on disk; the ShapeRings sign-off dependency (D-S03b-11) was missing."
+  },
+  "WP-S03b-06": {
+   "replaced_by": [
+    "WP-S03b-06R"
+   ],
+   "canonical": [
+    "W1-26"
+   ],
+   "referenced_by": [
+    "WP-S03b-08"
+   ],
+   "verifier_reason": "Superseded by WP-S03b-06R (same scope): missing the VV ProjectLink prerequisite (53 Symbol -> ProjectLink imports ProjectLoader functions VV lacks, a link-time failure), the D-S03b-11 gate for ShapeRings/LeaderGeometry, and the Open Sans re-measure of VV's title block and test fixture."
+  },
+  "WP-S03b-07": {
+   "replaced_by": [
+    "WP-S03b-07R"
+   ],
+   "canonical": [
+    "W1-28"
+   ],
+   "referenced_by": [
+    "DR-14",
+    "WP-S03b-11",
+    "WP-S06b-07b",
+    "WP-S06b-10b"
+   ],
+   "verifier_reason": "Superseded by WP-S03b-07R (same scope): '30/EditScope IsInside' is not a prerequisite (VV EditScope already exports it with TV's body) and EditScope is not a hot file; SpecMargin push already exists; the TV-only config reader GetVectorQualitySetup was missing."
+  },
+  "WP-S03b-09": {
+   "replaced_by": [
+    "WP-S03b-09R"
+   ],
+   "canonical": [
+    "W1-36"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S03b-09R (same scope): missing VV's 3D hotkey handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, Index.html L1792, 02__AppData/Na__ValeVision__HotkeysDictionary__.json), which KeyScope must gate, and a 3D-keys acceptance."
+  },
+  "WP-S04a-01": {
+   "replaced_by": [
+    "WP-S04a-01R"
+   ],
+   "canonical": [
+    "W1-23"
+   ],
+   "referenced_by": [
+    "DR-09",
+    "WP-S04a-02",
+    "WP-S04a-06",
+    "WP-S06b-10a"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-01R: the interim Describe must return a Resolve-shaped modelSource stub, not null slots (TV dereferences described.modelSource.renderId unguarded)."
+  },
+  "WP-S04a-03": {
+   "replaced_by": [
+    "WP-S04a-03R"
+   ],
+   "canonical": [
+    "W3-06"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "WP-S04a-06"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-03R: Window cannot be taken whole (it imports ModelSource and PlanDoors), Handles must land with the rotate config and SheetTools wiring, and seven VV rotation consumers (Groups, MarkupBridge, Eyedropper, SelectionBox, SelectionSet, ScrapbookParametric LinkNoodle/ViewportLink) were missing from hot_files."
+  },
+  "WP-S04a-05": {
+   "replaced_by": [
+    "WP-S04a-05R"
+   ],
+   "canonical": [
+    "W2-16"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-09",
+    "WP-S04a-09"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-05R: a verbatim ModelSource pulls the whole site plan client and hatch slice forward; the phase lines must be hunk replays; no LoadingSequence change is needed; VV's SetModelRoot is a stub."
+  },
+  "WP-S04a-07": {
+   "replaced_by": [
+    "WP-S04a-07R"
+   ],
+   "canonical": [
+    "W2-12"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-15"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-07R: also needs a VV route for Na__SectionCut__RenderDepthInto (TV's 49 RenderLayer imports it) and hunk replays rather than whole-file takes."
+  },
+  "WP-S04a-08": {
+   "replaced_by": [
+    "WP-S04a-08R"
+   ],
+   "canonical": [
+    "W2-13"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-31"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-08R: Linework/ModelLayers/Frame changes must be hunk replays, and its main acceptance test cannot run on Vale data (Doous linework GLBs carry no LineworkModifier tags) - a fixture is needed."
+  },
+  "WP-S04a-10": {
+   "replaced_by": [
+    "WP-S04a-10R"
+   ],
+   "canonical": [
+    "W2-14"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-08"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-10R: the tab grouping acceptance is stale (TabStrip 2.0.0), no LoadingSequence edit is needed, the Store adapter needs WithBuildToken exported and stem renaming, and ModelSource/Linework/painter must land together."
+  },
+  "WP-S04a-11": {
+   "replaced_by": [
+    "WP-S04a-11R"
+   ],
+   "canonical": [
+    "W5-06"
+   ],
+   "referenced_by": [
+    "DR-08"
+   ],
+   "verifier_reason": "Superseded by WP-S04a-11R: no exporter naming target is needed (Vale GLBs already carry TrueVision__ stems), and the VV registration point is the WCP build script."
+  },
+  "WP-S04a-13": {
+   "replaced_by": [
+    "WP-S04a-13R"
+   ],
+   "canonical": [
+    "WT-04"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S04a-13R: the Add Viewport back-port has a second half (ModeController scene-broadcast listeners), and the SectionAdapter item moves to WP-S04a-15 with a wider scope."
+  },
+  "WP-S04b-02": {
+   "replaced_by": [
+    "WP-S04b-02R"
+   ],
+   "canonical": [
+    "W2-19"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "WP-S04b-03",
+    "WP-S04b-04",
+    "WP-S04b-05",
+    "WP-S04b-10"
+   ],
+   "verifier_reason": "Its hot-file list for the full v2.111 package omits files the devlog's own Files list includes: SheetTools__.js 1.32.0, SheetTools__PointerDrag__.js 1.8.0, Toolbar__.js 1.14.0 and 50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js 1.2.0. It also cites ShapeGeometry 1.9.0 as a verbatim source, while TV's whole file imports 53 ProjectQr, 54 SheetImages and SheetChrome PushQr. Replaced by WP-S04b-02R."
+  },
+  "WP-S04b-06": {
+   "replaced_by": [
+    "WP-S04b-06R"
+   ],
+   "canonical": [
+    "W2-19"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-40",
+    "WP-S04b-07",
+    "WP-S04b-08",
+    "WP-S04b-09",
+    "WP-S04b-10",
+    "WP-S04b-12",
+    "WP-S04b-13",
+    "WP-S04b-14",
+    "WP-S04b-15",
+    "WP-S06a-05v"
+   ],
+   "verifier_reason": "Its Snapping__ shim re-exports the controller, which creates the tools -> Snapping -> controller -> Measurements -> tools cycle. It also leaves the three Toggle importers (Keyboard, Toolbar, ContextMenu) on the shim, so their files are missing from its hot files. Replaced by WP-S04b-06R."
+  },
+  "WP-S04b-11": {
+   "replaced_by": [
+    "WP-S04b-11R"
+   ],
+   "canonical": [
+    "W2-25"
+   ],
+   "referenced_by": [
+    "DR-01",
+    "WP-S04b-12"
+   ],
+   "verifier_reason": "It misses Na__LeTools__CarryTarget, TV-only code in HitResolution that PointerPress and the hover call (HitResolution is not among its hot files). It treats the carry config keys as optional, although ViewportSnapMove reads them with no fallback, so the carry would silently do nothing. Replaced by WP-S04b-11R."
+  },
+  "WP-S05a-01": {
+   "replaced_by": [
+    "WP-S03a-V03"
+   ],
+   "canonical": [
+    "W1-29"
+   ],
+   "referenced_by": [
+    "WP-S05a-09",
+    "WP-S07b-05C"
+   ],
+   "verifier_reason": "Duplicate of S03a's WP-S03a-V03 (KeyScope port, handler gate, contenteditable test, mode controller reader and Follow), which is a superset: it also skips dictionary rows with no callback before preventDefault, handles the help panel's fetch if the 3D file is renamed, and records the service-worker token. S03b's WP-S03b-09 also adds KeyScope. Keep its acceptance lines as checks on WP-S03a-V03 (S05a-V04)."
+  },
+  "WP-S05a-02": {
+   "replaced_by": [
+    "WP-S03a-09"
+   ],
+   "canonical": [
+    "W1-30"
+   ],
+   "referenced_by": [
+    "DR-33",
+    "WP-S05a-09"
+   ],
+   "verifier_reason": "Duplicate of S03a's WP-S03a-09 (same folder, key map and ModeController Ready/Initialize hunk; S03a owns the mode controller). If the planner prefers S05a as owner, drop WP-S03a-09 instead - never both."
+  },
+  "WP-S05a-04": {
+   "replaced_by": [
+    "WP-S03a-V01"
+   ],
+   "canonical": [
+    "W0-15"
+   ],
+   "referenced_by": [
+    "WP-S05a-06"
+   ],
+   "verifier_reason": "Subset of S03a's WP-S03a-V01, which takes ToolSetup 1.5.0 and every additive AppConfig key, block and label; keep the acceptance line (each reader returns TV's default with the key absent) as a check on it."
+  },
+  "WP-S05a-05": {
+   "replaced_by": [
+    "WP-S03a-02"
+   ],
+   "canonical": [
+    "W0-15"
+   ],
+   "referenced_by": [
+    "DR-33",
+    "WP-S05a-09"
+   ],
+   "verifier_reason": "Duplicate of S03a's WP-S03a-02 (rename + KeyMap 1.11.0 in one change); its acceptance count is wrong - Na__Test__DrawingTabKeys__ at TV HEAD resolves 588 presses, not 426 - and the key file's prose needs adapting (F33 is port_adapted)."
+  },
+  "WP-S05a-07": {
+   "replaced_by": [
+    "WP-S05a-07Ra",
+    "WP-S05a-07Rb"
+   ],
+   "canonical": [
+    "W2-23",
+    "W2-24"
+   ],
+   "referenced_by": [
+    "DR-34",
+    "WP-S05a-09",
+    "WP-S06b-07b",
+    "WP-S06b-10b"
+   ],
+   "verifier_reason": "Grips and Measurements wait on different dependency chains (Grips: ObjectSnap__Search__ closure incl. VectorTools__Curves__ and DrawingGrid__State__; Measurements: FloorAreas trio and the note-region record unit), and S04b's ObjectSnap controller, DrawingGrid, OrthoMode, DrawingAxes and MoveAnchor import Measurements Say, so Measurements must land before them and Grips after. Replaced by WP-S05a-07Ra and WP-S05a-07Rb (S05a-V05)."
+  },
+  "WP-S05a-08": {
+   "replaced_by": [
+    "WP-S05a-08R"
+   ],
+   "canonical": [
+    "W3-03"
+   ],
+   "referenced_by": [
+    "DR-01",
+    "DR-05",
+    "DR-34",
+    "WP-S05a-09",
+    "WP-S05a-10",
+    "WP-S05a-11",
+    "WP-S06b-07b",
+    "WP-S06b-10b"
+   ],
+   "verifier_reason": "Cannot be sequenced as written: it requires SheetImages Crop/Menu first, but SheetImages__Insert__ imports the hub's own ToolState PickUpMove (S05a-V01); its prerequisite list stops at the first level of a 70-file closure that reaches TV's 80__CloudflareIntegration ApiClient, NA site-plan data and the 3D phase library (S05a-V02); and it does not claim sole ownership of hub files that S04b and S07a plan to hunk (S05a-V03). Replaced by WP-S05a-08R."
+  },
+  "WP-S05b-03": {
+   "replaced_by": [
+    "WP-S03b-03R",
+    "WP-S03b-04",
+    "WP-S05a-08R",
+    "WP-S03a-V01",
+    "WP-S06a-07"
+   ],
+   "canonical": [
+    "W0-15",
+    "W1-19",
+    "W1-21",
+    "W3-03",
+    "W3-12"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Every file is ported whole elsewhere: SheetRecords, SheetModel__Shapes/Groups/TextAndDimensions and the facade (S03b WP-03/04), ToolState (S05a WP-08), ConfigState__ToolSetup and AppConfig dimension/shape keys (S05a WP-04), Dim*/ShapeHatch* labels (S06a WP-07). Keep its scope as the acceptance checklist of those packages (D-S05b-V01)."
+  },
+  "WP-S05b-04": {
+   "replaced_by": [
+    "WP-S03b-06R",
+    "WP-S03b-07R",
+    "WP-S05b-V1"
+   ],
+   "canonical": [
+    "W1-18",
+    "W1-26",
+    "W1-28"
+   ],
+   "referenced_by": [
+    "DR-12"
+   ],
+   "verifier_reason": "SheetChrome, ShapeGeometry and DimensionGeometry are S03b WP-06 whole-file ports and MarkupBridge is S03b WP-07 (its AtScale line also S03b WP-01's bridge). The S05b-owned GradientTool 1.1.0 and LineStyleTool 1.1.0 move to WP-S05b-V1."
+  },
+  "WP-S05b-05": {
+   "replaced_by": [
+    "WP-S06a-07",
+    "WP-S06a-02",
+    "WP-S05a-06",
+    "WP-S05b-07"
+   ],
+   "canonical": [
+    "W1-38",
+    "W2-21",
+    "W2-26",
+    "W3-12"
+   ],
+   "referenced_by": [
+    "WP-S05b-07"
+   ],
+   "verifier_reason": "Panel__Dimensions is S06a WP-07 (whole), PanelHost and Styles__Panels S06a WP-02 (whole), Eyedropper traits S05a WP-06 (Eyedropper 1.9.0 + v2.152 whole); DimensionTool create fields come with WP-S05b-07's whole body (land it before or with S06a WP-07)."
+  },
+  "WP-S05b-06": {
+   "replaced_by": [
+    "WP-S06a-07",
+    "WP-S06a-01",
+    "WP-S05a-06",
+    "WP-S05b-V2"
+   ],
+   "canonical": [
+    "W2-21",
+    "W2-29",
+    "W2-36",
+    "W3-12"
+   ],
+   "referenced_by": [
+    "DR-19",
+    "WP-S05b-10"
+   ],
+   "verifier_reason": "Panel__Shapes 1.9.0 is S06a WP-07 (1.8.1 fix in S06a WP-01), the Eyedropper hatch trait S05a WP-06, labels S06a WP-07. The S05b-owned remainder (Panel__Patterns and the ModeController Hatch Ready / Patterns registration / accordion hunks) is WP-S05b-V2."
+  },
+  "WP-S05b-08": {
+   "replaced_by": [
+    "WP-S05b-V3",
+    "WP-S05b-V4"
+   ],
+   "canonical": [
+    "W2-28",
+    "W3-07"
+   ],
+   "referenced_by": [
+    "DR-18",
+    "DR-37",
+    "WP-S05b-10",
+    "WP-S05b-11",
+    "WP-S06b-10b"
+   ],
+   "verifier_reason": "Mixes S05b-owned 37 units with anchored hunks into VV's OLD hubs (SheetTools__State, ToolState, PointerPress, PointerDrag, Keyboard, SheetTools__ContextMenu, SheetTools, Measurements, KeyMap) that S05a WP-05/07/08 replace whole with TV files already carrying the dispatch; also missed ContextMenu 1.1.0 flyouts (S05a WP-03) and Measurements Say (S05a WP-07). Replaced by WP-S05b-V3 (units inert) and WP-S05b-V4 (cross-slice switch-on release)."
+  },
+  "WP-S05b-09": {
+   "replaced_by": [
+    "WP-S05a-06",
+    "WP-S05a-08R",
+    "WP-S05b-V4"
+   ],
+   "canonical": [
+    "W2-21",
+    "W3-03",
+    "W3-07"
+   ],
+   "referenced_by": [
+    "WP-S05b-10"
+   ],
+   "verifier_reason": "All five files are S05a whole-file ports (SelectionBox 1.7.0 in S05a WP-06; PointerPress 1.10.0, Keyboard 1.18.0, SheetTools__ContextMenu 1.7.0, HitResolution 1.11.0 in S05a WP-08), each already carrying the v2.150 holes code. Its rule survives as a release gate inside WP-S05b-V4."
+  },
+  "WP-S06a-03": {
+   "replaced_by": [
+    "WP-S06a-03v"
+   ],
+   "canonical": [
+    "W1-35"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S06a-03v. Its scope adopts TV's Select and Move tooltips, which describe v2.78.0 auto-Move that VV lacks, and VV AppConfig :661-662 overrides the code fallbacks anyway. It also misses the AppConfig cleanup for the Notes toggle (MarginToggle keys, MarginNotes__Description), which duplicates WP-S06b-11."
+  },
+  "WP-S06a-04": {
+   "replaced_by": [
+    "WP-S06a-04v"
+   ],
+   "canonical": [
+    "W1-32"
+   ],
+   "referenced_by": [
+    "WP-S06a-06"
+   ],
+   "verifier_reason": "Superseded by WP-S06a-04v. Its acceptance check 'both columns show tabs' cannot pass: PanelHost hides a strip with fewer than two tabs (PanelHost__.js:273), and VV's left column gets its second tab only with LE/58. The 'document' tab moves to WP-S06a-06."
+  },
+  "WP-S06a-05": {
+   "replaced_by": [
+    "WP-S06a-05v"
+   ],
+   "canonical": [
+    "W2-37"
+   ],
+   "referenced_by": [
+    "DR-42",
+    "WP-S06a-06",
+    "WP-S06a-09",
+    "WP-S06a-12",
+    "WP-S06a-13"
+   ],
+   "verifier_reason": "Superseded by WP-S06a-05v. It misses four things:\n- the '../../40__System__DrawingViewCore' -> 42 path seam in the adapted panel (TV :199);\n- the Grips -> DrawingTitle 1.2.0 PLACE_BELOW/PLACE_RIGHT dependency;\n- the conflict with WP-S04b-09, which deletes the Snapping__.js its interim seam points at;\n- the fact that its '5 mm past the words' acceptance check can only be met against VV's Helvetica metrics until PdfFonts lands."
+  },
+  "WP-S06a-08": {
+   "replaced_by": [
+    "WP-S06a-08v"
+   ],
+   "canonical": [
+    "W3-15"
+   ],
+   "referenced_by": [
+    "DR-16"
+   ],
+   "verifier_reason": "Superseded by WP-S06a-08v. 'Take TV whole' copies imports of '../../40__System__DrawingViewCore' (:206) and '../../42__System__FloorPlanViews' (:207). Under those numbers the files do not exist in VV, so the editor fails to link."
+  },
+  "WP-S06a-10": {
+   "replaced_by": [
+    "WP-S06a-10v"
+   ],
+   "canonical": [
+    "W5-01"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S06a-10v. It is missing three dependencies:\n- WP-S04b-09, which edits the same file and owns the F3/F6/F7/F8/F9/K key rows and the loader STYLESHEETS lines its acceptance checks need;\n- the 54 and 66 stylesheet lines;\n- S05a's v2.78.0 port, for the tooltips."
+  },
+  "WP-S06b-07": {
+   "replaced_by": [
+    "WP-S06b-07a",
+    "WP-S06b-07b"
+   ],
+   "canonical": [
+    "W2-22",
+    "W3-11"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Wrong scope and order: its SheetTools/Measurements/RectangleTool/ObjectSnap hunks are delivered verbatim by WP-S05a-08 (hub incl. TOOL_REGION dispatch), WP-S05a-07 (Measurements 1.10.0), WP-S05b-07 (RectangleTool 1.4.0 land) and S04b's ObjectSnap folder (Sources RegionBoxes imports nothing of this slice), and those whole-file ports import NoteRegions__Tool__, so the tool must land before them. Replaced by WP-S06b-07a and WP-S06b-07b."
+  },
+  "WP-S06b-10": {
+   "replaced_by": [
+    "WP-S06b-10a",
+    "WP-S06b-10b"
+   ],
+   "canonical": [
+    "W1-27",
+    "W3-10"
+   ],
+   "referenced_by": [
+    "DR-01",
+    "DR-40"
+   ],
+   "verifier_reason": "Circular: 'Floor Areas last, after the SheetData, SheetTools, DrawingTools and Markup slices' cannot hold because those slices' whole-file ports import 59 modules (WP-S05a-07/08: FloorAreas__Tool__/__Menu__; WP-S03b-07: FloorAreas__Paint__). Most of its hot-file hunks are also delivered by whole-file ports elsewhere (S03b WP-03/04/07, S05a WP-07/08, S05b WP-07/08, S06a WP-01/10/13). Replaced by WP-S06b-10a and WP-S06b-10b."
+  },
+  "WP-S06b-11": {
+   "replaced_by": [
+    "WP-S06a-03v"
+   ],
+   "canonical": [
+    "W1-35"
+   ],
+   "referenced_by": [
+    "DR-40"
+   ],
+   "verifier_reason": "Duplicate of WP-S06a-03 (Toolbar subtractive phase), which removes the Notes toggle with Undo/Redo/Fit/100% and has the same acceptance; fold its two extras (delete Labels__MarginToggle/MarginToggleTitle at VV AppConfig :719-720, reword LayoutEditor__MarginNotes__Description at :428) into WP-S06a-03."
+  },
+  "WP-S06b-12": {
+   "replaced_by": [
+    "WP-S08-03",
+    "WP-S08-11"
+   ],
+   "canonical": [
+    "W1-25",
+    "W4-08"
+   ],
+   "referenced_by": [
+    "DR-05",
+    "DR-21"
+   ],
+   "verifier_reason": "Both halves are owned by S08: SpecPdf with PdfFonts and the returnPromise save in WP-S08-03, and the SpecEditor__Bar__ Share button in WP-S08-11; the SpecificationPdf test page's jsPDF path is WP-S08-01's."
+  },
+  "WP-S07b-01": {
+   "replaced_by": [
+    "WP-S06b-01"
+   ],
+   "canonical": [
+    "W2-30"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Duplicate. WP-S06b-01 already ports the same file (S06b row STMT-01) and Na__Test__StatementLockstep__ with it, so two packages would create the same file. Keep one owner (WP-S06b-01, the first consumer); the S07b packages depend on it."
+  },
+  "WP-S07b-05": {
+   "replaced_by": [
+    "WP-S07b-05A",
+    "WP-S07b-05B",
+    "WP-S07b-05C"
+   ],
+   "canonical": [
+    "W4-04",
+    "W4-06",
+    "W4-12"
+   ],
+   "referenced_by": [
+    "DR-10",
+    "DR-37",
+    "DR-42",
+    "WP-S07b-08",
+    "WP-S07b-09",
+    "WP-S07b-10"
+   ],
+   "verifier_reason": "It cannot land or pass its acceptance alone. Page__ statically imports 07 Publish__ and the 09 Registry and DrawingSchedule__Live__. Editor__ and Editor__Cards__ import the 09 Registry, which imports TrueVisionHub__, which imports ProjectQrCode. Replaced by WP-S07b-05A, -05B and -05C."
+  },
+  "WP-S07b-06": {
+   "replaced_by": [
+    "WP-S07b-05C",
+    "WP-S07b-05A"
+   ],
+   "canonical": [
+    "W4-04",
+    "W4-12"
+   ],
+   "referenced_by": [
+    "DR-10",
+    "DR-42",
+    "WP-S07b-10"
+   ],
+   "verifier_reason": "Publish__ imports the 09 Registry and the ProjectQr Symbol, and the Page (WP-05) imports Publish__, so this package can neither follow nor precede WP-05 on its own. Folded into WP-S07b-05C; Publish__Page__ moves to WP-S07b-05A."
+  },
+  "WP-S07b-07": {
+   "replaced_by": [
+    "WP-S07b-05A",
+    "WP-S07b-05C"
+   ],
+   "canonical": [
+    "W4-04",
+    "W4-12"
+   ],
+   "referenced_by": [
+    "DR-10",
+    "DR-42",
+    "DR-43",
+    "WP-S07b-10"
+   ],
+   "verifier_reason": "The Registry is imported by the Editor, Cards and Page (WP-05), so it cannot come after them. The pure section modules move to WP-S07b-05A; the Registry, Hub and Live source move to WP-S07b-05C."
+  },
+  "WP-S09-05": {
+   "replaced_by": [
+    "WP-S03a-V03",
+    "WP-S03a-02"
+   ],
+   "canonical": [
+    "W0-15",
+    "W1-29"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Duplicate with an unsafe step. KeyScope plus the HotkeyHandler gate (and skipping rows without a callback) is WP-S03a-V03. The key-file rename with TV content is WP-S03a-02, atomically with KeyMap 1.11.0 (the rename alone is also WP-S01-03R). Landing TV's file on VV's KeyMap 1.0.0 would make T reach Tool__Trim (When InContainer, listed above Text) and would disable F = Zoom Fit (F is Offset in TV's file). 31 DocumentKeys travels with S01-F27 and the register/statement WPs; the tests are in WP-S03a-02/V03 and WP-S05a-09."
+  },
+  "WP-S09-09": {
+   "replaced_by": [
+    "WP-S09-09R"
+   ],
+   "canonical": [
+    "W2-08"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Depends on D-S09-05, which is withdrawn because S09-F09 is refuted. Replaced by WP-S09-09R with the same scope."
+  },
+  "WP-S09-11": {
+   "replaced_by": [
+    "WP-S09-11R"
+   ],
+   "canonical": [
+    "W0-08"
+   ],
+   "referenced_by": [
+    "DR-07"
+   ],
+   "verifier_reason": "Missing precondition: until WP-S01-11 adds the registrar's unsaved-work hold, any token bump reloads open VV editors that hold unsaved work, on localhost too. Replaced by WP-S09-11R."
+  },
+  "WP-S09-12": {
+   "replaced_by": [
+    "WP-S09-12R"
+   ],
+   "canonical": [
+    "W2-01"
+   ],
+   "referenced_by": [
+    "DR-02",
+    "DR-23",
+    "DR-24"
+   ],
+   "verifier_reason": "Its step 'controls passed to plan/elevation mode controllers and Transitions per D-S09-05' is wrong: VV keeps its own controllers, which need Na__DrawView__Transitions__Initialize({camera, controls}). Replaced by WP-S09-12R."
+  },
+  "WP-S10-03": {
+   "replaced_by": [
+    "WP-S10-03R"
+   ],
+   "canonical": [
+    "W1-33"
+   ],
+   "referenced_by": [
+    "DR-39"
+   ],
+   "verifier_reason": "Superseded by WP-S10-03R. As scoped, the early body class would show the 3D menus, nav toolbar, help panel and carousel over the boot veil because their hiding rule is in the lazily linked VV Styles__Main (S10-V01); the 94 percent veil would show the live model through it; Enter returning false was unhandled; and its 'Specification from the 3D view' acceptance item cannot be tested before WP-S10-04."
+  },
+  "WP-S10-04": {
+   "replaced_by": [
+    "WP-S10-04R"
+   ],
+   "canonical": [
+    "W1-34"
+   ],
+   "referenced_by": [
+    "DR-25",
+    "DR-38"
+   ],
+   "verifier_reason": "Superseded by WP-S10-04R. Its risk line assumes sheet reorder stays reachable from the Sheet panel and Dev section, but neither has a reorder control in VV (S10-V02), so the port would remove VV's only reorder path; it also misses the async CreateSheet of the '+ New sheet' row and an unneeded Ready() wait."
+  },
+  "WP-S10-07": {
+   "replaced_by": [
+    "WP-S10-07R"
+   ],
+   "canonical": [
+    "WT-05"
+   ],
+   "referenced_by": [
+    "DR-44"
+   ],
+   "verifier_reason": "Superseded by WP-S10-07R. The cited CSS range (VV DropdownAndToast 1376-1509) includes VV's VV-only Navigation Mode Selector region (1464-1509), and the scope misses .na-dropdown-menu__action--secondary (VV 383-402), which TV lacks and the dialog's Cancel button needs."
+  },
+  "WP-S10-08": {
+   "replaced_by": [
+    "WP-S10-08R"
+   ],
+   "canonical": [
+    "W0-06"
+   ],
+   "referenced_by": [],
+   "verifier_reason": "Superseded by WP-S10-08R. It bumps the shared token on its own, which the ledger (159-173) records as Adam's decision because a bump evicts every Vale app's caches, models included; and it corrects one stale 'no service worker' ledger row where there are 19."
+  },
+  "WP-S12-09": {
+   "replaced_by": [
+    "WP-S12-V09R"
+   ],
+   "canonical": [
+    "W0-14"
+   ],
+   "referenced_by": [
+    "DR-27"
+   ],
+   "verifier_reason": "Its scope ports Assets 1.0.1 and Persistence 1.2.1 'verbatim', which swaps VV's IsRunningOnLocalhost() upload/bake gate for TV's DevGate (TD01). That goes against VV's DevGate PORT NOTE and D24: an unlocked live session would bake linework, attempt uploads that cannot land, and - with TV's non-throwing contract adopted in the same package - toast red on every snapshot. The persisted linework Description also names TrueVision. Replaced by WP-S12-V09R."
+  }
+ },
+ "coverage": {
+  "live_raw_ids": 221,
+  "mapped": 220,
+  "dropped": 1,
+  "unmapped": [],
+  "retired_aliases": 68,
+  "canonical_packages": 165
+ }
+}

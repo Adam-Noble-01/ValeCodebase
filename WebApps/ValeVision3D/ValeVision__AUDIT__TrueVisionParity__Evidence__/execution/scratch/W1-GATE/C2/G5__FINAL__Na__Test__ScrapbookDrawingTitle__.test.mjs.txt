@@ -1,0 +1,46 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - parametric scrapbook drawing title
+  PASS  the first record is the underline, and its first point is the origin
+  PASS  the underline is Adam's: 60 mm, 0.4 pt, #172b3a
+  PASS  the title says what Adam lettered
+  PASS  the title is set as Adam sets it: 3.5 mm, 600, #172b3a, ranged left
+  PASS  the title stands where Adam stands it over the underline, to a thousandth of a millimetre
+  PASS  the scale bar hangs where Adam hangs it under the underline, to a thousandth, sharing its left end
+  PASS  with its bar: the underline, the ten cells of the house 1:50 bar, the title and six numerals
+  PASS  every vector comes before every text, so the engine's slots never move
+  PASS  the title is always the first text, ahead of the bar's numerals
+  PASS  without its bar it is exactly the underline and the title
+  PASS  the config's default carries the bar
+  PASS  a proposed north elevation
+  PASS  north not set: EXISTING {{DIRECTION}} ELEVATION, and the build says it is unresolved
+  PASS  tied to nothing: {{DRAWING}}
+  PASS  a plan takes its drawing's name
+  PASS  a typed viewport name is the subject
+  PASS  a typed title replaces it all, as typed
+  PASS  capitals off, qualifier off
+  PASS  the same parameters build the same records, byte for byte
+  PASS  no way to measure text: the underline is its set length
+  PASS  a title shorter than the underline leaves it alone
+  PASS  a longer title is underlined to its end, plus the fit extra, rounded up to a tenth
+  PASS  a measure that throws, or answers nonsense, costs nothing
+  PASS  the measure is asked about the title as it is written, at its size and weight
+  PASS  a set length is held inside its limits
+  PASS  with its bar the stretch and lookup grips are the bar's, moved down with it
+  PASS  without its bar the stretch grip is the underline's end and there is no lookup grip
+  PASS  the link socket stands off the top of the underline's end either way
+  PASS  stretching a bare title sets its underline, in 5 mm steps
+  PASS  stretching a title with a bar lengthens the bar in whole divisions and leaves the underline
+  PASS  a stretch keeps every word the title says
+  PASS  junk parameters fall back to the config's standard
+  PASS  the standard at 1:100 is the bar's standard at 1:100 with the title's settings
+  PASS  the type names the facts the link module fills
+  PASS  a change of scale keeps every fact and every choice
+  PASS  the type says whether an element has a bar
+  PASS  the type says what a title reads, for the panel
+  PASS  the type builds with no tools at all, as it must under the tile
+  PASS  a missing config still draws the house title
+
+  PASS - every check passed.

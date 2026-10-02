@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>W1-03 harness</title>
+<!-- W1-03 acceptance harness (package scratch, never shipped). Read-only: it GETs ValeVision's modules,
+     the vendored three.js and the app config from the running Flask server, renders into its own canvases
+     and writes nothing anywhere. Results: window.__W1_03 and the #out block. -->
+<script type="importmap">
+{
+    "imports": {
+        "three"        : "/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+        "three/addons/": "/ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/"
+    }
+}
+</script>
+<style>
+    body   { font: 12px/1.4 Consolas, monospace; background: #ffffff; color: #111111; margin: 16px; }
+    canvas { border: 1px solid #999999; margin: 4px; max-width: 100%; }
+    pre    { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>W1-03 acceptance harness</h1>
+<pre id="out">running...</pre>
+<div id="stage"></div>
+<script type="module" src="./Na__W1_03__Harness__.js"></script>
+</body>
+</html>

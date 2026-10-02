@@ -1,0 +1,99 @@
+# R5 assembly: fills R5_template.md with the generated fragments and the analysis tables, and writes
+# parity/report/R5__E_ParityMatrix_Watermark_Inventory.md.
+# Order (from scratch): r5_exports_index.py, parse_appA (r5work/parse_appA.py), r5_release_map.py, r5_build.py,
+#   r5_inventory.py, r5_git_intro.py, r5_inventory.py (again, now with the git data), r5_assemble.py
+import sys, io, json, re, os, collections
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from r5_common import *
+from r5_analysis import TOP, LE
+from r5_overrides import WP_FIX
+
+sys.stdout.reconfigure(encoding="utf-8")
+HERE = os.path.dirname(os.path.abspath(__file__))
+OBF = jload(WORK + "/open_by_folder.json")
+SUM = jload(WORK + "/r5_summary.json")
+INV = jload(WORK + "/tv_only_inventory.json")
+TS = jload(WORK + "/tests_summary.json")
+
+
+def frag(name):
+    return io.open(WORK + "/" + name, encoding="utf-8").read().rstrip("\n")
+
+
+def md(s):
+    return str(s).replace("|", "/").replace("\n", " ")
+
+
+def open_txt(key):
+    vs = OBF.get(key, []) if key else []
+    if not vs:
+        return "0"
+    vs = sorted(vs, key=vkey)
+    short = [v.replace("v2.", "") for v in vs]
+    if len(short) <= 6:
+        return "%d: %s" % (len(short), ", ".join(short))
+    return "%d: %s ... %s" % (len(short), ", ".join(short[:3]), ", ".join(short[-2:]))
+
+
+top = ["| System (K2 target, TF id) | Open TV releases naming it | Key gaps (TV versions; evidence) | Recommended action and packages |",
+       "|---|---|---|---|"]
+for label, key, gaps, act in TOP:
+    top.append("| %s | %s | %s | %s |" % (md(label), open_txt(key), md(gaps), md(act)))
+le = ["| LE subfolder | Open TV releases naming it | Key gaps (TV versions; evidence) | Recommended action and packages |",
+      "|---|---|---|---|"]
+le_names = sorted(set(d["relpath"].split("/")[0] for d in DRIFT if d["vv_folder"] == "51__System__LayoutEditor"))
+for s in le_names:
+    gaps, act = LE.get(s, ("(no gap recorded)", "-"))
+    le.append("| %s | %s | %s | %s |" % (s, open_txt("LE/" + s), md(gaps), md(act)))
+
+# E.3 counts
+le_n = sum(1 for x in INV if "/51__System__LayoutEditor/" in x["path"])
+le_l = sum(x["lines"] for x in INV if "/51__System__LayoutEditor/" in x["path"])
+tot_l = sum(x["lines"] for x in INV)
+act = collections.Counter()
+for x in INV:
+    a = x["action"]
+    if a.startswith("excluded"):
+        act["excluded"] += 1
+    elif a.startswith("gated"):
+        act["decision-gated"] += 1
+    elif a.startswith("verbatim"):
+        act["verbatim"] += 1
+    elif a.startswith("adapted"):
+        act["adapted"] += 1
+    else:
+        act["path/body/rename/no owner"] += 1
+
+cc = SUM["class_counts_corrected"]
+c0 = SUM["class_counts_s11"]
+vals = {
+    "N_OPEN": str(SUM["open_rows"]),
+    "N_E3": str(len(INV)), "N_E3_LE": str(le_n), "N_E3_LE_L": format(le_l, ","), "N_E3_L": format(tot_l, ","),
+    "N_E3_OUT": str(len(INV) - le_n), "N_E3_OUT_L": format(tot_l - le_l, ","),
+    "N_WPFIX": str(len(WP_FIX)),
+    "E3_ACT": ", ".join("%s %d" % (k, v) for k, v in act.most_common()),
+}
+T = io.open(os.path.join(HERE, "R5_template.md"), encoding="utf-8").read()
+reps = {
+    "{{E1_CORRECTIONS}}": frag("frag_E1_corrections.md"),
+    "{{E1_AREA}}": frag("frag_E1_area.md"),
+    "{{E1_RELEASES}}": frag("frag_E1_release_table.md"),
+    "{{E1_REVERSE}}": frag("frag_E1_reverse.md"),
+    "{{E2_TOP}}": frag("frag_E2_top.md"),
+    "{{E2_TOP_ANALYSIS}}": "\n".join(top),
+    "{{E2_LE}}": frag("frag_E2_le.md"),
+    "{{E2_LE_ANALYSIS}}": "\n".join(le),
+    "{{E2_ADJ}}": frag("frag_E2_adjacent.md"),
+    "{{E3_SUMMARY}}": frag("frag_E3_summary.md"),
+    "{{E3_INVENTORY}}": frag("frag_E3_inventory.md"),
+    "{{E5_TESTS}}": frag("frag_E5_tests.md"),
+}
+for k, v in reps.items():
+    T = T.replace(k, v)
+for k, v in vals.items():
+    T = T.replace("{{" + k + "}}", v)
+left = re.findall(r"\{\{[A-Z0-9_]+\}\}", T)
+outp = PAR + "/report/R5__E_ParityMatrix_Watermark_Inventory.md"
+io.open(outp, "w", encoding="utf-8", newline="\n").write(T)
+print("written", outp, len(T), "chars; unresolved placeholders:", left)
+print(vals)

@@ -1,0 +1,515 @@
+{
+ "slice_id": "S10",
+ "claims_checked": 190,
+ "confirmed_ids": [
+  "S10-F01",
+  "S10-F02",
+  "S10-F03",
+  "S10-F04",
+  "S10-F05",
+  "S10-F06",
+  "S10-F07",
+  "S10-F08",
+  "S10-F09",
+  "S10-F10",
+  "S10-F11",
+  "S10-F12",
+  "S10-F13",
+  "S10-F14",
+  "S10-F16",
+  "S10-F18",
+  "S10-F19",
+  "S10-F20",
+  "S10-F21",
+  "S10-F22",
+  "S10-F23",
+  "S10-F24",
+  "S10-F25",
+  "S10-F26",
+  "S10-F27",
+  "S10-F28",
+  "S10-F29",
+  "S10-F30",
+  "S10-F31",
+  "S10-F32",
+  "S10-F33",
+  "S10-F34",
+  "S10-F35",
+  "S10-F36"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S10-F17",
+   "field": "action",
+   "new_value": "needs_decision",
+   "reason": "The VV ledger (lines 89-94 and 159-173) already records this exact question as Adam's call, raised on 20-Sep-2026 and not changed, because PWA_SW_VERSION_TOKEN also names the models and thumbnails buckets (WCP logic 229-233), so every bump re-downloads every Vale client's GLBs. Slices S04b, S06a, S08 and S11 treat it the same way. A swarm told to bump in every package would override a recorded owner decision."
+  },
+  {
+   "id": "S10-F17",
+   "field": "recommendation",
+   "new_value": "Do not bump in every package. Raise once as D-S10-13 with the fix that makes routine bumps cheap: give wpwa-models- and wpwa-thumbs- a token of their own (WCP logic 229-233), then bump the shell token once per VV deploy wave with a log line naming the VV versions. Land WP-S10-15 (registrar: hold the reload while the editor has unsaved work, no reload on a first install, updateViaCache 'none') before the first bump, because a bump reloads every open VV page once. List the WCP file as a hot file only. Correct the 19 ledger rows that still say VV has no worker (WP-S10-08R).",
+   "reason": "The original told every UI package to bump the shared token, contrary to the ledger's recorded decision and without the registrar safeguards TV has (see S10-V05)."
+  },
+  {
+   "id": "S10-F17",
+   "field": "detail",
+   "new_value": "VV is served under WCP's worker (scope covers /ValeVision3D/; live JS/CSS stale-while-revalidate, guarded only by the token). Token is '2026-09-18-1'. VV v2.70.0 wrote that it 'needs bumping with this release' because a warm cache without SnapshotRenderer's new exports breaks the editor until a second visit; it was not bumped, and v2.71.0 changed shell files too. Loader-linked editor sheets are outside the precache list, so the token is their only guard. The ledger already knows all of this: lines 135-173 record that VV DOES run under this worker on the live site, that releases v2.61-v2.66 shipped new exports without a bump, and that the bump was raised with Adam on 20-Sep and left unchanged because the token evicts every Vale app's caches, models included. A bump also triggers the shared registrar's one-off reload of every open VV page (S10-V05).",
+   "reason": "Adds the ledger record and the reload side effect the survey missed."
+  },
+  {
+   "id": "S10-F04",
+   "field": "recommendation",
+   "new_value": "Restyle the loader's loading state as TV's veil (na-le-veil plus a VV-only --boot modifier at the host's geometry that follows the fold, OPAQUE white with no blur because the 3D canvas is still painted underneath until Enter hides it), TV headline, Title Case statuses. The loader adds na-layout-editor--active at the click (after the IsAvailable check, non-quiet presses only) so the fold starts as in TV, and removes it on load failure, when the config has the editor off, when Na__LeMode__Enter returns false, and on the error state's Back to 3D Model. Hand the drawing wait to the ported FirstOpen (immediate). Prerequisite S10-V01: move the 3D-furniture hiding block from VV Styles__Main 30-50 (lazily linked) to Styles__Boot, or the Tools menu, nav toolbar, help panel and carousel float over the boot veil during the import. Error state unchanged. Use WP-S10-03R.",
+   "reason": "As written, the early body class would apply the fold before VV's furniture-hiding rule is loaded (it lives in the lazily linked Styles__Main), the 94 percent veil would show the live 3D model through it, and the Enter-false path was not handled."
+  },
+  {
+   "id": "S10-F06",
+   "field": "detail",
+   "new_value": "VV ported only TV's coming-out veil and lent its drawing wait (DrawingSettled) to the lazy loader, so the going-in cover exists only while the loader imports. Once document tabs or Dev actions load the editor first (the normal path after TabStrip 2.0.0), the first drawing tab gets no cover and viewports fill in under the reader - the cold drop TV v2.83 / VV v2.70 were written to remove. VV v2.70.0 chose this deliberately ('Two overlays over one crossing would be a duplication, not a port', VV devlog line 182; VV LoadingVeil PORT NOTE lines 57-61; ledger row 1241); the compact strip invalidates that reasoning, so the port reverses a recorded divergence.",
+   "reason": "The survey did not say the gap is a recorded VV decision, which the port must rewrite."
+  },
+  {
+   "id": "S10-F06",
+   "field": "recommendation",
+   "new_value": "Take TV LoadingVeil 1.1.0 whole; keep VV's DrawingSettled export; add an 'immediate' option for a gap-free hand-over from the loader's cover; call FirstOpen from VV Enter when not viewer and not quiet, with viewportCount from the model and PreloadMetrics returning its promise. Rewrite VV LoadingVeil's PORT NOTE divergence (lines 57-61), ledger row 1241 and the ModeController log, since this reverses a recorded VV decision. Part of WP-S10-03R.",
+   "reason": "Records must follow the reversal."
+  },
+  {
+   "id": "S10-F03",
+   "field": "recommendation",
+   "new_value": "Take TV 2.0.0 whole and re-apply VV seams: header/console prefix; every import via the Na__LeLoad__ facade (add VIEW_REGISTER, VIEW_STATEMENT, OpenRegister, OpenStatements, IsSitePlanSheet); IsAvailable visibility (D-S10-02); async Enter/OpenSpecification; await Na__LeLoad__CreateSheet (a promise in VV, synchronous in TV) before entering from the '+ New sheet' row; drop TV's Na__LeMode__Ready().then(Render) since VV renders at once and re-renders on Na__LeLoad__STATE_EVENT. Copy TV's tab-strip CSS region into Styles__Boot (menu rules in, rename rules out). Register/Statements tabs per D-S10-01. Decide D-S10-12 first: the strip's drag is VV's only way to reorder sheets (TV reorders only from the Document Register, which VV lacks). Use WP-S10-04R.",
+   "reason": "Missing async CreateSheet adaptation, an unneeded Ready wait, and the unmitigated loss of sheet reordering (S10-V02)."
+  },
+  {
+   "id": "S10-F09",
+   "field": "recommendation",
+   "new_value": "Now: remove Notes, Undo, Redo, Fit, 100% with their imports and listeners (WP-S10-02), mirroring TV 1.19.0's separator placement exactly: VV closes the editable block with a Gap and adds another after Fit/100%, so deleting only the buttons leaves a doubled separator in the read-only branch (reachable only with the web viewer switched off). Removing the history listener is safe: VV's undo re-announces through Na__LeModel__AnnounceRestore (History 213), which is what TV 1.19.0 relies on. Later: take TV 1.24.0 whole once 26/27/28/32/33/37/54/59/66 and VectorQuality exist (WP-S10-12).",
+   "reason": "Precision for the swarm: separator placement and the re-sync path were verified."
+  },
+  {
+   "id": "S10-F10",
+   "field": "detail",
+   "new_value": "The 304-line diff is TV additions plus one moved rule: toggle-group wrap and --tight (1:200 scale row), row inline-check (Hide swings), .na-le-btn--ref, the v2.154.0 rule giving Off, Unlock and Ref one faint red (#9b3b3b on #fbf3f3, border #e8c9c9), rangebox, range-suffix, the Linked Pair padlock region, adv-unit '%'. All but one are inert until their classes appear; VV colours only the lock today. The exception is flex-wrap: wrap on the existing .na-le-toggle-group, which changes VV's toggle rows at once (the intended wrap instead of clipping). The moved .na-le-select--compact rule stays after the base .na-le-input, .na-le-select rule in both files, so the move changes no cascade (checked declaration by declaration, comments stripped).",
+   "reason": "'All inert' was not quite true; one rule is live immediately."
+  },
+  {
+   "id": "S10-F12",
+   "field": "recommendation",
+   "new_value": "Module port is the 54 slice's; for UI parity import Na__ColourPalette__Styles__.css from VV's 03 CSS index after Styles__Boot (not the loader list), check the grey keys against VV's own DataLib SSOT, decide palette contents (D-S10-10). Attach points besides PanelHost 1.6.0: TV also attaches the palette in its 3D-tab 43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js, so VV's 44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js (the na-plan-anno__swatch colour input) needs the same Na__ColourPalette__Attach call. In VV the index-imported 54 sheet lands before the loader-linked editor sheets (TV imports it after them); its selectors are namespaced, so no conflict was found.",
+   "reason": "A second attach point and the cascade-order difference were missing."
+  },
+  {
+   "id": "S10-F13",
+   "field": "detail",
+   "new_value": "TV ContextMenu 1.1.0: flyout cards (hover delay, click or right arrow; Escape closes flyout first), muted row hints, 'mixed' ring; CSS .na-le-menu__item--mixed/--hinted/--submenu/--open and .na-le-menu--flyout (z 1201) in Main__Paper. ContextMenu imports nothing and has the same exports (Open, Close, IsOpen) in both apps, so it can be ported verbatim on its own. TV SheetTools__ContextMenu 1.7.0 adds the Layer row (LayerMenu 1.0.0), picture rows, rotate 90/reset, Vector tools, Show in Specification, Boolean. VV ContextMenu 1.0.0, SheetTools__ContextMenu 1.2.0. Container-aware menus are NOT a VV gap (the narrative B6 said they were): VV already has MenuEnterVector, MenuEnterDimension, MenuEnterGroup, MenuInsertVertex, MenuDeleteVertex, MenuCloseShape and MenuCloseScope; VV's version numbers do not line up with TV's (VV 1.1.0 = paste properties, 1.2.0 = leader clipboard). TV-only row labels: MenuOpenShape, MenuFinishView, MenuUnlock, MenuSnapOff, MenuRotateViewportLeft/Right, MenuResetViewportRotation, MenuShowInSpecification, plus adapter rows (Layer, pictures, Vector tools, Boolean).",
+   "reason": "Row-level comparison of both menus' label keys; prevents a swarm agent re-porting container menus VV already has."
+  },
+  {
+   "id": "S10-F14",
+   "field": "recommendation",
+   "new_value": "Port both modules and the hovertip CSS verbatim with WP-S10-11, wiring PointerDrag's hover pass and SheetTools attach as in TV; port the TV test. HoverTooltip needs nothing VV lacks; NoteTooltip also needs Na__LeLeadGeo__NoteFor and Na__LeModel__IsLayerSelectable (both absent in VV), and LayerMenu needs Na__LeModel__ItemLayerId and Na__LeModel__MoveToLayer (SheetModel layers 1.3.0, absent in VV), so these land after the layers and spec slices.",
+   "reason": "Exact missing exports verified against VV's sources."
+  },
+  {
+   "id": "S10-F16",
+   "field": "recommendation",
+   "new_value": "Adopt the report's Appendix A: TV index-imported editor sheets go into Na__LeLoad__STYLESHEETS in TV's order (WebViewer last); pre-editor rules into Styles__Boot, including the 3D-furniture hiding block from VV Styles__Main 30-50 once the loader adds the body class early (S10-V01); 54 and 55 into VV's CSS index; self-linking sheets (Patterns, VectorTools, DrawingRegister, the Statement page's two, ScrapbookCustom/Parametric/Specification, FloorAreas) need nothing. VV cannot reproduce TV's cascade for 54/55 (TV imports them after the editor sheets; VV's loader-linked sheets always land after the whole index): namespaced selectors make this low-risk, but the 55 slice must check any field carrying both .na-spellcheck-field and an editor class that sets white-space, outline, cursor or user-select. Enforce with WP-S10-05.",
+   "reason": "Adds the Boot home for the hiding block and the unavoidable cascade-order difference."
+  },
+  {
+   "id": "S10-F18",
+   "field": "detail",
+   "new_value": "(1) Ledger row ~1189 says VV has no service worker: wrong - and 18 more rows carry the same premise (340, 377, 384, 394, 404, 412, 420, 429, 439, 446, 452, 505, 522, 532, 542, 569, 615, 849), while the ledger's own section at 135-173 already says the premise is wrong; row 236 skipped the PWA unsaved-work flag because of it. (2) The fold section lacks the v2.158 strip as a pending return trip. (3) 'Async confirm dialog' is marked back-ported, but TV has no markup or CSS for it. (4) VV v2.70.0 edits to ModeController and Loader are unlogged and unversioned. (5) VV TabStrip and Toolbar port notes say 'new / Lantern Designer'; VV Toolbar repeats 1.8.0 and 1.9.0. (6) TV LoadingVeil 'Back-port: PENDING' is stale; TV ModeController 'Parity: verbatim' is untrue. (7) TV Toolbar 'Parity: verbatim' is also untrue. (8) Ledger lines 44-49 say VV has no Verify harness equivalents; VV has both. (9) Ledger row 1240 says VV 'carries only the --over-model veil'; VV has no --over-model rule (its base rule is that geometry). (10) TV TabStrip DESCRIPTION says the canvas shifts down with the strip; TV's canvas does not (S10-F20).",
+   "reason": "Verifier found 18 more stale ledger rows and four further stale records."
+  },
+  {
+   "id": "S10-F19",
+   "field": "evidence",
+   "new_value": "VV index.html 1322-1333 (markup); VV DropdownAndToast 1375-1462 is the Confirm Dialog region (1464-1509 is VV's VV-only 'Navigation Mode Selector Buttons' region, .na-navmode__btn, absent in TV); the markup's Cancel button uses .na-dropdown-menu__action--secondary, defined in VV DropdownAndToast 383-402 and absent in TV (TV has only .na-dropdown-menu__action at 480 and :hover at 493); TV ConfirmDialog 85-88, 143-147; grep TV Index.html and TV CSS for naConfirmDialog / na-confirm-dialog = none; 12 TV importers (11 LE + PresentationMode DevMenu Modal).",
+   "reason": "The cited range 1376-1509 over-included a VV-only region and the secondary-button dependency was missed."
+  },
+  {
+   "id": "S10-F19",
+   "field": "recommendation",
+   "new_value": "Back-port to TV: VV's markup into TV Index.html after #naToastNotification (TV line 798); the Confirm Dialog CSS region only (VV DropdownAndToast 1375-1462, not 1464-1509); and VV's .na-dropdown-menu__action--secondary rules (383-402: base, :hover, :active, .is-loading) placed before TV's .na-dropdown-menu__action:hover (line 493) so the cascade matches VV's - otherwise TV's Cancel renders as a dark primary button. Bump TV's own PWA token; reopen the ledger row until done (WP-S10-07R).",
+   "reason": "Correct scope for the TV-side change."
+  },
+  {
+   "id": "S10-F24",
+   "field": "recommendation",
+   "new_value": "Keep the folder and files. Keep Boot's tab-strip region identical to TV Styles__Main's (gate in WP-S10-05); put the Drawings menu rules, the boot veil and (S10-V01) the 3D-furniture hiding block in Boot - TV keeps that block in its start-up Styles__Main, so moving it to Boot restores TV's timing rather than diverging.",
+   "reason": "Boot's contents must include the hiding block for the early body class to work."
+  },
+  {
+   "id": "S10-F25",
+   "field": "vv_adaptation",
+   "new_value": "Module body verbatim, but its header's SCHEMA REF names NA's na-project-portal path; point it at VV's own project structure (VaApps/Projects/{folderId}/...). The module fetches ./Na__PubDoc__Config__.json beside itself, so VV's 52 folder needs its own PubDoc config (VV fetch paths, from the publishing slice) carrying the PubDoc__Loading__Config block; without it the built-in floor values apply.",
+   "reason": "NA-specific header content and a sibling config file the port must supply."
+  },
+  {
+   "id": "S10-F27",
+   "field": "evidence",
+   "new_value": "TVM/76 SystemLogic 1.0.0 and Prompt 1.2.0 headers; VVM/60 BrowserSupportLogic and UiInteractionLogic (unversioned, created 20-Mar-2026); TV devlog v2.8.0 line 16413. A 60 -> 76 renumber breaks exactly two VV importers: index.html line 1383 (Na__Feature__FullScreenMode__Initialize) and 03/Na__CoreUi__Styles__Index__.css line 69; neither is in the WCP precache list.",
+   "reason": "Importers of the renumbered folder were not named."
+  },
+  {
+   "id": "S10-F28",
+   "field": "detail",
+   "new_value": "27 (3D right-click: isolate floor, hide element, doors; Orbit and mouse only), 75 (User Guide overlay, no drawing content), 70 Cache & Storage dev panel (bust caches / full reset via TV's registrar), and TV's own SceneInspector stylesheet (VV keeps the rules in DropdownAndToast 970-1242). None touch the editor (no LE references, re-checked). VV slots 27, 75, 76 are free; VV's 62 is EmailWorkers, so TV's 62 AppInstallability could never share that number. The Scene Inspector split is not a pure file move: TV's sheet adds instance-count styling (.na-scene-inspector__count--instances) and sizes the tree without the strip height, where VV's region includes it.",
+   "reason": "'Same rules, file-structure only' was slightly overstated."
+  },
+  {
+   "id": "S10-F30",
+   "field": "evidence",
+   "new_value": "TV TabStrip 542-605; TV ModeController 611-617 and 707; TVM/03 KeyScope 1.1.0; LE/31 DocumentKeys 1.1.0. Lines containing :focus-visible across 03__Style__AppStylesheets and every LE stylesheet: TV 17, VV 9 (B12's figures; the 16 / 8 quoted before were a miscount). A press on the stage taking the keyboard back from a panel control (TV Controls__Pc 1.4.0, v2.115.0) is also missing in VV (1.1.0) and is owned by slice S03b.",
+   "reason": "Count inconsistent with B12; cross-reference added."
+  },
+  {
+   "id": "S10-F35",
+   "field": "evidence",
+   "new_value": "tree_tv 80__Testing (102 entries; 91 Na__Test__ files, 62 of them .mjs) vs tree_vv (30); no TV test references TabStrip, LoadingVeil, AppHeader or na-layout-editor--active (grep); VV ledger lines 44-49.",
+   "reason": "'About 70' test files was an undercount."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S10-V01",
+   "category": "wiring",
+   "severity": "high",
+   "action": "update_wiring",
+   "title": "VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil",
+   "detail": "WP-S10-03 and S10-F04 have VV's loader add body.na-layout-editor--active at the click, before the import, and claim the 3D furniture is hidden at the click. The rule that hides it (body.na-layout-editor--active .na-dropdown-menu, #naBreadcrumbNav, #naPresentationCarousel, #naNavToolbar, #naNavHelpPanel, .na-export-overlay, .na-projected-linework, .controls-instructions-panel { display:none !important }) is in VV LE/10/Styles__Main__.css 30-50, which the loader only starts linking inside Na__LeLoad__Run (Loader 325, in parallel with the import). Until that sheet has downloaded, the Tools & Settings menu (z 1001), nav toolbar (1002), help panel (1003) and scene carousel (1004) sit above a z 600 boot veil, and the Tools menu (top = header + strip + 10px) stays put while the header folds away from it - a visible glitch in exactly the animation Adam named. In TV the same block is in Styles__Main, which TV imports at start-up, so it is in force at the click. Also: the 3D canvas stays painted until Enter hides it, so a 94 percent veil would show the model through it.",
+   "recommendation": "As part of WP-S10-03R and before the loader adds the class early: move the block verbatim (comment included) from VV Styles__Main to Styles__Boot and delete it from Styles__Main; make the --boot veil opaque (#ffffff, no blur). Optionally add the VV-only .na-vs-tl selector (S10-V03) to the same rule as a recorded divergence.",
+   "evidence": "VV Styles__Main 30-50; VV Styles__Boot 1-273 (no such rule); VV Loader 125-134, 264-278, 320-325; z-indexes: VV DropdownAndToast 42 (1001), NavigationToolbar 41 (1002), ControlsHelpPanel 36 (1003), SceneCarousel 33 (1004); TV Styles__Main 42-51 imported at start-up by TV CSS index 162; VV ModeController 517-519 (class added and canvas hidden only inside Enter)",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "vv_adaptation": "A VV-only home (Boot, loaded at start-up) for a TV rule; identical selectors and effect, TV's timing restored.",
+   "depends_on": [
+    "S10-F04"
+   ],
+   "est_lines": 30
+  },
+  {
+   "id": "S10-V02",
+   "category": "decision",
+   "severity": "high",
+   "action": "needs_decision",
+   "title": "The compact tab strip would remove VV's only way to reorder sheets",
+   "detail": "TV TabStrip 2.0.0 drops drag-to-reorder and rename from the strip because the Document Register and the Sheet panel do both. In TV, reordering exists only in the register (Register__Editor BindRowDrag line 248; Register__Numbering writes Sheet__Order line 91); no other TV module calls Na__LeModel__ReorderSheet. VV has no Document Register; VV's Sheet panel renames (Panel__Sheet 146, 285) but has no order control; VV's Dev section offers Create, Duplicate and Delete only (DevMenu__Controls 101-103, 306). VV's only caller of Na__LeLoad__ReorderSheet is the tab strip's drag (TabStrip 320-328). WP-S10-04's risk line assumed reorder stays reachable from the Sheet panel and Dev section; it does not.",
+   "recommendation": "Decide D-S10-12 before WP-S10-04R. Recommended: keep drag-to-reorder on the Drawings menu rows in VV (localhost, editable) as a recorded divergence, removed when 51__Feature__DrawingRegister is ported. Alternatives: Move earlier / Move later in the Dev section's sheet list (existing Na__LeLoad__ReorderSheet), or port the register first.",
+   "evidence": "TV Register__Editor 246-290, Register__Numbering 91; grep TVM for Na__LeModel__ReorderSheet = SheetModel only; VV Panel__Sheet 146/285; VV DevMenu__Controls 101-103, 306; VV TabStrip 316-330; TV devlog v2.158.0 line 1109",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js"
+   ],
+   "depends_on": [
+    "S10-F03",
+    "D-S10-12",
+    "S07a DrawingRegister slice"
+   ]
+  },
+  {
+   "id": "S10-V03",
+   "category": "vv_only",
+   "severity": "low",
+   "action": "update_wiring",
+   "title": "VV-only Video Studio timeline stays on screen over drawing tabs",
+   "detail": "The Video Studio timeline .na-vs-tl (fixed, bottom, z 1000) is shown whenever a video path is selected (Timeline__Controls 807-820) and neither listens for the editor nor appears in the drawing-tab hiding rule, so with a path open a drawing tab shows the timeline over the editor host (z 600). TV has no Video Studio, so this is a VV-only interplay; it is a localhost Dev feature, so clients do not see it.",
+   "recommendation": "Add body.na-layout-editor--active .na-vs-tl to VV's hiding rule when it moves to Styles__Boot (S10-V01), recorded in the ledger as a VV-only selector; or have the timeline close on the editor's mode event.",
+   "evidence": "VV 31__System__VideoStudio/Na__VideoStudio__Timeline__Stylesheet__.css 51-76 (z 1000); Na__VideoStudio__Timeline__Controls.js 795-825; VV Styles__Main 41-48 (selector list without it)",
+   "tv_paths": [],
+   "vv_paths": [
+    "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Stylesheet__.css",
+    "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js"
+   ],
+   "depends_on": [
+    "S10-V01"
+   ],
+   "est_lines": 2
+  },
+  {
+   "id": "S10-V04",
+   "category": "vv_only",
+   "severity": "low",
+   "action": "no_action",
+   "title": "Coverage: VV install-guide.html and the export overlay helper carry no drawing-editor content",
+   "detail": "Not covered by the survey: VV-only install-guide.html (858 lines, a beginner's PWA install guide; no na-le- or editor references) and 03__AppUtils/Na__AppUtils__LoadingOverlay__.js, which drives #naLayoutLoadingOverlay for image export, Video Studio, the thumbnail bake and render layers (the --opaque and __status--error classes S10-F29 keeps). Neither affects the Layout Editor experience.",
+   "recommendation": "No action; record as Vale-only.",
+   "evidence": "tree_vv.tsv (install-guide.html 858 lines); grep install-guide.html for na-layout-editor / na-le- = 0; importers of Na__AppUtils__LoadingOverlay__: 30 ImageExport, 31 VideoStudio, 42 ThumbnailBake, 71 ExportRenderLayers",
+   "tv_paths": [],
+   "vv_paths": [
+    "install-guide.html",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__LoadingOverlay__.js"
+   ]
+  },
+  {
+   "id": "S10-V05",
+   "category": "wiring",
+   "severity": "medium",
+   "action": "port_adapted",
+   "title": "Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install",
+   "detail": "VV runs under Whitecardopedia's registrar (VV index.html 44). Its controllerchange bridge (registrar 110-150) reloads the page once per session whenever a worker takes control, deferring only for Na__LoadWatchdog__IsLoadingActive. TV's registrar 1.1.0 (19-Sep) also waits while the Layout Editor has unsaved work (window.TrueVision__Pwa__HasUnsavedWork, published by AutoSave); 1.2.0 (19-Sep, TV v2.75.0) does not reload on a FIRST install, so a first visit (and the first launch of an installed iPad icon) does not load the model twice; 1.3.0 (29-Sep) registers with updateViaCache 'none' so a token bump is seen at once. The WCP registrar has none of the three (it registers with { scope } only, line 195; its log stops at 1.2.0 of 26-Jun). VV deliberately did not publish an unsaved flag on the belief that it has no worker (ledger row 236; VV AutoSave 48-53). Consequences: every first VV visit loads the model, reloads and loads it again; and any token bump (S10-F17) reloads open VV pages over unsaved sheets, under the close guard's leave-site question.",
+   "recommendation": "Port the three TV registrar changes into the WCP registrar (Vale's own infrastructure; WP-S10-15) and publish a neutral window.Na__Pwa__HasUnsavedWork from VV AutoSave (Na__LeAuto__HasUnsavedWork is already exported; the name per S03b D-S03b-07). Land before any token bump under D-S10-13. Test Whitecardopedia's own pages as well, since the registrar is shared.",
+   "evidence": "WCP Whitecardopedia__Pwa__ServiceWorker__Registrar__.js 28-46 (log), 110-150 (bridge), 195 (register); TV TrueVision__Pwa__ServiceWorker__Registrar__.js 36-62 (log 1.1.0-1.3.0), 125-200; TV AutoSave PublishUnsavedFlag ~560-570; VV AutoSave 48-53, 345, 433; ledger 135-173 and row 236; TV devlog v2.75.0 lines 9189, 9201",
+   "tv_paths": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "vv_paths": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "tv_version": "Registrar 1.3.0",
+   "vv_version": "WCP Registrar 1.2.0 (26-Jun-2026)",
+   "vv_adaptation": "Neutral flag name rather than TV's TrueVision__ name; registrar stays Whitecardopedia's and keeps its load-watchdog check.",
+   "depends_on": [
+    "D-S03b-07",
+    "D-S10-13"
+   ],
+   "est_lines": 60
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S10-12",
+   "question": "The compact strip removes drag-to-reorder from the tabs. TV reorders sheets only from its Document Register; VV has no register, its Sheet panel only renames and its Dev section only creates, duplicates and deletes. How should VV reorder sheets after the compact strip?",
+   "options": "(a) Keep drag-to-reorder on the Drawings menu rows in VV (localhost, editable) as a recorded divergence until the register is ported. (b) Add Move earlier / Move later to the Dev section's sheet list. (c) Port the Document Register (51__Feature__DrawingRegister, slice S07a) before the compact strip.",
+   "recommendation": "(a): smallest change, nothing lost, and it disappears with the register port; (c) if the register is due first anyway.",
+   "blocks": [
+    "WP-S10-04R"
+   ]
+  },
+  {
+   "id": "D-S10-13",
+   "question": "Bump the shared Whitecardopedia service-worker token for the VV releases this work produces? The ledger (89-94, 159-173) records it as Adam's call - the token also names the models and thumbnails caches, so a bump re-downloads every Vale client's models - raised 20-Sep and not changed.",
+   "options": "(a) First give the models and thumbnails buckets a token of their own (WCP logic 229-233) and land WP-S10-15, then bump the shell token once per VV deploy wave. (b) Bump as it is, once per deploy wave, accepting the model re-download and a reload of open pages. (c) Never bump; rely on stale-while-revalidate and a second visit.",
+   "recommendation": "(a). Until Adam answers, no package bumps the token; packages list the WCP file as a hot file only.",
+   "blocks": [
+    "the first shared-token bump of this programme"
+   ]
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S10-03",
+   "reason": "Superseded by WP-S10-03R. As scoped, the early body class would show the 3D menus, nav toolbar, help panel and carousel over the boot veil because their hiding rule is in the lazily linked VV Styles__Main (S10-V01); the 94 percent veil would show the live model through it; Enter returning false was unhandled; and its 'Specification from the 3D view' acceptance item cannot be tested before WP-S10-04."
+  },
+  {
+   "id": "WP-S10-04",
+   "reason": "Superseded by WP-S10-04R. Its risk line assumes sheet reorder stays reachable from the Sheet panel and Dev section, but neither has a reorder control in VV (S10-V02), so the port would remove VV's only reorder path; it also misses the async CreateSheet of the '+ New sheet' row and an unneeded Ready() wait."
+  },
+  {
+   "id": "WP-S10-07",
+   "reason": "Superseded by WP-S10-07R. The cited CSS range (VV DropdownAndToast 1376-1509) includes VV's VV-only Navigation Mode Selector region (1464-1509), and the scope misses .na-dropdown-menu__action--secondary (VV 383-402), which TV lacks and the dialog's Cancel button needs."
+  },
+  {
+   "id": "WP-S10-08",
+   "reason": "Superseded by WP-S10-08R. It bumps the shared token on its own, which the ledger (159-173) records as Adam's decision because a bump evicts every Vale app's caches, models included; and it corrects one stale 'no service worker' ledger row where there are 19."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S10-03R",
+   "title": "First-open veil and fold, exactly as TV (verifier replacement for WP-S10-03)",
+   "scope": "(1) Move the 3D-furniture hiding block (VV LE/10/Styles__Main__.css 30-50, comment included) verbatim into LE/01/Styles__Boot__.css and delete it from Styles__Main. (2) Port TV LoadingVeil 1.1.0 whole; keep VV's DrawingSettled export; add an 'immediate' option to FirstOpen; rewrite VV LoadingVeil's PORT NOTE divergence (57-61). (3) Restyle Na__LeLoadScreen's loading state as .na-le-veil.na-le-veil--boot: fixed; top calc(var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight)); left, right, bottom 0; z-index 600; opaque #ffffff with no blur; and body.na-layout-editor--active .na-le-veil--boot { top: var(--Vale_LayoutTabStripHeight) }. TV headline 'Your Drawings Are Loading', Title Case statuses; error state unchanged. (4) Loader: after the IsAvailable check and only for a non-quiet press that will enter, add na-layout-editor--active before the import; remove it on load failure, when the config has the editor off, when Na__LeMode__Enter returns false, and on the error state's Back to 3D Model; hide the boot veil straight after action(editor) with no drawing wait. (5) ModeController: PreloadMetrics returns its promise; call FirstOpen(host, {specification, textMetrics, viewportCount, immediate}) from Enter when not a viewer and not Na__LeMode__Quiet (introduce the flag here, false until WP-S10-04R's EnterUnder sets it); WaitForFirstDrawing resolves at once off the sheet view. (6) Log ModeController, Loader, LoadingScreen and LoadingVeil entries; update ledger row 1241.",
+   "depends_on": [
+    "WP-S10-01",
+    "D-S10-03"
+   ],
+   "size": "M",
+   "acceptance": [
+    "Cold first press of a drawing tab: the Tools & Settings menu, nav toolbar, help panel and carousel vanish AT THE CLICK",
+    "Strip and header stay visible; the header holds 1 s then glides 1 s with the strip welded to it, over an opaque white cover below the strip with the spinner and 'Your Drawings Are Loading'; no 3D model visible through it",
+    "The cover hands over to the in-host veil with no blink and lifts only when every viewport img is decoded",
+    "Editor already loaded (via a Dev action): the in-host veil after 550 ms only if still drawing",
+    "Forced load failure: full-screen error state; Back to 3D Model returns with the header down and no body class",
+    "Layout Mode switched off during the load: no body class left behind",
+    "Leaving still shows 'Loading Your 3D Model'",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "hot_files": [
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js (note only; bump per D-S10-13)"
+   ],
+   "risk": "Medium: two covers in sequence (same look and geometry, immediate hand-over); every failure path must drop the early body class.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S10-04R",
+   "title": "Compact tab strip (TV TabStrip 2.0.0) with the Drawings menu (verifier replacement for WP-S10-04)",
+   "scope": "Everything in WP-S10-04 (TV TabStrip 2.0.0 whole with VV seams; TV's tab-strip CSS region into Styles__Boot, menu rules in, rename rules out; facade exports VIEW_REGISTER, VIEW_STATEMENT, OpenRegister, OpenStatements (stubs until the features land) and IsSitePlanSheet (false in VV) with CheckNames entries; ModeController EnterUnder + Quiet with OpenSpecification through EnterUnder; TV labels in VV's LE config with equal fallbacks; --specification class) plus: (a) the D-S10-12 reorder path - recommended, keep VV's drag-to-reorder on the Drawings menu rows (localhost, editable) as a recorded divergence until the Document Register is ported; (b) the '+ New sheet' row awaits Na__LeLoad__CreateSheet (a promise in VV) before Na__LeLoad__Enter; (c) drop TV's Na__LeMode__Ready().then(Render) - VV renders at once and re-renders on Na__LeLoad__STATE_EVENT, which stays wired; (d) a cold document-tab press gets the loader's early body class but no drawing wait (WP-S10-03R).",
+   "depends_on": [
+    "WP-S10-03R",
+    "D-S10-01",
+    "D-S10-02",
+    "D-S10-12",
+    "S03a ModeController work"
+   ],
+   "size": "L",
+   "acceptance": [
+    "From the 3D view the strip reads 3D Model | Drawings (caret) | Specification (+ Document Register | Design Statements when present), all tabs at the same weight",
+    "Drawings opens a menu under the tab: every sheet as 'D0n - Name' in order, the whole number on hover, the open sheet bold and focused, and on localhost '+ New sheet' after a rule; Escape shuts it and refocuses the tab; Up/Down/Home/End walk rows; an outside press or any document change shuts it",
+    "Specification pressed from the 3D view folds the bar and shows the page with no drawing veil and no loading screen held for a sheet nobody asked for, cold and warm",
+    "A sheet can still be reordered by the path D-S10-12 chose",
+    "'+ New sheet' on a cold editor creates one sheet and opens it",
+    "At 375 px the end arrows appear; next from 3D Model opens a drawing without the menu",
+    "Tab labels do not change when the editor finishes loading",
+    "WP-S10-05 gate: Styles__Boot tab-strip region equals TV Styles__Main's region",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass, and a cold load fetches no editor module before a tab is pressed"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js",
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js (note only; bump per D-S10-13)"
+   ],
+   "risk": "Medium-high: a static import of an editor module in the strip would put the whole editor back on start-up; sheet reordering must survive (D-S10-12).",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S10-07R",
+   "title": "Confirm dialog to TrueVision, TV-side (verifier replacement for WP-S10-07)",
+   "scope": "VV's #naConfirmDialog markup (VV index.html 1322-1333) into TV Index.html after #naToastNotification (TV line 798); VV DropdownAndToast 1375-1462 (the Confirm Dialog region only - not 1464-1509, VV's VV-only Navigation Mode Selector region) into TV DropdownAndToast or a new TV sheet imported from TV's index; VV DropdownAndToast 383-402 (.na-dropdown-menu__action--secondary, :hover, :active, .is-loading) into TV DropdownAndToast before TV's .na-dropdown-menu__action:hover (line 493); TV devlog entry; TV's own PWA token bump; ledger 'Async confirm dialog' row re-closed with the date.",
+   "depends_on": [
+    "D-S10-09"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Deleting a sheet from TV's Dev section, deleting a specification note and the register's destructive actions show the styled modal - light secondary Cancel, red destructive Confirm - identical to VV's",
+    "Escape and the backdrop cancel",
+    "window.confirm is never reached (console check)",
+    "No .na-navmode__btn rules arrive in TV",
+    "TV Na__Verify__Exports__.mjs passes"
+   ],
+   "files_tv": [
+    "Index.html",
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "Index.html (TV)",
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js (TV)",
+    "ValeVision__PARITY__TrueVisionLedger__.md (VV)"
+   ],
+   "risk": "Low; TV-side. Check the modal's z 9999 against TV's register and statement pages.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S10-08R",
+   "title": "Ledger, headers and service-worker records (verifier replacement for WP-S10-08)",
+   "scope": "Records only, no token bump (D-S10-13). Ledger: rewrite the 19 rows that say VV has no PWA worker / no service worker (340, 377, 384, 394, 404, 412, 420, 429, 439, 446, 452, 505, 522, 532, 542, 569, 615, 849, 1189); reopen row 236 (PWA unsaved-work flag) pending WP-S10-15 / D-S03b-07; apply Appendix B items 2-10 (fold section return trip, confirm-dialog row, row 1240 wording, lines 44-49 Verify harnesses). VV headers: ModeController and Loader entries for the v2.70.0 veil wiring; TabStrip and Toolbar PORT NOTEs (adapted from TrueVision3D; divergences = loader facade, Layout Mode gate); Toolbar's duplicate 1.8.0 / 1.9.0 entries. TV headers, comment-only: LoadingVeil ('Back-port: PENDING' stale), ModeController and Toolbar ('Parity: verbatim' stale), TabStrip DESCRIPTION's canvas line. Serialise behind WP-S10-03R and WP-S10-04R, or fold the header lines into them.",
+   "depends_on": [
+    "WP-S10-03R",
+    "WP-S10-04R"
+   ],
+   "size": "S",
+   "acceptance": [
+    "No ledger row still says VV has no service worker",
+    "Appendix B items corrected",
+    "git diff shows comment and header lines only in the edited JS files"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "files_vv": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js"
+   ],
+   "hot_files": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "Low; collides with any package editing the same headers, hence the serialisation.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S10-15",
+   "title": "Shared Whitecardopedia registrar brought up to TV's registrar 1.1.0-1.3.0 (verifier, new)",
+   "scope": "In ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js (Vale's own infrastructure): port TV registrar 1.2.0 (sample navigator.serviceWorker.controller before registering; a first claim is not an update and does not reload), 1.3.0 (register(url, { scope, updateViaCache: 'none' })) and 1.1.0's hold-off (the idle check also waits while the Layout Editor has unsaved work) through a neutral window.Na__Pwa__HasUnsavedWork published by VV AutoSave (Na__LeAuto__HasUnsavedWork already exported; name per D-S03b-07). Keep the existing Na__LoadWatchdog__IsLoadingActive check. Log the registrar version; record in the VV ledger and devlog.",
+   "depends_on": [
+    "D-S03b-07"
+   ],
+   "size": "S",
+   "acceptance": [
+    "A fresh origin's first load registers the worker and does NOT reload: the model loads once",
+    "A second controllerchange on a controlled page reloads once",
+    "With unsaved sheets open the reload waits, and gives up after the registrar's timeout",
+    "Whitecardopedia's own pages behave as before",
+    "Must be live before the first shared-token bump under D-S10-13"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "files_vv": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js"
+   ],
+   "hot_files": [
+    "../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js (only if D-S10-13 bumps in the same release)",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "Low-medium: the registrar is shared with Whitecardopedia, so both apps must be tested.",
+   "tests_to_port": []
+  }
+ ],
+ "coverage_gaps_closed": [
+  "Load timing of VV's 3D-furniture hiding rule (lazily linked Styles__Main) versus the proposed early body class - S10-V01",
+  "Sheet reordering after the compact strip (VV has no register; Sheet panel and Dev section cannot reorder) - S10-V02, D-S10-12",
+  "VV-only Video Studio timeline over drawing tabs - S10-V03",
+  "VV install-guide.html and 03__AppUtils/Na__AppUtils__LoadingOverlay__.js - S10-V04 (no action)",
+  "Shared Whitecardopedia registrar versus TV registrar 1.1.0-1.3.0 (first-install double load, reload over unsaved work, updateViaCache) - S10-V05, WP-S10-15",
+  "Ledger's own 20-Sep record that the token bump is Adam's call, and 19 stale 'no service worker' rows - F17, D-S10-13, WP-S10-08R",
+  "Confirm-dialog CSS range and the missing .na-dropdown-menu__action--secondary rules in TV - F19, WP-S10-07R",
+  "Row-level context-menu comparison (container menus already in VV) - F13",
+  "Second colour-palette attach point in VV 44 PlanAnnotations toolbar - F12",
+  "Cascade order of 54/55 sheets versus loader-linked editor sheets - F16",
+  "Remaining Styles__Main rules outside the tab strip and Dev section (identical) and the Scene Carousel diff (Presentation Dev editor only)"
+ ],
+ "notes": "The survey was strong: the fold analysis is exact (54 declarations each, only the narrow-screen title differs, confirmed with comments stripped), and about 60 spot-checked line, version and devlog references were right or within a line or two. Nothing was refuted outright. Seven corrections matter for the swarm. (1) WP-S10-03's early body class would have shown the Tools menu, nav toolbar, help panel and carousel over the boot veil, because their hiding rule is in VV's lazily linked Styles__Main. That glitch lands in exactly the animation Adam named; the block must move to Styles__Boot (S10-V01). (2) The compact strip removes VV's only way to reorder sheets: TV reorders only from its Document Register, which VV lacks (S10-V02, D-S10-12). (3) F17 told every package to bump the shared Whitecardopedia token. The VV ledger (159-173) records that bump as Adam's call: it evicts every Vale app's caches, models included, and he declined it on 20-Sep. F17 is now needs_decision (D-S10-13). (4) Related and unowned until now: VV's shared registrar lacks TV registrar 1.1.0-1.3.0, so every first VV visit loads the model twice and a bump reloads pages over unsaved sheets (S10-V05, WP-S10-15). (5) The confirm-dialog back-port range took in a VV-only region and missed the secondary-button CSS. (6) Container-aware context menus were wrongly listed as a VV gap. (7) Small count and line fixes. WP-S10-03, -04, -07 and -08 are replaced by R versions, and WP-S10-15 is new. Things to watch: the ledger is a hot file for every slice; run the packages in the order 01, 03R, 04R; D-S10-12 and D-S10-13 need Adam; nothing was checked in a browser. F15 was only partly verified: its regions and the osnap move are confirmed, its individual rules are not. Edited report: C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S10__Broader_UI_Parity.md (the original is backed up in verify_s10)."
+}

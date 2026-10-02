@@ -1,0 +1,1659 @@
+{
+ "slice_id": "S02b",
+ "report_path": "C:\\Users\\adamw\\AppData\\Local\\Temp\\claude\\C--Users-adamw-AppData-Roaming-SketchUp-SketchUp-2026-SketchUp-Plugins\\a1674149-918e-4d62-a79a-e7961f105155\\scratchpad\\parity\\slices\\S02b__Annotations_Dimensions_DepthFog_ProjectedLinework.md",
+ "summary": "Plan annotations and plan dimensions already do the same thing in both apps. Annotations differ only by TV Toolbar 1.1.0, which hands the dimension colour to the Colour Palette (TV v2.126.0) and so waits for the 54 port. Dimensions differ only structurally: VV split out ConfigState and EditorPreview; TV copied those two files but never wired them, so TV now runs two copies of the config and its Layout Editor MarkupBridge reads defaults from a ConfigState that is never loaded. VV's split is the target and the fix belongs on TV's side. The swarm must not copy TV's PlanDimensions Data or Editor onto VV.\n\nProjected linework (folder 50) is where most of the work is. 11 of 25 shared files have no real code difference, and VV already has owner tags, linetype annotation, the content stamp and ForgetCollections. What VV lacks is every TV linework change since v2.37.0:\n- the 3D-matching rules (FlushJoins, SeamsOcclude, LineworkFirst), signed off in TV, with the v2.159.0 flush tolerance;\n- door pose (v2.42.0 and v2.48.1), storeys (v2.105.0) and the hide-swings hit test (v2.140.0);\n- nested LineworkModifier owners (20-Sep, which has no TV devlog entry);\n- the design-phase seams.\n\nThat means 3 TV-only modules (DoorPose, FlushJoins, Storeys) plus 12 changed files and the config. One constraint is critical. DoorPose imports TV door module 1.9.0 exports and FindDoorGroups, which VV does not have, and Projector 1.5.0 calls DoorPose on every collection. So VV's 25 door module must be upgraded first, keeping VV's Video Studio exports, or the whole drawing module graph fails to link. Persistence keeps VV's folder-id resolution (DIV-4). No worker or server change is needed. The new BuildToken forces a one-off re-bake of every VV project.\n\nThe depth fog (TV 49, 8 files) should go into VV folder 49 under the same number. Its pure modules carry over unchanged. Three things must be adapted:\n- one fog call inside VV's ComposerPreset RenderFrame, which also covers VV thumbnails, plus an export hook (DIV-1);\n- a depth-only section-cap render from VV's CrossSectionView (DIV-2);\n- the Dev row, which needs DevRowShell.\n\nVV's 29 FogPlaneSystem is a separate 3D-view feature, switched off in drawings, and does not conflict with the depth fog.\n\nTwo related gaps sit in other slices: the orthographic fat-line depth bias (15) and the supersampler premultiplied clamp (05). Several records are wrong. The ledger marks the dimension split as closed, files the Lantern Designer items as TV work, and has no rows for any TV linework change since v2.37.0. TV's back-port markers are stale, the TV v2.159.0 devlog wrongly says VV has FlushJoins, and the two apps use clashing version numbers for the same files.",
+ "findings": [
+  {
+   "id": "S02b-F01",
+   "category": "folder",
+   "title": "Annotation/dimension folders: VV 44/45 vs TV 43/44",
+   "detail": "Both apps have the same 8 annotation and 15 dimension file names; only the folder numbers differ (VV n+1 = TV n). The realign plan section 4.1 fixed this map for the whole re-alignment, and every import in both apps already uses it. Renumbering would touch every importer (FloorPlan/Elevation mode controllers, MarkupMount, MarkupBridge, Toolbar) for no functional gain.",
+   "recommendation": "Keep VV 44__System__PlanAnnotations and 45__System__PlanDimensions. Record the mapping in the ledger, and translate folder numbers when porting hunks.",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/43__System__PlanAnnotations",
+    "02__Src__AppModules/44__System__PlanDimensions"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/44__System__PlanAnnotations",
+    "02__Src__AppModules/45__System__PlanDimensions"
+   ],
+   "evidence": "TV/TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md:304-321 (folder map 'Fixed for the whole of this work')"
+  },
+  {
+   "id": "S02b-F02",
+   "category": "folder",
+   "title": "No VV folder for TV 49__System__ElevationDepthFog; the n+1 shift cannot extend past 47",
+   "detail": "TV adds 47 DrawingPlanes, 48 CrossSectionViews and 49 ElevationDepthFog. VV has 47 NorthDirection and 50 ProjectedLinework, so only 48 and 49 are free and the n+1 shift would collide at 50. The 50/51 precedent (same number in both apps) avoids that. Na__Test__ElevationDepthFog__ reads 02__Src__AppModules/49__System__ElevationDepthFog by path.",
+   "recommendation": "Create VV 02__Src__AppModules/49__System__ElevationDepthFog with TV's file names and namespaces unchanged. Apply the same 'same number above 47' rule to 47 and 48 in their slices.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog"
+   ],
+   "depends_on": [
+    "D-S02b-04"
+   ],
+   "evidence": "VV 02__Src__AppModules listing (40-47, 50, 51; 48 and 49 free); TV listing (47, 48, 49); realign plan :320 (50/51 shared numbers)"
+  },
+  {
+   "id": "S02b-F03",
+   "category": "vv_only",
+   "title": "VV 29__System__FogPlaneSystem is a 3D-view fog, not a drawing fog; no overlap with the depth fog",
+   "detail": "Two face-picked world planes, a fall-off, a camera forcefield, Alt+Shift+F, and a top-level FogPlane__Config saved through R2SaveProjectJson. It is a composer ShaderPass that replaced VV's old orbit-anchored radial fog (TV still has the radial one). ComposerPreset turns it off for every drawing and back on afterwards. Namespaces (Na__FogPlane vs Na__ElevFog), storage and data are all different. Its file names lack the trailing __ (legacy).",
+   "recommendation": "Keep it as a VV-only 3D feature. Do not reuse it for drawings - it cannot fade the fat linework or the projected vectors. Port TV's 49 depth fog beside it.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "vv_paths": [
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__PlaneCreation.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__CameraConstraint.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js",
+    "02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__Config.json"
+   ],
+   "evidence": "VV 42/Na__DrawView__ComposerPreset__.js:290,301,341 (fog plane off in drawings); VV 29/Na__FogPlaneSystem__FogShaderEffect.js header ('Replaces the old orbit-anchored radial fog')"
+  },
+  {
+   "id": "S02b-F04",
+   "category": "module_naming",
+   "title": "File names and namespaces identical across 43/44/49/50; only identity text differs",
+   "detail": "Na__PlanAnnotations__*, Na__PlanDimensions__*, Na__ProjectedLinework__* and Na__ElevationDepthFog__* file names, and the namespaces Na__PlanAnno, Na__PlanDim, Na__Pl* and Na__ElevFog*, match exactly. The only differences are the console prefix ([TrueVision3D] vs [ValeVision3D]), header title lines, and identity strings such as TrueVision__ vs ValeVision__ category and owner keys.",
+   "recommendation": "No renames. Keep VV's identity seams (console prefix, header titles, ValeVision__ category and owner keys) when porting.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "Normalised diffs (app names and folder numbers normalised) show no symbol-name differences in any shared file"
+  },
+  {
+   "id": "S02b-F05",
+   "category": "module_naming",
+   "title": "Snapshot history file name differs: VV Na__AppUtils__SnapshotHistory__.js vs TV Na__AppUtils__SnapshotHistory.js",
+   "detail": "In each app, the History modules of both annotations and dimensions import the shared factory under that app's own file name, so these four files never copy verbatim. The file belongs to the 03__AppUtils slice. The ledger records it as a 'file name suffix' divergence.",
+   "recommendation": "Align in the 03 slice. Prefer TV renaming to the house __ suffix and updating its two History imports; VV then needs no change.",
+   "action": "needs_decision",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js",
+    "02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__History__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__History__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js",
+    "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js"
+   ],
+   "depends_on": [
+    "D-S02b-12"
+   ],
+   "evidence": "Normalised diffs of both History modules (import path only); VV ledger :986 'File name suffix'"
+  },
+  {
+   "id": "S02b-F06",
+   "category": "drift",
+   "title": "Plan annotation Toolbar 1.1.0: Colour Palette attach (TV v2.126.0)",
+   "detail": "TV's Toolbar imports Na__ColourPalette__Attach from ../54__Feature__ColourPalette/Na__ColourPalette__.js and calls it once on the dimension colour <input type=color>. VV's Toolbar is 1.0.0 and VV has no 54 folder. TV's Na__Test__ColourPalette__ fails by name on any colour input built without Attach.",
+   "recommendation": "After the ColourPalette port, add the import and the one call to VV's Toolbar. Keep VV's GetTextSetup import from 45/...ConfigState__.js, and log it as Toolbar 1.1.0 (TV numbering).",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "depends_on": [
+    "54__Feature__ColourPalette port (other slice)"
+   ],
+   "est_lines": 6,
+   "evidence": "Normalised diff +6/-3; TV Toolbar header 21-Sep-2026 1.1.0; TV devlog v2.126.0 :3982 ('Na__PlanAnnotations__Toolbar__ 1.1.0 attaches the dimension colour')"
+  },
+  {
+   "id": "S02b-F07",
+   "category": "drift",
+   "title": "Seven of eight annotation files are code-identical",
+   "detail": "Data, Editor, History, Hotkeys, Overlay, Styles and AppConfig show no normalised code difference beyond two items: the SnapshotHistory file name and the AppConfig description wording ('project.json' vs 'TrueVision__ProjectData__.json'). The rows drift_all marks 'header-only' differ only in PORT NOTE and devlog text.",
+   "recommendation": "No code action. Refresh the PORT NOTEs (Toolbar source version) in the ledger and header work package.",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/43__System__PlanAnnotations"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/44__System__PlanAnnotations"
+   ],
+   "evidence": "Normalised diff counts: Data/Editor/Hotkeys/Overlay/Styles 0/0; History 2/2 (import name); AppConfig 1/1 (description)"
+  },
+  {
+   "id": "S02b-F08",
+   "category": "drift",
+   "title": "Plan dimensions: VV's split (ConfigState, EditorPreview) is the target - do NOT copy TV's Data or Editor",
+   "detail": "Behaviour is identical in both apps. VV moved the config layer to ConfigState and the preview to EditorPreview (VV Data 662 lines, Editor 843), and nine VV consumers import from ConfigState. TV still holds both regions inline (Data 989, Editor 908, both over its 900-line budget). Copying TV's Data or Editor over VV's would create a second config state and break those nine import sites.",
+   "recommendation": "Leave VV's 15 files as they are, and mark them keep_vv_divergence in the ledger until TV is rewired (S02b-F09). Exclude Na__PlanDimensions__Data__.js and __Editor__.js from any 'copy the TV file' pass.",
+   "action": "keep_vv_divergence",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "1.0.0",
+   "evidence": "Normalised diff Data +315/-10, Editor +88/-21 (config and preview regions only); VV 45 headers 'Dimension config getters imported from Na__PlanDimensions__ConfigState__.js'"
+  },
+  {
+   "id": "S02b-F09",
+   "category": "wiring",
+   "title": "TV copied VV's dimension split but never wired it: duplicate config, orphan modules",
+   "detail": "TV's ConfigState__ and EditorPreview__ arrived on 10-Sep 'verbatim', but no TV consumer uses them. TV's mode controllers load Data's own config. TV's MarkupBridge (:259) is ConfigState's only real importer, so it reads ConfigState's never-loaded fallbacks. Today only FontFamily differs from the JSON, but any later JSON edit will not reach the Layout Editor's plan-dimension markup in TV.",
+   "recommendation": "TV-side, on Adam's approval: point all nine consumers and both mode controllers at ConfigState, have Editor use EditorPreview, and delete the duplicated regions. Both folders then become code-identical.",
+   "action": "backport_to_tv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js"
+   ],
+   "depends_on": [
+    "D-S02b-05"
+   ],
+   "est_lines": 420,
+   "evidence": "TV 44/Na__PlanDimensions__Data__.js:259,949 (Load); TV 42 FloorPlan ModeController :160-163; TV MarkupBridge :259; nothing in TV imports EditorPreview__"
+  },
+  {
+   "id": "S02b-F10",
+   "category": "ledger",
+   "title": "Ledger: dimension split recorded as closed; phase 2/4 rows do not track TV-to-VV deltas",
+   "detail": "Ledger :34-37 lists 'dimension config and preview splits' as closed, while :1220 still lists it as pending and TV is not wired. The phase 4 rows (:1011-1039, checked 09-Sep) compare VV with the Lantern Designer only. None of TV's v2.32.0, v2.37.0, v2.42.0, v2.48.1, v2.105.0, v2.140.0 or v2.159.0 linework changes has a row; only the 13-Sep and 18-Sep return trips cover part of folder 50.",
+   "recommendation": "Correct the split row to 'VV split; TV copied, not wired'. Add a return-trip section for each landed work package, with module versions and seams. Note Toolbar 1.1.0 (colour palette) under phase 2.",
+   "action": "fix_ledger",
+   "severity": "low",
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "evidence": "ValeVision__PARITY__TrueVisionLedger__.md:34-37, :982-985, :1011-1039, :1220"
+  },
+  {
+   "id": "S02b-F11",
+   "category": "drift",
+   "title": "Projected linework AppConfig: rule switches, Storeys block, LineworkModifiers block, BuildToken",
+   "detail": "TV's JSON adds Projection__HideFlushJoins (true), SeamsOcclude (true) and LineworkFirst (false) (v2.37.0); ProjectedLinework__Storeys__Config (prefix Storey__, FloorToleranceMm 500, AnnotationTokens Linetype__DoorSwings/ClearanceLines; v2.105.0); ProjectedLinework__LineworkModifiers__Config (tags 76-79 mapped to TrueVision__LineworkModifier__FineDetail/VeryFineDetail); BuildToken 2026-09-23-flush-tolerance (VV has 2026-09-18-linetype-annotation); and the DiffLabel 'Run Diff'.",
+   "recommendation": "Merge TV's JSON. Rewrite the OwnerKeys with the ValeVision__ prefix, and set a new VV BuildToken that equals the ConfigAccess fallback. Keep VV's Appearance block and VV's Main config ProjectedLinework__Config exclusion override.",
+   "action": "port_adapted",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json"
+   ],
+   "depends_on": [
+    "D-S02b-07",
+    "D-S02b-09"
+   ],
+   "est_lines": 30,
+   "evidence": "Normalised diff +25/-5; TV AppConfig :108-114 (modifier rows), :120 (token); VV AppConfig :98 (token)"
+  },
+  {
+   "id": "S02b-F12",
+   "category": "missing_module",
+   "title": "Na__ProjectedLinework__FlushJoins__.js (TV-only, 1.1.0): flush joins cut before the clip",
+   "detail": "Removes from the model's own edges every stretch where faces of one plane lie on both sides of the edge (wall bands, piers, a new wall carrying straight on from an old one). Authored linework never passes through it. In 1.1.0 (v2.159.0) both tolerances rose to 1e-4 m after RB05's 13-micron storey seam drew a line across every elevation. It imports nothing, so it is worker-safe. VV has no such file and no HideFlushJoins code, so VV elevations draw these lines today.",
+   "recommendation": "Port verbatim (header and console prefix only) together with CpuBackend 1.3.0+ and ConfigAccess 1.1.0+. Port Na__Test__FlushJoins__.test.mjs alongside it.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js"
+   ],
+   "tv_version": "1.1.0",
+   "depends_on": [
+    "S02b-F16",
+    "S02b-F17"
+   ],
+   "est_lines": 308,
+   "evidence": "TV 50/...FlushJoins__.js:99-100 (1e-4); TV devlog v2.37.0 :12893, v2.159.0 :1017; search of VVM for FlushJoin/SeamsOcclude/LineworkFirst returns nothing"
+  },
+  {
+   "id": "S02b-F13",
+   "category": "drift",
+   "title": "ClipKernel 1.2.0: SeamsOcclude",
+   "detail": "With settings.SeamsOcclude on, a triangle side lying exactly along the edge counts as the crossing. An edge behind the seam between two occluders is then hidden, as the depth buffer hides it in 3D. With it off, the output is byte-identical to before (Run Diff runs it off). VV is at 1.1.0 (owner tags, which TV also has).",
+   "recommendation": "Take TV's file whole and re-apply only the header and console prefix. After the port, Run Diff (cpu vs legacy) must still agree.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.1.0",
+   "est_lines": 8,
+   "evidence": "TV 50/...ClipKernel__.js:308 and the on1&&on2 branch; normalised diff +8/-1"
+  },
+  {
+   "id": "S02b-F14",
+   "category": "drift",
+   "title": "EdgeExtractor 1.3.0: linework-first category set",
+   "detail": "ExtractStageEdges and ExtractIntersectionEdges take an optional set of the categories that ship SketchUp linework. Those categories keep only their silhouettes and are never intersection-tested against each other, and bounds trees are built only when a test needs them. With no set, the output is byte-identical to 1.2.0. The D40 rotation path and owner tags are already identical in both apps.",
+   "recommendation": "Take TV's file whole and re-apply the header and console prefix only.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js"
+   ],
+   "tv_version": "1.3.0",
+   "vv_version": "1.2.0",
+   "est_lines": 41,
+   "evidence": "Normalised diff +41/-10; TV header 14-Sep-2026 1.3.0; TV devlog v2.37.0"
+  },
+  {
+   "id": "S02b-F15",
+   "category": "drift",
+   "title": "AuthoredEdges 1.2.0: Categories set and per-node LineworkModifier owners (unlogged)",
+   "detail": "1.2.0 (v2.37.0): Collect returns Categories, the categories whose linework root holds at least one segment, recorded before the visibility test. A later change on 20-Sep tags each nested LineworkModifier node with its own owner via Na__PlSampler__ModifierOwnerFor and Na__PlCfg__GetLineworkModifiers. That change is not logged in the file header.",
+   "recommendation": "Take TV's file whole and re-apply the header and console prefix. Log both changes in VV's header (1.2.0 plus a modifier note).",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S02b-F16",
+    "S02b-F22"
+   ],
+   "est_lines": 54,
+   "evidence": "Normalised diff +54/-17; TV imports GetLineworkModifiers and ModifierOwnerFor; TV header logs only 1.2.0"
+  },
+  {
+   "id": "S02b-F16",
+   "category": "drift",
+   "title": "ConfigAccess 1.2.0: rule switches, GetStoreySetup, GetLineworkModifiers",
+   "detail": "Adds lineworkFirst, seamsOcclude and hideFlushJoins to GetProjectionSetup (1.1.0), GetStoreySetup (1.2.0) and GetLineworkModifiers (unlogged), all with fallbacks. Two TV defects: the fallback buildToken '2026-09-21-storey-swings' is not the JSON's '2026-09-23-flush-tolerance', and the comment above GetAnnotationSetup reads 'Get the Model Sampling Setup'.",
+   "recommendation": "Take TV's file whole. Re-apply the ValeVision__ OwnerKey prefix in the fallbacks and set the fallback buildToken to VV's new JSON token (the StoreyBand test checks fallbacks against the JSON). Fix the comment.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.0.1",
+   "est_lines": 57,
+   "evidence": "TV 50/...ConfigAccess__.js:129 (fallback token) vs AppConfig__.json:120; :389 (comment); normalised diff +57/-2"
+  },
+  {
+   "id": "S02b-F17",
+   "category": "drift",
+   "title": "CpuBackend 1.4.0: rules into the kernel, flush joins, storey band for annotation",
+   "detail": "1.3.0 (v2.37.0): SeamsOcclude is posted to the workers, the linework-first set goes into both extractions, and Na__PlFlush__CutFlushJoins runs on the view-space model edges before the clip. 1.4.0 (v2.105.0): on a plan, annotation whose owner matches Storeys.AnnotationTokens is kept to the band of the storey the cut passes through, and the storey is reported. VV 1.2.1 already has SplitAnnotation (TV 1.3.1).",
+   "recommendation": "Take TV's file whole once FlushJoins and Storeys exist, and re-apply the header and console prefix.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js"
+   ],
+   "tv_version": "1.4.0",
+   "vv_version": "1.2.1",
+   "depends_on": [
+    "S02b-F12",
+    "S02b-F25"
+   ],
+   "est_lines": 34,
+   "evidence": "Normalised diff +34/-8; TV header 1.3.0 (14-Sep), 1.4.0 (21-Sep)"
+  },
+  {
+   "id": "S02b-F18",
+   "category": "drift",
+   "title": "ModelStage: edge rules in the fingerprint (TV 1.1.0)",
+   "detail": "Describe adds the edges, seams and joins rule names to the fingerprint, so linework baked under one setting is never restored under another. VV's ModelStage 1.1.0 is TV's 1.2.0 (content stamp) without this change - the version numbers collide.",
+   "recommendation": "Take TV's file whole (1.2.0) and re-apply the header and the 42__System__DrawingViewCore import path. Adopt TV's version number (D-S02b-10).",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S02b-F16"
+   ],
+   "est_lines": 4,
+   "evidence": "Normalised diff +4/-0; TV PORT NOTE ':51 1.1.0 PENDING ... 1.2.0 ported 18-Sep as ValeVision3D v2.57.0 (its 1.1.0)'"
+  },
+  {
+   "id": "S02b-F19",
+   "category": "drift",
+   "title": "DevMenu Controls 1.1.0: rule readouts and Diff note",
+   "detail": "The timings table gains 'Linework first', 'Seams occlude' and 'Flush joins' rows, and the Diff note says both sides ran without the 3D-matching rules. VV's own 1.1.0 is different content: the edge-style backend wording, which TV also has.",
+   "recommendation": "Take TV's file whole and re-apply the header and the 42 import path. This is localhost-only UI.",
+   "action": "port_whole_reapply_vv",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.1.0",
+   "est_lines": 16,
+   "evidence": "Normalised diff +16/-4; TV header 14-Sep-2026 1.1.0; VV header 13-Sep-2026 1.1.0 (edge styles)"
+  },
+  {
+   "id": "S02b-F20",
+   "category": "drift",
+   "title": "Projector 1.5.0: rules in BuildOptions, door pose around Collect, storeys measured per collection",
+   "detail": "1.2.0 (v2.37.0): the three rules, forced off for a named backend. 1.3.0 (v2.42.0): door pose Apply and SwingEdges around Collect. 1.4.0 (v2.48.1): PutBack and the shut pose. 1.5.0 (v2.105.0): the storey rule, with Na__PlDoors__Storeys run on EVERY collection (:359), so this file needs DoorPose and the door module even when no drawing has a pose. VV 1.1.1 already has TV 1.4.1 (annotation tokens).",
+   "recommendation": "Take TV's file whole after the door module work package, and re-apply the header and console prefix.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js"
+   ],
+   "tv_version": "1.5.0",
+   "vv_version": "1.1.1",
+   "depends_on": [
+    "S02b-F24",
+    "S02b-F25",
+    "S02b-F26"
+   ],
+   "est_lines": 66,
+   "evidence": "TV 50/...Projector__.js:138 (DoorPose import), :359 (storeys every collection), :370 (pose); normalised diff +66/-6"
+  },
+  {
+   "id": "S02b-F21",
+   "category": "drift",
+   "title": "Pipeline 1.5.0: optional model root, linework-first/door-pose/storey keys, swings",
+   "detail": "1.2.0 (v2.32.0): optional modelRoot in RenderDefinition and fingerprint in GetCached (TV design phases; harmless with no caller). 1.3.0: linework-first (lf0/lf1) in the collection key, plus report fields. 1.4.0: door pose hash in the key, and AppendSwings. 1.5.0: storey band in the key, a tally of off-storey swings, and the storey in the report. VV 1.1.0 already has ForgetCollections (v2.64.1), which neither app logs.",
+   "recommendation": "Take TV's file whole, keeping the model-root seam (D-S02b-08). Re-apply folder paths 42->43 (FloorPlan), 45->46 (Elevation) and 40->42 (DrawingViewCore) and the header, and log ForgetCollections.",
+   "action": "port_whole_reapply_vv",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js"
+   ],
+   "tv_version": "1.5.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S02b-F24",
+    "S02b-F25",
+    "D-S02b-08"
+   ],
+   "est_lines": 60,
+   "evidence": "Normalised diff +60/-19; TV PORT NOTE :50-56; VV Pipeline :585 ForgetCollections"
+  },
+  {
+   "id": "S02b-F22",
+   "category": "drift",
+   "title": "StageSampler 1.2.0: posed door panels, LineworkModifier owners",
+   "detail": "1.1.0 (v2.42.0): with rules.posedMods, meshes under a posed panel keep a COPY of their matrix, and the result names PosedModsDrawn. 1.2.0 (20-Sep, no TV devlog entry): Na__PlSampler__ModifierOwnerFor styles a mesh whose node name begins with a 76-79 tag under that tag's owner key. It is a prefix match because three.js strips '::' from node names. Without posedMods or modifiers, nothing changes.",
+   "recommendation": "Take TV's file whole and re-apply the header and the comment examples (ValeVision__ keys).",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.1.0",
+   "depends_on": [
+    "S02b-F16"
+   ],
+   "est_lines": 62,
+   "evidence": "Normalised diff +62/-14; TV header 20-Sep 1.2.0 and 14-Sep 1.1.0"
+  },
+  {
+   "id": "S02b-F23",
+   "category": "drift",
+   "title": "ViewDefinition 1.2.0: door pose in the definition and record hash",
+   "detail": "FromPlan and FromElevation take a fourth argument, doorPose, which Na__PlView__DoorPose normalises and adds to the hash only when it is set, so every existing hash is unchanged. TV's Flags function reads both the Styles__X and x spellings; VV's reads one. Both return the same value, because GetStyles returns flag names in both apps.",
+   "recommendation": "Take TV's file whole and re-apply folder paths 42->43 and 45->46 and the header. Accept TV's Flags.",
+   "action": "port_whole_reapply_vv",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js"
+   ],
+   "tv_version": "1.2.0",
+   "vv_version": "1.0.0",
+   "est_lines": 50,
+   "evidence": "Normalised diff +50/-21; TV FpData STYLE_KEYS :157-163 = VV :129-135"
+  },
+  {
+   "id": "S02b-F24",
+   "category": "missing_module",
+   "title": "Na__ProjectedLinework__DoorPose__.js (TV-only, 1.3.0)",
+   "detail": "Plans draw doors open with swing arcs (v2.42.0). Elevations and sections draw them shut, with PutBack (v2.48.1). One storey per plan (v2.105.0: StoreySamples, Storeys, StoreyBand). The hit test ignores swing ground when swings are hidden (v2.140.0). It has 13 exports, used by Projector, Pipeline, LE PlanDoors and SnapshotRenderer, and it imports TV door module 1.9.0 exports and FindDoorGroups, which VV lacks.",
+   "recommendation": "Port verbatim (header and console prefix) in the folder 50 work package, after the door module work package. With no Layout Editor caller, definitions carry DoorPose null and only the storey measurement runs.",
+   "action": "port_verbatim",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js"
+   ],
+   "tv_version": "1.3.0",
+   "depends_on": [
+    "S02b-F26",
+    "S02b-F25"
+   ],
+   "est_lines": 807,
+   "evidence": "TV 50/...DoorPose__.js:105-133 (imports), header 1.0.0-1.3.0; TV devlog v2.42.0 :12452, v2.48.1 :12193, v2.105.0 :5925, v2.140.0 :2594"
+  },
+  {
+   "id": "S02b-F25",
+   "category": "missing_module",
+   "title": "Na__ProjectedLinework__Storeys__.js (TV-only, 1.0.0)",
+   "detail": "A pure module (imports nothing). A plan belongs to the storey with the highest floor at or below its cut. Each floor is the median of the door bottoms in its Storey__<Key>__ group, and the band keeps storey-bound annotation. It matches 'Storey__' anywhere in a name, so VV's MultiModel Storey__${name}__${element} categories qualify. With fewer than two storeys it returns null and every drawing is unchanged.",
+   "recommendation": "Port verbatim together with Na__Test__StoreyBand__.test.mjs (53 checks). Keep the ConfigAccess storey fallbacks equal to the JSON.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js"
+   ],
+   "tv_version": "1.0.0",
+   "est_lines": 320,
+   "evidence": "TV 50/...Storeys__.js:71, :86-98 (unanchored key); VV 15/Na__ModelLoader__MultiModel.js:146,194 (Storey__ categories)"
+  },
+  {
+   "id": "S02b-F26",
+   "category": "wiring",
+   "title": "Door module (25) must reach the TV 1.9.0 exports, plus FindDoorGroups, before any folder 50 port",
+   "detail": "DoorPose imports Na__DoorAnimation__FindDoorGroups (a TV-only file) and MOD_TYPE_ROT_ONLY, MOD_TYPE_FIXED, DescribeDoors, ComputePanelLocalPose, ApplyPanelTransform and GetLiveProgress (TV 1.9.0). VV 1.7.1 exports none of them. ES modules link all-or-nothing, so taking TV's Projector, Pipeline or CpuBackend before this breaks Na__PlPipe__Initialize, the Dev section and every Layout Editor 2D viewport.",
+   "recommendation": "Merge TV 1.8.0 and 1.9.0 onto VV 1.7.1, keeping VV's own SnapAllClosed, Get/SetSpeedScale and GetBaseDurationMs (used by Video Studio). Port FindDoorGroups verbatim, and gate the change with Na__Verify__Exports__ and ModuleGraph.",
+   "action": "port_adapted",
+   "severity": "critical",
+   "tv_paths": [
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js"
+   ],
+   "tv_version": "1.9.0",
+   "vv_version": "1.7.1",
+   "depends_on": [
+    "D-S02b-02",
+    "D-S02b-11"
+   ],
+   "est_lines": 300,
+   "evidence": "TV 25/...ClickToOpenDoors__.js:47-60 (1.9.0); VV same file :43-56 (1.7.1); export diff: 11 TV-only, 4 VV-only; FindDoorGroups absent from VVM/25"
+  },
+  {
+   "id": "S02b-F27",
+   "category": "transport",
+   "title": "Persistence 1.2.1 FolderId is TV-only (DIV-4): keep VV's folder resolution",
+   "detail": "TV 1.2.1 reads assets from the URL's year and project folder because that is where TV's bake uploads. VV uploads (R2AssetUpload:199) and fetches (Persistence:447) through Na__AppUtils__NormalizeProjectFolderId(projectCode), so the two already agree, under VaApps/Projects/{folderId}/. Copying TV's line would send VV's fetches to the wrong folder.",
+   "recommendation": "When taking any TV Persistence hunk, keep VV's NormalizeProjectFolderId import and FetchAsset line. Record it in the PORT NOTE as a permanent DIV-4 seam.",
+   "action": "keep_vv_divergence",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js"
+   ],
+   "tv_version": "1.2.1",
+   "vv_version": "1.2.0",
+   "evidence": "TV Persistence :457-467 (FolderId); VV Persistence :78,447; VV R2AssetUpload :199"
+  },
+  {
+   "id": "S02b-F28",
+   "category": "drift",
+   "title": "Persistence bake gate: use Na__DevGate__IsAuthoringEnabled (TD01), like the rest of VV",
+   "detail": "TV's BakeBeforeSave returns early unless DevGate says authoring is enabled. VV's still checks Na__AppUtils__IsRunningOnLocalhost (:597), although VV has DevGate 1.1.0 and its Layout Editor loader, mode controller and dev tools already use it. Behaviour change: an explicit lock now stops baking on localhost, and ?authoring=on lets an installed app bake.",
+   "recommendation": "Replace the localhost check with Na__DevGate__IsAuthoringEnabled(), imported from 03__AppUtils/Na__AppUtils__DevGate__.js.",
+   "action": "port_adapted",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js"
+   ],
+   "depends_on": [
+    "D-S02b-06"
+   ],
+   "est_lines": 3,
+   "evidence": "TV Persistence :110,:617; VV Persistence :597; VV ledger :1187 (DevGate 1.1.0 verbatim)"
+  },
+  {
+   "id": "S02b-F29",
+   "category": "drift",
+   "title": "Eleven linework files are code-identical; WebGpuBackend differs only in comments",
+   "detail": "ClipWorker, WorkerPool, DiffHarness, Owners, ExportCompositor, FlatBvh, RasterPreview, Scheduler, SoupBuilder, SvgOverlay and Styles__Main show no normalised code difference. drift_all marks some as 'drifted' only because of console prefixes and comments. WebGpuBackend differs in comment wording only.",
+   "recommendation": "No code work. Optionally sync the WebGpuBackend comments verbatim, and refresh the PORT NOTEs to 'verbatim with TV x.y.z'.",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework"
+   ],
+   "est_lines": 0,
+   "evidence": "Appendix A of the report: 0/0 normalised diff counts for the eleven files; WebGpuBackend 18/17, all comments"
+  },
+  {
+   "id": "S02b-F30",
+   "category": "ledger",
+   "title": "Lantern Designer items are VV-to-LD back-ports, not TV-VV; TV is already identical",
+   "detail": "'Rotation path in the soup builder' and 'hidden segments through the worker pool' sit in the ledger's VV-to-TV pending table (:1226-1227). TV's SoupBuilder, WorkerPool and ClipWorker are code-identical to VV's, and the only TV change to EdgeExtractor is linework-first. The Lantern Designer folder still lacks ViewMapFromBasis and the pool's hidden segments.",
+   "recommendation": "Move both rows to a 'Pending Lantern Designer back-port' table and note TV parity. If they are ported to the Lantern Designer, take the post-v2.37.0 EdgeExtractor only if linework-first goes too.",
+   "action": "fix_ledger",
+   "severity": "low",
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "evidence": "Ledger :39-42, :1226-1227; normalised diffs 0 lines; LD 27__System__ProjectedEdges2d search finds only ClipKernel :92,563"
+  },
+  {
+   "id": "S02b-F31",
+   "category": "ledger",
+   "title": "TV back-port markers and header devlogs are stale or incomplete",
+   "detail": "The markers leave out pending Pipeline 1.5.0, Projector 1.5.0, StageSampler 1.2.0, ConfigAccess 1.2.0 and CpuBackend 1.4.0, yet still list items already ported (ConfigAccess 1.1.1, CpuBackend 1.3.1, Projector 1.4.1, ModelStage 1.2.0). Unlogged TV changes: AuthoredEdges modifier owners, GetLineworkModifiers, ClipWorker/WorkerPool owner tags, Pipeline ForgetCollections, and the Shader and Supersampler v2.103.0 fixes. LineworkModifiers has no TV devlog entry at all.",
+   "recommendation": "Swarm workers must take their scope from the code diff and this report's table, not from the markers. After each port, update the PORT NOTEs on both sides and log the missing entries.",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework"
+   ],
+   "evidence": "ref/tv_portnote_markers.txt rows for 50__System__ProjectedLinework; report Appendix B"
+  },
+  {
+   "id": "S02b-F32",
+   "category": "ledger",
+   "title": "TV devlog v2.159.0 wrongly says ValeVision has FlushJoins 1.0.0",
+   "detail": "The devlog reads 'ValeVision has FlushJoins 1.0.0 with the old tolerances and the same fault waiting' (TrueVision__DEVLOG__.md:1067). VV has no FlushJoins and none of HideFlushJoins, SeamsOcclude or LineworkFirst, so it lacks the whole v2.37.0 rule set, not just the tolerance. Anyone reading the TV devlog would under-scope the port.",
+   "recommendation": "Correct the note in TV (WP-S02b-10) and record the real state in the VV ledger.",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "tv_paths": [
+    "TrueVision__DEVLOG__.md"
+   ],
+   "evidence": "TV devlog :1067; a search of VVM for FlushJoin|SeamsOcclude|LineworkFirst returns nothing"
+  },
+  {
+   "id": "S02b-F33",
+   "category": "tooling",
+   "title": "TV ConfigAccess fallback build token does not match its JSON",
+   "detail": "The fallback buildToken is '2026-09-21-storey-swings' (:129) but the JSON's is '2026-09-23-flush-tolerance' (AppConfig:120); FlushJoins 1.1.0 bumped only the JSON. With the config unreadable, caches key under an older token than the rule that shipped, breaking the module's own rule that fallbacks mirror the JSON. A duplicated comment heading also sits at :389.",
+   "recommendation": "TV: set the fallback token to the JSON token and fix the heading. VV: keep the two equal after the port (WP-S02b-02 acceptance).",
+   "action": "backport_to_tv",
+   "severity": "low",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js"
+   ],
+   "est_lines": 2,
+   "evidence": "TV 50/...ConfigAccess__.js:129, :389; TV AppConfig__.json:120"
+  },
+  {
+   "id": "S02b-F34",
+   "category": "transport",
+   "title": "A new BuildToken makes every VV baked linework asset stale; plan a re-bake",
+   "detail": "The fingerprint includes the token and the edge rules, so every R2 asset, IndexedDB copy and pipeline cache in VV will read as stale once. Localhost re-bakes on Save Floor Plans or Save Elevations, but until each live VV project is re-baked, public viewers compute linework in their own browser on first open. The asset schema stays at 2 and no worker change is needed.",
+   "recommendation": "Adopt a VV-specific token (for example 2026-10-xx-tv-parity) and keep the fallbacks equal to it. Then, before the next publish, run Dev > Bake All to R2 (or the saves) on an authoring machine for each live VV project.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js"
+   ],
+   "depends_on": [
+    "D-S02b-09"
+   ],
+   "evidence": "TV devlog v2.159.0 :1045-1046 (token retires baked drawings); VV Persistence header (three load gates: schema, token, fingerprint)"
+  },
+  {
+   "id": "S02b-F35",
+   "category": "ledger",
+   "title": "Version numbers collide between apps: adopt TV numbering on whole-file ports",
+   "detail": "VV numbered its own ports: VV ModelStage 1.1.0 is TV 1.2.0, and VV's ClipWorker, WorkerPool and DevMenu 1.1.0 differ from TV's 1.1.0. If VV takes TV's whole files without TV's version numbers and devlogs, the collision stays and version-based parity checks (drift_all tv_ver/vv_ver) keep misleading.",
+   "recommendation": "When a VV file becomes TV's file, take TV's version and DEVELOPMENT LOG verbatim and add a VV PORT NOTE listing the seams. Record this convention in the ledger header.",
+   "action": "needs_decision",
+   "severity": "medium",
+   "depends_on": [
+    "D-S02b-10"
+   ],
+   "evidence": "VV ModelStage header 1.1.0 'Ported from TrueVision3D 1.2.0'; TV ClipWorker 1.0.0 vs VV 1.1.0 code-identical"
+  },
+  {
+   "id": "S02b-F36",
+   "category": "wiring",
+   "title": "Layout Editor consumers of linework modifiers (ModelLayers group, Viewport2d Frame and Linework)",
+   "detail": "TV styles nested LineworkModifier owners in the Layout Editor through three pieces: a ModelLayers config group (Layer__CategoryKey TrueVision__LineworkModifier__*, SketchUp tags 76-79, Group__AlwaysShow); Viewport2d__Frame importing Na__PlCfg__GetLineworkModifiers for widths; and Viewport2d__Linework treating modifier keys as never top-level. Without these, VV segments would carry owner keys with no style row and draw in the fallback style.",
+   "recommendation": "Layout Editor slice: after WP-S02b-02, add VV's group with ValeVision__LineworkModifier__FineDetail/VeryFineDetail keys and port the Frame and Linework hunks.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js"
+   ],
+   "depends_on": [
+    "S02b-F11",
+    "S02b-F16",
+    "S02b-F22"
+   ],
+   "evidence": "TV ModelLayers__Config__.json:23,105-108; TV Viewport2d__Frame__.js:109,190; TV Viewport2d__Linework__.js:195,292,334"
+  },
+  {
+   "id": "S02b-F37",
+   "category": "wiring",
+   "title": "Layout Editor plan doors and hide swings chain needed before sheets use DoorPose",
+   "detail": "TV PlanDoors 1.3.0 (new) is supported by: Viewport2d__Window Describe passing PoseFor/ShutPoseFor and SwingExcludeTokens (VV passes three arguments); SnapshotRenderer Apply/Restore around Render2d with the cut; SheetTools click, menu and cursor; the Panel__ViewportSettings Doors row and Hide swings; SheetRecords Viewport__ClosedDoors and HideSwings; ConfigState GetPlanDoorsSetup; and the AppConfig PlanDoors block and labels. It also needs 43 FloorPlan StoreyLevel (v2.87.0) and ViewportRotation (v2.138.0).",
+   "recommendation": "Layout Editor slice work package after WP-S02b-02. SwingCategoryKeys becomes ValeVision__Linetype__DoorSwings. Port Na__Test__HideSwings__ adapted (42->43).",
+   "action": "update_wiring",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js"
+   ],
+   "depends_on": [
+    "S02b-F24",
+    "S02b-F26",
+    "43__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js port (S02a)"
+   ],
+   "est_lines": 700,
+   "evidence": "TV PlanDoors header and imports; TV Viewport2d__Window__.js:156-165 vs VV :111-114; realign plan AA :887, AH :913"
+  },
+  {
+   "id": "S02b-F38",
+   "category": "missing_module",
+   "title": "Depth fog pure modules: AppConfig, ConfigState, Maths, RecordData, Shader, dev CSS",
+   "detail": "Six of the eight 49 files carry over unchanged. Maths and Shader import nothing, and ConfigState reads its own JSON. RecordData writes Elevation__DepthFog (DepthFog__Enabled false, StartDepthMm 1000, EndDepthMm 15000, FalloffPercent 50) into a record the first time it is read. The Shader includes the v2.103.0 premultiplied fix, which its header does not log. The CSS needs .na-draw-dev__caption and __choice, which VV lacks (they come from TV's 40 dev-row CSS).",
+   "recommendation": "Port verbatim into VV 49__System__ElevationDepthFog (header and console prefix). Log v2.103.0 in the Shader header, @import the CSS in VV's CSS index, and run Na__Test__ElevationDepthFog__.",
+   "action": "port_verbatim",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "D-S02b-03",
+    "D-S02b-04"
+   ],
+   "est_lines": 1264,
+   "evidence": "TV 49 headers (Authored in TrueVision3D first, 20-Sep-2026; ValeVision not yet ported); TV devlog v2.94.0 :6950, v2.103.0 :6147"
+  },
+  {
+   "id": "S02b-F39",
+   "category": "missing_module",
+   "title": "Depth fog RenderLayer: VV needs a depth-only section-cap hook (DIV-2)",
+   "detail": "RenderLayer imports Na__SectionCut__RenderDepthInto from TV's 41 SectionCutEngine, which draws the caps into the bound depth target without clearing so a poche reads as lying on the plane. VV's caps live in 41 CrossSectionView's OverlayScene, alongside the HelperRoot gizmos. VV's Na__Sect__RenderOverlay cannot stand in for it, because it binds the screen and clears depth.",
+   "recommendation": "Add a VV export that renders CapRoot only into the bound target (autoClear off, no clear, no setRenderTarget). Surface it through 42/Na__DrawView__SectionAdapter__ and repoint RenderLayer's one import to it. The rest of RenderLayer ports verbatim.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "S02b-F38"
+   ],
+   "est_lines": 670,
+   "evidence": "TV 49/...RenderLayer__.js:476; TV 41/Na__SectionCut__Engine__.js:539-550; VV 41/...SystemLogic.js:435-470"
+  },
+  {
+   "id": "S02b-F40",
+   "category": "missing_module",
+   "title": "Depth fog Dev row: needs DevRowShell and VV's elevation editor model",
+   "detail": "Na__ElevFogRow__Build imports Na__DrawShell__Button and Caption from TV-only 40/Na__DrawView__DevRowShell__.js. In TV, the row is a draft edit under the TV-only DraftGuard (Update/Revert). VV's elevation editor edits the live record and saves it with Save Elevations. The row is driven by read, write and onChanged accessors, so it can adapt.",
+   "recommendation": "Port DevRowShell (and its .na-draw-dev__* CSS) first, in S02a, then port the row verbatim. Hand it VV's elevation accessors and request a render on change. If DraftGuard is ported first, wire it as TV does.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__DevRowShell__.js"
+   ],
+   "tv_version": "1.0.0",
+   "depends_on": [
+    "42__System__DrawingViewCore/Na__DrawView__DevRowShell__.js port (S02a)",
+    "S02b-F38"
+   ],
+   "est_lines": 315,
+   "evidence": "TV 49/...DevMenu__Row__.js:36-48 (accessors, DevRowShell delegate); drift_all: DevRowShell, DraftGuard and DraftMaths are tv-only in 40"
+  },
+  {
+   "id": "S02b-F41",
+   "category": "wiring",
+   "title": "Depth fog 3D wiring in VV: one frame call in ComposerPreset (DIV-1), record getters, source, init",
+   "detail": "TV calls RenderOverlay in three places (LoadingSequence:1176, RenderPreset:302, Thumbnail:196). VV renders drawings through ComposerPreset__RenderFrame (:405-420), which VV's thumbnail also uses (registered at :324). One call after composer.render() and before drawOverlay therefore covers both. Also needed: GetDepthFog, SetDepthFog and GetDepthFogPlane plus Ensure in 46 ProjectJson, SetSource/clear in 46 ModeController, the row in 46 RowBuilders, Initialise in index.html, and the CSS import.",
+   "recommendation": "Implement as WP-S02b-04. Do not add a call to VV's LoadingSequence. Build GetDepthFogPlane from VV's existing GetAxes and GetPlaneDistanceMm.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "Index.html",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "vv_paths": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "depends_on": [
+    "S02b-F38",
+    "S02b-F39",
+    "S02b-F40"
+   ],
+   "est_lines": 90,
+   "evidence": "VV 42/...ComposerPreset__.js:324,405-420; VV 21/...Thumbnail__Renderer.js:183; TV Index.html:919,1783; TV 45/...ProjectJson__Data__.js:276,484-526,641"
+  },
+  {
+   "id": "S02b-F42",
+   "category": "wiring",
+   "title": "Depth fog in VV exports: the tiled renderer has no post-composer hook",
+   "detail": "VV's tiled exporter renders a drawing through the composer using ComposerPreset__GetExportOverrides (camera, renderProfileNormals, resize/restoreFrustum), with nothing drawn after the composer (TiledRenderer:261-649). The Layout Editor's Render2d takes the same route (SnapshotRenderer:469-526). Without a hook, image exports and sheet underlays of a fogged elevation lose the fog, and the Layout Editor has no fog-only frame for its fog image.",
+   "recommendation": "Add an after-composer hook (fog, then section overlay) to the export overrides and call it per tile in 30/...TiledRenderer. Add a fog-only frame option for the Layout Editor's fog image (TV passes RenderLayerFrame as the frame).",
+   "action": "update_wiring",
+   "severity": "medium",
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+    "02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js"
+   ],
+   "depends_on": [
+    "S02b-F41"
+   ],
+   "est_lines": 60,
+   "evidence": "VV ComposerPreset :447-472; VV TiledRenderer :261,316,476,649; VV SnapshotRenderer :469-526"
+  },
+  {
+   "id": "S02b-F43",
+   "category": "wiring",
+   "title": "Depth fog on sheets: Layout Editor Viewport2d__DepthFog, sixth frame layer, composite, record key, PDF",
+   "detail": "TV v2.94.0 added the Layout Editor's Viewport2d__DepthFog__ (FogFor: a token and a source); a sixth Frame layer between linework and markup; the Viewport2d key, ForceRender and export twin; the SnapshotRenderer fog image; a RenderComposites 'depthFog' composite, first in the list and on by default; Viewport__Styles.depthFog in SheetRecords; ConfigState SheetSetup and AppConfig DefaultStyles.DepthFog; the PdfExporter fog PNG after the vectors; and Paper CSS.",
+   "recommendation": "Layout Editor slice work package, after WP-S02b-04 and the supersampler clamp. Change the elevation-data import path from 45 to 46. Keep the vector and underlay keys free of fog.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js"
+   ],
+   "depends_on": [
+    "S02b-F41",
+    "S02b-F42",
+    "S02b-F44"
+   ],
+   "est_lines": 350,
+   "evidence": "TV devlog v2.94.0 :7098-7113; TV Viewport2d__DepthFog__.js header; TV RenderComposites__Config__.json:15,21"
+  },
+  {
+   "id": "S02b-F44",
+   "category": "drift",
+   "title": "Supersampler premultiplied clamp (TV v2.103.0) missing in VV",
+   "detail": "TV's supersampler writes min(rgb, a) in its present pass (05/Na__RenderEffect__Supersampler__.js:379), and the fog shader keeps its one-step colour bump only on the supersampled path. Without the clamp, premultiplied fog layer bakes store colour above alpha (99.69% of pixels on RB05), which Chrome tolerates and other viewers may not. VV's Supersampler has no clamp.",
+   "recommendation": "05 slice: add the clamp to VV's present pass before the fog sheet work. Opaque frames are unaffected.",
+   "action": "port_adapted",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js"
+   ],
+   "est_lines": 8,
+   "evidence": "TV devlog v2.103.0 :6147-6198; TV Supersampler :373-379; no min( in VV Supersampler"
+  },
+  {
+   "id": "S02b-F45",
+   "category": "drift",
+   "title": "Fat-line orthographic depth bias (TV v2.38.1) missing: VV base images show lines through faces",
+   "detail": "VV's MultiModel applies a fixed 0.00015 log-depth bias (:683-692), which across the drawing cameras' 10 mm to 500 m range is about 75 mm. SketchUp lines therefore bleed through fascias and parapets in every VV plan and elevation base image, sheet underlay and export. TV v2.38.1 gives orthographic cameras RenderConfig__Linework__OrthoDepthBiasMm (2 mm) and leaves perspective unchanged. TV row X was pending 'if ValeVision's loader carries the same fixed depth bias' - it does.",
+   "recommendation": "15 ModelLoader slice: port the MultiModel 1.3.0 hunk and add the Main-config key (2). Verify with a pixel diff on a VV elevation: the setback lines go and perspective renders are unchanged.",
+   "action": "port_adapted",
+   "severity": "high",
+   "tv_paths": [
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json"
+   ],
+   "est_lines": 25,
+   "evidence": "VV 15/Na__ModelLoader__MultiModel.js:683-692; TV Main config :90 OrthoDepthBiasMm 2; realign plan row X :871-874"
+  },
+  {
+   "id": "S02b-F46",
+   "category": "data_schema",
+   "title": "New record keys are nested and compatible; each app reads the other's",
+   "detail": "Elevation__DepthFog (inner keys DepthFog__*) is written on first read, switched off, inside elevation records in LayoutEditor__DrawingsData. Viewport__ClosedDoors and Viewport__HideSwings are stored only when set, and Viewport__Styles.depthFog joins the closed style list. Unknown keys survive saves, the linework asset schema stays at 2, and old records load byte-identical (verified in TV).",
+   "recommendation": "No migration needed. Note in the ledger that VV records will gain Elevation__DepthFog on the first save after the fog port. Key names must stay identical to TV's.",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "TV 49/...RecordData__.js header; TV devlog v2.140.0 :2621-2624; TV fog plan section 3.5"
+  },
+  {
+   "id": "S02b-F47",
+   "category": "transport",
+   "title": "No VV worker or local-server change is needed for this slice",
+   "detail": "VV's whitecardopedia-editor-api asset guard already allows LayoutEditor/Linework (CloudflareHandler__ProjectAsset__.js:51), as does the client guard in R2AssetUpload. Fog and door data nest in records saved through the existing R2SaveProjectJson path, and no Flask route in WCP/server.py is involved. The sheet fog image is rendered at view time and is not stored until Published Documents (52) arrives.",
+   "recommendation": "Nothing for S02b. Revisit when 52 is ported (S02b-F48).",
+   "action": "no_action",
+   "severity": "low",
+   "evidence": "WCP/CloudflareWorker/src/handlers/CloudflareHandler__ProjectAsset__.js:51; VV 03/Na__AppUtils__R2AssetUpload__.js PATH_GUARD"
+  },
+  {
+   "id": "S02b-F48",
+   "category": "wiring",
+   "title": "Published Documents (52) copy TV's linework folder-id rule; VV must use its own",
+   "detail": "TV's Na__PubDoc__Urls__ builds folder ids 'EXACTLY AS Na__PlStore__FolderId BUILDS IT' (:163), which is the TV-only 1.2.1 rule. Its loading screen treats fog masks and linework as published layers (LoadingScreen :33,105,221-245). A verbatim port to VV would read VV's published linework from the wrong R2 folder.",
+   "recommendation": "52 slice: build VV's published URLs from Na__AppUtils__NormalizeProjectFolderId (VaApps/Projects/{folderId}) to match VV's Persistence. Expect fog masks only after the depth fog lands.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "tv_paths": [
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js",
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js"
+   ],
+   "depends_on": [
+    "S02b-F27"
+   ],
+   "evidence": "TV 52/Na__PubDoc__Urls__.js:140,163; Na__PubDoc__LoadingScreen__.js:33,105,231-245"
+  },
+  {
+   "id": "S02b-F49",
+   "category": "test",
+   "title": "Port the FlushJoins, StoreyBand and ElevationDepthFog tests verbatim",
+   "detail": "Each test copies one leaf module to a temporary .mjs and runs it in Node: FlushJoins (50/...FlushJoins__.js); StoreyBand (50 Storeys, ConfigAccess and the AppConfig JSON - the fallbacks must equal the JSON); ElevationDepthFog (49 Maths, 68 checks). The paths are identical in VV as long as folders 50 and 49 are used. The fixtures are numbers measured on NA projects (RB05) and hold no client data.",
+   "recommendation": "Copy them into VV 80__Testing__PrototypeEnvironment with a header rename only, once WP-02 and WP-04 land. Each must exit 0 under node.",
+   "action": "port_test",
+   "severity": "medium",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs"
+   ],
+   "depends_on": [
+    "S02b-F12",
+    "S02b-F25",
+    "S02b-F38"
+   ],
+   "evidence": "TV 80/Na__Test__FlushJoins__.test.mjs:71; StoreyBand :47-53; ElevationDepthFog :48-51"
+  },
+  {
+   "id": "S02b-F50",
+   "category": "test",
+   "title": "Port Na__Test__HideSwings__ adapted, after the Layout Editor plan doors work",
+   "detail": "The test reads the Layout Editor's ConfigState SheetSetup, ScaleManager, ViewportRotation, SheetRecords, the Viewports unit and PlanDoors, plus 42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__ and the FloorPlan AppConfig (VV folder 43). It also asserts a 1:200 scale, which VV does not have (D27: scales 20/50/100).",
+   "recommendation": "Port after WP-S02b-06 with paths changed 42->43. Either port 1:200 (v2.140.0) or drop the scale assertions and record the divergence.",
+   "action": "port_test",
+   "severity": "low",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ],
+   "vv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ],
+   "depends_on": [
+    "S02b-F37"
+   ],
+   "evidence": "TV 80/Na__Test__HideSwings__.test.mjs:70-119,166,184,196,239,254"
+  },
+  {
+   "id": "S02b-F51",
+   "category": "test",
+   "title": "Na__Test__DimensionRoundUp__ tests the Layout Editor, not plan dimensions",
+   "detail": "It loads 51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js (TV-only, 1.0.0; v2.139.0 'Round up to 5 mm'). The 44/45 PlanDimensions folders contain no rounding code in either app.",
+   "recommendation": "Route the module and its test to the Layout Editor dimension slice. 45__System__PlanDimensions needs no change.",
+   "action": "port_test",
+   "severity": "low",
+   "tv_paths": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DimensionRoundUp__.test.mjs",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js"
+   ],
+   "evidence": "TV 80/Na__Test__DimensionRoundUp__.test.mjs:47-52; drift_all row 15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js tv-only"
+  },
+  {
+   "id": "S02b-F52",
+   "category": "test",
+   "title": "The ColourPalette test will flag VV's plan annotation colour input",
+   "detail": "TV's Na__Test__ColourPalette__ (36 checks) fails by name on any <input type=color> built without Na__ColourPalette__Attach. VV's 44 Toolbar builds one, so porting that test without S02b-F06 fails.",
+   "recommendation": "Land S02b-F06 in the same wave as the ColourPalette port and its test.",
+   "action": "port_test",
+   "severity": "low",
+   "vv_paths": [
+    "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js"
+   ],
+   "depends_on": [
+    "S02b-F06"
+   ],
+   "evidence": "TV devlog v2.126.0 :3982 (lines ~107-110 of the entry: 'fails by name')"
+  },
+  {
+   "id": "S02b-F53",
+   "category": "decision",
+   "title": "Adam's sign-off status for the TV features to be ported",
+   "detail": "Row V (3D-matching rules) was signed off by Adam on 14-Sep ('That works great'), but its VV port is 'pending Adam's sign-off'. Rows AA and AH (doors) have no recorded test by Adam. Storeys (v2.105.0) has none, and hide swings (v2.140.0) is 'NOT tried by Adam'. The depth fog is 'Awaiting Adam's test... then the ValeVision question'. LineworkModifiers has no devlog entry at all.",
+   "recommendation": "Before WP-02, WP-04 and WP-06 start, get one explicit go/no-go from Adam per group: rules and tolerance, doors and storeys, depth fog, modifiers. Recommended: go on all four.",
+   "action": "needs_decision",
+   "severity": "high",
+   "depends_on": [
+    "D-S02b-01",
+    "D-S02b-02",
+    "D-S02b-03",
+    "D-S02b-07"
+   ],
+   "evidence": "Realign plan :865-866, :886-887, :913; TV devlog ~:2697; TrueVision__PLAN__ElevationDepthFog__.md:4, :211"
+  },
+  {
+   "id": "S02b-F54",
+   "category": "tooling",
+   "title": "Docs in scope: the fog plan is the brief; the GPU drain plan and LE performance notes need nothing here",
+   "detail": "TrueVision__PLAN__ElevationDepthFog__.md holds the system map, decisions D1-D9 and the module map, and is the brief for WP-04/05. __StupidProof__Plan__Fix__ProfileLines__GPU__Drain__.md covers the 05 profile lines, where VV is the reference and TV already has the filter. TrueVision__NOTES__LayoutEditorPerformance__.md covers Layout Editor normalise-once and the Vector control, with no folder-50 change.",
+   "recommendation": "Hand the fog plan to the fog work packages. Route the Layout Editor performance items (SheetModel normalise-once, VectorQuality) to the Layout Editor slices.",
+   "action": "no_action",
+   "severity": "low",
+   "tv_paths": [
+    "TrueVision__PLAN__ElevationDepthFog__.md",
+    "__StupidProof__Plan__Fix__ProfileLines__GPU__Drain__.md",
+    "TrueVision__NOTES__LayoutEditorPerformance__.md"
+   ],
+   "evidence": "TV docs read; TV 05/Na__RenderEffect__ProfileLines__.js:79-106 (filter present)"
+  },
+  {
+   "id": "S02b-F55",
+   "category": "ui",
+   "title": "Visible changes VV users will see once this slice lands",
+   "detail": "Drawings: flush-join lines disappear from elevations on screen, on sheets, in PDFs and in exports. In the Layout Editor, plan doors draw open with swings, elevations draw them shut, and roof plans hide swings. Dev menu: three linework readouts and the Elevations Fog block (Depth, End, Fall-off and a sentence). The 3D plan toolbar's dimension swatch gains the colour palette. Layout Editor: a Doors row, door menu items and a Depth Fog composite. The top-bar fold animation is already in VV v2.70.0 and outside this slice.",
+   "recommendation": "Tell Adam that existing Vale sheets will change when they re-render, and re-publish them after the re-bake (D-S02b-09). Check each UI item in the work package acceptance.",
+   "action": "no_action",
+   "severity": "medium",
+   "depends_on": [
+    "S02b-F34"
+   ],
+   "evidence": "TV devlog v2.37.0 (removed lines), v2.42.0/v2.48.1 (doors), v2.94.0 (Fog row); ledger :1235-1246 (top-bar fold already ported)"
+  },
+  {
+   "id": "S02b-F56",
+   "category": "wiring",
+   "title": "Projected linework app wiring already matches TV",
+   "detail": "VV index.html:2255-2266 initialises SetAppConfig, the overlay, the pipeline and the Dev section exactly as TV Index.html:1705-1714 does. VV's CSS index imports the linework, annotation and dimension stylesheets (VV :89-91; TV :135,140,155), and the render loop syncs the overlay on each drawing frame. The folder 50 port changes no entry-point file.",
+   "recommendation": "No change. Do not add Storeys, DoorPose or FlushJoins to index.html - the pipeline reaches them.",
+   "action": "no_action",
+   "severity": "low",
+   "vv_paths": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css"
+   ],
+   "evidence": "VV index.html:2255-2266; TV Index.html:1705-1714; VV LoadingSequence :1320-1329"
+  }
+ ],
+ "work_packages": [
+  {
+   "id": "WP-S02b-01",
+   "title": "Door module to the TrueVision 1.9.0 contract (VV 25)",
+   "scope": "Merge TV 25/3dObjectIInteraction__Animation__ClickToOpenDoors__.js 1.8.0 and 1.9.0 onto VV 1.7.1, adding: exported MOD type constants, ComputePanelLocalPose, exported ApplyPanelTransform, GetLiveProgress, DescribeDoors, ScanGroupsInto, FindAdrAncestor, ResolveHitPanel, IsDoorOpen, and left-button-only clicks. Keep VV's SnapAllClosed, Get/SetSpeedScale, GetBaseDurationMs, bootstrap and thresholds. Port 25/Na__DoorAnimation__FindDoorGroups.js (new, header rename) and update the README. Must land before WP-S02b-02.",
+   "depends_on": [
+    "D-S02b-02",
+    "D-S02b-11"
+   ],
+   "size": "M",
+   "acceptance": [
+    "The export set equals TV 1.9.0's set plus VV's four Video Studio exports (SnapAllClosed, GetSpeedScale, SetSpeedScale, GetBaseDurationMs)",
+    "Orbit left-click still opens and closes doors; a stationary right click no longer toggles one; walk-mode proximity doors and Video Studio 'start with doors shut' are unchanged",
+    "Na__DoorAnim__DescribeDoors on a loaded VV project returns the registry's own records for registered doors",
+    "node 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js",
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "A wholesale copy of TV's file would drop the Video Studio exports and break Video Studio. If another slice (27 context menu) also edits this file, serialise the two.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-02",
+   "title": "Projected linework folder 50 to TV HEAD (rules, flush tolerance, modifiers, door pose, storeys)",
+   "scope": "Take TV's whole files for AuthoredEdges, ClipKernel, ConfigAccess, CpuBackend, DevMenu__Controls, EdgeExtractor, ModelStage, Pipeline, Projector, StageSampler and ViewDefinition, plus WebGpuBackend comments. Add the new files FlushJoins, Storeys and DoorPose. In Persistence change the gate only (DevGate). Merge the AppConfig JSON. Re-apply VV seams: VALEVISION3D headers and console prefix; folder paths 40->42, 42->43, 45->46; Persistence keeps NormalizeProjectFolderId (DIV-4); OwnerKey prefix ValeVision__; a new VV BuildToken in the JSON and in the ConfigAccess fallbacks; VV Main-config exclusion override untouched; TV version numbers and devlogs adopted, with a VV PORT NOTE.",
+   "depends_on": [
+    "WP-S02b-01",
+    "D-S02b-01",
+    "D-S02b-02",
+    "D-S02b-07",
+    "D-S02b-08",
+    "D-S02b-09",
+    "D-S02b-10"
+   ],
+   "size": "L",
+   "acceptance": [
+    "The normalised diff of VV folder 50 against TV folder 50 is empty except the listed seams (identity, folder paths, Persistence folder id, OwnerKey prefix, build token)",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass; index.html loads with no link error",
+    "Na__Test__FlushJoins__.test.mjs and Na__Test__StoreyBand__.test.mjs pass against VV's files, including fallbacks equal to the JSON",
+    "On a VV project with projected linework (e.g. Doous), with writes refused, Dev timings read 'Linework first: off / Seams occlude: on / Flush joins: hidden'",
+    "The same elevation projected with the rules on and off loses only flush-join and seam-leak segments; the ground line stays whole and nothing is added",
+    "Definitions built outside the Layout Editor carry DoorPose null and their record hashes are unchanged",
+    "Bake All to R2 on localhost uploads schema-2 assets with owner tags"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "If WP-S02b-01 has not landed, DoorPose's imports fail to link and the drawing system, the Dev section and Layout Editor 2D viewports all break. The new BuildToken makes every baked asset stale (re-bake needed, D-S02b-09). Existing elevations visibly lose flush-join lines.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02b-03",
+   "title": "Plan annotation toolbar: Colour Palette attach",
+   "scope": "Bring VV 44/Na__PlanAnnotations__Toolbar__.js to TV 1.1.0: import Na__ColourPalette__Attach from ../54__Feature__ColourPalette/Na__ColourPalette__.js and call it on the dimension colour input. Keep VV's GetTextSetup import from 45/...ConfigState__.js.",
+   "depends_on": [
+    "54__Feature__ColourPalette port (other slice)"
+   ],
+   "size": "S",
+   "acceptance": [
+    "The module graph and exports verifiers pass",
+    "In the 3D plan view, the dimension swatch opens the palette above the colour menu, and a pick recolours the selected dimension",
+    "If Na__Test__ColourPalette__.test.mjs is ported, it reports no unattached colour input in folder 44"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "Low. The import fails to link if 54 is absent, so it must land after the Colour Palette port.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-04",
+   "title": "Elevation Depth Fog core and 3D wiring (VV folder 49)",
+   "scope": "Create VVM/49__System__ElevationDepthFog: 5 files and the CSS verbatim, RenderLayer and DevMenu Row adapted. In 41 CrossSectionView, add a depth-only CapRoot render export, passed through by the 42 SectionAdapter. In 42 ComposerPreset, put one RenderOverlay call in RenderFrame (after the composer, before the section overlay) and add a post-composer hook to GetExportOverrides; 30 TiledRenderer calls that hook per tile. In 46 Elevation ProjectJson Data add GetDepthFog/SetDepthFog/GetDepthFogPlane and Ensure in the normaliser and creator; 46 ModeController sets and clears the source; 46 RowBuilders places the Fog block under View depth. index.html gets the import and Initialise; the CSS index gets the @import.",
+   "depends_on": [
+    "D-S02b-03",
+    "D-S02b-04",
+    "S02a: 42__System__DrawingViewCore/Na__DrawView__DevRowShell__.js and .na-draw-dev__* CSS",
+    "WP-S02b-11"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Na__Test__ElevationDepthFog__.test.mjs (68 checks) passes against VVM/49/...Maths__.js; both verifiers pass",
+    "Every VV elevation record gains Elevation__DepthFog (off) on first read; a drawing with fog off renders byte-identical to before",
+    "With fog on, surfaces, fat SketchUp linework and projected vectors behind the plane fade into the paper; a section's poche stays solid; a perspective camera gets none",
+    "The card thumbnail shows the fog; an image export of a fogged elevation carries it",
+    "VV FogPlane is still switched off in drawings and still works in 3D"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js",
+    "02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css"
+   ],
+   "hot_files": [
+    "index.html",
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+    "02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "DIV-1/DIV-2 adaptation: the fog call must come after the composer and before the section overlay, and the section-cap depth must not include the gizmos. The 46 files are shared with S02a, so serialise. Without the supersampler clamp, baked layers are premultiplied-invalid.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02b-05",
+   "title": "Depth fog on sheets (Layout Editor side)",
+   "scope": "New 51/20/Na__LayoutEditor__Viewport2d__DepthFog__.js (elevation-data import path 45->46). Viewport2d__Frame gains the sixth layer between linework and markup; Viewport2d gets the fog key, ForceRender and export twin. SnapshotRenderer renders a fog-only image through VV's tiled path. RenderComposites and its config get the depthFog composite (lowest Order, on by default). SheetRecords adds Viewport__Styles.depthFog; ConfigState SheetSetup and AppConfig add DefaultStyles.DepthFog. PdfExporter places the fog PNG after the vectors and before the markup. Styles__Main__Paper gets the layer rule.",
+   "depends_on": [
+    "WP-S02b-04",
+    "WP-S02b-11",
+    "Layout Editor baseline for these files (LE slices)"
+   ],
+   "size": "M",
+   "acceptance": [
+    "A fogged elevation on a sheet shows the frame stack underlay, linework, fog, markup",
+    "Unticking Depth Fog shows that viewport bare, while another sheet's viewport of the same elevation stays fogged",
+    "The base image is never fogged, and the underlay and vector cache keys do not change when the fog changes",
+    "The PDF carries the fog image with a soft mask (check with PyMuPDF); fog pixels have colour equal to alpha and alpha at least 2/255"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+    "02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "The TV LE files differ heavily from VV's (SnapshotRenderer 700 diff lines, Frame 261), so hunks must be replayed rather than copying files. Coordinate with the LE slice that owns these files.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-06",
+   "title": "Plan doors and hide swings in the Layout Editor",
+   "scope": "New 51/20/Na__LayoutEditor__PlanDoors__.js (1.3.0). Viewport2d__Window Describe passes PoseFor/ShutPoseFor and SwingExcludeTokens; SnapshotRenderer wraps Render2d in DoorPose Apply/Restore with the cut. SheetTools gets the door click, menu rows and cursor; Panel__ViewportSettings gets the Doors row and Hide swings. SheetRecords and the SheetModel Viewports unit gain Viewport__ClosedDoors and Viewport__HideSwings; ConfigState SheetSetup gets GetPlanDoorsSetup. The AppConfig gets the PlanDoors block (SwingCategoryKeys ValeVision__Linetype__DoorSwings) and labels; Styles__Panels gets its rules.",
+   "depends_on": [
+    "WP-S02b-02",
+    "S02a: 43__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js",
+    "LE: Na__LayoutEditor__ViewportRotation__ (TV v2.138.0)",
+    "D-S02b-02"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Plan viewports draw doors open with swing arcs; elevation and section viewports draw every door shut; 3D viewports and the 3D view are untouched",
+    "Clicking a door on the selected plan closes or opens it as one undo step; a locked viewport still toggles; Open all works",
+    "A roof plan hides swings by default; ticking or unticking stands and costs one undo step",
+    "Old sheets load byte-identical; Na__Verify__Exports__.mjs and ModuleGraph pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "ValeVision__DEVLOG__.md",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "risk": "Touches many shared LE files. It is visible on every existing Vale plan sheet (doors open), so publish only after Adam sees it. The exact SheetTools unit names for VV need confirming by the LE slice.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02b-07",
+   "title": "Linework modifier styling in the Layout Editor",
+   "scope": "Add a LineworkModifiers group to the ModelLayers config (Layer__CategoryKey ValeVision__LineworkModifier__FineDetail/VeryFineDetail, SketchUp tags 76-79, Group__AlwaysShow). Viewport2d__Frame imports Na__PlCfg__GetLineworkModifiers for widths. Viewport2d__Linework treats modifier owner keys as never top-level.",
+   "depends_on": [
+    "WP-S02b-02",
+    "D-S02b-07"
+   ],
+   "size": "S",
+   "acceptance": [
+    "A VV model with a nested 76-79 tag draws that detail at its own style and weight on a sheet",
+    "A model without such tags draws byte-identical to before",
+    "The Model Layers panel shows the group even when no loaded category matches"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js"
+   ],
+   "risk": "Low. The Frame file is also edited by WP-S02b-05, so serialise the two.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-08",
+   "title": "Port the slice tests",
+   "scope": "Port Na__Test__FlushJoins__, Na__Test__StoreyBand__ and Na__Test__ElevationDepthFog__ verbatim with a header rename (no path edits when folders 50 and 49 are used). Port Na__Test__HideSwings__ adapted after WP-06 (42->43; 1:200 assertions ported or dropped). Route Na__Test__DimensionRoundUp__ to the LE dimension slice and Na__Test__FloorPlanStoreyLevel__ to S02a.",
+   "depends_on": [
+    "WP-S02b-02",
+    "WP-S02b-04",
+    "WP-S02b-06"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Each ported test exits 0 under node from the VV app root",
+    "No test writes into 02__Src__AppModules (scratch copies only)"
+   ],
+   "files_tv": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ],
+   "files_vv": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ],
+   "hot_files": [],
+   "risk": "Low. HideSwings depends on LE work outside this slice.",
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs",
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs"
+   ]
+  },
+  {
+   "id": "WP-S02b-09",
+   "title": "Ledger, PORT NOTEs, headers and devlog",
+   "scope": "Ledger: add a return-trip section per landed WP; add phase 2/4 notes; record the dimension split as 'VV split; TV copied, not wired'; move the Lantern Designer rows out of the VV-to-TV table; record the version-number convention. Update the PORT NOTE blocks of every ported file (TV version, seams). Fix the VV 45/Na__PlanDimensions__Styles__.css:8 title. Add a VV devlog entry per release (## ValeVision3D v2.N.0 - DD-Mon-YYYY - Title).",
+   "depends_on": [
+    "WP-S02b-01",
+    "WP-S02b-02",
+    "WP-S02b-03",
+    "WP-S02b-04"
+   ],
+   "size": "S",
+   "acceptance": [
+    "Every ledger row for folders 44, 45, 49 and 50 matches the code",
+    "No PORT NOTE says 'verbatim' where a seam exists, and every seam is listed",
+    "The devlog version is chosen from a fresh read of the top of ValeVision__DEVLOG__.md"
+   ],
+   "files_vv": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css"
+   ],
+   "hot_files": [
+    "ValeVision__PARITY__TrueVisionLedger__.md",
+    "ValeVision__DEVLOG__.md",
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css"
+   ],
+   "risk": "Parallel sessions edit the devlog and the ledger, so serialise these writes.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-10",
+   "title": "TV-side back-ports (on Adam's approval only)",
+   "scope": "TV 44 PlanDimensions: rewire all consumers to Na__PlanDimensions__ConfigState__.js; have both mode controllers call ConfigState Load; have Editor use EditorPreview__; drop the duplicated regions from Data and Editor (back under 900 lines). TV ConfigAccess: make the fallback buildToken equal the JSON and fix the duplicate comment. Correct the VV note in TV devlog v2.159.0. Refresh the stale back-port markers in TV folder 50.",
+   "depends_on": [
+    "D-S02b-05"
+   ],
+   "size": "S",
+   "acceptance": [
+    "TV and VV PlanDimensions folders have zero normalised code diff",
+    "TV MarkupBridge reads the loaded config (FontFamily from the JSON)",
+    "TV Na__Verify__Exports__.mjs and ModuleGraph pass"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js",
+    "TrueVision__DEVLOG__.md"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Overlay__.js",
+    "TrueVision__DEVLOG__.md"
+   ],
+   "risk": "These are edits to TV, the lead app. They need Adam's explicit approval, and TV's PWA service worker token may need a bump.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S02b-11",
+   "title": "Cross-slice prerequisites for drawing quality (05 and 15)",
+   "scope": "VV 15__ModelLoader/Na__ModelLoader__MultiModel.js: orthographic cameras take RenderConfig__Linework__OrthoDepthBiasMm (2 mm) through abs(projectionMatrix[2][2])/2, perspective unchanged (TV v2.38.1 / MultiModel 1.3.0), plus the key in 02__AppData/Na__AppConfig__Main.json. VV 05__RenderPipeline/Na__RenderEffect__Supersampler__.js: min(rgb, a) in the present pass (TV v2.103.0). Hand over to the 05/15 slice owners if they already hold these.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Elevation base images lose the fascia and parapet line bleed (pixel diff against before, as in TV row X); a perspective render is unchanged to the pixel",
+    "A supersampled premultiplied layer has colour no greater than alpha at every pixel; opaque frames are byte-identical"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+    "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js"
+   ],
+   "risk": "MultiModel and Main config are high-traffic files - serialise them with other loader and config work.",
+   "tests_to_port": []
+  }
+ ],
+ "decisions_needed": [
+  {
+   "id": "D-S02b-01",
+   "question": "Port the projected-linework 3D-matching rules (HideFlushJoins, SeamsOcclude, LineworkFirst; TV v2.37.0, signed off by Adam in TV on 14-Sep) and the flush tolerance (v2.159.0) to VV now?",
+   "options": "a) port now; b) wait",
+   "recommendation": "a). VV elevations draw the same false lines today. The change is confined to folder 50 and has no TV-only dependency. Note the TV devlog wrongly says VV already has FlushJoins 1.0.0.",
+   "blocks": [
+    "WP-S02b-02"
+   ]
+  },
+  {
+   "id": "D-S02b-02",
+   "question": "Port door pose, storeys and hide swings (TV rows AA and AH, v2.105.0, v2.140.0) to VV? Adam has not recorded a test of AA or AH in TV.",
+   "options": "a) all of it: folder 50 and the door module now, Layout Editor plan doors in the LE wave; b) folder 50 only, with no LE caller (no visible change except the storey annotation band); c) defer",
+   "recommendation": "a). Even if this is deferred, b) is still needed to keep folder 50 file-for-file, because Projector and Pipeline 1.5.0 import DoorPose regardless.",
+   "blocks": [
+    "WP-S02b-01",
+    "WP-S02b-02",
+    "WP-S02b-06"
+   ]
+  },
+  {
+   "id": "D-S02b-03",
+   "question": "Port the Elevation Depth Fog to VV? The TV plan says 'Awaiting Adam's test... then the ValeVision question'.",
+   "options": "a) port with the DIV-1 (ComposerPreset) and DIV-2 (CrossSectionView cap depth) adaptations; b) wait for Adam's test in TV",
+   "recommendation": "a), after S02a lands DevRowShell and the 46 elevation core. The pure modules port verbatim; three seams need adapting.",
+   "blocks": [
+    "WP-S02b-04",
+    "WP-S02b-05"
+   ]
+  },
+  {
+   "id": "D-S02b-04",
+   "question": "Which VV folder should the depth fog go in?",
+   "options": "a) 49__System__ElevationDepthFog (same number as TV); b) a shifted number",
+   "recommendation": "a). The n+1 shift cannot extend past 47 because VV's 50 is taken. Using the same number matches the 50/51 precedent and lets Na__Test__ElevationDepthFog__ port with no path edit.",
+   "blocks": [
+    "WP-S02b-04"
+   ]
+  },
+  {
+   "id": "D-S02b-05",
+   "question": "Plan dimensions split: which app should change?",
+   "options": "a) keep VV's split and rewire TV to it; b) undo VV's split to mirror TV",
+   "recommendation": "a). TV's own plan says to keep splits; TV's Data and Editor are over the 900-line budget; and TV's ConfigState is a never-loaded orphan that feeds MarkupBridge. This is a TV-side change for Adam to approve.",
+   "blocks": [
+    "WP-S02b-10"
+   ]
+  },
+  {
+   "id": "D-S02b-06",
+   "question": "Which gate should control VV's linework bake: Na__DevGate__IsAuthoringEnabled() (TV TD01) or the current IsRunningOnLocalhost()?",
+   "options": "a) DevGate; b) keep localhost",
+   "recommendation": "a). VV already has DevGate 1.1.0 and its Layout Editor uses it. The behaviour change: an explicit lock stops baking on localhost, and ?authoring=on allows it in an installed app.",
+   "blocks": [
+    "WP-S02b-02"
+   ]
+  },
+  {
+   "id": "D-S02b-07",
+   "question": "Adopt the nested LineworkModifier owner keys in VV, and do VV's SketchUp exports carry the 76-79 tags?",
+   "options": "a) adopt ValeVision__LineworkModifier__FineDetail/VeryFineDetail with Layout Editor ModelLayers rows; b) skip the feature",
+   "recommendation": "a). It is harmless when a model carries no 76-79 tags (lines fall back to the parent category). Confirm the VV export uses the same pipeline (Linework GLB 1.6.0, SSOT 76-79).",
+   "blocks": [
+    "WP-S02b-02",
+    "WP-S02b-07"
+   ]
+  },
+  {
+   "id": "D-S02b-08",
+   "question": "Take TV's design-phase seams (Pipeline 1.2.0: optional model root and fingerprint) into VV, although VV has no Model Source?",
+   "options": "a) take them verbatim; b) strip them",
+   "recommendation": "a). No caller passes them, so behaviour does not change, and the file becomes identical to TV's. b) leaves a permanent hunk to re-apply on every future port.",
+   "blocks": [
+    "WP-S02b-02"
+   ]
+  },
+  {
+   "id": "D-S02b-09",
+   "question": "What BuildToken should VV use after the port, and how will its projects be re-baked?",
+   "options": "a) a new VV-specific token plus a localhost Bake All to R2 per live VV project before the next publish; b) reuse TV's token value",
+   "recommendation": "a). Use for example 2026-10-xx-tv-parity, keep the ConfigAccess fallbacks equal to it, and schedule the re-bake. Otherwise public viewers compute linework on their own devices.",
+   "blocks": [
+    "WP-S02b-02"
+   ]
+  },
+  {
+   "id": "D-S02b-10",
+   "question": "Which version numbers should VV files carry after whole-file ports?",
+   "options": "a) adopt TV's version and DEVELOPMENT LOG verbatim, with a VV PORT NOTE listing the seams; b) keep VV's own numbering",
+   "recommendation": "a). This ends the cross-app version collisions and makes future diffs mechanical.",
+   "blocks": [
+    "WP-S02b-02",
+    "WP-S02b-09"
+   ]
+  },
+  {
+   "id": "D-S02b-11",
+   "question": "Take TV door module 1.8.0 (left-button-only clicks; FindAdrAncestor, ResolveHitPanel and IsDoorOpen exports) along with 1.9.0?",
+   "options": "a) yes; b) 1.9.0 only",
+   "recommendation": "a). Right-drag is VV's orbit pan, so a door toggling on a stationary right click is a bug in VV too. The 1.8.0 exports are also what TV's 27 context menu needs if it is ported.",
+   "blocks": [
+    "WP-S02b-01"
+   ]
+  },
+  {
+   "id": "D-S02b-12",
+   "question": "Snapshot history file name: align on the __ suffix (VV) or no suffix (TV)?",
+   "options": "a) TV renames to Na__AppUtils__SnapshotHistory__.js; b) VV drops the __",
+   "recommendation": "a), owned by the 03 slice. It affects two History imports in each app's annotation and dimension folders.",
+   "blocks": []
+  }
+ ],
+ "coverage": {
+  "files_examined": 172,
+  "files_in_scope_tv": 59,
+  "files_in_scope_vv": 55,
+  "not_examined": [
+   "Full bodies of the TV Layout Editor consumers (PlanDoors, SnapshotRenderer, Viewport2d__Frame/Linework/Window, RenderComposites, PdfExporter) - only headers, imports and call sites were read; these files belong to the LE slices",
+   "TV 41__System__SectionCutEngine beyond RenderDepthInto/CapMeshes, and VV 46 ElevationViews internals (S02a scope)",
+   "Runtime behaviour - no app was run; every finding comes from static reading of code, headers, devlogs and the ledger",
+   "WCP/server.py - this slice involves no local-server route",
+   "VV 31 Video Studio call sites of the door module - the exports were compared, but call sites were not traced line by line"
+  ]
+ }
+}

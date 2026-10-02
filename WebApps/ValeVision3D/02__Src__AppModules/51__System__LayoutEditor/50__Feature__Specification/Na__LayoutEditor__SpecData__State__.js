@@ -39,14 +39,37 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : the setters are new
-// - Back-port     : the same split applies to TrueVision's copy.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js
+// - Source version: 1.2.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. This app's copy was its 1.0.0
+//                   (the split of Na__LayoutEditor__SpecData__.js, 15-Sep-2026, ValeVision3D v2.47.0),
+//                   the split TrueVision's unit was made from; 1.1.0 (LOCATE_EVENT, TrueVision3D
+//                   v2.144.0) and 1.2.0 (the lockstep's state) come across together.
+// - Parity        : adapted
+// - Divergences   :
+//   - Banner reads ValeVision3D.
+//   - DESCRIPTION, the sentence written into every specification file, names "the ValeVision drawings".
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Sep-2026 - Version 1.2.0
+// - The lockstep with the local file (Na__LayoutEditor__SpecData__Lockstep__):
+//   FileJson and FileIso (what the local TrueVision__DrawingNotes__.json held
+//   when this app last read or wrote it, and when it last changed), LiveIso
+//   (when the app's copy last changed), Conflict (the open question when the
+//   two are out of step) and LocalSaving (a write of the local file in
+//   flight), each with its setter, and DISCARDED_PREFIX, where the copy an
+//   answer did not keep is put aside in this browser.
+//
+// 22-Sep-2026 - Version 1.1.0
+// - LOCATE_EVENT: a request to show a note in the drawing editor's own
+//   Specification tab (the left column), scrolled to and pulsing. Raised by
+//   a specification bubble's right-click menu on the sheet, answered by
+//   Na__LayoutEditor__Panel__ScrapbookSpecification__ - declared here with
+//   OPEN_EVENT and GOTO_EVENT so neither has to import the other.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecData__.js; the code moved verbatim.
 //
@@ -74,7 +97,9 @@
     const Na__LeSpec__CHANGED_EVENT = 'na-layouteditor-spec-changed';   // <-- detail { reason, codesChanged, live, noteId, groupId }
     const Na__LeSpec__OPEN_EVENT    = 'na-layouteditor-spec-open';      // <-- detail { noteId } : show the Project Specification tab
     const Na__LeSpec__GOTO_EVENT    = 'na-layouteditor-spec-goto';      // <-- detail { sheetId, leaderId } : show a sheet with a bubble selected
+    const Na__LeSpec__LOCATE_EVENT  = 'na-layouteditor-spec-locate';    // <-- detail { noteId, leaderId } : show a note in the drawing's own Specification tab, scrolled to and pulsing
     const Na__LeSpec__DRAFT_PREFIX  = 'Na__LayoutEditor__SpecDraft__';
+    const Na__LeSpec__DISCARDED_PREFIX = 'Na__LayoutEditor__SpecDiscarded__';  // <-- The copy a lockstep answer did not keep, one per project
     const Na__LeSpec__VERSION       = 1;
     const Na__LeSpec__STATUS_IDLE    = 'idle';      // <-- Not asked for yet
     const Na__LeSpec__STATUS_LOADING = 'loading';
@@ -117,6 +142,15 @@
     let Na__LeSpec__ShowToast   = null;
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | The Lockstep With the Local File (Na__LayoutEditor__SpecData__Lockstep__)
+    // ------------------------------------------------------------
+    let Na__LeSpec__FileJson    = null;     // <-- The local file's content as this app last read or wrote it; null when not known
+    let Na__LeSpec__FileIso     = '';       // <-- When the local file last changed, as the server reports it
+    let Na__LeSpec__LiveIso     = '';       // <-- When the app's copy last changed
+    let Na__LeSpec__Conflict    = null;     // <-- The open lockstep question, when the app's copy and the file disagree
+    let Na__LeSpec__LocalSaving = false;    // <-- A write of the local file is in flight
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -146,6 +180,11 @@
     function Na__LeSpec__SetIdFloor(value)     { Na__LeSpec__IdFloor     = value; }
     function Na__LeSpec__SetEditable(value)    { Na__LeSpec__Editable    = value; }
     function Na__LeSpec__SetShowToast(value)   { Na__LeSpec__ShowToast   = value; }
+    function Na__LeSpec__SetFileJson(value)    { Na__LeSpec__FileJson    = value; }
+    function Na__LeSpec__SetFileIso(value)     { Na__LeSpec__FileIso     = value; }
+    function Na__LeSpec__SetLiveIso(value)     { Na__LeSpec__LiveIso     = value; }
+    function Na__LeSpec__SetConflict(value)    { Na__LeSpec__Conflict    = value; }
+    function Na__LeSpec__SetLocalSaving(value) { Na__LeSpec__LocalSaving = value; }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -228,7 +267,9 @@
         Na__LeSpec__CHANGED_EVENT,
         Na__LeSpec__OPEN_EVENT,
         Na__LeSpec__GOTO_EVENT,
+        Na__LeSpec__LOCATE_EVENT,
         Na__LeSpec__DRAFT_PREFIX,
+        Na__LeSpec__DISCARDED_PREFIX,
         Na__LeSpec__VERSION,
         Na__LeSpec__STATUS_IDLE,
         Na__LeSpec__STATUS_LOADING,
@@ -261,6 +302,11 @@
         Na__LeSpec__IdFloor,
         Na__LeSpec__Editable,
         Na__LeSpec__ShowToast,
+        Na__LeSpec__FileJson,
+        Na__LeSpec__FileIso,
+        Na__LeSpec__LiveIso,
+        Na__LeSpec__Conflict,
+        Na__LeSpec__LocalSaving,
         Na__LeSpec__SetDoc,
         Na__LeSpec__SetIndex,
         Na__LeSpec__SetStatus,
@@ -277,6 +323,11 @@
         Na__LeSpec__SetIdFloor,
         Na__LeSpec__SetEditable,
         Na__LeSpec__SetShowToast,
+        Na__LeSpec__SetFileJson,
+        Na__LeSpec__SetFileIso,
+        Na__LeSpec__SetLiveIso,
+        Na__LeSpec__SetConflict,
+        Na__LeSpec__SetLocalSaving,
         Na__LeSpec__Dispatch,
         Na__LeSpec__Toast,
         Na__LeSpec__CleanPrefix,

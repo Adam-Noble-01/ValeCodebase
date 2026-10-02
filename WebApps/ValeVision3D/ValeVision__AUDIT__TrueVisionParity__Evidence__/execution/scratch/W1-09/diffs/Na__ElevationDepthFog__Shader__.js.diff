@@ -1,0 +1,32 @@
+--- TV@b2aa9151/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js
++++ VV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - ELEVATION DEPTH FOG - SHADER
++// VALEVISION3D - ELEVATION DEPTH FOG - SHADER
+@@ -83,2 +83,16 @@
+-// - Authored in   : TrueVision3D first (20-Sep-2026)
+-// - ValeVision    : not yet ported.
++// - Ported from   : TrueVision3D 02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js
++// - Source version: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026, as changed by TrueVision3D v2.103.0,
++//                   21-Sep-2026, which its log does not record; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-09}}, with the fog system's other pure leaves.
++//                   TrueVision's own note said "not yet ported" and its fog plan still awaits Adam's
++//                   test; it comes across under DR-01 (c), and v2.94.0 and v2.103.0 are named as not
++//                   yet confirmed by Adam in TrueVision.
++// - Parity        : verbatim, and inert: only the render layer imports it, and that arrives with W2-03
++//                   (DR-15).
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - The DEVELOPMENT LOG is TrueVision's, plus one entry above it recording v2.103.0's change to
++//     this file, which TrueVision's own log does not (S02b c.4); the module version stays
++//     TrueVision's 1.0.0 (DR-34).
++// - Back-port     : TrueVision's own log could record v2.103.0 the same way (S02b WP-S02b-10R item 3,
++//                   the TrueVision lane, DR-36).
+@@ -88,0 +103,7 @@
++// 21-Sep-2026 - TrueVision3D v2.103.0 (no module version of its own; logged by ValeVision3D {{VVREL:W1-09}})
++// - A layer of its own writes its colour EXACTLY equal to its alpha when it
++//   draws straight to the canvas, and adds the 8-bit step (NA_STEP) only where
++//   a supersampled bake will sRGB-encode it (uEncodeFollows): premultiplied
++//   colour above its own alpha is undefined in WebGL, and 99.7% of the layer's
++//   pixels had been leaving here that way. The supersampler's present pass
++//   holds the encoded colour down to the alpha - the other half of the fix.

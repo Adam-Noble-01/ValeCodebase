@@ -1,0 +1,127 @@
+﻿ValeVision3D - painted on the point
+
+  The snap marker (the shipped State, Glyphs and Marker units)
+  PASS  marker at 0.34x: at the layer's corner, its origin there, all written inline
+  PASS    its MIDDLE is on the paper point
+  PASS    and it is its own size on screen (18 px)
+  PASS  marker at 1x: at the layer's corner, its origin there, all written inline
+  PASS    its MIDDLE is on the paper point
+  PASS    and it is its own size on screen (18 px)
+  PASS  marker at 8x: at the layer's corner, its origin there, all written inline
+  PASS    its MIDDLE is on the paper point
+  PASS    and it is its own size on screen (18 px)
+  PASS  marker at 32x: at the layer's corner, its origin there, all written inline
+  PASS    its MIDDLE is on the paper point
+  PASS    and it is its own size on screen (18 px)
+  PASS  marker at 64x: at the layer's corner, its origin there, all written inline
+  PASS    its MIDDLE is on the paper point
+  PASS    and it is its own size on screen (18 px)
+  PASS  one marker element, however often it is shown
+  PASS    and one zoom listener with it
+  PASS  a zoom settling under the marker on show gives it its size again
+  PASS    still on the point
+  PASS    which it still answers for (the drawing axes cross there)
+  PASS  a hidden marker is left alone by a settling zoom
+
+  The vertex grips and the rubber band (Place, PlaceBand and ShowBand, cut from the shipped Grips file)
+  PASS  grip at 0.34x: at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 0.34x, turned 45 (the insert diamond): at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 1x: at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 1x, turned 45 (the insert diamond): at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 8x: at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 8x, turned 45 (the insert diamond): at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 32x: at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 32x, turned 45 (the insert diamond): at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 64x: at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  grip at 64x, turned 45 (the insert diamond): at the layer's corner, its origin there
+  PASS    its MIDDLE is on the vertex
+  PASS    and it is 9 px across on screen
+  PASS  band level at 0.34x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band level at 1x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band level at 8x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band level at 32x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band level at 64x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band on a slant, the end given as [x, y] at 0.34x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band on a slant, the end given as [x, y] at 1x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band on a slant, the end given as [x, y] at 8x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band on a slant, the end given as [x, y] at 32x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  band on a slant, the end given as [x, y] at 64x: at the layer's corner
+  PASS    the MIDDLE of its thickness starts on the first point
+  PASS    and ends on the point it runs to
+  PASS    one pixel thick on screen, whatever the zoom
+  PASS  one band element, and one zoom listener with it
+  PASS  a zoom settling under the band on show lays it again: one pixel thick
+  PASS    between the same two points
+  PASS  a band taken away is left alone by a settling zoom
+
+  The viewport frames and the stylesheets
+  PASS  RefreshFrames carries each frame to its place by a translate of its corner
+  PASS    from the paper's corner: left 0 and top 0, written with it
+  PASS    and nothing else is ever written to its left or top
+  PASS  the stylesheet says nothing of where a viewport frame sits
+  PASS  the stylesheet says nothing of where the snap marker sits
+  PASS  the rubber band's origin is its own corner (the one thing its stylesheet does say)
+
+  Mutations
+  PASS  MUTATION caught: the marker is placed by left and top again
+  PASS  MUTATION caught: the marker is scaled before it is carried (it lands at the point divided by the zoom)
+  PASS  MUTATION caught: the marker hangs from its corner, not its middle
+  PASS  MUTATION caught: the marker never hears a zoom settle
+  PASS  MUTATION caught: a settling zoom places a marker that is not on show
+  PASS  MUTATION caught: a grip is placed by left and top again
+  PASS  MUTATION caught: a grip is turned about its corner, not its middle
+  PASS  MUTATION caught: the band is laid out in paper pixels again (its edge grows with the zoom)
+  PASS  MUTATION caught: the band hangs to one side of its line
+  PASS  MUTATION caught: the band never hears a zoom settle
+  PASS  MUTATION caught: a frame is placed by left and top again
+  PASS  MUTATION caught: a frame's corner is left to the stylesheet
+  PASS  MUTATION caught: the marker's origin is left to the stylesheet
+  PASS  MUTATION caught: a stylesheet takes to placing the marker
+  PASS  MUTATION caught: the rubber band's stylesheet rule loses its origin
+
+Every check passed.

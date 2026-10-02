@@ -18,6 +18,16 @@
 //   while the graph as a whole is broken. ValeVision shipped exactly that and
 //   the app died on `Failed to resolve module specifier "clipper2-js"`, thrown
 //   by a vendor file that no app module imports directly.
+// - STRINGS ARE NOT CODE. The specifier scan reads a copy of each file in
+//   which the contents of every string literal are blanked - the quotes
+//   kept and every offset unchanged - and takes each specifier back from
+//   the real text at the same place. Before this, prose inside a string
+//   read as an import: TrueVision's scene editor builds the message
+//   'No 3D scenes in "' + groupName + '" to export', and the word export
+//   followed by a quote was taken for a re-export of whatever text ran to
+//   the next quote (S09 B13). A quoted string that reaches the end of its
+//   line is closed there, as JavaScript requires, so one misread quote
+//   cannot blank the code below it.
 //
 // USAGE:
 //     node 80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs
@@ -26,7 +36,29 @@
 //
 // -----------------------------------------------------------------------------
 //
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.20.0); TrueVision3D
+//                   carries the twin at the same path (1.0.0 at b2aa9151,
+//                   identical apart from the app names)
+// - Parity        : diverged (from 1.1.0)
+// - Divergences   :
+//   - String literal contents are blanked before the specifier scan, so
+//     prose in a string is never read as an import or export (1.1.0).
+// - Back-port     : TrueVision wants the same fix: its own walk stops on the
+//                   scene-editor string (21, its standing baseline since
+//                   v2.166.0). Recorded for the TrueVision lane (WP-S09-14,
+//                   DR-36); not done here.
+//
+// -----------------------------------------------------------------------------
+//
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.1.0 (v2.71.1)
+// - String literal contents are blanked before the specifier scan, and each
+//   specifier is read back from the real text at the same offsets, so a
+//   string such as '" to export' is no longer read as a specifier (S09
+//   B13). With a copy of TrueVision's scene-editor string in the graph the
+//   walk exits 0; on this tree it walks exactly the modules 1.0.0 walked.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Written for the Phase A r184 vendoring (v2.20.0).
 //
@@ -68,8 +100,10 @@ import { fileURLToPath } from 'node:url';
     ];
     // ------------------------------------------------------------
 
-    // Static import + dynamic import + re-export, all forms.
-    const Na__Verify__SpecifierPattern = /(?:^|[\s;}])(?:import|export)\s*(?:[\s\S]*?\sfrom\s*)?['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
+    // Static import + dynamic import + re-export, all forms. Run over the
+    // string-blanked copy; the d flag gives each specifier's offsets, which
+    // are read back from the real text.
+    const Na__Verify__SpecifierPattern = /(?:^|[\s;}])(?:import|export)\s*(?:[\s\S]*?\sfrom\s*)?['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)/gd;
 
 // endregion -------------------------------------------------------------------
 
@@ -131,6 +165,106 @@ import { fileURLToPath } from 'node:url';
         }
 
         return output;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Blank the Contents of Every String Literal
+    // ------------------------------------------------------------
+    // Same length as the input, quotes kept, every character inside a
+    // string (and inside a template literal, its ${} parts included)
+    // replaced by a space, newlines kept. The specifier pattern then sees
+    // only code: the words import and export inside prose are gone, and
+    // each real specifier keeps its quotes, with blanks between them whose
+    // offsets point back at its text.
+    //
+    // A ' or " string that reaches the end of its line is closed there:
+    // JavaScript allows no line break in one, so a quote misread out of a
+    // regular expression literal costs one line, never the file below it.
+    // Regular expression literals themselves are recognised by the usual
+    // rule (a / where an expression may start) and blanked too.
+    // ------------------------------------------------------------
+    function Na__Verify__MaskStrings(source) {
+        const output = source.split('');
+        const length = source.length;
+        const blank  = (at) => { if (output[at] !== '\n' && output[at] !== '\r') output[at] = ' '; };
+        let index    = 0;
+        let previous = '';                                                                       // <-- Last code character that was not white space
+        let word     = '';                                                                       // <-- Last identifier or keyword read
+
+        const regexMayStart = () => previous === '' || '(,=:[!&|?{};+-*%<>~^'.indexOf(previous) !== -1
+            || /^(?:return|typeof|instanceof|case|do|else|in|of|new|delete|void|throw|yield|await)$/.test(word);
+
+        const skipQuoted = (quote) => {                                                          // <-- index sits on the opening quote
+            index += 1;
+            while (index < length) {
+                const char = source[index];
+                if (char === '\\') { blank(index); if (index + 1 < length) blank(index + 1); index += 2; continue; }
+                if (char === quote) { index += 1; return; }
+                if (char === '\n' && quote !== '`') return;                                    // <-- Unterminated: closed at the line end
+                if (quote === '`' && char === '$' && source[index + 1] === '{') {
+                    blank(index); blank(index + 1); index += 2;
+                    let depth = 1;
+                    while (index < length && depth > 0) {
+                        const inner = source[index];
+                        if (inner === '"' || inner === "'" || inner === '`') {
+                            const from = index;
+                            skipQuoted(inner);
+                            for (let at = from; at < index; at++) blank(at);
+                            continue;
+                        }
+                        if (inner === '{') depth += 1;
+                        else if (inner === '}') depth -= 1;
+                        blank(index);
+                        index += 1;
+                    }
+                    continue;
+                }
+                blank(index);
+                index += 1;
+            }
+        };
+
+        while (index < length) {
+            const char = source[index];
+            if (char === '"' || char === "'" || char === '`') {
+                skipQuoted(char);
+                previous = char;
+                word     = '';
+                continue;
+            }
+            if (char === '/' && regexMayStart()) {                                               // <-- A regular expression literal
+                let at = index + 1;
+                let inClass = false;
+                while (at < length && source[at] !== '\n') {
+                    const inner = source[at];
+                    if (inner === '\\') { at += 2; continue; }
+                    if (inner === '[') inClass = true;
+                    else if (inner === ']') inClass = false;
+                    else if (inner === '/' && !inClass) break;
+                    at += 1;
+                }
+                if (at < length && source[at] === '/') {                                          // <-- Closed on its own line: blank its body
+                    for (let k = index + 1; k < at; k++) blank(k);
+                    index = at + 1;
+                    while (index < length && /[a-z]/i.test(source[index])) index += 1;           // <-- Flags
+                    previous = ')';                                                              // <-- A regex is a value
+                    word     = '';
+                    continue;
+                }
+            }
+            if (/[A-Za-z0-9_$]/.test(char)) {
+                let end = index;
+                while (end < length && /[A-Za-z0-9_$]/.test(source[end])) end += 1;
+                word     = source.slice(index, end);
+                previous = source[end - 1];
+                index    = end;
+                continue;
+            }
+            if (!/\s/.test(char)) { previous = char; word = ''; }
+            index += 1;
+        }
+        return output.join('');
     }
     // ------------------------------------------------------------
 
@@ -218,11 +352,13 @@ import { fileURLToPath } from 'node:url';
 
             let source;
             try { source = Na__Verify__StripComments(readFileSync(currentFile, 'utf8')); } catch { continue; }
+            const masked = Na__Verify__MaskStrings(source);                                      // <-- Strings blanked; offsets unchanged
 
             Na__Verify__SpecifierPattern.lastIndex = 0;
             let match;
-            while ((match = Na__Verify__SpecifierPattern.exec(source)) !== null) {
-                const specifier = match[1] || match[2];
+            while ((match = Na__Verify__SpecifierPattern.exec(masked)) !== null) {
+                const span      = match.indices[1] || match.indices[2];
+                const specifier = span ? source.slice(span[0], span[1]) : null;                 // <-- Read back from the real text
                 if (!specifier) continue;
                 if (specifier.startsWith('data:') || specifier.startsWith('http')) continue;      // <-- Not a disk file
                 // A TEMPLATE LITERAL IS NOT A PATH. `import(`./${name}.js`)` is a

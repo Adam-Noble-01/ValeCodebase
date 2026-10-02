@@ -1,0 +1,22 @@
+{
+ "02__Src__AppModules\\01__AppCore\\Na__AppFlow__LoadingSequence.js": {
+  "sha1": "fc88f71e027795395ab4325406fa0a0bd63ab167",
+  "bytes": 115329,
+  "lines": 1822,
+  "crlf": 1822
+ },
+ "02__Src__AppModules\\05__RenderPipeline\\Na__RenderLoop__Invalidation.js": {
+  "sha1": "8711cd89c550d5f248582ab13079ba96e0ef40b5",
+  "bytes": 6085,
+  "lines": 128,
+  "crlf": 0
+ },
+ "02__Src__AppModules\\26__System__ToggleModelElements\\Na__UiFeature__ModelToggle__Controls.js": {
+  "sha1": "b23cfde23fc7e767296a3fcd2531ef521d6f8ca8",
+  "bytes": 24550,
+  "lines": 419,
+  "crlf": 419
+ },
+ "02__Src__AppModules\\05__RenderPipeline\\Na__RenderLoop__InteractiveOverlays__.js": null,
+ "02__Src__AppModules\\26__System__ToggleModelElements\\Na__ModelGroup__PhaseLibrary__.js": null
+}

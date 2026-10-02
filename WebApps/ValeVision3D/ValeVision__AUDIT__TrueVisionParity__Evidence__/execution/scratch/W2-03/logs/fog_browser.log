@@ -1,0 +1,24 @@
+PASS S.1 RenderFrame draws (preset active, plain render route)
+PASS S.2 a drawing with its fog OFF: every pixel equal to no fog source at all
+PASS S.3 the poche (the cut room, drawn by the section overlay AFTER the fog) stays solid
+PASS S.4 a surface in front of Depth (0.3 m behind the plane) is untouched
+PASS S.5 a surface inside the fade (2.75 m) is lifted part of the way to the paper
+PASS S.6 a surface past End (11 m) has faded into the paper
+PASS S.7 empty paper stays paper
+PASS S.8 nothing outside the two blocks behind Depth changes at all (cap, near block, paper)
+PASS S.9 a perspective camera gets no fog (every pixel as without a source)
+PASS S.10 no WebGL error
+PASS T.1 the card thumbnail is captured from the fogged frame (far faded, mid lifted, poche solid)
+PASS D.1 the Dev row builds (caption, Off/On, three number boxes, readout) and writes through its accessors
+PASS E.1 an export of the drawing runs one tile with one section overlay
+PASS E.2 export with the fog OFF: every pixel equal to no fog source
+PASS E.3 the export raster carries the fog: far block faded, mid lifted, near and paper untouched
+PASS E.4 ...and the poche stays solid (the section overlay drawn after the fog)
+PASS E.5 per tile: the fog drawn once and the section overlay once
+PASS E.6 the export matches the screen (same fogged colours at the same points)
+
+mode    : landed; served 48 files; aborted 0
+hashes  : {"frameNull":"176e4775:64000","frameOff":"176e4775:64000","exportOff":"e9634f75:256000"}
+info    : {"samples":{"cap":{"off":[80,80,80,255],"on":[80,80,80,255]},"near":{"off":[64,64,64,255],"on":[64,64,64,255]},"mid":{"off":[64,64,64,255],"on":[131,131,131,255]},"far":{"off":[64,64,64,255],"on":[255,255,255,255]},"paper":{"off":[255,255,255,255],"on":[255,255,255,255]}},"glError":0,"thumbnail":{"blob":730,"far":[255,255,255,255],"mid":[131,131,131,255],"cap":[80,80,80,255]},"devRow":{"built":true,"inputs":3,"buttons":2,"flow":{"enabled":true,"start":2500,"changes":2,"readout":"fog from 2500 to 15000 mm behind the plane - 50% by half way"}},"exportOff":{"w":320,"h":200,"fogCalls":1,"overlayCalls":1},"exportSamples":{"cap":{"off":[80,80,80,255],"on":[80,80,80,255]},"near":{"off":[64,64,64,255],"on":[64,64,64,255]},"mid":{"off":[64,64,64,255],"on":[131,131,131,255]},"far":{"off":[64,64,64,255],"on":[255,255,255,255]},"paper":{"off":[255,255,255,255],"on":[255,255,255,255]}},"exportOn":{"fogCalls":1,"overlayCalls":1},"mode":"landed"}
+console : 12 line(s), 0 error(s)
+RESULT: 18/18 PASS

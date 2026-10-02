@@ -1,0 +1,42 @@
+W2-29 acceptance - Patterns panel and the hatch ready chain
+  PASS  VV panel imports and registers without throwing
+  PASS  exports are TrueVision's two
+  PASS  registered in the right column, id patterns, no spec.tab (lands on the first tab, Properties)
+  PASS  hidden at registration, before the library loads
+  PASS  shown once Na__LeHatch__Ready resolves, then refreshed
+  PASS  links its own stylesheet from its own folder
+  PASS  the linked stylesheet exists (OC-07)
+  PASS  library: Construction Materials first with 14 tiles, then a second pack
+  PASS  first tile is Brickwork (the default a ticked Hatch picks)
+  PASS  every Construction tile is drawn in #333333 (Pack__SwatchInk), none in the woodland green
+  PASS  Site Plan pack second, 5 tiles (DR-08 (B) / DR-19 default: both packs)
+  PASS  no site plan viewport: every layer row hidden (site plans dormant)
+  PASS  status line is TrueVision's no-viewport note
+  PASS  no console error, no unhandled rejection
+  PASS  the library loads in 22 no-store requests (index, 2 pack indexes, 19 patterns)
+  PASS  PARITY: TrueVision's panel at b2aa9151 behaves identically (registration, visibility, controls, DOM, tiles, requests, console)
+  PASS  missing library: no throw, no console error, no rejection
+  PASS  missing library: no tiles; the section says "The pattern library is empty."
+  PASS  missing library: one [ValeVision3D] warning from the hatch module
+  PASS  missing library: hidden while the library is being looked for
+  PASS  PARITY (missing library): TrueVision's panel behaves identically
+        note: once Ready settles, both apps SHOW the section with the empty-library note (visibleAfterReady = true).
+  PASS  panel = TrueVision's bytes except the banner and the PORT NOTE block
+  PASS  panel is LF, as git show returns it
+  PASS  stylesheet = TrueVision's bytes except the banner and the PORT NOTE
+  PASS  Na__LeHatch__Ready imported from TrueVision's path
+  PASS  Na__LePanelPatterns__Register imported from TrueVision's path
+  PASS  ready chain is TrueVision's order over the names this app has
+  PASS  Na__LeHatch__Ready sits straight after Na__LeDash__Ready
+  PASS  the ready chain's own count comment says eight
+  PASS  Patterns registered straight after the three scrapbook libraries
+  PASS  right column registration order is TrueVision's over the panels this app has
+  PASS  registration line and comment are TrueVision's
+  PASS  the loader awaits Initialize, which returns the ready chain, before any sheet is entered (first paint waits on the hatch library)
+  PASS  mode controller log entry 1.18.6 carries {{VVREL:W2-29}}
+  PASS  PORT NOTE no longer lists patterns as not yet taken
+  PASS  "patterns" is in LayoutEditor__Panels__AccordionSections
+  PASS  AccordionSections keeps TrueVision's relative order
+  PASS  site plan drawings stay switched off (DR-08 (B))
+
+RESULT: PASS (38 pass, 0 fail)

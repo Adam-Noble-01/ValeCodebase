@@ -39,7 +39,7 @@
 //
 // ---------------------------------------------------------------------------
 //
-// THE FOUR CHANGES FROM THE VENDORED IMPLEMENTATION
+// THE FOUR CHANGES FROM THE VENDORED IMPLEMENTATION, AND ONE SWITCH
 //
 // Each is here because it was measured or reasoned to be a real cost, and each is
 // noted at the line it affects.
@@ -71,6 +71,19 @@
 //      Descent is ordered highest child first so that the tall occluder which
 //      saturates an edge is usually found early.
 //
+//   5  SEAMS OCCLUDE (options.SeamsOcclude - a ValeVision switch, off for Run Diff)
+//      The vendored overlap test skips a triangle side lying exactly along the
+//      edge, then counts the corner at its far end on the NEXT side - which is
+//      that same skipped side - so it finds one crossing, not two, and the
+//      triangle covers nothing. An edge BEHIND a seam, where two occluders meet
+//      exactly on its line, was therefore never hidden: a wall band sitting
+//      flush on the wall below lets every edge at that height through, the
+//      inner face's included, though the depth buffer hides them all in 3D.
+//      With the switch on, that side IS the crossing and the triangle covers
+//      the edge along it. Only the part of an edge beneath the plane reaches
+//      this test, so an edge lying ON the face still draws. Off, the
+//      arithmetic is the vendored one exactly.
+//
 // ---------------------------------------------------------------------------
 //
 // ON EXACTNESS
@@ -95,26 +108,30 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ClipKernel__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026 (created 07-Aug-2026)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : verbatim
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__ClipKernel__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0 (13-Sep-2026) took TrueVision's owner tags);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim. Without SeamsOcclude the output is byte-identical to 1.1.0.
 // - Divergences   :
-//   - Identifiers and console prefix only.
-// - Back-port     : none pending.
+//   - Banner reads ValeVision3D; DESCRIPTION calls SeamsOcclude "a ValeVision switch" (the running app
+//     adds it to the vendored kernel). No console output in this file.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
-// - Owner tags ride through the clip. When the edge set carries Owners, every
-//   piece an edge is cut into is stamped with that edge's category id, in a
-//   buffer grown in step with the coordinates, and the result adds Owners and
-//   HiddenOwners. Without owners both stay null. Ported from TrueVision3D (Edge Styles).
+// 14-Sep-2026 - Version 1.2.0
+// - options.SeamsOcclude: a triangle side lying exactly along the edge covers
+//   the edge along that side (change 5 above). Without it the output is
+//   byte-identical to 1.1.0. (1.1.0, the owner tags of 12-Sep-2026, was never
+//   logged here.)
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Ported from the Lantern Designer projection engine for port Phase 4;
-//   identifiers renamed to the ValeVision namespace and the header restyled.
+//   identifiers renamed to the TrueVision namespace and the header restyled.
 //   The body is kept as the Lantern Designer wrote it so the kernel stays
 //   diff-able against its source and the Diff harness remains meaningful.
 //
@@ -293,6 +310,7 @@
             : 0;
         const minimumLengthSq  =  minimumLength * minimumLength;
         const wantHidden       =  settings.IncludeHiddenEdges === true;
+        const seamsOcclude     =  settings.SeamsOcclude === true;             // <-- Change 5 in the header
 
         // OWNER TAGS RIDE ALONG WHEN THE EDGES CARRY THEM. edges.Owners is one
         // category id per edge; the sinks turn that into one id per emitted
@@ -517,7 +535,13 @@
 
                         let hx2, hz2;
                         if (on1 && on2) {
-                            continue;                                         // <-- Triangle side lies along the cut: the other two sides describe it
+                            if (!seamsOcclude) continue;                            // <-- Vendored: skipped, and the corner rule then finds one crossing, not two
+                            h0x  =  p1x;                                            // <-- SEAMS OCCLUDE: the side along the cut IS the crossing
+                            h0z  =  p1z;
+                            h1x  =  p2x;
+                            h1z  =  p2z;
+                            hitCount  =  2;
+                            break;
                         } else if (on1) {
                             hx2  =  p1x;
                             hz2  =  p1z;

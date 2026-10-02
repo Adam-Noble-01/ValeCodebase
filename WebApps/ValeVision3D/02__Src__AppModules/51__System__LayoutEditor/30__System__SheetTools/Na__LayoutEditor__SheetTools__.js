@@ -22,20 +22,35 @@
 //   of it. Inside a 3D viewport's content the wheel zooms its picture
 //   (Na__LayoutEditor__Viewport3dZoom__), and Enter finishes, keeping the
 //   zoom. Dimensions: grips re-pick the points and slide the line (with
-//   inference); click the value and drag it off the line for a curved leader
-//   back to the centre; double-click edits the value. Shapes: grips move vertices;
-//   a drag of the whole shape snaps to the linework; Shift-click an edge
-//   inserts a vertex.
+//   inference); double-click edits the value. Clicking the value and
+//   dragging it moves the text and draws a curved leader back to the
+//   centre of the dimension line. Shapes: grips move vertices; a drag of
+//   the whole shape snaps to the linework; Shift-click an edge inserts a
+//   vertex.
+// - Text: the round grip on a stem off the top of a selected text item turns
+//   it about the middle of its box (Na__LayoutEditor__TextTool__), holding
+//   RotateStepDeg steps with Shift; the right-click menu's Reset rotation
+//   levels it again.
+// - Plan doors: a click on a door in the selected plan viewport closes it or
+//   opens it again (Na__LayoutEditor__PlanDoors__).
+// - A press on a point of a 2D viewport's own linework carries the viewport
+//   BY that point, snapping it onto or into line with other drawings, through
+//   Na__LayoutEditor__ViewportSnapMove__. Hovering shows the point first.
+// - THE MOVE ANCHOR (Na__LayoutEditor__MoveAnchor__): Ctrl+click one item or
+//   one group and a red cross comes up in the middle of its box, with the Move
+//   tool. Drag the cross onto any snap point to re-place it; drag the item and
+//   it is carried by the cross alone - from this point to that point.
 // - Keys: Delete removes the selection (a viewport asks first), Escape
 //   backs out, Space clears the selection, Enter finishes a shape or the
 //   editing of a viewport's content, arrows nudge by a millimetre (ten with
 //   Shift), V T D L R B pick a tool, Ctrl+Z
 //   and Ctrl+Y step the history, Ctrl+C Ctrl+V Ctrl+D copy, paste and
 //   duplicate a viewport or a vector (Na__LayoutEditor__ViewportClipboard__),
-//   E picks the Leader tool. Nothing fires while typing in a field; a Ctrl
-//   chord still reaches the sheet from a select, a checkbox or a number box.
-//   While a vector is being drawn, Ctrl+Z / Ctrl+Y take vertices off and put
-//   them back instead of stepping the sheet.
+//   E picks the Leader tool. Nothing
+//   fires while typing in a field; a Ctrl chord still reaches the sheet from
+//   a select, a checkbox or a number box, which have no undo or paste of their
+//   own. While a vector is being drawn, Ctrl+Z / Ctrl+Y take vertices off and
+//   put them back instead of stepping the sheet.
 // - Eyedropper (B): picks the style off one item and paints it onto others
 //   through Na__LayoutEditor__Eyedropper__. It neither selects nor drags, so
 //   a run of style clicks never swaps the right-hand panel out mid-run.
@@ -55,10 +70,6 @@
 //   leader's tip grip re-points it, its head (the bubble, the note or the
 //   round anchor grip) moves while the tip stays, and its curve moves the
 //   whole leader; double-click edits its text.
-// - Text: the round grip on a stem off the top of a selected text item turns
-//   it about the middle of its box (Na__LayoutEditor__TextTool__), holding
-//   RotateStepDeg steps with Shift; the right-click menu's Reset rotation
-//   levels it again.
 // - While the Draw or Dimension tool is placing a point the arrows lock
 //   the axis instead of nudging: left or right the X, up or down the Y,
 //   the same key again to release, as in SketchUp LayOut.
@@ -71,7 +82,8 @@
 //   being dragged and the viewport being moved; it is refreshed after every
 //   move and press. A value typed while the Draw, Rectangle or Dimension tool
 //   is up, or while a vertex or a viewport is being dragged, is the box's
-//   before these keys see it. A length typed during a vertex drag moves that
+//   before these keys see it, so Enter and Escape reach the tools as before
+//   whenever nothing is typed. A length typed during a vertex drag moves that
 //   vertex that far along the drag (TypeVertexLength); during a viewport
 //   frame drag it moves the frame (TypeViewportLength).
 // - A right click that did not pan opens the context menu for what is
@@ -88,7 +100,7 @@
 //   that does not move narrows the selection to it.
 // - Read-only sessions (the web build) still select and inspect; every
 //   mutation is gated on the editable flag.
-// - THE UNITS (1.24.0). This file keeps Attach and Detach, the listeners map
+// - THE UNITS (1.29.0). This file keeps Attach and Detach, the listeners map
 //   and the public API: every name it exported is still exported here, most
 //   of them re-exported from the unit that now holds the code.
 //   - Na__LayoutEditor__SheetTools__State__: the tool names, the events and
@@ -97,10 +109,13 @@
 //     objects, the active tool, CancelPlacement, ArmEyedropper, ArmPalette
 //     and the palette sync.
 //   - Na__LayoutEditor__SheetTools__HitResolution__: Resolve, Record,
-//     IsViewportLocked, HoverCursor, the hit tolerance and the vector grab,
-//     insert and snap helpers.
+//     IsViewportLocked, HoverCursor, DoorAt, CarryTarget, the hit tolerance
+//     and the vector grab, insert and snap helpers.
 //   - Na__LayoutEditor__SheetTools__ContentEditing__: SetEditingViewport and
 //     RecentreViewport.
+//   - Na__LayoutEditor__SheetTools__CopyDrag__: Ctrl-drag's copy - made once
+//     a press becomes a drag, or when Ctrl goes down mid-move - carried in
+//     the original's place.
 //   - Na__LayoutEditor__SheetTools__PointerPress__: the press and the double
 //     click.
 //   - Na__LayoutEditor__SheetTools__PointerDrag__: the move, the drag, the
@@ -115,22 +130,101 @@
 // - The app imports only this file; the units are private to the sheet tools.
 // - Import direction: this file imports the units, and no unit imports it.
 //   Each unit imports only units listed before it here: State (no imports),
-//   ToolState, HitResolution, ContentEditing, PointerDrag, PointerPress,
-//   Keyboard, ContextMenu. There is no cycle.
+//   ToolState, HitResolution, ContentEditing, CopyDrag, PointerDrag,
+//   PointerPress, Keyboard, ContextMenu. There is no cycle.
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js (pointer conventions)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from the pointer
+//                   conventions of 35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js);
+//                   TrueVision3D took it back and grew it to 1.39.0, while this app's copy stayed at
+//                   its 1.25.0 (TrueVision's 1.30.0); since ported back whole from TrueVision3D 1.39.0
+//                   (HEAD b2aa9151)
+// - Source version: 1.39.0 (TrueVision3D v2.149.0, 22-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5 - whole, in the hub's atomic
+//                   sub-wave B: the automatic Move's listeners (1.31.0, v2.78.0), the zoom-settled
+//                   redraw (1.32.0, v2.111.0), the copy key (1.33.0, v2.117.0), the retype and array
+//                   context (1.34.0 / 1.35.0, v2.118.0 / v2.119.0), the vector tools (1.36.0,
+//                   v2.130.0), the region tool (1.37.0, v2.143.0), the note tooltip (1.38.0,
+//                   v2.144.0) and the move anchor (1.39.0, v2.149.0). Releases Adam has not
+//                   confirmed in TrueVision are named in the Port Record (DR-01 (c)).
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+//                   The four DR-40 gestures (items 7-10) are held in HitResolution and PointerPress.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 17-Sep-2026 - Version 1.25.0
+// 22-Sep-2026 - Version 1.39.0
+// - The move anchor (Na__LayoutEditor__MoveAnchor__): Attach reads its config
+//   (Ready), the repaint after a model change or a settled zoom puts the cross
+//   right or drops it once its item is no longer the one thing selected
+//   (Refresh, in DropperDraw), and Detach forgets it.
+//
+// 22-Sep-2026 - Version 1.38.0
+// - Attach and Detach take the note tooltip's stage listeners with them
+//   (Na__LayoutEditor__SheetTools__NoteTooltip__): a press, a wheel turn, a
+//   key or the pointer leaving the sheet takes a bubble's note label down.
+//
+// 22-Sep-2026 - Version 1.37.0
+// - TOOL_REGION is exported with the other tool names: the Margin Notes panel
+//   puts it up to draw an overspill note region, which the press, drag and
+//   keyboard units hand to Na__LayoutEditor__NoteRegions__Tool__ - the
+//   Rectangle tool with a region to make instead of a vector.
+//
+// 21-Sep-2026 - Version 1.36.0
+// - The Measurements box's context gains getVectorReading and typeVectorValue:
+//   what it reads and types for a vector tool (37__System__VectorTools), asked
+//   of their adapter with the tool that is up. The vector tools are handed the
+//   box's one-line Say as their speaker, so none of them imports the box.
+//
+// 21-Sep-2026 - Version 1.35.0
+// - The Measurements box is handed canArray and typeMoveArray: SketchUp's
+//   3x and /3 after a Ctrl-drag copy (PointerDrag, CopyDrag).
+//
+// 21-Sep-2026 - Version 1.34.0
+// - The Measurements box is handed getMoveRetype and getViewportRetype: the
+//   whole-object move or frame move that has just landed, while a typed value
+//   may still land it again (SketchUp's rule, Na__LeTools__RememberRetype in
+//   the pointer drag unit).
+//
+// 21-Sep-2026 - Version 1.33.0
+// - The keydown listener also hands the key to CopyKey (the Keyboard unit):
+//   Ctrl going down during a move turns it into a copy, or back into a move
+//   (Na__LayoutEditor__SheetTools__CopyDrag__, a new unit).
+//
+// 21-Sep-2026 - Version 1.32.0
+// - The counter-scaled boxes (eyedropper, tracking crosses, selection box,
+//   group boxes) are put right when a zoom SETTLES
+//   (Na__LeSurface__ZOOM_SETTLED_EVENT), not on every zoom step, and their
+//   group repaint is booked once a frame (DropperDraw) instead of once per
+//   announcement - a burst of announcements used to queue that many repaints
+//   of the same frame.
+//
+// 19-Sep-2026 - Version 1.31.0
+// - SELECT PICKS THE MOVE TOOL UP BY ITSELF for what is usually moved next:
+//   text, a vector, a leader by its bubble, note or curve, and a group
+//   (parametric ones included). The press that picks one carries straight on
+//   into the drag, and a box that leaves only those kinds selected picks Move
+//   up too. Viewports, dimensions and a leader's endpoint do not - they still
+//   wait for M, which is what the 17-Sep safety catch was for.
+// - A Move that came up by itself goes back to Select by itself: on a press on
+//   anything that does not pick it up, when the selection empties (Attach
+//   listens to the model and the container events and runs SettleAutoMove),
+//   and when a double click steps inside a group, a vector, a dimension, a
+//   text or a viewport's content. M or the toolbar gives a Move that stays.
+// - A press that picks, and the second press of a double click, travel
+//   PickDragPx before they move anything, and a double click whose second press
+//   travelled is ignored: a fast double click always steps inside, and "click,
+//   then at once drag" is only ever a move.
+// - IsMoveAuto is exported: the margin grip stays up under a Move that came up
+//   by itself, as it does under Select.
+//
+//
+// 17-Sep-2026 - Version 1.30.0
 // - CONTAINER EDITING, THE MOVE TOOL AND A REAL "NO TOOL" STATE. New unit
 //   Na__LayoutEditor__EditScope__ holds the context stack - a group, a vector or
 //   a dimension open for editing - and the points picked inside it. Double-click
@@ -148,7 +242,7 @@
 //   change prunes a container whose record has gone; Detach closes them all.
 //
 //
-// 15-Sep-2026 - Version 1.24.0
+// 15-Sep-2026 - Version 1.29.0
 // - Split into Na__LayoutEditor__SheetTools__State__.js,
 //   Na__LayoutEditor__SheetTools__ToolState__.js,
 //   Na__LayoutEditor__SheetTools__HitResolution__.js,
@@ -163,9 +257,13 @@
 //   stage, the editable flag, the drag, the suppression flag, the right
 //   press, the last point and Shift) is assigned through the Write accessors
 //   in Na__LayoutEditor__SheetTools__State__, because an imported binding
-//   cannot be assigned.
+//   cannot be assigned. The drag of a press on a door of a locked plan goes
+//   through WriteDrag like the others.
+// - The same split as ValeVision3D v2.47.0 (SheetTools 1.24.0): the same
+//   units holding the same functions. DoorAt and CarryTarget, which only
+//   TrueVision has, are in Na__LayoutEditor__SheetTools__HitResolution__.
 //
-// 15-Sep-2026 - Version 1.23.0
+// 14-Sep-2026 - Version 1.28.0
 // - Rotate text: Resolve looks for the one selected text item's rotate grip
 //   before anything else (RotateGripAt), because the grip stands off the text
 //   where no hit test would find it. A press on it drags the angle through
@@ -173,76 +271,106 @@
 //   release announces it once. The cursor over the grip is ROTATE_CURSOR.
 //   The text menu offers Reset rotation on turned text. The text defaults
 //   carry rotationDeg (0), which the Text panel sets for new text.
-// - Ported from TrueVision3D v2.52.0 (SheetTools 1.28.0).
 //
-// 14-Sep-2026 - Version 1.22.0
+// 14-Sep-2026 - Version 1.27.0
 // - Enter finishes the editing of a viewport's content, as Escape already did:
 //   the way a 3D viewport's zoom is set and left
 //   (Na__LayoutEditor__Viewport3dZoom__). Recentre content centres a 3D
 //   picture at the zoom it is drawn at, rather than pinning its corner to the
 //   frame's.
-// - Ported from TrueVision3D (SheetTools 1.27.0, v2.50.0).
 //
-// 14-Sep-2026 - Version 1.21.0
-// - Shape defaults carry dashOn and dash from Na__LayoutEditor__LineStyleTool__,
-//   so Draw and Rectangle place a dashed edge when the Vectors toggle is on.
-// - Ported from TrueVision3D (SheetTools dashed edges).
-//
-// 14-Sep-2026 - Version 1.20.0
+// 14-Sep-2026 - Version 1.26.0
 // - Right-click Arrange: Bring to front, Bring forward, Send backward and
 //   Send to back, for a vector, a text item, a dimension or a leader among
 //   the other items of its kind on the same layer.
-// - Ported from TrueVision3D (SheetTools 1.26.0).
 //
-// 14-Sep-2026 - Version 1.19.0
+// 14-Sep-2026 - Version 1.25.0
+// - The shape defaults carry the dashed-edge style: dashOn and its settings,
+//   seeded from Na__LayoutEditor__LineStyleTool__ and kept through the toggle.
+//
+// 14-Sep-2026 - Version 1.24.0
 // - While a viewport's frame is being dragged (not a handle, not the drawing
 //   inside), the Measurements box takes a typed length: GetViewportDrag is
 //   the frame origin and where it is headed, TypeViewportLength puts it that
 //   far along that direction (no snap) and finishes the drag. The length is
 //   a real size at the viewport's scale, or the sheet's for a 3D viewport.
-// - Ported from TrueVision3D v2.47.0.
 //
-// 14-Sep-2026 - Version 1.18.0
+// 14-Sep-2026 - Version 1.23.0
 // - Ctrl+G groups selected vectors and text (and nested groups); Ctrl+Shift+G
 //   ungroups. A click on a member selects the group. Groups move, nudge,
 //   delete, copy and paste as one. Multi-select copy/paste for vectors and
 //   text (Na__LayoutEditor__Groups__, Na__LayoutEditor__ItemClipboard__).
-// - Ported from TrueVision3D (SheetTools 1.23.0).
 //
-// 14-Sep-2026 - Version 1.17.0
+// 14-Sep-2026 - Version 1.22.0
+// - The eyedropper skips locked viewports in Resolve, so a locked frame is
+//   not picked up over the markup and unlocked viewports on it. Unlocked
+//   viewports match each other (composites, frame, caption, scale).
+//
+// 14-Sep-2026 - Version 1.21.0
+// - While a vertex is being dragged, the Measurements box takes a typed
+//   length: GetVertexDrag is the original vertex and where it is headed,
+//   TypeVertexLength puts it that far along that direction (no snap, so the
+//   figure is exact) and finishes the drag so the still-down pointer cannot
+//   pull it back to the cursor. One undo step.
+//
+// 14-Sep-2026 - Version 1.20.0
+// - A dragged vector snaps to the linework: the grab point and every vertex
+//   are offered, the nearest snap wins, and the whole shape translates so
+//   that point lands on it (the same carry a viewport already uses). Vertex
+//   grips already snapped; the whole-shape move did not.
+// - Shift-click an edge of the selected vector inserts a vertex there (a
+//   diamond marks the spot while Shift is held). The insert snaps, and a
+//   drag of the new vertex is the same undo step.
+//
+// 14-Sep-2026 - Version 1.19.0
 // - A press on a dimension's value (or on the arc back to the line) drags
 //   the text: DimensionGrab's 'text' mode writes TextDXMm / TextDYMm, and
 //   dragging it close to home clears both. The context menu's Reset text
 //   position does the same. The PDF and the screen share the arc because
 //   it is drawn as a chrome primitive.
-// - Ported from TrueVision3D (SheetTools 1.19.0).
 //
-// 14-Sep-2026 - Version 1.16.0
-// - The eyedropper skips locked viewports in Resolve, so a locked frame is
-//   not picked up over the markup and unlocked viewports on it. Unlocked
-//   viewports match each other (composites, caption, scale). Ported from
-//   TrueVision3D (SheetTools 1.22.0); the frame-shown trait stays there.
+// 14-Sep-2026 - Version 1.18.0
+// - Vectors use the clipboard: Copy vector, Duplicate vector and Paste on a
+//   shape's menu, and Paste vector on bare paper when a vector is held
+//   (Na__LayoutEditor__ViewportClipboard__). Ctrl+C / Ctrl+V / Ctrl+D while
+//   a vector is selected. While the Draw tool is placing points, Ctrl+Z takes
+//   the last vertex off and Ctrl+Y puts it back, before the sheet history.
+//   A number box (Edge pt, Size mm) hands those Ctrl chords to the sheet the
+//   way a select already did, instead of swallowing them.
 //
-// 14-Sep-2026 - Version 1.15.0
-// - Vector clipboard (Ctrl+C / Ctrl+V / Ctrl+D) and draw-vertex undo while a
-//   polyline is being placed. Viewport copy/paste/duplicate is included: this
-//   tree had none yet. Ported from TrueVision3D v2.44.0.
-// - Whole-shape snap: a dragged vector offers the grab point and every vertex,
-//   and the nearest snap moves the whole shape. Shift-click an edge of the
-//   selected vector inserts a vertex there. Ported from TrueVision3D v2.45.0.
-// - Measurements box: typed lengths for Draw, Rectangle and Dimension, and a
-//   typed length while a vertex is being dragged (GetVertexDrag /
-//   TypeVertexLength). DrawingScale reads atScale true on the shape and
-//   dimension defaults; the Vectors/Dimensions panel toggle rows are not here.
-// - Ported from TrueVision3D v2.46.0.
-//
-// 14-Sep-2026 - Version 1.12.0
+// 14-Sep-2026 - Version 1.17.0
 // - The settings for new dimensions carry tickLengthMm: how large the ticks,
 //   arrows or dots at each end are, from the config TickLengthMm until Size mm
 //   in the Dimensions panel changes it.
-// - Ported from TrueVision3D v2.43.0.
 //
-// 14-Sep-2026 - Version 1.11.0
+// 14-Sep-2026 - Version 1.16.0
+// - Plan doors. With a 2D plan viewport selected, a click on a door closes it
+//   and another click opens it again (Na__LayoutEditor__PlanDoors__); the
+//   cursor turns to a pointer over a door. A press that moves still moves the
+//   viewport - only one that comes up without moving toggles - and each click
+//   waits out the double click window, so a double click to enter the content
+//   leaves the door alone. The viewport's right-click menu leads with Close
+//   door or Open door under the click, and Open all doors while any is shut.
+//   A lock holds a viewport's frame, not what it draws: on a locked plan a
+//   press on a door is a door press - the click toggles, a drag does nothing -
+//   rather than the start of a selection box.
+//
+// 14-Sep-2026 - Version 1.15.0
+// - The settings for new dimensions carry their extension line lengths and
+//   the padlock between them (startExtensionMm, endExtensionMm,
+//   extensionsLinked): the config's DefaultExtensionMm for both, linked.
+//
+// 14-Sep-2026 - Version 1.14.0
+// - The Measurements box: attached and detached here, refreshed after every
+//   Draw, Rectangle and Dimension move and press, an arrow key lock, a Shift
+//   redraw and a change of tool; a press on the sheet or an abandoned
+//   placement drops a half-typed value. Rerun runs the placing tool's move
+//   again from the last pointer position once a typed value has placed a
+//   point. Shift is remembered from the last move or Shift key.
+// - The shape and dimension defaults carry atScale: the Vectors panel's Draw
+//   at scale and the Dimensions panel's Measure at scale.
+//
+// 14-Sep-2026 - Version 1.13.0
 // - Box select and multi-selection. A Select press with nothing movable under
 //   it hands the pointer to Na__LayoutEditor__SelectionBox__ (window or
 //   crossing), and its release is folded into the selection (BoxUp). Ctrl,
@@ -254,11 +382,8 @@
 //   the context menu delete, the whole selection.
 // - FinishDrag takes released: a press's click runs only when the button
 //   really came up, never when a pan took the pointer over.
-// - Left out: TrueVision's CarryTarget hunk (a member of a multi-selection
-//   carries nothing), as this tree has no viewport carry yet.
-// - Ported from TrueVision3D v2.34.0.
 //
-// 14-Sep-2026 - Version 1.10.0
+// 14-Sep-2026 - Version 1.12.0
 // - The Leader tool (E) joins the tool list: Na__LayoutEditor__LeaderTool__
 //   places a note or a specification bubble on a curved leader, and is handed
 //   the press, the move and the release like the Rectangle tool. A press that
@@ -270,17 +395,20 @@
 // - GetLeaderDefaults and SetLeaderDefaults hold the Leaders panel's settings
 //   for new leaders, and a palette sync fills them.
 // - The shape defaults carry fillOpacity and strokeOpacity.
-// - Ported from TrueVision3D v2.35.0.
 //
-// 13-Sep-2026 - Version 1.9.0
+// 13-Sep-2026 (TrueVision)
+// - A viewport's right-click menu lists the project's design phases as Model
+//   items, the one it draws ticked (Na__LayoutEditor__ModelSource__). Nothing on
+//   a project with a single model.
+//
+// 13-Sep-2026 - Version 1.11.0
 // - Shift going down or up redraws a dimension line being placed, so the switch
 //   between aligned and ortho shows without moving the mouse (ShiftRedraw, on
 //   keydown and on a new keyup listener).
 // - A dimension grip that re-picks a point keeps an ortho line where it was
 //   (Na__LeDimGeo__OffsetKeepingLine), and snaps in the dimension tone.
-// - Ported from TrueVision3D v2.31.0.
 //
-// 13-Sep-2026 - Version 1.8.0
+// 13-Sep-2026 - Version 1.10.0
 // - Palette (Shift+B, Shift+click on the Eyedropper button, or Use for new ...
 //   on the context menu): an item's style becomes the settings new objects of
 //   its kind are created with. AdoptStyle is the writer handed to the
@@ -288,15 +416,26 @@
 //   takes over, a vector going to whichever of Draw and Rectangle drew last.
 // - The eyedropper resolves locked items too, so a locked scrapbook is a source
 //   and a locked target is refused with a reason instead of being missed.
-// - Ported from TrueVision3D v2.30.0.
 //
-// 13-Sep-2026 - Version 1.7.1
+// 13-Sep-2026 - Version 1.9.1
 // - The shape defaults carry the gradient: gradientOn and its settings, seeded
-//   from Na__LayoutEditor__GradientTool__ and kept through the toggle. Ported
-//   from TrueVision.
+//   from Na__LayoutEditor__GradientTool__ and kept through the toggle.
 //
-// 13-Sep-2026 - Version 1.7.0
-// - The Rectangle tool (R), ported from TrueVision. Na__LayoutEditor__RectangleTool__
+// 13-Sep-2026 - Version 1.9.0
+// - Viewports move by a point: hover a 2D viewport's linework and the snap
+//   marker shows the point a press would carry it by; the drag snaps that
+//   point onto other drawings and tracks level or plumb with points rested on
+//   (Na__LayoutEditor__ViewportSnapMove__). Handles, content editing and locks
+//   win over it, and snapping off gives back the plain move.
+// - Ctrl+C, Ctrl+V and Ctrl+D copy, paste and duplicate a viewport, and the
+//   right-click menu offers the same (Na__LayoutEditor__ViewportClipboard__).
+//   Paste from the menu on bare paper lands at the click.
+// - A Ctrl chord (undo, redo, copy, paste, duplicate) is no longer swallowed
+//   when a select or a checkbox has the focus. Ctrl+Z straight after choosing
+//   a scene in the Viewport panel used to do nothing: the select kept the key.
+//
+// 13-Sep-2026 - Version 1.8.0
+// - The Rectangle tool (R) joins the tool list. Na__LayoutEditor__RectangleTool__
 //   draws it; this module hands it the press, the move and - new for a placing
 //   tool - the release, so a rectangle can be dragged out as well as clicked.
 //   The stage captures the pointer for it, so a drag that leaves the stage
@@ -305,14 +444,17 @@
 //   half-drawn rectangle. The arrow keys are swallowed while one is drawn
 //   rather than nudging whatever was selected before it.
 //
-// 13-Sep-2026 - Version 1.6.0
-// - The Eyedropper tool (B), ported from TrueVision: Na__LayoutEditor__Eyedropper__
-//   owns the picking and the painting, this module owns the slot, the pointer
-//   and the keys. B with something selected arms it already loaded. Escape
-//   empties the dropper before it clears the selection. Copy and Paste
-//   properties on the context menu drive the same dropper.
+// 13-Sep-2026 - Version 1.7.0
 // - Grip drags pass their own vertex or dimension end to the snap as an
 //   exclusion, now that the sheet's vectors and dimensions are candidates.
+//
+// 12-Sep-2026 - Version 1.6.0
+// - The Eyedropper tool (B) joins the tool list: Na__LayoutEditor__Eyedropper__
+//   owns the picking and the painting, this module owns the slot, the pointer
+//   and the keys. B with something selected arms it already loaded.
+// - Escape is staged one step deeper: it empties the dropper before it clears
+//   the selection.
+// - Copy and Paste properties on the context menu drive the same dropper.
 //
 // 10-Sep-2026 - Version 1.5.0
 // - The arrow keys lock the drawing axis while a tool is placing a point
@@ -345,23 +487,28 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Model, Surface, Text Tool, Measurements, Groups, Eyedropper, Selection Box, Menu
+    // MODULE IMPORTS | Model, Surface, Text Tool, Measurements, Eyedropper, Viewport Snap Move, Groups, Selection Box, Menu
     // ------------------------------------------------------------
     import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__GetSelectionItems } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import {
-        Na__LeSurface__ZOOM_EVENT,
+        Na__LeSurface__ZOOM_SETTLED_EVENT,
         Na__LeSurface__GetElements,
         Na__LeSurface__GetPixelsPerMm,
         Na__LeSurface__GetZoom,
         Na__LeSurface__Refresh
     } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeText__BeginEdit, Na__LeText__Cancel } from '../35__System__DrawingTools/Na__LayoutEditor__TextTool__.js';
-    import { Na__LeMeasure__Attach, Na__LeMeasure__Detach } from './Na__LayoutEditor__Measurements__.js';
-    import { Na__LeGroup__Render } from '../15__Core__Markup/Na__LayoutEditor__Groups__.js';
+    import { Na__LeMeasure__Attach, Na__LeMeasure__Detach, Na__LeMeasure__Say } from './Na__LayoutEditor__Measurements__.js';
+    import { Na__LeVec__Reading, Na__LeVec__TypeValue } from '../37__System__VectorTools/Na__LayoutEditor__VectorTools__.js';   // <-- What the Measurements box reads and types for a vector tool
+    import { Na__LeVec__SetSpeaker } from '../37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js';
     import { Na__LeDrop__Refresh } from './Na__LayoutEditor__Eyedropper__.js';
+    import { Na__LeVpMove__Refresh } from '../28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js';
+    import { Na__LeAnchor__Ready, Na__LeAnchor__Refresh, Na__LeAnchor__Clear } from '../28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js';   // <-- Ctrl+click's red cross: counter-scaled, and dropped with its selection
+    import { Na__LeGroup__Render } from '../15__Core__Markup/Na__LayoutEditor__Groups__.js';
     import { Na__LeSelBox__Refresh } from './Na__LayoutEditor__SelectionBox__.js';
     import { Na__LeScope__CHANGED_EVENT, Na__LeScope__Clear, Na__LeScope__Prune } from './Na__LayoutEditor__EditScope__.js';
     import { Na__LeMenu__Close } from './Na__LayoutEditor__ContextMenu__.js';
+    import { Na__LeNoteTip__Attach, Na__LeNoteTip__Detach } from './Na__LayoutEditor__SheetTools__NoteTooltip__.js';   // <-- A bubble's note label comes down on a press, a wheel turn, a key or the pointer leaving
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Sheet Tools Units
@@ -375,6 +522,8 @@
         Na__LeTools__TOOL_RECT,
         Na__LeTools__TOOL_EYEDROP,
         Na__LeTools__TOOL_LEADER,
+        Na__LeTools__TOOL_AREA,
+        Na__LeTools__TOOL_REGION,
         Na__LeTools__CHANGED_EVENT,
         Na__LeTools__DEFAULTS_EVENT,
         Na__LeTools__Stage,
@@ -401,6 +550,7 @@
         Na__LeTools__CancelPlacement,
         Na__LeTools__SetTool,
         Na__LeTools__GetTool,
+        Na__LeTools__IsMoveAuto,
         Na__LeTools__ArmEyedropper,
         Na__LeTools__ArmPalette
     } from './Na__LayoutEditor__SheetTools__ToolState__.js';
@@ -409,6 +559,7 @@
         Na__LeTools__OnMove,
         Na__LeTools__OnUp,
         Na__LeTools__GetMoveDrag,
+        Na__LeTools__GetMoveRetype,
         Na__LeTools__TypeMoveLength,
         Na__LeTools__GetVertexDrag,
         Na__LeTools__GetVertexRetype,
@@ -420,13 +571,17 @@
         Na__LeTools__TypeDimensionOffset,
         Na__LeTools__TypeVertexLength,
         Na__LeTools__GetViewportDrag,
+        Na__LeTools__GetViewportRetype,
         Na__LeTools__TypeViewportLength,
+        Na__LeTools__CanMoveArray,
+        Na__LeTools__TypeMoveArray,
         Na__LeTools__SetSuppressed
     } from './Na__LayoutEditor__SheetTools__PointerDrag__.js';
-    import { Na__LeTools__OnDown, Na__LeTools__OnDoubleClick } from './Na__LayoutEditor__SheetTools__PointerPress__.js';
+    import { Na__LeTools__OnDown, Na__LeTools__OnDoubleClick, Na__LeTools__SettleAutoMove } from './Na__LayoutEditor__SheetTools__PointerPress__.js';
     import {
         Na__LeTools__DeleteSelection,
         Na__LeTools__ShiftRedraw,
+        Na__LeTools__CopyKey,
         Na__LeTools__Rerun,
         Na__LeTools__OnKey
     } from './Na__LayoutEditor__SheetTools__Keyboard__.js';
@@ -443,6 +598,7 @@
     // MODULE VARIABLES | The Listeners While Attached (the shared state is in Na__LayoutEditor__SheetTools__State__)
     // ------------------------------------------------------------
     let Na__LeTools__Handlers   = null;
+    let Na__LeTools__GroupFrame = 0;         // <-- The group boxes' repaint, booked once however many announcements ask for it in a frame
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -451,6 +607,28 @@
 // -----------------------------------------------------------------------------
 // REGION | Attach and Detach
 // -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Put the Counter-Scaled Boxes Right: After a Model Change or a Settled Zoom
+    // ------------------------------------------------------------
+    // The eyedropper's boxes, the tracking crosses and a selection box are
+    // counter-scaled like the grips, and groups paint after the surface clears
+    // the layer, on the next frame. That frame is booked ONCE: this used to
+    // queue a fresh one per announcement, so a burst of them repainted the
+    // group boxes that many times over in the same frame. It no longer runs on
+    // every zoom step either - the zoom's settle is the one that counts.
+    // ------------------------------------------------------------
+    function Na__LeTools__DropperDraw() {
+        const sheet = Na__LeModel__GetActiveSheet();
+        Na__LeScope__Prune(sheet); Na__LeDrop__Refresh(sheet); Na__LeVpMove__Refresh(sheet); Na__LeSelBox__Refresh(sheet); Na__LeAnchor__Refresh(sheet);
+        if (Na__LeTools__GroupFrame) return;
+        Na__LeTools__GroupFrame = requestAnimationFrame(() => {
+            Na__LeTools__GroupFrame = 0;
+            const els  = Na__LeSurface__GetElements();
+            const shown = Na__LeModel__GetActiveSheet();
+            if (els && els.handles && shown) Na__LeGroup__Render(els.handles, shown, Na__LeModel__GetSelectionItems(), Na__LeSurface__GetPixelsPerMm(), Na__LeSurface__GetZoom());
+        });
+    }
+    // ------------------------------------------------------------
 
     // FUNCTION | Listen on the Stage and the Keyboard
     // ------------------------------------------------------------
@@ -467,16 +645,19 @@
             pointercancel : (e) => Na__LeTools__OnUp(e),
             dblclick      : (e) => Na__LeTools__OnDoubleClick(e),
             contextmenu   : (e) => Na__LeTools__OnContextMenu(e),
-            keydown       : (e) => { Na__LeTools__OnKey(e); if (e.key === 'Shift') Na__LeTools__ShiftRedraw(!!e.shiftKey); },   // <-- Shift turns a dimension being placed ortho: show it without waiting for the mouse
+            keydown       : (e) => { Na__LeTools__OnKey(e); if (e.key === 'Shift') Na__LeTools__ShiftRedraw(!!e.shiftKey); Na__LeTools__CopyKey(e); },   // <-- Shift turns a dimension being placed ortho: show it without waiting for the mouse; Ctrl mid-move carries a copy, or the original again
             keyup         : (e) => { if (e.key === 'Shift') Na__LeTools__ShiftRedraw(!!e.shiftKey); },
             scopedraw     : () => Na__LeSurface__Refresh('scope'),            // <-- Opening or closing a container fades the sheet and redraws its contents
-            dropperdraw   : () => { const sheet = Na__LeModel__GetActiveSheet(); Na__LeScope__Prune(sheet); Na__LeDrop__Refresh(sheet); Na__LeSelBox__Refresh(sheet); requestAnimationFrame(() => { const els = Na__LeSurface__GetElements(); if (els && els.handles && sheet) Na__LeGroup__Render(els.handles, sheet, Na__LeModel__GetSelectionItems(), Na__LeSurface__GetPixelsPerMm(), Na__LeSurface__GetZoom()); }); }   // <-- The eyedropper's boxes and a selection box are counter-scaled, like the grips; groups paint after the surface clears the layer
+            settlemove    : () => Na__LeTools__SettleAutoMove(),              // <-- A Move that came up by itself goes back down when the selection stops warranting it (Delete, an undo, a container opening or closing)
+            dropperdraw   : () => Na__LeTools__DropperDraw()                  // <-- The counter-scaled boxes, once a frame; a zoom counts when it settles
         };
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.addEventListener(name, Na__LeTools__Handlers[name]));
+        Na__LeNoteTip__Attach(Na__LeTools__Stage);                           // <-- The hover pass puts a bubble's note label up; these take it down
         window.addEventListener('keydown', Na__LeTools__Handlers.keydown);
         window.addEventListener('keyup', Na__LeTools__Handlers.keyup);
-        [ Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeTools__Handlers.dropperdraw));
+        [ Na__LeSurface__ZOOM_SETTLED_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeTools__Handlers.dropperdraw));
         window.addEventListener(Na__LeScope__CHANGED_EVENT, Na__LeTools__Handlers.scopedraw);
+        [ Na__LeModel__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeTools__Handlers.settlemove));
         Na__LeMeasure__Attach({                                              // <-- The Measurements box reads the tools through these, and never imports them back
             getTool              : () => Na__LeTools__Tool,
             isEditable           : () => Na__LeTools__Editable,
@@ -495,10 +676,18 @@
             typeDimensionOffset  : (paperMm) => Na__LeTools__TypeDimensionOffset(paperMm),
             typeVertexLength     : (paperMm) => Na__LeTools__TypeVertexLength(paperMm),
             getMoveDrag          : () => Na__LeTools__GetMoveDrag(),                 // <-- A whole object, or a whole selection, being relocated
+            getMoveRetype        : () => Na__LeTools__GetMoveRetype(),               // <-- ...or just relocated, while a typed value may still land it again
             typeMoveLength       : (paperMm) => Na__LeTools__TypeMoveLength(paperMm),
             getViewportDrag      : () => Na__LeTools__GetViewportDrag(),
-            typeViewportLength   : (paperMm) => Na__LeTools__TypeViewportLength(paperMm)
+            getViewportRetype    : () => Na__LeTools__GetViewportRetype(),           // <-- The same for a frame just moved
+            typeViewportLength   : (paperMm) => Na__LeTools__TypeViewportLength(paperMm),
+            canArray             : () => Na__LeTools__CanMoveArray(),                // <-- A Ctrl-drag copy that may be arrayed: SketchUp's 3x and /3
+            typeMoveArray        : (mode, count) => Na__LeTools__TypeMoveArray(mode, count),
+            getVectorReading     : () => Na__LeVec__Reading(Na__LeTools__Tool, Na__LeModel__GetActiveSheet(), Na__LeTools__LastPointMm, Na__LeTools__GetShapeDefaults()),   // <-- A circle's radius, an arc's bulge or angle, an offset, a fillet, a chamfer: null for every other tool
+            typeVectorValue      : (text) => Na__LeVec__TypeValue(Na__LeTools__Tool, Na__LeModel__GetActiveSheet(), text, Na__LeTools__GetShapeDefaults(), Na__LeTools__LastPointMm)
         });
+        Na__LeVec__SetSpeaker((text) => Na__LeMeasure__Say(text));           // <-- The vector tools say a line above the Measurements box ("Nothing crosses that line") without importing it
+        Na__LeAnchor__Ready();                                               // <-- The move anchor's settings, read once, before the first Ctrl+click
         Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
         return true;
     }
@@ -509,18 +698,22 @@
     // ------------------------------------------------------------
     function Na__LeTools__Detach() {
         Na__LeMenu__Close();
+        Na__LeNoteTip__Detach();                                             // <-- No note label left up, or waiting, over a stage that is going
         Na__LeTools__WriteRightPress(null);
         Na__LeTools__WriteLastPointMm(null);
         Na__LeText__Cancel();
         Na__LeScope__Clear();                                                // <-- Never leave a sheet with a container still open
+        Na__LeAnchor__Clear();                                               // <-- Nor a move anchor's cross on a stage that is going
         Na__LeTools__CancelPlacement();
         Na__LeMeasure__Detach();                                             // <-- The box is put away with the tools, and its keys with it
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
         window.removeEventListener('keydown', Na__LeTools__Handlers.keydown);
         window.removeEventListener('keyup', Na__LeTools__Handlers.keyup);
-        [ Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeTools__Handlers.dropperdraw));
+        [ Na__LeSurface__ZOOM_SETTLED_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeTools__Handlers.dropperdraw));
+        if (Na__LeTools__GroupFrame) { cancelAnimationFrame(Na__LeTools__GroupFrame); Na__LeTools__GroupFrame = 0; }   // <-- No group repaint booked for a stage that is going
         window.removeEventListener(Na__LeScope__CHANGED_EVENT, Na__LeTools__Handlers.scopedraw);
+        [ Na__LeModel__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeTools__Handlers.settlemove));
         Na__LeTools__Stage.style.cursor = '';
         Na__LeTools__WriteSuppressed(false);                                 // <-- Never leave the tools deaf for the next mount
         Na__LeTools__WriteStage(null); Na__LeTools__Handlers = null; Na__LeTools__WriteDrag(null);
@@ -546,12 +739,15 @@
         Na__LeTools__TOOL_RECT,
         Na__LeTools__TOOL_EYEDROP,
         Na__LeTools__TOOL_LEADER,
+        Na__LeTools__TOOL_AREA,
+        Na__LeTools__TOOL_REGION,
         Na__LeTools__CHANGED_EVENT,
         Na__LeTools__DEFAULTS_EVENT,
         Na__LeTools__Attach,
         Na__LeTools__Detach,
         Na__LeTools__SetTool,
         Na__LeTools__GetTool,
+        Na__LeTools__IsMoveAuto,
         Na__LeTools__ArmEyedropper,
         Na__LeTools__ArmPalette,
         Na__LeTools__GetTextDefaults,

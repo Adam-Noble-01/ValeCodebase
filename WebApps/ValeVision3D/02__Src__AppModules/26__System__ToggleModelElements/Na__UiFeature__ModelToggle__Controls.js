@@ -19,10 +19,58 @@
 // - Integrates into the existing Tools dropdown panel in the ValeVision3D UI.
 // - Exposes Na__ModelToggle__ApplySceneLayerVisibility so Presentation Mode
 //   scene transitions can drive these same category toggles per tour scene.
+// - Exposes TrueVision's registry names for the Layout Editor's snapshot
+//   renderer: SetCategoryVisibleByKey (exact key, silent), and BorrowRegistry
+//   and RestoreRegistry, which lend the registry to another design phase's
+//   categories for the length of one render.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : TrueVision3D 02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
+//                   - hunks only: the names SetCategoryVisibleByKey, BorrowRegistry and RestoreRegistry, with
+//                   ValeVision bodies (K2 X3), and the registry rebuilt as a new map with a generation rather than
+//                   cleared in place; the rest of the file is ValeVision's own
+// - Source version: TrueVision's file has no version line; SetCategoryVisibleByKey as it has stood since
+//                   TrueVision3D v2.25.0 (12-Sep-2026, commit f8321d60), BorrowRegistry, RestoreRegistry and the
+//                   new map since v2.32.0 (13-Sep-2026); read at b2aa9151
+// - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.2
+// - Parity        : diverged (both apps' copies descend from the 10-Feb-2026 original; never taken whole)
+// - Divergences   :
+//   - Category keys and display names are ValeVision's.
+//   - SetCategoryVisibility is ValeVision's exact-key setter, with a silent flag for renders, and it
+//     dispatches na-model-visibility-changed, which the projected linework and the snapshot renderer listen
+//     for (kept: S02b-V01). TrueVision exports a token matcher under that name and dispatches nothing.
+//   - Each registry entry keeps its dev button; TrueVision finds the button in the page. A borrowed entry
+//     has none, so the dev buttons never follow a borrowed registry.
+//   - ValeVision-only export (K2 X2): Na__ModelToggle__GetCategories, for the Video Studio. Not here yet:
+//     TrueVision's GetVisibilityState, ApplyVisibilityState and SetAllCategoriesVisible (its Presentation
+//     Mode state capture and context menu read them) and its guard against wiring the panel button twice.
+//   - Nothing borrows the registry: ValeVision has no design phases (DR-09 (a)).
+// - Legacy        : TrueVision's copy of this file has no module version (its log entries carry dates only),
+//                   so the Source version names releases instead.
+// - Back-port     : the na-model-visibility-changed dispatch (TrueVision's pipeline and snapshot renderer listen
+//                   for it and nothing there dispatches it) - offered with the TrueVision lane (DR-36), not done
+//                   here.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.2.3 (TrueVision's registry names, v2.71.2)
+// - Na__ModelToggle__SetCategoryVisibleByKey, Na__ModelToggle__BorrowRegistry
+//   and Na__ModelToggle__RestoreRegistry at TrueVision's names (TrueVision3D
+//   v2.25.0 and v2.32.0), with ValeVision bodies: the exact-key setter is
+//   silent and keeps the dev button in step; a borrow lends the registry to
+//   a design phase's categories for one render and leaves the dev buttons
+//   alone. Nothing borrows it yet (no design phases here).
+// - BuildButtons makes a new map, with a generation, instead of clearing the
+//   old one in place, so a borrowed map is never emptied under a render and
+//   RestoreRegistry can tell when the 3D view rebuilt it meanwhile.
+// - The na-model-visibility-changed dispatch is unchanged.
+// - PORT NOTE added. DEVELOPMENT LOG re-ordered newest first, and the 01-Sep
+//   entry renumbered 1.1.1 (it was a second 1.2.0); the text of every entry
+//   is unchanged.
+//
 // 18-Sep-2026 - Version 1.2.2
 // - Display names for the eight Linetype__ categories, and no buttons for them:
 //   a projection-only category is not drawn in 3D, so a 3D toggle would look
@@ -38,8 +86,14 @@
 // 09-Sep-2026 - Visibility event (port Phase 4)
 // - SetCategoryVisibility dispatches na-model-visibility-changed so the projected linework refreshes.
 //
-// 10-Feb-2026 - Version 1.0.0
-// - Initial implementation.
+// 01-Sep-2026 - Version 1.1.1 (written as 1.2.0; renumbered 01-Oct-2026)
+// - Added Na__ModelToggle__GetCategories and Na__ModelToggle__CaptureVisibilityMap
+//   so the Video Studio can list the loaded categories in its own UI and snapshot
+//   the live toggle state into a per-video layer override.
+// - BuildButtons now clears the state map before rebuilding. It only rewrote
+//   entries before, so a second load left categories from the previous model in
+//   the map with dead group references. Harmless while nothing read the map
+//   wholesale; not harmless now that a snapshot of it gets saved to a project.
 //
 // 01-Jul-2026 - Version 1.1.0
 // - Added Na__ModelToggle__ApplySceneLayerVisibility (exported) so per-scene
@@ -48,14 +102,8 @@
 // - Toggle buttons now keep a reference to their DOM element in the state map
 //   so programmatic visibility changes stay in sync with the active class.
 //
-// 01-Sep-2026 - Version 1.2.0
-// - Added Na__ModelToggle__GetCategories and Na__ModelToggle__CaptureVisibilityMap
-//   so the Video Studio can list the loaded categories in its own UI and snapshot
-//   the live toggle state into a per-video layer override.
-// - BuildButtons now clears the state map before rebuilding. It only rewrote
-//   entries before, so a second load left categories from the previous model in
-//   the map with dead group references. Harmless while nothing read the map
-//   wholesale; not harmless now that a snapshot of it gets saved to a project.
+// 10-Feb-2026 - Version 1.0.0
+// - Initial implementation.
 //
 // =============================================================================
 
@@ -155,6 +203,8 @@
     // MODULE VARIABLES | Internal Toggle State
     // ------------------------------------------------------------
     let Na__ModelToggle__StateMap = new Map();                            // <-- Map of category -> { group, visible }
+    let Na__ModelToggle__Generation = 0;                                  // <-- Bumped each time the 3D view rebuilds the map
+    let Na__ModelToggle__Borrowed = false;                                // <-- A render has lent the map to another design phase
     // ------------------------------------------------------------
 
 
@@ -286,6 +336,78 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Layout Editor Renders - Exact Keys and the Lent Registry
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Show or Hide One Category by Its Exact Key
+    // ------------------------------------------------------------
+    // TrueVision's exact-key setter, which its Layout Editor snapshot renderer
+    // calls for the Model Layers hides of one picture. SILENT, like every
+    // change a render makes and puts straight back: the visibility event
+    // would reset the projected linework and the snapshot fingerprints in the
+    // middle of the render that caused it. Returns false when the category is
+    // not loaded this session. The dev button follows the 3D view's registry,
+    // never a borrowed one.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__SetCategoryVisibleByKey(categoryKey, visible) {
+        const state = Na__ModelToggle__StateMap.get(categoryKey);         // <-- Look up state entry
+        if (!state) return false;                                        // <-- Not loaded this session: nothing to hide
+        const wanted  = visible !== false;
+        state.visible = wanted;                                          // <-- Update internal state
+        if (state.group) state.group.visible = wanted;                   // <-- Set THREE.Group visibility
+        if (!Na__ModelToggle__Borrowed && state.button) {
+            state.button.classList.toggle(Na__ModelToggle__ActiveClass, wanted);  // <-- Keep the dev button in step
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Lend the Registry to Another Design Phase for One Render
+    // ------------------------------------------------------------
+    // TrueVision's Layout Editor can draw a design phase the 3D view does not
+    // hold, by putting that phase's model into the scene for the length of one
+    // render. Everything the render asks of this module - the Context Layer,
+    // the Model Layers hides, a saved layer map, the capture that puts them
+    // back - must then act on THAT phase's category groups. loadedGroups is
+    // the loader's category Map for the phase; the token returned is what
+    // RestoreRegistry takes. A borrowed map has no dev buttons: they describe
+    // the 3D view and are left alone throughout. ValeVision has no design
+    // phases yet, so nothing borrows it.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__BorrowRegistry(loadedGroups) {
+        const token    = { map : Na__ModelToggle__StateMap, generation : Na__ModelToggle__Generation, borrowed : Na__ModelToggle__Borrowed };
+        const borrowed = new Map();
+        if (loadedGroups && typeof loadedGroups.forEach === 'function') {
+            loadedGroups.forEach((group, categoryKey) => {
+                borrowed.set(categoryKey, { group : group, visible : group.visible !== false, button : null });
+            });
+        }
+        Na__ModelToggle__StateMap = borrowed;
+        Na__ModelToggle__Borrowed = true;
+        return token;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand the Registry Back
+    // ------------------------------------------------------------
+    // Returns false, and leaves the registry as it is, when the 3D view rebuilt
+    // it during the borrow: that map is the true one.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__RestoreRegistry(token) {
+        if (!token) return false;
+        if (token.generation !== Na__ModelToggle__Generation) return false;
+        Na__ModelToggle__StateMap = token.map;
+        Na__ModelToggle__Borrowed = token.borrowed === true;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Dynamic UI Button Generation
 // -----------------------------------------------------------------------------
 
@@ -301,7 +423,13 @@
     // nothing, which is the worst of the available failures because it looks
     // like the toggle simply has no effect on that model.
     function Na__ModelToggle__BuildButtons(loadedGroups) {
-        Na__ModelToggle__StateMap.clear();                               // <-- Drop categories from a previously loaded model
+        // A NEW MAP, NOT A CLEARED ONE. A render that has borrowed the registry
+        // for another design phase holds the previous map object; clearing it
+        // in place would empty that phase's categories out from under the
+        // render. The generation tells RestoreRegistry this map now stands.
+        Na__ModelToggle__StateMap = new Map();                           // <-- Drop categories from a previously loaded model
+        Na__ModelToggle__Generation += 1;
+        Na__ModelToggle__Borrowed = false;
         if (loadedGroups) {
             loadedGroups.forEach((group, categoryKey) => {
                 Na__ModelToggle__StateMap.set(categoryKey, {
@@ -412,7 +540,10 @@
         Na__ModelToggle__SetCategoryVisibility,
         Na__ModelToggle__GetCategories,
         Na__ModelToggle__GetCategoryKeys,
-        Na__ModelToggle__CaptureVisibilityMap
+        Na__ModelToggle__CaptureVisibilityMap,
+        Na__ModelToggle__SetCategoryVisibleByKey,
+        Na__ModelToggle__BorrowRegistry,
+        Na__ModelToggle__RestoreRegistry
     };
     // ------------------------------------------------------------
 

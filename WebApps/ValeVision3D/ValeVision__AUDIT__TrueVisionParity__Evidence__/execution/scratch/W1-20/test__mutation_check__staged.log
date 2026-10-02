@@ -1,0 +1,16 @@
+﻿control (unmutated)  exit 0  68 passed, 0 failed
+caught   exit 1  PruneGroups forgets leaders (the old exists())             62 passed, 6 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: a group holding a viewport, a
+caught   exit 1  PruneGroups forgets viewports                              61 passed, 7 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: a group holding a viewport, a
+caught   exit 1  PruneGroups forgets dimensions                             60 passed, 8 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: a group holding a viewport, a
+caught   exit 1  DeleteLayer re-homes no shapes (this app's 1.0.0)          62 passed, 6 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: deleting a layer that holds a
+caught   exit 1  InsertShape throws its fallback away (this app's 1.0.0)    64 passed, 4 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: a scrapbook drop naming a mis
+caught   exit 1  DeleteLeader does not prune                                66 passed, 2 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: DeleteLeader takes the leader
+caught   exit 1  DeleteDimension does not prune                             66 passed, 2 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: DeleteDimension prunes, and a
+caught   exit 1  DeleteViewport does not prune                              66 passed, 2 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement | new: DeleteViewport prunes too
+caught   exit 1  Dispatch does not move the Revision                        67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+caught   exit 1  UpdateViewport ignores hideSwings null                     67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+caught   exit 1  UpdateLayer does not trim the selection                    67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+caught   exit 1  RenameAreaGroup leaves its rooms behind                    67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+caught   exit 1  CreateDimension forgets the line weight                    67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+caught   exit 1  UpdateShape replaces the hatch instead of merging it       67 passed, 1 failed: new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+mutation check: 0 problem(s) over 14 mutants and the control

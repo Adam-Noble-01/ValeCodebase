@@ -1,0 +1,36 @@
+TAP version 13
+# Subtest: the base is learned from the local server after a load, and a save built on it goes out stamped and judged
+ok 1 - the base is learned from the local server after a load, and a save built on it goes out stamped and judged
+  ---
+  duration_ms: 6.0806
+  type: 'test'
+  ...
+# Subtest: a save whose drawings on disk have moved on is refused before R2 is touched
+ok 2 - a save whose drawings on disk have moved on is refused before R2 is touched
+  ---
+  duration_ms: 1.778
+  type: 'test'
+  ...
+# Subtest: a server without the fingerprint route leaves saves unjudged, as they were
+ok 3 - a server without the fingerprint route leaves saves unjudged, as they were
+  ---
+  duration_ms: 0.9963
+  type: 'test'
+  ...
+# Subtest: the web build judges by the block's own stamp: none before the first save, the stamp after
+ok 4 - the web build judges by the block's own stamp: none before the first save, the stamp after
+  ---
+  duration_ms: 2.002
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 134.5841
+
+

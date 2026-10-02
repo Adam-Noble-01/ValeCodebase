@@ -30,11 +30,19 @@
 // INTEGRATION:
 // - Na__UiFeature__CrossSectionView__Controls wires the Tools menu to this API.
 // - Na__UiFeature__CrossSectionView__DevControls persists CrossSection__Config.
+// - Na__DrawView__SectionAdapter__ drives it as every drawing's cut engine
+//   through the drawing adapter exports below (RenderDepthInto included).
 // - Dispatches 'na-crosssection-state-changed' after every state mutation.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 02-Oct-2026 - Drawing adapter export RenderDepthInto (v2.71.4)
+// - Additive export RenderDepthInto(camera) for Na__DrawView__SectionAdapter__,
+//   the depth fog's cut-face pre-pass: the cap root alone (fills and outlines,
+//   never the gizmos) drawn into the caller's bound target with autoClear
+//   off, nothing cleared or bound; no existing behaviour changed.
+//
 // 09-Sep-2026 - Drawing adapter exports (port Phase 2)
 // - Additive exports GetSectionById, SetSectionPositionMm and ReapplyClipping
 // - for Na__DrawView__SectionAdapter__; no existing behaviour changed.
@@ -1406,6 +1414,36 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Add the Live Caps to a Depth Buffer Somebody Else Is Building
+    // ------------------------------------------------------------
+    // For the drawing's depth fog, through Na__DrawView__SectionAdapter__: a
+    // pass that reads depth, not colour, so the cut faces count as what they
+    // are - ON the plane, not as far back as the room behind them. The
+    // overlay above clears depth and draws to the screen, because it lands on
+    // a finished picture; this does neither. Only the cap root is drawn -
+    // every section's fill and outline, clipped by the other sections' planes
+    // as on screen - never the gizmos in the helper root, into whatever target
+    // the caller has bound, tested against the model depth already there.
+    // autoClear is handed back as found, even when the draw throws. A no-op,
+    // answering false, with no section cutting or no camera: depth drawn
+    // through any camera but the caller's would land in the wrong place.
+    // ------------------------------------------------------------
+    function Na__CrossSection__RenderDepthInto(activeCamera) {
+        if (!Na__Sect__Renderer || !Na__Sect__CapRoot || !activeCamera) return false;
+        if (!Na__Sect__Sections.some((s) => s.enabled)) return false;            // <-- Nothing cutting: every plain elevation
+
+        const savedAutoClear = Na__Sect__Renderer.autoClear;
+        Na__Sect__Renderer.autoClear = false;                                    // <-- The model's depth must survive: the caps are tested against it
+        try {
+            Na__Sect__Renderer.render(Na__Sect__CapRoot, activeCamera);         // <-- The cap root alone, into the bound target
+        } finally {
+            Na__Sect__Renderer.autoClear = savedAutoClear;
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -1746,7 +1784,8 @@
         Na__CrossSection__GetClippingDiagnostics,
         Na__CrossSection__GetSectionById,
         Na__CrossSection__SetSectionPositionMm,
-        Na__CrossSection__ReapplyClipping
+        Na__CrossSection__ReapplyClipping,
+        Na__CrossSection__RenderDepthInto
     };
     // ------------------------------------------------------------
 

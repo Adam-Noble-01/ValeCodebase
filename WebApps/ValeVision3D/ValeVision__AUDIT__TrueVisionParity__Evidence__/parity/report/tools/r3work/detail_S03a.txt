@@ -1,0 +1,150 @@
+### S03a-F02 [data_schema/high/port_adapted] AppConfig brand seams and NA-specific values a blind copy would break
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: 16 brand values must stay VV: Style FontFamily, every TitleBlock Logo* value, DrawnByDefault, ClassicScanAssets, Pdf Author/Creator/JsPdfScriptPath, Specification FileName. TV-only blocks carry NA values: PlanDoors SwingCategoryKeys TrueVision__Linetype__DoorSwings, LegacyFileName TrueVision__ProjectSpecification__.json, Pdf FontBasePath/FontCdnBase (NA CDN), Register PdfJs paths (/na-apps/20__PlanVision...), LetterheadLogoAspect 4.096, Statement...
+REC: Encode an explicit VV seam allow-list (AppConfig parity test). VV values: ValeVision__Linetype__DoorSwings, legacy '', ValeVision__StatementDocs__.json, VV-hosted fonts/PDF.js/html2canvas, aspect 4.5, VV content folder in SitePlanNoData; open items via D-S03a-05..08.
+ADAPT: Seam list in report b.2
+EVID: TV AppConfig lines 341 (PlanDoors), 1193 (DrawingRegister) and 1271 (Statement). VV linetype keys are ValeVision__Linetype__* (grep, 8 keys). There is no Open Sans TTF file under VV/ or WebApps/, but VV's screen font CSS fetches the cuts from www.noble-architecture.com/assets/AD04_... (Na__CoreUi__S...
+VER: Notes that VV already fetches remote Open Sans TTFs.
+DEP: D-S03a-05; D-S03a-06; D-S03a-07; D-S03a-08
+
+### S03a-F05 [data_schema/low/backport_to_tv] TV defect: three Measure labels sit in the Selection block and are dead
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: TV AppConfig puts LayoutEditor__Labels__MeasureOffsetAgain, MeasureNoOffsetSide and MeasureDimOffsetTitle inside LayoutEditor__Selection__Config (lines 367-369). Na__LeCfg__GetLabel reads only the Labels block (ConfigState:372-375), so in TV they never apply and the code fallbacks print. VV has them correctly in Labels (line 881); that is why they show as VV-only.
+REC: Do not copy the misplacement into VV. Back-port: move the three keys into TV's LayoutEditor__Labels__Config.
+ADAPT: 
+EVID: TV Na__LayoutEditor__AppConfig__.json:357,367-369,587; TV ConfigState__.js:372-375; TV Measurements__.js:619,921,925
+VER: 
+DEP: 
+
+### S03a-F16 [wiring/medium/update_wiring] Viewer path: TV never renders a sheet for a reader (v2.155.0)
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: TV's viewer never calls SetSheet (Enter :752-755; OnSheetsChanged :1131-1138) and fits only in the editor. The change came from v2.155.0 after phones crashed, and has no entry in the module's own log. VV still renders every viewport on the reader's device. Porting it needs the published-documents system (52/53/65 and WebViewer ShowDrawing published).
+REC: Port with the publishing packages. In the same change, make WaitForFirstDrawing resolve at once in viewer mode; otherwise the loader screen waits about 2.5 s for frames that never appear. Add the missing TV log entry.
+ADAPT: 
+EVID: TV ModeController__.js:747-755,1125-1138; TV devlog :1334-1335; VV ModeController__.js:539-542,595-600
+VER: 
+DEP: 52__System__Layout__PublishedDocuments port; 53__Data__Layout__PublishedSchema port; 80__Feature__WebViewer published path
+
+### S03a-F18 [wiring/high/update_wiring] Document tabs opened from 3D: VV loader wait would cover the page
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js; 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: TV opens a document tab from 3D via EnterUnder (quiet: no first-open veil over the Register or Statements page, ModeController 1.30.0). VV's WithEditor waits on WaitForFirstDrawing for the active sheet whenever the editor is active, so the loading screen would sit over the requested page until the hidden first sheet draws. This is latent now and becomes live with TabStrip 2.0.0.
+REC: WaitForFirstDrawing should resolve at once when View is not VIEW_SHEET, or in viewer mode. Port EnterUnder and the Quiet flag in WP-S03a-04.
+ADAPT: 
+EVID: TV ModeController__.js:444,733,883-888; VV Loader__.js:376-384,388-422; VV ModeController__.js:595-600
+VER: 
+DEP: 
+
+### S03a-F23 [wiring/high/update_wiring] Loader STYLESHEETS must mirror TV's CSS-index LE imports
+TV: 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: TV's CSS index imports 14 LE sheets (lines 161-174); VV's STYLESHEETS has 8. Still to add as features land: DraftMode, DrawingGrid, ObjectSnap, DrawingAxes (after Main__Paper), then SheetImages and Share (after Spec__Read, before WebViewer). Patterns, FloorAreas, DrawingRegister, ScrapbookSpecification, VectorTools and the Statement CSS link themselves, so they need no entry. ColourPalette and SpellCheck are page-level in TV (182, 190).
+REC: Each feature package adds its own line in TV's order. Never pre-register a file that doesn't exist yet: a missing file only warns. Add a parity test that reads TV's CSS index.
+ADAPT: 
+EVID: TV Na__CoreUi__Styles__Index__.css:161-174,182,190; VV Loader__.js:125-134,264-278; TV Register__Editor__.js:596 self-link
+VER: 
+DEP: 
+
+### S03a-F24 [wiring/high/update_wiring] Loader facade additions: strip actions, view copies, model source, shared links
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js; Index.html
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: TabStrip 2.0.0 needs OpenRegister, OpenStatements, IsSitePlanSheet and the VIEW_REGISTER/VIEW_STATEMENT constants, which VV's strip may reach only through the loader; CheckNames (284-295) must cover them. The Dev menu's live-phase bake needs ModelSource in ImportEditor. TV starts Na__LeShareOpen__Initialize (66 sharing) at boot (Index.html 1733-1738).
+REC: Add to the facade: Na__LeLoad__OpenRegister(options), Na__LeLoad__OpenStatements(options), Na__LeLoad__IsSitePlanSheet(sheet), and the copies Na__LeLoad__VIEW_REGISTER = 'register' and Na__LeLoad__VIEW_STATEMENT = 'statement', both added to CheckNames. The document-tab feature-presence answer should be a static map in the loader that each feature package flips when it lands, not a runtime probe. IsSitePlanSheet: before load, read record.Sheet__Dr...
+ADAPT: 
+EVID: TV TabStrip__.js:135-161; VV Loader__.js:244-253,284-295,698-706; TV Index.html:1733-1738; TV SheetRecords__.js:433,1311
+VER: VV's SheetViews has no Sheet__DrawingType, and VV's SheetModel does not export IsSitePlanSheet. The original would throw or misreport.
+DEP: S03a-F13
+
+### S03a-F29 [wiring/high/port_adapted] VV 3D hotkeys answer under drawing tabs (code-path evidence)
+TV: 02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js
+DET: VV's HotkeyHandler (53-56, 91-101) has no scope check and no contenteditable test. It and the sheet keyboard (SheetTools:476) both listen on window, and the sheet never checks defaultPrevented. On a drawing tab: T selects Text AND calls SetWalkMode (index.html 1795); R picks Rectangle AND resets the hidden camera; V toggles the carousel. Digits and Page Up/Down drive the hidden carousel whenever its toggled state is on, because Na__PresentationMo...
+REC: Guard HandleKeyDown with Na__KeyScope__Is(Na__KeyScope__MODEL) and use Na__KeyScope__IsTypingTarget in place of the tag-only test. Keep VV's action names and VV-only actions.
+ADAPT: 
+EVID: VV Na__AppUtils__ValeVision__HotkeyHandler__.js:53-56,91-101; VV index.html:1792-1809; VV SheetTools__.js:476; TV devlog v2.110.0
+VER: Adds the carousel-flag, Measurements-capture and Page Up/Down interim details, all verified in code.
+DEP: S03a-F28
+
+### S03a-F33 [test/high/port_test] Keyboard and mode tests to port; new VV-only tests
+TV: 80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs
+VV: 80__Testing__PrototypeEnvironment/
+DET: TV tests with no VV counterpart: Na__Test__DrawingTabKeys__ (fallback vs file, ReloadKeyMap, ControlKeepsKey, sheet keyboard), Na__Test__DocumentKeys__ (scope, 3D hotkeys, document keys), Na__Test__SheetPagingWalkExit__ (Page Up/Down, returnToOrbit), and Na__Test__AuthoringZoomMax__ (config plus navigation). VV also lacks tests for its loader facade and stylesheet order, and an AppConfig seam allow-list.
+REC: Port the four tests, adapted to VV's file names, VV's folder numbers and VV's handler (in place of Hotkeys__Manager). Port each with the package that makes it pass. Na__Test__DrawingTabKeys__: the fallback-parity and ReloadKeyMap sections with WP-S03a-02; the ControlKeepsKey, SheetTools-keyboard and Controls__Pc capture sections only after the S05a keyboard and S03b Controls__Pc ports. Na__Test__DocumentKeys__: the scope and 3D-hotkey sections wi...
+ADAPT: 
+EVID: TV 80__Testing__PrototypeEnvironment test headers; VV test folder listing
+VER: Several tests assert behaviour that VV gets only from other slices' packages. Ported early, they fail.
+DEP: 
+
+### S03a-F34 [tooling/medium/port_adapted] jsPDF, html2canvas and the Classic scan live in the legacy folder
+TV: 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js; 04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js; 01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png
+VV: 02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js; 02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png
+DET: VV's jsPDF (35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js) is identical to TV's 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0 copy apart from line endings (cmp after stripping CR). VV has no html2canvas, which the Statement Writer PDF needs. TV moved jsPDF, html2canvas and the Classic scan in v2.155.0 Phase 0. BUT VV's legacy page layout system is still live. 30__System__ImageExport/Na__UiFeature__ImageE...
+REC: Mirror TV's locations by COPYING, not moving. Copy jsPDF to 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/. Vendor html2canvas 1.4.1 to 06__Vendor__Html2Canvas__v1.4.1/. Copy the Classic scan to 01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png. Point the Layout Editor at the copies: the AppConfig (Pdf JsPdfScriptPath, TitleBlock ClassicScanAssets), the SheetSetup fallback, the import-map index ...
+ADAPT: 
+EVID: cmp after tr -d '\r': identical (both 4.1.0, built 2026-02-02); TV devlog v2.155.0 Phase 0
+VER: The survey recommended a move without checking the legacy folder's own users. | Keeps Image Export's page layout working. | A copy plus a config repoint, not a rename or move.
+DEP: 
+
+### S03a-F40 [data_schema/medium/port_adapted] Drawing Register and Statement Writer config blocks need VV values
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: DrawingRegister (52 keys) needs: Phases T01 Concept..T04 Site & Remedial (NA job stages), DocumentCodeFormat, PDF.js from PlanVision, logo aspect 4.096, and a palette described as NA's. Statement (37 keys) needs: IndexFileName TrueVision__StatementDocs__.json, StylesheetUrl on noble-architecture.com, the Html2Canvas path, and PdfPresets.
+REC: Add both blocks in the config pass with VV values: Vale phases from Adam, vendored PDF.js 3.11.174, aspect 4.5, ValeVision__StatementDocs__.json, a VV public stylesheet URL and vendored html2canvas.
+ADAPT: 
+EVID: TV AppConfig :1193-1270, :1271-1332; TV EditorSetup GetDrawingRegisterSetup/GetStatementSetup
+VER: 
+DEP: D-S03a-07; D-S03a-08
+
+### S03a-F41 [wiring/medium/update_wiring] Mode controller Ready chain grows with each feature
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: TV waits on 11 promises before enabling the editor (:1193). VV waits on 6. The missing five are Na__LeHatch__Ready, Na__LeSpComp__Ready, Na__LeArea__Ready, Na__LeDocKeys__Ready and Na__LeImg__Ready. Each is a feature's own config fetch and is documented never to reject. A rejecting Ready would leave the whole editor disabled.
+REC: Each feature package appends its Ready to the chain in TV's order, and must prove it resolves when its config file is missing.
+ADAPT: 
+EVID: TV ModeController__.js:1193; VV ModeController__.js:828
+VER: 
+DEP: 
+
+### S03a-F42 [wiring/high/update_wiring] Per-feature mode-controller hunks (from the TV import walk)
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+DET: Hunks VV must add, each with its feature: Grid (529, 574, 585), Axes (575, 586), SheetImages (547, 578, 582, 1209, 1151), VectorTools (546, 1198), FloorAreas and Patterns (552-553, 1003, 1028, 1059, 1208), ScrapbookSpecification left tabs (521-522, 536), SitePlan composites (533, 1076), Region grips (577, 583), Spec lockstep (557, 710, 768), Register (502, 690, 765, 928-939, 1142, 1201-1202), Statements (503-504, 957-969, 1230), Model Source (120...
+REC: Use report table d.1 as the checklist. Each feature package copies its TV hunk verbatim, re-applies VV seams, and adds its STYLESHEETS line.
+ADAPT: 
+EVID: work_s03a/mc_imports.py output (31 imports missing or partial)
+VER: 
+DEP: each TV-only LE feature port
+
+### S03a-F44 [wiring/medium/update_wiring] Left-column tabs (Document Preferences | Specification)
+TV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js
+DET: TV 1.20.0 (v2.91.0) registers a left 'document' tab first, with hint text, then the Specification tab from 58__Feature__ScrapbookSpecification. Every left section without a named tab lands on Document Preferences, and the right tabs gained hints. VV's PanelHost supports either side, but VV registers only right-column tabs and has no hint text.
+REC: Add with the ScrapbookSpecification port: TV lines 521-522 and 536, plus PanelHost hint support (Panels slice).
+ADAPT: 
+EVID: TV ModeController__.js:518-538; VV ModeController__.js:410-422; VV PanelHost__.js:293
+VER: 
+DEP: 58__Feature__ScrapbookSpecification port; PanelHost hint support
+
+### S03a-V01 [wiring/high/update_wiring] Barrel ahead of its units breaks module linking
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js
+DET: TV's ConfigState barrel (1.29.0) statically imports four names from ConfigState__KeyMap__ (TV ConfigState__.js:236-253): ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier and IsCopyDragKey. It also imports GetVectorQualitySetup, GetPlanDoorsSetup, GetModelSourceSetup, GetDrawingRegisterSetup and GetStatementSetup from SheetSetup/EditorSetup. An ES module fails at link time when a named import is missing. WP-S03a-01 takes 'the six ConfigSta...
+REC: Land each of the barrel's names with the unit that exports it. The five getters go with SheetSetup/EditorSetup (WP-S03a-V01). The four KeyMap names go with KeyMap 1.11.0 and the key-file rename (WP-S03a-02). Gate every config package on Na__Verify__Exports__.mjs (it checks imported names) and Na__Verify__ModuleGraph__.mjs.
+ADAPT: 
+EVID: TV 51/03__Core__Config/Na__LayoutEditor__ConfigState__.js:226-298; VV ConfigState__KeyMap__.js exports 12 names, none of them ReloadKeyMap/GetCopyDragModifier/GetMoveAnchorModifier/IsCopyDragKey; git diff -w ConfigState__.js (import/export lists only); survey WP-S03a-01 scope
+VER: 
+DEP: 
+
+### S03a-V03 [wiring/medium/update_wiring] Transitions opt-in would strip the Walk exit from VV's plan and elevation entries
+TV: 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js; 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+VV: 02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js; 02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js; 02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/05__Core_...
+DET: VV Transitions 1.0.0 SuspendThreeD() always leaves Walk/Fly, through Na__NavToolbar__SetOrbitMode. Three VV callers rely on that: the Layout Editor (ModeController:524), the floor plan controller (43/Na__FloorPlan__ModeController__.js:465) and the elevation controller (46/Na__Elevation__ModeController__.js:526). A fourth caller, the snapshot renderer (51/25/Na__LayoutEditor__SnapshotRenderer__.js:501), does NOT want it. It suspends around every v...
+REC: When Transitions 1.1.0 lands (S02a WP-S02a-11; ReturnToOrbit = VV's Na__NavToolbar__SetOrbitMode), pass { returnToOrbit : true } from all three VV drawing entries (Layout Editor, floor plan, elevation) in the same change. Leave the snapshot renderer call bare. Acceptance: entering a plan, an elevation or a drawing tab while walking leaves Walk; baking or re-stamping a viewport picture from the 3D tab while walking does not.
+ADAPT: 
+EVID: VV grep of Na__DrawView__Transitions__SuspendThreeD callers: 51 ModeController:524, 43 FloorPlan MC:465, 46 Elevation MC:526, 51/25 SnapshotRenderer:501. TV callers: LE ModeController:707 (with the option), SnapshotRenderer:905 (bare). TV Transitions 1.1.0 log; S02a WP-S02a-11.
+VER: 
+DEP: S02a WP-S02a-11
+

@@ -1,0 +1,107 @@
+﻿W1-32 mode controller harness: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-32\preimage\Na__LayoutEditor__ModeController__.js.before
+
+  1. Initialise
+[ValeVision3D] Layout Editor ready (editable).
+  PASS  Initialize resolves true
+  FAIL  the key scope is handed one reader, a function
+        got  [0,"undefined"]
+        want [1,"function"]
+  FAIL  handed over before anything is waited on
+        got  [false,true]
+        want [true,true]
+  FAIL  the documents' key map is waited on with the other configs (once)
+        got  0
+        want 1
+  FAIL  the documents' keyboard is started once, after the model, before the editor's own Ctrl+S
+        got  [0,false,true]
+        want [1,true,true]
+  FAIL  the reader: the editor shut is the 3D model's
+        got  null
+        want "model"
+  PASS  the scene-broadcast listeners are still registered (VV 1.15.1)
+
+  2. Enter, the specification, back to the sheet, Leave
+  PASS  Enter(null) opens the first sheet
+  FAIL  Walk and Fly are asked to leave: SuspendThreeD({ returnToOrbit : true }), once
+        got  [[]]
+        want [[{"returnToOrbit":true}]]
+  FAIL  the reader on a drawing tab: the sheet's
+        got  null
+        want "sheet"
+  PASS  the PDF metrics are asked for once on the first entry
+  PASS  OpenSpecification() shows the page over the sheet
+  FAIL  the reader on the specification: the documents'
+        got  null
+        want "document"
+  PASS  the view is the specification
+  PASS  Enter(the same sheet) from the specification
+  FAIL  it comes back to the sheet: the page hidden, the sheet's input attached, the reader the sheet's
+        got  [1,1,"sheet",null]
+        want [1,1,"sheet","sheet"]
+  PASS  no second Walk exit while the editor stays open
+  PASS  Leave() gives the 3D view back
+  FAIL  the reader once the editor is shut: the 3D model's again
+        got  null
+        want "model"
+  PASS  Leave announces once, after the return veil
+
+  3. The viewport fold
+  FAIL  a viewport selected: FocusSection(null) - the whole group folds
+        got  [false,[]]
+        want [true,[null]]
+  FAIL  two viewports: the same
+        got  [false,[]]
+        want [true,[null]]
+  PASS  a text selected: Text opens, the rest fold
+  PASS  a vector selected: Vectors (shapes)
+  PASS  a group of notes: Text (the group is opened up first)
+  PASS  nothing selected: the folds are left alone
+  PASS  a mixed selection: no one panel, the folds are left alone
+  FAIL  the eyedropper picking from a viewport folds the group too
+        got  [false,[]]
+        want [true,[null]]
+  PASS  an unknown kind says nothing
+  FAIL  SectionForKind: viewport is FOLD_GROUP (an empty string, not null); a group is null
+        got  [null,null,null,"leaders"]
+        want ["","",null,"leaders"]
+  PASS  with FocusSectionOnSelect off nothing folds
+  FAIL  with the real panel host: selecting a viewport folds Text, Dimensions, Vectors and Leaders
+        got  {"text":false,"dimensions":false,"shapes":false,"leaders":false}
+        want {"text":true,"dimensions":true,"shapes":true,"leaders":true}
+  PASS  and selecting a text then opens Text alone
+  PASS  and clearing the selection leaves the folds as they were
+
+  4. The document views
+  FAIL  VIEW_REGISTER and VIEW_STATEMENT are TrueVision's names
+        got  [null,null]
+        want ["register","statement"]
+  FAIL  OpenRegister and OpenStatements refuse: false, nothing opened, changed or announced
+        got  [["missing","missing"],true,0,true]
+        want [[false,false],true,0,true]
+  FAIL  each says so once, under this app's prefix
+        got  []
+        want [true,true]
+  FAIL  EnterUnder exists
+        got  false
+        want true
+
+  5. PreloadMetrics
+  FAIL  the first call returns the promise, a second the null of "already asked"
+        got  [false,null]
+        want [true,null]
+node : file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/executi
+on/scratch/W1-32/verify_w1_32.mjs:268
+At line:1 char:805
++ ... ct -Last 2; node "$s\verify_w1_32.mjs" "$s\preimage\Na__LayoutEditor_ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///D:/10_C...y_w1_32.mjs:268:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    await first.catch(() => { rejected = true; });
+                ^
+
+TypeError: Cannot read properties of undefined (reading 'catch')
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/executi
+on/scratch/W1-32/verify_w1_32.mjs:268:17
+
+Node.js v22.23.2

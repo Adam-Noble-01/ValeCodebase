@@ -20,7 +20,7 @@
 //   on the record, so the web build loads the picture instead of rendering
 //   it. A picture is only re-rendered when the paper size grows well past
 //   what it was rendered for.
-// - ZOOM AND THE WINDOW (1.5.0). The picture's paper size is Viewport__ImageMm
+// - ZOOM AND THE WINDOW (1.6.0). The picture's paper size is Viewport__ImageMm
 //   times Viewport__ImageZoom (Na__LayoutEditor__Viewport3dZoom__). While the
 //   picture and the frame are the same rectangle - every viewport never
 //   zoomed, slid or cropped - the whole picture renders exactly as before,
@@ -40,24 +40,41 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js (capture and upload pattern)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
-// - Parity        : new
-// - Divergences   : TrueVision's 1.5.0 (Model Source - the design phase in the fingerprint
-//                   and the render) is not here: ValeVision has no model groups. The zoom
-//                   window of 1.5.0 is TrueVision's 1.6.0, less its design phase lines.
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from the Presentation
+//                   Mode thumbnail renderer's capture and upload pattern); TrueVision3D took it for its
+//                   v2.21.0 re-alignment (10-Sep-2026); since ported back whole from TrueVision3D 1.8.1
+//                   (HEAD b2aa9151)
+// - Source version: 1.8.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was its own 1.6.2. TrueVision 1.5.0 (v2.32.0, Model Source) and 1.8.0 (v2.107.0, Draft) and
+//                   the Enhance strength in the scene weights come across under DR-01 (c); none is recorded as
+//                   tried by Adam in TrueVision. 1.8.1 is this app's own per-scene lighting (v2.71.0).
+// - Parity        : verbatim (the code is TrueVision 1.8.1's; the banner and this note are the only differences)
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+//   - Design phases are dormant here (DR-09 (a)): Model Source always resolves to the live model, so the
+//     fingerprint and every stored snapshot key are the live model's, as before.
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 28-Sep-2026 - Version 1.6.1 (per-scene lighting, ValeVision v2.71.0)
+// 28-Sep-2026 - Version 1.8.1 (per-scene lighting, v2.161.0)
 // - A scene's own lighting (PresentationMode__Scene__Lighting) joins the
 //   fingerprint, so relighting a scene re-renders the pictures of it. Only
 //   when the scene has one: every snapshot of an unlit scene keeps its key.
-//   ValeVision only; TrueVision has no per-scene lighting.
+//   Ported from ValeVision3D v2.71.0 (Viewport3d 1.6.1 there).
 //
-// 18-Sep-2026 - Version 1.6.0
+// 21-Sep-2026 - Version 1.8.0 (TrueVision)
+// - Draft mode (K, Na__LayoutEditor__DraftMode__). A 3D viewport is a picture
+//   and nothing else, so in Draft it books, renders and uploads nothing: Fill
+//   returns before any key is compared, the debounced scheduler drops a timer
+//   that fires while Draft is on, and the render queue's stillWanted skips a
+//   queued render the moment Draft goes on. The picture held is kept, so
+//   switching Draft off shows it at once. The draft stylesheet hides the image
+//   and outlines the frame. ForceRender, the bake and the PDF are unchanged.
+//
+// 18-Sep-2026 - Version 1.7.0 (TrueVision)
 // - The viewport cache. Park lifts a viewport's state out of the map while its
 //   sheet is off screen and Restore puts it back (the sheet surface keeps it
 //   beside the sheet's detached frames), so coming back to a sheet finds the
@@ -72,9 +89,8 @@
 //   bake, the export and the scene rename looked a state up by id alone and
 //   could be handed the frame of the SAME id on the sheet on screen, then paint
 //   another sheet's picture into it. LiveState checks the sheet as well.
-// - Ported from TrueVision3D 1.7.0 (v2.64.0), less its design phase lines.
 //
-// 14-Sep-2026 - Version 1.5.0
+// 14-Sep-2026 - Version 1.6.0 (TrueVision)
 // - Zoom. The picture is drawn at Viewport__ImageMm times Viewport__ImageZoom.
 //   A frame that is not the whole picture renders only the window it shows,
 //   at the frame's size, through the tiled renderer's new viewWindow: sharp at
@@ -83,18 +99,24 @@
 //   viewport keys and renders exactly as before. The image element is placed
 //   by the window its picture was rendered for (Place), so the frame follows a
 //   zoom at once. ExportRectMm tells the PDF where the picture goes.
-// - Ported from TrueVision3D 1.6.0 (v2.50.0), less its design phase lines.
 //
-// 13-Sep-2026 - Version 1.4.1
-// - RenderNow stamps the record only when the upload came back with r2Success === true,
-//   and returns whether the picture was stored and referenced; Bake counts that return
-//   instead of reading the record afterwards. Here a refused upload already came back
-//   null (the upload throws and Assets catches it), so nothing was stamped - but a forced
-//   bake, or a same-key record too narrow for export, still read as baked after a refusal.
-//   Ported from TrueVision3D 1.5.1, where a refused upload did stamp the record.
+// 13-Sep-2026 - Version 1.5.1
+// - A refused snapshot upload no longer stamps the record. Na__LeAssets__Upload hands
+//   back the upload's result object whether or not R2 took the file, and RenderNow
+//   treated any result as success, so Viewport__SnapshotAsset could name a path R2
+//   never received. The stamp now needs r2Success === true. RenderNow returns whether
+//   the picture was stored and referenced, and Bake counts that instead of reading the
+//   record afterwards, which a same-key record from before already satisfied.
+//
+// 13-Sep-2026 - Version 1.5.0 (TrueVision)
+// - Model Source. The fingerprint takes the model fingerprint of the viewport's
+//   design phase and the snapshot renders that phase; the fingerprint is null
+//   while the phase loads and the frame says so. A picture of one phase is never
+//   shown for another. A viewport of the live phase keys exactly as before, so
+//   every stored snapshot keeps its key.
 //
 // 13-Sep-2026 - Version 1.4.0
-// - The snapshot draws the model's own edges at the viewport's Base Image weight; a weight that has been set joins the fingerprint. Ported from TrueVision3D.
+// - The snapshot draws the model's own edges at the viewport's Base Image weight; a weight that has been set joins the fingerprint.
 //
 // 10-Sep-2026 - Version 1.3.1
 // - Base Image off: no snapshot is rendered, shown or exported; the picture already held comes straight back on.
@@ -126,8 +148,10 @@
     import { Na__LeSnap__Render3d, Na__LeSnap__IsReady, Na__LeSnap__GetModelFingerprint } from '../25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js';
     import { Na__SceneLighting__SceneToken } from '../../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';  // <-- A scene's own lighting keys its picture
     import { Na__LeModelLayers__Token } from '../25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js';
+    import { Na__LeSource__Resolve, Na__LeSource__Ensure, Na__LeSource__WaitFor, Na__LeSource__StatusText } from './Na__LayoutEditor__ModelSource__.js';
     import { Na__LeComposite__Weight, Na__LeComposite__RasterToken } from '../25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js';
     import { Na__LeRaster__Working, Na__LeRaster__Export, Na__LeRaster__Fit } from './Na__LayoutEditor__RasterQuality__.js';
+    import { Na__LeDraft__IsOn } from '../26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js';
     import {
         Na__LeAssets__CanvasToBlob,
         Na__LeAssets__BlobToDataUrl,
@@ -179,7 +203,12 @@
 
     // FUNCTION | The Fingerprint of the Picture a Viewport Wants
     // ------------------------------------------------------------
+    // null while the viewport's design phase is not loaded: there is no model
+    // to describe yet, so nothing can be compared, fetched or rendered.
+    // ------------------------------------------------------------
     function Na__LeVp3d__Fingerprint(viewport, scene) {
+        const modelFp = Na__LeSnap__GetModelFingerprint(Na__LeSource__Resolve(viewport).renderId);
+        if (modelFp === null) return null;
         const parts = [
             scene.PresentationMode__Scene__Id, scene.PresentationMode__Scene__Name,
             JSON.stringify(scene.PresentationMode__Scene__CameraPosition || null),
@@ -188,7 +217,7 @@
             JSON.stringify(viewport.Viewport__Styles),
             Na__LeModelLayers__Token(viewport),
             Math.round((viewport.Viewport__ImageMm.WidthMm / viewport.Viewport__ImageMm.HeightMm) * 1000),
-            Na__LeSnap__GetModelFingerprint()
+            modelFp
         ];
         const weights = Na__LeComposite__RasterToken(viewport, true);
         if (weights) parts.push(weights);                                         // <-- Only when set, so every stored snapshot keeps its key
@@ -197,6 +226,19 @@
         const lighting = Na__SceneLighting__SceneToken(scene);
         if (lighting) parts.push(lighting);                                       // <-- Only when the scene has its own lighting, for the same reason; a relit scene re-renders
         return Na__LeVp3d__Hash(parts.join('|'));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Fingerprint, Once the Viewport's Design Phase Is In
+    // ------------------------------------------------------------
+    // For the callers that must finish - a forced render, a bake, a PDF - rather
+    // than show a frame that says it is loading. null when the phase cannot load.
+    // ------------------------------------------------------------
+    async function Na__LeVp3d__FingerprintWhenReady(viewport, scene) {
+        const key = Na__LeVp3d__Fingerprint(viewport, scene);
+        if (key !== null) return key;
+        return (await Na__LeSource__WaitFor(Na__LeSource__Resolve(viewport).renderId)) ? Na__LeVp3d__Fingerprint(viewport, scene) : null;
     }
     // ------------------------------------------------------------
 
@@ -386,16 +428,21 @@
     async function Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile, stillWanted) {
         const px = Na__LeVp3d__PixelSize(viewport, profile);
         const view = Na__LeVp3d__Window(viewport);                                 // <-- What the frame shows of the picture (null: all of it), read with the key, before the wait
+        const renderId = Na__LeSource__Resolve(viewport).renderId;                 // <-- The design phase drawn; null is the live model
         state.inFlight = true;
         state.renderOk = false;                                                    // <-- True once THIS render's picture is held; the PDF reads it
         try {
-            const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h, viewport.Viewport__ModelLayers, px.samples, { modelEdgePx : Na__LeComposite__Weight(viewport, 'baseImage') }, view, stillWanted);
+            const weights = {
+                modelEdgePx : Na__LeComposite__Weight(viewport, 'baseImage'),          // <-- How thick the model's own edges draw in the picture
+                enhancePct  : Na__LeComposite__Weight(viewport, 'enhanceWhitecard')    // <-- How much of the Enhance Whitecard post pass to apply
+            };
+            const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h, viewport.Viewport__ModelLayers, px.samples, weights, renderId, view, stillWanted);
             if (!result) return false;
             const blob    = await Na__LeAssets__CanvasToBlob(result.canvas, 'image/webp', 0.9);
             const dataUrl = blob ? await Na__LeAssets__BlobToDataUrl(blob) : result.canvas.toDataURL('image/png');
             if (!dataUrl) return false;
             state.img.src = dataUrl; state.img.hidden = false;
-            state.key = key; state.px = px; state.dataUrl = dataUrl;
+            state.key = key; state.px = px; state.dataUrl = dataUrl; state.modelFp = Na__LeSnap__GetModelFingerprint(renderId);
             state.win = view;
             state.renderOk = true;
             Na__LeVp3d__Place(state);                                              // <-- Where this picture belongs in the frame as it stands now
@@ -403,7 +450,7 @@
                 const path = Na__LeAssets__SnapshotPath(sheet.Sheet__Id, viewport.Viewport__Id, key);
                 const uploaded = await Na__LeAssets__Upload(blob, path, null);
                 if (uploaded && uploaded.r2Success === true) {                        // <-- Never name a file R2 did not take: the web build would ask for it and draw nothing
-                    return Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key, Asset__PixelWidth : px.w } }, true);
+                    return Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key, Asset__PixelWidth : px.w, Asset__Samples : px.samples } }, true);
                 }
             }
             return false;
@@ -426,11 +473,13 @@
             // here dropped the render outright and left the frame showing a
             // snapshot of a pose or a frame it no longer had.
             if (!state.lastArgs) return;
+            if (Na__LeDraft__IsOn()) return;                                      // <-- Draft draws no picture, so renders and uploads none; Fill books it again when Draft goes off
             if (Na__LeVp3d__Interacting || state.inFlight) { Na__LeVp3d__Schedule(state, viewportId); return; }
             const { sheet, viewport } = state.lastArgs;
             const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
             if (!scene) return;
             const key     = Na__LeVp3d__Fingerprint(viewport, scene);
+            if (key === null) return;                                             // <-- Its design phase is not in: the load's refresh schedules again
             if (state.key === key) return;
             const profile = Na__LeRaster__Working();                              // <-- The global working level
             const wanted  = Na__LeVp3d__PixelSize(viewport, profile);
@@ -446,7 +495,8 @@
                 if (!state.parked && Na__LeVp3d__States.get(viewportId) !== state) return;   // <-- Released. A parked state keeps the picture it was already fetching
                 if (dataUrl) {
                     state.img.src = dataUrl; state.img.hidden = false;
-                    state.key = key; state.dataUrl = dataUrl; state.px = { w : slot.Asset__PixelWidth, h : Math.round(slot.Asset__PixelWidth * (wanted.h / wanted.w)) };
+                    state.key = key; state.dataUrl = dataUrl; state.px = { w : slot.Asset__PixelWidth, h : Math.round(slot.Asset__PixelWidth * (wanted.h / wanted.w)), samples : slot.Asset__Samples };
+                    state.modelFp = Na__LeSnap__GetModelFingerprint(Na__LeSource__Resolve(viewport).renderId);
                     state.win = view;
                     Na__LeVp3d__Place(state);
                     return;
@@ -454,7 +504,7 @@
             }
             if (!Na__LeSnap__IsReady()) return;
             if (state.parked) return;                                             // <-- Left while the stored picture was looked for
-            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile, () => !state.parked);   // <-- Still queued when its sheet is left: skipped
+            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile, () => !state.parked && !Na__LeDraft__IsOn());   // <-- Still queued when its sheet is left, or when Draft goes on: skipped
         }, Na__LeVp3d__RENDER_DELAY_MS);
     }
     // ------------------------------------------------------------
@@ -474,6 +524,16 @@
             state.empty.hidden = false; state.img.hidden = true; state.key = null;
             return;
         }
+        // DRAFT MODE | A 3D viewport is a picture and nothing else, and Draft
+        // draws no pictures: nothing is booked, rendered or uploaded, and the
+        // picture held stays in the state (the draft stylesheet hides it and
+        // outlines the frame), so switching Draft off shows it at once - or, if
+        // it went stale meanwhile, books its render through the rest of Fill.
+        if (Na__LeDraft__IsOn()) {
+            if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
+            state.empty.hidden = true;
+            return;
+        }
         // BASE IMAGE OFF | An empty frame: nothing is rendered, and the last
         // picture is kept in the state so switching back on is instant.
         if (viewport.Viewport__Styles.baseImage === false) {
@@ -482,7 +542,20 @@
             return;
         }
         state.empty.hidden = true;
-        if (state.dataUrl && state.img.hidden) state.img.hidden = false;          // <-- Back on: the picture it already has
+        // DESIGN PHASE NOT IN YET | The frame says so, and shows no picture of the
+        // model it drew before; the library's event refreshes it when it is in.
+        const source  = Na__LeSource__Resolve(viewport);
+        const modelFp = Na__LeSnap__GetModelFingerprint(source.renderId);
+        if (modelFp === null) {
+            Na__LeSource__Ensure(source);
+            if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
+            state.img.hidden = true; state.key = null;
+            state.empty.textContent = Na__LeSource__StatusText(source); state.empty.hidden = false;
+            return;
+        }
+        const samePhase = !state.modelFp || state.modelFp === modelFp;
+        if (!samePhase) state.img.hidden = true;                                   // <-- One phase's picture never stands in for another's
+        else if (state.dataUrl && state.img.hidden) state.img.hidden = false;      // <-- Back on: the picture it already has
         const key = Na__LeVp3d__Fingerprint(viewport, scene);
         if (state.key === key) {
             const wanted = Na__LeVp3d__PixelSize(viewport, Na__LeRaster__Working());
@@ -507,7 +580,9 @@
         if (!scene) return false;
         if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
         state.key = null; state.triedAsset = null;                                // <-- Nothing on screen is trusted from here
-        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, Na__LeVp3d__Fingerprint(viewport, scene), Na__LeRaster__Working());
+        const key = await Na__LeVp3d__FingerprintWhenReady(viewport, scene);
+        if (key === null) return false;                                           // <-- Its design phase could not be loaded
+        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeRaster__Working());
         return true;
     }
     // ------------------------------------------------------------
@@ -592,6 +667,7 @@
                 if (!scene) return;
 
                 const key = Na__LeVp3d__Fingerprint(viewport, scene);
+                if (key === null) return;                                            // <-- Its design phase is not loaded: nothing to compare with
                 if (slot.Asset__Fingerprint === key) return;                         // <-- Already current
 
                 Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, {
@@ -621,14 +697,15 @@
     async function Na__LeVp3d__Bake(sheet, viewport, force) {
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
         if (!scene || !Na__LeSnap__IsReady()) return 'failed';
-        const key     = Na__LeVp3d__Fingerprint(viewport, scene);
+        const key     = await Na__LeVp3d__FingerprintWhenReady(viewport, scene);
+        if (key === null) return 'failed';                                         // <-- Its design phase could not be loaded
         const wanted  = Na__LeVp3d__PixelSize(viewport, Na__LeVp3d__ExportProfile());
         const slot    = viewport.Viewport__SnapshotAsset;
         if (!force && slot && slot.Asset__Fingerprint === key && Na__LeVp3d__WideEnough(slot.Asset__PixelWidth, wanted.w)) return 'skipped';
         const state = { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
         const stored = await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeVp3d__ExportProfile());
         const live = Na__LeVp3d__LiveState(sheet, viewport.Viewport__Id);
-        if (live && state.dataUrl) { live.img.src = state.dataUrl; live.img.hidden = false; live.key = key; live.px = state.px; live.dataUrl = state.dataUrl; live.win = state.win; Na__LeVp3d__Place(live); }
+        if (live && state.dataUrl) { live.img.src = state.dataUrl; live.img.hidden = false; live.key = key; live.px = state.px; live.dataUrl = state.dataUrl; live.modelFp = state.modelFp; live.win = state.win; Na__LeVp3d__Place(live); }
         return stored ? 'baked' : 'failed';                                        // <-- This render's upload, not the record: a same-key record from before read as baked
     }
     // ------------------------------------------------------------
@@ -640,23 +717,23 @@
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
         if (!scene) return null;
         if (viewport.Viewport__Styles.baseImage === false) return null;           // <-- An empty frame prints empty
-        const key     = Na__LeVp3d__Fingerprint(viewport, scene);
+        const key     = await Na__LeVp3d__FingerprintWhenReady(viewport, scene);
+        if (key === null) return null;                                            // <-- Its design phase could not be loaded
         const profile = Na__LeVp3d__ExportProfile();
         const live    = Na__LeVp3d__LiveState(sheet, viewport.Viewport__Id);
         const slot = viewport.Viewport__SnapshotAsset;
         const stored = slot && slot.Asset__Fingerprint === key;
         if (!Na__LeSnap__IsReady()) return stored ? Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path)) : null;   // <-- The web build has only the stored picture
-        // THE RENDERER ALWAYS RUNS FOR THE PDF. Until 1.6.0 a picture already on
-        // screen, or already stored, was handed back when it was wide enough
-        // under the same fingerprint. Width is not quality - a working-level
-        // picture on a dense screen passes the width test on a quarter of the
-        // samples - and the fingerprint is a short hash, good enough to save the
-        // screen a render and not good enough to vouch for a printed page. Every
-        // cache in the editor is for the screen; the PDF draws from the model, at
-        // the export level, every time.
+        // THE RENDERER ALWAYS RUNS FOR THE PDF. Until 1.7.0 a picture already on
+        // screen, or already stored, was handed back when it was wide enough and
+        // sampled enough. The fingerprint that decided "same picture" is a short
+        // hash over category names and triangle counts, which is good enough to
+        // save the screen a render and not good enough to vouch for a printed
+        // page. Every cache in the editor is for the screen; the PDF draws from
+        // the model, at the export level, every time.
         const state = live || { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
         await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile);   // <-- Export size; the stored asset is refreshed with it
-        if (!state.renderOk || !state.dataUrl) return null;                       // <-- The render failed: the screen's working picture is never printed in its place
+        if (!state.renderOk || !state.dataUrl) return null;                           // <-- The render failed: the screen's working picture is never printed in its place
         return Na__LeAssets__ToPngDataUrl(state.dataUrl);
     }
     // ------------------------------------------------------------

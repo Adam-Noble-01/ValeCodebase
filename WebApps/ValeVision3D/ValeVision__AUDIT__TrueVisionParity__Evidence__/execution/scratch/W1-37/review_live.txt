@@ -1,0 +1,468 @@
+﻿==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,3 +1,3 @@
+     // =============================================================================
+    -// TRUEVISION3D - COLOUR PALETTE
+    +// VALEVISION3D - COLOUR PALETTE
+     // =============================================================================
+    @@ -13,3 +13,3 @@
+     // - THE COLOUR PALETTE IS A FEATURE OF ITS OWN, in a folder of its own, so
+    -//   anything in TrueVision that lets a colour be chosen can use it: the
+    +//   anything in ValeVision that lets a colour be chosen can use it: the
+     //   Layout Editor's panels today, the 3D tab's Plan Annotations toolbar, and
+    @@ -39,4 +39,10 @@
+     // PORT NOTE:
+    -// - Authored in   : TrueVision3D first (21-Sep-2026)
+    -// - ValeVision    : not yet ported - it waits for Adam's sign-off.
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js
+    +// - Source version: 1.0.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D, and DESCRIPTION names this app where TrueVision's names
+    +//     itself. (No console output in this file.)
+    +// - Back-port     : none.
+     //
+==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,3 +1,3 @@
+     // =============================================================================
+    -// TRUEVISION3D - COLOUR PALETTE - MANAGER
+    +// VALEVISION3D - COLOUR PALETTE - MANAGER
+     // =============================================================================
+    @@ -38,4 +38,9 @@
+     // PORT NOTE:
+    -// - Authored in   : TrueVision3D first (21-Sep-2026)
+    -// - ValeVision    : not yet ported - it waits for Adam's sign-off.
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js
+    +// - Source version: 1.1.0 (TrueVision3D v2.133.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner and console prefix read ValeVision3D ([ValeVision3D ColourPalette]).
+    +// - Back-port     : none.
+     //
+    @@ -173,3 +178,3 @@
+             if (!hex) {
+    -            console.warn('[TrueVision3D ColourPalette] ' + key + ' has no readable Colour__Hex or Colour__Rgb; skipped.');
+    +            console.warn('[ValeVision3D ColourPalette] ' + key + ' has no readable Colour__Hex or Colour__Rgb; skipped.');
+                 return null;
+    @@ -177,9 +182,9 @@
+             if (fromHex && fromRgb && fromHex !== fromRgb) {
+    -            console.warn('[TrueVision3D ColourPalette] ' + key + ': Colour__Hex ' + fromHex + ' and Colour__Rgb ' + fromRgb + ' disagree; the hex is used.');
+    +            console.warn('[ValeVision3D ColourPalette] ' + key + ': Colour__Hex ' + fromHex + ' and Colour__Rgb ' + fromRgb + ' disagree; the hex is used.');
+             }
+             if (typeof block.Colour__TechnicalName === 'string' && block.Colour__TechnicalName !== key) {
+    -            console.warn('[TrueVision3D ColourPalette] ' + key + ' names itself ' + block.Colour__TechnicalName + '; the key is used.');
+    +            console.warn('[ValeVision3D ColourPalette] ' + key + ' names itself ' + block.Colour__TechnicalName + '; the key is used.');
+             }
+             if (typeof block.Colour__MenuGroup === 'string' && block.Colour__MenuGroup !== group.Group__MenuName) {
+    -            console.warn('[TrueVision3D ColourPalette] ' + key + ' says its menu group is "' + block.Colour__MenuGroup + '" but sits in "' + group.Group__MenuName + '"; where it sits is used.');
+    +            console.warn('[ValeVision3D ColourPalette] ' + key + ' says its menu group is "' + block.Colour__MenuGroup + '" but sits in "' + group.Group__MenuName + '"; where it sits is used.');
+             }
+    @@ -264,3 +269,3 @@
+                         if (Na__ColourPalette__ByName.has(colourKey)) {
+    -                        console.warn('[TrueVision3D ColourPalette] The technical name ' + colourKey + ' is used twice; the second is skipped.');
+    +                        console.warn('[ValeVision3D ColourPalette] The technical name ' + colourKey + ' is used twice; the second is skipped.');
+                             return;
+    @@ -296,8 +301,8 @@
+                     try { Na__ColourPalette__Parse(doc); }
+    -                catch (error) { console.warn('[TrueVision3D ColourPalette] The palette config could not be read:', error); }
+    +                catch (error) { console.warn('[ValeVision3D ColourPalette] The palette config could not be read:', error); }
+                 } else {
+    -                console.warn('[TrueVision3D ColourPalette] Palette config not found; colour fields open the browser colour menu only.');
+    +                console.warn('[ValeVision3D ColourPalette] Palette config not found; colour fields open the browser colour menu only.');
+                 }
+                 Na__ColourPalette__Loaded = true;
+    -            console.log('[TrueVision3D ColourPalette] ' + Na__ColourPalette__ByName.size + ' colour(s) in ' + Na__ColourPalette__Palettes.length + ' palette(s).');
+    +            console.log('[ValeVision3D ColourPalette] ' + Na__ColourPalette__ByName.size + ' colour(s) in ' + Na__ColourPalette__Palettes.length + ' palette(s).');
+                 Na__ColourPalette__Announce('loaded');
+==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,3 +1,3 @@
+     // =============================================================================
+    -// TRUEVISION3D - COLOUR PALETTE - PICKER
+    +// VALEVISION3D - COLOUR PALETTE - PICKER
+     // =============================================================================
+    @@ -51,4 +51,12 @@
+     // PORT NOTE:
+    -// - Authored in   : TrueVision3D first (21-Sep-2026)
+    -// - ValeVision    : not yet ported - it waits for Adam's sign-off.
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js
+    +// - Source version: 1.1.0 (TrueVision3D v2.133.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +//   - The Mixer helper's comment that TrueVision runs inside ProjectVision's frame is
+    +//     TrueVision's account, kept verbatim: the code reads the top window's widths wherever
+    +//     the page is hosted, so the same read serves this app, framed or not.
+    +// - Back-port     : none.
+     //
+==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -3,3 +3,3 @@
+             "Meta__FileName"          : "Na__ColourPalette__Config__.json",
+    -        "Meta__Description"       : "The Colour Palette Manager's standard colours. Every colour field in TrueVision - a vector's edge, fill and hatch, a text, a dimension, a leader, a floor area, a gradient stop, the drawing grid, the 3D tab's plan dimensions - opens this palette beside the field with the browser's own colour mixer directly above it, and one click on a swatch puts that colour in the field. Nothing here is code: a colour, a group or a whole palette is added by editing this file.",
+    +        "Meta__Description"       : "The Colour Palette Manager's standard colours. Every colour field in ValeVision - a vector's edge, fill and hatch, a text, a dimension, a leader, a floor area, a gradient stop, the drawing grid, the 3D tab's plan dimensions - opens this palette beside the field with the browser's own colour mixer directly above it, and one click on a swatch puts that colour in the field. Nothing here is code: a colour, a group or a whole palette is added by editing this file.",
+             "Meta__Version"           : "1.1.0",
+    @@ -7,2 +7,3 @@
+             "Meta__Author"            : "Adam Noble - Noble Architecture",
+    +        "Meta__PortedFrom"        : "TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json 1.1.0, as TrueVision3D v2.133.0 shipped it (21-Sep-2026; read at HEAD b2aa9151), ported 02-Oct-2026 (parity package W1-37). Every key, group and colour is TrueVision's, so a line coloured here is the same colour in both apps. ValeVision's values: the palette's menu name, Vale Garden Houses Standard (DR-20: the name is the palette's on-screen title; a Vale group of its own would be one more block in Palette__Groups), and this app's name in Meta__Description.",
+     
+    @@ -53,3 +54,3 @@
+             "ColourPalette__Standard": {
+    -            "Palette__MenuName"      : "Noble Architecture Standard",
+    +            "Palette__MenuName"      : "Vale Garden Houses Standard",
+                 "Palette__TechnicalName" : "ColourPalette__Standard",
+==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,3 +1,3 @@
+     /* ================================================================= */
+    -/* REGION  |  TrueVision3D - Colour Palette Styles                    */
+    +/* REGION  |  ValeVision3D - Colour Palette Styles                    */
+     /* ================================================================= */
+    @@ -25,2 +25,15 @@
+     */
+    +/*
+    +   PORT NOTE:
+    +   - Ported from   : TrueVision3D 02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css
+    +   - Source version: none of its own - the sheet as TrueVision3D v2.133.0 left it (21-Sep-2026, commit
+    +                     7ab70638; read at b2aa9151)
+    +   - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}
+    +   - Parity        : verbatim (the rules are TrueVision's; the banner and this note are the only differences)
+    +   - Divergences   :
+    +     - Banner reads ValeVision3D.
+    +   - Legacy        : TrueVision's copy of this sheet has no module version, so the Source version names
+    +                     the release and the commit instead.
+    +   - Back-port     : none.
+    +*/
+     
+==============================================================================================================
+02__Src__AppModules/54__Feature__ColourPalette/README__ColourPalette__.md   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -6,3 +6,3 @@
+     
+    -The standard colours, one click away from every colour field in TrueVision.
+    +The standard colours, one click away from every colour field in ValeVision.
+     
+    @@ -150,2 +150,11 @@
+       it already is one.
+    -- Not in ValeVision.
+    +
+    +---
+    +
+    +Ported from TrueVision3D's `README__ColourPalette__.md` (as of TrueVision3D v2.133.0, read at HEAD b2aa9151) by parity
+    +package W1-37 on 02-Oct-2026. Three changes for ValeVision: this app's name in the opening line; the palette's own
+    +name, **Vale Garden Houses Standard** in `Palette__MenuName` (decision DR-20 - the swatches are TrueVision's, colour for
+    +colour, so a line coloured here is the same colour in both apps, and a Vale group of its own would be one more block in
+    +the config); and TrueVision's closing "Not in ValeVision" gone. The list of colour fields is TrueVision's: in
+    +ValeVision each field has the palette from the release that brings it, the Layout Editor's panel fields through the
+    +panel host.
+==============================================================================================================
+02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js   [LIVE: LF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,3 +1,3 @@
+     // =============================================================================
+    -// TRUEVISION3D - PLAN ANNOTATIONS - EDITING TOOLBAR
+    +// VALEVISION3D - PLAN ANNOTATIONS - EDITING TOOLBAR
+     // =============================================================================
+    @@ -32,2 +32,18 @@
+     //
+    +// PORT NOTE:
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+    +// - Source version: 1.1.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}, whole; first ported 09-Sep-2026 for
+    +//                   ValeVision3D v2.18.0 (port Phase 2) as 1.0.0, logic unchanged, imports repointed
+    +// - Parity        : adapted
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +//   - Na__PlanDim__GetTextSetup is imported from 44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js,
+    +//     where this app keeps the plan dimension config getters; TrueVision imports it from
+    +//     Na__PlanDimensions__Data__.js until WT-01 gives TrueVision the same split (R6 F.8 C24).
+    +// - Back-port     : the ConfigState split, offered as WT-01 (held: DR-36, TrueVision is not edited by this
+    +//                   programme).
+    +//
+    +// -----------------------------------------------------------------------------
+    +//
+     // DEVELOPMENT LOG:
+    @@ -95,5 +111,7 @@
+         import {
+    +        Na__PlanDim__GetTextSetup
+    +    } from '../44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+    +    import {
+             Na__PlanDim__GetNewDefaults,
+             Na__PlanDim__SetNewDefaults,
+    -        Na__PlanDim__GetTextSetup,
+             Na__PlanDim__Update,
+  -- against this app's pre-image (LF):
+    --- VV-before
+    +++ VV-after
+    @@ -34,10 +34,13 @@
+     // - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+    -// - Source version: 1.0.0 (31-Aug-2026)
+    -// - Ported on     : 09-Sep-2026 for ValeVision3D v2.18.0 (port Phase 2)
+    -// - Parity        : verbatim
+    +// - Source version: 1.1.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-37}}, whole; first ported 09-Sep-2026 for
+    +//                   ValeVision3D v2.18.0 (port Phase 2) as 1.0.0, logic unchanged, imports repointed
+    +// - Parity        : adapted
+     // - Divergences   :
+    -//   - Console prefix and app name read ValeVision3D.
+    -//   - Focus arbiter imported from 40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js under the Na__DrawFocus__ namespace.
+    -//   - Dimension config getters imported from Na__PlanDimensions__ConfigState__.js (TrueVision keeps them in the data module).
+    -// - Back-port     : none pending.
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +//   - Na__PlanDim__GetTextSetup is imported from 44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js,
+    +//     where this app keeps the plan dimension config getters; TrueVision imports it from
+    +//     Na__PlanDimensions__Data__.js until WT-01 gives TrueVision the same split (R6 F.8 C24).
+    +// - Back-port     : the ConfigState split, offered as WT-01 (held: DR-36, TrueVision is not edited by this
+    +//                   programme).
+     //
+    @@ -46,4 +49,6 @@
+     // DEVELOPMENT LOG:
+    -// 09-Sep-2026 - ValeVision3D v2.18.0 (port Phase 2)
+    -// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+    +// 21-Sep-2026 - Version 1.1.0
+    +// - The dimension colour swatch is handed to the Colour Palette
+    +//   (54__Feature__ColourPalette): the standard colours open above the
+    +//   browser's colour menu, and a pick arrives as the `input` it already hears.
+     //
+    @@ -124,2 +129,7 @@
+     
+    +    // MODULE IMPORTS | The Colour Palette (the standard colours above the dimension colour's own menu)
+    +    // ------------------------------------------------------------
+    +    import { Na__ColourPalette__Attach } from '../54__Feature__ColourPalette/Na__ColourPalette__.js';
+    +    // ------------------------------------------------------------
+    +
+     
+    @@ -260,2 +270,3 @@
+             });
+    +        Na__ColourPalette__Attach(input);                                       // <-- The standard dimension colours, one click away; a pick arrives as the `input` above
+             return input;
+==============================================================================================================
+03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css   [LIVE: CRLF]
+  -- against TrueVision b2aa9151:
+    --- TV
+    +++ VV
+    @@ -1,10 +1,10 @@
+     /* ================================================================= */
+    -/* REGION  |  TrueVision3D Main Stylesheet Index                    */
+    +/* REGION  |  ValeVision3D Main Stylesheet Index                    */
+     /* ================================================================= */
+     /* 
+    - * Central import file for all TrueVision3D stylesheets
+    - * Import order matters: fonts â†’ base â†’ components
+    + * Central import file for all ValeVision3D stylesheets
+    + * Import order matters: fonts → base → components
+      * 
+      * Author: Adam Noble - Noble Architecture
+    - * Project: TrueVision3D
+    + * Project: ValeVision3D
+      */
+    @@ -33,12 +33,2 @@
+     
+    -/* Dev Tools - Scene Inspector */
+    -/* ----------------------------------------------------------------- */
+    -@import url('Na__UiFeature__Styles__SceneInspector__.css');
+    -
+    -
+    -/* Dev Tools - Cache & Storage Panel (localhost only) */
+    -/* ----------------------------------------------------------------- */
+    -@import url('Na__UiFeature__Styles__DevMenu__CacheAndStorage__.css');
+    -
+    -
+     /* Header Component - Vale Branding */
+    @@ -46,9 +36,2 @@
+     @import url('Na__UiFeature__Styles__AppHeader__.css');
+    -
+    -
+    -/* Dev Tools Menu - Header Trigger + Left Flyout (localhost only) */
+    -/* ----------------------------------------------------------------- */
+    -/* Imported AFTER the dropdown and header sheets because it overrides */
+    -/* the floating dropdown geometry those two establish.                */
+    -@import url('Na__UiFeature__Styles__DevToolsMenu__.css');
+     
+    @@ -60,5 +43,5 @@
+     
+    -/* User Instructions Overlay - User Guide Modal */
+    +/* Floating Navigation Toolbar & Help Panel - Bottom Centre */
+     /* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/75__System__UserInstructionsSystem/Na__UiFeature__Styles__UserInstructions__.css');
+    +@import url('Na__UiFeature__Styles__NavigationToolbar__.css');
+     
+    @@ -75,8 +58,19 @@
+     
+    -/* Floating Navigation Toolbar - Orbit / Walk / Fly / Reset / Help */
+    +/* Share Project Link — modal overlay */
+     /* ----------------------------------------------------------------- */
+    -@import url('Na__UiFeature__Styles__NavigationToolbar__.css');
+    +@import url('../02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__Stylesheet__.css');
+    +
+    +/* Send Email — modal overlay + autocomplete chips */
+    +/* ----------------------------------------------------------------- */
+    +@import url('../02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css');
+    +
+    +/* Full Screen Mode - tools menu integration */
+    +/* ----------------------------------------------------------------- */
+    +@import url('../02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__Stylesheet__.css');
+    +
+    +/* BREADCRUMB NAVIGATION | Top-left collapsed trail back to Whitecardopedia */
+    +@import url('../02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Stylesheet__.css');
+     
+     
+    -/* Presentation Mode - Scene Carousel + Dev Editor + Adaptive Layout */
+    +/* Presentation Mode - Scene Carousel and Dev Editor */
+     /* ----------------------------------------------------------------- */
+    @@ -84,4 +78,3 @@
+     
+    -
+    -/* Presentation Mode - Scene Group Selector Bar + Dev Group Editor */
+    +/* Presentation Mode - Scene Group Selector pill, grouped Dev rows (after the carousel sheet it extends) */
+     /* ----------------------------------------------------------------- */
+    @@ -89,53 +82,25 @@
+     
+    -
+    -/* Full Screen Mode - Startup Invitation Card + Menu Toggle Icons */
+    -/* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__Styles__FullscreenMode__.css');
+    -
+    -
+    -/* PWA Installability - Install Invitation Card + Compact Install Bar */
+    -/* ----------------------------------------------------------------- */
+    -@import url('Na__UiFeature__Styles__PwaInstallability__.css');
+    -
+    -
+    -/* Context Menu System - Floating Right-Click Menu */
+    -/* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css');
+    -
+    -
+    -/* Floor Plan Views - Dev Menu Plan Rows + Floor Datum Slider */
+    +/* Floor Plans, Elevations, North, Plan Annotations, Plan Dimensions, then the Drawing View Core Dev rows: TrueVision's order (port Phases 2 and 3) */
+     /* ----------------------------------------------------------------- */
+     @import url('../02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css');
+    -
+    -
+    -/* Elevation Views - Dev Menu Compass Strip + Drawing Plane Sliders */
+    -/* ----------------------------------------------------------------- */
+    -/* Imported AFTER the floor plan styles because it reuses their row */
+    -/* card and slider classes and only adds what has no equivalent. */
+     @import url('../02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css');
+     @import url('../02__Src__AppModules/46__System__NorthDirection/Na__North__Styles__DevMenu__.css');
+    +@import url('../02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
+    +@import url('../02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
+    +@import url('../02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css');   /* <-- After the drawing sheets, where TrueVision's index has it: its Drawing Panel Shell overrides .na-pm-dev__btn:disabled */
+    +@import url('../02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css');
+    +@import url('../02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css');
+    +/* Layout Editor Main, Panels and Specification are linked by Na__LayoutEditor__Loader__.js when the editor first loads */
+     
+    +/* Video Studio - Dev Tools camera path authoring panel */
+    +/* ----------------------------------------------------------------- */
+    +@import url('../02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Stylesheet__.css');
+     
+    -/* Drawing Planes - Dev Menu Bar, Row Controls and the Drag Readout */
+    +/* Video Studio - Bottom keyframe timeline (replaces the scene carousel) */
+     /* ----------------------------------------------------------------- */
+    -/* Imported AFTER the floor plan and elevation styles: the bar and   */
+    -/* the row controls sit inside both panels and reuse their classes.  */
+    -@import url('../02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css');
+    +@import url('../02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Stylesheet__.css');
+     
+    -
+    -/* Elevation Depth Fog - the Fog Block of a Drawing's Dev Menu Row */
+    +/* Export Render Layers - Dev Tools structural pass panel + preview overlay */
+     /* ----------------------------------------------------------------- */
+    -/* Imported AFTER the elevation styles: the block sits inside a      */
+    -/* drawing's row and reuses its caption, button and input classes.   */
+    -@import url('../02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css');
+    -
+    -
+    -/* Plan Annotations - World-Anchored Text Layer + Editing Toolbar */
+    -/* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
+    -
+    -
+    -/* PLAN DIMENSIONS | Measured dimension lines over a floor plan cut */
+    -/* ------------------------------------------------------------ */
+    -@import url('../02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
+    +@import url('../02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__Stylesheet__.css');
+     
+    @@ -143,33 +108,6 @@
+     
+    -
+    -
+     /* ----------------------------------------------------------------- */
+    -/* REGION  |  Drawing View Core - Dev Menu Rows                       */
+    +/* REGION  |  Dev Tools Menu Shell (header trigger + flyout panel)    */
+     /* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css');
+    -/* endregion -------------------------------------------------------- */
+    -
+    -/* ----------------------------------------------------------------- */
+    -/* REGION  |  Projected Linework - Overlay and Dev Controls           */
+    -/* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css');
+    -/* endregion -------------------------------------------------------- */
+    -
+    -/* ----------------------------------------------------------------- */
+    -/* REGION  |  Layout Editor - Stage, Paper, Panels                    */
+    -/* ----------------------------------------------------------------- */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css');   /* <-- Draft mode (K): every rule keyed on body.na-le-draft, so it is inert until Draft is on */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css');   /* <-- Drawing grid (F6 / F7): the grid's canvas on the paper and the grid snap ring */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css');   /* <-- Object snap (F3): the snap marker (coloured by what it snapped to), the Snap button's arrow and the snap options menu */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css');   /* <-- Drawing axes overlay (F9): SketchUp's red and green axes on the cursor, out to the edges of the sheet */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css');
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css');   /* <-- Sheet Images: the drop look, a picture's corner grips, the crop overlay and the Images panel */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Styles__Share__.css');   /* <-- Document Sharing: the Share box every Share button opens (the link, Copy link, Share..., Open) */
+    -@import url('../02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css');   /* <-- LAST of the Layout Editor sheets: it reshapes the shell and the specification page for the read-only web viewer */
+    +@import url('Na__UiFeature__Styles__DevToolsMenu__.css');
+     /* endregion -------------------------------------------------------- */
+    @@ -183,9 +121 @@
+     /* endregion -------------------------------------------------------- */
+    -
+    -/* ----------------------------------------------------------------- */
+    -/* REGION  |  Spell Check - the Browser's Spell Check, the Practice's Words */
+    -/* ----------------------------------------------------------------- */
+    -/* Its own feature, like the Colour Palette: any text box in the app  */
+    -/* can be a spell-checked one, so it belongs to no one system's region. */
+    -@import url('../02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css');
+    -/* endregion -------------------------------------------------------- */
+  -- against this app's pre-image (CRLF):
+    --- VV-before
+    +++ VV-after
+    @@ -113 +113,9 @@
+     /* endregion -------------------------------------------------------- */
+    +
+    +/* ----------------------------------------------------------------- */
+    +/* REGION  |  Colour Palette - the Standard Colours Above a Colour Field */
+    +/* ----------------------------------------------------------------- */
+    +/* Its own feature, used by the Layout Editor's panels and the 3D tab's */
+    +/* Plan Annotations toolbar alike, so it belongs to neither's region.   */
+    +@import url('../02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css');
+    +/* endregion -------------------------------------------------------- */

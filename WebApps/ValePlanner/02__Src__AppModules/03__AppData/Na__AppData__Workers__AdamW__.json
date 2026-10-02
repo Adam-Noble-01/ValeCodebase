@@ -3456,11 +3456,51 @@
           "color": "na-shift-color-purple"
         },
         {
+          "id": "new-1790848187898",
+          "date": "2026-10-01",
+          "startTime": "11:15",
+          "endTime": "12:45",
+          "title": "Whitecard |  Mathison",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1790753421762",
+          "date": "2026-09-30",
+          "startTime": "08:30",
+          "endTime": "09:30",
+          "title": "Whitecard |  Mathison",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1790773868200",
+          "date": "2026-09-30",
+          "startTime": "15:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Mathison",
+          "color": "na-shift-color-lime"
+        },
+        {
           "id": "new-1790579855723",
           "date": "2026-09-28",
-          "startTime": "08:45",
-          "endTime": "11:15",
-          "title": "TEMP | Wash",
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "title": "Whitecard |  Washington",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1790935621747",
+          "date": "2026-10-02",
+          "startTime": "11:15",
+          "endTime": "12:45",
+          "title": "MaxUpgrade |  Washington",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1790943968398",
+          "date": "2026-10-02",
+          "startTime": "13:30",
+          "endTime": "16:45",
+          "title": "MaxUpgrade |  Washington",
           "color": "na-shift-color-purple"
         }
       ]

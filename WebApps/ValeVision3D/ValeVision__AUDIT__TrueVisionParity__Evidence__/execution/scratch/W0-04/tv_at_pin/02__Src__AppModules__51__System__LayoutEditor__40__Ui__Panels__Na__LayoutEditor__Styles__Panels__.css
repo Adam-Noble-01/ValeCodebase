@@ -1,0 +1,1174 @@
+/* ================================================================= */
+/* REGION  |  TrueVision3D - Layout Editor Styles (panels)            */
+/* ================================================================= */
+/*
+ * PORT NOTE:
+ * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (panel column rules)
+ * - Ported on   : 09-Sep-2026 for TrueVision3D v2.21.0 (port Phase 5)
+ * - Parity      : adapted (foldable sections with height grips, delegated controls, layer rows)
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Columns and Grips                                      */
+/* ----------------------------------------------------------------- */
+
+.na-le-panel {
+    position                           : absolute;
+    inset                              : 0;
+    display                            : flex;
+    background                         : #ffffff;
+    font-size                          : 0.78rem;
+    color                              : #172b3a;
+}
+
+.na-le-panel--left  { border-right : 1px solid rgba(23, 43, 58, 0.14); }
+.na-le-panel--right { border-left  : 1px solid rgba(23, 43, 58, 0.14); flex-direction : row-reverse; }
+
+.na-le-panel__scroll {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    overflow-y                         : auto;
+    overflow-x                         : hidden;
+}
+
+.na-le-panel__grip {
+    flex                               : 0 0 6px;
+    cursor                             : col-resize;
+    background                         : transparent;
+    transition                         : background 0.15s;
+}
+
+.na-le-panel__grip:hover {
+    background                         : rgba(26, 127, 196, 0.35);
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Sections                                               */
+/* ----------------------------------------------------------------- */
+
+.na-le-section {
+    border-bottom                      : 1px solid rgba(23, 43, 58, 0.10);
+}
+
+.na-le-section[hidden] {
+    display                            : none;
+}
+
+.na-le-section__header {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+    width                              : 100%;
+    padding                            : 8px 10px;
+    border                             : none;
+    background                         : #f4f6f8;
+    color                              : #172b3a;
+    font-size                          : 0.78rem;
+    font-weight                        : 600;
+    text-align                         : left;
+    cursor                             : pointer;
+}
+
+.na-le-section__header:hover {
+    background                         : #e8edf3;
+}
+
+.na-le-section__chevron {
+    width                              : 0;
+    height                             : 0;
+    border-left                        : 5px solid transparent;
+    border-right                       : 5px solid transparent;
+    border-top                         : 6px solid #172b3a;
+    transition                         : transform 0.15s;
+}
+
+.na-le-section.is-folded .na-le-section__chevron {
+    transform                          : rotate(-90deg);
+}
+
+.na-le-section__body {
+    padding                            : 8px 10px;
+    overflow-y                         : auto;
+}
+
+.na-le-section.is-folded .na-le-section__body,
+.na-le-section.is-folded .na-le-section__grip {
+    display                            : none;
+}
+
+.na-le-section__grip {
+    height                             : 5px;
+    cursor                             : row-resize;
+    background                         : transparent;
+}
+
+.na-le-section__grip:hover {
+    background                         : rgba(26, 127, 196, 0.35);
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Rows and Controls                                      */
+/* ----------------------------------------------------------------- */
+
+.na-le-row {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+    margin-bottom                      : 6px;
+}
+
+.na-le-row[hidden] {
+    display                            : none;
+}
+
+.na-le-row__label {
+    flex                               : 0 0 78px;
+    color                              : #555;
+    font-size                          : 0.74rem;
+}
+
+.na-le-row--toggle .na-le-row__label {
+    flex                               : 1 1 auto;
+}
+
+.na-le-input,
+.na-le-select {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    padding                            : 3px 6px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background                         : #ffffff;
+    color                              : #172b3a;
+    font-size                          : 0.76rem;
+    font-family                        : inherit;
+}
+
+.na-le-input:disabled,
+.na-le-select:disabled {
+    background                         : #f4f6f8;
+    color                              : #6c757d;
+}
+
+.na-le-input--check {
+    flex                               : 0 0 auto;
+    width                              : 16px;
+    height                             : 16px;
+    padding                            : 0;
+}
+
+.na-le-input--colour {
+    flex                               : 0 0 44px;
+    height                             : 24px;
+    padding                            : 1px;
+}
+
+.na-le-input--inline {
+    flex                               : 1 1 auto;
+    padding                            : 1px 4px;
+}
+
+/* THE SHEET NAME FIELD. The drawing's short code ("D03 -") is joined to the
+   front of the box as fixed text, so the row reads the way the tab does while
+   only the words after the code can be typed. The code is the Drawing
+   Register's: it changes when the register renumbers, never from here. */
+
+.na-le-namefield {
+    display                            : flex;
+    flex                               : 1 1 auto;
+    align-items                        : stretch;
+    min-width                          : 0;
+}
+
+.na-le-namefield__code {
+    display                            : flex;
+    flex                               : 0 0 auto;
+    align-items                        : center;
+    padding                            : 0 7px;
+    border                             : 1px solid #ccd3d8;
+    border-right                       : none;
+    border-radius                      : 4px 0 0 4px;
+    background                         : #f4f6f8;
+    color                              : #46596b;
+    font-size                          : 0.76rem;
+    font-weight                        : 600;
+    white-space                        : nowrap;
+    cursor                             : default;
+}
+
+.na-le-namefield__code[hidden] {
+    display                            : none;
+}
+
+.na-le-namefield__code:not([hidden]) + .na-le-input {
+    border-radius                      : 0 4px 4px 0;
+}
+
+.na-le-select--compact {
+    flex                               : 0 0 92px;
+    padding                            : 2px 4px;
+}
+
+.na-le-grid4 {
+    display                            : flex;
+    flex                               : 1 1 auto;
+    gap                                : 4px;
+    min-width                          : 0;
+}
+
+.na-le-grid4 .na-le-input {
+    flex                               : 1 1 0;
+    min-width                          : 0;
+    padding                            : 3px 4px;
+}
+
+/* WRAPS rather than clips: the Scale row holds one button per locked scale
+   (four since 1:200 joined, six on a site plan viewport), and in a narrow
+   column the last of them would otherwise be cut off at the edge. Nothing
+   moves while the buttons fit on one line. */
+.na-le-toggle-group {
+    display                            : flex;
+    flex                               : 1 1 auto;
+    flex-wrap                          : wrap;
+    gap                                : 4px;
+}
+
+/* THE SCALE BUTTONS SIT CLOSER TO THEIR WORDS, so 1:20, 1:50, 1:100 and 1:200
+   stay on one line in the panel's default 300 px column - scroll bar showing
+   or not - where the ordinary 6 px sides left the fourth 3 px short. */
+.na-le-toggle-group--tight .na-le-btn--toggle {
+    padding                            : 4px 3px;
+}
+
+/* A CHECKBOX AND ITS WORDS INSIDE A ROW, after the row's own control - the
+   Doors row's Hide swings, beside Open all. Its own label, so a click on
+   the words ticks it and a click on the row's caption does nothing. */
+.na-le-row__inline-check {
+    display                            : inline-flex;
+    flex                               : 0 0 auto;
+    align-items                        : center;
+    gap                                : 5px;
+    margin-left                        : 4px;
+    color                              : #555;
+    font-size                          : 0.74rem;
+    white-space                        : nowrap;
+    cursor                             : pointer;
+}
+
+.na-le-row__inline-check .na-le-input--check:disabled {
+    cursor                             : default;
+}
+
+.na-le-bar {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    align-items                        : center;
+    gap                                : 6px;
+    margin                             : 4px 0 8px;
+}
+
+.na-le-bar[hidden] {
+    display                            : none;
+}
+
+.na-le-block[hidden] {
+    display                            : none;
+}
+
+.na-le-subheading {
+    margin                             : 10px 0 6px;
+    font-size                          : 0.72rem;
+    font-weight                        : 600;
+    text-transform                     : uppercase;
+    letter-spacing                     : 0.04em;
+    color                              : #6c757d;
+}
+
+.na-le-note {
+    margin                             : 4px 0 8px;
+    font-size                          : 0.72rem;
+    line-height                        : 1.35;
+    color                              : #6c757d;
+}
+
+.na-le-note[hidden] {
+    display                            : none;
+}
+
+/* WHAT THE PROJECT ADMIN RECORD SAYS, offered beside the pack's own client and
+   site address when the two differ. A note with a button on the end of it: the
+   text is the offer and the button takes it. It shows only when there is a
+   difference, so it must not reserve height when it is hidden - which is why
+   it sets display only in this rule and leaves [hidden] above to win. */
+.na-le-note--offer {
+    display                            : flex;
+    align-items                        : baseline;
+    gap                                : 6px;
+}
+
+.na-le-note--offer > span {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+}
+
+.na-le-note--offer > .na-le-btn {
+    flex                               : 0 0 auto;
+}
+
+/* A GROUP SUBHEAD inside a long list of toggles. It is a note, not a section
+   header: the sections fold and these do not, and one foldable thing inside
+   another foldable thing is a maze. */
+.na-le-note--heading {
+    margin                             : 10px 0 4px;
+    padding-bottom                     : 2px;
+    border-bottom                      : 1px solid #e6eaee;
+    color                              : #46596b;
+    font-size                          : 0.68rem;
+    font-weight                        : 700;
+    text-transform                     : uppercase;
+    letter-spacing                     : 0.06em;
+}
+
+.na-le-note--heading:first-child {
+    margin-top                         : 0;
+}
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Advanced Fold                                          */
+/* ----------------------------------------------------------------- */
+
+/* THE SMALL TOGGLE UNDER A SECTION TITLE. Deliberately quieter than the
+   section header above it - smaller, no fill, no rule - so it reads as a
+   property of the section rather than as another section. */
+.na-le-adv-toggle {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 6px;
+    width                              : 100%;
+    margin                             : -2px 0 8px;
+    padding                            : 2px 0;
+    border                             : none;
+    background                         : transparent;
+    color                              : #6c7a86;
+    font-size                          : 0.66rem;
+    font-weight                        : 600;
+    letter-spacing                     : 0.05em;
+    text-transform                     : uppercase;
+    text-align                         : left;
+    cursor                             : pointer;
+}
+
+.na-le-adv-toggle:hover {
+    color                              : #1a7fc4;
+}
+
+.na-le-adv-toggle__chevron {
+    width                              : 0;
+    height                             : 0;
+    border-left                        : 4px solid transparent;
+    border-right                       : 4px solid transparent;
+    border-top                         : 5px solid currentColor;
+    transform                          : rotate(-90deg);
+    transition                         : transform 0.15s;
+}
+
+.na-le-section.is-advanced .na-le-adv-toggle {
+    color                              : #1a7fc4;
+}
+
+.na-le-section.is-advanced .na-le-adv-toggle__chevron {
+    transform                          : none;
+}
+
+/* EVERYTHING MARKED ADVANCED IS GONE UNTIL THE FOLD IS OPEN. !important
+   because these sit inside rows whose own display rules would otherwise
+   win on specificity. */
+.na-le-section:not(.is-advanced) .na-le-adv {
+    display                            : none !important;
+}
+
+/* A SUB-FOLD inside a panel (the Leaders panel's Endpoint): the Advanced
+   fold's quiet toggle, opening only the rows under it, which carry a faint
+   rule down their left like the gradient rows. */
+.na-le-subfold-toggle {
+    margin                             : 2px 0 6px;
+}
+
+.na-le-subfold-toggle.is-open {
+    color                              : #1a7fc4;
+}
+
+.na-le-subfold-toggle.is-open .na-le-adv-toggle__chevron {
+    transform                          : none;
+}
+
+.na-le-subfold {
+    margin                             : -2px 0 6px;
+    padding-left                       : 8px;
+    border-left                        : 2px solid #e6eaee;
+}
+
+/* THE INLINE CLUSTER inside a toggle row: colour, line type, weight, then the
+   row's own checkbox after it. The label gives way first - it ellipsises
+   rather than pushing the controls off the edge - which is why the panel can
+   be dragged wider while curating and narrow again afterwards. */
+.na-le-row--toggle .na-le-row__label {
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+}
+
+.na-le-row__adv {
+    display                            : flex;
+    flex                               : 0 0 auto;
+    align-items                        : center;
+    gap                                : 4px;
+}
+
+.na-le-row__adv .na-le-select,
+.na-le-row__adv .na-le-input {
+    flex                               : 0 0 auto;
+    padding                            : 1px 3px;
+    font-size                          : 0.7rem;
+}
+
+.na-le-adv-colour  { width : 92px; }
+.na-le-adv-type    { width : 82px; }
+.na-le-adv-weight  { width : 52px; text-align : right; }
+
+/* THE UNIT AFTER A COMPOSITE WEIGHT: a multiplication sign for a factor of
+   the sheet master, "px" for a render-buffer width, "%" for how much of a post
+   pass to apply. Three kinds of number in one column need telling apart
+   without reading the tooltip. */
+.na-le-adv-unit {
+    flex                               : 0 0 16px;
+    color                              : #8a96a0;
+    font-size                          : 0.66rem;
+}
+
+/* THE CHECKBOX COLUMN, HELD OPEN on a composite row that has a weight but no
+   toggle (Section Outline). Every other weight sits just before its row's
+   checkbox; without this the row's weight slides right by a checkbox and its
+   gap, and the column breaks. Same width as .na-le-input--check. */
+.na-le-row__check-slot {
+    flex                               : 0 0 16px;
+    width                              : 16px;
+}
+
+/* A CLUSTER THAT DOES NOT APPLY to the selected viewport - edge styles on a
+   3D viewport, a 2D-only weight on a 3D one - is removed even with the fold
+   open, rather than offering controls that would change nothing. */
+.na-le-adv--off,
+.na-le-list--no-edges .na-le-row__adv,
+.na-le-list--no-edges .na-le-adv-head {
+    display                            : none !important;
+}
+
+/* A SWATCH BESIDE THE COLOUR SELECT. A native option list cannot be relied on
+   to paint its own backgrounds, and a grey called "Mid Grey" is not a grey
+   anyone can see. The swatch shows the colour the line will actually be. */
+.na-le-adv-swatch {
+    flex                               : 0 0 12px;
+    width                              : 12px;
+    height                             : 12px;
+    border                             : 1px solid rgba(23, 43, 58, 0.25);
+    border-radius                      : 2px;
+}
+
+/* A CATEGORY THIS VIEWPORT HAS RESTYLED gets a marker on its label and a reset
+   button, so a curated row can be told from an inherited one at a glance. */
+.na-le-row.is-overridden .na-le-row__label {
+    color                              : #1a7fc4;
+    font-weight                        : 600;
+}
+
+.na-le-adv-reset {
+    flex                               : 0 0 18px;
+    width                              : 18px;
+    height                             : 18px;
+    padding                            : 0;
+    border                             : 1px solid transparent;
+    border-radius                      : 3px;
+    background                         : transparent;
+    color                              : #8a96a0;
+    font-size                          : 0.78rem;
+    line-height                        : 1;
+    cursor                             : pointer;
+    visibility                         : hidden;
+}
+
+.na-le-row.is-overridden .na-le-adv-reset {
+    visibility                         : visible;
+}
+
+.na-le-adv-reset:hover {
+    border-color                       : #ccd3d8;
+    color                              : #172b3a;
+}
+
+/* THE COLUMN HEADINGS for the inline cluster, shown once above a list rather
+   than repeated per row. Aligned to the same widths as the controls below. */
+.na-le-adv-head {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+    margin                             : 0 0 4px;
+    color                              : #8a96a0;
+    font-size                          : 0.62rem;
+    font-weight                        : 600;
+    letter-spacing                     : 0.04em;
+    text-transform                     : uppercase;
+}
+
+.na-le-adv-head__spacer { flex : 1 1 auto; }
+.na-le-adv-head__cell   { flex : 0 0 auto; }
+
+/* endregion ------------------------------------------------------- */
+
+
+/* A ROW THAT IS ONLY BUTTONS, with no label column to line up against. */
+.na-le-row--buttons {
+    gap                                : 6px;
+    margin-bottom                      : 8px;
+}
+
+.na-le-row--buttons .na-le-btn {
+    flex                               : 1 1 auto;
+}
+
+/* A BUTTON THAT IS THE WHOLE ROW, for an action rather than a choice. */
+.na-le-btn--wide {
+    width                              : 100%;
+    padding                            : 6px 10px;
+    font-weight                        : 600;
+}
+
+.na-le-btn--wide:disabled {
+    opacity                            : 0.6;
+    cursor                             : default;
+}
+
+.na-le-btn {
+    padding                            : 4px 10px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 5px;
+    background                         : #f4f6f8;
+    color                              : #172b3a;
+    font-size                          : 0.74rem;
+    font-family                        : inherit;
+    cursor                             : pointer;
+    white-space                        : nowrap;
+}
+
+.na-le-btn:hover:not(:disabled) {
+    background                         : #e8edf3;
+}
+
+.na-le-btn:disabled {
+    opacity                            : 0.5;
+    cursor                             : default;
+}
+
+.na-le-btn--primary {
+    border-color                       : #1a7fc4;
+    color                              : #1a7fc4;
+    background                         : #eef5fb;
+}
+
+.na-le-btn--danger {
+    border-color                       : #cc3333;
+    color                              : #cc3333;
+    background                         : #fdf0f0;
+}
+
+.na-le-btn--toggle {
+    flex                               : 1 1 0;
+    padding                            : 4px 6px;
+}
+
+.na-le-btn--active {
+    border-color                       : #1a7fc4;
+    background                         : #1a7fc4;
+    color                              : #ffffff;
+}
+
+.na-le-btn--small {
+    padding                            : 3px 8px;
+}
+
+.na-le-btn--icon {
+    flex                               : 0 0 auto;
+    min-width                          : 38px;
+    padding                            : 2px 4px;
+    font-size                          : 0.68rem;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Layer Rows                                             */
+/* ----------------------------------------------------------------- */
+
+.na-le-layers {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 3px;
+    margin-bottom                      : 6px;
+}
+
+.na-le-layer {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 4px;
+    padding                            : 3px 4px;
+    border                             : 1px solid transparent;
+    border-radius                      : 4px;
+    background                         : #f8f9fa;
+}
+
+.na-le-layer:hover {
+    background                         : #eef2f5;
+}
+
+.na-le-layer--hidden .na-le-layer__name {
+    color                              : #9aa5ad;
+    text-decoration                    : line-through;
+}
+
+.na-le-layer--locked .na-le-layer__name {
+    font-style                         : italic;
+}
+
+.na-le-layer__name {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+    cursor                             : default;
+}
+
+/* THE LOCK BUTTON SAYS WHAT A CLICK WILL DO - "Lock" or "Unlock" - so it
+   holds one width for both words; otherwise every name in the list would
+   twitch sideways as its layer locked. */
+.na-le-btn--lock {
+    min-width                          : 48px;
+}
+
+/* THE REF BUTTON - a reference layer, Blender's Selectable switch - reads
+   Ref either way, so it is only as wide as that word. */
+.na-le-btn--ref {
+    min-width                          : 32px;
+}
+
+/* ONE RED FOR EVERY SWITCH AWAY FROM ITS USUAL STATE - a layer Off, a layer
+   locked (Unlock), a reference layer (Ref). A finished drawing has every
+   layer On, unlocked and selectable, so a red button anywhere down the three
+   columns is one still to put back. Only just red: enough to pick the rows
+   out at a glance, too little to be mistaken for a warning or for Delete. */
+.na-le-btn--eye.is-off,
+.na-le-btn--lock.is-locked,
+.na-le-btn--ref.is-reference {
+    border-color                       : #e8c9c9;
+    background                         : #fbf3f3;
+    color                              : #9b3b3b;
+}
+
+.na-le-btn--eye.is-off:hover:not(:disabled),
+.na-le-btn--lock.is-locked:hover:not(:disabled),
+.na-le-btn--ref.is-reference:hover:not(:disabled) {
+    background                         : #f6e7e7;
+}
+
+/* THE GRIP - six small squares, the usual sign for "hold here and drag".
+   Faint until its row is under the pointer; the grab cursor does the rest. */
+.na-le-layer__grip {
+    flex                               : 0 0 auto;
+    display                            : inline-flex;
+    align-items                        : center;
+    justify-content                    : center;
+    width                              : 20px;
+    height                             : 22px;
+    padding                            : 0;
+    border                             : 1px solid transparent;
+    border-radius                      : 4px;
+    background                         : transparent;
+    color                              : #a0aab2;
+    cursor                             : grab;
+    touch-action                       : none;
+    user-select                        : none;
+}
+
+.na-le-layer__grip svg {
+    display                            : block;
+    width                              : 8px;
+    height                             : 13px;
+    fill                               : currentColor;
+    pointer-events                     : none;
+}
+
+.na-le-layer:hover .na-le-layer__grip:not(:disabled) {
+    color                              : #6c7a86;
+}
+
+.na-le-layer .na-le-layer__grip:hover:not(:disabled),
+.na-le-layers .na-le-layer.is-dragging .na-le-layer__grip {
+    background                         : #e2e8ee;
+    color                              : #172b3a;
+}
+
+.na-le-layer__grip:focus-visible {
+    outline                            : none;
+    border-color                       : #1a7fc4;
+}
+
+.na-le-layer__grip:disabled {
+    opacity                            : 0.35;
+    cursor                             : default;
+}
+
+/* WHILE A ROW IS DRAGGED the rows it passes slide aside to open the gap it
+   will drop into. The dragged row tracks the pointer with no easing, lifted
+   above its neighbours. */
+.na-le-layers.is-sorting .na-le-layer {
+    transition                         : transform 0.12s ease;
+}
+
+.na-le-layers.is-sorting .na-le-layer.is-dragging {
+    position                           : relative;
+    z-index                            : 2;
+    border-color                       : #1a7fc4;
+    background                         : #ffffff;
+    box-shadow                         : 0 3px 10px rgba(23, 43, 58, 0.18);
+    transition                         : none;
+}
+
+/* THE GRABBING CURSOR is held across the whole page for the length of the
+   drag, so it never flickers back to an arrow once the pointer leaves the
+   grip. */
+body.na-le-sorting,
+body.na-le-sorting * {
+    cursor                             : grabbing !important;
+    user-select                        : none !important;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Gradient Rows (Vectors panel)                          */
+/* ----------------------------------------------------------------- */
+
+/* THE SETTINGS BLOCK sits under its toggle the way the fill colour row sits
+   under Fill, with a faint rule down its left so the rows read as the
+   gradient's own rather than as more shape properties. */
+.na-le-grad {
+    margin                             : -2px 0 6px;
+    padding-left                       : 8px;
+    border-left                        : 2px solid #e6eaee;
+}
+
+/* AN ALPHA END has no colour of its own - the solid end lends it one - so its
+   colour well goes. visibility rather than display keeps the tick in place. */
+.na-le-grad-stop.is-alpha .na-le-input--colour {
+    visibility                         : hidden;
+}
+
+.na-le-grad-alpha {
+    display                            : inline-flex;
+    align-items                        : center;
+    gap                                : 4px;
+    color                              : #555;
+    font-size                          : 0.72rem;
+    white-space                        : nowrap;
+    cursor                             : pointer;
+}
+
+.na-le-input--range {
+    flex                               : 1 1 auto;
+    min-width                          : 40px;
+    height                             : 18px;
+    padding                            : 0;
+    border                             : none;
+    background                         : transparent;
+    accent-color                       : #1a7fc4;
+}
+
+/* THE TYPABLE FIGURE BESIDE A SLIDER. The slider previews fast but lands
+   nowhere exact; this is where an exact value is locked in. Spin buttons are
+   dropped - the box is too narrow for them, and the slider already covers
+   quick dragging - so typing plus Enter or Tab (both blur it) is the way in. */
+.na-le-input--rangebox {
+    flex                               : 0 0 38px;
+    width                              : 38px;
+    padding                            : 2px 4px;
+    text-align                         : right;
+    font-variant-numeric               : tabular-nums;
+    -moz-appearance                    : textfield;
+}
+
+.na-le-input--rangebox::-webkit-outer-spin-button,
+.na-le-input--rangebox::-webkit-inner-spin-button {
+    -webkit-appearance                 : none;
+    margin                             : 0;
+}
+
+.na-le-grad-readout {
+    flex                               : 0 0 34px;
+    color                              : #555;
+    font-size                          : 0.72rem;
+    font-variant-numeric               : tabular-nums;
+    text-align                         : right;
+}
+
+/* THE UNIT LEFT AFTER A SLIDER ROW GAINED ITS OWN FIGURE BOX. Only the suffix
+   ("%") is left to show here, so it sits close and left-aligned rather than
+   padded out to the old reading's width. */
+.na-le-range-suffix {
+    flex                               : 0 0 14px;
+    text-align                         : left;
+}
+
+.na-le-grad-angle {
+    flex                               : 0 0 50px;
+    width                              : 50px;
+    text-align                         : right;
+}
+
+/* THE PREVIEW is painted from the same stops as the paper, over a
+   checkerboard so the alpha end reads as see-through rather than as white. */
+.na-le-grad-preview {
+    flex                               : 0 0 24px;
+    width                              : 24px;
+    height                             : 24px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background-color                   : #ffffff;
+    background-size                    : 100% 100%, 8px 8px;
+    background-repeat                  : no-repeat, repeat;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Dashed-Edge Rows (Vectors panel)                       */
+/* ----------------------------------------------------------------- */
+
+/* THE SETTINGS BLOCK sits under its toggle the way the gradient block sits
+   under Gradient, with a faint rule down its left so the rows read as the
+   dashed edge's own rather than as more shape properties. */
+.na-le-dash {
+    margin                             : -2px 0 6px;
+    padding-left                       : 8px;
+    border-left                        : 2px solid #e6eaee;
+}
+
+.na-le-dash-readout {
+    flex                               : 0 0 42px;
+    color                              : #555;
+    font-size                          : 0.72rem;
+    font-variant-numeric               : tabular-nums;
+    text-align                         : right;
+}
+
+/* THE PREVIEW is the same dash array the paper is painted with, stretched
+   to four pixels per paper millimetre so a 2.5 mm dash is long enough to
+   read across the row. */
+.na-le-dash-preview {
+    height                             : 18px;
+    margin                             : 0 0 6px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background                         : #ffffff;
+    color                              : #172b3a;
+    overflow                           : hidden;
+}
+
+.na-le-dash-preview__svg {
+    display                            : block;
+    width                              : 100%;
+    height                             : 100%;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Linked Pair (two values and a padlock)                 */
+/* ----------------------------------------------------------------- */
+
+/* TWO VALUES THAT CAN MOVE TOGETHER, with the padlock between them, as in the
+   layout apps. Each value keeps a small caption in front of it, so the pair
+   reads without a second row of labels. */
+.na-le-pair {
+    display                            : flex;
+    flex                               : 1 1 auto;
+    align-items                        : center;
+    gap                                : 4px;
+    min-width                          : 0;
+}
+
+.na-le-pair__field {
+    display                            : flex;
+    flex                               : 1 1 0;
+    align-items                        : center;
+    gap                                : 4px;
+    min-width                          : 0;
+}
+
+.na-le-pair__caption {
+    flex                               : 0 0 auto;
+    color                              : #6c757d;
+    font-size                          : 0.68rem;
+}
+
+.na-le-pair__input {
+    flex                               : 1 1 0;
+    width                              : 0;
+    min-width                          : 0;
+    padding                            : 3px 4px;
+}
+
+/* THE PADLOCK. Shut is the working state, so it takes the accent blue and a
+   solid body; open is a quiet grey outline with its shackle lifted. */
+.na-le-pair__link {
+    flex                               : 0 0 24px;
+    display                            : inline-flex;
+    align-items                        : center;
+    justify-content                    : center;
+    width                              : 24px;
+    height                             : 24px;
+    padding                            : 0;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background                         : #f4f6f8;
+    color                              : #8a96a0;
+    cursor                             : pointer;
+}
+
+.na-le-pair__link:hover:not(:disabled) {
+    background                         : #e8edf3;
+    color                              : #172b3a;
+}
+
+.na-le-pair__link.is-linked {
+    border-color                       : #9cc7e6;
+    background                         : #eef5fb;
+    color                              : #1a7fc4;
+}
+
+.na-le-pair__link.is-linked:hover:not(:disabled) {
+    background                         : #e1eef8;
+    color                              : #1a7fc4;
+}
+
+.na-le-pair__link:focus-visible {
+    outline                            : none;
+    border-color                       : #1a7fc4;
+}
+
+.na-le-pair__link:disabled {
+    opacity                            : 0.5;
+    cursor                             : default;
+}
+
+.na-le-pair__padlock {
+    display                            : block;
+    width                              : 14px;
+    height                             : 14px;
+    fill                               : none;
+    stroke                             : currentColor;
+    stroke-width                       : 2.2;
+    stroke-linecap                     : round;
+    stroke-linejoin                    : round;
+    pointer-events                     : none;
+}
+
+.na-le-pair__link.is-linked .na-le-pair__body {
+    fill                               : currentColor;
+}
+
+.na-le-pair__link.is-linked .na-le-pair__shackle--open,
+.na-le-pair__link:not(.is-linked) .na-le-pair__shackle--shut {
+    display                            : none;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Scrapbook                                              */
+/* ----------------------------------------------------------------- */
+
+/* READY-MADE ITEMS to drag onto the paper (Na__LayoutEditor__Panel__Scrapbook__).
+   One tile per item, every tile styled alike whatever it holds. */
+.na-le-scrap {
+    display                            : grid;
+    grid-template-columns              : 1fr;
+    gap                                : 6px;
+}
+
+.na-le-scrap__item {
+    display                            : flex;
+    flex-direction                     : column;
+    align-items                        : stretch;
+    gap                                : 4px;
+    width                              : 100%;
+    padding                            : 6px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 5px;
+    background                         : #ffffff;
+    color                              : #172b3a;
+    font-family                        : inherit;
+    text-align                         : left;
+    cursor                             : grab;
+    touch-action                       : none;                        /* <-- A finger drags the item rather than scrolling the column */
+}
+
+.na-le-scrap__item:hover:not(:disabled) {
+    border-color                       : #1a7fc4;
+    background                         : #eef5fb;
+}
+
+.na-le-scrap__item:focus-visible {
+    outline                            : none;
+    border-color                       : #1a7fc4;
+    box-shadow                         : 0 0 0 2px rgba(26, 127, 196, 0.25);
+}
+
+.na-le-scrap__item:disabled {
+    cursor                             : default;
+    opacity                            : 0.6;
+}
+
+.na-le-scrap__thumb {
+    display                            : block;
+    height                             : 56px;
+    pointer-events                     : none;
+}
+
+.na-le-scrap__thumb svg,
+.na-le-scrap-ghost svg {
+    display                            : block;
+    width                              : 100%;
+    height                             : 100%;
+    overflow                           : visible;
+}
+
+.na-le-scrap__name {
+    font-size                          : 0.72rem;
+    line-height                        : 1.3;
+    pointer-events                     : none;
+}
+
+/* THE ITEM UNDER THE POINTER while it is dragged, drawn at the sheet's zoom so
+   it shows the size it lands at: faint away from the sheet, clear over it.
+   Above the header, menus and toasts; below the loading overlays. */
+.na-le-scrap-ghost {
+    position                           : fixed;
+    left                               : 0;
+    top                                : 0;
+    z-index                            : 9990;
+    pointer-events                     : none;
+    opacity                            : 0.4;
+}
+
+.na-le-scrap-ghost.is-over {
+    opacity                            : 0.85;
+}
+
+body.na-le-scrap-dragging,
+body.na-le-scrap-dragging * {
+    cursor                             : no-drop !important;
+    user-select                        : none;
+    -webkit-user-select                : none;
+}
+
+body.na-le-scrap-dragging.is-over-sheet,
+body.na-le-scrap-dragging.is-over-sheet * {
+    cursor                             : copy !important;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Column Tabs                                            */
+/* ----------------------------------------------------------------- */
+
+/* A COLUMN WITH TWO TABS (Na__LePanels__RegisterTab). The strip is the first
+   thing in the column's scroller and sticks to its top, so the column's own
+   layout - the scroller beside its width grip - is exactly what it was. The
+   tabs are the sheet tab strip's, a size down: the same two greys, the same
+   join to the surface below, and BOTH STYLED ALIKE - which one is up is said
+   by its weight and that join, never by a mark one tab has and the other
+   lacks. */
+
+.na-le-panel__tabs {
+    position                           : sticky;
+    top                                : 0;
+    z-index                            : 3;                           /* <-- Over the sections that scroll under it */
+    display                            : flex;
+    align-items                        : stretch;
+    gap                                : 2px;
+    padding                            : 4px 6px 0 6px;
+    background                         : #f4f6f8;
+    border-bottom                      : 1px solid var(--Na_Le_ChromeRule, rgba(23, 43, 58, 0.14));
+}
+
+.na-le-panel__tabs[hidden] {
+    display                            : none;
+}
+
+.na-le-panel__tab {
+    flex                               : 1 1 0;
+    min-width                          : 0;
+    padding                            : 5px 8px;
+    border                             : 1px solid var(--Na_Le_ChromeRule, rgba(23, 43, 58, 0.14));
+    border-bottom                      : none;
+    border-radius                      : 6px 6px 0 0;
+    background                         : #e9edf0;
+    color                              : var(--Na_Le_Ink, #172b3a);
+    font-family                        : inherit;
+    font-size                          : 0.78rem;
+    font-weight                        : 400;
+    white-space                        : nowrap;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    cursor                             : pointer;
+}
+
+.na-le-panel__tab:hover {
+    background                         : var(--Na_Le_Chrome, #ffffff);
+}
+
+.na-le-panel__tab:focus-visible {
+    outline                            : none;
+    box-shadow                         : 0 0 0 2px rgba(26, 127, 196, 0.25);
+}
+
+.na-le-panel__tab.is-active {
+    background                         : var(--Na_Le_Chrome, #ffffff);
+    font-weight                        : 600;
+    box-shadow                         : 0 2px 0 0 var(--Na_Le_Chrome, #ffffff);   /* <-- Joins the tab to the column below */
+}
+
+/* A SECTION OFF ITS TAB is put away by a class of its own, never by the hidden
+   attribute: that one is SetSectionVisible's, and a section can be both on
+   show for its tab and hidden for its sheet. */
+
+.na-le-section.is-off-tab {
+    display                            : none;
+}
+
+/* endregion ------------------------------------------------------- */

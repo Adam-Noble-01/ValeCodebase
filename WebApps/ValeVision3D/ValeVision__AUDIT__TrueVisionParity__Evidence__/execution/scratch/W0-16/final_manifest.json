@@ -1,0 +1,57 @@
+{
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+    "pre": "ff00f852c9883c4b97f94a5be22772e08cc06466",
+    "final": "30216db293b71bb0b7891b1242f4aef4645dd8c4",
+    "size": 172756
+  },
+  "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js": {
+    "pre": "1a8012e5192545b7d8ea893c60d6f4e5fd9035ed",
+    "final": "a513b02d2cb3f32e1daf27310ce7d00b34a6bca3",
+    "size": 38450
+  },
+  "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__ImportMap__Index__.json": {
+    "pre": "22cbcbe61641787792577a08bdcc14d982571c9d",
+    "final": "23545176df6572925890856bdbc3563d3879b181",
+    "size": 6308
+  },
+  "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md": {
+    "pre": "737820bb1fffed38fa38db370fd6d0795a723580",
+    "final": "665897d2f629582672ac1f7223826ce5cb9a1fa3",
+    "size": 6548
+  },
+  "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html": {
+    "pre": "c2fd6b20c7ee9a7e5f236c0c89663f6d94909b08",
+    "final": "c82a2e9711989ed3bbf6bbf236ddc3dde600197e",
+    "size": 6528
+  },
+  "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html": {
+    "pre": "4156291e1bec88614b6c7745e62cd0f245fa2ea0",
+    "final": "c4f84f72752e4d1b6e33f1e4c70b740e5d017c44",
+    "size": 12835
+  },
+  "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js": {
+    "pre": "(new)",
+    "final": "0407d0bc468b680e64f881822cd60ffbac4d2db8",
+    "size": 1201403
+  },
+  "04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js": {
+    "pre": "(new)",
+    "final": "b987dc0cc6cfcdc2e34499375f505470c5adb891",
+    "size": 198689
+  },
+  "04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.min.js": {
+    "pre": "(new)",
+    "final": "4463aee3549b8bcd0dd736a492c30771686564ea",
+    "size": 377116
+  },
+  "04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.worker.min.js": {
+    "pre": "(new)",
+    "final": "c3d04ea27491c7076467b0ebe3c82a60e59376e6",
+    "size": 1133660
+  },
+  "01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png": {
+    "pre": "(new)",
+    "final": "0a9092ada55dd0ae7959ece98bce6e7e2047376d",
+    "size": 244120
+  }
+}

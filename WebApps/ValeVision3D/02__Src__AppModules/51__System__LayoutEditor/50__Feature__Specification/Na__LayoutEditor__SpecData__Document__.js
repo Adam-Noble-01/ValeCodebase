@@ -19,28 +19,49 @@
 //   change clears it.
 // - READING. The groups and notes, a note's code, typed codes read forgivingly
 //   (ParseCode, FindByCode, NormaliseCode), the prefix checks, and GetState,
-//   the lifecycle summary the tab and the panels are drawn from.
+//   the lifecycle summary the tab and the panels are drawn from. Its canSync
+//   also needs the Cloudflare Worker configured (Na__CfApi__IsConfigured).
 // - Nothing here changes the document. The only state it writes is the index
 //   and, through NextId, the id floor a normalisation raises.
 //
 // INTEGRATION:
-// - Imports the State unit and the config state. Imported by the Draft,
-//   Editing and Transport units and by Na__LayoutEditor__SpecData__.js, which
-//   exports the reads and Normalise.
+// - Imports the State unit, the config state and the Cloudflare API client
+//   (for GetState). Imported by the Draft, Editing and Transport units and by
+//   Na__LayoutEditor__SpecData__.js, which exports the reads and Normalise.
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : BuildIndex stores the index through Na__LeSpec__SetIndex
-// - Back-port     : the same split applies to TrueVision's copy. Its GetState
-//                   also requires Na__CfApi__IsConfigured for canSync, so its
-//                   copy of this unit imports the Cloudflare API client.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js
+// - Source version: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. This app's copy was its 1.0.0
+//                   (the v2.47.0 split), whose GetState left Na__CfApi__IsConfigured out of canSync;
+//                   TrueVision's check now resolves to this app's transport facade (W0-12).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+//   - Na__CfApi__IsConfigured is the ValeVision facade's (80__CloudflareIntegration, W0-12): true on
+//     localhost with the editor Worker config and a master-index project folder, so canSync is off on
+//     the live site, where no write can go anyway.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Sep-2026 - Version 1.1.0
+// - LockstepOn: whether this session keeps the specification in step with
+//   its local file (localhost, editable, LockstepEnabled) - asked here so the
+//   state the bar is drawn from and the lockstep unit give the same answer.
+// - GetState says how the specification stands against its LOCAL FILE as
+//   well as against the cloud: conflict (the two are out of step and the
+//   question is up), lockstep, fileKnown, inStepWithFile (the file holds
+//   what is in the app), savingLocal and fileIso. canSync is off while the
+//   question stands. It imports the localhost check for LockstepOn.
+// - LockJson: the content the lockstep compares by - ContentJson without each
+//   note's Note__UpdatedIso, which only says when a note last changed. An
+//   agent writing exactly the words on screen can never write this app's
+//   stamps, and a difference in them alone is nothing to ask about.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecData__.js; the code moved verbatim.
 //
@@ -51,9 +72,11 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Config and the Specification State
+    // MODULE IMPORTS | Config, R2 Client and the Specification State
     // ------------------------------------------------------------
     import { Na__LeCfg__GetSpecificationSetup, Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__CfApi__IsConfigured } from '../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';
+    import { Na__AppUtils__IsRunningOnLocalhost } from '../../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     import {
         Na__LeSpec__VERSION,
         Na__LeSpec__STATUS_IDLE,
@@ -79,6 +102,10 @@
         Na__LeSpec__LastSyncIso,
         Na__LeSpec__Editable,
         Na__LeSpec__ProjectCode,
+        Na__LeSpec__FileJson,
+        Na__LeSpec__FileIso,
+        Na__LeSpec__Conflict,
+        Na__LeSpec__LocalSaving,
         Na__LeSpec__SetIndex,
         Na__LeSpec__CleanPrefix,
         Na__LeSpec__IdNumber,
@@ -214,13 +241,33 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Part of a Document That Counts as Its Content
+    // ------------------------------------------------------------
     // The revision and the document number are CONTENT, not bookkeeping: changing
     // either has to mark the document unsynced, or Sync stays off and the issued
     // revision never reaches the cloud copy the next person reads.
-    // HELPER FUNCTION | The Part of a Document That Counts as Its Content
-    // ------------------------------------------------------------
     function Na__LeSpec__ContentJson(doc) {
         return doc ? JSON.stringify([ doc[Na__LeSpec__K_DIGITS], doc[Na__LeSpec__K_REVISION], doc[Na__LeSpec__K_DOCNUMBER], doc[Na__LeSpec__K_GROUPS] ]) : '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Content the Lockstep With the Local File Compares By
+    // ------------------------------------------------------------
+    // ContentJson with every note's Note__UpdatedIso left out: the stamp says
+    // when a note changed, not what it says, and nobody but this app can write
+    // this app's stamps - so two copies holding the same words agree.
+    // ------------------------------------------------------------
+    function Na__LeSpec__LockJson(doc) {
+        if (!doc) return '';
+        const groups = (Array.isArray(doc[Na__LeSpec__K_GROUPS]) ? doc[Na__LeSpec__K_GROUPS] : []).map((group) => Object.assign({}, group, {
+            Group__Notes : (Array.isArray(group.Group__Notes) ? group.Group__Notes : []).map((note) => {
+                const copy = Object.assign({}, note);
+                delete copy.Note__UpdatedIso;
+                return copy;
+            })
+        }));
+        return JSON.stringify([ doc[Na__LeSpec__K_DIGITS], doc[Na__LeSpec__K_REVISION], doc[Na__LeSpec__K_DOCNUMBER], groups ]);
     }
     // ------------------------------------------------------------
 
@@ -370,24 +417,49 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Is This Session Keeping the Specification in Step With Its Local File
+    // ------------------------------------------------------------
+    // Only where this session writes the file: a reader has no copy of its own
+    // to fall out of step, and off localhost there is no file to look at.
+    // The config key has to be set true: a setup that does not name it (an
+    // older config, a test) keeps the last save winning, as before.
+    // ------------------------------------------------------------
+    function Na__LeSpec__LockstepOn() {
+        return Na__LeSpec__Editable && Na__AppUtils__IsRunningOnLocalhost() && Na__LeCfg__GetSpecificationSetup().lockstepEnabled === true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Lifecycle State for the Tab and the Panels
     // ------------------------------------------------------------
     // { status, source, error, dirty, syncing, lastSyncIso, cloudStamp, loaded,
-    //   editable, canSync }
+    //   editable, canSync, conflict, lockstep, fileKnown, inStepWithFile,
+    //   savingLocal, fileIso }
+    // dirty is against the CLOUD, as it always was. inStepWithFile is against
+    // the local file: false while the app holds something the file has not
+    // been given yet.
     // ------------------------------------------------------------
     function Na__LeSpec__GetState() {
-        const loaded = !!Na__LeSpec__Doc && Na__LeSpec__Status !== Na__LeSpec__STATUS_IDLE && Na__LeSpec__Status !== Na__LeSpec__STATUS_LOADING;
+        const loaded   = !!Na__LeSpec__Doc && Na__LeSpec__Status !== Na__LeSpec__STATUS_IDLE && Na__LeSpec__Status !== Na__LeSpec__STATUS_LOADING;
+        const conflict = !!Na__LeSpec__Conflict;
+        const known    = typeof Na__LeSpec__FileJson === 'string';
         return {
-            status      : Na__LeSpec__Status,
-            source      : Na__LeSpec__Source,
-            error       : Na__LeSpec__Error,
-            dirty       : Na__LeSpec__IsDirty(),
-            syncing     : Na__LeSpec__Syncing,
-            lastSyncIso : Na__LeSpec__LastSyncIso,
-            cloudStamp  : Na__LeSpec__BaseStamp,
-            loaded      : loaded,
-            editable    : Na__LeSpec__Editable,
-            canSync     : loaded && Na__LeSpec__Editable && !Na__LeSpec__Syncing
+            status         : Na__LeSpec__Status,
+            source         : Na__LeSpec__Source,
+            error          : Na__LeSpec__Error,
+            dirty          : Na__LeSpec__IsDirty(),
+            syncing        : Na__LeSpec__Syncing,
+            lastSyncIso    : Na__LeSpec__LastSyncIso,
+            cloudStamp     : Na__LeSpec__BaseStamp,
+            loaded         : loaded,
+            editable       : Na__LeSpec__Editable,
+            canSync        : loaded && Na__LeSpec__Editable && !Na__LeSpec__Syncing && !conflict && Na__CfApi__IsConfigured(),
+            conflict       : conflict,
+            lockstep       : Na__LeSpec__LockstepOn(),
+            fileKnown      : known,
+            inStepWithFile : known && !!Na__LeSpec__Doc && Na__LeSpec__LockJson(Na__LeSpec__Doc) === Na__LeSpec__FileJson,
+            savingLocal    : Na__LeSpec__LocalSaving,
+            fileIso        : Na__LeSpec__FileIso
         };
     }
     function Na__LeSpec__IsLoaded()   { return Na__LeSpec__GetState().loaded; }
@@ -412,6 +484,7 @@
         Na__LeSpec__Renumber,
         Na__LeSpec__Normalise,
         Na__LeSpec__ContentJson,
+        Na__LeSpec__LockJson,
         Na__LeSpec__CodeSignature,
         Na__LeSpec__GetGroups,
         Na__LeSpec__GetGroupById,
@@ -424,6 +497,7 @@
         Na__LeSpec__PrefixClashes,
         Na__LeSpec__ValidatePrefix,
         Na__LeSpec__NumberDigits,
+        Na__LeSpec__LockstepOn,
         Na__LeSpec__GetState,
         Na__LeSpec__IsLoaded,
         Na__LeSpec__IsDirty,

@@ -1,0 +1,3488 @@
+[
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+  "kind": "vv",
+  "sha1_before": "bc50dc15d718e945d408c23124f3b2641d69742b",
+  "sha1_after": "a80b8e8d3f437d9f9f2bf85d984f0490c41224a3",
+  "tokens": [
+   "{{VVREL:W2-07}}",
+   "{{VVREL:W2-07}}"
+  ],
+  "lines": [
+   65,
+   100
+  ],
+  "size_before": 131077,
+  "size_after": 131061,
+  "crlf": 2051,
+  "lf": 2051,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js",
+  "kind": "vv",
+  "sha1_before": "92aaa980cd201be1f51fb7e87ac88ab9a68723db",
+  "sha1_after": "702a5cd1e7de4a516ea30970e9eb633867a47517",
+  "tokens": [
+   "{{VVREL:W2-13}}",
+   "{{VVREL:W2-13}}"
+  ],
+  "lines": [
+   48,
+   68
+  ],
+  "size_before": 29079,
+  "size_after": 29063,
+  "crlf": 476,
+  "lf": 476,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js",
+  "kind": "vv",
+  "sha1_before": "c5f9c8f31f333ec4b9de82eee7c1d5218cf53be0",
+  "sha1_after": "acdd7f9fe8752edbf4749ce5a79ee37a1c254118",
+  "tokens": [
+   "{{VVREL:W2-07}}"
+  ],
+  "lines": [
+   125
+  ],
+  "size_before": 50446,
+  "size_after": 50438,
+  "crlf": 0,
+  "lf": 894,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js",
+  "kind": "vv",
+  "sha1_before": "87a4c55c4df3c4dcd908a37f09098038e99c06f9",
+  "sha1_after": "1718a3b76cc359920197d634b6e221d407ade941",
+  "tokens": [
+   "{{VVREL:W2-03}}",
+   "{{VVREL:W2-12}}"
+  ],
+  "lines": [
+   129,
+   141
+  ],
+  "size_before": 49720,
+  "size_after": 49704,
+  "crlf": 793,
+  "lf": 793,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+  "kind": "vv",
+  "sha1_before": "4cdc496c9e215d94a81534a866c9d3784d6f6f3d",
+  "sha1_after": "c9c6eeec6629c6fd7595af54465dc0d279187102",
+  "tokens": [
+   "{{VVREL:W2-03}}"
+  ],
+  "lines": [
+   69
+  ],
+  "size_before": 33408,
+  "size_after": 33400,
+  "crlf": 599,
+  "lf": 599,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js",
+  "kind": "vv",
+  "sha1_before": "a543efaba2a5c9a95c1a90a954540f99f72be233",
+  "sha1_after": "4e7f69b4ab1cae8c47b116b964a6bc5dabeb7774",
+  "tokens": [
+   "{{VVREL:W2-02}}",
+   "{{VVREL:W2-02}}"
+  ],
+  "lines": [
+   81,
+   107
+  ],
+  "size_before": 35036,
+  "size_after": 35020,
+  "crlf": 0,
+  "lf": 636,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js",
+  "kind": "vv",
+  "sha1_before": "12052302a6a2ae59cf12e3a69a2fac5c14a9d930",
+  "sha1_after": "e46816e9d193601a9711eaeefffecd1220a18b2e",
+  "tokens": [
+   "{{VVREL:W2-05}}",
+   "{{VVREL:W2-04}}"
+  ],
+  "lines": [
+   59,
+   63
+  ],
+  "size_before": 23599,
+  "size_after": 23583,
+  "crlf": 0,
+  "lf": 445,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js",
+  "kind": "vv",
+  "sha1_before": "23b61ad292688a98113ee28802698631da53f1bd",
+  "sha1_after": "f6f0d124a4b915124439efd0f7fdd49f953a958c",
+  "tokens": [
+   "{{VVREL:W2-02}}"
+  ],
+  "lines": [
+   40
+  ],
+  "size_before": 91629,
+  "size_after": 91621,
+  "crlf": 0,
+  "lf": 1792,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js",
+  "kind": "vv",
+  "sha1_before": "6a1f441d54b0eb1373a568968f00f56d6a77b8b9",
+  "sha1_after": "aaa7baf12ff8946e7f5fa922175fe2592c84abac",
+  "tokens": [
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   32
+  ],
+  "size_before": 10945,
+  "size_after": 10937,
+  "crlf": 218,
+  "lf": 218,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+  "kind": "vv",
+  "sha1_before": "57f044f5b6f92f0e0b808b5bd1cd05b5f4bc23da",
+  "sha1_after": "4275c1adfedc34b6718573e28613d1078e3f7247",
+  "tokens": [
+   "{{VVREL:W2-04}}"
+  ],
+  "lines": [
+   58
+  ],
+  "size_before": 80130,
+  "size_after": 80122,
+  "crlf": 0,
+  "lf": 1552,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+  "kind": "vv",
+  "sha1_before": "ba53855f123177aa4755c2def16c2e0cc3c771a8",
+  "sha1_after": "39bbd93660b60606dbce49468f51bcffe75d8d00",
+  "tokens": [
+   "{{VVREL:W2-04}}"
+  ],
+  "lines": [
+   41
+  ],
+  "size_before": 20061,
+  "size_after": 20053,
+  "crlf": 0,
+  "lf": 409,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css",
+  "kind": "vv",
+  "sha1_before": "3827fb2bbd7b800443a4baf14d1ef53e9c6fdde0",
+  "sha1_after": "a0508c79e45230fe8d9ad650ef1a61708e4875be",
+  "tokens": [
+   "{{VVREL:W2-04}}",
+   "{{VVREL:W2-04}}"
+  ],
+  "lines": [
+   28,
+   31
+  ],
+  "size_before": 7951,
+  "size_after": 7935,
+  "crlf": 0,
+  "lf": 192,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+  "kind": "vv",
+  "sha1_before": "b3389501eef9d163f74fa3f848ccb51052815bd1",
+  "sha1_after": "bed3d08c0944607476ab4e1ee900009f0f796eac",
+  "tokens": [
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   66
+  ],
+  "size_before": 87251,
+  "size_after": 87243,
+  "crlf": 0,
+  "lf": 1633,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js",
+  "kind": "vv",
+  "sha1_before": "0f661c38193009602126ed9afe6bcd655041db48",
+  "sha1_after": "696b1a984c08909e202f52c03b6b0a6d6e75a3f4",
+  "tokens": [
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   55
+  ],
+  "size_before": 35844,
+  "size_after": 35836,
+  "crlf": 0,
+  "lf": 715,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+  "kind": "vv",
+  "sha1_before": "05390371337b6939dc23342deb1c3e42e9049303",
+  "sha1_after": "d724bc2487bfa1b89bfb3b2793cd34cb155a5f2f",
+  "tokens": [
+   "{{VVREL:W2-03}}",
+   "{{VVREL:W2-03}}"
+  ],
+  "lines": [
+   55,
+   71
+  ],
+  "size_before": 47096,
+  "size_after": 47080,
+  "crlf": 0,
+  "lf": 944,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+  "kind": "vv",
+  "sha1_before": "3652650227a0c8f84c51d6db93055e12c2c008ab",
+  "sha1_after": "98abfacfa9cff5d3e1832efa37f8d979b93048ef",
+  "tokens": [
+   "{{VVREL:W2-05}}",
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   68,
+   83
+  ],
+  "size_before": 47791,
+  "size_after": 47775,
+  "crlf": 0,
+  "lf": 945,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css",
+  "kind": "vv",
+  "sha1_before": "e66d5ff225942e91f01dafc3490ab8545797897e",
+  "sha1_after": "9bfdaa96ff306f12010c3ac69ace2956ba34a8ba",
+  "tokens": [
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   24
+  ],
+  "size_before": 10667,
+  "size_after": 10659,
+  "crlf": 0,
+  "lf": 267,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js",
+  "kind": "vv",
+  "sha1_before": "29b90e41d058ca6d2fe77edb636718df65cda88e",
+  "sha1_after": "e9073b2882ec261e6c95f452e7bfa88ea1953f14",
+  "tokens": [
+   "{{VVREL:W2-40}}"
+  ],
+  "lines": [
+   50
+  ],
+  "size_before": 20872,
+  "size_after": 20864,
+  "crlf": 0,
+  "lf": 406,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js",
+  "kind": "vv",
+  "sha1_before": "1ab38ab5d160b4ef6d564e3c18bbfdf3a1fb0d0a",
+  "sha1_after": "e2a46c65b53de794ea6b8e7de08b4092c2346e21",
+  "tokens": [
+   "{{VVREL:W2-40}}"
+  ],
+  "lines": [
+   31
+  ],
+  "size_before": 20190,
+  "size_after": 20182,
+  "crlf": 0,
+  "lf": 368,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js",
+  "kind": "vv",
+  "sha1_before": "2e5ef72bddf1dbb3ffc3ae5730372e8c1b801eb5",
+  "sha1_after": "67e4cce970a05343af605976a6ec55994aa737a2",
+  "tokens": [
+   "{{VVREL:W2-01}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 19347,
+  "size_after": 19339,
+  "crlf": 0,
+  "lf": 408,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+  "kind": "vv",
+  "sha1_before": "47f2c6ced5aa7968b055b7683adf43d0c08a8448",
+  "sha1_after": "1cf6da8b2cbc201f045595443bdb1f0db6f96154",
+  "tokens": [
+   "{{VVREL:W2-01}}"
+  ],
+  "lines": [
+   61
+  ],
+  "size_before": 41891,
+  "size_after": 41883,
+  "crlf": 0,
+  "lf": 845,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js",
+  "kind": "vv",
+  "sha1_before": "0045ab56e7378335a46ac47ebbee901f82ff8edc",
+  "sha1_after": "4f29fd34d8c80c41d471bd7e1d37565877f01d6c",
+  "tokens": [
+   "{{VVREL:W2-40}}"
+  ],
+  "lines": [
+   56
+  ],
+  "size_before": 21859,
+  "size_after": 21851,
+  "crlf": 0,
+  "lf": 421,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js",
+  "kind": "vv",
+  "sha1_before": "e6d4a048eb1323f88d8b3bb2c8486af8adab7ec9",
+  "sha1_after": "ebfae304ecc33a9cd0bbd66fd3f84becba2e977d",
+  "tokens": [
+   "{{VVREL:W2-01}}"
+  ],
+  "lines": [
+   82
+  ],
+  "size_before": 42823,
+  "size_after": 42815,
+  "crlf": 0,
+  "lf": 850,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js",
+  "kind": "vv",
+  "sha1_before": "6c90d593b60b6977bf8acc2b5353f482018f42bb",
+  "sha1_after": "371919f65195f98af304f2cfd871cb678dee6742",
+  "tokens": [
+   "{{VVREL:W2-40}}"
+  ],
+  "lines": [
+   58
+  ],
+  "size_before": 29400,
+  "size_after": 29392,
+  "crlf": 0,
+  "lf": 565,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css",
+  "kind": "vv",
+  "sha1_before": "7f5fb23ed735510bcef8f56fcb17d3133b0b7a0c",
+  "sha1_after": "cbb8db5f50bec7f05ed36a7597e91d02c1ee996c",
+  "tokens": [
+   "{{VVREL:W2-01}}"
+  ],
+  "lines": [
+   24
+  ],
+  "size_before": 6925,
+  "size_after": 6917,
+  "crlf": 0,
+  "lf": 159,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js",
+  "kind": "vv",
+  "sha1_before": "8e1989e46494331d8593c55a32ec1c804be3918d",
+  "sha1_after": "84e1deb8b5a617ea4b08f094d66358ba2397b786",
+  "tokens": [
+   "{{VVREL:W2-05}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 10469,
+  "size_after": 10461,
+  "crlf": 0,
+  "lf": 205,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js",
+  "kind": "vv",
+  "sha1_before": "fe2b05136b7d21713f67af89afddf853c5102c30",
+  "sha1_after": "2f590c2f376a1a3213f41a7cacaed7ee79e1d472",
+  "tokens": [
+   "{{VVREL:W2-03}}"
+  ],
+  "lines": [
+   55
+  ],
+  "size_before": 16694,
+  "size_after": 16686,
+  "crlf": 0,
+  "lf": 323,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js",
+  "kind": "vv",
+  "sha1_before": "e45e0e32cfe05bdf705c18356898ef67839938d5",
+  "sha1_after": "40b74a2cf66b577bc7fdda861c22d75ba6128550",
+  "tokens": [
+   "{{VVREL:W2-03}}"
+  ],
+  "lines": [
+   72
+  ],
+  "size_before": 35019,
+  "size_after": 35011,
+  "crlf": 0,
+  "lf": 651,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css",
+  "kind": "vv",
+  "sha1_before": "8fb3e30660c9808f9a4fdde0568d1f8ec103ba18",
+  "sha1_after": "b2369be29960947d438164c84cfaa34b7aad5f88",
+  "tokens": [
+   "{{VVREL:W2-03}}"
+  ],
+  "lines": [
+   23
+  ],
+  "size_before": 5630,
+  "size_after": 5622,
+  "crlf": 0,
+  "lf": 125,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js",
+  "kind": "vv",
+  "sha1_before": "d6316d0bcff49b2e6361d218f5d9289c10f1ec38",
+  "sha1_after": "b433816c4d46b2ba7ac4d3eb0dd769f058f428e1",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   51
+  ],
+  "size_before": 14153,
+  "size_after": 14145,
+  "crlf": 0,
+  "lf": 280,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js",
+  "kind": "vv",
+  "sha1_before": "b50b4303e49a7788dffec59e6d62eac4718534f9",
+  "sha1_after": "5059e390f643ae31816548825b377c34f32d53a4",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   116
+  ],
+  "size_before": 36163,
+  "size_after": 36155,
+  "crlf": 0,
+  "lf": 717,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js",
+  "kind": "vv",
+  "sha1_before": "545abd6a7a712cd2457993a00bcc85eddeb14134",
+  "sha1_after": "3c4184bb5aaa9d41b9751bd071893a6ff2f35fb9",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   38
+  ],
+  "size_before": 27404,
+  "size_after": 27396,
+  "crlf": 0,
+  "lf": 509,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js",
+  "kind": "vv",
+  "sha1_before": "89f13326a795f41f37881d9369ce04a75ace059e",
+  "sha1_after": "2b16c110954e10a118fd063b53d24cbbbc7814e9",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   78
+  ],
+  "size_before": 28671,
+  "size_after": 28663,
+  "crlf": 0,
+  "lf": 526,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+  "kind": "vv",
+  "sha1_before": "f0dd1ce01c3f39ae7432e6dcb60738f359e301b5",
+  "sha1_after": "6b960463731c41fa55c49fefacd47b9ab69a6031",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   36
+  ],
+  "size_before": 25314,
+  "size_after": 25306,
+  "crlf": 0,
+  "lf": 506,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js",
+  "kind": "vv",
+  "sha1_before": "6d540a3bc370ccc0479408dd2bf81abec094b673",
+  "sha1_after": "aec75363f3aecd29b2baf97a417a2188839f058c",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   61
+  ],
+  "size_before": 45890,
+  "size_after": 45882,
+  "crlf": 0,
+  "lf": 817,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js",
+  "kind": "vv",
+  "sha1_before": "dbde2b54ca9d1167deac831f3b125d9ad3b0853b",
+  "sha1_after": "ac33a9bdad11a27f0213068c16e156bb26529722",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   66
+  ],
+  "size_before": 40625,
+  "size_after": 40617,
+  "crlf": 0,
+  "lf": 779,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js",
+  "kind": "vv",
+  "sha1_before": "54697efc7320bf1cc9f12ad7f7f74e3d4034ef90",
+  "sha1_after": "5826659adc74d39c7b45024de6200a7d4941bbca",
+  "tokens": [
+   "{{VVREL:W2-43}}"
+  ],
+  "lines": [
+   59
+  ],
+  "size_before": 16731,
+  "size_after": 16723,
+  "crlf": 0,
+  "lf": 319,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+  "kind": "vv",
+  "sha1_before": "90c77779163dd34b7735b54c925f72ecb895189b",
+  "sha1_after": "660353b7a800c573dcca1840e38de4a18f1d7073",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   51
+  ],
+  "size_before": 13642,
+  "size_after": 13634,
+  "crlf": 0,
+  "lf": 266,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+  "kind": "vv",
+  "sha1_before": "3851359bfb4c25c8cea3c5bbd4ac800231568021",
+  "sha1_after": "bf31e52c48402407704345dc10c3b8d61b1d2aed",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   53
+  ],
+  "size_before": 40780,
+  "size_after": 40772,
+  "crlf": 0,
+  "lf": 797,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js",
+  "kind": "vv",
+  "sha1_before": "930d675de130c4801e06131782a187661234c16b",
+  "sha1_after": "c38cd0b35f11760e4518b3ce82cbe027a86c9ccb",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 34101,
+  "size_after": 34093,
+  "crlf": 0,
+  "lf": 615,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js",
+  "kind": "vv",
+  "sha1_before": "c78c96cc37281bde9d27899411ca7e3e1ed30f29",
+  "sha1_after": "a8584a4386901c050c707dbfa99e0a326ae937cd",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   57
+  ],
+  "size_before": 31505,
+  "size_after": 31497,
+  "crlf": 0,
+  "lf": 607,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js",
+  "kind": "vv",
+  "sha1_before": "697fba4c8cdd5f78be7f25e589332ab1d4441851",
+  "sha1_after": "57042759e9ff81a1374291ed17bbcdcae56cd32e",
+  "tokens": [
+   "{{VVREL:W2-43}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 17182,
+  "size_after": 17174,
+  "crlf": 0,
+  "lf": 330,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+  "kind": "vv",
+  "sha1_before": "707e2f8df1ab4968114e4570026e4f8b06660c3d",
+  "sha1_after": "443e0cdc1fbb0888a125606e45d384d3b227a457",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   55
+  ],
+  "size_before": 24352,
+  "size_after": 24344,
+  "crlf": 0,
+  "lf": 485,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js",
+  "kind": "vv",
+  "sha1_before": "399434b598cd446bdf72153ec3c5ecc887208366",
+  "sha1_after": "3f276420b65e4df60f1f622fa9bf5909b6605523",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   88
+  ],
+  "size_before": 23044,
+  "size_after": 23036,
+  "crlf": 0,
+  "lf": 458,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+  "kind": "vv",
+  "sha1_before": "48867e35a359b4bfc0774e2a4c25183c60cdee1c",
+  "sha1_after": "37bb1028b4822c5ee19f3e3ffa2db918b37003e0",
+  "tokens": [
+   "{{VVREL:W2-17}}",
+   "{{VVREL:W2-18}}",
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   148,
+   158,
+   171
+  ],
+  "size_before": 70539,
+  "size_after": 70515,
+  "crlf": 1139,
+  "lf": 1139,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+  "kind": "vv",
+  "sha1_before": "1209d39415999d1b4d96b933816d32b514be8efa",
+  "sha1_after": "d5a1b7285ecfa583b62d2d83de3998dae63adb84",
+  "tokens": [
+   "{{VVREL:W2-16}}",
+   "{{VVREL:W2-16}}",
+   "{{VVREL:W2-35}}",
+   "{{VVREL:W2-31}}",
+   "{{VVREL:W2-29}}",
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   63,
+   98,
+   111,
+   124,
+   133,
+   147
+  ],
+  "size_before": 91144,
+  "size_after": 91096,
+  "crlf": 1340,
+  "lf": 1340,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css",
+  "kind": "vv",
+  "sha1_before": "b94615402baf940443547c5ce30834c0ed4a6b16",
+  "sha1_after": "14a4de5d998a419374e81f01077391d1d6b4802a",
+  "tokens": [
+   "{{VVREL:W2-20}}",
+   "{{VVREL:W2-19}}",
+   "{{VVREL:W2-24}}",
+   "{{VVREL:W2-25}}"
+  ],
+  "lines": [
+   15,
+   19,
+   25,
+   30
+  ],
+  "size_before": 40039,
+  "size_after": 40007,
+  "crlf": 915,
+  "lf": 915,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js",
+  "kind": "vv",
+  "sha1_before": "526e0229fbcb3c7190c8fa291288b25e79faccc2",
+  "sha1_after": "c8e3a0ee5fd5c16d290ae4f97ec1f36482ad02a1",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 16239,
+  "size_after": 16231,
+  "crlf": 0,
+  "lf": 321,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js",
+  "kind": "vv",
+  "sha1_before": "c8eebe303c9c75db21dfd135264c5d60f12e97f4",
+  "sha1_after": "09019724aa12afc9bc92eb736cd489aa9b4c3dac",
+  "tokens": [
+   "{{VVREL:W2-11}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 25728,
+  "size_after": 25720,
+  "crlf": 0,
+  "lf": 472,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js",
+  "kind": "vv",
+  "sha1_before": "be0f8917e009d1d73f328501e71a01dfd61f82b0",
+  "sha1_after": "011045815fa64adf55b1552e36954452dce0a505",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   66
+  ],
+  "size_before": 42128,
+  "size_after": 42120,
+  "crlf": 0,
+  "lf": 668,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js",
+  "kind": "vv",
+  "sha1_before": "54885d55a6111602a6d25a109b099c318b76ef0b",
+  "sha1_after": "f32cc386723bbb96c733c51db998d5e5e5cd3451",
+  "tokens": [
+   "{{VVREL:W2-12}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 8045,
+  "size_after": 8037,
+  "crlf": 0,
+  "lf": 154,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js",
+  "kind": "vv",
+  "sha1_before": "6af5a944bd1e03e3b4b0299fb00f764841028561",
+  "sha1_after": "a25292c22d3522819321bb05285e386019eeeb10",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 32742,
+  "size_after": 32734,
+  "crlf": 0,
+  "lf": 546,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js",
+  "kind": "vv",
+  "sha1_before": "d37185467c32330825f1eac064abec9709e2315a",
+  "sha1_after": "73ddc4cddbfb046b6a9b1df22c017abe4a48012c",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   44
+  ],
+  "size_before": 29448,
+  "size_after": 29440,
+  "crlf": 0,
+  "lf": 490,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js",
+  "kind": "vv",
+  "sha1_before": "3fd0120466df72e470810485eee4be836496a59d",
+  "sha1_after": "40d89fc7144cb1ba84d208f1a193661778d7f9c8",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 36964,
+  "size_after": 36956,
+  "crlf": 0,
+  "lf": 639,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js",
+  "kind": "vv",
+  "sha1_before": "0f10feea18b64a6c3574426ce1ce04d6794dca9c",
+  "sha1_after": "60c654d2c12c54b0eb4a9657af54d8fa4072bce2",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   40
+  ],
+  "size_before": 10959,
+  "size_after": 10951,
+  "crlf": 0,
+  "lf": 188,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js",
+  "kind": "vv",
+  "sha1_before": "4d2dc7fd0585c9d67a452ee2fd67930a40f143eb",
+  "sha1_after": "2bee81be1c6690ca9c69f720e7535b3c1462b3b0",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   48
+  ],
+  "size_before": 46398,
+  "size_after": 46390,
+  "crlf": 0,
+  "lf": 766,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+  "kind": "vv",
+  "sha1_before": "aa76ea09ed6490ced2715be60659dd0bd40845de",
+  "sha1_after": "0bbf9af884de6a9c16cbc07dbd8929a460bd553f",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   59
+  ],
+  "size_before": 22874,
+  "size_after": 22866,
+  "crlf": 0,
+  "lf": 401,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js",
+  "kind": "vv",
+  "sha1_before": "7e99220e5588b33b92c4ed6369e7e1760e126579",
+  "sha1_after": "c9914d8acaf549571c41d2587ddd3111279709ef",
+  "tokens": [
+   "{{VVREL:W2-10}}"
+  ],
+  "lines": [
+   63
+  ],
+  "size_before": 20607,
+  "size_after": 20599,
+  "crlf": 0,
+  "lf": 367,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js",
+  "kind": "vv",
+  "sha1_before": "39726d0180815c31e441c4dc90180e1fec7a1c66",
+  "sha1_after": "4d0bc84ef5831e0ade338ed30cd99d984ab770cd",
+  "tokens": [
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   31
+  ],
+  "size_before": 20119,
+  "size_after": 20111,
+  "crlf": 0,
+  "lf": 379,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js",
+  "kind": "vv",
+  "sha1_before": "f00cd499995596f31f70f5eafba5a30f9fb5db2c",
+  "sha1_after": "a484a1e96ba6781cffc1856180e723e07fa45683",
+  "tokens": [
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   64
+  ],
+  "size_before": 52457,
+  "size_after": 52449,
+  "crlf": 0,
+  "lf": 913,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js",
+  "kind": "vv",
+  "sha1_before": "7616676d41f247add02ad5da8079417ac67d71a0",
+  "sha1_after": "f503fbb0ec31673afbd0017253d787709aeddd96",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 31277,
+  "size_after": 31269,
+  "crlf": 0,
+  "lf": 588,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js",
+  "kind": "vv",
+  "sha1_before": "eeb75a798669eb5ffd30ddac188b877c46a2f797",
+  "sha1_after": "ffdb615ff371183b018c38ff1959d9dbcea6b627",
+  "tokens": [
+   "{{VVREL:W2-09}}"
+  ],
+  "lines": [
+   64
+  ],
+  "size_before": 9951,
+  "size_after": 9943,
+  "crlf": 0,
+  "lf": 183,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js",
+  "kind": "vv",
+  "sha1_before": "3c1f153cdb7dde0b6cf6666a6ca0b3f8341a5e8a",
+  "sha1_after": "c477275617fdf434a2f2045b89313afdbb6b5e5f",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   34
+  ],
+  "size_before": 22347,
+  "size_after": 22339,
+  "crlf": 0,
+  "lf": 417,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js",
+  "kind": "vv",
+  "sha1_before": "b8551d607c3d5a763521a87432c9ac9c0f87adce",
+  "sha1_after": "dcd4ab1a74366962a29cf47c7299f2b8de85657c",
+  "tokens": [
+   "{{VVREL:W2-09}}"
+  ],
+  "lines": [
+   65
+  ],
+  "size_before": 20262,
+  "size_after": 20254,
+  "crlf": 0,
+  "lf": 363,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+  "kind": "vv",
+  "sha1_before": "d2d92d581b1de7ddb12d1d66e6534978f494f147",
+  "sha1_after": "b67da3b33df62acd958bd0afd0bf99d0607610fe",
+  "tokens": [
+   "{{VVREL:W2-15}}",
+   "{{VVREL:W2-15}}"
+  ],
+  "lines": [
+   45,
+   75
+  ],
+  "size_before": 64823,
+  "size_after": 64807,
+  "crlf": 1018,
+  "lf": 1018,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js",
+  "kind": "vv",
+  "sha1_before": "17cf20ef769a88b443671ef6db7ecd79f8ccc82b",
+  "sha1_after": "fe48cdb90a277ebb9f18329b913e3b7c83673363",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   65
+  ],
+  "size_before": 18364,
+  "size_after": 18356,
+  "crlf": 0,
+  "lf": 326,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css",
+  "kind": "vv",
+  "sha1_before": "7ff30d099e802d367fc9505df21d7709bdcd66c3",
+  "sha1_after": "038df73e6df99b015004cb15632d3f630f4d9816",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   35
+  ],
+  "size_before": 12922,
+  "size_after": 12914,
+  "crlf": 0,
+  "lf": 219,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js",
+  "kind": "vv",
+  "sha1_before": "9c3064642ca9c8875da4fb07f23459efed286f43",
+  "sha1_after": "755f9bb19a3b1db41cbdb91d5a6cffa6081789ff",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   64
+  ],
+  "size_before": 36555,
+  "size_after": 36547,
+  "crlf": 0,
+  "lf": 685,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js",
+  "kind": "vv",
+  "sha1_before": "407ba9add3c15fd9ef38fcb1bcf44fdbb9752ed6",
+  "sha1_after": "fa84f76e8bf48bdae7b0d1ff74834d2e755df59f",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   38
+  ],
+  "size_before": 14878,
+  "size_after": 14870,
+  "crlf": 0,
+  "lf": 259,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css",
+  "kind": "vv",
+  "sha1_before": "47afdf1f8afa5d2e8d30fa10a0f187ea79882816",
+  "sha1_after": "2cada42df6860ede5c6b050701b0ec9f72237eb0",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   30
+  ],
+  "size_before": 4763,
+  "size_after": 4755,
+  "crlf": 0,
+  "lf": 83,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js",
+  "kind": "vv",
+  "sha1_before": "bdd83b0987d4a60bf06692d275d4ca0ea0e3b9ae",
+  "sha1_after": "1a2f23e1d0b6868a82ca535c444de3bb32cbd528",
+  "tokens": [
+   "{{VVREL:W2-25}}"
+  ],
+  "lines": [
+   90
+  ],
+  "size_before": 40278,
+  "size_after": 40270,
+  "crlf": 0,
+  "lf": 718,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js",
+  "kind": "vv",
+  "sha1_before": "3111b4d36acbadd2b4c9143a6d7c3189660f6f52",
+  "sha1_after": "00346bcb61042b95262bae5c9ef86fac1354a4f8",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   62
+  ],
+  "size_before": 16360,
+  "size_after": 16352,
+  "crlf": 0,
+  "lf": 322,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js",
+  "kind": "vv",
+  "sha1_before": "18575d0a6ed57609afa5bf26577738984543c152",
+  "sha1_after": "653413579ada78d0cd1549521879daf825cac561",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 12615,
+  "size_after": 12607,
+  "crlf": 0,
+  "lf": 231,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js",
+  "kind": "vv",
+  "sha1_before": "3e13f70359b3378271388cf9d68188130cfa5ff0",
+  "sha1_after": "b9a53855afa3562defdb880cc6fcdb2631436913",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   40
+  ],
+  "size_before": 9888,
+  "size_after": 9880,
+  "crlf": 0,
+  "lf": 169,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js",
+  "kind": "vv",
+  "sha1_before": "a33df8b86c284ddfadbdf396cd1823d8cc879c3e",
+  "sha1_after": "a627cdaa8ab98754e6dc9f588a4956d40002c500",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 20722,
+  "size_after": 20714,
+  "crlf": 0,
+  "lf": 342,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js",
+  "kind": "vv",
+  "sha1_before": "14b87185ad29c32a4ceb2695da23eeb1c2cc3c04",
+  "sha1_after": "00982fd9b2b6db17a2219fc95994c1b070520cdd",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 16516,
+  "size_after": 16508,
+  "crlf": 0,
+  "lf": 307,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js",
+  "kind": "vv",
+  "sha1_before": "81b169f1cb2c9242ef623df1555d41d7253d3ab9",
+  "sha1_after": "fcc1be46cf0a8f4c59d0ebb9dc958eb22dc28183",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   67
+  ],
+  "size_before": 16718,
+  "size_after": 16710,
+  "crlf": 0,
+  "lf": 280,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js",
+  "kind": "vv",
+  "sha1_before": "e391e8a4d903ec7724ef57a41a6bcd4d8f95e967",
+  "sha1_after": "db9531cecceba95253523d333a27dcbbf6e1da3b",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   44
+  ],
+  "size_before": 18680,
+  "size_after": 18672,
+  "crlf": 0,
+  "lf": 364,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js",
+  "kind": "vv",
+  "sha1_before": "89aa57a7e9af14d55c267a17f3c361f632ed07c1",
+  "sha1_after": "e304161b163c654b0ea71edbcfb16e69fcf40edb",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   37
+  ],
+  "size_before": 9908,
+  "size_after": 9900,
+  "crlf": 0,
+  "lf": 170,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js",
+  "kind": "vv",
+  "sha1_before": "15a72f9df43280ad62dee30d2229871e57ee2df6",
+  "sha1_after": "9e58bf3b4dd0e942b6c13d38f65c5636d4907874",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   70
+  ],
+  "size_before": 40465,
+  "size_after": 40457,
+  "crlf": 0,
+  "lf": 668,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js",
+  "kind": "vv",
+  "sha1_before": "9e53b4a30e38e5e2fe705558dc883df6b64a4c95",
+  "sha1_after": "108d5fb96d4853e057fb3973c39208df57d2b040",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   64
+  ],
+  "size_before": 35033,
+  "size_after": 35025,
+  "crlf": 0,
+  "lf": 578,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js",
+  "kind": "vv",
+  "sha1_before": "7c973326f3147b6f0506a3b616133ae074fa9519",
+  "sha1_after": "580934aa131da069a0c214a9362ce959954e1182",
+  "tokens": [
+   "{{VVREL:W2-42}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 20093,
+  "size_after": 20085,
+  "crlf": 0,
+  "lf": 347,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css",
+  "kind": "vv",
+  "sha1_before": "473cb8ace56ae5ac06f59b693c3ab0ecd1bf6f89",
+  "sha1_after": "5fba3df4cc6ede93a982574cb86ffe7b91b2cac2",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   41
+  ],
+  "size_before": 21212,
+  "size_after": 21204,
+  "crlf": 0,
+  "lf": 455,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js",
+  "kind": "vv",
+  "sha1_before": "d6c0a68a6e85de96b633d9156553ee6b97ec5833",
+  "sha1_after": "c66e781f96b5fe7582964e0a8e7f3a08544ffae7",
+  "tokens": [
+   "{{VVREL:W2-25}}"
+  ],
+  "lines": [
+   77
+  ],
+  "size_before": 37019,
+  "size_after": 37011,
+  "crlf": 0,
+  "lf": 655,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js",
+  "kind": "vv",
+  "sha1_before": "fd932fed8d61b1051b8aa8c4261aa8611bc605bb",
+  "sha1_after": "139b3856c6a443582fa24f6ead2c5d96e023130f",
+  "tokens": [
+   "{{VVREL:W2-25}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 10053,
+  "size_after": 10045,
+  "crlf": 208,
+  "lf": 208,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js",
+  "kind": "vv",
+  "sha1_before": "d6aa0927af8f577c85512a5ba7b8efde4c86635e",
+  "sha1_after": "a90377f6fc8329a5224c66a857e82c6738a631d8",
+  "tokens": [
+   "{{VVREL:W2-20}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 20036,
+  "size_after": 20028,
+  "crlf": 0,
+  "lf": 382,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js",
+  "kind": "vv",
+  "sha1_before": "552f788d63ccfda1004b37d4e07112b25775496b",
+  "sha1_after": "11574b26a399a70a2edfed7a10e28bf9af16ae57",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   71
+  ],
+  "size_before": 43258,
+  "size_after": 43250,
+  "crlf": 0,
+  "lf": 805,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js",
+  "kind": "vv",
+  "sha1_before": "b4c47dbc341e3b038f51ee7463b9e67fc4712791",
+  "sha1_after": "7a3aa938227380c9940f7b76d7a11fc77d92a326",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   113
+  ],
+  "size_before": 61954,
+  "size_after": 61946,
+  "crlf": 0,
+  "lf": 1100,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js",
+  "kind": "vv",
+  "sha1_before": "eeca6b9151a31ccfb05877e6d41a9890c94253a5",
+  "sha1_after": "b15ff69a6cfe24c89fd96d762bdc34c2fb329b34",
+  "tokens": [
+   "{{VVREL:W2-24}}"
+  ],
+  "lines": [
+   57
+  ],
+  "size_before": 48944,
+  "size_after": 48936,
+  "crlf": 0,
+  "lf": 791,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js",
+  "kind": "vv",
+  "sha1_before": "988130f02a20854e9a07d46adbedf49f3b3b4fc4",
+  "sha1_after": "e47edd69f1606914eb8ef4fbac1c66109a707b78",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 50207,
+  "size_after": 50199,
+  "crlf": 0,
+  "lf": 836,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js",
+  "kind": "vv",
+  "sha1_before": "28eec70afcb7d6598cc1f5499a090006fd732f19",
+  "sha1_after": "f01c2e6f2ae9688a99fddedbe1c902790717f20e",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 10951,
+  "size_after": 10943,
+  "crlf": 0,
+  "lf": 201,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js",
+  "kind": "vv",
+  "sha1_before": "5ba9b578de954e8fa7a1752dc407184420a6474b",
+  "sha1_after": "1839670ff74ce6bb95c42c366338469ae857968a",
+  "tokens": [
+   "{{VVREL:W2-23}}"
+  ],
+  "lines": [
+   77
+  ],
+  "size_before": 79083,
+  "size_after": 79075,
+  "crlf": 0,
+  "lf": 1225,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js",
+  "kind": "vv",
+  "sha1_before": "7c7be9180ee199470faff41b09f653f81ad003bf",
+  "sha1_after": "a1117f906b76b87d3d97668786859c1cb7fc4847",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   60
+  ],
+  "size_before": 43390,
+  "size_after": 43382,
+  "crlf": 0,
+  "lf": 773,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js",
+  "kind": "vv",
+  "sha1_before": "333f7d66bb0925e292bb5f08abd14f044dfcd10c",
+  "sha1_after": "c391e3e19531a5b99931e2c35cae5a5e1313eaea",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 27229,
+  "size_after": 27221,
+  "crlf": 0,
+  "lf": 466,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js",
+  "kind": "vv",
+  "sha1_before": "6034f4cd760f5a5d85a62fa1abae5bd8ab8d34a0",
+  "sha1_after": "c8bb114742d0678fc9c488acc0e31cf6f0eb48fa",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 28443,
+  "size_after": 28435,
+  "crlf": 405,
+  "lf": 405,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js",
+  "kind": "vv",
+  "sha1_before": "b0cb7e335ba6965d8dbb901152fc1b6bd2a6b707",
+  "sha1_after": "bf025755229c39cf401422bd6c5b33b31e3e4ede",
+  "tokens": [
+   "{{VVREL:W2-20}}"
+  ],
+  "lines": [
+   32
+  ],
+  "size_before": 7240,
+  "size_after": 7232,
+  "crlf": 0,
+  "lf": 139,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js",
+  "kind": "vv",
+  "sha1_before": "b27f71c6e9283e6dfddd4a1f94c3c43946d9cf53",
+  "sha1_after": "511d53761da26858b4dbcb188b6249b7eaca76a6",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 33105,
+  "size_after": 33097,
+  "crlf": 504,
+  "lf": 504,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js",
+  "kind": "vv",
+  "sha1_before": "667ca614a345594f0eece6bf7a4f422c4a371ee1",
+  "sha1_after": "ec69bae86a03a70975e51d68efec00a889341d87",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   50
+  ],
+  "size_before": 17321,
+  "size_after": 17313,
+  "crlf": 0,
+  "lf": 313,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js",
+  "kind": "vv",
+  "sha1_before": "966f99ee0c70b4bfb0bfee5556c2fc2e9e03909f",
+  "sha1_after": "0ab9be23ba576ffaccb7bccad6db3bea73cd16b3",
+  "tokens": [
+   "{{VVREL:W2-19}}",
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   51,
+   63
+  ],
+  "size_before": 8276,
+  "size_after": 8260,
+  "crlf": 155,
+  "lf": 155,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js",
+  "kind": "vv",
+  "sha1_before": "18a5751f8f54f4b01fac15ce25bfe071a4e66fb1",
+  "sha1_after": "df87d1e147066d8e97c300c4c475f652d07bb89b",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   79
+  ],
+  "size_before": 13226,
+  "size_after": 13218,
+  "crlf": 0,
+  "lf": 244,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js",
+  "kind": "vv",
+  "sha1_before": "694dcbd311a5a4b37549131ee971a3da6c16c70a",
+  "sha1_after": "db6162b792d6a5a67b63ccc20af61c29a39220a5",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   73
+  ],
+  "size_before": 32531,
+  "size_after": 32523,
+  "crlf": 0,
+  "lf": 563,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css",
+  "kind": "vv",
+  "sha1_before": "79548cc107fb5bf770e88fefca12a34988082513",
+  "sha1_after": "8588ebf1e4fa176103c751b3bed3851137521439",
+  "tokens": [
+   "{{VVREL:W2-18}}"
+  ],
+  "lines": [
+   33
+  ],
+  "size_before": 5865,
+  "size_after": 5857,
+  "crlf": 0,
+  "lf": 105,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js",
+  "kind": "vv",
+  "sha1_before": "edf351930358174aea9d5cc3c3ef02057cf73556",
+  "sha1_after": "208c2b79c3dd1fe5111f42a10151233a18ee9a42",
+  "tokens": [
+   "{{VVREL:W2-26}}"
+  ],
+  "lines": [
+   68
+  ],
+  "size_before": 37269,
+  "size_after": 37261,
+  "crlf": 0,
+  "lf": 601,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js",
+  "kind": "vv",
+  "sha1_before": "60e130622be0389f95f53c1f341cdc5d3f83fc58",
+  "sha1_after": "e863633f325de907db8169989ce0267712cf8f54",
+  "tokens": [
+   "{{VVREL:W2-26}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 20866,
+  "size_after": 20858,
+  "crlf": 0,
+  "lf": 372,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js",
+  "kind": "vv",
+  "sha1_before": "423e997c6aae7771684a04d7d1ab74b273ba4ef4",
+  "sha1_after": "8234bc292ef126c33f3c8f0480f1e0c2e7e9278c",
+  "tokens": [
+   "{{VVREL:W2-26}}"
+  ],
+  "lines": [
+   63
+  ],
+  "size_before": 26193,
+  "size_after": 26185,
+  "crlf": 0,
+  "lf": 438,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js",
+  "kind": "vv",
+  "sha1_before": "c6e7e107869dabbb711086bf4c321d8b8a1a39e5",
+  "sha1_after": "03187453d790d6ffb9c5091ecfe771595c67e623",
+  "tokens": [
+   "{{VVREL:W2-26}}"
+  ],
+  "lines": [
+   44
+  ],
+  "size_before": 20444,
+  "size_after": 20436,
+  "crlf": 0,
+  "lf": 372,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js",
+  "kind": "vv",
+  "sha1_before": "65cd89f48cbebd2010e3e9dac42b0cdff18bf3f6",
+  "sha1_after": "7275c52e08d03b936819714fa5ce74fa7606d554",
+  "tokens": [
+   "{{VVREL:W2-29}}"
+  ],
+  "lines": [
+   34
+  ],
+  "size_before": 27254,
+  "size_after": 27246,
+  "crlf": 0,
+  "lf": 473,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css",
+  "kind": "vv",
+  "sha1_before": "20e502d5f3bce1160e3aad856ab6e41fba4d885d",
+  "sha1_after": "3e7df9939a2d75377149dab1bd37a30b1a0ea83a",
+  "tokens": [
+   "{{VVREL:W2-29}}"
+  ],
+  "lines": [
+   14
+  ],
+  "size_before": 3151,
+  "size_after": 3143,
+  "crlf": 0,
+  "lf": 45,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js",
+  "kind": "vv",
+  "sha1_before": "9336b675c2d8dbe9b79cb305f0717cd801a5318b",
+  "sha1_after": "46df2389221006c61be7b7b41fa05b290b8f675c",
+  "tokens": [
+   "{{VVREL:W2-41}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 27297,
+  "size_after": 27289,
+  "crlf": 0,
+  "lf": 430,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css",
+  "kind": "vv",
+  "sha1_before": "963d439b5db35d734631472198f6f9642ee5a023",
+  "sha1_after": "6bcea795d17a69f8f2701e40ef543a2684d7adcf",
+  "tokens": [
+   "{{VVREL:W2-41}}"
+  ],
+  "lines": [
+   29
+  ],
+  "size_before": 4869,
+  "size_after": 4861,
+  "crlf": 0,
+  "lf": 96,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js",
+  "kind": "vv",
+  "sha1_before": "0f91b32d84e2bd998c41fb804c15a78b57a5413a",
+  "sha1_after": "c7f32969c367b081e8a801aa41bc0ef3cf95c97b",
+  "tokens": [
+   "{{VVREL:W2-41}}"
+  ],
+  "lines": [
+   59
+  ],
+  "size_before": 42554,
+  "size_after": 42546,
+  "crlf": 0,
+  "lf": 715,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js",
+  "kind": "vv",
+  "sha1_before": "aa2b042b059749ab4deed3f8cbe50e69b27ad010",
+  "sha1_after": "9d2a7ba4f5cbff2b256e708b54a251d605558929",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 28031,
+  "size_after": 28023,
+  "crlf": 0,
+  "lf": 475,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js",
+  "kind": "vv",
+  "sha1_before": "d7383691e43a616b21c3779e1ae09aa1b0b123b5",
+  "sha1_after": "ac0d1238e935fa89e9f99aaa6f0bc28eba7d1f6b",
+  "tokens": [
+   "{{VVREL:W2-41}}"
+  ],
+  "lines": [
+   65
+  ],
+  "size_before": 41433,
+  "size_after": 41425,
+  "crlf": 0,
+  "lf": 696,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js",
+  "kind": "vv",
+  "sha1_before": "06e69cc4da140914496490d9e62291d45b577039",
+  "sha1_after": "b4a05b9543087c9d0122ab3478b09d7682b6840b",
+  "tokens": [
+   "{{VVREL:W2-27}}"
+  ],
+  "lines": [
+   63
+  ],
+  "size_before": 30272,
+  "size_after": 30264,
+  "crlf": 0,
+  "lf": 554,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js",
+  "kind": "vv",
+  "sha1_before": "1b81464f611e9ee53ef3196205ac63e140c7c0a9",
+  "sha1_after": "f45045b249669757ccf261499f2e29fe686dc95c",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 21426,
+  "size_after": 21418,
+  "crlf": 0,
+  "lf": 358,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js",
+  "kind": "vv",
+  "sha1_before": "03174872e423f0643e968c06efabe2be0608c25e",
+  "sha1_after": "25318c9cd7af83695f4f21cc95fe28ba05f06e3d",
+  "tokens": [
+   "{{VVREL:W2-27}}"
+  ],
+  "lines": [
+   48
+  ],
+  "size_before": 37745,
+  "size_after": 37737,
+  "crlf": 0,
+  "lf": 689,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js",
+  "kind": "vv",
+  "sha1_before": "cdd590a4876e26dc612c18d2eb14f17f6022bfb2",
+  "sha1_after": "989a7353b8d877d8635757b6fa4b1e9e4cac3795",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 21614,
+  "size_after": 21606,
+  "crlf": 0,
+  "lf": 388,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js",
+  "kind": "vv",
+  "sha1_before": "bf8f4304a7ecdaa791a5813d606fd54aecf3f0b1",
+  "sha1_after": "d7b1756f65d854f2d7a303e2d7e8a2cc0169888e",
+  "tokens": [
+   "{{VVREL:W2-41}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 25922,
+  "size_after": 25914,
+  "crlf": 0,
+  "lf": 425,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js",
+  "kind": "vv",
+  "sha1_before": "31305e343165c6b73a50999ae18552b203c119e8",
+  "sha1_after": "3466814ee409439a3f73848032d412bfef156ec4",
+  "tokens": [
+   "{{VVREL:W2-27}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 29521,
+  "size_after": 29513,
+  "crlf": 0,
+  "lf": 485,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js",
+  "kind": "vv",
+  "sha1_before": "60121529de0804201177865d05b46ed1b4e4dfdc",
+  "sha1_after": "52d344eb7e74e2e92d0a4e750990c79285bd5e03",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 11945,
+  "size_after": 11937,
+  "crlf": 0,
+  "lf": 223,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js",
+  "kind": "vv",
+  "sha1_before": "67bec1519fd075fce00c6e0112f3afa1b03b95b8",
+  "sha1_after": "c487bea76e3ffc50fadf84f815118e5667d8454f",
+  "tokens": [
+   "{{VVREL:W2-27}}"
+  ],
+  "lines": [
+   29
+  ],
+  "size_before": 7771,
+  "size_after": 7763,
+  "crlf": 0,
+  "lf": 158,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js",
+  "kind": "vv",
+  "sha1_before": "7c1217f9dd38caecd5837b68f26267d02e656c1a",
+  "sha1_after": "2fe45ea936b95a3db79bcbd0321dd77064fd8dba",
+  "tokens": [
+   "{{VVREL:W2-27}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 16785,
+  "size_after": 16777,
+  "crlf": 0,
+  "lf": 302,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js",
+  "kind": "vv",
+  "sha1_before": "0cf1d135be7278809efe267e810de822fdee816c",
+  "sha1_after": "8d6c6a8418c0425af39c4ac3aad1b95eb59f4061",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 30400,
+  "size_after": 30392,
+  "crlf": 0,
+  "lf": 510,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js",
+  "kind": "vv",
+  "sha1_before": "ed9ec7d8e2cdd1ea47b2447132b851cd1455b135",
+  "sha1_after": "6e8654fe0edee3bc82435b8913c683992a313dd9",
+  "tokens": [
+   "{{VVREL:W2-28}}"
+  ],
+  "lines": [
+   50
+  ],
+  "size_before": 21859,
+  "size_after": 21851,
+  "crlf": 0,
+  "lf": 386,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js",
+  "kind": "vv",
+  "sha1_before": "5508d0f7378dc22f3d575b725aecbcdbc2c8a32c",
+  "sha1_after": "6188438e3c2e6b6dc9ce91aeabd532d28f4820cd",
+  "tokens": [
+   "{{VVREL:W2-36}}",
+   "{{VVREL:W2-36}}",
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   45,
+   56,
+   62
+  ],
+  "size_before": 27937,
+  "size_after": 27913,
+  "crlf": 470,
+  "lf": 470,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js",
+  "kind": "vv",
+  "sha1_before": "69f37d739ef4787a59b009c72c2ca578b8931e2e",
+  "sha1_after": "6f32c176e509eb21893fb76533a46110325a05fa",
+  "tokens": [
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 31373,
+  "size_after": 31365,
+  "crlf": 0,
+  "lf": 504,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js",
+  "kind": "vv",
+  "sha1_before": "0ae1bd5ab6bde7197c24134feb0428921b4db57a",
+  "sha1_after": "fa4d2118339f2b898e83047f9420fe576f9dda30",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   38
+  ],
+  "size_before": 25610,
+  "size_after": 25602,
+  "crlf": 0,
+  "lf": 473,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js",
+  "kind": "vv",
+  "sha1_before": "bef610aa502fb935656f671742983b1643445360",
+  "sha1_after": "6c32fdc30f986a5d14b6a6d3857974841bcde39b",
+  "tokens": [
+   "{{VVREL:W2-36}}",
+   "{{VVREL:W2-36}}",
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   56,
+   68,
+   74
+  ],
+  "size_before": 30323,
+  "size_after": 30299,
+  "crlf": 459,
+  "lf": 459,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js",
+  "kind": "vv",
+  "sha1_before": "c27f5097b9372b3911e024e4d71be9ae8d32bed0",
+  "sha1_after": "97fffa82c017c2c7dcbbc222383710007c66d588",
+  "tokens": [
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   39
+  ],
+  "size_before": 11920,
+  "size_after": 11912,
+  "crlf": 0,
+  "lf": 247,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js",
+  "kind": "vv",
+  "sha1_before": "43ce61983cc7be394b1beef6fdbfee2307029581",
+  "sha1_after": "249e02e00de0d247503970db5dc9c19e8417820e",
+  "tokens": [
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   38
+  ],
+  "size_before": 21606,
+  "size_after": 21598,
+  "crlf": 0,
+  "lf": 418,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js",
+  "kind": "vv",
+  "sha1_before": "a73e902f0b7ec695d8b88f2c3a55a563b0ef46c8",
+  "sha1_after": "b03c2cd87a72c3c74bd63b6b8d7317e745be3d7d",
+  "tokens": [
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   31
+  ],
+  "size_before": 15260,
+  "size_after": 15252,
+  "crlf": 0,
+  "lf": 248,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+  "kind": "vv",
+  "sha1_before": "4bbd06e7fceb62daff2bd0e148d8988f7f4dcf61",
+  "sha1_after": "3a015bb10ff4b81e567d20666a9ee2429b6f2b70",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   56
+  ],
+  "size_before": 25651,
+  "size_after": 25643,
+  "crlf": 427,
+  "lf": 427,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js",
+  "kind": "vv",
+  "sha1_before": "7073d821e9ff79f428ed69800839df634ca6059f",
+  "sha1_after": "fe35d9be8b4b7c3cb01319a2b3a0d7a290f44f9f",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   34
+  ],
+  "size_before": 19887,
+  "size_after": 19879,
+  "crlf": 0,
+  "lf": 356,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js",
+  "kind": "vv",
+  "sha1_before": "1c7f441ce6727c21ee68cb3d5238d8e3a55795d4",
+  "sha1_after": "c1033fb26b69e8de1d2509d241edfd3ec7b3fa26",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   66
+  ],
+  "size_before": 20563,
+  "size_after": 20555,
+  "crlf": 0,
+  "lf": 358,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js",
+  "kind": "vv",
+  "sha1_before": "21837677783bce8f842433634faaf5e7595fda45",
+  "sha1_after": "cc2178b32c9cd20633d104dfc2c9466be3b7d044",
+  "tokens": [
+   "{{VVREL:W2-22}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 15027,
+  "size_after": 15019,
+  "crlf": 0,
+  "lf": 278,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js",
+  "kind": "vv",
+  "sha1_before": "10f2fbea08a6ec5a0a4551bcbb205b31037acab2",
+  "sha1_after": "71496f87000372baa70785f71bc31d0fc0ee0b84",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 31086,
+  "size_after": 31078,
+  "crlf": 0,
+  "lf": 520,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js",
+  "kind": "vv",
+  "sha1_before": "bd08acda5f071ba831ea0ba810f0604a5c464d7f",
+  "sha1_after": "96e0b8b808b7aa5a710fb0f508e2c4d2337d464a",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   100
+  ],
+  "size_before": 18405,
+  "size_after": 18397,
+  "crlf": 0,
+  "lf": 370,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js",
+  "kind": "vv",
+  "sha1_before": "1a68c47b0bf94bc6b8724c1c49d260a4551d283b",
+  "sha1_after": "1b6536e52c46dccc0a522dc12b2f74ece6a7aadc",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   37
+  ],
+  "size_before": 27630,
+  "size_after": 27622,
+  "crlf": 0,
+  "lf": 509,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js",
+  "kind": "vv",
+  "sha1_before": "ca65c3a34f9edad2bd0e09acbf50535377b1b5f3",
+  "sha1_after": "89c70bb6087b1eafb20dc291f3e19a4273dc3f66",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   36
+  ],
+  "size_before": 10530,
+  "size_after": 10522,
+  "crlf": 0,
+  "lf": 209,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js",
+  "kind": "vv",
+  "sha1_before": "4661cdab11740bbcd1c70d64ea85a60d07483245",
+  "sha1_after": "39a2a4cf43f0e0b50ca7de95cd56540e45b933be",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   37
+  ],
+  "size_before": 22286,
+  "size_after": 22278,
+  "crlf": 0,
+  "lf": 443,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js",
+  "kind": "vv",
+  "sha1_before": "fe37710659c8180351aab768015a8152afae8a70",
+  "sha1_after": "ef0c5a114d6fb2d7a07e98d50c935b19fc17c1a2",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   88
+  ],
+  "size_before": 58197,
+  "size_after": 58189,
+  "crlf": 0,
+  "lf": 1054,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js",
+  "kind": "vv",
+  "sha1_before": "43a252c80f6158098535dd022cc99de3cced6ce5",
+  "sha1_after": "c9e1127dcafee5a6ea8415ba37b4123ceca0861d",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   44
+  ],
+  "size_before": 19126,
+  "size_after": 19118,
+  "crlf": 0,
+  "lf": 340,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js",
+  "kind": "vv",
+  "sha1_before": "5af08c4d313ff29c2949b0f840b7ee5ca2a66fee",
+  "sha1_after": "b5484bb427a1186c9545713976fab7ecfccf0864",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   54
+  ],
+  "size_before": 43042,
+  "size_after": 43034,
+  "crlf": 0,
+  "lf": 717,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+  "kind": "vv",
+  "sha1_before": "6d58ba0f83215122208a6cbba34ae930ea9c447b",
+  "sha1_after": "f1a4ec1a90280533bc68d71c54607c25a638c7c4",
+  "tokens": [
+   "{{VVREL:W2-31}}"
+  ],
+  "lines": [
+   36
+  ],
+  "size_before": 23419,
+  "size_after": 23411,
+  "crlf": 0,
+  "lf": 346,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js",
+  "kind": "vv",
+  "sha1_before": "0d4f9d4d539209b000c43f21c61418e21ac21801",
+  "sha1_after": "9dad603759b94e09536ff8bc2d7d51864effa108",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   46
+  ],
+  "size_before": 21618,
+  "size_after": 21610,
+  "crlf": 0,
+  "lf": 403,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js",
+  "kind": "vv",
+  "sha1_before": "3b1cd90d10bb00681975d9770db68a7919f5d873",
+  "sha1_after": "57fcade20bf8ee063a7851e49ed850c7a3eea751",
+  "tokens": [
+   "{{VVREL:W2-31}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 20918,
+  "size_after": 20910,
+  "crlf": 0,
+  "lf": 374,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js",
+  "kind": "vv",
+  "sha1_before": "6afded928335537d3369252496c9d64b127b7d36",
+  "sha1_after": "40cfaa77e5e16edcb900ff2e2d8ba056649a6a34",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 23592,
+  "size_after": 23584,
+  "crlf": 0,
+  "lf": 396,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js",
+  "kind": "vv",
+  "sha1_before": "f021cbfe1f6b8c95021d23a5eadb235321cd4259",
+  "sha1_after": "44541451992e77f27ad8a714b8d668b7ed88c41c",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   48
+  ],
+  "size_before": 18116,
+  "size_after": 18108,
+  "crlf": 0,
+  "lf": 311,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css",
+  "kind": "vv",
+  "sha1_before": "c7016af63fc22bce49fd6425f27e70668e432f81",
+  "sha1_after": "df9e1e4ef2d5bac852b5dedfc6a8a3ddc997fbb0",
+  "tokens": [
+   "{{VVREL:W2-31}}"
+  ],
+  "lines": [
+   20
+  ],
+  "size_before": 24868,
+  "size_after": 24860,
+  "crlf": 0,
+  "lf": 652,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css",
+  "kind": "vv",
+  "sha1_before": "3ef299db8f78be7df741f84bf275c8bbfafc8505",
+  "sha1_after": "c1aea67610294c455d0ff2c5a61681cc39106bb3",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   10
+  ],
+  "size_before": 25949,
+  "size_after": 25941,
+  "crlf": 0,
+  "lf": 667,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js",
+  "kind": "vv",
+  "sha1_before": "0133048be667ab8902ed40198a43da1ee3d79f9c",
+  "sha1_after": "75cc1669da8a98a73ae86e6e08cf8578e4ad1fa3",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 12853,
+  "size_after": 12845,
+  "crlf": 0,
+  "lf": 254,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js",
+  "kind": "vv",
+  "sha1_before": "ff97e1a30d563773fe095d7e3881c89ac06d4b59",
+  "sha1_after": "0bfb5a0d3baa7379a4a61ada09d255b3713d1bd7",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   48
+  ],
+  "size_before": 24482,
+  "size_after": 24474,
+  "crlf": 0,
+  "lf": 438,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js",
+  "kind": "vv",
+  "sha1_before": "0b69c858f7a07c20b97da4fa3724dc7616e882d5",
+  "sha1_after": "d6759b2b854445abfa2c157486dcd01939a887e4",
+  "tokens": [
+   "{{VVREL:W2-36}}"
+  ],
+  "lines": [
+   47
+  ],
+  "size_before": 34325,
+  "size_after": 34317,
+  "crlf": 0,
+  "lf": 593,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js",
+  "kind": "vv",
+  "sha1_before": "c1e24313b3657afb9cc3cdc718113a6bb55d0132",
+  "sha1_after": "975b1e7680625f27fc27af3b090843d1407a5c32",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   76
+  ],
+  "size_before": 60163,
+  "size_after": 60155,
+  "crlf": 0,
+  "lf": 1015,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js",
+  "kind": "vv",
+  "sha1_before": "0cb2a83163f99e8a803e9616383a76ddeeda2900",
+  "sha1_after": "d432c02f5e930b7486d7bfefaab8f34c44a3f6aa",
+  "tokens": [
+   "{{VVREL:W2-38}}"
+  ],
+  "lines": [
+   85
+  ],
+  "size_before": 61518,
+  "size_after": 61510,
+  "crlf": 0,
+  "lf": 999,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js",
+  "kind": "vv",
+  "sha1_before": "3005d7d93ce60a42090551d00e97de838f00967e",
+  "sha1_after": "008492bd38ef7496910f1e52891608869621e788",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   84
+  ],
+  "size_before": 38732,
+  "size_after": 38724,
+  "crlf": 0,
+  "lf": 601,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js",
+  "kind": "vv",
+  "sha1_before": "f133ba4acc3731683993ab38d6e42e1979eeef39",
+  "sha1_after": "1a39e123c57982712a85fee6d7c66e77e5a4dcce",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   68
+  ],
+  "size_before": 47097,
+  "size_after": 47089,
+  "crlf": 0,
+  "lf": 735,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js",
+  "kind": "vv",
+  "sha1_before": "3367a9fc346c141de49bb2eb4d6f1d28806adcb9",
+  "sha1_after": "4976d48a203b95678d6876c94a01dc4bd41c6a74",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   59
+  ],
+  "size_before": 37487,
+  "size_after": 37479,
+  "crlf": 0,
+  "lf": 614,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js",
+  "kind": "vv",
+  "sha1_before": "5086faead5dd9a3163887f962f278cf4df9fa4d4",
+  "sha1_after": "cbd53b04a69d726009c46d0fd11cac25fc49c6a9",
+  "tokens": [
+   "{{VVREL:W2-38}}"
+  ],
+  "lines": [
+   61
+  ],
+  "size_before": 46857,
+  "size_after": 46849,
+  "crlf": 0,
+  "lf": 822,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js",
+  "kind": "vv",
+  "sha1_before": "45ab690407d510e24be971b5cfa732e14e533ad2",
+  "sha1_after": "dfd67108381c62d2e66fc1f4ab285e83f08ccff0",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 26551,
+  "size_after": 26543,
+  "crlf": 0,
+  "lf": 467,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js",
+  "kind": "vv",
+  "sha1_before": "e6abbad0befdcf4d1ce7b76fff2399bbb508cfa8",
+  "sha1_after": "f11b2259bb480079f3aa69266de0811c70375e58",
+  "tokens": [
+   "{{VVREL:W2-39}}"
+  ],
+  "lines": [
+   56
+  ],
+  "size_before": 25696,
+  "size_after": 25688,
+  "crlf": 0,
+  "lf": 453,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js",
+  "kind": "vv",
+  "sha1_before": "31652459ca46378a9ac11228c9f8127b8691c825",
+  "sha1_after": "15ec72f7192b5d59b037aa6cdc07336e7df9d26e",
+  "tokens": [
+   "{{VVREL:W2-39}}"
+  ],
+  "lines": [
+   61
+  ],
+  "size_before": 54473,
+  "size_after": 54465,
+  "crlf": 0,
+  "lf": 906,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js",
+  "kind": "vv",
+  "sha1_before": "1e9464656c9f36718e18d9e951882bc371268626",
+  "sha1_after": "a672641565f0a815edbd886b4d2bb4899cf56d91",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   99
+  ],
+  "size_before": 47402,
+  "size_after": 47394,
+  "crlf": 0,
+  "lf": 802,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css",
+  "kind": "vv",
+  "sha1_before": "61c959efe8a20a857e20113e6538cca6ab7e60a5",
+  "sha1_after": "18a693b0ca12dca73eae5019b2f6d04596079e91",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   23
+  ],
+  "size_before": 12757,
+  "size_after": 12749,
+  "crlf": 0,
+  "lf": 292,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js",
+  "kind": "vv",
+  "sha1_before": "c511c23ee34d8a64360700ff0e2e9c8aa38fb62a",
+  "sha1_after": "929536ea4a9b14af571873dd0a92656203ad76f6",
+  "tokens": [
+   "{{VVREL:W2-35}}"
+  ],
+  "lines": [
+   63
+  ],
+  "size_before": 47599,
+  "size_after": 47591,
+  "crlf": 0,
+  "lf": 805,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js",
+  "kind": "vv",
+  "sha1_before": "df32951290c4395db01701a299c57170b96b19a7",
+  "sha1_after": "ef0472d65c82b4a367841bab995afe28c512d6d2",
+  "tokens": [
+   "{{VVREL:W2-35}}"
+  ],
+  "lines": [
+   56
+  ],
+  "size_before": 26090,
+  "size_after": 26082,
+  "crlf": 0,
+  "lf": 452,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js",
+  "kind": "vv",
+  "sha1_before": "3a92697dd1582b708e97f02845930b98c15bc8b5",
+  "sha1_after": "940019aa9c8385a70dc88f80ecfcc7c5ca36516f",
+  "tokens": [
+   "{{VVREL:W2-35}}"
+  ],
+  "lines": [
+   57
+  ],
+  "size_before": 27677,
+  "size_after": 27669,
+  "crlf": 0,
+  "lf": 479,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css",
+  "kind": "vv",
+  "sha1_before": "b25da8304edd04710f9acb9eed88cd664f284f2d",
+  "sha1_after": "574e983c8b71a1de61969c1c8d02ba9dfadf0fcc",
+  "tokens": [
+   "{{VVREL:W2-35}}"
+  ],
+  "lines": [
+   37
+  ],
+  "size_before": 17475,
+  "size_after": 17467,
+  "crlf": 0,
+  "lf": 428,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js",
+  "kind": "vv",
+  "sha1_before": "c2cac5953e4d9e381bd2d746a75c7c50508781ab",
+  "sha1_after": "e3628251d14e8593be5c873e49adbb66e914e6f3",
+  "tokens": [
+   "{{VVREL:W2-17}}",
+   "{{VVREL:W2-17}}"
+  ],
+  "lines": [
+   43,
+   65
+  ],
+  "size_before": 25412,
+  "size_after": 25396,
+  "crlf": 457,
+  "lf": 457,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__.js",
+  "kind": "vv",
+  "sha1_before": "3b43de4dda2f36f4c26241e790bed01c53116fc8",
+  "sha1_after": "405d71e01f2319fe1ff44f06b39487b4dcb1abe6",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   40
+  ],
+  "size_before": 4956,
+  "size_after": 4948,
+  "crlf": 0,
+  "lf": 106,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js",
+  "kind": "vv",
+  "sha1_before": "323876238b25a8d05a247e94cb84406da3e9be21",
+  "sha1_after": "dbdf344fa55cf175eb1c07faae0c1e25c4a835a0",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   62
+  ],
+  "size_before": 33142,
+  "size_after": 33134,
+  "crlf": 0,
+  "lf": 574,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Field__.js",
+  "kind": "vv",
+  "sha1_before": "f0a6233c72ce1ddffc6bb4a269ea04846b2fa12b",
+  "sha1_after": "9458d18ca94ff50cf8bed43cf9fd7386b3138bb4",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   59
+  ],
+  "size_before": 36150,
+  "size_after": 36142,
+  "crlf": 0,
+  "lf": 635,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css",
+  "kind": "vv",
+  "sha1_before": "e5f3373ee2172f41b0b9472b37a2cc3e35b35b4c",
+  "sha1_after": "62c6cd51f53de85d152c22f53ef1327d77b59cb0",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   29
+  ],
+  "size_before": 4981,
+  "size_after": 4973,
+  "crlf": 0,
+  "lf": 120,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js",
+  "kind": "vv",
+  "sha1_before": "f133a5a67d62da3eac44543403aff2e4f019b4af",
+  "sha1_after": "2dce1c84c62f6f874a34272c2e0a9fd1c2e6e839",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 12158,
+  "size_after": 12150,
+  "crlf": 0,
+  "lf": 220,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs",
+  "kind": "vv",
+  "sha1_before": "ce70f07d265fa0dc36f11ddcacb77c6a95ed4a31",
+  "sha1_after": "b5bef797f824825e84128d2fe06aca53b1998d47",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 6606,
+  "size_after": 6598,
+  "crlf": 0,
+  "lf": 118,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "1a94a035f7a7bd564023507f5374c39d777d3520",
+  "sha1_after": "ea858613403fa83f73e5ead902a74548d6f9dbda",
+  "tokens": [
+   "{{VVREL:W2-36}}",
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   56,
+   65
+  ],
+  "size_before": 29716,
+  "size_after": 29700,
+  "crlf": 0,
+  "lf": 433,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "d52469cc558b31c084f5cffb29af6d36e8c2021c",
+  "sha1_after": "54d3e3550f23b2ad4b2b0cc4037cee88fde57211",
+  "tokens": [
+   "{{VVREL:W2-01}}"
+  ],
+  "lines": [
+   31
+  ],
+  "size_before": 16232,
+  "size_after": 16224,
+  "crlf": 0,
+  "lf": 250,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "90c02e88e2e245d9afe588e214d800e2e29455c8",
+  "sha1_after": "5b4f231ba9b9dd90de55420bd349ee6114373d97",
+  "tokens": [
+   "{{VVREL:W2-09}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 16756,
+  "size_after": 16748,
+  "crlf": 0,
+  "lf": 292,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "36a4935e1f72fb4d5518c4e2121922426c1b2cf7",
+  "sha1_after": "dcb5204ada24f1477c61e1ba21ee9911e9b76fad",
+  "tokens": [
+   "{{VVREL:W2-43}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 8504,
+  "size_after": 8496,
+  "crlf": 0,
+  "lf": 186,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "2411f9712664cc068e8823b22d1226c9c0b0b092",
+  "sha1_after": "9b04c0be2ab42adbc5f70aa33551fbc5e69d755a",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   40
+  ],
+  "size_before": 25806,
+  "size_after": 25798,
+  "crlf": 0,
+  "lf": 349,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "1111a66d7d05624e50e75edd3ca312dba9a4764f",
+  "sha1_after": "456184c29d4f836933ca07e88b4516a4615154d6",
+  "tokens": [
+   "{{VVREL:W2-21}}"
+  ],
+  "lines": [
+   56
+  ],
+  "size_before": 55488,
+  "size_after": 55480,
+  "crlf": 0,
+  "lf": 770,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "cf0036975d78ebfb3516199853eac3af73ccb4b4",
+  "sha1_after": "15c8f3e0e57b18da92aa2bd6ca4d64cf32642738",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   43
+  ],
+  "size_before": 30400,
+  "size_after": 30392,
+  "crlf": 0,
+  "lf": 398,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LineworkModifiers__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "1005c1542aed76a241069ec4e809034723030313",
+  "sha1_after": "0791d984c3057096cb3383e33ccc73fabbf43784",
+  "tokens": [
+   "{{VVREL:W2-13}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 34522,
+  "size_after": 34514,
+  "crlf": 0,
+  "lf": 504,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "be076d0af2a3eafeaa611fdee498a17bb3a26fa5",
+  "sha1_after": "fe6193731b6b16fe9c44445a336f68638b5ee40c",
+  "tokens": [
+   "{{VVREL:W2-17}}"
+  ],
+  "lines": [
+   70
+  ],
+  "size_before": 75512,
+  "size_after": 75504,
+  "crlf": 0,
+  "lf": 1080,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "a89cda3203ed05f49eca4ec661726531e47622aa",
+  "sha1_after": "a105b3253170d72c21ac22009e059ff9a4a93091",
+  "tokens": [
+   "{{VVREL:W2-32}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 31193,
+  "size_after": 31185,
+  "crlf": 0,
+  "lf": 396,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "27bdccbc75d24fefd5aebed39e383ea741518e15",
+  "sha1_after": "1268ee2898bda7ec1be6cd9c9ccd28051694e502",
+  "tokens": [
+   "{{VVREL:W2-19}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 31360,
+  "size_after": 31352,
+  "crlf": 0,
+  "lf": 382,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "fbb905600666d2e2e1cde0e63b2c9c92f9f24869",
+  "sha1_after": "85d302cf427b5c0a5640badc548d95d890f31f12",
+  "tokens": [
+   "{{VVREL:W2-24}}"
+  ],
+  "lines": [
+   49
+  ],
+  "size_before": 25801,
+  "size_after": 25793,
+  "crlf": 0,
+  "lf": 359,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookCabinetInfill__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "c6b20f4a51c0c6e8fa228112ed4d08ff27b8b519",
+  "sha1_after": "2678b9832be2e5e69753a4f02cc57217d5990107",
+  "tokens": [
+   "{{VVREL:W2-38}}"
+  ],
+  "lines": [
+   39
+  ],
+  "size_before": 31953,
+  "size_after": 31945,
+  "crlf": 0,
+  "lf": 352,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "25fddb2a780bb9ba35d12c553f2d9670c3d33263",
+  "sha1_after": "5b247b59116446d68ea72adfa1c748fa5074c599",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   34
+  ],
+  "size_before": 30677,
+  "size_after": 30669,
+  "crlf": 0,
+  "lf": 295,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "b3cb0ca5d7392f4be7ef1ef4d85fe38dfe04a8ca",
+  "sha1_after": "0b1ce69e4e1646af4d9bf3f1bc82f0d384fbc478",
+  "tokens": [
+   "{{VVREL:W2-38}}"
+  ],
+  "lines": [
+   39
+  ],
+  "size_before": 35102,
+  "size_after": 35094,
+  "crlf": 0,
+  "lf": 449,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "30592d7a91b9f96c38620a44cb9985f51675e813",
+  "sha1_after": "9c7e45af3f5be8d105e763892a37fe3795d287e7",
+  "tokens": [
+   "{{VVREL:W2-37}}"
+  ],
+  "lines": [
+   33
+  ],
+  "size_before": 11659,
+  "size_after": 11651,
+  "crlf": 0,
+  "lf": 164,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookSiteLegend__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "ab9d66efc0f120d24ef5a8e193468668c379ca71",
+  "sha1_after": "f799e200e4989ee378a5204cd749f2b523feac8e",
+  "tokens": [
+   "{{VVREL:W2-39}}"
+  ],
+  "lines": [
+   38
+  ],
+  "size_before": 24900,
+  "size_after": 24892,
+  "crlf": 0,
+  "lf": 295,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "e18f07148a70e4eb3ab75d4cbb0f58afa87fc86d",
+  "sha1_after": "91b459519a5931b0a18cd035d67e279ee8392360",
+  "tokens": [
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   52
+  ],
+  "size_before": 77081,
+  "size_after": 77073,
+  "crlf": 0,
+  "lf": 1077,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanFaces__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "4b837ec4176cb456632924db89e122afa7a12cb1",
+  "sha1_after": "f2d376f42858e5ae19a9a3fa9e4cbb836705d336",
+  "tokens": [
+   "{{VVREL:W2-16}}"
+  ],
+  "lines": [
+   42
+  ],
+  "size_before": 11037,
+  "size_after": 11029,
+  "crlf": 0,
+  "lf": 217,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanStore__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "fd4bc49e68b980f79fa1d0560d6a0fb4b6a4df3d",
+  "sha1_after": "ca190e266bcda4ca9273d071a2ad70804d69529e",
+  "tokens": [
+   "{{VVREL:W2-14}}"
+  ],
+  "lines": [
+   45
+  ],
+  "size_before": 24334,
+  "size_after": 24326,
+  "crlf": 0,
+  "lf": 394,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpecInlineEdit__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "9d5e992cb57427aca63b08be5bf652c281f52e3b",
+  "sha1_after": "8785a6774029b8337ab9ac14b8f4988b95f6bbd1",
+  "tokens": [
+   "{{VVREL:W2-35}}"
+  ],
+  "lines": [
+   57
+  ],
+  "size_before": 34034,
+  "size_after": 34026,
+  "crlf": 0,
+  "lf": 458,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpecLockstep__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "d58a2b7d0eca419152bb135e9549839d669d3acb",
+  "sha1_after": "59566349a6fbdbc99d15840ad682b79359065189",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   62
+  ],
+  "size_before": 31612,
+  "size_after": 31604,
+  "crlf": 0,
+  "lf": 474,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "ab790bac0007fe240cad94807aa7c0bb4a42c032",
+  "sha1_after": "d2dc8a768fa8546123b07f7c3c8b90a238691805",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   51
+  ],
+  "size_before": 25527,
+  "size_after": 25519,
+  "crlf": 0,
+  "lf": 349,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckField__.html",
+  "kind": "vv",
+  "sha1_before": "71bf5042d5b97ee85dd80bc942b1be05c35d5842",
+  "sha1_after": "fba4c9f55d9c60a606186949549bf608d8f395e8",
+  "tokens": [
+   "{{VVREL:W2-34}}"
+  ],
+  "lines": [
+   44
+  ],
+  "size_before": 12644,
+  "size_after": 12636,
+  "crlf": 0,
+  "lf": 208,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StatementLockstep__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "53563547afb4365e9f3122f1dedd0faaee02ba17",
+  "sha1_after": "764b6890169a8d96e701f28f14d1129f8e649d13",
+  "tokens": [
+   "{{VVREL:W2-30}}"
+  ],
+  "lines": [
+   30
+  ],
+  "size_before": 8855,
+  "size_after": 8847,
+  "crlf": 0,
+  "lf": 171,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "d6732b69a99849437996a86ad32aae32954b3967",
+  "sha1_after": "449154940113d8f2c8278a7582632bb05c865811",
+  "tokens": [
+   "{{VVREL:W2-06}}"
+  ],
+  "lines": [
+   33
+  ],
+  "size_before": 17412,
+  "size_after": 17404,
+  "crlf": 0,
+  "lf": 204,
+  "bom": false
+ },
+ {
+  "rel": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs",
+  "kind": "vv",
+  "sha1_before": "67ce81a93b37e31a8acd2ff1b1750d912cb5633f",
+  "sha1_after": "a7cb7b18bf96347590acbfa3f09ba22fe1509626",
+  "tokens": [
+   "{{VVREL:W2-10}}"
+  ],
+  "lines": [
+   30
+  ],
+  "size_before": 16298,
+  "size_after": 16290,
+  "crlf": 0,
+  "lf": 185,
+  "bom": false
+ }
+]

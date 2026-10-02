@@ -1,0 +1,77 @@
+{
+  "pin": "b2aa9151",
+  "tv": {
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js": {
+      "bytes": 87873,
+      "sha1": "6a6997bfa3823b7c23ef53be841c21955e8d128e",
+      "crlf": 0,
+      "bare_lf": 1292,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js": {
+      "bytes": 13277,
+      "sha1": "5871cc8cc89881257013f7e581ad88a4a636e03d",
+      "crlf": 0,
+      "bare_lf": 262,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+      "bytes": 174262,
+      "sha1": "bd14eda34fef9e9b472b68cccb7c74e58a189eec",
+      "crlf": 0,
+      "bare_lf": 1332,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js": {
+      "bytes": 46383,
+      "sha1": "acdc1b16c5f3f7e351f1565ec3c110a7fa2a50f1",
+      "crlf": 0,
+      "bare_lf": 878,
+      "bom": false
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs": {
+      "bytes": 17107,
+      "sha1": "1794ef990dca0107ea30a655235e7fd1900bf8b5",
+      "crlf": 0,
+      "bare_lf": 269,
+      "bom": false
+    },
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js": {
+      "bytes": 16429,
+      "sha1": "b9a47f7cc20b9b343f45b6788a6144cd4c8a61c7",
+      "crlf": 0,
+      "bare_lf": 311,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js": {
+      "bytes": 23935,
+      "sha1": "30ae16a98a988abefa9b51ea1bc9089cdf4d578d",
+      "crlf": 0,
+      "bare_lf": 439,
+      "bom": false
+    }
+  },
+  "vv_preimage": {
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js": {
+      "bytes": 58779,
+      "sha1": "4597c9db3046de24ef41c77fdb787b0a2013eec7",
+      "crlf": 906,
+      "bare_lf": 0,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+      "bytes": 172756,
+      "sha1": "30216db293b71bb0b7891b1242f4aef4645dd8c4",
+      "crlf": 0,
+      "bare_lf": 1334,
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js": {
+      "bytes": 12825,
+      "sha1": "e2f370a613c3368bbbe51417042e0b23d19d07ab",
+      "crlf": 250,
+      "bare_lf": 0,
+      "bom": false
+    }
+  }
+}

@@ -1,0 +1,55 @@
+
+A. Model Source dormant (real PhaseLibrary, never initialised)
+  PASS  the library has no groups
+  PASS  Initialize only sets the cache limit (true) and announces nothing
+  PASS  HasChoices is false: the Model Source row and menu stay hidden
+  PASS  Resolve().renderId is null for every viewport (stored id or not)
+  PASS  ...and every one is the live model, nothing missing, nothing explicit
+  PASS  StatusText is empty
+  PASS  WaitFor(null) and WaitFor(undefined) resolve true at once
+  PASS  MenuItems is empty (no Model items in the right-click menu)
+  PASS  CategoryKeys of an ordinary viewport is null (the live registry answers)
+  PASS  CategoryKeys of a site plan viewport is its (empty) store layers
+  PASS  Options: only Project Default
+  PASS  Ensure is a no-op, nothing written, nothing announced
+
+B. 3D viewport fingerprints, before vs after (stored snapshot keys)
+  PASS  every case: the fingerprint is the same before and after
+  PASS  and is never null (no viewport waits for a design phase)
+  PASS  Enhance 40 re-keys the 3D picture (the raster token joins the fingerprint)
+
+C. 2D frames: stack order, underlay keys, depth fog, Enhance, modifiers
+  PASS  the frame stack reads underlay, linework, fog, markup (then the empty and progress notes)
+  PASS  a new frame's fog layer starts hidden
+  PASS  a plan is described with its doors open (the viewport's pose)
+  PASS  an elevation is described with every door shut
+  PASS  Describe hands back Model Source's own answer: the live model
+  PASS  before W2-16 no pose was handed to the projection at all
+  PASS  elevation underlay key: identical before and after but for the shut-door pose in its record hash
+  PASS  plan underlay key: identical before and after but for the open-door pose (plan doors)
+  PASS  with modifier rows configured the new key is the old one plus the modifier token (W2-13 F2)
+  PASS  no fog: the fog layer stays hidden and no fog image is rendered (costs nothing)
+  PASS  fog on: one fog image is rendered, with the fog source as Render2d's 11th argument
+  PASS  fog on: the underlay is not rendered again and its key is unchanged
+  PASS  fog on: the linework is neither re-projected nor repainted
+  PASS  fog on: the fog layer shows
+  PASS  fog off again: the fog layer hides; underlay and linework untouched
+  PASS  Enhance 40 reaches the 2D render as enhancePct 40
+  PASS  Enhance 40 re-keys the 2D underlay (the raster token)
+  PASS  a modifier row switched off in Model Layers leaves the base image (hidden in the raster rules)
+  PASS  ...and its token says off, so the picture re-renders
+  PASS  no modifier rows: no modifiers, an empty token
+
+D. Edge styles: Line scale and the site plan prefix
+  PASS  the dashed row has a dash pattern to scale
+  PASS  a Line scale of 0.5 halves every dash and gap length
+  PASS  ...and only those: weight, colour and line type are unchanged
+  PASS  a ValeVision__SitePlan__ layer takes its default from the store (dormant with site plans)
+  PASS  a TrueVision__SitePlan__ key is not a site plan layer here
+
+E. Linework: a modifier row switched off leaves the vectors
+  PASS  with the row on, all four segments draw
+  PASS  with the Fine Detail row off, its two segments leave the vectors; the wall and the window stay
+  NOTE  TrueVision edge case: one style left in a class -> indices [null] (null = the whole class, the switched-off segment included)
+
+42 passed, 0 failed

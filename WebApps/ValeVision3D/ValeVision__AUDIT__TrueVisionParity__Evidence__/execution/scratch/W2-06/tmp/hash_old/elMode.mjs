@@ -1,0 +1,1 @@
+export function Na__ElevationMode__GetActiveElevation() { return null; }

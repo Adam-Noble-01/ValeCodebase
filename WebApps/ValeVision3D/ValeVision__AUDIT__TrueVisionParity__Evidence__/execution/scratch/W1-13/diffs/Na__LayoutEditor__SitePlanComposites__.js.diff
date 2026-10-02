@@ -1,0 +1,30 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js
++++ VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - SITE PLAN COMPOSITES
++// VALEVISION3D - LAYOUT EDITOR - SITE PLAN COMPOSITES
+@@ -42,4 +42,11 @@
+-// - Ported from   : none (TrueVision-only: site plan drawings)
+-// - Parity        : n/a
+-// - Divergences   : n/a
+-// - Back-port     : goes to ValeVision3D with the site plan feature, if that is ever ported
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js
++// - Source version: 1.0.0 (TrueVision3D v2.89.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-13}}, with Na__LayoutEditor__SitePlanComposites__Config__.json
++//                   (TrueVision's file, byte for byte)
++// - Parity        : verbatim, and dormant: ValeVision has no site plan data (DR-08 (B)). Taken whole on
++//                   purpose, overriding TrueVision's composites plan section 3.5 ('a surgical merge of the
++//                   non-site-plan parts only'), so the record layer and the site plan painter can come
++//                   across byte for byte.
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+@@ -132 +139 @@
+-                        console.warn('[TrueVision3D LayoutEditor] Site plan composite config fetch failed (' + response.status + ') - the built-in inventory will be used.');
++                        console.warn('[ValeVision3D LayoutEditor] Site plan composite config fetch failed (' + response.status + ') - the built-in inventory will be used.');
+@@ -139 +146 @@
+-                    console.warn('[TrueVision3D LayoutEditor] Site plan composite config unavailable - the built-in inventory will be used.', error);
++                    console.warn('[ValeVision3D LayoutEditor] Site plan composite config unavailable - the built-in inventory will be used.', error);
+@@ -315 +322 @@
+-            console.warn('[TrueVision3D LayoutEditor] Site plan location ink pattern is not a valid regex - the built-in one will be used.', error);
++            console.warn('[ValeVision3D LayoutEditor] Site plan location ink pattern is not a valid regex - the built-in one will be used.', error);

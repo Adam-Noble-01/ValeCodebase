@@ -6,64 +6,79 @@
 // NAMESPACE  : Na__LeViewId
 // MODULE     : Layout Editor - Viewport Identity
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Say what a viewport is a drawing OF - plan or elevation, and which way an elevation faces - and name unnamed elevation viewports from it
+// PURPOSE    : Say what a viewport is a drawing OF - existing or proposed, plan or elevation, and which way an elevation faces - and name unnamed elevation viewports from it
 // CREATED    : 19-Sep-2026
 //
 // DESCRIPTION:
-// - TITLING ELEVATIONS BY HAND IS A CHORE, and what a title says is already
-//   known: an elevation's bearing against the project's north says North,
-//   East, South or West. This module reaches in for those facts, once, for
-//   everything that wants them:
-//       Describe(viewport) -> { kind, phase, facing, name, drawing }
-// - PHASE IS NEVER KNOWN HERE. In TrueVision it is the model group a viewport
-//   draws - existing building or proposed scheme. This app loads one model
-//   per project and has no groups to read, so every phase is unknown and a
-//   title writes Existing or Proposed only when its own settings say so.
+// - TITLING ELEVATIONS BY HAND IS A CHORE, and everything a title says is
+//   already known: which model group the viewport draws says Existing or
+//   Proposed, and its elevation's bearing against the project's north says
+//   North, East, South or West. This module reaches in for those facts, once,
+//   for everything that wants them:
+//       Describe(viewport) -> { kind, phase, facing, level, name, drawing }
+// - PHASE is the viewport's Model Source (Na__LayoutEditor__ModelSource__):
+//   the group it names, or the Project Default. A group whose label says
+//   "existing" is the existing building - the very test the app's startup
+//   uses to choose the default model - and any other is proposed. A project
+//   with no model groups has no phase; a site plan draws no model at all.
 // - FACING is the elevation record's azimuth read against the project's north
-//   (47__System__NorthDirection). Until north is set it is empty, and a title
+//   (46__System__NorthDirection). Until north is set it is empty, and a title
 //   shows {{Direction}} rather than the app's old guess that the model's -Z
-//   axis is north - a guess that seeds a building's north elevation as east
-//   whenever the model was not drawn with north up the page.
+//   axis is north - the guess that had PS02's North Elevation seeded as East.
+// - LEVEL is the building storey a floor plan is a plan of, as the title it
+//   goes by: "Ground Floor Plan" (42__System__FloorPlanViews). It is chosen
+//   per plan in the Dev menu, and an educated guess until it is - never
+//   empty for a plan, so unlike a direction it has no placeholder. Only a
+//   floor plan has one; every other drawing's is ''.
 // - NAME is a name somebody TYPED on the viewport. A paste's placeholder
-//   ("East Elevation copy") is not one: a sheet's proposed elevations are
-//   often copies of its existing ones, still carrying those names, and a
-//   title reading "EAST ELEVATION COPY" is nobody's intention.
+//   ("East Elevation copy") is not one: PS02's three proposed elevations are
+//   copies of its existing ones, still carrying those names, and a title
+//   reading "EAST ELEVATION COPY" is nobody's intention.
 // - UNNAMED ELEVATION VIEWPORTS ARE NAMED HERE, through the model's
-//   RegisterViewportNamer: "North Elevation" in the panels, the link
+//   RegisterViewportNamer: "Existing North Elevation" in the panels, the link
 //   menus, the toasts and the frame caption, once north is set. A typed name
 //   always wins, and nothing is ever written to a record - it is a name
 //   derived on the spot, so it can never go stale.
-// - A CHANGE OF NORTH changes names without changing a sheet. CHANGED_EVENT
-//   says so, for whoever draws them.
+// - A CHANGE OF NORTH, OF THE MODEL GROUPS OR OF A PLAN'S STOREY changes names
+//   without changing a sheet. CHANGED_EVENT says so, for whoever draws them.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__ModeController__ calls Initialize once.
 // - 57__Feature__ScrapbookParametric/...ScrapbookParametric__ViewportLink__
 //   fills a parametric title's facts from Describe.
 // // @delegate: ./Na__LayoutEditor__ViewportTitleText__.js
-// // @delegate: ../../47__System__NorthDirection/Na__North__ProjectJson__Data__.js
+// // @delegate: ./Na__LayoutEditor__ModelSource__.js
+// // @delegate: ../../46__System__NorthDirection/Na__North__ProjectJson__Data__.js
+// // @delegate: ../../42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js,
-//                   its 1.0.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.67.0
-// - Parity        : adapted
-// - Divergences   : NO PHASE. TrueVision reads Existing or Proposed off the model group a viewport
-//                   draws (its Model Source and phase library). This app loads one model per
-//                   project, so PhaseOf answers unknown for every viewport and a title writes no
-//                   qualifier unless its own settings force one. NO SITE PLAN BRANCH: this app has
-//                   no site plan viewports. Everything else - facing, typed names, the namer - is
-//                   TrueVision's.
-// - Back-port     : n/a. If model groups ever arrive here, take TrueVision's PhaseOf whole.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js
+// - Source version: 1.1.0 (TrueVision3D v2.87.0, 20-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was TrueVision's 1.0.0 less its phase and site plan branches (ValeVision3D v2.67.0). 1.1.0
+//                   (the storey level) comes across under DR-01 (c); it is not recorded as tried by Adam in
+//                   TrueVision.
+// - Parity        : verbatim (the code is TrueVision 1.1.0's; the banner, the console prefix and this note are
+//                   the only differences)
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+//   - PhaseOf reads Model Source and the phase library, which register no groups here (DR-09 (a)), so it
+//     answers unknown for every viewport and a title writes Existing or Proposed only when its own settings
+//     say so; the site plan branch is dormant (DR-08 (B)).
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.0.0, without the phase and site plan branches
-//   (see PORT NOTE).
+// 20-Sep-2026 - Version 1.1.0
+// - A sixth fact, level: a floor plan's building storey as the title it goes
+//   by, from the floor plan data. A storey chosen in the Dev menu is announced
+//   as CHANGED_EVENT reason 'level'.
+//
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation.
 //
 // =============================================================================
 
@@ -76,28 +91,36 @@
     // ------------------------------------------------------------
     import {
         Na__LeModel__KIND_3D,
+        Na__LeModel__IsSitePlanViewport,
         Na__LeModel__ResolveViewportSource,
         Na__LeModel__RegisterViewportNamer
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeCfg__GetLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeSource__Resolve } from './Na__LayoutEditor__ModelSource__.js';
     import { Na__LeClip__IsCopyName } from './Na__LayoutEditor__ViewportClipboard__.js';
     import {
         Na__LeViewText__KIND_NONE,
         Na__LeViewText__KIND_ELEVATION,
         Na__LeViewText__KIND_SECTION,
         Na__LeViewText__KIND_PLAN,
+        Na__LeViewText__KIND_SITEPLAN,
         Na__LeViewText__KIND_3D,
         Na__LeViewText__PHASE_NONE,
+        Na__LeViewText__PHASE_EXISTING,
+        Na__LeViewText__PHASE_PROPOSED,
         Na__LeViewText__MODE_AUTO,
         Na__LeViewText__WORDS,
         Na__LeViewText__Compose
     } from './Na__LayoutEditor__ViewportTitleText__.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Elevations and the Project's North
+    // MODULE IMPORTS | Elevations, Floor Plan Storeys, the Design Phases and the Project's North
     // ------------------------------------------------------------
-    import { Na__ElevData__IsSection } from '../../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
-    import { Na__NorthCfg__Load } from '../../47__System__NorthDirection/Na__North__ConfigState__.js';
-    import { Na__NorthData__CHANGED_EVENT, Na__NorthData__IsSet, Na__NorthData__FacingWordForAzimuth } from '../../47__System__NorthDirection/Na__North__ProjectJson__Data__.js';
+    import { Na__ElevData__IsSection } from '../../45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+    import { Na__FpData__STOREY_CHANGED_EVENT, Na__FpData__GetStoreyLevel } from '../../42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+    import { Na__PhaseLib__CHANGED_EVENT } from '../../26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js';
+    import { Na__NorthCfg__Load } from '../../46__System__NorthDirection/Na__North__ConfigState__.js';
+    import { Na__NorthData__CHANGED_EVENT, Na__NorthData__IsSet, Na__NorthData__FacingWordForAzimuth } from '../../46__System__NorthDirection/Na__North__ProjectJson__Data__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -111,7 +134,8 @@
     // ------------------------------------------------------------
     const Na__LeViewId__ConfigUrl     = new URL('./Na__LayoutEditor__ViewportIdentity__Config__.json', import.meta.url);
     const Na__LeViewId__PREFIX        = 'LayoutEditor__ViewportIdentity__';
-    const Na__LeViewId__CHANGED_EVENT = 'na-layouteditor-viewport-identity-changed';   // <-- detail : { reason : 'north' | 'config' }
+    const Na__LeViewId__CHANGED_EVENT = 'na-layouteditor-viewport-identity-changed';   // <-- detail : { reason : 'north' | 'phases' | 'level' | 'config' }
+    const Na__LeViewId__EXISTING      = Object.freeze([ 'existing' ]);               // <-- When the config gives none
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | The Fetched Config and Whether the Namer Is In
@@ -193,15 +217,19 @@
 // REGION | The Facts About a Viewport
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Which Design Phase a Viewport Draws: Always Unknown in This App
+    // FUNCTION | Which Design Phase a Viewport Draws: 'existing', 'proposed' or ''
     // ------------------------------------------------------------
-    // '' for every viewport. This app loads one model per project: there is
-    // no existing-against-proposed to read, as there is in TrueVision's model
-    // groups. Kept as a function so whatever asks for a phase asks here, and
-    // the day this app has phases this is the one place that learns of them.
+    // '' on a project with no model groups, and for a site plan, which draws
+    // survey linework and no model at all.
     // ------------------------------------------------------------
     function Na__LeViewId__PhaseOf(viewport) {
-        return Na__LeViewText__PHASE_NONE;
+        if (!viewport || Na__LeModel__IsSitePlanViewport(viewport)) return Na__LeViewText__PHASE_NONE;
+        const source = Na__LeSource__Resolve(viewport);
+        if (!source || !source.groupId) return Na__LeViewText__PHASE_NONE;
+        const listed = Na__LeViewId__Block('Phase').Phase__ExistingLabelContains;
+        const tokens = (Array.isArray(listed) ? listed : []).filter((token) => typeof token === 'string' && token.trim() !== '').map((token) => token.trim().toLowerCase());
+        const text   = (String(source.label || '') + ' ' + String(source.groupId)).toLowerCase();
+        return (tokens.length ? tokens : Na__LeViewId__EXISTING).some((token) => text.indexOf(token) !== -1) ? Na__LeViewText__PHASE_EXISTING : Na__LeViewText__PHASE_PROPOSED;
     }
     // ------------------------------------------------------------
 
@@ -213,27 +241,45 @@
     // calls ResolveViewportSource, which would call the namer.
     // ------------------------------------------------------------
     function Na__LeViewId__DescribeFrom(viewport, parts) {
-        const none = { kind : Na__LeViewText__KIND_NONE, phase : Na__LeViewText__PHASE_NONE, facing : '', name : '', drawing : '' };
+        const none = { kind : Na__LeViewText__KIND_NONE, phase : Na__LeViewText__PHASE_NONE, facing : '', level : '', name : '', drawing : '' };
         if (!viewport) return none;
         const given     = parts || {};
         const typed     = (typeof viewport.Viewport__Name === 'string') ? viewport.Viewport__Name.trim() : '';
         const name      = (typed !== '' && !Na__LeClip__IsCopyName(viewport)) ? typed : '';   // <-- A paste's placeholder is not a name anybody chose
         const phase     = Na__LeViewId__PhaseOf(viewport);
 
+        // level is on every answer, '' for all but a plan: a title moved from
+        // a plan onto an elevation must be told its storey has gone, and a
+        // fact left out is a fact left as it was.
+        if (Na__LeModel__IsSitePlanViewport(viewport)) {
+            return { kind : Na__LeViewText__KIND_SITEPLAN, phase : phase, facing : '', level : '', name : name, drawing : Na__LeCfg__GetLabel('SitePlanViewportName', 'Site Plan') };
+        }
         if (viewport.Viewport__Kind === Na__LeModel__KIND_3D) {
             const scene = given.scene || null;
-            return { kind : Na__LeViewText__KIND_3D, phase : phase, facing : '', name : name, drawing : (scene && typeof scene.PresentationMode__Scene__Name === 'string') ? scene.PresentationMode__Scene__Name : '' };
+            return { kind : Na__LeViewText__KIND_3D, phase : phase, facing : '', level : '', name : name, drawing : (scene && typeof scene.PresentationMode__Scene__Name === 'string') ? scene.PresentationMode__Scene__Name : '' };
         }
         if (given.plan) {
-            return { kind : Na__LeViewText__KIND_PLAN, phase : phase, facing : '', name : name, drawing : given.plan.FloorPlan__Name || '' };
+            const storey = Na__FpData__GetStoreyLevel(given.plan);                // <-- Chosen in the Dev menu, or an educated guess until it is
+            return { kind : Na__LeViewText__KIND_PLAN, phase : phase, facing : '', level : storey ? storey.title : '', name : name, drawing : given.plan.FloorPlan__Name || '' };
         }
         if (given.elevation) {
             const section = Na__ElevData__IsSection(given.elevation);
+
+            // A NAME CHOSEN FOR THE DRAWING ITSELF stands in where the viewport has
+            // none of its own. Elevation__NameIsAuto reads false only once somebody
+            // has typed the elevation's name in Dev Tools > Elevations ("Coach House
+            // East Elevation"); true follows the compass, and absent is a record from
+            // before the flag, whose "Elevation 3" nobody wants on a title. Without
+            // this, two east elevations on one sheet are two drawings with one title.
+            // @delegate: ../../45__System__ElevationViews/Na__Elevation__AutoName__.js
+            const chosen = (given.elevation.Elevation__NameIsAuto === false && typeof given.elevation.Elevation__Name === 'string')
+                ? given.elevation.Elevation__Name.trim() : '';
             return {
                 kind    : section ? Na__LeViewText__KIND_SECTION : Na__LeViewText__KIND_ELEVATION,
                 phase   : phase,
                 facing  : Na__NorthData__FacingWordForAzimuth(Number(given.elevation.Elevation__AzimuthDeg)),   // <-- '' until north is set
-                name    : name,
+                level   : '',
+                name    : name || chosen,
                 drawing : given.elevation.Elevation__Name || ''
             };
         }
@@ -244,7 +290,7 @@
 
     // FUNCTION | The Facts About a Viewport
     // ------------------------------------------------------------
-    // { kind, phase, facing, name, drawing } - see the title text module.
+    // { kind, phase, facing, level, name, drawing } - see the title text module.
     // ------------------------------------------------------------
     function Na__LeViewId__Describe(viewport) {
         if (!viewport) return Na__LeViewId__DescribeFrom(null, null);
@@ -291,7 +337,7 @@
         const facts = Na__LeViewId__DescribeFrom(viewport, parts);
         if (facts.kind !== Na__LeViewText__KIND_ELEVATION || facts.facing === '') return '';
         const told = Na__LeViewText__Compose(
-            { kind : facts.kind, phase : naming.includePhase ? facts.phase : Na__LeViewText__PHASE_NONE, facing : facts.facing, name : '', drawing : '' },
+            { kind : facts.kind, phase : naming.includePhase ? facts.phase : Na__LeViewText__PHASE_NONE, facing : facts.facing, name : facts.name, drawing : '' },   // <-- facts.name here is never the viewport's (this runs for an unnamed one): it is the name chosen for the elevation itself, or ''
             { phaseMode : Na__LeViewText__MODE_AUTO, uppercase : false }, Na__LeViewId__Words());
         return told.resolved ? told.text : '';
     }
@@ -312,13 +358,18 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Install the Namer and Follow North (once)
+    // FUNCTION | Install the Namer and Follow North and the Design Phases (once)
     // ------------------------------------------------------------
     function Na__LeViewId__Initialize() {
         if (Na__LeViewId__Initialized) return false;
         Na__LeViewId__Initialized = true;
         Na__LeModel__RegisterViewportNamer(Na__LeViewId__NameFor);
         window.addEventListener(Na__NorthData__CHANGED_EVENT, () => Na__LeViewId__Announce('north'));
+        window.addEventListener(Na__PhaseLib__CHANGED_EVENT, (event) => {
+            const kind = (event && event.detail) ? event.detail.kind : '';
+            if (kind === 'groups') Na__LeViewId__Announce('phases');              // <-- The groups are registered after the project loads; until then every phase reads as unknown
+        });
+        window.addEventListener(Na__FpData__STOREY_CHANGED_EVENT, () => Na__LeViewId__Announce('level'));   // <-- Chosen in the Dev menu's Floor Plans panel: a plan's title on an open sheet follows the dropdown
         void Na__LeViewId__Ready();
         return true;
     }

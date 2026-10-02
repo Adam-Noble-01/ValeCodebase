@@ -1,0 +1,71 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs
+exit 0
+
+ValeVision3D - the drawing tabs' keys: M, the focus and the fallback
+
+  The built-in key map against the shipped file
+  PASS  every key resolves the same through both (588 presses)
+  PASS  M is Move in the fallback too
+  PASS  the space bar arms Select in the fallback, not Deselect
+  PASS  Ctrl+S is the editor's save in the fallback
+  PASS  every press on the stage means the same
+  PASS  the wheel, the selection keys, the guards, the setups and the Measurements keys match
+
+  Reading the drawing tabs' key file again
+  PASS  a read that lands replaces the map
+  PASS  a read that fails keeps the map in force
+  PASS  a file caught half written keeps it too
+  PASS  so does a file that is not there
+  PASS  two calls at once share one read
+  PASS  a map handed in is never replaced by the file
+  PASS  handed back (null), the file is read again
+
+  Which keys a focused control keeps
+  PASS  a text box, a text area and a page being written keep every key
+  PASS  a tick box keeps Space and Enter, and no letter, Escape, Delete or arrow
+  PASS  a list keeps its arrows, Home, End, the page keys, Space and Enter
+  PASS  but no letter and no Escape: M is not "Medium"
+  PASS  a number box keeps its figures and the keys that edit them
+  PASS  but not a tool letter
+  PASS  a slider keeps its arrows; a button and a colour picker only Space and Enter
+  PASS  nothing focused, or the stage, keeps nothing
+
+  The sheet's keyboard with a control focused
+  PASS  M with nothing focused picks Move (as ever)
+  PASS  M from a ticked box picks Move, takes the key and the focus
+  PASS  M from a list picks Move and the list never sees it (no "Medium")
+  PASS  a capital M (Caps Lock) from a list, the same
+  PASS  M from a number box picks Move (a figure cannot hold an M)
+  PASS  V from a toolbar list picks Select
+  PASS  M typed into a text box stays the text box's
+  PASS  M typed into a page being written stays the page's
+  PASS  an arrow in a list stays the list's
+  PASS  a figure in a number box stays the number box's (nothing bound)
+  PASS  Space on a tick box stays the tick box's
+  PASS  Escape in a number box stays the number box's
+  PASS  Escape from a list is the sheet's: back to Select, the key and the focus taken
+  PASS  Ctrl+Z from a list is the sheet's undo, and the list keeps the focus (as before)
+
+  Enter in a one-line panel field gives the keys back
+  PASS  Enter in a panel text box (a room's name): the stage takes the keys, the field blurs and commits
+  PASS  a text area keeps its Enter - it is a new line there
+  PASS  a page being written keeps its Enter
+  PASS  text typed on the paper is left to its tool
+  PASS  a field its own Enter already put away is left alone
+  PASS  an Enter finishing an input method's composition stays with the field
+  PASS  M typed into that panel text box is still a letter, not Move
+
+  A press on the stage takes the keyboard
+  PASS  Attach listens for presses on the stage in the capture phase
+  PASS  a press on the paper takes the focus from a panel tick box
+  PASS  and from the toolbar's Raster list
+  PASS  and from a panel text box (its change is committed by the blur)
+  PASS  with nothing focused the stage takes it
+  PASS  a stage that already has it is left alone
+  PASS  text being typed on the paper is left to its tool
+  PASS  a control pressed on the stage keeps its own focus
+  PASS  TakeKeyboard with no press (a drawing tab opened) takes it
+  PASS  Detach takes the press listener off
+  PASS  and with nothing attached, TakeKeyboard does nothing
+
+  Every check passed.

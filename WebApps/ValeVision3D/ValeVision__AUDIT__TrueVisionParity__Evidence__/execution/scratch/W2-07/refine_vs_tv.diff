@@ -1,0 +1,43 @@
+diff --git a/C:/Users/adamw/AppData/Local/Temp/na-w207-diff-mszy4h48/TV__Na__RenderEffect__ProgressiveRefine__.js b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+index 32fc39ab..401fd979 100644
+--- a/C:/Users/adamw/AppData/Local/Temp/na-w207-diff-mszy4h48/TV__Na__RenderEffect__ProgressiveRefine__.js
++++ b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - RENDER PIPELINE - PROGRESSIVE REFINEMENT
++// VALEVISION3D - RENDER PIPELINE - PROGRESSIVE REFINEMENT
+@@ -121,11 +121,21 @@
+-// - Ported from   : ValeVision3D 05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js 1.0.1
+-// - Ported on     : 16-Sep-2026 for TrueVision3D v2.56.0
+-// - Parity        : verbatim apart from the app name in this header and in the
+-//                   one console warning. The maths, the settle test, the chunk
+-//                   planner and the whole API are identical, and are meant to
+-//                   stay that way - a second copy that drifts is worse than no
+-//                   second copy.
+-// - Divergence    : none in behaviour. What differs is the CALLER: TrueVision
+-//                   has one engine rather than two, no video studio to report
+-//                   as busy, and a 2D drawing path that bypasses the composer
+-//                   instead of running a preset through it.
++// - Authored in   : ValeVision3D first (1.0.0 and 1.0.1, 16-Sep-2026, ValeVision3D v2.48.0 and v2.48.1);
++//                   TrueVision3D took 1.0.1 whole on 16-Sep-2026 (its v2.56.0) and grew it to 1.0.3;
++//                   since ported back whole from TrueVision3D 1.0.3 (HEAD b2aa9151)
++// - Source version: 1.0.3 (TrueVision3D v2.58.2, 17-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-07}} - whole. This app's copy was its 1.0.1
++//                   with TrueVision's 1.0.3 buffer floor already in (ValeVision3D v2.54.0, unlogged) and
++//                   the optional onSample hook both copies took on 19-Sep-2026 (ValeVision3D v2.59.0).
++//                   New here is 1.0.2: planFrame reads performance.now() itself, and the render loop
++//                   passes it no timestamp (Na__AppFlow__LoadingSequence 1.7.3).
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner and the one console warning read ValeVision3D.
++//   - None in behaviour. What differs is the CALLER, as it did when TrueVision took this file:
++//     ValeVision has two engines, reports Video Studio's preview and its legacy elevation camera as
++//     busy, and runs its 2D drawing views through their composer preset (DIV-1) rather than past the
++//     composer. The SCOPE paragraph above is TrueVision's text about TrueVision's caller; here the
++//     drawing views are excluded by the caller in the same way, and image and video export both do
++//     their own supersampling.
++// - Legacy        : TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), lists 1.0.1 above 1.0.3 and
++//                   1.0.2 - TrueVision's own order, kept as written.
++// - Back-port     : none.
+@@ -642 +652 @@
+-                    console.warn('[TrueVision3D] Progressive refinement disabled: the accumulation buffer could not be created.');
++                    console.warn('[ValeVision3D] Progressive refinement disabled: the accumulation buffer could not be created.');

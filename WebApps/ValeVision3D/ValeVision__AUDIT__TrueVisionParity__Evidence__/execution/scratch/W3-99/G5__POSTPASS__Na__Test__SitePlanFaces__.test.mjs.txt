@@ -1,0 +1,16 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__SitePlanFaces__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+PASS  a face with a hole is one run: outline then hole, the hole start named
+PASS  the hole's points follow the outline's in the run
+PASS  Spans splits the run back into its rings
+PASS  three holes, the outline arriving second, give one face with three hole starts
+PASS  a ring with no face index, and a second outline under one index, are faces of their own
+PASS  none of them carries a hole
+PASS  a ring under three corners, a face with only holes, and a null are dropped
+PASS  nothing at all gives nothing
+PASS  toPoint maps the outline and the hole alike
+SKIP  no proposed site plan data on this PC: D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\3047__Doous\SitePlan__DrawingData__Proposed
+
+9 passed, 0 failed

@@ -1,0 +1,580 @@
+{
+  "project": "2026/3047__Doous",
+  "stagedTools": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D\\ValeVision__AUDIT__TrueVisionParity__Evidence__\\execution\\prepared\\W0-07\\WebApps\\Whitecardopedia\\Tools__DevUtils",
+  "editorKeyList": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D\\02__Src__AppModules\\02__AppData\\Na__AppConfig__Main.json",
+  "localProductionFolderReadOnly": "C:\\01__ValeProjects\\ValeProjects__2026\\3047__Doous__MaxModel",
+  "liveProjectFolderUntouched": true,
+  "unfixedPurgeWouldDelete": [
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_001__ye06v8.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1degjhi.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1egz3u7.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1f89ym1.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1g0yj2z.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1od0ttx.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__1yd86wr.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__46xdae.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__81thms.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__ed51gw.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__gwoyda.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__h0jhwz.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__ib06pr.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__mmpg29.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__pkvze8.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__t5qnkg.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__tuys87.webp",
+    "VaApps/Projects/2026/3047__Doous/LayoutEditor/Snapshots/Sheet_001__Viewport_002__uzvb0u.webp",
+    "VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_007.webp",
+    "VaApps/Projects/2026/3047__Doous/PresentationMode/Thumbnails/Scene_008.webp"
+  ],
+  "scenarios": [
+    {
+      "scenario": "A__all__R2_mirrors_disk",
+      "action": "all",
+      "r2Ahead": false,
+      "steps": [
+        {
+          "label": "Clone Images",
+          "success": true,
+          "message": "Cloned 6 image(s) from VisDpt__Whitecard__SecondEdition__02-Sep-2026 (purged 18 stale)."
+        },
+        {
+          "label": "Update Image List",
+          "success": true,
+          "message": "project.json images unchanged \u2014 6 scene(s): IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png, IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026.png, IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026.png, IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026.png, IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026.png, IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026.png."
+        },
+        {
+          "label": "Generate Thumbnails",
+          "success": true,
+          "message": "DRY RUN: placeholder thumbnails written into the temp copy."
+        },
+        {
+          "label": "Upload Images to R2",
+          "success": true,
+          "message": "Uploaded 18 file(s) to R2 under VaApps/Projects/2026/3047__Doous/."
+        },
+        {
+          "label": "Upload project.json to R2",
+          "success": true,
+          "message": "Uploaded project.json to R2 key: VaApps/Projects/2026/3047__Doous/project.json - kept from R2: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, FogPlane__Config, RenderEngine__Config, VideoStudio__Config",
+          "keptFromR2": [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config"
+          ],
+          "r2State": "ok",
+          "localUpdated": false
+        },
+        {
+          "label": "Upload GLB Models to R2",
+          "success": true,
+          "message": "Uploaded 14 GLB(s) to R2 under VaApps/Projects/2026/3047__Doous/."
+        },
+        {
+          "label": "Merge Model URLs into project.json (local)",
+          "success": true,
+          "message": "Set 14 model URL(s) in local project.json."
+        },
+        {
+          "label": "Upload project.json to R2",
+          "success": true,
+          "message": "Uploaded project.json to R2 key: VaApps/Projects/2026/3047__Doous/project.json - kept from R2: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, FogPlane__Config, RenderEngine__Config, VideoStudio__Config",
+          "keptFromR2": [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config"
+          ],
+          "r2State": "ok",
+          "localUpdated": false
+        },
+        {
+          "label": "Merge Model URLs into R2 project.json",
+          "success": true,
+          "message": "Set 14 model URL(s) in R2 project.json."
+        },
+        {
+          "label": "Merge Camera Data into project.json (local)",
+          "success": true,
+          "message": "Merged ValeVison3D__SketchUpCameraData into project.json."
+        },
+        {
+          "label": "Merge Camera Data into R2 project.json",
+          "success": true,
+          "message": "Merged ValeVison3D__SketchUpCameraData into R2 project.json."
+        }
+      ],
+      "listCalls": [
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        },
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        }
+      ],
+      "deleted": [],
+      "subFolderKeysBefore": 21,
+      "subFolderKeysDeleted": [],
+      "writesOutsidePrefix": [],
+      "projectJsonWrites": 4,
+      "editorKeysOnR2Before": [
+        "PresentationMode__SavedCameraScenes",
+        "LayoutEditor__DrawingsData",
+        "CrossSection__SceneData",
+        "CrossSection__Config",
+        "Navmode__EnabledModes",
+        "FogPlane__Config",
+        "RenderEngine__Config",
+        "VideoStudio__Config"
+      ],
+      "editorKeysChangedOnR2": [],
+      "r2ProjectJsonChange": {
+        "changedKeys": [],
+        "added": [],
+        "removed": []
+      },
+      "localProjectJsonChange": {
+        "changedKeys": [],
+        "added": [],
+        "removed": []
+      },
+      "localReceivedR2Drawings": true,
+      "r2DrawingsKept": true,
+      "sceneThumbsBefore": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp"
+      },
+      "sceneThumbsAfter": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp"
+      }
+    },
+    {
+      "scenario": "B__all__R2_ahead_of_disk",
+      "action": "all",
+      "r2Ahead": true,
+      "steps": [
+        {
+          "label": "Clone Images",
+          "success": true,
+          "message": "Cloned 6 image(s) from VisDpt__Whitecard__SecondEdition__02-Sep-2026 (purged 18 stale)."
+        },
+        {
+          "label": "Update Image List",
+          "success": true,
+          "message": "project.json images unchanged \u2014 6 scene(s): IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png, IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026.png, IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026.png, IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026.png, IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026.png, IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026.png."
+        },
+        {
+          "label": "Generate Thumbnails",
+          "success": true,
+          "message": "DRY RUN: placeholder thumbnails written into the temp copy."
+        },
+        {
+          "label": "Upload Images to R2",
+          "success": true,
+          "message": "Uploaded 18 file(s) to R2 under VaApps/Projects/2026/3047__Doous/."
+        },
+        {
+          "label": "Purge Stale R2 Images",
+          "success": true,
+          "message": "Purged 18 stale top-level image(s) from R2 under VaApps/Projects/2026/3047__Doous/."
+        },
+        {
+          "label": "Upload project.json to R2",
+          "success": true,
+          "message": "Uploaded project.json to R2 key: VaApps/Projects/2026/3047__Doous/project.json - kept from R2: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, FogPlane__Config, RenderEngine__Config, VideoStudio__Config; re-pointed 1 scene thumbnail(s) on the uploaded copy; local project.json updated to match",
+          "keptFromR2": [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config"
+          ],
+          "r2State": "ok",
+          "localUpdated": true
+        },
+        {
+          "label": "Upload GLB Models to R2",
+          "success": true,
+          "message": "Uploaded 14 GLB(s) to R2 under VaApps/Projects/2026/3047__Doous/ (purged 1 stale)."
+        },
+        {
+          "label": "Merge Model URLs into project.json (local)",
+          "success": true,
+          "message": "Set 14 model URL(s) in local project.json."
+        },
+        {
+          "label": "Upload project.json to R2",
+          "success": true,
+          "message": "Uploaded project.json to R2 key: VaApps/Projects/2026/3047__Doous/project.json - kept from R2: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, FogPlane__Config, RenderEngine__Config, VideoStudio__Config",
+          "keptFromR2": [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config"
+          ],
+          "r2State": "ok",
+          "localUpdated": false
+        },
+        {
+          "label": "Merge Model URLs into R2 project.json",
+          "success": true,
+          "message": "Set 14 model URL(s) in R2 project.json."
+        },
+        {
+          "label": "Merge Camera Data into project.json (local)",
+          "success": true,
+          "message": "Merged ValeVison3D__SketchUpCameraData into project.json."
+        },
+        {
+          "label": "Merge Camera Data into R2 project.json",
+          "success": true,
+          "message": "Merged ValeVison3D__SketchUpCameraData into R2 project.json."
+        }
+      ],
+      "listCalls": [
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        },
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        }
+      ],
+      "deleted": [
+        "VaApps/Projects/2026/3047__Doous/Doous__TrueVision__MainBuildingModel__ExistingWalls__MeshModel__.glb",
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp"
+      ],
+      "subFolderKeysBefore": 27,
+      "subFolderKeysDeleted": [],
+      "writesOutsidePrefix": [],
+      "projectJsonWrites": 4,
+      "editorKeysOnR2Before": [
+        "PresentationMode__SavedCameraScenes",
+        "LayoutEditor__DrawingsData",
+        "CrossSection__SceneData",
+        "CrossSection__Config",
+        "Navmode__EnabledModes",
+        "FogPlane__Config",
+        "RenderEngine__Config",
+        "VideoStudio__Config"
+      ],
+      "editorKeysChangedOnR2": [
+        "PresentationMode__SavedCameraScenes"
+      ],
+      "r2ProjectJsonChange": {
+        "changedKeys": [
+          "PresentationMode__SavedCameraScenes"
+        ],
+        "added": [],
+        "removed": []
+      },
+      "localProjectJsonChange": {
+        "changedKeys": [
+          "LayoutEditor__DrawingsData",
+          "PresentationMode__SavedCameraScenes"
+        ],
+        "added": [
+          "LayoutEditor__DrawingsData"
+        ],
+        "removed": []
+      },
+      "localReceivedR2Drawings": true,
+      "r2DrawingsKept": true,
+      "sceneThumbsBefore": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      },
+      "sceneThumbsAfter": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      }
+    },
+    {
+      "scenario": "C__glb__R2_ahead_of_disk",
+      "action": "glb",
+      "r2Ahead": true,
+      "steps": [
+        {
+          "label": "Upload GLB Models to R2",
+          "success": true,
+          "message": "Uploaded 14 GLB(s) to R2 under VaApps/Projects/2026/3047__Doous/ (purged 1 stale)."
+        },
+        {
+          "label": "Merge Model URLs into project.json (local)",
+          "success": true,
+          "message": "Set 14 model URL(s) in local project.json."
+        },
+        {
+          "label": "Upload project.json to R2",
+          "success": true,
+          "message": "Uploaded project.json to R2 key: VaApps/Projects/2026/3047__Doous/project.json - kept from R2: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, FogPlane__Config, RenderEngine__Config, VideoStudio__Config; re-pointed 1 scene thumbnail(s) on the uploaded copy; local project.json updated to match",
+          "keptFromR2": [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config"
+          ],
+          "r2State": "ok",
+          "localUpdated": true
+        },
+        {
+          "label": "Merge Model URLs into R2 project.json",
+          "success": true,
+          "message": "Set 14 model URL(s) in R2 project.json."
+        }
+      ],
+      "listCalls": [
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        }
+      ],
+      "deleted": [
+        "VaApps/Projects/2026/3047__Doous/Doous__TrueVision__MainBuildingModel__ExistingWalls__MeshModel__.glb"
+      ],
+      "subFolderKeysBefore": 27,
+      "subFolderKeysDeleted": [],
+      "writesOutsidePrefix": [],
+      "projectJsonWrites": 2,
+      "editorKeysOnR2Before": [
+        "PresentationMode__SavedCameraScenes",
+        "LayoutEditor__DrawingsData",
+        "CrossSection__SceneData",
+        "CrossSection__Config",
+        "Navmode__EnabledModes",
+        "FogPlane__Config",
+        "RenderEngine__Config",
+        "VideoStudio__Config"
+      ],
+      "editorKeysChangedOnR2": [
+        "PresentationMode__SavedCameraScenes"
+      ],
+      "r2ProjectJsonChange": {
+        "changedKeys": [
+          "PresentationMode__SavedCameraScenes"
+        ],
+        "added": [],
+        "removed": []
+      },
+      "localProjectJsonChange": {
+        "changedKeys": [
+          "LayoutEditor__DrawingsData",
+          "PresentationMode__SavedCameraScenes"
+        ],
+        "added": [
+          "LayoutEditor__DrawingsData"
+        ],
+        "removed": []
+      },
+      "localReceivedR2Drawings": true,
+      "r2DrawingsKept": true,
+      "sceneThumbsBefore": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      },
+      "sceneThumbsAfter": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      }
+    },
+    {
+      "scenario": "D__images__R2_ahead_of_disk",
+      "action": "images",
+      "r2Ahead": true,
+      "steps": [
+        {
+          "label": "Clone Images",
+          "success": true,
+          "message": "Cloned 6 image(s) from VisDpt__Whitecard__SecondEdition__02-Sep-2026 (purged 18 stale)."
+        },
+        {
+          "label": "Update Image List",
+          "success": true,
+          "message": "project.json images unchanged \u2014 6 scene(s): IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png, IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026.png, IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026.png, IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026.png, IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026.png, IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026.png."
+        },
+        {
+          "label": "Generate Thumbnails",
+          "success": true,
+          "message": "DRY RUN: placeholder thumbnails written into the temp copy."
+        },
+        {
+          "label": "Upload Images to R2",
+          "success": true,
+          "message": "Uploaded 18 file(s) to R2 under VaApps/Projects/2026/3047__Doous/."
+        },
+        {
+          "label": "Purge Stale R2 Images",
+          "success": true,
+          "message": "Purged 18 stale top-level image(s) from R2 under VaApps/Projects/2026/3047__Doous/."
+        }
+      ],
+      "listCalls": [
+        {
+          "Prefix": "VaApps/Projects/2026/3047__Doous/",
+          "Delimiter": "/",
+          "ContinuationToken": null,
+          "MaxKeys": null
+        }
+      ],
+      "deleted": [
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG02__3dView__Interior__View-01__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG03__3dView__Interior__View-02__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG04__3dView__Interior__View-03__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG05__3dView__Interior__View-04__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026.png",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026__Thumbnail__524p__.jpg",
+        "VaApps/Projects/2026/3047__Doous/IMG06__3dView__Interior__View-05__WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp"
+      ],
+      "subFolderKeysBefore": 27,
+      "subFolderKeysDeleted": [],
+      "writesOutsidePrefix": [],
+      "projectJsonWrites": 0,
+      "editorKeysOnR2Before": [
+        "PresentationMode__SavedCameraScenes",
+        "LayoutEditor__DrawingsData",
+        "CrossSection__SceneData",
+        "CrossSection__Config",
+        "Navmode__EnabledModes",
+        "FogPlane__Config",
+        "RenderEngine__Config",
+        "VideoStudio__Config"
+      ],
+      "editorKeysChangedOnR2": [],
+      "r2ProjectJsonChange": {
+        "changedKeys": [],
+        "added": [],
+        "removed": []
+      },
+      "localProjectJsonChange": {
+        "changedKeys": [],
+        "added": [],
+        "removed": []
+      },
+      "localReceivedR2Drawings": false,
+      "r2DrawingsKept": true,
+      "sceneThumbsBefore": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      },
+      "sceneThumbsAfter": {
+        "su_scene_1": "IMG01__3dView__MainShot____WhitecardImage__01-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_007": "PresentationMode/Thumbnails/Scene_007.webp",
+        "su_scene_2": "IMG02__3dView__Interior__View-01__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_3": "IMG03__3dView__Interior__View-02__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_4": "IMG04__3dView__Interior__View-03__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_5": "IMG05__3dView__Interior__View-04__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "su_scene_6": "IMG06__3dView__Interior__View-05__WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+        "Scene_008": "PresentationMode/Thumbnails/Scene_008.webp",
+        "Scene_DryRun": "PresentationMode/Thumbnails/Scene_DryRun.webp"
+      }
+    }
+  ]
+}

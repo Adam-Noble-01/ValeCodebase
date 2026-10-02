@@ -1,0 +1,40 @@
+﻿PASS  the config loaded, and the decks are fills then patterns then linework
+PASS  every deck is on by default
+PASS  the block plan boundary is 1:500
+PASS  1:100 / 1:200 / 1:500 are block plans, 1:1250 / 1:2500 are location plans
+PASS  a viewport that says nothing follows its scale
+PASS  a stored choice overrules the scale, both ways
+PASS  an unrecognised subtype falls back to Automatic rather than to a blank drawing
+PASS  Block Plan at 1:2500 turns the patterns back ON
+PASS  a 1:2500 viewport left on Automatic paints no patterns
+PASS  a deck with no stored value reads its config default
+PASS  a stored false switches one deck off and leaves the others alone
+PASS  the token changes when a deck is switched off
+PASS  the token changes when the subtype is overridden
+PASS  the boundary family keeps its ink
+PASS  the woodland, the water and the OS base map do not
+PASS  a proposal layer keeps its ink wherever its tag number sits
+PASS  only the proposal fill counts as a proposal
+PASS  the OS greys pass through greyscale untouched
+PASS  the woodland green and the water blue drop to a grey of their own weight
+PASS  a value that is not a hex colour is handed back as it came
+PASS  with no site rules four identical-looking layers collapse to ONE band, as they always did
+node : file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanCom
+posites__.test.mjs:274
+At line:1 char:970
++ ... in $tests){ node $t.FullName *> "$s\suite__$($t.BaseName).log"; if($L ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///D:/10_C...__.test.mjs:274:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  zoned.map((b) => KEYS[b.indices[0]]), ['minorStreets', 'wallsAndFences', 'buildings', 'redLine'])
+                                 ^
+
+TypeError: Cannot read properties of null (reading '0')
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanCom
+posites__.test.mjs:274:34
+    at Array.map (<anonymous>)
+    at file:///D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanCom
+posites__.test.mjs:274:9
+
+Node.js v22.23.2

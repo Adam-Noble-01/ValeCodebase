@@ -1,0 +1,394 @@
+{
+ "slice_id": "S12",
+ "claims_checked": 115,
+ "confirmed_ids": [
+  "S12-F01",
+  "S12-F02",
+  "S12-F03",
+  "S12-F05",
+  "S12-F08",
+  "S12-F09",
+  "S12-F12",
+  "S12-F13",
+  "S12-F16",
+  "S12-F17",
+  "S12-F18",
+  "S12-F21",
+  "S12-F22",
+  "S12-F23",
+  "S12-F24",
+  "S12-F26",
+  "S12-F27",
+  "S12-F28",
+  "S12-F29",
+  "S12-F30",
+  "S12-F33",
+  "S12-F36",
+  "S12-F37",
+  "S12-F38",
+  "S12-F39",
+  "S12-F41",
+  "S12-F42",
+  "S12-F43",
+  "S12-F44",
+  "S12-F45",
+  "S12-F47",
+  "S12-F48",
+  "S12-F49",
+  "S12-F50"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S12-F04",
+   "field": "recommendation",
+   "new_value": "Create the facade per report b.4: async Initialize (master index, editor-config, W0 capabilities, folderId), sync IsConfigured, feature-detect new routes and fall back to existing ones, never throw; Admin/Plans locations return null; header PORT NOTE 'diverged (identical names, different transport)'. Resolve folderId ONLY from the URL token through the master index (a year-prefixed ?project=, which is how Whitecardopedia opens VV, else a Na__AppUtils__LookupIndexEntry hit): never from project.json's folderId field (wrong in 54 and missing in 10 of 155 files, S12-V02) and never from NormalizeProjectFolderId's legacy '2026/<code>' guess; an unresolved token leaves IsConfigured() false. Encode each path segment (three folders contain spaces). Treat today's Flask answer to an unknown /api/projects/<id>/<suffix> GET (JSON 404 'Project not found') as 'route missing'. One owner with WP-S09-06 (D-S12-V01).",
+   "reason": "Report b.4 told the facade to prefer GetLoadedProjectData().folderId. A census of the 155 local project.json files shows that field is missing in 10 and wrong in 54 (e.g. 2025/43822__Napthine stores '43822__Napthine'); every existing VV client resolves through the master index instead."
+  },
+  {
+   "id": "S12-F06",
+   "field": "recommendation",
+   "new_value": "Add GetProjectFolderFromUrl (?project-folder, else the folder of the master-index entry for ?project) and GetYearFromUrl (?year, else the 4-digit year of that entry, else null - never a default year). Both answer null until InitMasterIndex has settled and when the index has no entry: never the legacy 2026/<code> guess, never project.json's folderId. On localhost, fallback ${origin}/Whitecardopedia/Projects/{folderId}/{rel} in ResolveAssetUrl (TV's PubDoc Urls reads that fallback first on localhost). Additive only. One owner with WP-S08-06 and WP-S09-06, which propose the same two exports (D-S12-V01).",
+   "reason": "The report defaulted the year to '2026'. A guessed year or the legacy fallback sends facade writes to a wrong prefix (S12-V02). S08 and S09 propose the same additions."
+  },
+  {
+   "id": "S12-F07",
+   "field": "detail",
+   "new_value": "VV's worker has save (whole doc), assets (3 roots, base64), drawing-notes, visibility, rename, delete. TV features need a fresh project read, key-level merge, sibling documents beyond the notes, raw uploads, list, copy and delete for sheet images and published documents, and statement files. Proposed: W0 health with version and routes, W1 GET project, W2 merge-keys (editor-owned key families, optional drawingsBase 409, no bump), W3-W8 files read/write/upload/list/copy/delete over six server-side path families. Both workers bind the SAME bucket, noble-architecture-cdn (TV wrangler.toml [[r2_buckets]], VV wrangler.jsonc r2_buckets): TV under NaProjectPortal/, VV under VaApps/. Every new handler must hard-prefix VaApps/Projects/{validated folderId}/ as the existing handlers do, so a VV path bug cannot reach TV content (R2 keys are literal; '..' is not a traversal on R2, but the Flask mirrors still need realpath fencing). W2's remove list must allow the legacy valeVision_Camera__DefaultPosition, which SaveCameraSettings deletes and which matches none of the proposed key families.",
+   "reason": "Missing context: the shared bucket makes the key prefix the only thing between a VV path bug and TV's content, and one legacy key the VV camera saver removes would be refused by the proposed guard."
+  },
+  {
+   "id": "S12-F10",
+   "field": "vv_adaptation",
+   "new_value": "LayoutModeEnabled re-applied (key, getter, setter, skeleton, normalise); VV description WITHOUT its final sentence 'The SketchUp cloud sync never writes this key.' (Na__DrawData__DESCRIPTION, VV ProjectData__.js:135, is written into every project.json as LayoutEditor__DrawingsData__Description and is false until WP-S12-01 lands); ../42 paths; section provider registered from VV 41 SceneData (VV's stored entry schema stays VV's, S12-V01); migration region inert.",
+   "reason": "The VV description constant is persisted data, and its sync claim is contradicted by the whole-file project.json upload confirmed in F02."
+  },
+  {
+   "id": "S12-F10",
+   "field": "recommendation",
+   "new_value": "Port TV 1.6.0 whole over the facade; re-apply LayoutModeEnabled key/getter/setter/skeleton/normalise, the VV description minus its false sync sentence, and ../42 paths; register VV's section block from VV 41 SceneData; keep the migration region inert. Coordinate with WP-S03b-05 and WP-S09-06 (WP-S02a-15 was refuted by the S02a verifier as their duplicate).",
+   "reason": "The cited coordination target WP-S02a-15 no longer exists."
+  },
+  {
+   "id": "S12-F11",
+   "field": "recommendation",
+   "new_value": "Port AutoSave 1.5.0 and DevMenu Modal 1.2.0 after ProjectData 1.6.0; add DraftApplied/DraftDiscarded/DraftLeftAside labels to VV AppConfig; port the DraftGuard and DraftRestore tests. Correct the VV PORT NOTE premise 'ValeVision has no service worker' (VV ledger L135-175). The shared Whitecardopedia registrar (WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js:116-145) auto-reloads on controllerchange and holds back only for window.Na__LoadWatchdog__IsLoadingActive, so publishing a VV unsaved-work flag protects nothing until that shared file reads one (a WCP change, alongside S09's WP-S09-11). The content duplicates WP-S03b-05: keep one owner (D-S12-V01), and make sure that owner ports Modal 1.2.0 (WP-S03b-05 lists it only as a prerequisite).",
+   "reason": "The original suggested publishing a VV flag for the shared registrar, but the registrar reads no such flag. The package duplicates WP-S03b-05."
+  },
+  {
+   "id": "S12-F14",
+   "field": "detail",
+   "new_value": "No handler validates the URL folderId. Save, assets and drawing-notes accept any decoded string after /projects/, and the rename handler applies its pattern only to the NEW folderId from the body (ProjectRename__.js:225). Because the generic save route captures every POST under /projects/, a client calling a new route on a worker deployed before it lands in the save handler, refused today only because the body lacks projectCode. Validation added in 1.6.0 protects only against FUTURE unknown suffixes; against an older worker the only protection is the client's W0 capability check. TV detects missing routes by sniffing error text. All 152 master-index folderIds and all 155 local folders pass the rename pattern. S08's stricter W1 pattern ^\\d{4}/[A-Za-z0-9][A-Za-z0-9_\\-.]{0,119}$ would refuse the three 2025/FN-62104__Fenner Scheme-0n projects (spaces).",
+   "reason": "The report said validation would make a worker deployed before the new routes refuse misrouted POSTs, but an old worker has no validation. It also said the rename handler validates the folder id; it validates only the new one. The S08 pattern conflict was missed."
+  },
+  {
+   "id": "S12-F15",
+   "field": "detail",
+   "new_value": "serve_static falls back to index.html for any missing path, so a GET to a route the running server lacks returns 200 HTML. That happens for GETs OUTSIDE /api/projects/: /api/health, and the /api/valevision sheet-images, published, statements and user-config routes. An unknown POST there gets werkzeug's HTML 405. Under /api/projects/, the <path:folder_id> routes capture any suffix: an unknown GET such as .../drawings-fingerprint or .../files/<name> reaches get_project (server.py:408) and answers JSON 404 'Project not found: <id>/<suffix>'; an unknown POST reaches save_project (400 'Missing required field' or 404). TV transport code treats 404/405 or non-JSON as 'route missing' but reads a JSON 404 carrying an error as 'project not found' (TV LocalProjectMirror__.js:289-291). VV's scrapbook port already had to parse every answer defensively.",
+   "reason": "The finding said ported fingerprint and files GETs would misread HTML. On today's server they get a JSON 404 from get_project instead, which TV's code misreads in a different way."
+  },
+  {
+   "id": "S12-F15",
+   "field": "recommendation",
+   "new_value": "Register an /api/<path:rest> catch-all returning 404 JSON for GET and POST, ranked above the static route. It cannot change the /api/projects/ captures, which win as more specific rules. So the VV facade and ported modules must also treat 'JSON 404 Project not found' on a sub-route, HTML, 405 and non-JSON as 'route missing'. Keep the parsing defensive.",
+   "reason": "Follows from the corrected route behaviour."
+  },
+  {
+   "id": "S12-F19",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "TV 1.0.1 gates uploads on Na__DevGate__IsAuthoringEnabled (TD01). VV's DevGate PORT NOTE and D24 keep the Flask-mirror data path on the hostname test, so the file cannot be taken verbatim."
+  },
+  {
+   "id": "S12-F19",
+   "field": "recommendation",
+   "new_value": "Port TV 1.0.1 with three VV seams: the ../../42__System__DrawingViewCore path, the ValeVision3D console prefix, and VV's gate - CanUpload stays Na__AppUtils__IsRunningOnLocalhost() && project code, not Na__DevGate__IsAuthoringEnabled. With TV's gate, an unlocked live session attempts uploads that cannot land (no editor key off localhost) and, with TV's non-throwing R2AssetUpload contract, toasts red on every snapshot. The gain is parity only: VV never had TV's 1.0.1 bug, because its NormalizeProjectFolderId already resolves the real folder through the master index.",
+   "reason": "Verbatim would swap VV's documented gate."
+  },
+  {
+   "id": "S12-F20",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "Same gate issue as F19, and the persisted linework Description names TrueVision."
+  },
+  {
+   "id": "S12-F20",
+   "field": "vv_adaptation",
+   "new_value": "Keep the VV IndexedDB name ValeVision3D__ProjectedLinework, the console prefix, the stored block Description ('one ValeVision drawing'), and the Na__AppUtils__IsRunningOnLocalhost() gate on bake-before-save (not DevGate).",
+   "reason": "The git diff -w shows four differences, not two: DB name, console prefix, gate and the persisted Description text."
+  },
+  {
+   "id": "S12-F20",
+   "field": "recommendation",
+   "new_value": "Port TV 1.2.1 with the four VV seams documented in the PORT NOTE; FolderId comes from the new ProjectLoader helpers. Single owner with S02b, whose scope also holds Persistence.",
+   "reason": "Verbatim would change VV's gate and write a TrueVision description into VV data."
+  },
+  {
+   "id": "S12-F25",
+   "field": "detail",
+   "new_value": "TV SpecData Transport 1.3.0 and Lockstep (v2.163.0) call Na__CfApi__ProjectFileLocation/ReadProjectFile/WriteProjectFile/IsConfigured and Na__LocalMirror__WriteSiblingFile, and read the local copy at repoUrl with Last-Modified (Lockstep__.js:333-355). With the facade those calls port unchanged, and the file name is config (ValeVision__DrawingNotes__.json). But Lockstep also imports the Statement Writer's pure verdict module LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js (Lockstep__.js:120-127; 245 lines, no imports), which VV lacks. The v2.163.0 change also spans SpecData, State, Draft, Editing, SpecEditor__Bar, SpecLockstep (the asking UI) and ModeController. 'No worker deploy is needed' holds only if worker 1.5.0's /drawing-notes routes are deployed, which no VV devlog entry records (F45); and each Sync through them bumps the global build manifest until W4 exists (F13). On VV's Flask, repoUrl reads go through the /Whitecardopedia/<path> proxy route (send_from_directory: real 404s, Last-Modified).",
+   "reason": "The finding missed a hard import of a TV-only module and the wider v2.163.0 change, and stated 'no deploy needed' without its condition."
+  },
+  {
+   "id": "S12-F25",
+   "field": "recommendation",
+   "new_value": "Inside WP-S06b-01, which already owns the lockstep port and the pure Statement Lockstep leaf (WP-S07b-01 was refuted as its duplicate): port SpecData Transport 1.3.0, Lockstep, Document 1.1.0 and the pure module at its TV path, verbatim over the facade, once Flask L6 exists. VV config FileName, no LegacyFileName. D-S06b-V01 (adapt to R2DrawingNotes, or port over the facade) is the same question as D-S12-01: decide it once.",
+   "reason": "Names the owning package and the conflicting decision."
+  },
+  {
+   "id": "S12-F31",
+   "field": "recommendation",
+   "new_value": "Define ProjectData__EditorOwnedKeys in VVM/02__AppData/Na__AppConfig__Main.json. Use it for the localhost overlay (D-S12-04) and the sync pipeline, and mirror it as prefix families in the worker merge-keys guard. Include the legacy valeVision_Camera__DefaultPosition as removable-only: SaveCameraSettings deletes it, 35/155 files still carry it, and VV LoadingSequence.js:683 still reads it as a fallback. Without it, a saver moved to DeleteProjectKeys is refused. The pipeline reading a VV app file from WCP is a cross-folder dependency: keep the path in one constant, and fail closed (preserve every R2 key) when the file cannot be read.",
+   "reason": "Each of the nine savers was checked against the list; one legacy key is removed outside the proposed families."
+  },
+  {
+   "id": "S12-F32",
+   "field": "title",
+   "new_value": "Schema parity: drawings block and per-scene lighting match; CrossSection__SceneData matches only at block level",
+   "reason": "The per-scene section entries differ (S12-V01)."
+  },
+  {
+   "id": "S12-F32",
+   "field": "detail",
+   "new_value": "Drawings block sub-keys match except TV LayoutEditor__DrawingsData__SavedIso (v2.146.0) and VV LayoutEditor__DrawingsData__LayoutModeEnabled (literal census of both trees, re-run by the verifier). CrossSection__SceneData shares only its block keys (__Description, __Version, __Scenes). The per-scene entries differ: VV stores CrossSection__SceneBinding__* with CrossSection__Section__* sections, TV the raw camelCase snapshot. So TD06's 'byte-compatible' is not met (S12-V01), and the load event detail also differs (VV sceneData, TV block). Per-scene lighting (PresentationMode__Scene__Lighting) is identical: header-only drift, the same 6 Scene__Lighting__* keys in both. Record-level drift is additive.",
+   "reason": "VV 41 SceneData.js:229-245 writes prefixed entries and :406-433 reads only those. TV 41 SceneData__.js:220-226 stores Serialize() output, which Apply reads as camelCase. All 5 VV data files use the prefixed form."
+  },
+  {
+   "id": "S12-F32",
+   "field": "recommendation",
+   "new_value": "No VV migration: keep LayoutModeEnabled, VV's own 41 SceneData writer and reader, and its section event detail; let the first VV save stamp SavedIso; note that pre-upgrade drafts are asked about once. Never port TV 41 SceneData or Serialize into VV. The TD06 fix is a TV back-port (D-S12-V02).",
+   "reason": "Follows from S12-V01."
+  },
+  {
+   "id": "S12-F34",
+   "field": "detail",
+   "new_value": "TV's register PDF (Register__Pdf__.js:212-216), parametric title (Panel__ScrapbookParametric__.js:289-297), SpecDocument (:161) and SpecPdf read window.TrueVision__Pwa__ProjectContext, which only TV's 62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js defines. They then fall back to data.Project__Name, which exists in neither app's data (both have projectName; VV also has displayName in 31/155 files and projectNameAlias in 7/155). VV's already-ported SpecPdf__.js:147-148 reads the same TV-only global, and nothing in VV or Whitecardopedia defines it, so VV's specification PDF prints no project name today. On a verbatim register port, the fallback would print the bare project code.",
+   "reason": "The scope was incomplete: two more TV modules read the global, and VV's already-ported SpecPdf is affected today."
+  },
+  {
+   "id": "S12-F34",
+   "field": "recommendation",
+   "new_value": "WP-S12-V18: one VV seam - the facade's Na__CfApi__ProjectDisplayName(), reading the root projectName/displayName/projectNameAlias with an agreed precedence - used by SpecPdf, SpecDocument, Register Pdf, ScrapbookParametric and the title block default (S12-V03). Offer the helper back to TV.",
+   "reason": "Follows from the wider scope."
+  },
+  {
+   "id": "S12-F35",
+   "field": "detail",
+   "new_value": "Storage is per origin, and VV and TV never share one, so keys cannot collide. Brand-bearing TV keys: Na__TrueVision__StatementDraft__, StatementDiscarded__ (Statement__Data__.js), StatementView__, StatementLast__ and StatementMono__ (Statement__Page__.js), TrueVision3D__AuthoringUnlocked, and the IndexedDB TrueVision3D__ProjectedLinework. VV precedent renames brand-bearing keys (ValeVision3D__AuthoringUnlocked, ValeVision3D__ProjectedLinework). The sheets draft gains a base field in AutoSave 1.5.0. The key na-layouteditor-osnap is shared by VV's Snapping__ and TV's ObjectSnap__State__ with the same '1'/'0' format, so it needs no migration.",
+   "reason": "A census of storage keys in both trees found two brand-bearing keys the survey missed, and confirmed the shared osnap key is compatible."
+  },
+  {
+   "id": "S12-F40",
+   "field": "detail",
+   "new_value": "Stale statements found: (1) VV ledger row 'Drawings block ... 1.2.0 verbatim' (TV is now 1.6.0; it is a dated 20-Sep return-trip row, accurate when written). (2) VV AutoSave PORT NOTE and VV ProjectLoader.js:121 say ValeVision has no service worker; ledger L135-175 shows it runs under the shared worker. (3) VV ProjectData__.js:15-17, its stored Description (:135), VV 41 SceneData:18-20 and LoadingSequence:719 all say the SketchUp sync never writes editor keys, while it uploads the whole local project.json (F02). (4) TV plan DIV-4 says 'TrueVision: no Flask at all' and 'no worker change and no deploy are needed'; TV's local server is Flask (ProjectVision__LocalServer__Main__.py:223), and worker 1.1.0 needed a deploy. (5) TV plan TD06 and s3.2 present camelCase entries as VV's schema (S12-V01). (6) TV ProjectData PORT NOTE says the worker does the read-merge-write; the client does (ApiClient__.js:348-363). (7) TV ApiClient's log stops at 1.5.0, though the Statement and Published regions came later.",
+   "reason": "Each statement was verified, and more of the same kind were found."
+  },
+  {
+   "id": "S12-F40",
+   "field": "recommendation",
+   "new_value": "Add a 'Transport (DIV-4)' section to the VV ledger (facade map, worker 1.6.0 routes and deploy state, Flask routes) that supersedes the dated rows rather than rewriting them. Correct the VV headers and comments listed. Remove the false sync sentence from the stored Description with WP-S12-07. List the TV-side corrections (plan DIV-4, TD06/s3.2, ProjectData PORT NOTE, ApiClient log) for Adam.",
+   "reason": "Dated return-trip rows are history and should be superseded, not edited."
+  },
+  {
+   "id": "S12-F46",
+   "field": "detail",
+   "new_value": "TV ProjectData receives the section block through RegisterSectionBlockProvider (TV 41 SceneData registers at init, so ProjectData never imports the engine). VV ProjectData hard-imports Na__SectSceneData__GetProjectBlock from VV 41. Porting TV's ProjectData verbatim therefore needs VV's 41 SceneData to register itself. VV 41 SceneData imports nothing from 42, so there is no cycle, and Na__SectSceneData__Initialize runs at start-up (index.html:2156, via InitializeCrossSectionControls). ProjectData passes the block through untouched, so the per-scene entry schema difference (S12-V01) does not affect this wiring; the block is not identical to TV's at entry level.",
+   "reason": "The finding said the block schema is identical (TD06). It matches only at block level."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S12-V01",
+   "category": "data_schema",
+   "title": "CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met",
+   "detail": "The two apps share only the block keys (__Description, __Version, __Scenes). VV's 41 SceneData stores each scene as CrossSection__SceneBinding__{SceneId, UpdatedIso, GizmosVisible, SliceDepthM, FillColor, LineColor, LineWidthPx, Sections[CrossSection__Section__{Name, Mode, NormalXyz, PositionMm, Enabled, GizmoVisible}]} and reads back only that form; all 5 VV project.json files carrying the block use it. TV's 41 SceneData stores the raw Serialize() snapshot {gizmosVisible, sliceDepthM, fillColor, lineColor, lineWidthPx, sections[{name, mode, normalXyz, positionMm, enabled, gizmoVisible}], sceneId}, and Apply reads only that. TV plan s3.2 documented VV's IN-MEMORY snapshot (VV SystemLogic Na__CrossSection__SerializeSections, camelCase) as VV's stored schema. Each app reads the other's entries as an empty sections array, i.e. 'no cuts'. No TV repository file carries the block (0/8), so no shared data is broken today. The S12 report (b.1 item 10, F32, F46, module table) repeated 'byte-compatible'.",
+   "recommendation": "VV: keep its own 41 SceneData writer and reader (DIV-2), and never port TV 41 Na__SectionCut__SceneData__ or Serialize__ into VV. ProjectData only passes the block through, so F46's registration is unaffected. TV back-port (D-S12-V02): CaptureForScene maps the snapshot to VV's prefixed entry keys, and RestoreForScene reads the prefixed form, falling back to camelCase; correct TV plan s3.2.",
+   "action": "backport_to_tv",
+   "severity": "medium",
+   "evidence": "VV 41/Na__CrossSectionView__SceneData.js:229-245 (capture), :406-433 (restore); VV 41/Na__CrossSectionView__SystemLogic.js:1490 (camelCase in-memory snapshot); TV 41/Na__SectionCut__SceneData__.js:220-226; TV 41/Na__SectionCut__Serialize__.js:167-200 (Serialize), Apply reads snapshot.sections; TV plan TD06 (L189) and s3.2 (L191-258); data census: 5/155 VV files, all prefixed; 0/8 TV files",
+   "tv_paths": [
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js",
+    "02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js",
+    "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js"
+   ],
+   "tv_version": "1.0.0",
+   "vv_version": "1.1.0",
+   "depends_on": []
+  },
+  {
+   "id": "S12-V02",
+   "category": "data_schema",
+   "title": "project.json folderId is unreliable: never use it for R2 or disk paths",
+   "detail": "Census of the 155 local WCP/Projects/*/*/project.json files (01-Oct-2026): folderId equals the real year/folder in 91, is missing in 10 (e.g. 2026/44371__Gill) and differs in 54 (e.g. 2025/43822__Napthine stores '43822__Napthine' with no year; 2025/59494__Weeks stores '2025/WK-3007__Weeks', an old name). Report b.4 told the facade to 'prefer GetLoadedProjectData().folderId when set', which would send a third of projects' writes to R2 prefixes the app never reads. Every existing VV client (R2SaveProjectJson, R2AssetUpload, R2DrawingNotes) resolves through Na__AppUtils__NormalizeProjectFolderId(?project) and the master index. Whitecardopedia opens VV with ?project=<folderId> taken from the folder it loaded (WCP 03__AppData/Na__AppData__ProjectLoader.js:519 overwrites the file's value), so the URL token is reliable. NormalizeProjectFolderId still guesses '2026/<code>' when the index has no entry (ProjectLoader.js:350). Corroborates S07a-V05.",
+   "recommendation": "The facade and the ProjectLoader helpers resolve the folder only from the URL token via the master index (LookupIndexEntry), refuse writes when it misses (no '2026/<code>' guess), and never read project.json's folderId. Add a facade test with a stale-folderId fixture. Cleaning the field in the data is Adam's call.",
+   "action": "build_vv_transport",
+   "severity": "high",
+   "evidence": "parity/verify_s12_r2/folderid_field.py (91 same / 10 missing / 54 differ); VV 03/Na__AppUtils__ProjectLoader.js:335-351; WCP 61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js:37-54; WCP 03__AppData/Na__AppData__ProjectLoader.js:508-519; report b.4 pre-verification text",
+   "tv_paths": [],
+   "vv_paths": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "depends_on": [
+    "S12-F04",
+    "S12-F06"
+   ]
+  },
+  {
+   "id": "S12-V03",
+   "category": "wiring",
+   "title": "Printed project name never fills: VV reads a TV-only global, and both apps read the presentation block",
+   "detail": "VV's already-ported SpecPdf__.js:147-148 reads window.TrueVision__Pwa__ProjectContext; so do TV's SpecDocument__.js:161, Register__Pdf__.js:213 and Panel__ScrapbookParametric__.js:290. Only TV's 62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js defines it, and nothing in VV or Whitecardopedia does, so VV's specification PDF never prints a project name today. Separately, the title block's Project default (Na__LeRec__BuildFields: VV SheetRecords__.js:768-769, TV :1683-1684, identical) reads projectName || displayName from Na__PresentationMode__ProjectJson__GetActiveConfig(). That is the PresentationMode__SavedCameraScenes block, and 0/9 VV and 0/3 TV presentation blocks carry a name, so the default never fills in either app. This is the same root cause as F24. S07a-V05 recommended GetActiveConfig().projectName as VV's name source; it is always empty.",
+   "recommendation": "WP-S12-V18: one VV project-facts seam (the facade's Na__CfApi__ProjectDisplayName(): root projectName 155/155, displayName 31/155, projectNameAlias 7/155, with an agreed precedence), used by SpecPdf, SpecDocument, Register Pdf, ScrapbookParametric and BuildFields. Offer the BuildFields fix and the helper back to TV.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "VV LE/50/Na__LayoutEditor__SpecPdf__.js:147-148; TV LE/50/Na__LayoutEditor__SpecDocument__.js:161; TV LE/51/Na__LayoutEditor__Register__Pdf__.js:212-216; VV LE/07/Na__LayoutEditor__SheetRecords__.js:768-769; TV same file :1683-1684; VV 21/Na__PresentationMode__ProjectJson__SceneData.js:124, 206-209, 445-468; data census of root and presentation-block name fields",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js"
+   ],
+   "depends_on": [
+    "S12-F04",
+    "S12-F09"
+   ],
+   "est_lines": 40
+  },
+  {
+   "id": "S12-V04",
+   "category": "decision",
+   "title": "Seven slices propose overlapping, partly conflicting transport and persistence packages",
+   "detail": "Facade/shims: WP-S12-05, WP-S09-06, WP-S07a-02 (register facade), WP-S08-06 (R2PublishedDocs client and ProjectLoader helpers). Flask core: WP-S12-03, WP-S09-06, WP-S03b-05, WP-S06b-02. Worker routes: WP-S12-04, WP-S07a-06 (sheet images, VV folder LayoutEditor/SheetImages), WP-S07b-03 (statement routes), WP-S08-05 (published W1-W3). Blueprints: WP-S12-11/12/13/14 against WP-S07a-06, WP-S08-05, WP-S07b-03, WP-S06b-09. Persistence core: WP-S12-07/08 against WP-S03b-05. Service worker: WP-S12-15, WP-S08-12, WP-S09-11. Open conflicts: folder names (D-S12-03 vs D-S07a-07); probe route (D-S12-07 /api/health vs WP-S06b-09 /api/check-localhost); spec transport (D-S12-01 vs D-S06b-V01 and D-S07b-10); the S08 W1 folderId pattern refusing three existing projects. Other verifiers already refuted some duplicates (WP-S02a-15, WP-S07b-01).",
+   "recommendation": "Settle D-S12-V01 before scheduling: S12 owns the transport (facade, worker, Flask core, blueprints, pipeline) and the persistence core, and feature slices own feature modules and depend on S12's packages. Merge the duplicates as listed in D-S12-V01.",
+   "action": "needs_decision",
+   "severity": "high",
+   "evidence": "parity/data/raw/survey__S03b/S06b/S07a/S07b/S08/S09.json work packages; verify__S02a.json (WP-S02a-15 refuted), verify__S07b.json (WP-S07b-01 refuted; D-S07b-10), verify__S06b.json (D-S06b-V01), verify__S07a.json notes (4)",
+   "tv_paths": [],
+   "vv_paths": [],
+   "depends_on": []
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S12-09",
+   "reason": "Its scope ports Assets 1.0.1 and Persistence 1.2.1 'verbatim', which swaps VV's IsRunningOnLocalhost() upload/bake gate for TV's DevGate (TD01). That goes against VV's DevGate PORT NOTE and D24: an unlocked live session would bake linework, attempt uploads that cannot land, and - with TV's non-throwing contract adopted in the same package - toast red on every snapshot. The persisted linework Description also names TrueVision. Replaced by WP-S12-V09R."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S12-V09R",
+   "title": "Asset modules ported with VV's gate, and the upload failure contract",
+   "scope": "Take TV Assets 1.0.1 and ProjectedLinework Persistence 1.2.1 with VV seams: the ../42__ path; CanUpload and bake-before-save keep Na__AppUtils__IsRunningOnLocalhost() (not Na__DevGate__IsAuthoringEnabled); Persistence keeps its DB name ValeVision3D__ProjectedLinework, console prefix and stored Description ('one ValeVision drawing'). VV R2AssetUpload adopts TV's non-throwing contract ({r2Success:false, localSuccess:false, publicUrl:null, relUrl:null, error}, with relUrl on success) but returns a silent skipped result off localhost. The VV Thumbnail Renderer tests r2Success.",
+   "depends_on": [
+    "WP-S12-02"
+   ],
+   "size": "S",
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js"
+   ],
+   "tests_to_port": [],
+   "acceptance": [
+    "A refused or failed upload never reports a stored snapshot, linework block or thumbnail",
+    "On the live site with authoring unlocked, no upload or bake-for-upload is attempted and no toast is shown",
+    "Snapshots and linework read back from VaApps/Projects/{folderId}/LayoutEditor/... on the web and from the Flask copy on localhost",
+    "The PORT NOTEs record the gate, DB name and Description divergences"
+   ],
+   "risk": "Persistence is also in S02b's scope (single owner). Keep VV's gate unless Adam reverses D24."
+  },
+  {
+   "id": "WP-S12-V18",
+   "title": "Project display name for printed documents and the title block",
+   "scope": "Add Na__CfApi__ProjectDisplayName() to the VV facade: it reads the root projectName/displayName/projectNameAlias of the loaded project data, with a precedence the owner agrees. Use it where TV reads window.TrueVision__Pwa__ProjectContext: VV's already-ported SpecPdf__.js:147-148, SpecDocument__.js, and on arrival Register__Pdf__.js:212-216 and Panel__ScrapbookParametric__.js:289-297. Use it in Na__LeRec__BuildFields, which today reads the presentation block (VV SheetRecords__.js:768-769). Offer the helper and the BuildFields fix back to TV.",
+   "depends_on": [
+    "WP-S12-05",
+    "WP-S12-06"
+   ],
+   "size": "S",
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js"
+   ],
+   "tests_to_port": [],
+   "acceptance": [
+    "The specification PDF of 2026/3047__Doous prints the project name",
+    "A new sheet's Project field fills from the project data",
+    "No VV module reads window.TrueVision__Pwa__ProjectContext"
+   ],
+   "risk": "SheetRecords is being replaced by S03b's 1.39.0 port: apply the BuildFields seam to the ported file, after it lands."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S12-V01",
+   "question": "Who owns each transport and persistence work package? S03b, S06b, S07a, S07b, S08, S09 and S12 each propose part of the same transport, and some proposals conflict.",
+   "options": "(A) S12 owns the transport (facade, worker, Flask core, blueprints, pipeline) and the persistence core; feature slices own feature modules and depend on S12's packages. (B) Each feature slice builds its own transport (route-per-feature, per-feature clients).",
+   "recommendation": "A, consistent with D-S12-01 option A. Merge WP-S09-06 into WP-S12-05 and WP-S12-03; WP-S08-06 into WP-S12-02 (no R2PublishedDocs client under A); WP-S07a-02 into WP-S12-05/07; the transport halves of WP-S07a-06, WP-S07b-03 and WP-S08-05 into WP-S12-04 plus WP-S12-11/13/12; WP-S06b-02 into WP-S12-03; the blueprint half of WP-S06b-09 into WP-S12-14; WP-S08-12 and WP-S12-15 into one service-worker package; AutoSave 1.5.0 and Modal 1.2.0 into WP-S12-08 or WP-S03b-05, not both. Decide alongside: folder names (D-S12-03 vs D-S07a-07), probe route (D-S12-07 vs WP-S06b-09), spec transport (D-S12-01 vs D-S06b-V01 and D-S07b-10).",
+   "blocks": [
+    "WP-S12-02",
+    "WP-S12-03",
+    "WP-S12-04",
+    "WP-S12-05",
+    "WP-S12-07",
+    "WP-S12-08",
+    "WP-S12-11",
+    "WP-S12-12",
+    "WP-S12-13",
+    "WP-S12-14",
+    "WP-S12-15"
+   ]
+  },
+  {
+   "id": "D-S12-V02",
+   "question": "TD06 is not met: TV writes camelCase per-scene section entries, while VV writes and reads CrossSection__SceneBinding__*. Fix TV?",
+   "options": "(A) Back-port to TV: CaptureForScene maps to VV's prefixed entry schema, RestoreForScene reads the prefixed form and falls back to camelCase; correct TV plan s3.2. (B) Accept two entry schemas and amend TD06 to 'block keys only'.",
+   "recommendation": "A. Adam's TD06 intent was one schema; VV holds the only real data (5 projects) and is unaffected either way. VV needs no change: keep VV 41 SceneData, and never port TV 41 SceneData or Serialize.",
+   "blocks": []
+  }
+ ],
+ "coverage_gaps_closed": [
+  "NAAPPS/ProjectVision__ProjectManager__Api__.py: no action (no TV drawing module calls /api/manager)",
+  "TV local server /api/dev/projects, /sync-cdn and /backups routes: no action (operator-facing; LocalProjectMirror only mentions /backups in a comment)",
+  "WCP CloudflareHelper__MasterConfigR2__ and __MasterIndexR2__: no action (rename, visibility and delete only)",
+  "WCP pipeline scripts BuildCloudflareBucket, FetchLocalProjects, UpdateProjectImages, PromoteProjectType and GenerateGalleryThumbnails checked: none overwrites R2's editor keys",
+  "56 TV drawing-system I/O files not named in the report classified: 4 covered under short names, 52 static config/asset/font loads or UI preferences",
+  "project.json folderId census (S12-V02)",
+  "CrossSection__SceneData per-scene entry census and code paths (S12-V01)",
+  "Browser-storage key census in both trees (F35)",
+  "SpecData Lockstep's import of the Statement Writer's pure Lockstep module (F25)",
+  "Shared R2 bucket between the two workers (F07)",
+  "Shared service-worker registrar reload behaviour (F11)",
+  "Project-name sources in SpecPdf, SpecDocument and SheetRecords BuildFields (S12-V03)",
+  "Cross-slice transport work-package overlaps (S12-V04)"
+ ],
+ "notes": "The survey is strong and mostly accurate: 34 of 50 findings were confirmed exactly as written (all 16 critical/high were checked), the code-level evidence held at almost every cited line, and the critical sync-pipeline findings (F01 recursive basename purge, F02 whole-file project.json upload) are right by code reading. No finding was refuted outright; 16 were corrected.\n\nThe corrections that change what the swarm builds:\n(1) Report b.4 told the facade to prefer project.json's folderId. That field is missing in 10 and wrong in 54 of 155 files, so following it would write a third of projects to R2 prefixes the app never reads (S12-V02). The facade must use the master index only.\n(2) 'CrossSection__SceneData byte-compatible (TD06)' is false at entry level. VV stores prefixed binding entries and TV stores camelCase snapshots; each reads the other's as 'no cuts' (S12-V01). VV is safe if TV's 41 modules are never ported into it.\n(3) Assets and Persistence are not verbatim ports: TV's DevGate gate contradicts VV's DevGate PORT NOTE and D24 (WP-S12-09 refuted, WP-S12-V09R added).\n(4) The spec lockstep (F25) hard-imports the Statement Writer's pure Lockstep module, which WP-S06b-01 already owns.\n(5) VV's own headers, and the drawings Description that VV writes into every project.json, claim the sync never touches editor keys, which is false today.\n\nSmaller fixes: F14's old-worker reasoning; F15's HTML-200 trap applies only outside /api/projects/; two more brand-bearing storage keys; a legacy camera key the W2 guard must allow; the shared bucket; the registrar reads no unsaved-work flag; VV's spec PDF and both apps' title-block Project default never get a name (S12-V03).\n\nWatch: seven slices propose overlapping transport packages with conflicting choices (folder names, probe route, spec transport, S08's folderId pattern refusing three existing projects with spaces). Settle D-S12-V01 before scheduling. Nothing was run; R2 contents, the deployed worker version and Cloudflare limits remain unverified.\n\nReport edited in place, with a backup at parity/verify_s12_r2/S12_report_before_verify.md."
+}

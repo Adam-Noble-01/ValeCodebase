@@ -1,0 +1,462 @@
+﻿====================================================================================================
+W1-31 headings: 1. Decisions taken inside the package (for the orchestrator's eye) | 2. Acceptance | 3. Gates | 4. Follow-ups
+------------------------------------------------------------
+## 1. Decisions taken inside the package (for the orchestrator's eye)
+
+
+### 1.1 CheckNames rows for names the editor does not declare yet - ordering defect, proposed correction (F1)
+
+K3 puts the facade (W1-31) before the mode controller realignment (W1-32 depends on W1-31), and W1-31's goal asks for
+the view-name copies "with CheckNames rows". But W0-04's G2 pass 3 proves every `editor.<part>.Na__<Name>` the loader
+reads is exported by that part's module. VV's ModeController exports no `Na__LeMode__VIEW_REGISTER` /
+`VIEW_STATEMENT` until W1-32, and VV's SheetModel no `Na__LeModel__DRAWING_SITEPLAN` until W1-21. A direct row now
+fails G2 on the loader (my own file); reading the constant by string to slip past pass 3 would defeat the gate, so I
+did neither. What landed instead:
+
+- the copies themselves, checked by the new test against TV's constants at the pin (and against VV's the moment VV
+  declares them);
+- a CheckNames comment saying the row joins in the change that declares the constant;
+- a test check that FAILS once VV's editor declares a copied constant whose row is missing, naming the exact row.
+  Simulated on a scratch copy of the app (OS temp, never the live tree): with W1-32's two constants added to the
+  mode controller the test fails 2 checks ("add [ Na__LeLoad__VIEW_REGISTER, editor.mode.Na__LeMode__VIEW_REGISTER,
+  'the register view name' ] ..."); with the two rows added it passes 118/118 and G2's facade count becomes 37 with
+  no facade failure.
+
+Proposed correction (OC-style, at dispatch): the first Loader holder after W1-32 - W1-33 - adds, inside
+`Na__LeLoad__CheckNames` after the VIEW_SPEC row (the row list is CRLF):
+
+```
+            [ Na__LeLoad__VIEW_REGISTER,  editor.mode.Na__LeMode__VIEW_REGISTER,  'the register view name'   ],
+            [ Na__LeLoad__VIEW_STATEMENT, editor.mode.Na__LeMode__VIEW_STATEMENT, 'the statements view name' ]
+```
+
+(the VIEW_SPEC row gains a trailing comma) and drops "the register and statement views until the mode controller
+takes TrueVision's VIEW_REGISTER and VIEW_STATEMENT" from the comment above it. W1-21 (Loader + SheetModel 1.35.1,
+which exports Na__LeModel__DRAWING_SITEPLAN) adds
+`[ Na__LeLoad__DRAWING_SITEPLAN, editor.model.Na__LeModel__DRAWING_SITEPLAN, 'the site plan drawing type' ]` and
+removes the rest of that clause. If neither happens, the wave's G5 run of Na__Test__LoaderFacade__ fails with the
+row to add - by design.
+
+### 1.2 OpenRegister / OpenStatements land refusing; the forwarding comes with the feature
+
+R3 C.2 (a3) and S10: "stubs returning false until the features land", owner "W1-31 (live W4-10, W4-13)". The bodies
+call only `Na__LeLoad__RefuseView(view)`. The package that lands a feature flips its `Na__LeLoad__FEATURES` entry
+and, in the same edit, forwards the entry point through `Na__LeLoad__WithEditor((editor) =>
+editor.mode.Na__LeMode__OpenRegister(options), false)` (OpenStatements the same). Two guards keep a half-done flip
+visible: RefuseView logs a console.error when the map says present, and the test's static check C fails unless a
+present view's entry point forwards to an export the mode controller has. W4-13 must also make
+HasFeature(VIEW_STATEMENT) honour `LayoutEditor__Statement__Enabled` (DR-10) - HasFeature is a function so that
+can be added there.
+
+### 1.3 IsSitePlanSheet: TV's rule on both sides of the load (R3 wording "after load answer false" not followed literally)
+
+R3 C.2 (a3) says "after load answer false while the editor lacks Na__LeModel__IsSitePlanSheet". The package
+acceptance says "the facade answers identically before and after the first editor load", and the loader's founding
+rule is that a tab must not change when the bundle lands (TV TabStrip 2.0.0 gives a site-plan row its own class and
+hover). Answering false only after the load would change a site-plan row as the editor arrives. So the facade
+applies TV's own rule (`!!sheet && sheet.Sheet__DrawingType === 'siteplan'`, TV SheetRecords :1311) to the record
+it is handed, before and after; VV's normaliser keeps the field in place today, and TV's (W1-19) keeps 'siteplan'.
+No forwarding to `editor.model.Na__LeModel__IsSitePlanSheet` (G2 would fail until W1-21; the rule is identical).
+"False in VV" (R4, S10) still holds in practice: no VV record carries Sheet__DrawingType (DR-08 (B), dormant).
+
+### 1.4 Ready: settles with the first load, never causes one
+
+S10's verifier lists Ready as "not needed" by the strip (W1-34 drops TV's `Ready().then(Render)`); K3 lists it, so it
+is provided with a definite meaning: forwards to `editor.mode.Na__LeMode__Ready()` once loaded; `false` once the
+editor's config is known to have it off; otherwise a pending promise settled by the first load (true started,
+false off or failed). The same answer whether asked before or after the load (test: before -> pending -> true after
+the load; asked after -> true; config off -> false both sides; failed load -> false). A caller that needs the
+editor calls Na__LeLoad__Require.
+
+### 1.5 Module versions: patch steps
+
+Loader 1.1.0 -> 1.1.1 and LoadingScreen 1.0.0 -> 1.0.1, following Adam's written rule (memory note
+devlog-entries-use-patch-bumps: per-file DEVELOPMENT LOG headers step the patch number) and this run's precedent
+(W0-11, W0-12, W0-13, W1-01, W1-03, W1-04). The plan's title "Loader facade 1.2" is a label; Adam can relabel.
+
+### 1.6 Loading-screen wording
+
+Title only, to TV's VeilDrawingsHeadline fallback, plus the drawing-count label read through GetLabel - the
+"wording aligned with the LE config veil labels" of the package. W1-33's brief also lists "TV headline" among its
+LoadingScreen hunks: it will find the title already TV's; the restyle, the Title Case pre-load lines and
+`Na__LeLoadScreen__IsShown` remain W1-33's. Q-COVER (1) default holds: a cold document-tab press shows the same
+headline with VV's two pre-load lines.
+------------------------------------------------------------
+## 4. Follow-ups
+
+
+For the orchestrator:
+- F1 (section 1.1): W1-33 adds the two view CheckNames rows after W1-32; W1-21 adds the site-plan row. Otherwise the
+  wave G5 fails on Na__Test__LoaderFacade__ with the row to add.
+- F2: W1-34 maps TV TabStrip 2.0.0's imports to the facade: VIEW_REGISTER / VIEW_STATEMENT / OpenRegister /
+  OpenStatements / IsSitePlanSheet (and Ready if it keeps that line) from the loader, and shows the Document
+  Register / Design Statements tabs only when `Na__LeLoad__HasFeature(Na__LeLoad__VIEW_REGISTER / VIEW_STATEMENT)`.
+- F3: W4-10 / W4-13 flip the map entry and forward the entry point in one edit (section 1.2); W4-13 adds the
+  LayoutEditor__Statement__Enabled condition to HasFeature for statements.
+- F4 (scribe, W1-99): resolve the 5 placeholders; the ledger's loader status rows (W0-06: :863-865, :1256,
+  :2561, :2683) need no change - the loader's and the screen's Back-port lines now say the same thing, and the
+  :1256 row's "Notes" cell ("The Loader's own PORT NOTE still says 'Back-port : candidate'; the next package that
+  writes the Loader (W1-31) aligns it") can be closed; record the 7 new loader exports in the wave's SW note.
+
+For Adam (he tests in the app himself):
+- On `?project=` a project with no sheets: DevTools network panel shows no `51__System__LayoutEditor` module except
+  the loader, its LoadingScreen and the DrawingCode leaf.
+- First press of a drawing tab: the cover now reads "Your Drawings Are Loading" (TV's wording, DR-39 default) over
+  "Fetching the drawing tools" / "Reading the drawing settings" / "Drawing the Views - n of m"; still VV's
+  full-screen look until W1-33 restyles it. DR-39 (b) keeps the old words if he prefers them.
+- After W1-32 and F1: the console shows no "Layout Editor loader:" name-mismatch error when the editor loads.
+- Version labels: the loader reads 1.1.1 and the screen 1.0.1 (patch steps per his rule) where the plan says
+  "Loader facade 1.2".
+====================================================================================================
+W1-32 headings: 1. Files changed, one line each (what and why) | 2. Acceptance items | 3. What still differs from TrueVision's file (post-change `git diff --no-index -w`, code region) | 4. Gates and tests (VV app root, final state; logs `execution/scratch/W1-32/final_*.txt`) | 5. TrueVision source and the pin | 6. Follow-ups
+------------------------------------------------------------
+## 6. Follow-ups
+
+
+For the orchestrator:
+1. **W1-33 (next Loader holder):** add the two `Na__LeLoad__CheckNames` rows W1-31 F1 gives (VIEW_REGISTER, VIEW_STATEMENT, against `editor.mode`). Until then `Na__Test__LoaderFacade__` fails exactly those 2 checks - by design.
+2. **W1-33:** the first-open veil call goes at TV's call site; `specLoad` / `metricsLoad` and `Na__LeMode__Quiet` are already in place. **W1-34:** OpenSpecification through EnterUnder (R4 D.1.4 row 5 also lists it under W1-32; the canonical JSON gives it to W1-34). **W1-36:** RestartSheetKeys, StepSheet, TakeKeyboard and the ReloadKeyMap import.
+3. **Page Up / Page Down interim (W1-29's note):** now that the reader is handed over, Page Up / Page Down on a drawing tab no longer move the hidden 3D camera, and do nothing until W1-36 lands Controls__Pc 1.4.0's paging - keep W1-36 in this wave.
+4. **W1-38:** the Properties tab's hover text needs PanelHost 1.5.0+ (`spec.hint`); acceptance 1's hover half is complete only then.
+5. **W4-10 / W4-13:** replace the refusing OpenRegister / OpenStatements bodies with TV's (delete the "REFUSED IN THIS BUILD" paragraphs and the PORT NOTE bullet), and take the OnSaveKey comment paragraph about documents with a save of their own.
+6. **W2-16 / W2-29 / W3-09 / W3-10:** SectionForKind's site plan, picture and floor-area rules and TV's viewport comment; the FocusNote clauses; AccordionSections ids. `Na__Test__AppConfigParity__`'s allow-list row for `Panels/FocusNote` still names W1-32 as "who changes it next" - its next owner should name these packages (informational; the test passes).
+7. **W5-03:** the import order and the three VV-worded comments listed in the PORT NOTE.
+8. **W6-02:** precache `51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js` and its key map (the offline first-load edge above).
+9. **Scribe (W1-99):** 4 placeholders - mode controller `:59` (PORT NOTE Ported on) and `:89` (log 1.18.1), Panel__Scrapbook `:35`, the test `:46`. Name v2.91.0, v2.106.0, v2.110.0, v2.112.0, v2.158.0 and v2.166.0 as not confirmed by Adam in TV; v2.83.0 confirmed by DR-01's reading. Ledger: the mode controller row (hunk replay, Source 1.32.0 partial), Panel__Scrapbook 1.2.1 (whole), the test ported. Module versions: mode controller 1.18.1 (patch step), Panel__Scrapbook 1.2.1 (TV's, DR-34 (a)).
+
+For Adam (he tests in the app himself), on `?project=2026/3047__Doous` with Layout Mode on:
+- Walk in the 3D view, then press a drawing tab: Walk is left and the toolbar reads Orbit; back on the 3D Model tab, B and T behave.
+- On a drawing tab, press T, R, V, B, Y, 1-9: the sheet tools answer (Text, Rectangle, Select ...) and nothing moves in the hidden 3D view; the carousel does not toggle. Page Up / Page Down do nothing until W1-36.
+- Select a viewport: Text, Dimensions, Vectors and Leaders all fold. Select a text: Text opens alone. Click empty paper: the folds stay as they were.
+- Hover the Scrapbook tab: "Ready-made, dynamic and saved items to drag onto the sheet." (the Properties tab's text arrives with W1-38).
+- Open the Specification, type r, b, t into a note: letters type, nothing moves behind; Ctrl+S saves as before. The network panel shows one GET of `Na__Hotkeys__DocumentTabs__.json` when the editor loads; no "[ValeVision3D LayoutEditor] Document key map unavailable" line.
+- A project with no drawings, and Layout Mode off: no tabs, and the 3D keys work as before.
+
+Restore, if ever needed (in this order): `python -B execution/scratch/W1-32/patch_pass2.py --restore` (back to pass 1), then `python -B execution/scratch/W1-32/apply_w1_32.py --restore` (puts the three pre-images back and deletes the test, each only if the live file is still exactly what was written; pre-images in `scratch/W1-32/preimage/`).
+====================================================================================================
+W1-33 headings: 1. Decisions taken inside the package (for the orchestrator's eye) | 2. Acceptance | 3. Gates and tests (VV app root, live tree after install) | 4. TrueVision source and the pin | 5. Follow-ups
+------------------------------------------------------------
+## 1. Decisions taken inside the package (for the orchestrator's eye)
+
+
+### 1.1 The web viewer's first drawing is uncovered until W4-09 - a gap the plan's sequencing opens (ISSUE)
+
+The plan says to call FirstOpen "when not in the web viewer and not Quiet, at TV's call site" (R4 D.1.4 item 3,
+F.6.1, canonical "TV ModeController :733"), and this package does exactly that. But TV added the viewer half of that
+guard in **v2.156.0**, with the published loading screen, because TV's viewer renders nothing since v2.155.0 and has
+its own cover on every tab press. This app's viewer still renders sheets on the device until **W4-09** lands the
+published viewer. Before this package the loader's full-screen screen (z 9999) waited for the drawing in the viewer
+too; now the loader drops its cover after Enter, the host (appended after the cover, same z 600) paints above it, and
+in viewer mode no first-open veil is built. So on the **live, read-only site** (viewer mode: not editable and
+`LayoutEditor__WebViewer__Enabled: true`) a Vale client's first drawing of a session fills in uncovered once the
+editor has loaded - only for projects whose Layout Mode is on. Localhost (editable) is unaffected, so the
+orchestrator's localhost smoke test will not show it.
+
+I did not change the plan's condition (it is explicit, and policy 11 forbids unlisted seams). The code comment over
+the call says so in this app's words (recorded among the PORT NOTE's VV-worded comments). Two ways to close it, for
+the orchestrator or Adam to choose before W1 is deployed:
+- **(a) one-line VV seam until W4-09:** drop `!Na__LeVw__IsViewerMode() && ` from the call
+  (`Na__LayoutEditor__ModeController__.js:678`) and list it under Divergences; W4-09 puts TV's guard back with the
+  published loading screen. The in-host veil then covers the viewer's first drawing as it does the editor's.
+- **(b) accept the gap** until W4-09 and simply do not deploy W1-W3 to the live site before W4-09.
+
+### 1.2 DR-39 part 3 ("a veil for the first drawing after a document tab") is met by TV's own rule, with no loader screen
+
+DR-39's option text for part 3 says "the loader shows its screen and waits on WaitForFirstDrawing" (the S03a design,
+D-S03a-11). Since this package ports TV's FirstOpen, TV's once-per-session rule does that job: a Quiet entry under a
+document tab does not spend `Na__LeVeil__FirstUsed`, so the first drawing tab afterwards gets the in-host veil (550ms
+rule, the editor already loaded) - exactly TV's behaviour and acceptance item 2's "editor already loaded: the in-host
+veil after 550 ms only if still drawing". A loader screen on top would be a second cover over the same wait (the
+duplication VV v2.70.0 avoided) and not TV's look. So the loader never waits on the drawing (R4 D.1.4 item 6).
+
+### 1.3 WaitForFirstDrawing keeps its export and its new rule, with no caller left
+
+The canonical brief asks both for "hide the boot veil straight after action(editor)" and "WaitForFirstDrawing resolves
+at once off the sheet view". Both are done: the loader no longer calls it, and the ModeController's export (a listed
+VV seam) answers at once when not active or off the sheet view, otherwise waits on DrawingSettled. W4-09's "resolves
+at once in the viewer" can still be added there if a caller returns. Its comment says it is kept for a caller that must
+know when the open sheet is on the paper.
+
+### 1.4 The one file outside my edits list: W1-31's Na__Test__LoaderFacade__.test.mjs (unavoidable importer update)
+
+The test runs the real loader and loading screen and read four things this package's mandated changes retire: the
+title's class (`.loading-text`), the status line's class (`.na-le-loading__status`), the loader's drawing-count line
+in `Na__LeLoad__AwaitFirstDrawing` (static check D) and the drawing count driven through the loader (sections F and G).
+Without an update the wave's G5 run fails on my files. Each check was rewritten to the same concern under the new
+design and nothing else was touched:
+- D: the drawing-count line is the first-open veil's - this app's LoadingVeil reads `VeilDrawingViews` with TV's
+  fallback "Drawing the Views" - and the loader's code names neither `VeilDrawingViews` nor `WaitForFirstDrawing`.
+- F: the headline read from `.na-le-veil__text`; the status line from `.na-le-veil__status`, which must read "Fetching
+  the Drawing Tools" at the press and "Reading the Drawing Settings" last, with no WaitForFirstDrawing call.
+- G: the case that drove a configured drawing label through the loader is retired with the loader's drawing line (its
+  concern is covered by D); the section title loses "the label is the config's".
+- header DESCRIPTION bullet and a 1.0.1 log entry with `{{VVREL:W1-33}}`.
+Result: 117/117 (the two designed CheckNames failures of W1-31 F1 now pass with the rows added). The test is on no
+hot-file register; only W1-31 lists it.
+
+### 1.5 The new body-class checks live in the scratch harness, not in the suite
+
+The early class and every path that drops it (acceptance item 3), the hand-over order (item 5) and the `immediate`
+mechanics are proved by `execution/scratch/W1-33/verify_w1_33.mjs` (66 checks: the real LoadingVeil, LoadingScreen and
+Loader in a fake DOM, per-case copies in the OS temp folder; TV read with git show at the pin). Adding them to W1-31's
+test would go beyond an unavoidable importer update, so they stay in scratch, as W1-32 kept its harness. Follow-up 6
+proposes folding them into the suite.
+
+### 1.6 The loader's copy of the body class has no CheckNames row
+
+`Na__LeLoad__BODY_CLASS = 'na-layout-editor--active'` copies the mode controller's `Na__LeMode__BODY_CLASS`, which
+neither app exports, so there is nothing for CheckNames to read (a row reading an unexported name fails G2 pass 3).
+The constant's comment says so; the class is TV's (K2 S3) and every stylesheet that uses it is TV's or Boot.
+
+### 1.7 Smaller points
+
+- **Which presses put the class on.** Only `Na__LeLoad__Enter` and `Na__LeLoad__OpenSpecification` (enters = true),
+  and only while IsAvailable; never a quiet load (the re-stamp) or a Dev action (CreateSheet, Duplicate, Require ...).
+  A Dev action still shows the boot cover, below the strip and without the class, so on localhost the 3D furniture
+  (z 1001+) sits above it for those few seconds. The "+" tab and the Dev menu's create-then-open: the open usually
+  lands within the cover's two-frame hide, so IsShown is still true and FirstOpen goes up `immediate`.
+- **The strip is visible during a cold load now** (it was under the z 9999 cover). Pressing the 3D Model tab during the
+  load is answered false by `Na__LeLoad__Leave` (nothing loaded yet) and the drawing still opens when the load
+  completes. No stuck state; noted for W1-34, which rewrites the strip's handlers.
+- **Cold OpenSpecification before W1-34.** It is unreachable in today's strip (1.5.0 shows the Specification tab only
+  while a sheet is open). Until W1-34 routes it through EnterUnder, a cold call would enter non-quietly and get the
+  `immediate` first-open veil over the specification page (follow-up 2).
+- **The loader's finally is synchronous now**, so a long action that returns a promise still hides the screen as it
+  starts, as the loader's own comment always said.
+- **Versions**: patch steps (Loader 1.1.2, LoadingScreen 1.0.2, ModeController 1.18.2) per this run's rule and the
+  W1-31/W1-32 precedent; R4's "1.2.0 / 1.1.0 / 1.19.0" labels are Adam's to relabel. LoadingVeil takes TV's 1.1.0
+  (DR-34 (a)).
+------------------------------------------------------------
+## 5. Follow-ups
+
+
+For the orchestrator:
+1. **Section 1.1 (viewer gap) needs a call before W1 is deployed:** (a) the one-line seam until W4-09, or (b) hold the
+   live deploy until W4-09. Tell W4-09 either way (it owns TV's viewer guard and the published loading screen).
+2. **W1-34 (next Loader, ModeController and Boot holder):** route `Na__LeMode__OpenSpecification` through EnterUnder in
+   the same change that shows the Specification tab from the 3D view (else a cold press gets the immediate first-open
+   veil over the specification page); keep passing `enters` (true) for document tabs; the strip is now visible during a
+   cold load (1.7) - its 3D Model handler may want to know a load is in flight; Boot's new "Shell Hiding" region sits
+   just above the Tab Strip region it rewrites.
+3. **W4-10 / W4-13:** when forwarding OpenRegister / OpenStatements through WithEditor, pass `enters` = true (third
+   argument), as OpenSpecification does, so the bar folds at the press.
+4. **W1-21:** the CheckNames comment now names only the site plan type; add its row with DRAWING_SITEPLAN (W1-31 F1).
+5. **W5-02 / W5-03:** Styles__Main's region "Published Heights and Shell Hiding" keeps TV's title but no longer holds
+   the block (pointer comment); the ModeController's first-open comment has two VV paragraphs (viewer, immediate)
+   recorded in the PORT NOTE.
+6. **Suite:** consider folding sections C and D of `scratch/W1-33/verify_w1_33.mjs` (the boot cover and the body-class
+   paths) into a permanent test, so the next Loader holders cannot regress the early class silently.
+7. **Scribe (W1-99):** 10 placeholders for W1-33 - Loader :117, :138; LoadingScreen :57, :72; Styles__Boot :9;
+   LoadingVeil :55; ModeController :60, :95; Styles__Main :13; LoaderFacade test :70. Name v2.83.0 (both readings of
+   "confirmed", above), v2.156.0 and v2.158.0 (not confirmed). Ledger: LoadingVeil now whole 1.1.0 (adapted: two
+   seams); the old "going-in veil deliberately not ported" divergence and row 1240's "only the --over-model veil" are
+   closed; LoadingOverlays veil region verbatim; Boot's VV-only `.na-vs-tl` selector; the loader's early class and
+   no-wait hand-over; the Q-COVER part 2 seam (IsShown / immediate) in three PORT NOTEs. Service-worker note as above.
+
+For Adam (he tests in the app himself), on a project with Layout Mode on and sheets, localhost, fresh reload:
+- Press a drawing tab: the Tools & Settings menu, nav toolbar, help panel and carousel vanish at once; the tab strip
+  and header stay; the header holds about 1 s then glides up with the strip welded to it, over a white cover below the
+  strip reading "Your Drawings Are Loading" / "Fetching the Drawing Tools" -> "Reading the Drawing Settings"; no model
+  shows through. Then, with no flash of grey stage, the same headline with "Drawing the Views  -  n of m" (and possibly
+  "Reading the Project Specification", "Preparing the Drawing Fonts"); it lifts when the pictures are on the paper.
+  A DevTools Performance recording with screenshots should show no frame of bare stage between the two covers.
+- Back to 3D Model: "Loading Your 3D Model" over the canvas, under the strip and header; the camera goes to scene 1.
+- Open a second drawing: no cover. Reload, open the editor from a Dev action first, then press a drawing tab: the
+  in-host veil only if it is still drawing after half a second.
+- With a Video Studio path open on the 3D tab, press a drawing tab: the timeline goes; it is back on 3D Model.
+- Forced failure (e.g. block one editor module in DevTools): the full-screen error state; Back to 3D Model returns
+  with the header down. Switch Layout Mode off from the console during a cold load: the header comes back down.
+- **Live site (read-only viewer): see 1.1** - the first drawing fills in uncovered until W4-09 unless you take (a).
+- Words: the cover's lines are TV's headline with this app's two pre-load steps in Title Case (DR-39 (a); Q-COVER
+  part 1 default for a cold Specification press: the same headline and lines, no drawing line).
+
+Restore, if ever needed: `python -B execution/scratch/W1-33/install_w1_33.py --restore` puts the seven pre-images
+(`scratch/W1-33/preimage/`) and the test's W1-31 bytes back, each only if the live file is still exactly what this
+package wrote (`scratch/W1-33/written.json`).
+====================================================================================================
+W1-34 headings: 1. Decisions taken inside the package (for the orchestrator's eye) | 2. Acceptance | 3. Gates and tests (VV app root, live tree after install) | 4. TrueVision source and the pin | 5. Follow-ups
+------------------------------------------------------------
+## 1. Decisions taken inside the package (for the orchestrator's eye)
+
+
+### 1.1 The drawing rows carry the drag, but not the old "Double-click to rename, drag to reorder" hover
+
+R4 D.2.2 expected `SheetTabEditTitle` to stay in use on the Drawings-menu rows until W4-10. Its words (TV's config
+value, which this app must keep: the AppConfigParity test would fail on a changed value) advertise a double-click
+rename, and a menu row cannot have one - its first click shuts the menu and opens the drawing; renaming is the Sheet
+panel's here (VV Panel__Sheet `sheet-name`), as TrueVision intends. So each row keeps TrueVision's hover (the whole
+drawing number, and the site-plan note) and carries the drag silently in an editable session. `SheetTabEditTitle` and
+`SheetNameTitle` are now unused by this app's code, as in TrueVision (both keep the keys). If Adam wants a hint on the
+rows before the register lands, it needs a label of this app's own (an AppConfig key and an allow-list row); W4-10
+removes the drag anyway.
+
+### 1.2 DESCRIPTION verbatim, the differences in the PORT NOTE
+
+K2 H4 keeps TrueVision's DESCRIPTION, and four of its bullets describe TrueVision's strip where this one differs
+(shown whenever a sheet exists - here Layout Mode too; five tabs - here three until the features land; reordering is the
+register's - here a menu drag until then; and TV's "Initialized from index.html"). Each difference is a Divergences
+bullet, and INTEGRATION is this app's, because it states the wiring (the loader starts the strip).
+
+### 1.3 Acceptance item 3's "at 375 px the end arrows appear" assumed five tabs
+
+TrueVision shows the arrows only when the tabs do not all fit. Measured in Chromium (Adam's Flask server, my own tab,
+in memory only): with this build's three tabs the strip fits at 375 px (scroller 367 px wide, content 367 px), so no
+arrow shows - correctly, by TV's rule; at 320 px the content is 314 px in a 252 px scroller and both arrows show
+(previous disabled on 3D Model), the menu clamped 8 px inside the window. TrueVision's own proof was at 375 px with five
+tabs (TV devlog :1149-1150); this app overflows at 375 px again once the Register and Statements tabs land. "Next from 3D
+Model opens a drawing without the menu" holds whenever the arrows show (harness C14: Activate shuts the menu and calls
+Enter(null); the menu is never opened).
+
+### 1.4 The AppConfigParity allow-list now has four STALE entries (WARN; the test passes)
+
+`Labels/NoSheets`, `Labels/TabsPreviousTitle`, `Labels/TabsNextTitle`, `Labels/SpecificationTab` (withheld, W1-34)
+no longer differ from TrueVision, so `Na__Test__AppConfigParity__` prints "WARN 4 allow-list entries no longer differ"
+and still exits 0 (it fails only with --strict). The test is W0-15's file and no W1 package lists it, so I did not edit
+it; the W1 gate can take the four rows off, as the W0 gate did for `Pdf/JsPdfScriptPath`.
+
+### 1.5 The loader needed no code: two facade names are now without an importer
+
+Nothing in TrueVision's strip asks the facade for anything it lacks, so the loader's change is its header. The old
+strip was the only importer of `Na__LeLoad__UpdateSheet` (its rename) and `Na__LeLoad__GetShortCode` (its rename
+field's code); both stay exported (harmless; G2 does not count importers). A later Loader holder may retire them or the
+register's port may reuse UpdateSheet.
+
+### 1.6 A cold load with the strip in view (not changed here)
+
+Since W1-33 the strip stays visible over the boot cover during a cold load. For those seconds the strip still marks 3D
+Model as the open tab (TrueVision's Enter is synchronous, so it has no such window), and a press on 3D Model is
+answered false by `Na__LeLoad__Leave` while the drawing still opens when the load completes. No listed seam covers a
+"pending" state, so nothing was added; follow-up 3.
+
+### 1.7 TrueVision's comment examples kept verbatim
+
+TV's code comment ("RB05_T01_D02 is open") and its 1.6.0 log line ("PS01_T02_D03") stay as written: source comments,
+never rendered (the same precedent as W1-16's SheetImages note). The harness and the browser check used Vale-style
+numbers (3047_D01 ...).
+------------------------------------------------------------
+## 5. Follow-ups
+
+
+For the orchestrator:
+1. **Smoke test (by eye):** on a project with Layout Mode on and sheets (3047__Doous has neither; seeding them in memory
+   as I did shows the strip and menu but must not be saved), check acceptance 1-3 after the fold, Specification cold and
+   warm with no "Your Drawings Are Loading" after the cold cover, and a menu drag reorder.
+2. **W1 gate:** take the four STALE W1-34 rows off `Na__Test__AppConfigParity__`'s allow-list (section 1.4).
+3. **Cold load with the strip in view (1.6):** if wanted, a loader seam (a pending view, or Leave cancelling a pending
+   Enter) for a later Loader holder (W1-21 or W5-03); TrueVision has no equivalent because its Enter is synchronous.
+4. **W4-10 / W4-13:** flip `Na__LeLoad__FEATURES` and forward OpenRegister / OpenStatements (W1-31 F3): the strip shows
+   the tab with no strip edit. W4-10 also removes the drag seam (Na__LeTabs__DragId, Na__LeTabs__Draggable and its call,
+   the PORT NOTE bullet) and `Na__LeLoad__ReorderSheet` from the strip's imports, so the strip is TV's but for the
+   facade. W4-13 makes HasFeature(VIEW_STATEMENT) honour `LayoutEditor__Statement__Enabled` (DR-10).
+5. **W2-17:** the Dev menu's PORT NOTE still reads "Parity : new / Divergences : n/a"; its refresh is yours
+   (WP-S03a-08). **WT-08:** offer TrueVision the deletion of its dead `.na-le-tabs__tab--spec` rule.
+6. **Scribe (W1-99):** 8 placeholders for W1-34 - TabStrip :61; Styles__Boot :12; Styles__Specification :13; Loader
+   :121, :142; ModeController :60, :96; DevMenu__Controls :45. Name v2.158.0 (not confirmed by Adam in TV). Ledger:
+   TabStrip now whole 2.0.0 (adapted: loader facade, Layout Mode visibility, feature-gated document tabs, async New
+   sheet, state-event render, menu-row drag until the register); its old "Parity: new / Ported from Lantern" row and
+   S10-F07/S03a WP-S03a-06 rows close; Styles__Boot's Tab Strip region verbatim (UiParity 2); the dead --spec rule gone
+   in VV only (back-port row for WT-08); ModeController's OpenSpecification hunk; the four label values (withheld ->
+   TV's). Module versions: TabStrip 2.0.0 (TV's, DR-34 (a)), ModeController 1.18.3, Loader 1.1.3, DevMenu 1.4.1 (patch
+   steps). Service-worker note as above.
+
+For Adam (he tests in the app himself), localhost, a project with Layout Mode on and at least three sheets, fresh reload:
+- The strip under the header reads **3D Model | Drawings ▾ | Specification**, all the same size and weight; 3D Model is
+  bold. Hover Drawings: "The drawings of this project. Press to choose one".
+- Press **Drawings**: a white menu hangs straight under the tab with every drawing as "D01 - Name" in drawing order, the
+  whole number on each hover, then a rule and a blue "+ New sheet". Down / Up / Home / End move between rows; Escape
+  shuts it and leaves the focus on Drawings; a click anywhere else shuts it.
+- Pick a drawing: the menu shuts first, the bar folds, the drawing opens; Drawings is now the bold tab and its hover
+  reads "{number} is open. Press to choose another drawing". Press Drawings again: the menu opens with that drawing's
+  row bold and focused, and nothing else changes.
+- **Reorder:** with the menu open, drag one drawing's row onto another's: the order changes and the menu shows it at
+  once (this is the stand-in until the Document Register lands; rename a drawing in the Sheet panel).
+- Fresh reload, press **Specification** from the 3D view: the bar folds and the specification page shows - the short
+  cover while the editor loads, then the page, with no "Drawing the Views" veil. Then pick a drawing: the first-drawing
+  veil appears only if it is still drawing after half a second.
+- "+ New sheet" on a fresh reload makes one sheet and opens it.
+- Narrow the window to a phone width (about 320 px with three tabs): arrows appear at the ends; the right arrow from 3D
+  Model opens a drawing without the menu.
+- Switch Layout Mode off (Dev Tools > Layout Editor): the strip goes; a project with no sheets has no strip.
+- The tab names do not change as the editor finishes loading; the Dev menu's empty list now reads "No sheets yet. New
+  Sheet below makes the first; the tab strip and its Drawings menu appear with it."
+
+Restore, if ever needed: `python -B execution/scratch/W1-34/install_w1_34.py --restore` puts the seven pre-images
+(`scratch/W1-34/preimage/`) back, each only if the live file is still exactly what this package wrote
+(`scratch/W1-34/written.json`).
+====================================================================================================
+W1-35 headings: 1. Decisions taken inside the package (for the orchestrator's eye) | 2. Acceptance | 3. Gates and tests (VV app root, live tree after install) | 4. TrueVision source and the pin | 5. Follow-ups
+------------------------------------------------------------
+## 1. Decisions taken inside the package (for the orchestrator's eye)
+
+
+### 1.1 The Margin Notes description is TrueVision's whole line
+
+TrueVision's value differs from this app's in two places: the toolbar sentence (1.17.0) and one leaderless clause ("It
+lists any groups the sheet lists without leaders first (LeaderlessNote), then ..."). I took the whole line, because:
+it is the one value W0-15 withheld for W1-35 (`Na__Test__AppConfigParity__` row "MarginNotes/Description, withheld,
+W1-35"); no later package edits this key (W2-32 and W3-11 do not list the AppConfig), so a half-reworded value would
+differ from TrueVision with no owner; the same block's `LayoutEditor__MarginNotes__LeaderlessNote`, landed verbatim by
+W0-15, already documents the (inert) leaderless notes in the present tense; and the Description is a developer note -
+no code in 02__Src__AppModules reads it. If Adam wants the description to describe only what is live today, the
+leaderless clause can be withheld until W2-32 / W3-11 switch leaderless notes on (an AppConfig edit plus a re-owned
+allow-list row).
+
+### 1.2 Separators exactly where TrueVision 1.19.0 put them
+
+TrueVision removed the blank line, the first separator, Undo and Redo, then Fit, 100% and the separator after them,
+keeping the separator that now closes the tool group. The harness mounts TrueVision's own toolbar (git show at the
+pin, its feature modules stood in) beside this app's and compares the two strips: they are equal once TrueVision's
+not-yet-here controls are taken out, editable and read-only. The acceptance's "|" marks are groups, not separators:
+there is no separator between Eyedropper and Snap or between Snap and the hints, and none between the read-only note
+and Download PDF - in TrueVision either (its v2.124.0 proof reads "name | Select ... Ortho | Raster | Save Sheets,
+Download PDF").
+
+### 1.3 The zoom keys ship switched off, as in TrueVision
+
+`Nav__ZoomFit` (F) and `Nav__ZoomActualSize` (1) are in `Na__Hotkeys__DrawingTabs__.json` with `"Enabled": false`,
+row for row as TrueVision ships them (v2.124.0: "which still ship switched off"; F is Adam's Offset key). The harness
+shows that, switched on, the real KeyMap resolves F and 1 to them, and `Controls__Pc__` runs `Na__LeNav__Fit()` and
+`Na__LeNav__ZoomTo(1)` for them. Zoom to fit stays one right click away on bare paper, editable or read-only.
+
+### 1.4 Version and the hover-text divergence
+
+Patch step 1.9.3 -> 1.9.4 (Adam's patch-bump rule for module headers, as W0-06 and W1-34 did). The Select and Move
+hover texts were a live difference the PORT NOTE did not list; this package is the one that keeps them on purpose, so
+they now have their Divergences bullet (DR-40 item 7; W3-04, then W5-01).
+
+### 1.5 The AppConfigParity allow-list now has three more STALE rows (WARN; the test passes)
+
+`MarginNotes/Description`, `Labels/MarginToggle`, `Labels/MarginToggleTitle` (W1-35) no longer differ from
+TrueVision, beside W1-34's four. The test is W0-15's file and not in my edits list, so I left it; the W1 gate can take
+the seven rows off as the W0 gate did for `Pdf/JsPdfScriptPath`. Those two rows are the only `MarginToggle` text left
+in the app, outside 02__Src__AppModules.
+
+### 1.6 My own log line nearly failed the grep
+
+The first build's log entry named the deleted labels by their key names, which a literal "grep of VVM for
+MarginToggle" finds; the harness caught it before install, and the entry now says "the button's two labels". The build
+script refuses any `MarginToggle` left in the file, comments included.
+------------------------------------------------------------
+## 5. Follow-ups
+
+
+For the orchestrator:
+1. **Smoke test (by eye):** on a project with Layout Mode on and a sheet (3047__Doous has neither; seeding in memory shows the strip but must not be saved): the toolbar has no Notes, Undo, Redo, Fit or 100% and no doubled separator; Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z undo and redo a nudge; right-click on bare paper offers Zoom to fit, Undo, Redo; Show notes margin switches the margin. The read-only strip only with the web viewer switched off in config.
+2. **W1 gate:** take the seven STALE rows off `Na__Test__AppConfigParity__`'s allow-list (section 1.5): W1-35's `MarginNotes/Description`, `Labels/MarginToggle`, `Labels/MarginToggleTitle` and W1-34's four.
+3. **W1-36 / W2-21:** v2.124.0's comment hunks come with your whole-file takes - Navigation :30 ("Na__LayoutEditor__Toolbar__ calls Fit and ZoomTo from its buttons") and Eyedropper :695 ("The toolbar re-syncs on a zoom, an undo and every model change") are stale now.
+4. **W2-19:** the Toolbar is yours next (Snap split and menu over 28__System__ObjectSnap); its pre-image is sha1 550db24f.
+
+For the Parity Scribe (W1-99):
+5. Two placeholders: `40__Ui__Panels/Na__LayoutEditor__Toolbar__.js` :36 (Ported on) and :55 (log 1.9.4). Name v2.124.0 (NOT confirmed by Adam in TV) and Toolbar 1.17.0 (no TV release entry; not confirmed); DR-40 item 3 is the visible change ("the toolbar has lost Notes, Undo, Redo, Fit and 100% while their keys still work", F.5.4 W1 item 4). Ledger: Toolbar row VV 1.9.4, hunks to 1.12.0 plus 1.17.0 and 1.19.0 (TV 1.24.0 at the pin); Release Watermark: v2.124.0 ported (W1-35), Toolbar 1.17.0 ported, 1.14.0 / v2.111.0 superseded (nothing to take); the AppConfig rows: MarginToggle keys deleted, MarginNotes Description TrueVision's. Service-worker note as above.
+
+For Adam (he tests in the app himself), localhost, a project with Layout Mode on and at least one sheet, fresh reload:
+- Open a drawing: the toolbar reads the sheet's name, then Select, Move, Text, Leader, Dimension, Draw, Rectangle, Eyedropper and Snap, then Raster, then Save Sheets and Download PDF. There is no Notes, Undo, Redo, Fit or 100% button, and never two separators side by side.
+- Nudge something with an arrow key, then Ctrl+Z, Ctrl+Y and Ctrl+Z again (and Ctrl+Shift+Z): it is undone, redone and undone; the Save button's highlight follows.
+- Right-click on bare paper: Zoom to fit, then Undo and Redo further down. Zoom to fit fits the sheet.
+- In the left column's Margin Notes section, tick and untick Show notes margin: the notes margin appears and goes.
+- Optional: F and 1 for zoom-to-fit and 100% are in the key file but ship switched off, exactly as in TrueVision (F is your Offset key); give Zoom to fit another key before switching it on if you want it.
+- Visible change to approve (DR-40 item 3): the five buttons are gone for Vale authors too.
+
+Restore, if ever needed: `python -B execution/scratch/W1-35/install_w1_35.py --restore` puts both pre-images
+(`scratch/W1-35/preimage/`) back, each only if the live file is still exactly what this package wrote
+(`scratch/W1-35/written.json`).

@@ -1,0 +1,327 @@
+{
+ "40__System__2dElevationsView": [],
+ "41__System__SectionCutEngine": [
+  "W1-05",
+  "W2-02",
+  "W2-05"
+ ],
+ "40__System__DrawingViewCore": [
+  "W0-02",
+  "W1-04",
+  "W1-05",
+  "W1-06",
+  "W1-12",
+  "W2-02",
+  "W2-03",
+  "W2-04",
+  "W2-05"
+ ],
+ "42__System__FloorPlanViews": [
+  "W1-04",
+  "W1-08",
+  "W2-04"
+ ],
+ "43__System__PlanAnnotations": [
+  "W1-37"
+ ],
+ "44__System__PlanDimensions": [
+  "W0-03"
+ ],
+ "45__System__ElevationViews": [
+  "W1-04",
+  "W1-10",
+  "W2-03",
+  "W2-05"
+ ],
+ "46__System__NorthDirection": [
+  "W1-05",
+  "W1-11"
+ ],
+ "47__System__DrawingPlanes": [
+  "W2-40",
+  "W2-01"
+ ],
+ "48__System__CrossSectionViews": [
+  "W2-05"
+ ],
+ "49__System__ElevationDepthFog": [
+  "W1-09",
+  "W2-03"
+ ],
+ "50__System__ProjectedLinework": [
+  "W0-14",
+  "W2-43",
+  "W2-06"
+ ],
+ "52__System__Layout__PublishedDocuments": [
+  "W4-17",
+  "W4-02"
+ ],
+ "53__Data__Layout__PublishedSchema": [
+  "W4-01"
+ ],
+ "54__Feature__ColourPalette": [
+  "W1-37"
+ ],
+ "55__Feature__SpellCheck": [
+  "W2-34"
+ ],
+ "27__System__ContextMenuSystem": [
+  "W4-11"
+ ],
+ "80__CloudflareIntegration": [
+  "W0-12"
+ ],
+ "LE/01__Core__Loader": [
+  "W1-31",
+  "W1-33",
+  "W1-34",
+  "W1-21",
+  "W2-19",
+  "W2-18",
+  "W2-17",
+  "W3-09",
+  "W4-08",
+  "W4-10",
+  "W4-09",
+  "W4-13",
+  "W5-02",
+  "W5-03"
+ ],
+ "LE/03__Core__Config": [
+  "W0-03",
+  "W0-15",
+  "W0-16",
+  "W1-32",
+  "W1-34",
+  "W1-35",
+  "W1-22",
+  "W1-25",
+  "W2-14",
+  "W2-29",
+  "W2-36",
+  "W3-07",
+  "W3-09",
+  "W3-10",
+  "W5-01",
+  "W5-05"
+ ],
+ "LE/05__Core__ModeController": [
+  "W1-31",
+  "W1-32",
+  "W1-33",
+  "W1-34",
+  "W1-36",
+  "W2-19",
+  "W2-29",
+  "W2-31",
+  "W2-35",
+  "W2-16",
+  "W3-05",
+  "W3-07",
+  "W3-09",
+  "W3-10",
+  "W3-11",
+  "W4-10",
+  "W4-09",
+  "W4-13",
+  "W5-03"
+ ],
+ "LE/07__Core__SheetData": [
+  "W0-08",
+  "W0-14",
+  "W1-12",
+  "W1-13",
+  "W1-19",
+  "W1-20",
+  "W1-21",
+  "W1-07",
+  "W1-22",
+  "W4-07"
+ ],
+ "LE/10__Core__SheetSurface": [
+  "W0-03",
+  "W1-33",
+  "W1-34",
+  "W1-22",
+  "W1-26",
+  "W1-28",
+  "W1-36",
+  "W2-20",
+  "W2-19",
+  "W2-24",
+  "W2-25",
+  "W5-02"
+ ],
+ "LE/15__Core__Markup": [
+  "W1-13",
+  "W1-26",
+  "W1-28"
+ ],
+ "LE/20__System__Viewports": [
+  "W1-14",
+  "W1-23",
+  "W2-10",
+  "W2-12",
+  "W2-11",
+  "W2-16",
+  "W3-06"
+ ],
+ "LE/21__System__SitePlanData": [
+  "W2-14"
+ ],
+ "LE/25__System__RenderStyles": [
+  "W1-13",
+  "W1-23",
+  "W2-09",
+  "W2-12",
+  "W2-13",
+  "W2-15",
+  "W2-16"
+ ],
+ "LE/26__System__DraftMode": [
+  "W1-14",
+  "W2-18"
+ ],
+ "LE/27__System__DrawingGrid": [
+  "W1-14",
+  "W2-18"
+ ],
+ "LE/28__System__ObjectSnap": [
+  "W2-42",
+  "W2-19",
+  "W2-25"
+ ],
+ "LE/30__System__SheetTools": [
+  "W0-03",
+  "W2-20",
+  "W2-21",
+  "W2-23",
+  "W2-19",
+  "W2-24",
+  "W2-25",
+  "W3-01",
+  "W3-03",
+  "W3-04",
+  "W3-08"
+ ],
+ "LE/31__System__DocumentKeys": [
+  "W1-30"
+ ],
+ "LE/32__System__OrthoMode": [
+  "W1-14",
+  "W2-18"
+ ],
+ "LE/33__System__DrawingAxes": [
+  "W2-18"
+ ],
+ "LE/35__System__DrawingTools": [
+  "W1-18",
+  "W2-26",
+  "W3-07"
+ ],
+ "LE/36__System__HatchPatternTools": [
+  "W1-17",
+  "W2-29"
+ ],
+ "LE/37__System__VectorTools": [
+  "W1-14",
+  "W2-27",
+  "W2-28",
+  "W2-41"
+ ],
+ "LE/40__Ui__Panels": [
+  "W1-35",
+  "W1-38",
+  "W2-14",
+  "W2-19",
+  "W2-36",
+  "W2-16",
+  "W3-12",
+  "W3-13",
+  "W3-15",
+  "W4-10",
+  "W5-01"
+ ],
+ "LE/50__Feature__Specification": [
+  "W0-03",
+  "W0-12",
+  "W1-34",
+  "W1-25",
+  "W2-22",
+  "W2-30",
+  "W2-32",
+  "W2-31",
+  "W3-03",
+  "W3-11",
+  "W4-08"
+ ],
+ "LE/51__Feature__DrawingRegister": [
+  "W1-13",
+  "W4-18",
+  "W4-10"
+ ],
+ "LE/52__Feature__StatementWriter": [
+  "W2-30",
+  "W4-04",
+  "W4-05",
+  "W4-15",
+  "W4-16",
+  "W4-06",
+  "W4-12"
+ ],
+ "LE/53__Feature__ProjectQrCode": [
+  "W1-15",
+  "W5-05"
+ ],
+ "LE/54__Feature__SheetImages": [
+  "W1-16",
+  "W3-18",
+  "W3-02"
+ ],
+ "LE/55__Feature__Scrapbook": [
+  "W1-32",
+  "W2-37"
+ ],
+ "LE/56__Feature__ScrapbookCustom": [
+  "W2-36"
+ ],
+ "LE/57__Feature__ScrapbookParametric": [
+  "W2-37",
+  "W2-38",
+  "W2-39",
+  "W3-13",
+  "W3-17",
+  "W3-14"
+ ],
+ "LE/58__Feature__ScrapbookSpecification": [
+  "W2-35"
+ ],
+ "LE/59__Feature__FloorAreas": [
+  "W1-27",
+  "W3-10"
+ ],
+ "LE/60__Feature__PdfExport": [
+  "W1-23",
+  "W1-24",
+  "W1-22",
+  "W1-25",
+  "W1-28",
+  "W3-16"
+ ],
+ "LE/65__Feature__DocumentPublishing": [
+  "W4-03",
+  "W4-07"
+ ],
+ "LE/66__Feature__DocumentSharing": [
+  "W4-07",
+  "W4-08"
+ ],
+ "LE/70__DevTools__DevMenu": [
+  "W1-34",
+  "W2-17"
+ ],
+ "LE/80__Feature__WebViewer": [
+  "W4-09"
+ ]
+}

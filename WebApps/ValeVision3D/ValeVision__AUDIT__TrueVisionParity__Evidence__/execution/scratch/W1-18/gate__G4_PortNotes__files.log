@@ -1,0 +1,14 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 2 named file(s) - 2 PORT NOTE(s), 2 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 2 since rewritten (their full checks apply)
+
+  PENDING  2 release placeholder(s) in 2 file(s), for the wave's Parity Scribe: W1-18 x2
+      02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:106  {{VVREL:W1-18}}
+      02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:78  {{VVREL:W1-18}}
+
+  Baseline entries that no longer apply (the file was written since 01-Oct-2026):
+      02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js
+      02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
+
+  RESULT: PASS (0 fail, 0 warn, 2 pending)

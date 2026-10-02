@@ -1,0 +1,85 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs
+exit 1
+
+ValeVision3D - Ortho mode (F8)
+
+  The rule: Ortho XOR Shift
+  PASS  off on a fresh browser (AutoCAD ORTHOMODE 0)
+  PASS  off+up free, off+Shift held, on+up held, on+Shift free
+  PASS  with the Shift override off, Shift only ever holds
+  PASS  an undefined Shift counts as up
+  PASS  a new page comes back on when this browser left it on
+
+  The switch: remembered, announced and echoed as AutoCAD echoes it
+  PASS  F8 on: on, remembered, announced, "<Ortho on>"
+  PASS  F8 off: off, remembered, "<Ortho off>"
+  PASS  switching to what it already is does nothing
+  PASS  the toolbar words come from the config
+
+  The Draw tool: the next vertex
+  PASS  Ortho off: the band goes where the cursor is
+  PASS  Ortho off, Shift held: held across, as Shift always did
+  FAIL  Ortho on: held across when the cursor is further across
+        got  {"x":50,"y":12}
+        want {"x":50,"y":10}
+  FAIL  Ortho on: held down when the cursor is further down
+        got  {"x":12,"y":60}
+        want {"x":10,"y":60}
+  FAIL  Ortho on, Shift held: free (AutoCAD's Shift override)
+        got  {"x":50,"y":10}
+        want {"x":50,"y":12}
+  FAIL  Ortho on, a snap off the axis: its x, the axis's y (never at an angle)
+        got  {"x":80,"y":30}
+        want {"x":80,"y":10}
+  PASS  Ortho on, an arrow key lock still wins
+  FAIL  Ortho on: the click lands the held point, not the cursor
+        got  [50,13]
+        want [50,10]
+  FAIL  Ortho on: a typed length runs along the held direction
+        got  [37.18475206115986,34.46554029755723]
+        want [50,35]
+  PASS  Ortho off again: free again
+
+  The Dimension tool: horizontal or vertical, as a held Shift made it
+  PASS  Ortho off: aligned from its first frame
+  PASS  Ortho off: the line dragged below stays aligned
+  PASS  Ortho off, Shift held: horizontal below, as Shift always did
+  PASS  Ortho on: ortho from its first frame
+  PASS  Ortho on: its two points are the points picked (the span is never bent)
+  PASS  Ortho on: dragged below, horizontal (measures x)
+  PASS  Ortho on: dragged beside, vertical (measures y)
+  PASS  Ortho on, Shift held: aligned (the override)
+  PASS  Ortho on: the third click lands it horizontal
+
+  Every drag a held Shift holds
+  PASS  vertex, Ortho off: free
+  PASS  vertex, Ortho off, Shift held: held across
+  PASS  vertex, Ortho on: held across
+  PASS  vertex, Ortho on, Shift held: free
+  PASS  text moved, Ortho on: along the nearer axis only
+  PASS  text moved a TYPED length, Ortho on: exact
+  PASS  text moved, Ortho off: free, as before
+  PASS  dimension end, Ortho on: held across
+  PASS  a vector moved whole, Ortho on: its snap is asked to hold the axis
+  PASS  a group moved, Ortho on: locked to the nearer axis (x)
+  PASS  a viewport carried by a point, Ortho on: the solver holds the axis
+  PASS  a viewport handle still hears the raw Shift (up)
+  PASS  the text rotate grip still hears the raw Shift (up)
+
+  The keyboard: F8
+  PASS  the shipped key map binds F8 to Ortho, and a plain L stays Draw
+  PASS  Ctrl+L, AutoCAD's second key, ships off
+  PASS  F8 switches Ortho once, takes the key, and re-aims the band
+  PASS  a held F8 is taken but switches nothing more
+  PASS  F8 from a panel checkbox still reaches the sheet
+  PASS  F8 in a text box stays the text box's
+  PASS  Ctrl+F8 is not the binding (Exact)
+  PASS  with a dimension being placed, F8 re-aims it
+  PASS  with a vertex really being dragged, F8 re-aims the drag
+  PASS  a press still under the drag threshold is never shifted by F8
+  PASS  Shift down re-aims the band with Shift held (the override)
+  PASS  Shift up re-aims it again
+  PASS  a read-only sheet re-aims nothing
+  PASS  the built-in fallback key map switches Ortho on F8 too
+
+6 FAILED

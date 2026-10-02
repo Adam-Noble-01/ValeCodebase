@@ -24,20 +24,33 @@
 // INTEGRATION:
 // - Imports the State and Document units, the config state and the project
 //   code. Imported by the Editing unit (ScheduleDraft), the Transport unit
-//   (ScheduleDraft, ClearDraft, RestoreDraft) and
-//   Na__LayoutEditor__SpecData__.js (FlushDraft).
+//   (ScheduleDraft, ClearDraft), the Lockstep unit (ReadDraft, WriteDraft,
+//   ClearDraft, RestoreDraft) and Na__LayoutEditor__SpecData__.js
+//   (FlushDraft).
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
-// - Parity        : verbatim (moved code)
-// - Divergences   : RestoreDraft stores through the State unit's setters
-// - Back-port     : the same split applies to TrueVision's copy.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js
+// - Source version: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. This app's copy was its 1.0.0
+//                   (the v2.47.0 split).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Sep-2026 - Version 1.1.0
+// - ReadDraft and WriteDraft are exported for the lockstep with the local file
+//   (Na__LayoutEditor__SpecData__Lockstep__): where the lockstep is on, a draft
+//   that differs from the file is ASKED about on load instead of put back
+//   (RestoreDraft is then not called), and the app's copy goes to the draft
+//   the moment the file is found to have moved, so an unanswered question
+//   survives the tab being closed.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecData__.js; the code moved verbatim.
 //
@@ -51,7 +64,7 @@
     // MODULE IMPORTS | Config, Project Code and the Specification State and Document
     // ------------------------------------------------------------
     import { Na__LeCfg__GetSpecificationSetup, Na__LeCfg__GetLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
-    import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__DrawData__GetProjectCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import {
         Na__LeSpec__DRAFT_PREFIX,
         Na__LeSpec__STATUS_READY,
@@ -184,6 +197,8 @@
     // MODULE EXPORTS | Specification Data Browser Draft
     // ------------------------------------------------------------
     export {
+        Na__LeSpec__ReadDraft,
+        Na__LeSpec__WriteDraft,
         Na__LeSpec__ClearDraft,
         Na__LeSpec__ScheduleDraft,
         Na__LeSpec__FlushDraft,

@@ -381,7 +381,7 @@
         }, { once: true });
 
         // HIDE WHILE A 2D DRAWING IS ON SCREEN (or flying to one)
-        // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+        // @delegate: ../42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
         const Na__NavToolbar__OnDrawingMode = (event) => {
             const detail = event.detail || {};
             Na__NavToolbar__SetHiddenForDrawing(Boolean(detail.state) && detail.state !== 'idle');

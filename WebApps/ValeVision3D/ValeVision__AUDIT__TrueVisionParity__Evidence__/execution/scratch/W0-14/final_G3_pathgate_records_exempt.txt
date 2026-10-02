@@ -1,0 +1,13 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-02\path_gate_records_exempt.py --root D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+(exit 0)
+
+(records-exempt wrapper: HISTORY = (DEVLOG|PARITY__TrueVisionLedger|__PLAN__|__AUDIT__TrueVisionParity__|__WORKING_MEMORY__TrueVisionParity__))
+K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked: css @import 28, new URL 35, path strings 169, folder tokens 13
+  WARN G4 path string   80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs:120 -> 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs:747 -> 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__Planted__.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs:732 -> 02__Src__AppModules/51__System__LayoutEditor/99__Planted__SelfTest/Na__Planted__.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs:758 -> 02__Src__AppModules/10__NavigationAndCameras/Na__Planted__.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs:761 -> 02__Src__AppModules/10__NavigationAndCameras/Na__Planted__.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+RESULT: PASS (0 fail, 6 warn)

@@ -1,0 +1,465 @@
+{
+ "label": "candidate + Na__LayoutEditor__Viewport2d__Window__.js=before",
+ "events": [
+  {
+   "s": "S1",
+   "k": "THREW",
+   "d": "Cannot read properties of undefined (reading 'renderId')"
+  },
+  {
+   "s": "S2",
+   "k": "PlStage.Describe",
+   "d": "#ModelRoot"
+  },
+  {
+   "s": "S2",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S2",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S2",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": {
+     "u0": -0.022530650977170472,
+     "u1": 1,
+     "v0": -0.011561749281473037,
+     "v1": 0.8455875228246382
+    }
+   }
+  },
+  {
+   "s": "S2",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S2",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S2",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S2",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S2",
+   "k": "fingerprint",
+   "d": "47eaht"
+  },
+  {
+   "s": "S2",
+   "k": "img",
+   "d": {
+    "hidden": false,
+    "src": "data:image/png;w=1104;h=617",
+    "style": {
+     "height": "360.0026942845667px",
+     "left": "0px",
+     "top": "0px",
+     "width": "644.1943101156176px"
+    }
+   }
+  },
+  {
+   "s": "S3",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S3",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S3",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": {
+     "u0": -0.015020433984780316,
+     "u1": 0.6666666666666666,
+     "v0": -0.007707832854315358,
+     "v1": 0.5637250152164255
+    }
+   }
+  },
+  {
+   "s": "S3",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S3",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S3",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S3",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S3",
+   "k": "fingerprint",
+   "d": "18zj2wo"
+  },
+  {
+   "s": "S3",
+   "k": "exportRect",
+   "d": {
+    "HeightMm": 102.85791265273335,
+    "WidthMm": 184.05551717589069,
+    "X": 0,
+    "Y": 0
+   }
+  },
+  {
+   "s": "S3",
+   "k": "img",
+   "d": {
+    "hidden": false,
+    "src": "data:image/png;w=1104;h=617",
+    "style": {
+     "height": "360.0026942845667px",
+     "left": "0px",
+     "top": "0px",
+     "width": "644.1943101156174px"
+    }
+   }
+  },
+  {
+   "s": "S4",
+   "k": "THREW",
+   "d": "Cannot read properties of undefined (reading 'renderId')"
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S5",
+   "k": "ApplySceneCamera",
+   "d": "su_scene_1"
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Enter",
+   "d": [
+    {
+     "enhanceWhitecard": true,
+     "glassOpaque": true,
+     "hiddenLines": false,
+     "profileLinework": true,
+     "projectedLinework": false,
+     "whitecard": true
+    }
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    0.75
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RenderToCanvas",
+   "d": {
+    "antiAliasSamples": 2,
+    "camera": "main",
+    "elevationOverrides": "(undefined)",
+    "pipelineFn": "function",
+    "renderFrame": "undefined",
+    "renderer": "#Renderer",
+    "scene": "#Scene",
+    "targetHeight": 617,
+    "targetWidth": 1104,
+    "viewWindow": {
+     "u0": -0.015020433984780316,
+     "u1": 0.6666666666666666,
+     "v0": -0.007707832854315358,
+     "v1": 0.5637250152164255
+    }
+   }
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 2
+   }
+  },
+  {
+   "s": "S5",
+   "k": "parkedD",
+   "d": true
+  },
+  {
+   "s": "S5",
+   "k": "Enhance.Apply",
+   "d": [
+    "#Canvas"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "LineworkSettings.Override",
+   "d": [
+    null
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "MaterialPreset.Exit",
+   "d": []
+  },
+  {
+   "s": "S5",
+   "k": "ModelToggle.ApplyMap",
+   "d": [
+    "#VisibilityMap"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "CrossSection.Apply",
+   "d": [
+    "#Sections"
+   ]
+  },
+  {
+   "s": "S5",
+   "k": "RequestRender",
+   "d": null
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 1
+   }
+  },
+  {
+   "s": "S5",
+   "k": "queue",
+   "d": {
+    "outstanding": 0
+   }
+  },
+  {
+   "s": "S5",
+   "k": "renders",
+   "d": 1
+  },
+  {
+   "s": "S5",
+   "k": "stateD(parked)",
+   "d": {
+    "dataUrl": null,
+    "key": null,
+    "parked": true,
+    "px": null,
+    "renderOk": false,
+    "win": null
+   }
+  },
+  {
+   "s": "S6",
+   "k": "jsPDF.new",
+   "d": {
+    "compress": true,
+    "format": [
+     420,
+     297
+    ],
+    "orientation": "landscape",
+    "unit": "mm"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "pdf.setProperties",
+   "d": {
+    "author": "a",
+    "creator": "c",
+    "subject": "ValeVision3D sheet A3 landscape, scale 1:50",
+    "title": "Elevations Test"
+   }
+  },
+  {
+   "s": "S6",
+   "k": "Chrome.DrawToPdf",
+   "d": 0
+  },
+  {
+   "s": "S6",
+   "k": "pdf.save",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "pdf.rect",
+   "d": [
+    17.726983949907236,
+    16.929521475495157,
+    184.7137316214605,
+    104.37325344245082,
+    null
+   ]
+  },
+  {
+   "s": "S6",
+   "k": "pdf.restore",
+   "d": null
+  },
+  {
+   "s": "S6",
+   "k": "THREW",
+   "d": "Cannot read properties of undefined (reading 'renderId')"
+  },
+  {
+   "s": "S7",
+   "k": "THREW",
+   "d": "Cannot read properties of undefined (reading 'renderId')"
+  },
+  {
+   "s": "end",
+   "k": "unstubbed",
+   "d": []
+  }
+ ]
+}

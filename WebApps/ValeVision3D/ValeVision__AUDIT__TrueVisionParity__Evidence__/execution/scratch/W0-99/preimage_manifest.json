@@ -1,0 +1,427 @@
+[
+ {
+  "rel": "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+  "sha1_before": "9f93128ab9b0de8e0dc3fc5d5f59bd81b77b26d7",
+  "sha1_after": "fc88f71e027795395ab4325406fa0a0bd63ab167",
+  "tokens": [
+   "{{VVREL:W0-13}}",
+   "{{VVREL:W0-13}}"
+  ],
+  "size_before": 115345,
+  "size_after": 115329
+ },
+ {
+  "rel": "02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+  "sha1_before": "f76f20e5740b20bca119f46dc537afc5c1f4a249",
+  "sha1_after": "dc41782a0e30111827b29e022f0588ae7106bb60",
+  "tokens": [
+   "{{VVREL:W0-12}}",
+   "{{VVREL:W0-12}}"
+  ],
+  "size_before": 28143,
+  "size_after": 28127
+ },
+ {
+  "rel": "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+  "sha1_before": "21318006f98ae20838b885f6e5aaa528efaf34e6",
+  "sha1_after": "2a2a72d0142702d1f2b47a1295e374e236f63e6d",
+  "tokens": [
+   "{{VVREL:W0-11}}",
+   "{{VVREL:W0-11}}"
+  ],
+  "size_before": 43173,
+  "size_after": 43157
+ },
+ {
+  "rel": "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+  "sha1_before": "1f9dad7aa791112530ae3c2c0def5c133b42b5c4",
+  "sha1_after": "4038c1b47cf364a7d5258fc0cd925b0ba2d6aecd",
+  "tokens": [
+   "{{VVREL:W0-14}}",
+   "{{VVREL:W0-14}}",
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 19459,
+  "size_after": 19435
+ },
+ {
+  "rel": "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+  "sha1_before": "6bbff1640b7806f270fc85d78cf59a798066f600",
+  "sha1_after": "c3dc374ce356f82db76502f7aecfcb705736e3a7",
+  "tokens": [
+   "{{VVREL:W0-03}}"
+  ],
+  "size_before": 9555,
+  "size_after": 9547
+ },
+ {
+  "rel": "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js",
+  "sha1_before": "7d070882eeb0e722fddea415abca97fa2455591c",
+  "sha1_after": "6647ab5de77fe1fa908f80243c409275f18fb5db",
+  "tokens": [
+   "{{VVREL:W0-02}}"
+  ],
+  "size_before": 19286,
+  "size_after": 19278
+ },
+ {
+  "rel": "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js",
+  "sha1_before": "8dc5e16093e55ffb0535a15f78b778cd0fd7f785",
+  "sha1_after": "f11d85e503a668982d13af5bca59edb1340b0ccc",
+  "tokens": [
+   "{{VVREL:W0-03}}"
+  ],
+  "size_before": 8559,
+  "size_after": 8551
+ },
+ {
+  "rel": "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js",
+  "sha1_before": "19eba94089246a72a4bf5142309dc3097a85f9b5",
+  "sha1_after": "cb7814e2ba162ff138a918b8215732e361924cb6",
+  "tokens": [
+   "{{VVREL:W0-03}}"
+  ],
+  "size_before": 20192,
+  "size_after": 20184
+ },
+ {
+  "rel": "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+  "sha1_before": "aaeecff56e7b81f8e470d0c68746b6d230cb6039",
+  "sha1_after": "2ef5ee77b8f8fd21b9aad98b18be04e42d02d2aa",
+  "tokens": [
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 87950,
+  "size_after": 87942
+ },
+ {
+  "rel": "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js",
+  "sha1_before": "6b4c46f30d55cf2a324b2b961143068e466a1c89",
+  "sha1_after": "0dc4e027ae20992b659bcc3114fef4a5af014165",
+  "tokens": [
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 16602,
+  "size_after": 16594
+ },
+ {
+  "rel": "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+  "sha1_before": "cd35a747255668fde417b5caa9ed796f55e335b3",
+  "sha1_after": "4d7d518de58ec1ca215dd7a78b3cf9aa9f79a7f3",
+  "tokens": [
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 51953,
+  "size_after": 51945
+ },
+ {
+  "rel": "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+  "sha1_before": "5899dfdb602e5b77e7178f26b9fee3784e16c30d",
+  "sha1_after": "f4f3de583a44025bb8db2a0c5278a6595444e8f0",
+  "tokens": [
+   "{{VVREL:W0-14}}",
+   "{{VVREL:W0-14}}"
+  ],
+  "size_before": 17587,
+  "size_after": 17571
+ },
+ {
+  "rel": "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+  "sha1_before": "82d07ff613129f96597da43205f3853449eea4ee",
+  "sha1_after": "e229dc8f5c968ff62ec763cb9aed85cdd5650276",
+  "tokens": [
+   "{{VVREL:W0-02}}",
+   "{{VVREL:W0-02}}"
+  ],
+  "size_before": 30299,
+  "size_after": 30283
+ },
+ {
+  "rel": "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css",
+  "sha1_before": "723a26b2dbe559d5b7bad3105a56180d17f10b40",
+  "sha1_after": "095858ae5b4b601730c98847c24f8d99f86b76fb",
+  "tokens": [
+   "{{VVREL:W0-03}}"
+  ],
+  "size_before": 19231,
+  "size_after": 19223
+ },
+ {
+  "rel": "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+  "sha1_before": "09716125ffaa785f4544af38c24d281fd23afe96",
+  "sha1_after": "f6feff435d92ddb8be45bfe5d1f4a06d75d3c623",
+  "tokens": [
+   "{{VVREL:W0-14}}"
+  ],
+  "size_before": 34868,
+  "size_after": 34860
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+  "sha1_before": "1d12051e9a12c1c4c685bb0abbd3d8b40a5c7b18",
+  "sha1_after": "209cccea6bd17ce32ad147c40a12caed832aa592",
+  "tokens": [
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 21024,
+  "size_after": 21016
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+  "sha1_before": "e8962e55b6d27afcce6d9d9725a179ec85e466bf",
+  "sha1_after": "3413d98c2dccb187604dcd811bbbe9b160b99e5a",
+  "tokens": [
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 29083,
+  "size_after": 29075
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+  "sha1_before": "42e0cba7ffe2bc6e3f0934fb8dd690fbda7d173d",
+  "sha1_after": "2f19ee63ac9573b3effb960cb81a3ae50b05ca61",
+  "tokens": [
+   "{{VVREL:W0-03}}",
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 42354,
+  "size_after": 42338
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js",
+  "sha1_before": "c62997d93ef52246a3669fdbab8e3e048a0f0972",
+  "sha1_after": "3b4739576c28abedb5a47b39e4d49d1c98cb6e6f",
+  "tokens": [
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 7064,
+  "size_after": 7056
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+  "sha1_before": "a513b02d2cb3f32e1daf27310ce7d00b34a6bca3",
+  "sha1_after": "5d921cdc006e15cc33fb7df6aa504cdaec76369e",
+  "tokens": [
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 38450,
+  "size_after": 38442
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+  "sha1_before": "83a90cb988bc43202f4cb85cabb62da7032af079",
+  "sha1_after": "56880f1a246ee594fcc254d7687f8174487318d6",
+  "tokens": [
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 24090,
+  "size_after": 24082
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+  "sha1_before": "7e99dad7526beec1419e3e9c1a712c757990a357",
+  "sha1_after": "6ce452f793e0ae1b131dc2e842362811e6d0acf1",
+  "tokens": [
+   "{{VVREL:W0-14}}"
+  ],
+  "size_before": 12487,
+  "size_after": 12479
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+  "sha1_before": "c39e8f1bfab9b5247ea32e0e4e2741d69ef42806",
+  "sha1_after": "ed2011441796fd430b0e81524a018dccf7ff6f7b",
+  "tokens": [
+   "{{VVREL:W0-08}}",
+   "{{VVREL:W0-08}}"
+  ],
+  "size_before": 26729,
+  "size_after": 26713
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+  "sha1_before": "1633a01882b3b90105cc9c2cb6b055998966ed66",
+  "sha1_after": "87c607465daea51f6485a58ff168cca9ceae0658",
+  "tokens": [
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 19670,
+  "size_after": 19662
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+  "sha1_before": "6bf52ca67c36a7581a3151bbd77135574d0659b2",
+  "sha1_after": "3e27ab151c75af5c72d1024c8e25071e088791cf",
+  "tokens": [
+   "{{VVREL:W0-06}}"
+  ],
+  "size_before": 25946,
+  "size_after": 25938
+ },
+ {
+  "rel": "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+  "sha1_before": "b24adfb3af1c88f7647559bddd7fabf24b62fe68",
+  "sha1_after": "28393c0eae59f1430f2ae31c729a14aece612fad",
+  "tokens": [
+   "{{VVREL:W0-12}}",
+   "{{VVREL:W0-03}}"
+  ],
+  "size_before": 25516,
+  "size_after": 25500
+ },
+ {
+  "rel": "02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+  "sha1_before": "eae32ae685ea256e4cd4c4cc97976ef4dab61214",
+  "sha1_after": "3688de8ec3b38d91febe016b2dde0c8c068d542d",
+  "tokens": [
+   "{{VVREL:W0-12}}",
+   "{{VVREL:W0-12}}"
+  ],
+  "size_before": 88269,
+  "size_after": 88253
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs",
+  "sha1_before": "56928aa65a1626042d0a509c7214d0e8d859540f",
+  "sha1_after": "e5e7d03ea94d551fe5b108606dc74e287350451c",
+  "tokens": [
+   "{{VVREL:W0-16}}",
+   "{{VVREL:W0-15}}"
+  ],
+  "size_before": 27791,
+  "size_after": 27775
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__DrawingNotesRoute__.test.py",
+  "sha1_before": "e2010a6d37d03445680a93fbaccdf5452e4224b6",
+  "sha1_after": "87151b59882a910f2ef32a77b1aed447e413defb",
+  "tokens": [
+   "{{VVREL:W0-09}}",
+   "{{VVREL:W0-09}}"
+  ],
+  "size_before": 16580,
+  "size_after": 16564
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__LoaderStylesheets__.test.mjs",
+  "sha1_before": "314b309482220d4856730595c50f20dd7247df1f",
+  "sha1_after": "e8db7162354ab87e746ba40d8ec8cf7c6d1f1c62",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 12308,
+  "size_after": 12300
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py",
+  "sha1_before": "7cc20efed9f8e8b0a05e83afefd190d3f3d87245",
+  "sha1_after": "852f3db8c3137b1b7eb0ac726e24aa61d8bf54c1",
+  "tokens": [
+   "{{VVREL:W0-09}}"
+  ],
+  "size_before": 23118,
+  "size_after": 23110
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py",
+  "sha1_before": "6a11197a9c2f22f8f6872155c01c456b95183b47",
+  "sha1_after": "6b9cb53fb0ba33faaa08d5fe3273136ea10b04e9",
+  "tokens": [
+   "{{VVREL:W0-19}}",
+   "{{VVREL:W0-19}}"
+  ],
+  "size_before": 29287,
+  "size_after": 29271
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__SheetImagesApi__.test.py",
+  "sha1_before": "e31f28bf030e873332f44538cc64d67946a94b5d",
+  "sha1_after": "4985e4f61d3b02747fc66d60c197175c6a88f21f",
+  "tokens": [
+   "{{VVREL:W0-18}}"
+  ],
+  "size_before": 18124,
+  "size_after": 18116
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__StatementServer__.py",
+  "sha1_before": "a88c902c1a6a0140840d18c0e3d4c7454c71d2d3",
+  "sha1_after": "e1cdbd44479073e467227efa8c324ab3710050df",
+  "tokens": [
+   "{{VVREL:W0-19}}"
+  ],
+  "size_before": 47900,
+  "size_after": 47892
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__TransportFacade__.test.mjs",
+  "sha1_before": "d0c1e9405d4ebe0d0ceb264347457c7cd642cd25",
+  "sha1_after": "7e980611cb5898c7f874814e72966e7c8df3ffe0",
+  "tokens": [
+   "{{VVREL:W0-12}}",
+   "{{VVREL:W0-12}}"
+  ],
+  "size_before": 112511,
+  "size_after": 112495
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Test__UserSpellingsApi__.test.py",
+  "sha1_before": "2dc1fdfed61e663069fb5138d0cf6e2f29238b69",
+  "sha1_after": "554e70c11751449c3b7450089105006c7bf8076a",
+  "tokens": [
+   "{{VVREL:W0-18}}"
+  ],
+  "size_before": 20730,
+  "size_after": 20722
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs",
+  "sha1_before": "b080068b0bcb88b31a2ac9d101bf241cd2bb6da0",
+  "sha1_after": "1d3745cb80e918fda6ba30d25c95b4a1b471af62",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 27396,
+  "size_after": 27388
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs",
+  "sha1_before": "c26b9026d64e6ebf4ffcaae7b337616f0230e9b2",
+  "sha1_after": "9ea83995b0d75601b1459070edc77ee93cbdb0fa",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 27485,
+  "size_after": 27477
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs",
+  "sha1_before": "678110ec25b4ea20849b19642820a3a525321f8a",
+  "sha1_after": "eb5059df958b9f0743ca988090ba0d9c13939c9b",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 53157,
+  "size_after": 53149
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs",
+  "sha1_before": "53b77ba24634acf5902fdb5c60648eb1b207bc24",
+  "sha1_after": "0c62f7afc33da32c980a8103a6756c9ab9455a9c",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 55126,
+  "size_after": 55118
+ },
+ {
+  "rel": "80__Testing__PrototypeEnvironment/Na__Verify__UiParity__.mjs",
+  "sha1_before": "7cd10b0570b1bd74f1db9ab6badbfb6efe55b408",
+  "sha1_after": "477ea6ba3eb3af5a9be6665ac8cce06f041d81f2",
+  "tokens": [
+   "{{VVREL:W0-04}}"
+  ],
+  "size_before": 41130,
+  "size_after": 41122
+ }
+]

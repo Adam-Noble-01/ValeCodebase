@@ -50,7 +50,7 @@ import { tmpdir } from 'node:os';
 // -----------------------------------------------------------------------------
 
     const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-    const SYSTEM     = resolve(SCRIPT_DIR, '..', '02__Src__AppModules', '47__System__NorthDirection');
+    const SYSTEM     = resolve(SCRIPT_DIR, '..', '02__Src__AppModules', '46__System__NorthDirection');
     const SCRATCH    = mkdtempSync(join(tmpdir(), 'na-north-'));
     copyFileSync(join(SYSTEM, 'Na__North__Compass__.js'), join(SCRATCH, 'Compass.mjs'));
     const compass = await import(pathToFileURL(join(SCRATCH, 'Compass.mjs')).href);

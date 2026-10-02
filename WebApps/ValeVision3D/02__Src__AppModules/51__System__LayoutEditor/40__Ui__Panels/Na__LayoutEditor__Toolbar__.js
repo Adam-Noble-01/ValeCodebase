@@ -6,13 +6,16 @@
 // NAMESPACE  : Na__LeToolbar
 // MODULE     : Layout Editor - Toolbar
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : The strip above the stage: tools, zoom, save and Download PDF
+// PURPOSE    : The strip above the stage: tools, raster, save and Download PDF
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
 // - Tool buttons (Select, Text, Dimension) and Save exist only when the
-//   session can edit; Zoom to Fit, the zoom readout and Download PDF are
-//   for everyone, so a web viewer can read a sheet and take the PDF away.
+//   session can edit; the Raster list and Download PDF are for everyone, so
+//   a web viewer can read a sheet and take the PDF away.
+// - Undo, Redo, Zoom to Fit and the zoom readout have no buttons here: they
+//   are keys (Ctrl+Z, Ctrl+Y, and the key map's zoom bindings), and Zoom to
+//   fit is on the right-click menu as well.
 //
 // INTEGRATION:
 // - Mounted by the mode controller into the centre column.
@@ -20,26 +23,85 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (sheet toolbar purpose)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
-// - Back-port     : none.
+// - Authored in   : ValeVision3D first (v2.21.0, 09-Sep-2026, after the sheet toolbar of
+//                   Lantern Designer's 30__System__DrawingEditorMode). TrueVision3D took it
+//                   whole on 10-Sep-2026 for its re-alignment and has led it since; this file
+//                   has taken TrueVision's changes as hunks, one log entry each.
+// - Twin          : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
+// - Source version: hunks up to TrueVision's Toolbar 1.12.0 (TrueVision3D v2.70.0, 19-Sep-2026),
+//                   then its 1.17.0 (the Notes toggle; 21-Sep-2026, named in no TrueVision3D
+//                   release entry) and 1.19.0 (Undo, Redo, Fit and the zoom readout; TrueVision3D
+//                   v2.124.0, 21-Sep-2026); TrueVision's file is 1.24.0 (read at b2aa9151)
+// - Ported on     : hunk by hunk, 13-Sep-2026 to 19-Sep-2026, then 02-Oct-2026 for
+//                   ValeVision3D v2.71.2 (see the log below)
+// - Parity        : adapted
+// - Divergences   :
+//   - Snap is a plain toggle over 28__System__ObjectSnap's controller
+//     (Na__LayoutEditor__ObjectSnap__.js) with this app's words. TrueVision's is a split
+//     button whose arrow opens Na__LayoutEditor__ObjectSnap__Menu__, worded by the
+//     controller's Label (its 1.20.0); the menu is landed and waits for W5-01.
+//   - The Select and Move hover texts keep this app's words, in the code and in the
+//     config: TrueVision's describe its automatic Move (TrueVision3D v2.78.0), which
+//     this app does not have until Adam confirms it (DR-40 item 7; W3-04, then W5-01).
+//   - Not here yet, each waiting for its feature: Floor Area, Image, Circle, Arc,
+//     Draft, Grid, Grid Snap, Ortho, Axes, the vector quality list, Share, and the
+//     Save Sheets note for a specification held back by its lockstep (TrueVision
+//     1.13.0 to 1.24.0). W5-01 takes TrueVision's file whole once they exist.
+//   - Banner reads ValeVision3D.
+// - Back-port     : none - TrueVision has the file and leads it.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 19-Sep-2026 - Version 1.9.0
+// 02-Oct-2026 - Version 1.9.5 (object snap's own folder, v2.71.4)
+// - THE SNAP BUTTON SWITCHES THROUGH 28__System__ObjectSnap. CHANGED_EVENT,
+//   IsEnabled and Toggle come from its controller,
+//   Na__LayoutEditor__ObjectSnap__.js, so a click echoes "<Osnap on>" /
+//   "<Osnap off>" as F3 does, and the button follows the same event and
+//   the same remembered switch. One import line. The arrow and the snap
+//   options menu are TrueVision's 1.20.0 and come with W5-01.
+//
+// 02-Oct-2026 - Version 1.9.4 (the strip slimmed as TrueVision's, v2.71.2)
+// - THE NOTES TOGGLE IS GONE, as in TrueVision's 1.17.0: Show notes margin in
+//   the Margin Notes panel is the one switch for a sheet's notes margin, so
+//   the strip no longer spends a button on a setting that already had a
+//   home. Its sync went with it, and the SheetModel UpdateMarginNotes and
+//   SheetRecords MarginNotes imports; the config lost the button's two
+//   labels, and its Margin Notes description is TrueVision's.
+// - UNDO, REDO, FIT AND THE 100% BUTTON ARE GONE, as in TrueVision's 1.19.0
+//   (TrueVision3D v2.124.0), with the two separators that fenced them: the
+//   tools close with one separator and Raster with another, so neither
+//   strip shows two side by side. The keys stay - Ctrl+Z, Ctrl+Y and
+//   Ctrl+Shift+Z, and the key map's Nav__ZoomFit and Nav__ZoomActualSize -
+//   and Zoom to fit, Undo and Redo stay on the right-click menu. Nothing
+//   left reads the undo depth or the zoom, so the toolbar no longer listens
+//   for Na__LeHist__CHANGED_EVENT or Na__LeSurface__ZOOM_EVENT and the
+//   History, Navigation and SheetSurface imports are gone; an undo still
+//   re-syncs it through the model change it announces
+//   (Na__LeModel__AnnounceRestore). PURPOSE and DESCRIPTION are TrueVision's.
+// - TrueVision's 1.14.0 (a zoom step updating the readout alone) leaves
+//   nothing to take: its 1.19.0 removed the readout.
+// - The Select and Move hover texts stay this app's (PORT NOTE).
+//
+// 01-Oct-2026 - Version 1.9.3 (records hygiene, v2.71.1)
+// - Comments only. The PORT NOTE says where this file came from and what
+//   TrueVision's has that it lacks, in the house fields; it had read
+//   "Parity : new" since 09-Sep.
+// - Two entries below carried numbers already used further down: 17-Sep's
+//   1.8.0 (the Move button) is now 1.9.1 and 19-Sep's 1.9.0 (the tab's name) is
+//   now 1.9.2, so the log reads newest first with no number twice. The parity
+//   ledger and the devlog of those days name them by their old numbers.
+//
+// 19-Sep-2026 - Version 1.9.2 (written as 1.9.0; renumbered 01-Oct-2026)
 // - The sheet's name on the toolbar is what its tab reads
 //   (Na__LeModel__GetTabLabel, "D03 - Elevations"). Ported from TrueVision3D
 //   v2.70.0.
 //
-// 17-Sep-2026 - Version 1.8.0
+// 17-Sep-2026 - Version 1.9.1 (written as 1.8.0; renumbered 01-Oct-2026)
 // - The Move button (M), beside Select, and a tooltip on Select that says a
 //   drag no longer moves anything.
 // - The state hint: which container is open and how to leave it. It is
 //   invisible otherwise, and a faded sheet reads as a broken editor.
-//
 //
 // 14-Sep-2026 - Version 1.9.0
 // - Leader tool button (E), after Text; its tooltip comes from ToolLeaderTitle.
@@ -83,11 +145,10 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Config, Model, Tools, Navigation, Surface, PDF
+    // MODULE IMPORTS | Config, Model, Tools, PDF
     // ------------------------------------------------------------
     import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__GetTabLabel, Na__LeModel__IsDirty, Na__LeModel__Save, Na__LeModel__UpdateMarginNotes } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
-    import { Na__LeRec__MarginNotes } from '../07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js';
+    import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__GetTabLabel, Na__LeModel__IsDirty, Na__LeModel__Save } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSpec__CHANGED_EVENT, Na__LeSpec__IsDirty, Na__LeSpec__GetState, Na__LeSpec__Sync } from '../50__Feature__Specification/Na__LayoutEditor__SpecData__.js';
     import {
         Na__LeTools__TOOL_SELECT,
@@ -106,10 +167,7 @@
     } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
     import { Na__LeDrop__CHANGED_EVENT, Na__LeDrop__GetHint } from '../30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js';
     import { Na__LeScope__CHANGED_EVENT, Na__LeScope__Get, Na__LeScope__GetVectorId, Na__LeScope__GetDimensionId } from '../30__System__SheetTools/Na__LayoutEditor__EditScope__.js';
-    import { Na__LeNav__Fit, Na__LeNav__ZoomTo } from '../10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js';
-    import { Na__LeOsnap__CHANGED_EVENT, Na__LeOsnap__IsEnabled, Na__LeOsnap__Toggle } from '../30__System__SheetTools/Na__LayoutEditor__Snapping__.js';
-    import { Na__LeHist__CHANGED_EVENT, Na__LeHist__CanUndo, Na__LeHist__CanRedo, Na__LeHist__Undo, Na__LeHist__Redo } from '../07__Core__SheetData/Na__LayoutEditor__History__.js';
-    import { Na__LeSurface__ZOOM_EVENT, Na__LeSurface__GetZoom } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
+    import { Na__LeOsnap__CHANGED_EVENT, Na__LeOsnap__IsEnabled, Na__LeOsnap__Toggle } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js';
     import { Na__LePdf__ExportSheet } from '../60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js';
     import { Na__LeRaster__LEVELS, Na__LeRaster__CHANGED_EVENT, Na__LeRaster__Get, Na__LeRaster__Set } from '../20__System__Viewports/Na__LayoutEditor__RasterQuality__.js';
     // ------------------------------------------------------------
@@ -157,7 +215,7 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Reflect Tool, Zoom, Sheet Name and Dirty State
+    // HELPER FUNCTION | Reflect Tool, Sheet Name and Dirty State
     // ------------------------------------------------------------
     function Na__LeToolbar__Sync() {
         if (!Na__LeToolbar__Root) return;
@@ -169,10 +227,6 @@
         });
         const snap = Na__LeToolbar__Root.querySelector('[data-na-toolbar="snap"]');
         if (snap) { snap.classList.toggle('na-le-toolbar__btn--active', Na__LeOsnap__IsEnabled()); snap.setAttribute('aria-pressed', String(Na__LeOsnap__IsEnabled())); }
-        const undo = Na__LeToolbar__Root.querySelector('[data-na-toolbar="undo"]');
-        if (undo) undo.disabled = !Na__LeHist__CanUndo();
-        const redo = Na__LeToolbar__Root.querySelector('[data-na-toolbar="redo"]');
-        if (redo) redo.disabled = !Na__LeHist__CanRedo();
         const raster = Na__LeToolbar__Root.querySelector('[data-na-toolbar="raster"]');
         if (raster && raster.value !== Na__LeRaster__Get()) raster.value = Na__LeRaster__Get();
         const hint = Na__LeToolbar__Root.querySelector('[data-na-toolbar="dropper-hint"]');
@@ -197,18 +251,9 @@
             scope.title       = text;
             scope.classList.toggle('na-le-toolbar__hint--scope', !!open);
         }
-        const zoom = Na__LeToolbar__Root.querySelector('[data-na-toolbar="zoom"]');
-        if (zoom) zoom.textContent = Math.round(Na__LeSurface__GetZoom() * 100) + '%';
         const sheet = Na__LeModel__GetActiveSheet();
         const name  = Na__LeToolbar__Root.querySelector('.na-le-toolbar__name');
         if (name) name.textContent = sheet ? Na__LeModel__GetTabLabel(sheet) : '';   // <-- What the tab reads: the short code, then the short name
-        const margin = Na__LeToolbar__Root.querySelector('[data-na-toolbar="margin"]');
-        if (margin) {
-            const on = !!sheet && Na__LeRec__MarginNotes(sheet).Enabled === true;
-            margin.classList.toggle('na-le-toolbar__btn--active', on);
-            margin.setAttribute('aria-pressed', String(on));
-            margin.disabled = !sheet;
-        }
         const save = Na__LeToolbar__Root.querySelector('[data-na-toolbar="save"]');
         if (save) { save.classList.toggle('na-le-toolbar__btn--attention', Na__LeModel__IsDirty() || Na__LeSpec__IsDirty()); save.disabled = Na__LeToolbar__Busy; }
         const pdf = Na__LeToolbar__Root.querySelector('[data-na-toolbar="pdf"]');
@@ -289,10 +334,6 @@
                 root.appendChild(button);
             });
             root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SnapToggle', 'Snap'), 'snap', Na__LeCfg__GetLabel('SnapToggleTitle', 'Snap dimensions to the linework endpoints and midpoints (F3)'), () => Na__LeOsnap__Toggle()));
-            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('MarginToggle', 'Notes'), 'margin', Na__LeCfg__GetLabel('MarginToggleTitle', 'Show the notes margin on this sheet: the specification notes its bubbles link to, with the general notes last. Drag its left edge to resize it.'), () => {
-                const sheet = Na__LeModel__GetActiveSheet();
-                if (sheet) Na__LeModel__UpdateMarginNotes(sheet, { enabled : Na__LeRec__MarginNotes(sheet).Enabled !== true });
-            }));
 
             // EYEDROPPER HINT | What the dropper is holding and what to do next.
             // It lives beside the tool buttons because that is where the eye
@@ -313,16 +354,8 @@
             scopeHint.setAttribute('data-na-toolbar', 'scope-hint');
             scopeHint.hidden = true;
             root.appendChild(scopeHint);
-
-            root.appendChild(Na__LeToolbar__Gap());
-            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('Undo', 'Undo'), 'undo', 'Undo the last change to this sheet (Ctrl+Z)', () => Na__LeHist__Undo()));
-            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('Redo', 'Redo'), 'redo', 'Redo the change just undone (Ctrl+Y)', () => Na__LeHist__Redo()));
             root.appendChild(Na__LeToolbar__Gap());
         }
-
-        root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('ZoomFit', 'Fit'), 'fit', 'Zoom to fit the sheet', () => Na__LeNav__Fit()));
-        root.appendChild(Na__LeToolbar__Button('100%', 'zoom', 'Zoom to 100 percent (one paper millimetre per screen unit)', () => Na__LeNav__ZoomTo(1)));
-        root.appendChild(Na__LeToolbar__Gap());
 
         // RASTER | The working resolution of the viewport pictures; the PDF ignores it
         const rasterLabel = document.createElement('span');
@@ -357,7 +390,7 @@
         container.appendChild(root);
         Na__LeToolbar__Root = root;
         Na__LeToolbar__Listeners = () => Na__LeToolbar__Sync();
-        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
         Na__LeToolbar__Sync();
         return true;
     }
@@ -368,7 +401,7 @@
     // ------------------------------------------------------------
     function Na__LeToolbar__Unmount() {
         if (Na__LeToolbar__Listeners) {
-            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
+            [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
         }
         if (Na__LeToolbar__Root && Na__LeToolbar__Root.parentNode) Na__LeToolbar__Root.parentNode.removeChild(Na__LeToolbar__Root);
         Na__LeToolbar__Root = Na__LeToolbar__Listeners = null;

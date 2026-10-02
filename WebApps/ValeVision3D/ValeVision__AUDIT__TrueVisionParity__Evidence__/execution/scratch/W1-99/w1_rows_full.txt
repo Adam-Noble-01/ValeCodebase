@@ -1,0 +1,1300 @@
+﻿01__AppCore/Na__AppFlow__LoadingSequence.js 
+    [0] `01__AppCore/Na__AppFlow__LoadingSequence.js`
+    [1] same path
+    [2] 1.3.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151) - hunks only (W0-13) [was: unrecorded]
+    [3] 1.3.1
+    [4] diverged (VV load contract, PD-08: hunks only, never whole); next: keep_vv_divergence (re-check hunks); W0-13 (v2.71.1): TrueVision's overlay, merge-base and scene-ready hunks replayed (TV v2.7.1, v2.8.0, v2.21.0)
+    [5] VV boot sequence differs (loader, Flask, build token); the facade is started after the master index (async Initialize); the overlay list is ProjectData__EditorOwnedKeys; the overlay is bounded, non-fatal and guarded by projectCode (W0-13)
+    [6] 13-Sep 1.3.0; 28-Sep 1.3.1 [2.71.0]; after W0-13: 1.3.0's design-phase start-up waits for W1-01 (DR-09), the progressive-render remainder for W2-07
+    [7] index.html
+    [8] VV facade: Na__CfApi__Initialize, IsConfigured, ReadProjectData, SetLoadedProjectData (W0-13) [was: TV: Na__CloudflareIntegration__ApiClient__ -> VV facade (DIV-4)]
+    [9] 01-Oct-2026
+    [10] W0-02, W0-13, W1-01, W2-07
+    [11] -
+02__AppData/Na__AppConfig__Main.json 
+    [0] `02__AppData/Na__AppConfig__Main.json`
+    [1] same path
+    [2] -
+    [3] -
+    [4] drifted (282 diff lines); W0-07 (v2.71.1): the ValeVision-only block ProjectData__EditorOwnedKeys (13 keys), the one list the sync, the worker's merge-keys guard and the localhost overlay read
+    [5] ProjectData__EditorOwnedKeys (ValeVision-only, DR-06, DR-30)
+    [6] -
+    [7] named by `Na__AppConfig__Loader.js` (+9)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W0-07, W1-03, W2-08
+    [11] -
+03__AppUtils/Na__AppUtils__KeyScope__.js 
+    [0] - (lands at the TV path)
+    [1] `03__AppUtils/Na__AppUtils__KeyScope__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-33 a
+    [6] all (first TV release naming it: v2.109.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-29
+    [11] none
+03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js 
+    [0] `03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js`
+    [1] -
+    [2] -
+    [3] -
+    [4] VV-only; keep: VV's 3D hotkey handler, twin of TV 10/Na__Hotkeys__Manager.js; gains the KeyScope guard (DR-33); fetches TrueVision's file name Na__Hotkeys__3dModelTab__.json since W0-03 (v2.71.1)
+    [5] -
+    [6] -
+    [7] index.html
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-03, W1-29
+    [11] -
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js 
+    [0] `05__RenderPipeline/Na__RenderEffect__Supersampler__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.0.0
+    [4] shared (outside S11 c.1); taken by W1-03
+    [5] -
+    [6] see its package
+    [7] `Na__ImageExport__StaticExport__TiledRenderer.js` (+2)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-03
+    [11] -
+05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js 
+    [0] - (lands at the TV path)
+    [1] `05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] see its package
+    [6] all
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-01
+    [11] none
+05__RenderPipeline/Na__RenderLoop__Invalidation.js 
+    [0] `05__RenderPipeline/Na__RenderLoop__Invalidation.js`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] shared (outside S11 c.1); taken by W1-01
+    [5] -
+    [6] see its package
+    [7] index.html (+52)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-01
+    [11] none
+15__ModelLoader/Na__ModelLoader__MultiModel.js 
+    [0] `15__ModelLoader/Na__ModelLoader__MultiModel.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.4.0
+    [4] drifted (1182 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+    [5] VV skipped TV 1.3.0 (14-Sep, v2.38.1 ortho depth bias) while taking 1.3.1, 1.3.2 and 1.4.0 (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] `Na__AppFlow__LoadingSequence.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-03
+    [11] -
+21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js 
+    [0] `21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.2.0
+    [4] drifted (69 diff lines); next: port_adapted
+    [5] -
+    [6] 20-Sep 1.1.0; 22-Sep 1.2.0
+    [7] `Na__PresentationMode__DevMenu__SceneEditor.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] none
+25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js 
+    [0] `25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.9.0
+    [4] shared (outside S11 c.1); taken by W1-02
+    [5] -
+    [6] see its package
+    [7] `3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` (+3)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-02
+    [11] none
+25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js 
+    [0] - (lands at the TV path)
+    [1] `25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] see its package
+    [6] all
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-02
+    [11] none
+26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js 
+    [0] - (lands at the TV path)
+    [1] `26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] see its package
+    [6] all
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-01
+    [11] none
+26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js 
+    [0] `26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] shared (outside S11 c.1); taken by W1-01
+    [5] -
+    [6] see its package
+    [7] `Na__AppFlow__LoadingSequence.js` (+7)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-01
+    [11] -
+40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js 
+    [0] - (lands at the TV path)
+    [1] `40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] `Na__DrawView__DrawingUsage__.js` (missing, W1-06)
+40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js 
+    [0] - (lands at the TV path)
+    [1] `40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] `Na__DrawView__DraftMaths__.js` (missing, W1-06); `Na__DrawView__ProjectData__.js` (+1 name, W1-05); `Na__DrawView__RowAccordion__.js` (+2 names, W1-06)
+40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js 
+    [0] - (lands at the TV path)
+    [1] `40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] verbatim
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] none
+40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js 
+    [0] - (lands at the TV path)
+    [1] `40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] verbatim
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] none
+40__System__DrawingViewCore/Na__DrawView__ProjectData__.js 
+    [0] `40__System__DrawingViewCore/Na__DrawView__ProjectData__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.6.0
+    [4] drifted (742 diff lines); next: port_whole_reapply_vv
+    [5] Keep VV transport: Na__DrawData__Save -> GET-merge + Na__AppUtils__R2SaveProjectJson (R2 + Flask mirror); TV writes via Na__CfApi__MergeAndSaveKeys (DIV-4)
+    [6] 21-Sep 1.4.0; 22-Sep 1.6.0; 22-Sep 1.5.0
+    [7] index.html (+31)
+    [8] VV: Na__AppUtils__R2SaveProjectJson__, fetch /api/; TV: Na__AppUtils__LocalProjectMirror__, Na__CloudflareIntegration__ApiClient__ -> VV facade (DIV-4)
+    [9] 01-Oct-2026
+    [10] W1-05, W1-12, W5-07
+    [11] none
+40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js 
+    [0] `40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.1.0
+    [4] drifted (144 diff lines); next: port_adapted
+    [5] Loader re-stamp path (VV lazy editor); fourth holder = CrossSection binding key
+    [6] 20-Sep 1.1.0
+    [7] `Na__Elevation__DevMenu__Editor__.js` (+2)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] none
+40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js 
+    [0] `40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (122 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] `Na__Elevation__DevMenu__Editor__.js` (+1)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] none
+40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css 
+    [0] `40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (138 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] CSS index
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-06
+    [11] -
+40__System__DrawingViewCore/Na__DrawView__Transitions__.js 
+    [0] `40__System__DrawingViewCore/Na__DrawView__Transitions__.js`
+    [1] same path
+    [2] 1.1.0 (07-Sep-2026)
+    [3] 1.1.0
+    [4] drifted (102 diff lines); next: port_adapted
+    [5] -
+    [6] 21-Sep 1.1.0 [2.110.0]
+    [7] index.html (+5)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-04
+    [11] -
+41__System__CrossSectionView/Na__CrossSectionView__SceneData.js 
+    [0] `41__System__CrossSectionView/Na__CrossSectionView__SceneData.js`
+    [1] -
+    [2] -
+    [3] -
+    [4] VV-only; keep: DIV-2, VV's live Cross Sections tool and section engine (TD06 schema); name kept with a README (DR-26, D66); gate ids renamed by W2-05
+    [5] -
+    [6] -
+    [7] index.html (+5)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W2-02, W2-05
+    [11] -
+42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json 
+    [0] `42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json`
+    [1] same path
+    [2] -
+    [3] -
+    [4] verbatim (header only)
+    [5] -
+    [6] -
+    [7] `Na__FloorPlan__ConfigState__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08, W2-04
+    [11] -
+42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js 
+    [0] `42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js`
+    [1] same path
+    [2] 1.0.0 (31-Aug-2026)
+    [3] 1.1.0
+    [4] drifted (48 diff lines); next: port_adapted
+    [5] -
+    [6] 20-Sep 1.1.0
+    [7] `Na__FloorPlan__DevMenu__Editor__.js` (+7)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08
+    [11] `Na__FloorPlan__StoreyLevel__.js` (missing, W1-08)
+42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js 
+    [0] - (lands at the TV path)
+    [1] `42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.87.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08
+    [11] `Na__FloorPlan__ProjectJson__Data__.js` (+3 names, W1-08)
+42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js 
+    [0] `42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js`
+    [1] same path
+    [2] 1.1.0 (07-Sep-2026)
+    [3] 1.1.0
+    [4] drifted (394 diff lines); next: no_action (re-verify VV seams)
+    [5] VV module is 1.2.2 (log, 09-Sep; DIV-1/DIV-2 seams); 1.1.0 is its PORT NOTE Source version (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] index.html (+5)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W1-04
+    [11] -
+42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js 
+    [0] `42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js`
+    [1] same path
+    [2] 1.0.0 (31-Aug-2026)
+    [3] 1.1.0
+    [4] drifted (477 diff lines); next: port_whole_reapply_vv
+    [5] -
+    [6] 20-Sep 1.1.0
+    [7] `Na__DrawView__RenameDrawing__.js` (+9)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08
+    [11] `Na__FloorPlan__StoreyLevel__.js` (missing, W1-08); `Na__FloorPlan__ConfigState__.js` (+1 name, W1-08)
+42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js 
+    [0] - (lands at the TV path)
+    [1] `42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.87.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08
+    [11] none
+42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css 
+    [0] `42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (60 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] CSS index
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-08, W2-04
+    [11] -
+45__System__ElevationViews/Na__Elevation__AppConfig__.json 
+    [0] `45__System__ElevationViews/Na__Elevation__AppConfig__.json`
+    [1] same path
+    [2] -
+    [3] -
+    [4] verbatim (header only)
+    [5] -
+    [6] -
+    [7] `Na__Elevation__ConfigState__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-10, W2-05
+    [11] -
+45__System__ElevationViews/Na__Elevation__AutoNameText__.js 
+    [0] - (lands at the TV path)
+    [1] `45__System__ElevationViews/Na__Elevation__AutoNameText__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-10
+    [11] none
+45__System__ElevationViews/Na__Elevation__AutoName__.js 
+    [0] - (lands at the TV path)
+    [1] `45__System__ElevationViews/Na__Elevation__AutoName__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.86.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-10
+    [11] `Na__Elevation__AutoNameText__.js` (missing, W1-10)
+45__System__ElevationViews/Na__Elevation__ModeController__.js 
+    [0] `45__System__ElevationViews/Na__Elevation__ModeController__.js`
+    [1] same path
+    [2] 1.0.0 (07-Sep-2026)
+    [3] 1.1.0
+    [4] drifted (381 diff lines); next: port_whole_reapply_vv
+    [5] -
+    [6] 20-Sep 1.1.0
+    [7] index.html (+5)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W1-04, W2-03
+    [11] -
+45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js 
+    [0] `45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js`
+    [1] same path
+    [2] 1.0.0 (07-Sep-2026)
+    [3] 1.1.0
+    [4] drifted (518 diff lines); next: port_whole_reapply_vv
+    [5] -
+    [6] 20-Sep 1.1.0
+    [7] `Na__DrawView__RenameDrawing__.js` (+13)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-10, W2-05
+    [11] `Na__ElevationDepthFog__RecordData__.js` (missing, W1-09)
+45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css 
+    [0] `45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (181 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] CSS index
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-10, W2-05
+    [11] -
+46__System__NorthDirection/Na__North__AppConfig__.json 
+    [0] `46__System__NorthDirection/Na__North__AppConfig__.json`
+    [1] same path
+    [2] -
+    [3] -
+    [4] verbatim (header only)
+    [5] -
+    [6] -
+    [7] `Na__North__ConfigState__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-11
+    [11] -
+46__System__NorthDirection/Na__North__CompassGizmo__.js 
+    [0] `46__System__NorthDirection/Na__North__CompassGizmo__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.85.0
+    [3] 1.1.0
+    [4] drifted (96 diff lines); next: port whole after Na__InteractiveOverlays (TV v2.84.0 half) (was no_action (re-verify VV seams))
+    [5] VV shows compass only while panel open (no InteractiveOverlays registry); VV PORT NOTE: take TV 1.1.0 whole once Na__InteractiveOverlays is ported (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] index.html (+1)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-11
+    [11] `Na__RenderLoop__InteractiveOverlays__.js` (missing, W1-01)
+46__System__NorthDirection/Na__North__DevMenu__Editor__.js 
+    [0] `46__System__NorthDirection/Na__North__DevMenu__Editor__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.85.0
+    [3] 1.1.0
+    [4] drifted (120 diff lines); next: port whole after Na__InteractiveOverlays (TV v2.84.0 half) (was no_action (re-verify VV seams))
+    [5] Same as CompassGizmo; VV PORT NOTE: take TV 1.1.0 whole once Na__InteractiveOverlays is ported (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] index.html
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-11
+    [11] `Na__North__CompassGizmo__.js` (+2 names, W1-11)
+46__System__NorthDirection/Na__North__ProjectJson__Data__.js 
+    [0] `46__System__NorthDirection/Na__North__ProjectJson__Data__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.85.0
+    [3] 1.0.0
+    [4] drifted (38 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] `Na__LayoutEditor__ViewportIdentity__.js` (+1)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-05
+    [11] -
+49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json 
+    [0] - (lands at the TV path)
+    [1] `49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-15
+    [6] all (first TV release naming it: v2.94.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-09
+    [11] -
+49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js 
+    [0] - (lands at the TV path)
+    [1] `49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-15
+    [6] all (first TV release naming it: v2.94.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-09
+    [11] none
+49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js 
+    [0] - (lands at the TV path)
+    [1] `49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-15
+    [6] all (first TV release naming it: v2.94.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-09
+    [11] none
+49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js 
+    [0] - (lands at the TV path)
+    [1] `49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-15
+    [6] all (first TV release naming it: v2.94.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-09
+    [11] `Na__ElevationDepthFog__ConfigState__.js` (missing, W1-09); `Na__ElevationDepthFog__Maths__.js` (missing, W1-09)
+49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js 
+    [0] - (lands at the TV path)
+    [1] `49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-15
+    [6] all (first TV release naming it: v2.94.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-09
+    [11] none
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js 
+    [0] `51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js`
+    [1] -
+    [2] -
+    [3] -
+    [4] VV-only; keep: permanent VV divergence, the lazy loader (DR-24 (a), D64; PD-05); not a back-port candidate
+    [5] -
+    [6] -
+    [7] index.html (+3)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-31, W1-33, W1-34, W4-08
+    [11] -
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js 
+    [0] `51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js`
+    [1] -
+    [2] -
+    [3] -
+    [4] VV-only; keep: permanent VV divergence, the lazy loader (DR-24 (a), D64; PD-05); not a back-port candidate
+    [5] -
+    [6] -
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-31, W1-33, W1-34, W4-08
+    [11] -
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css 
+    [0] `51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css`
+    [1] -
+    [2] -
+    [3] -
+    [4] VV-only; keep: permanent VV divergence, the lazy loader (DR-24 (a), D64; PD-05); not a back-port candidate
+    [5] -
+    [6] -
+    [7] CSS index
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-31, W1-33, W1-34, W4-08
+    [11] -
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json 
+    [0] `51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json`
+    [1] same path
+    [2] -
+    [3] -
+    [4] adapted - every TrueVision key, block, note and label in one additive pass, in TrueVision's formatting (W0-15); the jsPDF path and the Classic scan repointed (W0-16); 79 listed seams held by Na__Test__AppConfigParity__ (v2.71.1) [was: drifted (2083 diff lines)]
+    [5] 79 seams: brand 17, decision 12, identity 11, NA path 3, TrueVision defect 3, ValeVision-only 8, withheld 25 (each with its owner in the test's allow-list)
+    [6] -
+    [7] `Na__LayoutEditor__ConfigState__Readers__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-03, W0-15, W0-16, W1-32, W1-34, W1-35, W1-22, W1-25, W2-14, W2-29, W2-36, W3-07, W3-09, W3-10, W5-01, W5-05, W5-07
+    [11] -
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js 
+    [0] `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.83.0
+    [3] 1.1.0
+    [4] drifted (234 diff lines); next: no_action (re-verify VV seams)
+    [5] VV exports DrawingSettled for the loader; no text-metrics job (no PdfFonts)
+    [6] none (date rule)
+    [7] `Na__LayoutEditor__ModeController__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-33
+    [11] none
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js 
+    [0] `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.57.0
+    [3] 1.32.0
+    [4] drifted (828 diff lines); next: port_whole_reapply_vv
+    [5] VV initialised by 01__Core__Loader; WaitForFirstDrawing; IsAvailable = Layout Mode on AND a sheet
+    [6] 21-Sep 1.28.0; 21-Sep 1.27.0; 21-Sep 1.26.0; 21-Sep 1.25.0; 21-Sep 1.24.0; 21-Sep 1.23.0; 21-Sep 1.22.0; 21-Sep 1.21.0 [2.57.0,2.104.0]; 22-Sep 1.29.0; 23-Sep 1.30.0; 29-Sep 1.32.0 [2.166.0]; 29-Sep 1.31.0
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W1-31, W1-32, W1-33, W1-34, W1-36, W2-19, W2-29, W2-31, W2-35, W2-16, W3-05, W3-07, W3-09, W3-10, W3-11, W4-10, W4-09, W4-13, W5-03, W5-07
+    [11] 32 modules: `Na__AppUtils__KeyScope__.js` (missing, W1-29); `Na__ModelGroup__PhaseLibrary__.js` (missing, W1-01); `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); and 29 more (landed by W1-13, W1-17, W1-21, W1-27, W1-30, W1-33, W1-36, W2-14, W2-18, W2-19, W2-29, W2-30, W2-31, W2-35, W2-41, W3-02, W3-10, W3-11, W4-06, W4-09, W4-10, W4-12, W4-18)
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js 
+    [0] `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js`
+    [1] same path
+    [2] - (from Lantern Designer)
+    [3] 2.0.0
+    [4] drifted (656 diff lines); next: port_whole_reapply_vv
+    [5] Reads go through the loader facade (Na__LeLoad__*); Layout Mode gate (D22)
+    [6] 23-Sep 2.0.0
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-34, W4-10, W4-13, W5-07
+    [11] `Na__LayoutEditor__ModeController__.js` (+4 names, W1-34); `Na__LayoutEditor__SheetModel__.js` (+1 name, W1-34)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js 
+    [0] `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.1.0
+    [4] diverged (PD-19: no Project Admin in VV); next: keep_vv_divergence (re-check hunks)
+    [5] Permanent: reads project config (clientDrawingName, siteAddress), no Project Admin fetch
+    [6] none (date rule)
+    [7] `Na__LayoutEditor__SheetModel__.js` (+1)
+    [8] TV: Na__CloudflareIntegration__ApiClient__ -> VV facade (DIV-4)
+    [9] 01-Oct-2026
+    [10] W1-12
+    [11] -
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js 
+    [0] `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js`
+    [1] same path
+    [2] - (from Lantern Designer)
+    [3] 1.2.1
+    [4] verbatim (header only); next: port_whole_reapply_vv
+    [5] No site plan scale list (IsListed asks one list) until site plans decided
+    [6] 14-Sep 1.1.0; 17-Sep 1.2.0; 21-Sep 1.2.1
+    [7] `Na__LayoutEditor__Panel__ViewportSettings__.js` (+4)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.147.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.143.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css 
+    [0] `51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css`
+    [1] same path
+    [2] - (from Lantern Designer)
+    [3] -
+    [4] drifted (249 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-33, W1-34, W5-02
+    [11] -
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.139.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js 
+    [0] `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.46.0
+    [3] 1.1.0
+    [4] drifted (57 diff lines); next: port_adapted
+    [5] -
+    [6] 21-Sep 1.1.0
+    [7] `Na__LayoutEditor__Measurements__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.106.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.150.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.136.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js 
+    [0] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js`
+    [1] same path
+    [2] - (from Lantern Designer)
+    [3] 1.16.0
+    [4] drifted (337 diff lines); next: port_whole_reapply_vv
+    [5] No SitePlan unit; Render2d stillWanted arg position
+    [6] 20-Sep 1.12.0; 21-Sep 1.15.0; 21-Sep 1.14.0; 21-Sep 1.13.0; 29-Sep 1.16.0
+    [7] `Na__LayoutEditor__ForceRender__.js` (+6)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-23, W2-16
+    [11] 8 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); and 5 more (landed by W1-14, W1-21, W2-14, W2-16)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js 
+    [0] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.4.0
+    [4] drifted (261 diff lines); next: port_whole_reapply_vv
+    [5] -
+    [6] 20-Sep 1.2.0; 21-Sep 1.4.0; 21-Sep 1.3.0
+    [7] `Na__LayoutEditor__Viewport2d__.js` (+1)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-23, W2-16
+    [11] `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); `Na__LayoutEditor__DraftMode__State__.js` (missing, W1-14); `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js 
+    [0] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.2.0
+    [4] drifted (123 diff lines); next: port_adapted
+    [5] -
+    [6] 20-Sep 1.2.0
+    [7] `Na__LayoutEditor__Viewport2d__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-23, W2-16
+    [11] `Na__LayoutEditor__ModelSource__.js` (missing, W2-16)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js 
+    [0] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.2.0
+    [4] drifted (93 diff lines); next: port_adapted
+    [5] -
+    [6] 21-Sep 1.2.0; 21-Sep 1.1.0
+    [7] `Na__LayoutEditor__Viewport2d__.js` (+2)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-23, W2-16
+    [11] `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js 
+    [0] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.8.1
+    [4] drifted (157 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+    [5] VV tiled renderer per-tile shear; scene lighting fingerprint; TV 1.8.0 (21-Sep) Draft mode, hidden by VV's 28-Sep entry; no DraftMode in VV (S11 c.1 verifier; S04b)
+    [6] none (date rule)
+    [7] LE loader (+4)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-23, W2-16
+    [11] `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__DraftMode__State__.js` (missing, W1-14)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] adapted
+    [6] all (first TV release naming it: v2.138.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - dormant (DR-08 B)
+    [6] all (first TV release naming it: v2.93.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - dormant (DR-08 B)
+    [6] all (first TV release naming it: v2.89.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] -
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js 
+    [0] `51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.13.0
+    [4] drifted (700 diff lines); next: port_adapted (hunks only, DIV-1) (was no_action (re-verify VV seams))
+    [5] DIV-1: ComposerPreset + LineworkSettings consumers instead of RenderPreset/Sobel quad; TV 1.12.0 fog source (v2.94.0) and 1.12.1 storey doors (v2.105.0), hidden by VV's 28-Sep entry; keep the DIV-1 seams (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] `Na__LayoutEditor__LoadingVeil__.js` (+5)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W1-23, W2-15
+    [11] -
+51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] verbatim
+    [6] all (first TV release naming it: v2.107.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] verbatim
+    [6] all (first TV release naming it: v2.114.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-33 a
+    [6] all (first TV release naming it: v2.109.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-30
+    [11] -
+51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-33 a
+    [6] all (first TV release naming it: v2.109.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-30
+    [11] `Na__AppUtils__KeyScope__.js` (missing, W1-29)
+51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] verbatim
+    [6] all (first TV release naming it: v2.113.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js 
+    [0] `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (47 diff lines); next: port_adapted
+    [5] -
+    [6] 22-Sep 1.1.0
+    [7] `Na__LayoutEditor__ModeController__.js` (+4)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-18
+    [11] `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js 
+    [0] `51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js`
+    [1] same path
+    [2] unrecorded
+    [3] -
+    [4] drifted (83 diff lines); next: port_adapted
+    [5] -
+    [6] 23-Sep 1.1.0
+    [7] `Na__LayoutEditor__ModeController__.js` (+4)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-18
+    [11] none
+51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js`
+    [2] -
+    [3] 1.5.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-19
+    [6] all (first TV release naming it: v2.89.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-17
+    [11] none
+51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - DR-18 a
+    [6] all (first TV release naming it: v2.129.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-14
+    [11] none
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js 
+    [0] `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js`
+    [1] same path
+    [2] hunks up to TrueVision's Toolbar 1.12.0 (TrueVision3D v2.70.0, 19-Sep-2026)
+    [3] 1.24.0
+    [4] drifted (366 diff lines); next: port_whole_reapply_vv
+    [5] Short-tab label; Save shared with Ctrl+S
+    [6] 21-Sep 1.22.0; 21-Sep 1.21.0; 21-Sep 1.20.0; 21-Sep 1.19.0; 21-Sep 1.18.0; 21-Sep 1.17.0; 21-Sep 1.16.0; 21-Sep 1.15.0; 21-Sep 1.14.0; 21-Sep 1.13.0; 29-Sep 1.24.0 [2.166.0]; 29-Sep 1.23.0
+    [7] `Na__LayoutEditor__ModeController__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-06, W1-35, W2-19, W5-01
+    [11] 13 modules: `Na__LayoutEditor__VectorQuality__.js` (missing, W1-14); `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); and 10 more (landed by W1-16, W2-18, W2-19, W2-27, W3-02, W3-03, W4-08)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css 
+    [0] `51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css`
+    [1] same path
+    [2] cites TrueVision3D v2.51.0
+    [3] -
+    [4] drifted (189 diff lines); next: no_action (re-verify VV seams)
+    [5] -
+    [6] none (date rule)
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-34, W2-31
+    [11] -
+51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js`
+    [2] -
+    [3] 1.0.1
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-11 A code
+    [6] all (first TV release naming it: v2.69.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-13
+    [11] none
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] -
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] none
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, verbatim - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] none
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] none
+51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js`
+    [2] -
+    [3] 1.2.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] `Na__ProjectQr__Encoder__.js` (missing, W1-15); `Na__ProjectQr__ProjectLink__.js` (missing, W1-15)
+51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - switched off (DR-12 A); NA content off (DR-43) - DR-12, DR-43
+    [6] all (first TV release naming it: v2.81.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-15
+    [11] -
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json`
+    [2] -
+    [3] -
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] -
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16)
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] none
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Painter__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Source__.js` (missing, W1-16)
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] none
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] 5 modules: `Na__LayoutEditor__SheetImages__Encode__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Geometry__.js` (missing, W1-16); `Na__LayoutEditor__SheetImages__Paint__.js` (missing, W1-16); and 2 more (landed by W1-16)
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js`
+    [2] -
+    [3] 1.1.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] none
+51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js 
+    [0] - (lands at the TV path)
+    [1] `51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js`
+    [2] -
+    [3] 1.0.0
+    [4] TV-only (not yet in VV)
+    [5] gated, adapted - DR-13 a
+    [6] all (first TV release naming it: v2.116.0)
+    [7] -
+    [8] TV: Na__CloudflareIntegration__ApiClient__ -> VV facade (DIV-4)
+    [9] 01-Oct-2026
+    [10] W1-16
+    [11] `Na__LayoutEditor__SheetImages__Setup__.js` (missing, W1-16)
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js 
+    [0] `51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js`
+    [1] same path
+    [2] cites TrueVision3D v2.85.0
+    [3] 1.2.1
+    [4] drifted (40 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+    [5] TV 1.2.1 (20-Sep) tab hover text, absent in VV (S11 c.1 verifier)
+    [6] none (date rule)
+    [7] `Na__LayoutEditor__ModeController__.js`
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-32
+    [11] -
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js 
+    [0] `51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.12.0
+    [4] drifted (364 diff lines); next: port_whole_reapply_vv
+    [5] Helvetica; StyleBands [was: Helvetica; StyleBands; jsPDF path (VV vendors jsPDF under 35__System__PageLayoutSystem) - its jsPDF part closed in v2.71.1: jsPDF 4.1.0 at TrueVision's vendor 05 path, W0-16]
+    [6] 17-Sep 1.5.0; 20-Sep 1.6.0; 21-Sep 1.9.0; 21-Sep 1.8.0; 21-Sep 1.7.0; 22-Sep 1.10.0; 23-Sep 1.12.0; 23-Sep 1.11.0
+    [7] LE loader (+4)
+    [8] -
+    [9] 01-Oct-2026
+    [10] W0-02, W1-23, W1-24, W1-25, W1-28, W3-16
+    [11] 10 modules: `Na__LayoutEditor__PaintOrder__.js` (missing, W1-13); `Na__LayoutEditor__ShapeRings__.js` (missing, W1-13); `Na__LayoutEditor__ViewportRotation__.js` (missing, W1-14); and 7 more (landed by W1-16, W1-17, W1-21, W1-25, W1-26, W1-28, W2-16)
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js 
+    [0] `51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js`
+    [1] same path
+    [2] unrecorded
+    [3] 1.3.0
+    [4] drifted (224 diff lines); next: no_action (re-verify VV seams)
+    [5] VV 1.4.0 ahead: loader facade reads, Layout Mode switch
+    [6] none (date rule)
+    [7] LE loader
+    [8] -
+    [9] 01-Oct-2026
+    [10] W1-34, W2-17, W5-07
+    [11] -

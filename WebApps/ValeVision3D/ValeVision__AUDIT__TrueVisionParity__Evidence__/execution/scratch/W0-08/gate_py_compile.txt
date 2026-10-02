@@ -1,0 +1,7 @@
+﻿py_compile exit=0  edit_autosave.py
+py_compile exit=0  edit_util.py
+py_compile exit=0  fetch_tv_pin.py
+py_compile exit=0  harden_logic_test.py
+py_compile exit=0  harden_logic_test2.py
+py_compile exit=0  preflight.py
+py_compile exit=0  stage_sw.py

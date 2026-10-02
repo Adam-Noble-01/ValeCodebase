@@ -1,0 +1,12 @@
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-38\mirror
+  checked  : 3 named file(s); no registry; 1 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  FAIL  ValeVision__NOTES__FolderNumberRegistry__.md  registry  (DR-03)
+        the folder number registry is missing, so no folder can be checked
+  FAIL  02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css  stylesheet-home  (K2 S5, R3 C.2 (b))
+        no home: add it to Na__LeLoad__STYLESHEETS in TrueVision's CSS-index order, or have its module link it
+
+  RESULT: FAIL (2 fail, 0 warn)

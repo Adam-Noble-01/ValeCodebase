@@ -37,11 +37,16 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Leaders__.js 1.0.0
-// - Ported on     : 14-Sep-2026
-// - Parity        : verbatim (header only)
-// - Divergences   : none - it edits the same Sheet__Leaders fields
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js
+// - Source version: 1.2.0 (TrueVision3D v2.57.0, 17-Sep-2026; read at b2aa9151)
+// - Ported on     : 14-Sep-2026 (1.0.0, ValeVision3D v2.32.0); whole again on 02-Oct-2026 for ValeVision3D
+//                   v2.71.4, with TrueVision's log. This app's copy already held the code of
+//                   1.1.0 and 1.2.0; it differed in two comment blocks, the order of the two
+//                   specification imports and the missing 1.1.0 log entry.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
@@ -51,7 +56,14 @@
 //   The type is a palette-only trait, so nine leaders take a size and a colour
 //   without a note turning into a bubble; the specification link stays a
 //   single-selection edit.
-// - Ported from TrueVision3D v2.57.0.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Project Specification: a selected bubble shows a Spec note row - the
+//   project specification's notes by group, or Not linked - and a line saying
+//   what its link is: linked, linked to a deleted note, reading a note's code
+//   without being linked, or reading a code no note has. Open in specification
+//   shows the linked note on the Project Specification tab. Nothing changes
+//   for a note leader or for the settings for new leaders.
 //
 // 14-Sep-2026 - Version 1.0.0
 // - Initial implementation.
@@ -66,12 +78,12 @@
     // MODULE IMPORTS | Config, Model, Tools, Surface, Leader Tool and Panel Host
     // ------------------------------------------------------------
     import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel, Na__LeCfg__GetLeaderSetup, Na__LeCfg__GetLineweightSetup, Na__LeCfg__GetTextSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeSpec__OPEN_EVENT, Na__LeSpec__IsLoaded, Na__LeSpec__ListNotes } from '../50__Feature__Specification/Na__LayoutEditor__SpecData__.js';
+    import { Na__LeSpecLink__Describe, Na__LeSpecLink__NoteIdOf, Na__LeSpecLink__Link } from '../50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js';
     import { Na__LeModel__GetActiveSheet, Na__LeModel__GetSelection, Na__LeModel__GetLeaders, Na__LeModel__UpdateLeader } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeTools__GetLeaderDefaults, Na__LeTools__SetLeaderDefaults } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
     import { Na__LeSurface__Refresh } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeLeader__BeginEdit } from '../35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js';
-    import { Na__LeSpec__OPEN_EVENT, Na__LeSpec__IsLoaded, Na__LeSpec__ListNotes } from '../50__Feature__Specification/Na__LayoutEditor__SpecData__.js';
-    import { Na__LeSpecLink__Describe, Na__LeSpecLink__NoteIdOf, Na__LeSpecLink__Link } from '../50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js';
     import {
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
@@ -340,6 +352,11 @@
 
     // HELPER FUNCTION | Reflect a Selected Bubble's Specification Link
     // ------------------------------------------------------------
+    // The notes are listed by group, code first. The list is only rebuilt when
+    // the specification's notes change, so a refresh never snaps an open list
+    // shut. A link to a deleted note stays chosen, under its own option, so
+    // the choice on show is always the truth about the record.
+    // ------------------------------------------------------------
     function Na__LePanelLeaders__RefreshSpec(body, leader) {
         const L      = Na__LeCfg__GetLabel;
         const select = body.querySelector('[data-na-control="leader-spec-note"]');
@@ -455,6 +472,7 @@
             });
         });
 
+        // SPECIFICATION | Choose a note to link the bubble to it (it takes the code), or Not linked
         on('change', 'leader-spec-note', (e, el) => { const s = Na__LePanelLeaders__Selected(); if (s) Na__LeSpecLink__Link(s.sheet, s.item.Leader__Id, el.value || null); });
         on('click', 'leader-spec-open', () => {
             const s = Na__LePanelLeaders__Selected();

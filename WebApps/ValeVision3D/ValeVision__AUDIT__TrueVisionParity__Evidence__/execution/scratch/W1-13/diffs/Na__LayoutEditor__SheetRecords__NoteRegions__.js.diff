@@ -1,0 +1,15 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js
++++ VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - SHEET RECORDS - NOTE REGIONS
++// VALEVISION3D - LAYOUT EDITOR - SHEET RECORDS - NOTE REGIONS
+@@ -52,2 +52,7 @@
+-// - Authored in   : TrueVision3D first (22-Sep-2026)
+-// - ValeVision    : not yet ported. Nothing here is app-specific.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js
++// - Source version: 1.0.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-13}}
++// - Parity        : verbatim - nothing here is app-specific, as TrueVision's own note said
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.

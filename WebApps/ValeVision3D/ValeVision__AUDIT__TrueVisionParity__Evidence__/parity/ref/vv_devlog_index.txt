@@ -1,0 +1,190 @@
+4	## ValeVision3D v2.71.0 - 28-Sep-2026 - A Scene Can Turn the Sun, and Every Scene It Does Not Touch Keeps the Default	**Overview**
+133	## ValeVision3D v2.70.0 - 20-Sep-2026 - The Top Bar Knows When It Is Not Wanted, and Neither Crossing Is a Cold Drop	### Ported from TrueVision3D v2.83.0, authored there the same day
+220	## ValeVision3D v2.69.0 - 20-Sep-2026 - A Selection Saved as a File, and a Route on the Local Server to Write It	### Ported from TrueVision3D v2.76.0 (the Custom Scrapbook), with the server side written for this app's own server
+319	## ValeVision3D v2.68.0 - 20-Sep-2026 - The Right Column Gets a Scrapbook Tab, and What You Drag Out of It Keeps Answering	### Ported from TrueVision3D v2.76.0 (the parametric scale bar), v2.77.0 (the tab and the linking noodle), v2.80.0 (the Drawing Title) and v2.85.0 (the noodle's plug)
+416	## ValeVision3D v2.67.0 - 20-Sep-2026 - North Is a Bearing, Not the Model's Green Axis, and an Elevation Is Named From It	### Ported from TrueVision3D v2.80.0 (north direction and viewport identity), with its compass as TrueVision v2.84.0 left it
+509	## ValeVision3D v2.66.1 - 20-Sep-2026 - Tighter Margins on the Specification Page	### Authored in TrueVision3D v2.78.1; one of its three changes applies here
+549	## ValeVision3D v2.66.0 - 20-Sep-2026 - A Title Block Cell Is a Width in Millimetres, and a Drawing Says What It Is Issued For	### Ported from TrueVision3D v2.79.0, re-measured in this app's own face
+634	## ValeVision3D v2.65.0 - 20-Sep-2026 - One Client, One Site, One Place to Type Them	### Ported from TrueVision3D v2.74.0, adapted where ValeVision has no admin system behind it
+713	## ValeVision3D v2.64.0 - 20-Sep-2026 - Every Ctrl+Z Was Writing the Whole Project to R2	### Authored in TrueVision3D v2.30.1 and ported today, closing the parity ledger's oldest open row
+782	## ValeVision3D v2.63.0 - 19-Sep-2026 - One Scene Open at a Time, and the Carousel Decides Which	### Authored in TrueVision3D v2.68.0 and ported the same day
+880	## ValeVision3D v2.62.0 - 19-Sep-2026 - Closing Asks First Now, and Ctrl+S Blurs Before It Saves	### Authored in TrueVision3D v2.67.0 and v2.73.0, ported the same day
+952	## ValeVision3D v2.61.0 - 19-Sep-2026 - The Number Was Typed Into the Name, and the Name Had No Way of Knowing	### Authored in TrueVision3D v2.70.0 and ported the same day
+1064	## ValeVision3D v2.60.0 - 19-Sep-2026 - Two Greys and Two Shadows for One Pack of Documents	### Authored in TrueVision3D v2.72.0 and applied to both copies the same day
+1136	## ValeVision3D v2.59.1 - 19-Sep-2026 - The Floor Was Shading Itself	### Authored in TrueVision3D v2.68.1 and applied to both copies the same day
+1189	## ValeVision3D v2.59.0 - 19-Sep-2026 - The Settle Was Buying Sixteen Copies of the Same Noise	### Authored in TrueVision3D v2.66.0 and applied to both copies the same day
+1265	## ValeVision3D v2.58.1 - 18-Sep-2026 - The Drawing Keeps the Finger	### Authored in TrueVision3D v2.65.2 and applied to both copies the same day
+1321	## ValeVision3D v2.58.0 - 18-Sep-2026 - The Public Web Is a Viewer, Not a Disabled Editor	### Ported from TrueVision3D v2.65.0 and v2.65.1, authored there the same day
+1441	## ValeVision3D v2.57.0 - 18-Sep-2026 - Drawing Tabs Stay Rendered, and a Moved Thing Is a New Model	### Ported from TrueVision3D v2.64.0 and v2.64.1, authored there the same day
+1520	## ValeVision3D v2.56.1 - 18-Sep-2026 - A Line Tagged Dashed in SketchUp Arrives Dashed on the Sheet	### Ported from TrueVision3D v2.63.1 and v2.63.2, authored there the same day
+1590	## ValeVision3D v2.56.0 - 17-Sep-2026 - The Specification Is a Document: Revision, Number and Download	### Ported from TrueVision3D v2.63.0, authored there the same day
+1626	## ValeVision3D v2.55.0 - 17-Sep-2026 - A Downloaded Sheet Is Named After the Drawing	### Ported from TrueVision3D v2.62.0, authored there the same day
+1647	## ValeVision3D v2.54.1 - 17-Sep-2026 - Viewport Captions Stop Eating Their Own Scale	### Ported from TrueVision3D v2.61.1, authored there the same day
+1673	## ValeVision3D v2.54.0 - 17-Sep-2026 - The Title Block Says What Paper It Is, and Names Every Scale	### Ported from TrueVision3D v2.61.0, authored there the same day
+1704	## ValeVision3D v2.54.0 - 17-Sep-2026 - The Progressive Renderer Stall, and the Scale Cell's Paper Size	### Ported from TrueVision3D v2.58.2 and v2.61.0
+1755	## ValeVision3D v2.53.0 - 17-Sep-2026 - Dimensions You Can Grab, Constrain, Type Into and Slide	### Ported from TrueVision3D v2.60.0, authored there the same day
+1858	## ValeVision3D v2.52.0 - 17-Sep-2026 - Container Editing, the Move Tool, and Editable Dimensions	### Changed
+1929	## ValeVision3D v2.51.0 - 17-Sep-2026 - Match Properties to a Whole Selection, and One Markup Panel Open at a Time	### Changed
+1997	## ValeVision3D v2.50.1 - 16-Sep-2026 - Carousel Holds Opaque Longer on First Reveal	### Changed
+2015	## ValeVision3D v2.50.0 - 16-Sep-2026 - Views Button Retired, Carousel Always Shows With Idle Fade	### Changed
+2062	## ValeVision3D v2.49.1 - 16-Sep-2026 - Mobile Nav Swap: Also Trigger on Near-Square/Portrait Windows	### Fixed
+2084	## ValeVision3D v2.49.0 - 16-Sep-2026 - Mobile Nav: Toolbar and Tools Menu Swap Instead of Overlap	### Fixed
+2115	## ValeVision3D v2.48.1 - 16-Sep-2026 - Progressive Renderer: Zoom and Scene Changes Refine Too	### Fixed
+2164	## ValeVision3D v2.48.0 - 16-Sep-2026 - Progressive Renderer: the Viewport Sharpens Itself to 16x Once the Camera Stops	### Added
+2261	## ValeVision3D v2.47.1 - 15-Sep-2026 - Console Tidy-Ups: Shadow Map Type and Sharpen Readbacks	### Fixed
+2291	## ValeVision3D v2.47.0 - 15-Sep-2026 - Layout Editor Sorted Into Numbered Subfolders	### Changed
+2390	## ValeVision3D v2.46.0 - 15-Sep-2026 - Plan and Elevation Thumbnails Bake Themselves	### Fixed
+2441	## ValeVision3D v2.45.1 - 15-Sep-2026 - Fix: New Plans and Elevations Missing From Add Viewport	### Fixed
+2468	## ValeVision3D v2.45.0 - 15-Sep-2026 - Layout Editor Loads on First Use, Behind a Loading Screen	### Changed
+2546	## ValeVision3D v2.44.1 - 15-Sep-2026 - Fix: "does not provide an export named Na__ModelToggle__GetCategoryKeys" on Load	### Fixed
+2578	## ValeVision3D v2.44.0 - 15-Sep-2026 - Layout Editor: Margin Notes Spread Out When the Column Has Room	### Added
+2635	## ValeVision3D v2.43.0 - 15-Sep-2026 - Project Specification: Read - the Notes as A4 Pages, to Print or Read Aloud	### Added
+2691	## ValeVision3D v2.42.0 - 15-Sep-2026 - Layout Editor: Zoom Inside a 3D Viewport	### Added
+2764	## ValeVision3D v2.41.0 - 15-Sep-2026 - Layout Editor: Rotate Text With a Round Grip	### Added
+2816	## ValeVision3D v2.40.0 - 14-Sep-2026 - Layout Editor: Dashed Edges on Vectors	### Added
+2856	## ValeVision3D v2.39.0 - 14-Sep-2026 - Layout Editor: Type a Length While Dragging a Viewport	### Added
+2882	## ValeVision3D v2.38.0 - 14-Sep-2026 - Layout Editor: Group / Ungroup and Multi-Item Copy	### Added
+2915	## ValeVision3D v2.37.0 - 14-Sep-2026 - Dimension Text Leader: Drag the Value Off the Line	### Added
+2948	## ValeVision3D v2.36.0 - 14-Sep-2026 - Eyedropper: Match Unlocked Viewports, Skip Locked Ones	### Added
+2977	## ValeVision3D v2.35.0 - 14-Sep-2026 - Layout Editor Clipboard, Whole-Shape Snap, Measurements Box	### Added
+3023	## ValeVision3D v2.34.0 - 14-Sep-2026 - Dimension End Size: Resize Ticks, Arrows and Dots	### Added
+3048	## ValeVision3D v2.33.0 - 14-Sep-2026 - Box Select: a Window to the Right, a Crossing to the Left	### Added
+3127	## ValeVision3D v2.32.0 - 14-Sep-2026 - Leaders & Annotation Bubbles: a Note or a Specification Code on a Sweeping Leader	### Added
+3226	## ValeVision3D v2.31.1 - 13-Sep-2026 - A Refused Snapshot Upload Is Never Counted as Baked	### Fixed
+3268	## ValeVision3D v2.31.0 - 13-Sep-2026 - Drawing Layers: Drag the Grip, Lock and Unlock	### Changed
+3316	## ValeVision3D v2.30.0 - 13-Sep-2026 - Edge Styles: Structure Black, Doors Grey, Furniture Faint	### Added
+3448	## ValeVision3D v2.29.0 - 13-Sep-2026 - Ortho Dimensions: Hold Shift for Horizontal or Vertical	### Added
+3502	## ValeVision3D v2.28.0 - 13-Sep-2026 - Render Composites Weights: How Thick Each Layer Draws	### Added
+3551	## ValeVision3D v2.27.0 - 13-Sep-2026 - The Palette: Shift+B Sets What You Draw Next	### Added
+3591	## ValeVision3D v2.26.0 - 13-Sep-2026 - Gradient Fills	### Added
+3657	## ValeVision3D v2.25.0 - 13-Sep-2026 - The Rectangle Tool	### Added
+3697	## ValeVision3D v2.24.0 - 13-Sep-2026 - The Eyedropper, and Vectors That Redraw and Snap	### Added
+3760	## ValeVision3D v2.23.0 - 12-Sep-2026 - Supersampling Comes Back From the Still Exporter	### Added
+3816	## ValeVision3D v2.22.1 - 12-Sep-2026 - The Dev Menu Moves Into the Top Bar	### Changed
+3862	## ValeVision3D v2.22.0 - 12-Sep-2026 - The Return Trip: Fixes and Hardware From TrueVision	### Fixed
+3942	## ValeVision3D v2.21.21 - 11-Sep-2026 - Video Studio: 16x anti-aliasing by default	### Changed
+3963	## ValeVision3D v2.21.20 - 11-Sep-2026 - Layout Editor: tabs only where a project uses them	### Added
+4009	## ValeVision3D v2.21.19 - 11-Sep-2026 - Video Studio: anti-aliased MP4 exports	### Added
+4063	## ValeVision3D v2.21.18 - 11-Sep-2026 - Video Studio: door animation per keyframe	### Added
+4124	## ValeVision3D v2.21.17 - 11-Sep-2026 - Scenes and video keyframes keep their Orbit, Fly or Walk mode	### Fixed
+4224	## ValeVision3D v2.21.16 - 11-Sep-2026 - Camera-follow billboards really face the camera	### Fixed
+4256	## ValeVision3D v2.21.15 - 11-Sep-2026 - Entourage silhouettes switch on and off on their own	### Added
+4285	## ValeVision3D v2.21.14 - 10-Sep-2026 - Dev menu: drawing rows fold, one open at a time	### Changed
+4320	## ValeVision3D v2.21.13 - 10-Sep-2026 - Layout Editor: a vector can be a fill, and the arrow keys lock the axis	### Added
+4360	## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: Render Composites (Base Image, Context Layer)	### Added
+4387	## ValeVision3D v2.21.11 - 10-Sep-2026 - Layout Editor: 3D snapshots really do follow the raster level	### Fixed
+4413	## ValeVision3D v2.21.10 - 10-Sep-2026 - Layout Editor: the modern title block set like a Lantern drawing	### Changed
+4464	## ValeVision3D v2.21.9 - 10-Sep-2026 - Layout Editor raster quality: Low, Medium, High	### Added
+4485	## ValeVision3D v2.21.8 - 10-Sep-2026 - Layout Editor: dimensions you can edit, lineweights in points, Enhance Whitecard, a Draw tool	### Added
+4528	## ValeVision3D v2.21.7 - 10-Sep-2026 - Layout Editor: undo, locks, context menu, roaming page, sheets that survive a reload	### Fixed
+4582	## ValeVision3D v2.21.6 - 10-Sep-2026 - Drawings project only when asked	### Changed
+4597	## ValeVision3D v2.21.5 - 10-Sep-2026 - Renaming a drawing	### Fixed
+4669	## ValeVision3D v2.21.4 - 10-Sep-2026 - Raster viewports by default, help panel	### Changed
+4696	## ValeVision3D v2.21.3 - 10-Sep-2026 - Linework projection budget and object snaps	### Fixed
+4735	## ValeVision3D v2.21.2 - 10-Sep-2026 - Engine pause on drawing tabs	### Fixed
+4763	## ValeVision3D v2.21.1 - 10-Sep-2026 - clipper2-js vendored (app failed to load)	### Fixed
+4795	## ValeVision3D v2.21.0 - 10-Sep-2026 - Layout Editor (Port Phase 5)	### Overview
+4862	## ValeVision3D v2.20.0 - 09-Sep-2026 - Projected Linework on Drawings (Port Phase 4)	### Overview
+4937	## ValeVision3D v2.19.0 - 09-Sep-2026 - Elevations and Sections (Port Phase 3)	### Overview
+5008	## ValeVision3D v2.18.0 - 09-Sep-2026 - Drawing Substrate, Floor Plans, Annotations, Dimensions, Client Measuring (Port Phase 2)	### Overview
+5083	## ValeVision3D v2.17.0 - 09-Sep-2026 - Presentation Mode Scene Groups (Port Phase 1)	### Overview
+5167	## ValeVision3D v2.16.0 - 09-Sep-2026 - Three r184 Version-Locked Library Set (Port Phase 0)	### Overview
+5231	## ValeVision3D v2.15.0 - 02-Sep-2026 - Video Studio: Keyframe Timeline Replaces the Transport Slider	### Overview
+5308	## ValeVision3D v2.14.7 - 21-Aug-2026 - Walk and Fly Enabled by Default	### Overview
+5345	## ValeVision3D v2.14.6 - 21-Aug-2026 - MAT000E__ Glazing: SketchUp Opacity Reaches PureEngine	### Overview
+5392	## ValeVision3D v2.14.5 - 21-Aug-2026 - Fix: Views Bar Thumbnails Survive an Image Re-Sync	### Overview
+5413	## ValeVision3D v2.14.4 - 19-Aug-2026 - Export Render Layers: Approximations Removed	### Overview
+5464	## ValeVision3D v2.14.3 - 19-Aug-2026 - Canny From Linework, and Two Real Bugs	### Changed
+5505	## ValeVision3D v2.14.2 - 19-Aug-2026 - Export Render Layers: Line Art on the Real Renderer	### Changed
+5547	## ValeVision3D v2.14.1 - 19-Aug-2026 - Export Render Layers: First Export Review	### Overview
+5627	## ValeVision3D v2.14.0 - 19-Aug-2026 - Export Render Layers	### Overview
+5719	## ValeVision3D v2.13.1 - 14-Aug-2026 - Video Studio Editing Pass	### Overview
+5828	## ValeVision3D v2.13.0 - 14-Aug-2026 - Video Studio	### Overview
+5940	## ValeVision3D v2.12.9 - 30-Jul-2026 - Alt+Shift+F Fog + Forcefield Toggle	### Overview
+5953	## ValeVision3D v2.12.8 - 28-Jul-2026 - Nav Toolbar Idle Fade	### Overview
+5967	## ValeVision3D v2.12.7 - 28-Jul-2026 - Menu Style and Small-Screen Usability Pass	### Overview
+5983	## ValeVision3D v2.12.6 - 28-Jul-2026 - Whitecardopedia Breadcrumb Menu + Alt+Backspace Back	### Overview
+6009	## ValeVision3D v2.12.5 - 28-Jul-2026 - Orbit Keyboard Nudges + Device-Aware Help Panel	### Overview
+6042	## ValeVision3D v2.12.4 - 16-Jul-2026 - PureEngine MAT000E__ Texture Brightness Match	### Overview
+6062	## ValeVision3D v2.12.3 - 15-Jul-2026 - Capture Styles On Save Scene / Save All	### Overview
+6078	## ValeVision3D v2.12.2 - 15-Jul-2026 - Per-Scene Cross Section Style Capture	### Overview
+6097	## ValeVision3D v2.12.1 - 15-Jul-2026 - Fix: Unbound Scenes Now Clear Cross Sections	### Overview
+6115	## ValeVision3D v2.12.0 - 15-Jul-2026 - SketchUp-Native Section Planes Auto-Port Per Scene	### Overview
+6148	## ValeVision3D v2.11.0 - 15-Jul-2026 - Per-Scene Cross Section Bindings + Image Export Support	### Overview
+6211	## ValeVision3D v2.10.3 - 14-Jul-2026 - Cross Section Per-Section On/Off Toggle	### Overview
+6229	## ValeVision3D v2.10.2 - 14-Jul-2026 - Cross Section Overlay Composite Fix	### Overview
+6250	## ValeVision3D v2.10.1 - 14-Jul-2026 - Cross Section Face-Click + Slice Depth	### Overview
+6266	## ValeVision3D v2.10.0 - 14-Jul-2026 - SketchUp-Style Live Cross Section Tool	### Overview
+6320	## ValeVision3D v2.9.14 - 10-Jul-2026 - SketchUp Scene Framing vs OrbitHelperCube Pivot Split	### Overview
+6386	## ValeVision3D v2.9.13 - 10-Jul-2026 - Glass Darkening Compounding Fix + Unified Dark Mirror Glass	### Overview
+6428	## ValeVision3D v2.9.12 - 10-Jul-2026 - Multi-Panel Doors and Independent Exterior Double Leaves	### Overview
+6469	## ValeVision3D v2.9.11 - 09-Jul-2026 - WYSIWYG Line Widths in Exports (Resolution Compensation)	### Overview
+6489	## ValeVision3D v2.9.10 - 09-Jul-2026 - Single/Zero-Scene Orbit Pivot Fix	### Overview
+6510	## ValeVision3D v2.9.9 - 08-Jul-2026 - Tiled Static Export Renderer (4K Fixed, 8K Added) + Advanced Linework Settings	### Overview
+6554	## ValeVision3D v2.9.8 - 02-Jul-2026 - Generate & Download Email Type Chooser	### Overview
+6570	## ValeVision3D v2.9.7 - 02-Jul-2026 - App Notification Email System + Install Guide Page	### Overview
+6598	## ValeVision3D v2.9.6 - 01-Jul-2026 - Per-Scene Tag-Driven Model Toggles	### Overview
+6621	## ValeVision3D v2.9.5 - 26-Jun-2026 - Pipeline Fix: valeVision_ModelUrls Now Always Populated	### Overview
+6643	## ValeVision3D v2.9.4 - 26-Jun-2026 - Purge App Cache Button (Tools & Settings → App Settings)	### Overview
+6662	## ValeVision3D v2.9.3 - 26-Jun-2026 - R2-First Dev Menu Saves + Fog Dev UI Sync Fix	### Overview
+6706	## ValeVision3D v2.9.2 - 26-Jun-2026 - Match SketchUp Scene-First Default Camera Position (Scene 1 First Camera Position)	### Overview
+6739	## ValeVision3D v2.9.1 - 25-Jun-2026 - Orbit Helper Cube Visibility Regression Fix	### Overview
+6761	## ValeVision3D v2.9.0 - 25-Jun-2026 - Build-Version Cache-Bust (Real-Time R2 Assets)	### Overview
+6778	## ValeVision3D v2.8.0 - 25-Jun-2026 - SketchUp Camera Auto-Animation + R2 Master Index	### Overview
+6805	## ValeVision3D v2.7.2 - 16-Jun-2026 - Carousel UI Cleanup: Remove Play Button and Pagination Dots	### Overview
+6819	## ValeVision3D v2.7.1 - 11-Jun-2026 - Presentation Mode Saved Camera Scenes	### Overview
+6849	## ValeVision3D v2.7.0 - 11-Jun-2026 - MaxModel Load Speed + Model/HDRI/DataLib Caching Strategy	### Overview
+6867	## ValeVision3D v2.6.1 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)	### Overview
+6889	## ValeVision3D v2.6.0 - 11-Jun-2026 - PWA Stability Fix	### Overview
+6931	## ValeVision3D v2.5.0 - 10-Jun-2026	### Floating Navigation Toolbar + Project-JSON Reset View + Navigation Help Panel
+6962	## ValeVision3D v2.4.3 - 10-Jun-2026	### Negative Door Swing Angles + PureEngine Whitecard Enforcement
+6987	## ValeVision3D v2.4.2 - 10-Jun-2026	### Glass Realism Upgrade + Red Failure Toast Diagnostics
+7015	## ValeVision3D v2.4.1 - 10-Jun-2026	### MaxModel Loading Fixes — Storey GLB Parsing, Indexed Material Preservation, Token-Based Door Collection
+7050	## ValeVision3D v2.4.0 - 10-Jun-2026	### Dual Render Engine — PureEngine (Default) + MaxEngine (TrueVision PBR/SSAO Port)
+7105	## ValeVision3D v2.3.7 - 09-Jun-2026	### Navigation Modes — Walk and Fly Mode Port from TrueVision3D
+7138	## ValeVision3D v2.3.6 - 24-May-2026	### Profile Lines — Architectural Alignment with TrueVision (Mesh/Linework Discrimination Tags)
+7179	## ValeVision3D v2.3.5 - 21-May-2026	### Site Boundaries Toggle — Conditional Layer Support
+7205	## ValeVision3D v2.3.4 - 29-Apr-2026	### Dev Tools — Confirm Modals + Camera Configurations Grouping
+7244	## ValeVision3D v2.3.3 - 29-Apr-2026	### Orbit Max Zoom Distance — iPad +50% Bonus + Per-Project Override
+7286	## ValeVision3D v2.3.2 - 09-Apr-2026	### Email Workers — R2 CDN Contacts, BCC Admin Copy, Deployment Tooling
+7336	## ValeVision3D v2.3.1 - 09-Apr-2026	### Email Auth Overlay — Password-Gated Email Send Authorization
+7380	## ValeVision3D v2.3.0 - 09-Apr-2026	### Email Workers — Internal Send-Email System via Microsoft Graph
+7441	## ValeVision3D v2.2.0 - 07-Apr-2026	### Fog Plane System — Planar Fog with Camera Force Field
+7489	## ValeVision3D v2.1.5 - 07-Apr-2026	### Scene Inspector — Copy Tree to Clipboard
+7508	## ValeVision3D v2.1.4 - 20-Mar-2026	### Tools Menu — Share Link + Full Screen Icon Update
+7524	## ValeVision3D v2.1.3 - 13-Mar-2026	### Tools Menu — Icon Set Added
+7549	## ValeVision3D v2.1.2 - 13-Mar-2026	### Elevation View — Grid Origin Plane Anchor
+7573	## ValeVision3D v2.1.1 - 13-Mar-2026	### Grid Lines System — Configurable Scene Grid Overlay
+7616	## ValeVision3D v2.1.0 - 13-Mar-2026	### Vertical Perspective Correction — Architectural Line Straightening
+7687	## ValeVision3D v2.0.8  -  12-Mar-2026	### Elevation View System — 2D Elevation Tool
+7731	## ValeVision3D v2.0.7  -  12-Mar-2026	### Page Layout System — Config Externalisation
+7771	## ValeVision3D v2.0.6  -  12-Mar-2026	### PDF Export — Canvas Corruption Fix, JPEG Pipeline & Data Validation
+7801	## ValeVision3D v2.0.5  -  12-Mar-2026	### Viewport Refresh — Camera Lens Slider & Post-Export Repaint
+7822	## ValeVision3D v2.0.4  -  11-Mar-2026	### Scene Inspector — Visibility Controls, Filter, Isolate Pair, Viewport Height
+7865	## ValeVision3D v2.0.3  -  11-Mar-2026	### Dev Tools Panel — Localhost-Only Developer Menu System
+7914	## ValeVision3D v2.0.2  -  11-Mar-2026	### PDF Export — Flattened 600 dpi Pipeline & Config Naming Convention
+7941	## ValeVision3D v2.0.1  -  11-Mar-2026	### Multi-Model Loader — TrueVision Namespace Support (Ribbins 62854)
+7962	## ValeVision3D v2.0.0  -  10-Mar-2026	### GPU Performance Overhaul — Profile Lines Pipeline Optimisation
+8031	## ValeVision3D v1.9.9  -  10-Mar-2026	### Profile Lines — Dynamic Edge Width, Smooth Threshold, Config Alignment
+8061	## ValeVision3D v1.9.8  -  10-Mar-2026	### Project Structure Alignment — TrueVision3D Numbered Layout
+8088	## ValeVision3D v1.9.7  -  27-Feb-2026	### Stylesheet Naming Standardization
+8106	## ValeVision3D v1.9.6  -  26-Feb-2026	### Orbit Anchor Hardening + Nav Damping Delegation
+8188	## ValeVision3D v1.9.5  -  24-Feb-2026	### Layout View Loading Overlay — Spinner Feedback, Button State Fix, postMessage Handshake
+8235	## ValeVision3D v1.9.4  -  24-Feb-2026	### `index.html` Modularisation Pass — 5 New Modules, Walk Mode Controls, Region Structure
+8308	## ValeVision3D v1.9.3  -  24-Feb-2026	### AppConfig Key Wiring Fix — `Camera__DefaultMisc__Fov` Key Name Regression
+8335	## ValeVision3D v1.9.2  -  23-Feb-2026	### PBR Materials Swap System — Indexed Material Library, WebApp Renderer, SketchUp Export Modes
+8432	## ValeVision3D v1.9.1  -  23-Feb-2026	### Walk Mode Navigation System — First-Person Capsule Physics, Proximity Doors, Test Environment UI & Collision Exemptions
+8502	## ValeVision3D v1.9.0  -  18-Feb-2026	### Save Camera Settings — Localhost-Only Button & Full State Restore
+8528	## ValeVision3D v0.1.8  -  18-Feb-2026	### Scene Effects Delegation & Post-Processing Orbit-Anchored Fog
+8567	## ValeVision3D v0.1.7  -  18-Feb-2026	### Configuration Architecture Refactor — Scene Config Separation & Ground Plane Control
+8615	## ValeVision3D v0.1.6  -  15-Feb-2026	### Building Storey Visibility System — Dolls House View & Per-Storey Toggle
+8696	## ValeVision3D v0.1.5  -  15-Feb-2026	### 3D Object Interactions System — Click-to-Open Door Animation
+8753	## ValeVision3D v0.1.4  -  14-Feb-2026	### Testing Environment — Prototype Sandbox & Click-to-Open Doors Feature (Initial Prototype)
+8802	## ValeVision3D v0.1.3c  -  13-Feb-2026	### Page Layout Touch Controls — Edge Handle Clipping Parity (iOS / Touchscreen)
+8835	## ValeVision3D v0.1.3b  -  13-Feb-2026	### Layout View Export Fix — Profile Lines / Camera Projection Synchronization
+8867	## ValeVision3D v0.1.3  -  12-Feb-2026	### Render Effect — Profile Lines (SketchUp-Style Silhouette Edges)
+8887	## ValeVision3D v0.1.2  -  12-Feb-2026	### 3D Render Pipeline — Ground Line Visibility & RenderConfig__Linework Naming
+8907	## ValeVision3D v0.1.1  -  12-Feb-2026	### Page Layout System — Image Clipping with Edge Handles
+8945	## ValeVision3D v0.1.0  -  12-Feb-2026	### OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
+8982	## ValeVision3D v0.0.9  -  11-Feb-2026	### Page Layout View System (LayoutVision 2D)
+9022	## ValeVision3D v0.0.8  -  11-Feb-2026	### Image Export Safe Frame & Rule of Thirds Grid Overlay

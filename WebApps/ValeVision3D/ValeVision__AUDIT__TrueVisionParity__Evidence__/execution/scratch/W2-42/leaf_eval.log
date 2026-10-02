@@ -1,0 +1,10 @@
+﻿Geometry exports: Na__LeOsnapGeo__CellsOfSegment, Na__LeOsnapGeo__Centroid, Na__LeOsnapGeo__Cross, Na__LeOsnapGeo__DistanceToSegment, Na__LeOsnapGeo__Foot, Na__LeOsnapGeo__Nearest
+Glyphs exports  : Na__LeOsnap__GlyphSvg, Na__LeOsnap__IllustrationSvg
+State exports   : 28
+PASS Cross of two diagonals is (5, 5)
+PASS Centroid of a 10 x 4 rectangle is (5, 2)
+PASS Glyph SVG for an endpoint is an <svg>
+PASS State KIND_END is "end"
+PASS State reads on in a window-less run (default enabled, storage read wrapped)
+PASS Six running modes
+6/6 PASS

@@ -1,0 +1,13 @@
+{
+ "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js": {
+  "exists": true,
+  "sha1": "c3dc374ce356f82db76502f7aecfcb705736e3a7",
+  "bytes": 9547,
+  "crlf": 170,
+  "lf_only": 0,
+  "bom": false
+ },
+ "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js": {
+  "exists": false
+ }
+}

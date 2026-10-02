@@ -1,0 +1,19 @@
+--- TV b2aa9151/Na__LayoutEditor__Register__Notes__.js
++++ VV/Na__LayoutEditor__Register__Notes__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - DRAWING REGISTER REVISION NOTES
++// VALEVISION3D - LAYOUT EDITOR - DRAWING REGISTER REVISION NOTES
+@@ -25,2 +25,11 @@
+-// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the register tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js
++// - Source version: 1.0.1 (TrueVision3D v2.69.0, 19-Sep-2026, the first release whose log names the Drawing
++//                   Register; the file is unchanged since it was first committed that day; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
++//                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - The warning select offers TrueVision's none / yellow / red. A yellow warning prints in the amber
++//     panel because Na__LayoutEditor__Register__Pdf__ boxes it (DR-37 item 2, fixed there, not here).
++// - Back-port     : none.

@@ -36,34 +36,45 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 51 Na__LayoutEditor__SheetTools__ v1.3.0 (placement and inline editing, split out)
-// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.8 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5: placement and inline
+//                   editing split out of Na__LayoutEditor__SheetTools__ 1.3.0); TrueVision3D took it whole
+//                   on 10-Sep-2026 (its v2.21.0) and grew it to 1.4.0; since ported back whole from
+//                   TrueVision3D 1.4.0 (HEAD b2aa9151)
+// - Source version: 1.4.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This app's
+//                   copy was its 1.3.0 (15-Sep-2026), TrueVision 1.3.0's content. It now takes 1.4.0: a
+//                   new text item lands on the drawing grid while Grid Snap is on (v2.114.0). That
+//                   TrueVision release is not confirmed by Adam in TrueVision; it comes across under
+//                   DR-01 (c) and is named so.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 15-Sep-2026 - Version 1.3.0
+// 21-Sep-2026 - Version 1.4.0
+// - Place puts a new text item on the drawing grid while Grid Snap is on
+//   (F7, Na__LayoutEditor__DrawingGrid__): the click lands on the nearest
+//   grid point and the text is set from there. Grid Snap off, as before.
+//
+// 14-Sep-2026 - Version 1.3.0
 // - Rotation: WrapDeg, RotationPatch (a turn about the middle of the box),
 //   RotateStart and RotateTo (the rotate grip's drag, with Shift steps and a
 //   right-angle detent). OpenField takes rotateDeg with originXMm and
 //   originYMm and turns the field about that point; BeginEdit passes the
 //   item's. Place takes defaults.rotationDeg and puts the top of the first
 //   line on the press, turned or not.
-// - Ported from TrueVision3D v2.52.0 (TextTool 1.3.0).
 //
 // 14-Sep-2026 - Version 1.2.0
 // - Sheet annotations open a text area (commitOnEnter): Shift+Enter starts
 //   a new line, Enter still commits. Drawn as one line per newline.
-// - Ported from TrueVision3D (TextTool 1.2.0).
 //
 // 14-Sep-2026 - Version 1.1.0
 // - OpenField takes multiline: a text area instead of a single line, for a
 //   leader's note. Enter starts a new line and Ctrl+Enter commits; Escape
 //   still cancels and a blur still commits. It grows a row per line typed.
-// - Ported from TrueVision3D v2.35.0.
 //
 // 10-Sep-2026 - Version 1.0.0
 // - Initial implementation, split from the sheet tools.
@@ -85,6 +96,7 @@
         Na__LeModel__SetSelection
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeCfg__GetTextSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeGrid__SnapPoint } from '../27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js';   // <-- Grid Snap (F7): a leaf, the nearest grid point
     import { Na__LeSurface__GetElements, Na__LeSurface__GetPixelsPerMm } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeMarkup__AnnotationBox, Na__LeMarkup__AnnotationRotationDeg, Na__LeMarkup__AnnotationCentre } from '../15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js';
     // ------------------------------------------------------------
@@ -237,6 +249,7 @@
     // or not.
     // ------------------------------------------------------------
     function Na__LeText__Place(sheet, point, defaults) {
+        point = Na__LeGrid__SnapPoint(point);                                    // <-- Grid Snap (F7): the text goes down on the grid point nearest the click
         const d    = defaults || {};
         const deg  = Na__LeText__WrapDeg(d.rotationDeg);
         const drop = (d.sizeMm || 3) * 0.72;                                     // <-- From the press down to the first baseline, before turning

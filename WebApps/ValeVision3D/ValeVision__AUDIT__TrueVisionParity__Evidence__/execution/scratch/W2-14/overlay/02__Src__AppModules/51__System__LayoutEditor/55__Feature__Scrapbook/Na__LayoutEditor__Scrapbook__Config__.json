@@ -1,0 +1,31 @@
+{
+    "LayoutEditor__Scrapbook__Meta": {
+        "Meta__FileName": "Na__LayoutEditor__Scrapbook__Config__.json",
+        "Meta__Description": "The Standard Scrapbook: ready-made items, written here as sheet records, that are dragged onto the paper. Owned by Na__LayoutEditor__Scrapbook__.js. IT IS EMPTY IN THIS APP. TrueVision ships two - a mapping data credentials block and a north point, both site plan furniture and both Noble Architecture's own - and neither belongs here. The file, the module and the section are in place so that a house item can be added by writing it below, exactly as TrueVision's are written: a piece under Pieces (vectors and text in paper millimetres from its own top left), and an item under Items__List naming the pieces it is made of. With no items the section stays hidden, and the Scrapbook tab shows the Parametric and Custom libraries alone.",
+        "Meta__Version": "1.0.0",
+        "Meta__Created": "20-Sep-2026",
+        "Meta__Author": "Adam Noble - Noble Architecture",
+        "Meta__Pieces": "A piece is { Piece__Description, Piece__SizeMm : { WidthMm, HeightMm }, Piece__Records : [ { kind : 'shape' | 'annotation', record } ] }. A shape record may carry Scrapbook__Circle : { CentreMm, RadiusMm, Segments } in place of Shape__Points.",
+        "Meta__Items": "An item is { Item__Id, Item__Name, Item__Description, Item__DrawingTypes (optional; this app has only 'architectural'), Item__Pieces : [ { Piece, OffsetMm : [ x, y ] } ] }.",
+        "Meta__Tokens": "Text may hold {Token} names; each is filled from LayoutEditor__Scrapbook__Tokens when the item is built."
+    },
+    "LayoutEditor__Scrapbook__Tokens": {
+        "Tokens__Description": "Values that item text may quote as {Name}. None are needed while the library is empty."
+    },
+    "LayoutEditor__Scrapbook__Pieces": {
+        "Pieces__Description": "The parts items are made of. None yet."
+    },
+    "LayoutEditor__Scrapbook__Items": {
+        "Items__Description": "The tiles the Standard Scrapbook section shows, in this order. None yet, so the section is hidden.",
+        "Items__List": []
+    },
+    "LayoutEditor__Scrapbook__Labels": {
+        "Labels__Description": "The Scrapbook's wording. Title is the right column's tab, which holds every library; StandardTitle is this library's own section on it. ItemTitle is each tile's tooltip, with {name} the item's name.",
+        "Labels__Title": "Scrapbook",
+        "Labels__StandardTitle": "Standard Scrapbook",
+        "Labels__Hint": "Drag an item onto the sheet. Double-click one to place it in the middle of the view.",
+        "Labels__ReadOnly": "Items can only be placed while sheets are editable.",
+        "Labels__Failed": "The scrapbook could not be read, so it has no items.",
+        "Labels__ItemTitle": "{name}: drag onto the sheet, or double-click to place it in the middle of the view."
+    }
+}

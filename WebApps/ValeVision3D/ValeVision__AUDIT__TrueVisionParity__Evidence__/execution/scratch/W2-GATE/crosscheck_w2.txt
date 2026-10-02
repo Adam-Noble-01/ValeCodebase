@@ -1,0 +1,408 @@
+W1 checkpoint: W1__20261002-1026 (mtime 02-Oct 10:26:28)
+changed since baseline (records excluded): 544  by status code: {" D": 3, " M": 191, "??": 269, "R ": 20, "RM": 61}
+untouched since the W1 checkpoint: 310 (byte-identical to it: 305; changed: 0; not comparable: 5)
+touched in the W2: 234 (new since W1: 188; W1 paths written again: 46)
+W1 checkpoint paths no longer dirty: 0 []
+W2-touched with a strict W2 owner: 228; loose mention only: 0; no W2 record at all: 6
+hash attestation of the W2-touched: {"MISSING": 1, "NONE": 115, "record": 86, "scratch": 32}
+W2-touched outside every W2 edits/hot list: 10 (new files 10, existing files 0)
+
+== UNTOUCHED SINCE W1 BUT CHANGED (defect) ==
+== UNTOUCHED, NOT COMPARABLE ==
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionPublished__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionShared__Lib__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionSheetImages__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionStatements__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+  WebApps/Whitecardopedia/__pycache__/Server__ValeVisionUserConfig__Api__.cpython-312.pyc  (bytecode (checkpoint.py leaves .pyc out))
+
+== CONTINUATION-TOUCHED, NO STRICT CONTINUATION OWNER ==
+  ?? WebApps/ValeVision3D/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  mtime 02-Oct 10:33:58  loose: -  any strict: -
+  ?? WebApps/Whitecardopedia/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  mtime 02-Oct 10:34:02  loose: -  any strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_001.webp  mtime 02-Oct 10:37:17  loose: -  any strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_002.webp  mtime 02-Oct 10:37:18  loose: -  any strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_003.webp  mtime 02-Oct 10:37:18  loose: -  any strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_004.webp  mtime 02-Oct 10:37:18  loose: -  any strict: -
+
+== CONTINUATION-TOUCHED, MORE THAN ONE STRICT CONTINUATION OWNER ==
+   M WebApps/ValeVision3D/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js  <- W2-03,W2-12
+  RM WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js  <- W2-04,W2-05
+  RM WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css  <- W2-04,W2-32
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js  <- W2-17,W2-18,W2-19,W2-32
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json  <- W2-11,W2-14,W2-29,W2-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js  <- W2-16,W2-19,W2-29,W2-31,W2-35
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css  <- W2-19,W2-20,W2-24,W2-25
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json  <- W2-09,W2-12
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js  <- W2-13,W2-15
+   M WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css  <- W2-01,W2-03,W2-34
+   M WebApps/ValeVision3D/index.html  <- W2-01,W2-03,W2-05,W2-08,W2-27,W2-34
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js  <- W2-16,W2-17
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  <- W2-14,W2-36
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/ValeVision__DrawingNotes__.json  <- W2-30,W2-32,W2-35
+
+== CONTINUATION-TOUCHED OUTSIDE EVERY CONTINUATION EDITS LIST ==
+  ?? WebApps/ValeVision3D/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  vv_target of -  strict: -
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css  vv_target of -  strict: W2-29
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  vv_target of -  strict: W2-14,W2-36
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs  vv_target of -  strict: W2-17
+  ?? WebApps/Whitecardopedia/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  vv_target of -  strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_001.webp  vv_target of -  strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_002.webp  vv_target of -  strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_003.webp  vv_target of -  strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_004.webp  vv_target of -  strict: -
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/ValeVision__DrawingNotes__.json  vv_target of -  strict: W2-30,W2-32,W2-35
+
+== HASH NOT ATTESTED ==
+  WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js  MISSING  sha1 None sha256 None  owners W2-33
+  WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js  NONE  sha1 92aaa980cd20 sha256 834ead60e42b8384  owners W2-13
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json  NONE  sha1 4c8a6b4f9e74 sha256 07c8a868e36e761a  owners W2-04
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js  NONE  sha1 57f044f5b6f9 sha256 16f0f845d5eececb  owners W2-04
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js  NONE  sha1 ba53855f1231 sha256 b3479f0e405e64fd  owners W2-04
+  WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css  NONE  sha1 3827fb2bbd7b sha256 832127ecfb26168b  owners W2-04,W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json  NONE  sha1 ce80279e0aa6 sha256 eca182625e5828f0  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js  NONE  sha1 d6316d0bcff4 sha256 3d5c06701cc4f012  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js  NONE  sha1 b50b4303e49a sha256 54149ce2aeb241a6  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js  NONE  sha1 545abd6a7a71 sha256 8503d0fa447d9a07  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js  NONE  sha1 89f13326a795 sha256 250c6894f55b7d2d  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js  NONE  sha1 f0dd1ce01c3f sha256 46981ff783abd0aa  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js  NONE  sha1 dbde2b54ca9d sha256 cff1885c661cc31e  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js  NONE  sha1 90c77779163d sha256 b2ecb8724ec37e80  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js  NONE  sha1 3851359bfb4c sha256 484028e3f0cd703a  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js  NONE  sha1 930d675de130 sha256 5e5da1f5975d49a5  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js  NONE  sha1 c78c96cc3728 sha256 e701e138d5ecf0ea  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js  NONE  sha1 707e2f8df1ab sha256 a7b2111cf321d9f3  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js  NONE  sha1 399434b598cd sha256 62d3fd192fa11782  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css  NONE  sha1 b94615402baf sha256 761be7ae5c4c9ba4  owners W2-19,W2-20,W2-24,W2-25
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json  NONE  sha1 0b7f78951023 sha256 fd7292fc3697a763  owners W2-13
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js  NONE  sha1 fd932fed8d61 sha256 b782fc9d1222a81d  owners W2-25
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js  NONE  sha1 d6aa0927af8f sha256 3f8355971fa99cc5  owners W2-20
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js  NONE  sha1 552f788d63cc sha256 e611568fd065289a  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js  NONE  sha1 b4c47dbc341e sha256 314a1c542f3bcf1e  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js  NONE  sha1 eeca6b9151a3 sha256 ad4d4325a7c7ff99  owners W2-24
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js  NONE  sha1 988130f02a20 sha256 68e0164c6e02248e  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js  NONE  sha1 5ba9b578de95 sha256 b00142a197d46191  owners W2-23
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js  NONE  sha1 7c7be9180ee1 sha256 8ad7c2311a110ba9  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js  NONE  sha1 333f7d66bb09 sha256 55dec230e6f35a94  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js  NONE  sha1 6034f4cd760f sha256 88279cd906ea8e47  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js  NONE  sha1 b27f71c6e928 sha256 6dff3a27cc26005f  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js  NONE  sha1 966f99ee0c70 sha256 c4b9631e29294fac  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js  NONE  sha1 4bbd06e7fceb sha256 ca79347faaef493e  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js  NONE  sha1 7073d821e9ff sha256 97ffdc21521dbd83  owners W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js  NONE  sha1 6afded928335 sha256 421de56e9ab24171  owners W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css  NONE  sha1 3ef299db8f78 sha256 51c62ead21b3d148  owners W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js  NONE  sha1 ff97e1a30d56 sha256 c562668923bbada6  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js  NONE  sha1 c1e24313b365 sha256 af69969cffb22207  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json  NONE  sha1 e7c49187c08b sha256 078a3da97d1f6b41  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js  NONE  sha1 3005d7d93ce6 sha256 d08aec01dbde62c3  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js  NONE  sha1 f133ba4acc37 sha256 aea5ff53a3200df7  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js  NONE  sha1 3367a9fc346c sha256 ebac6acd63d51d36  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js  NONE  sha1 45ab690407d5 sha256 94e7038dc74c9965  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js  NONE  sha1 1e9464656c9f sha256 481edf1ee8f4cd88  owners W2-37
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css  NONE  sha1 61c959efe8a2 sha256 d0c2967d6cf4b49c  owners W2-37
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs  NONE  sha1 25fddb2a780b sha256 4be30c952b3d4efc  owners W2-37
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs  NONE  sha1 30592d7a91b9 sha256 78c86f480c749a60  owners W2-37
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs  NONE  sha1 67ce81a93b37 sha256 6aae41d16b847e8a  owners W2-10
+  WebApps/ValeVision3D/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  NONE  sha1 149bd6ad72b4 sha256 20549ca4730e43c7  owners -
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json  NONE  sha1 c4aba0373137 sha256 3e0fb2da7f35d002  owners W2-40
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js  NONE  sha1 29b90e41d058 sha256 04d0f69690008be2  owners W2-40
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js  NONE  sha1 1ab38ab5d160 sha256 5d11e798cdc96255  owners W2-40
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js  NONE  sha1 2e5ef72bddf1 sha256 ab875b94c07fdcb6  owners W2-01
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js  NONE  sha1 47f2c6ced5aa sha256 11a0a07e31fa1f32  owners W2-01
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js  NONE  sha1 0045ab56e737 sha256 43e9186c465fa979  owners W2-40
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js  NONE  sha1 e6d4a048eb13 sha256 9e24d9c8153bcf92  owners W2-01
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js  NONE  sha1 6c90d593b60b sha256 6df55319af0f41c5  owners W2-40
+  WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css  NONE  sha1 7f5fb23ed735 sha256 4985962bd3427373  owners W2-01
+  WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js  NONE  sha1 6d540a3bc370 sha256 6bcb93a37d6d58f8  owners W2-06
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js  NONE  sha1 39726d018081 sha256 82b293add5599dde  owners W2-14
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js  NONE  sha1 f00cd4999955 sha256 51bd60d273a043c9  owners W2-14
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js  NONE  sha1 17cf20ef769a sha256 78e8ea6e6751872d  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json  NONE  sha1 dfe93d4af306 sha256 40335e5f612b0e6f  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css  NONE  sha1 7ff30d099e80 sha256 f9a17b16bb23d21c  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js  NONE  sha1 9c3064642ca9 sha256 186582950732c9f2  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json  NONE  sha1 1b284cf60e39 sha256 f6c04d83a315da9a  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js  NONE  sha1 407ba9add3c1 sha256 ea32211528592b32  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css  NONE  sha1 47afdf1f8afa sha256 f28a1c24b7eae1b9  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js  NONE  sha1 bdd83b0987d4 sha256 21460523ae2b8709  owners W2-25
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json  NONE  sha1 3e689f35c886 sha256 a0986490d1d5eb5e  owners W2-25
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js  NONE  sha1 3111b4d36acb sha256 ac019205645838f0  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json  NONE  sha1 36786d4acad2 sha256 d2bb9a9baa1d17c9  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js  NONE  sha1 18575d0a6ed5 sha256 a8577326563c181b  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js  NONE  sha1 3e13f70359b3 sha256 85a69698fce6f845  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js  NONE  sha1 a33df8b86c28 sha256 d33e20006e9828e6  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js  NONE  sha1 14b87185ad29 sha256 d363f003d420c85a  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js  NONE  sha1 81b169f1cb2c sha256 f4267bcc5701b68c  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js  NONE  sha1 e391e8a4d903 sha256 c43f1512db1320a9  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js  NONE  sha1 89aa57a7e9af sha256 c9009bc48d500085  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js  NONE  sha1 15a72f9df432 sha256 32637bc892795c0f  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js  NONE  sha1 9e53b4a30e38 sha256 102facffd8c37976  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js  NONE  sha1 7c973326f314 sha256 ed8d2bfd4f93b038  owners W2-42
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css  NONE  sha1 473cb8ace56a sha256 26c4d8bdf94e7205  owners W2-19
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js  NONE  sha1 d6c0a68a6e85 sha256 c8ab09ffd578c809  owners W2-25
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js  NONE  sha1 28eec70afcb7 sha256 aaf6c3d20ccf30af  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js  NONE  sha1 b0cb7e335ba6 sha256 f4784603b86b0ea4  owners W2-20
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js  NONE  sha1 667ca614a345 sha256 764aa7e99fb7473f  owners W2-21
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js  NONE  sha1 18a5751f8f54 sha256 3202c0bcaecc356f  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json  NONE  sha1 4157e1f1289b sha256 8d768cbb831ae561  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js  NONE  sha1 694dcbd311a5 sha256 f68aac67a54b96cc  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json  NONE  sha1 8ff10ee83aa4 sha256 7da5adc18dfc0673  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css  NONE  sha1 79548cc107fb sha256 eaab0d1c62fefa46  owners W2-18
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js  NONE  sha1 c27f5097b937 sha256 efe908cf02cc6e8b  owners W2-14
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js  NONE  sha1 1c7f441ce672 sha256 4eed2397bfabbb28  owners W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js  NONE  sha1 21837677783b sha256 616174ea33ffc2fd  owners W2-22
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js  NONE  sha1 10f2fbea08a6 sha256 d09e66ec8b932f88  owners W2-32
+  WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js  NONE  sha1 f021cbfe1f6b sha256 53f13fe0d602407e  owners W2-32
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs  NONE  sha1 ce70f07d265f sha256 df6e821bead06da1  owners W2-19
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs  NONE  sha1 d52469cc558b sha256 bdb31c0331c034c6  owners W2-01
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs  NONE  sha1 1111a66d7d05 sha256 834242b335abfcb8  owners W2-21
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs  NONE  sha1 cf0036975d78 sha256 f7bff49928aa8f89  owners W2-32
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LineworkModifiers__.test.mjs  NONE  sha1 1005c1542aed sha256 c2bb3fa1b2be111a  owners W2-13
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs  NONE  sha1 a89cda3203ed sha256 b81002a774017d46  owners W2-32
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs  NONE  sha1 27bdccbc75d2 sha256 ddcb4a1109b5a90f  owners W2-19
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs  NONE  sha1 fbb905600666 sha256 57803350e06333fd  owners W2-24
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__.test.mjs  NONE  sha1 e18f07148a70 sha256 3c040f32b149b78e  owners W2-14
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__Output__.html  NONE  sha1 e5e54514a8f9 sha256 55a557e8dcac67b1  owners W2-14
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanStore__.test.mjs  NONE  sha1 fd4bc49e68b9 sha256 2f462dcd9c37d5fb  owners W2-14
+  WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs  NONE  sha1 d6732b69a998 sha256 5a7b99ce18e30fa5  owners W2-06
+  WebApps/Whitecardopedia/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  NONE  sha1 149bd6ad72b4 sha256 20549ca4730e43c7  owners -
+  WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_001.webp  NONE  sha1 2365ecf60efd sha256 15e283de16f39a3c  owners -
+  WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_002.webp  NONE  sha1 6f6ea29d1a4c sha256 cb725c47d01cdaff  owners -
+  WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_003.webp  NONE  sha1 ed05279dc0f4 sha256 a850ec3484951480  owners -
+  WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_004.webp  NONE  sha1 37c230408790 sha256 4febf264f003873a  owners -
+  WebApps/Whitecardopedia/Projects/2026/64348__Mathison/ValeVision__DrawingNotes__.json  NONE  sha1 5a4cd2771827 sha256 3e0fa43356ca0b26  owners W2-30,W2-32,W2-35
+
+== ALL CONTINUATION-TOUCHED (code path mtime eol sha1 <- strict owners | attest | declared) ==
+   M WebApps/ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js  02-Oct 10:49:48  CRLF  bc50dc15d718  <- W2-07 | record:W2-07 | W2-07
+   M WebApps/ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json  02-Oct 10:49:44  CRLF  c09c58b53ce3  <- W2-08 | record:W2-08 | W2-08
+   D WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js  None  None  None  <- W2-33 | MISSING | W2-33  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js  02-Oct 11:02:16  CRLF  92aaa980cd20  <- W2-13 | NONE | W2-13  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js  02-Oct 10:49:48  LF  c5f9c8f31f33  <- W2-07 | record:W2-07 | W2-07  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js  02-Oct 11:27:00  CRLF  87a4c55c4df3  <- W2-03,W2-12 | record:W2-12 | W2-03,W2-12  [new since W1]
+  RM WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js  02-Oct 11:04:22  CRLF  4cdc496c9e21  <- W2-03 | record:W2-03 | W2-03
+  RM WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js  02-Oct 10:48:21  LF  a543efaba2a5  <- W2-02 | record:W2-02 | W2-02
+  RM WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js  02-Oct 11:27:43  LF  12052302a6a2  <- W2-04,W2-05 | scratch:W2-05 | W2-04,W2-05
+   M WebApps/ValeVision3D/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js  02-Oct 10:48:21  LF  23b61ad29268  <- W2-02 | record:W2-02 | W2-02  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js  02-Oct 11:27:43  CRLF  6a1f441d54b0  <- W2-05 | scratch:W2-05 | W2-05  [new since W1]
+  RM WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json  02-Oct 11:01:11  LF  4c8a6b4f9e74  <- W2-04 | NONE | W2-04
+  RM WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js  02-Oct 11:01:11  LF  57f044f5b6f9  <- W2-04 | NONE | W2-04
+  RM WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js  02-Oct 11:01:11  LF  ba53855f1231  <- W2-04 | NONE | W2-04
+  RM WebApps/ValeVision3D/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css  02-Oct 11:01:11  LF  3827fb2bbd7b  <- W2-04,W2-32 | NONE | W2-04
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json  02-Oct 11:27:43  LF  9f5c899ff518  <- W2-05 | scratch:W2-05 | W2-05
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js  02-Oct 11:27:43  LF  b3389501eef9  <- W2-05 | scratch:W2-05 | W2-05
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js  02-Oct 11:27:43  LF  0f661c381930  <- W2-05 | scratch:W2-05 | W2-05
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js  02-Oct 11:04:22  LF  05390371337b  <- W2-03 | record:W2-03 | W2-03
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js  02-Oct 11:27:43  LF  3652650227a0  <- W2-05 | scratch:W2-05 | W2-05
+  RM WebApps/ValeVision3D/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css  02-Oct 11:27:43  LF  e66d5ff22594  <- W2-05 | scratch:W2-05 | W2-05
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json  02-Oct 10:50:52  LF  ce80279e0aa6  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js  02-Oct 10:50:52  LF  d6316d0bcff4  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js  02-Oct 10:50:52  LF  b50b4303e49a  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js  02-Oct 10:50:52  LF  545abd6a7a71  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js  02-Oct 10:50:52  LF  89f13326a795  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js  02-Oct 10:50:52  LF  f0dd1ce01c3f  <- W2-06 | NONE | W2-06
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js  02-Oct 10:50:52  LF  dbde2b54ca9d  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js  02-Oct 10:50:52  LF  90c77779163d  <- W2-06 | NONE | W2-06
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js  02-Oct 10:50:52  LF  3851359bfb4c  <- W2-06 | NONE | W2-06
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js  02-Oct 10:50:52  LF  930d675de130  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js  02-Oct 10:50:52  LF  c78c96cc3728  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js  02-Oct 10:50:52  LF  707e2f8df1ab  <- W2-06 | NONE | W2-06
+   M WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js  02-Oct 10:50:52  LF  399434b598cd  <- W2-06 | NONE | W2-06  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js  02-Oct 12:34:15  CRLF  48867e35a359  <- W2-17,W2-18,W2-19,W2-32 | record:W2-17 | W2-17,W2-18,W2-19
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json  02-Oct 12:03:07  LF  f538cef1c392  <- W2-11,W2-14,W2-29,W2-36 | record:W2-36 | W2-14,W2-29,W2-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js  02-Oct 12:24:19  CRLF  1209d3941599  <- W2-16,W2-19,W2-29,W2-31,W2-35 | scratch:W2-16 | W2-16,W2-19,W2-29,W2-31,W2-35
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css  02-Oct 11:47:42  CRLF  b94615402baf  <- W2-19,W2-20,W2-24,W2-25 | NONE | W2-19,W2-20,W2-24,W2-25
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js  02-Oct 12:24:19  LF  be0f8917e009  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js  02-Oct 12:24:19  LF  6af5a944bd1e  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js  02-Oct 12:24:19  LF  d37185467c32  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js  02-Oct 12:24:19  LF  0f10feea18b6  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js  02-Oct 12:24:19  LF  4d2dc7fd0585  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js  02-Oct 12:24:19  LF  aa76ea09ed64  <- W2-16 | scratch:W2-16 | W2-16
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json  02-Oct 10:54:41  LF  6cb02c8a43db  <- W2-10 | record:W2-10 | W2-10  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js  02-Oct 10:54:41  LF  7e99220e5588  <- W2-10 | record:W2-10 | W2-10  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js  02-Oct 12:24:19  LF  7616676d41f2  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__Config__.json  02-Oct 12:24:19  LF  8e3313ef3a58  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js  02-Oct 10:40:21  LF  eeb75a798669  <- W2-09 | record:W2-09 | W2-09  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js  02-Oct 12:24:19  LF  3c1f153cdb7d  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json  02-Oct 11:03:01  CRLF  0b7f78951023  <- W2-13 | NONE | W2-13  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js  02-Oct 10:40:21  LF  b8551d607c3d  <- W2-09 | record:W2-09 | W2-09  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json  02-Oct 11:27:00  CRLF  1b06be10727f  <- W2-09,W2-12 | record:W2-12 | W2-09,W2-12  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js  02-Oct 11:58:06  CRLF  d2d92d581b1d  <- W2-13,W2-15 | record:W2-15 | W2-15
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js  02-Oct 11:47:42  CRLF  fd932fed8d61  <- W2-25 | NONE | W2-25  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js  02-Oct 11:11:19  LF  d6aa0927af8f  <- W2-20 | NONE | W2-20  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js  02-Oct 11:20:37  LF  552f788d63cc  <- W2-21 | NONE | W2-21  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js  02-Oct 11:20:37  LF  b4c47dbc341e  <- W2-21 | NONE | W2-21  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js  02-Oct 11:37:50  LF  eeca6b9151a3  <- W2-24 | NONE | W2-24  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js  02-Oct 11:20:37  LF  988130f02a20  <- W2-21 | NONE | W2-21  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js  02-Oct 11:15:06  LF  5ba9b578de95  <- W2-23 | NONE | W2-23
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js  02-Oct 11:20:37  LF  7c7be9180ee1  <- W2-21 | NONE | W2-21  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js  02-Oct 11:20:37  LF  333f7d66bb09  <- W2-21 | NONE | W2-21  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js  02-Oct 11:27:27  CRLF  6034f4cd760f  <- W2-19 | NONE | W2-19  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js  02-Oct 11:27:27  CRLF  b27f71c6e928  <- W2-19 | NONE | W2-19  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js  02-Oct 11:27:27  CRLF  966f99ee0c70  <- W2-19 | NONE | W2-19  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js  02-Oct 11:41:27  LF  edf351930358  <- W2-26 | record:W2-26 | W2-26  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js  02-Oct 11:41:27  LF  60e130622be0  <- W2-26 | record:W2-26 | W2-26  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js  02-Oct 11:41:27  LF  423e997c6aae  <- W2-26 | record:W2-26 | W2-26  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js  02-Oct 11:41:27  LF  c6e7e107869d  <- W2-26 | record:W2-26 | W2-26  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js  02-Oct 12:03:07  CRLF  5508d0f7378d  <- W2-36 | record:W2-36 | W2-36  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js  02-Oct 12:03:07  LF  69f37d739ef4  <- W2-36 | record:W2-36 | W2-36  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js  02-Oct 12:24:19  LF  0ae1bd5ab6bd  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js  02-Oct 12:03:07  CRLF  bef610aa502f  <- W2-36 | record:W2-36 | W2-36  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js  02-Oct 12:03:07  LF  43ce61983cc7  <- W2-36 | record:W2-36 | W2-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js  02-Oct 12:03:07  LF  a73e902f0b7e  <- W2-36 | record:W2-36 | W2-36
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js  02-Oct 11:27:27  CRLF  4bbd06e7fceb  <- W2-19 | NONE | W2-19
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js  02-Oct 11:30:33  LF  7073d821e9ff  <- W2-32 | NONE | W2-32  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js  02-Oct 11:09:05  LF  bd08acda5f07  <- W2-30 | record:W2-30 | W2-30
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js  02-Oct 11:09:05  LF  1a68c47b0bf9  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js  02-Oct 11:09:05  LF  ca65c3a34f9e  <- W2-30 | record:W2-30 | W2-30
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js  02-Oct 11:09:05  LF  4661cdab1174  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js  02-Oct 11:09:05  LF  43a252c80f61  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js  02-Oct 11:09:05  LF  5af08c4d313f  <- W2-30 | record:W2-30 | W2-30
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js  02-Oct 11:52:35  LF  6d58ba0f8321  <- W2-31 | record:W2-31 | W2-31
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js  02-Oct 11:09:05  LF  0d4f9d4d5392  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js  02-Oct 11:30:33  LF  6afded928335  <- W2-32 | NONE | W2-32  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css  02-Oct 11:52:35  LF  c7016af63fc2  <- W2-31 | record:W2-31 | W2-31
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css  02-Oct 11:32:59  LF  3ef299db8f78  <- W2-32 | NONE | W2-32  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js  02-Oct 11:51:23  LF  ff97e1a30d56  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js  02-Oct 12:03:07  LF  0b69c858f7a0  <- W2-36 | record:W2-36 | W2-36  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js  02-Oct 11:51:22  LF  c1e24313b365  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json  02-Oct 11:51:22  LF  e7c49187c08b  <- W2-37 | NONE | W2-37
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js  02-Oct 11:51:22  LF  3005d7d93ce6  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js  02-Oct 11:51:22  LF  f133ba4acc37  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js  02-Oct 11:51:22  LF  3367a9fc346c  <- W2-37 | NONE | W2-37
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js  02-Oct 11:51:22  LF  45ab690407d5  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js  02-Oct 11:52:04  LF  1e9464656c9f  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css  02-Oct 11:51:22  LF  61c959efe8a2  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js  02-Oct 12:34:15  CRLF  c2cac5953e4d  <- W2-17 | record:W2-17 | W2-17
+   M WebApps/ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css  02-Oct 11:29:35  CRLF  82f8096ce512  <- W2-01,W2-03,W2-34 | record:W2-34 | W2-01,W2-03,W2-34
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs  02-Oct 11:51:23  LF  25fddb2a780b  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs  02-Oct 11:51:23  LF  30592d7a91b9  <- W2-37 | NONE | W2-37  [new since W1]
+   M WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs  02-Oct 10:54:41  LF  67ce81a93b37  <- W2-10 | NONE | W2-10  [new since W1]
+   M WebApps/ValeVision3D/index.html  02-Oct 11:27:43  CRLF  e95e595db85c  <- W2-01,W2-03,W2-05,W2-08,W2-27,W2-34 | scratch:W2-05 | W2-01,W2-03,W2-05
+  ?? WebApps/ValeVision3D/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  02-Oct 10:33:58  LF  149bd6ad72b4  <- - | NONE | -  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json  02-Oct 10:35:48  LF  c4aba0373137  <- W2-40 | NONE | W2-40  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js  02-Oct 10:35:48  LF  29b90e41d058  <- W2-40 | NONE | W2-40  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js  02-Oct 10:35:48  LF  1ab38ab5d160  <- W2-40 | NONE | W2-40  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js  02-Oct 10:46:22  LF  2e5ef72bddf1  <- W2-01 | NONE | W2-01  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js  02-Oct 10:46:22  LF  47f2c6ced5aa  <- W2-01 | NONE | W2-01  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js  02-Oct 10:35:48  LF  0045ab56e737  <- W2-40 | NONE | W2-40  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js  02-Oct 10:46:22  LF  e6d4a048eb13  <- W2-01 | NONE | W2-01  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js  02-Oct 10:35:48  LF  6c90d593b60b  <- W2-40 | NONE | W2-40  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css  02-Oct 10:46:22  LF  7f5fb23ed735  <- W2-01 | NONE | W2-01  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js  02-Oct 11:27:43  LF  8e1989e46494  <- W2-05 | scratch:W2-05 | W2-05  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js  02-Oct 11:04:22  LF  fe2b05136b7d  <- W2-03 | record:W2-03 | W2-03  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js  02-Oct 11:04:22  LF  e45e0e32cfe0  <- W2-03 | record:W2-03 | W2-03  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css  02-Oct 11:04:22  LF  8fb3e30660c9  <- W2-03 | record:W2-03 | W2-03  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js  02-Oct 10:50:52  LF  6d540a3bc370  <- W2-06 | NONE | W2-06  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js  02-Oct 10:34:32  LF  54697efc7320  <- W2-43 | record:W2-43 | W2-43  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js  02-Oct 10:34:32  LF  697fba4c8cdd  <- W2-43 | record:W2-43 | W2-43  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js  02-Oct 12:24:19  LF  526e0229fbcb  <- W2-16,W2-17 | scratch:W2-16 | W2-16  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js  02-Oct 10:56:54  LF  c8eebe303c9c  <- W2-11 | record:W2-11 | W2-11  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js  02-Oct 11:27:00  LF  54885d55a611  <- W2-12 | record:W2-12 | W2-12  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js  02-Oct 12:24:19  LF  3fd0120466df  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js  02-Oct 11:07:49  LF  39726d018081  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js  02-Oct 11:07:49  LF  f00cd4999955  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js  02-Oct 11:41:40  LF  17cf20ef769a  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json  02-Oct 11:41:41  LF  dfe93d4af306  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css  02-Oct 11:41:41  LF  7ff30d099e80  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js  02-Oct 11:41:40  LF  9c3064642ca9  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json  02-Oct 11:41:41  LF  1b284cf60e39  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js  02-Oct 11:41:41  LF  407ba9add3c1  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css  02-Oct 11:41:41  LF  47afdf1f8afa  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js  02-Oct 11:47:42  LF  bdd83b0987d4  <- W2-25 | NONE | W2-25  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json  02-Oct 11:47:42  LF  3e689f35c886  <- W2-25 | NONE | W2-25  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js  02-Oct 11:25:43  LF  3111b4d36acb  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json  02-Oct 11:15:32  LF  36786d4acad2  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js  02-Oct 11:15:31  LF  18575d0a6ed5  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js  02-Oct 11:15:31  LF  3e13f70359b3  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js  02-Oct 11:25:43  LF  a33df8b86c28  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js  02-Oct 11:15:31  LF  14b87185ad29  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js  02-Oct 11:15:32  LF  81b169f1cb2c  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js  02-Oct 11:25:43  LF  e391e8a4d903  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js  02-Oct 11:25:43  LF  89aa57a7e9af  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js  02-Oct 11:25:43  LF  15a72f9df432  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js  02-Oct 11:15:32  LF  9e53b4a30e38  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js  02-Oct 11:15:31  LF  7c973326f314  <- W2-42 | NONE | W2-42  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css  02-Oct 11:25:43  LF  473cb8ace56a  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js  02-Oct 11:47:42  LF  d6c0a68a6e85  <- W2-25 | NONE | W2-25  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js  02-Oct 11:20:37  LF  28eec70afcb7  <- W2-21 | NONE | W2-21  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js  02-Oct 11:11:19  LF  b0cb7e335ba6  <- W2-20 | NONE | W2-20  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js  02-Oct 11:20:37  LF  667ca614a345  <- W2-21 | NONE | W2-21  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js  02-Oct 11:41:41  LF  18a5751f8f54  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json  02-Oct 11:41:41  LF  4157e1f1289b  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js  02-Oct 11:41:41  LF  694dcbd311a5  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json  02-Oct 11:41:41  LF  8ff10ee83aa4  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css  02-Oct 11:41:41  LF  79548cc107fb  <- W2-18 | NONE | W2-18  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js  02-Oct 11:36:45  LF  65cd89f48cbe  <- W2-29 | record:W2-29 | W2-29  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css  02-Oct 11:36:45  LF  20e502d5f3bc  <- W2-29 | record:W2-29 | -  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js  02-Oct 11:55:05  LF  9336b675c2d8  <- W2-41 | record:W2-41 | W2-41  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css  02-Oct 11:55:05  LF  963d439b5db3  <- W2-41 | record:W2-41 | W2-41  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js  02-Oct 11:55:05  LF  0f91b32d84e2  <- W2-41 | record:W2-41 | W2-41  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js  02-Oct 11:48:11  LF  aa2b042b0597  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js  02-Oct 11:55:05  LF  d7383691e43a  <- W2-41 | record:W2-41 | W2-41  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js  02-Oct 11:18:00  LF  06e69cc4da14  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js  02-Oct 11:48:11  LF  1b81464f611e  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json  02-Oct 11:18:00  LF  487be49f4f00  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js  02-Oct 11:18:00  LF  03174872e423  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js  02-Oct 11:48:11  LF  cdd590a4876e  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js  02-Oct 11:55:05  LF  bf8f4304a7ec  <- W2-41 | record:W2-41 | W2-41  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js  02-Oct 11:18:00  LF  31305e343165  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js  02-Oct 11:48:11  LF  60121529de08  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js  02-Oct 11:18:00  LF  67bec1519fd0  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js  02-Oct 11:18:00  LF  7c1217f9dd38  <- W2-27 | record:W2-27 | W2-27  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js  02-Oct 11:48:11  LF  0cf1d135be72  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js  02-Oct 11:48:11  LF  ed9ec7d8e2cd  <- W2-28 | record:W2-28 | W2-28  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js  02-Oct 11:07:49  LF  c27f5097b937  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js  02-Oct 11:30:33  LF  1c7f441ce672  <- W2-32 | NONE | W2-32  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js  02-Oct 11:09:44  LF  21837677783b  <- W2-22 | NONE | W2-22  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js  02-Oct 11:30:33  LF  10f2fbea08a6  <- W2-32 | NONE | W2-32  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js  02-Oct 11:09:05  LF  fe37710659c8  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js  02-Oct 11:52:35  LF  3b1cd90d10bb  <- W2-31 | record:W2-31 | W2-31  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js  02-Oct 11:30:33  LF  f021cbfe1f6b  <- W2-32 | NONE | W2-32  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js  02-Oct 11:09:05  LF  0133048be667  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js  02-Oct 12:01:14  LF  0cb2a83163f9  <- W2-38 | scratch:W2-38 | W2-38  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js  02-Oct 12:01:14  LF  5086faead5dd  <- W2-38 | scratch:W2-38 | W2-38  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js  02-Oct 12:34:53  LF  e6abbad0befd  <- W2-39 | scratch:W2-39 | W2-39  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js  02-Oct 12:34:53  LF  31652459ca46  <- W2-39 | scratch:W2-39 | W2-39  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js  02-Oct 12:02:41  LF  c511c23ee34d  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js  02-Oct 12:02:41  LF  df32951290c4  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json  02-Oct 12:02:41  LF  b88440a47f17  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js  02-Oct 12:02:41  LF  3a92697dd158  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css  02-Oct 12:02:41  LF  b25da8304edd  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__.js  02-Oct 11:29:35  LF  3b43de4dda2f  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Config__.json  02-Oct 11:29:35  LF  507b6efe9908  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js  02-Oct 11:29:35  LF  323876238b25  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Field__.js  02-Oct 11:29:35  LF  f0a6233c72ce  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css  02-Oct 11:29:35  LF  e5f3373ee217  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js  02-Oct 11:29:35  LF  f133a5a67d62  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/02__Src__AppModules/55__Feature__SpellCheck/README__SpellCheck__.md  02-Oct 11:29:35  LF  2708deeb8870  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs  02-Oct 11:25:43  LF  ce70f07d265f  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  02-Oct 12:03:07  LF  1a94a035f7a7  <- W2-14,W2-36 | scratch:W2-36 | -
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs  02-Oct 10:46:22  LF  d52469cc558b  <- W2-01 | NONE | W2-01  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs  02-Oct 10:40:21  LF  90c02e88e2e2  <- W2-09 | record:W2-09 | W2-09  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs  02-Oct 10:34:32  LF  36a4935e1f72  <- W2-43 | record:W2-43 | W2-43  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs  02-Oct 12:24:19  LF  2411f9712664  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs  02-Oct 11:20:37  LF  1111a66d7d05  <- W2-21 | NONE | W2-21  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs  02-Oct 11:30:33  LF  cf0036975d78  <- W2-32 | NONE | W2-32  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LineworkModifiers__.test.mjs  02-Oct 11:06:06  LF  1005c1542aed  <- W2-13 | NONE | W2-13  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LoaderFacade__.test.mjs  02-Oct 12:34:15  LF  be076d0af2a3  <- W2-17 | record:W2-17 | -
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs  02-Oct 11:30:33  LF  a89cda3203ed  <- W2-32 | NONE | W2-32  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs  02-Oct 11:25:43  LF  27bdccbc75d2  <- W2-19 | NONE | W2-19  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs  02-Oct 11:37:50  LF  fbb905600666  <- W2-24 | NONE | W2-24  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookCabinetInfill__.test.mjs  02-Oct 12:01:14  LF  c6b20f4a51c0  <- W2-38 | scratch:W2-38 | W2-38  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs  02-Oct 12:01:14  LF  b3cb0ca5d739  <- W2-38 | scratch:W2-38 | W2-38  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookSiteLegend__.test.mjs  02-Oct 12:34:53  LF  ab9d66efc0f1  <- W2-39 | scratch:W2-39 | W2-39  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__.test.mjs  02-Oct 11:07:49  LF  e18f07148a70  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__Output__.html  02-Oct 12:37:42  LF  e5e54514a8f9  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanFaces__.test.mjs  02-Oct 12:24:19  LF  4b837ec4176c  <- W2-16 | scratch:W2-16 | W2-16  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SitePlanStore__.test.mjs  02-Oct 11:07:49  LF  fd4bc49e68b9  <- W2-14 | NONE | W2-14  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpecInlineEdit__.test.mjs  02-Oct 12:02:41  LF  9d5e992cb574  <- W2-35 | record:W2-35 | W2-35  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpecLockstep__.test.mjs  02-Oct 11:09:05  LF  d58a2b7d0eca  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs  02-Oct 11:29:52  LF  ab790bac0007  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckField__.html  02-Oct 11:29:35  LF  71bf5042d5b9  <- W2-34 | record:W2-34 | W2-34  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StatementLockstep__.test.mjs  02-Oct 11:09:05  LF  53563547afb4  <- W2-30 | record:W2-30 | W2-30  [new since W1]
+  ?? WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs  02-Oct 10:50:52  LF  d6732b69a998  <- W2-06 | NONE | W2-06  [new since W1]
+  ?? WebApps/Whitecardopedia/.claude/skills/adam-vale-apps-infrastructure-architecture/SKILL.md  02-Oct 10:34:02  LF  149bd6ad72b4  <- - | NONE | -  [new since W1]
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_001.webp  02-Oct 10:37:17  LF  2365ecf60efd  <- - | NONE | -  [new since W1]
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_002.webp  02-Oct 10:37:18  LF  6f6ea29d1a4c  <- - | NONE | -  [new since W1]
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_003.webp  02-Oct 10:37:18  LF  ed05279dc0f4  <- - | NONE | -  [new since W1]
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/PresentationMode/Thumbnails/Scene_004.webp  02-Oct 10:37:18  LF  37c230408790  <- - | NONE | -  [new since W1]
+  ?? WebApps/Whitecardopedia/Projects/2026/64348__Mathison/ValeVision__DrawingNotes__.json  02-Oct 10:36:43  LF  5a4cd2771827  <- W2-30,W2-32,W2-35 | NONE | -  [new since W1]
+
+== DECLARED EDITS OF CONTINUATION PACKAGES NOT DIRTY-SINCE-W1 ==

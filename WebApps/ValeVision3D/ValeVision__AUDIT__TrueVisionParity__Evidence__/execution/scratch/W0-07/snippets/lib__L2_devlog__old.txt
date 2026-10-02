@@ -1,0 +1,5 @@
+# 25-Jun-2026 - Version 1.0.0
+# - Initial release: creds/client, head/list/upload, content-type map,
+#   masterConfig reader, master-index read/upsert/write (R2 + GH copy).
+#
+# =============================================================================

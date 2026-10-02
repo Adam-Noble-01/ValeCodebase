@@ -1,0 +1,306 @@
+{
+ "pass": 76,
+ "fail": 0,
+ "fails": [],
+ "evidence": {
+  "registerSetup": {
+   "documentCodeFmt": "{project}_{drawing}",
+   "defaultPhase": "",
+   "phases": [],
+   "prefix": "D",
+   "digits": 2,
+   "logoAspect": 4.5,
+   "pdfJs": [
+    "./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.min.js",
+    "./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.worker.min.js"
+   ]
+  },
+  "composeCases": [
+   {
+    "name": "all three parts",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "3047_S1_D01",
+    "tv": "3047_S1_D01",
+    "want": "3047_S1_D01"
+   },
+   {
+    "name": "the project missing",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     "",
+     "S1",
+     "D01"
+    ],
+    "vv": "S1_D01",
+    "tv": "S1_D01",
+    "want": "S1_D01"
+   },
+   {
+    "name": "the phase missing",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     "3047",
+     "",
+     "D01"
+    ],
+    "vv": "3047_D01",
+    "tv": "3047_D01",
+    "want": "3047_D01"
+   },
+   {
+    "name": "the drawing missing",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     "3047",
+     "S1",
+     ""
+    ],
+    "vv": "3047_S1",
+    "tv": "3047_S1",
+    "want": "3047_S1"
+   },
+   {
+    "name": "all three missing",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     "",
+     "",
+     ""
+    ],
+    "vv": "",
+    "tv": "",
+    "want": ""
+   },
+   {
+    "name": "null and undefined parts",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     null,
+     null,
+     "D01"
+    ],
+    "vv": "D01",
+    "tv": "D01",
+    "want": "D01"
+   },
+   {
+    "name": "untrimmed input",
+    "fmt": "{project}_{phase}_{drawing}",
+    "parts": [
+     " 3047 ",
+     " S1 ",
+     " D01 "
+    ],
+    "vv": "3047_S1_D01",
+    "tv": "3047_S1_D01",
+    "want": "3047_S1_D01"
+   },
+   {
+    "name": "another separator",
+    "fmt": "{project}-{phase}-{drawing}",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "3047-S1-D01",
+    "tv": "3047-S1-D01",
+    "want": "3047-S1-D01"
+   },
+   {
+    "name": "another order",
+    "fmt": "{drawing}/{project}",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "D01/3047",
+    "tv": "D01/3047",
+    "want": "D01/3047"
+   },
+   {
+    "name": "a leading literal",
+    "fmt": "DWG-{project}_{drawing}",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "DWG-3047_D01",
+    "tv": "DWG-3047_D01",
+    "want": "DWG-3047_D01"
+   },
+   {
+    "name": "a leading literal, project empty",
+    "fmt": "DWG-{project}_{drawing}",
+    "parts": [
+     "",
+     "S1",
+     "D01"
+    ],
+    "vv": "DWG-D01",
+    "tv": "DWG-D01",
+    "want": "DWG-D01"
+   },
+   {
+    "name": "a trailing literal",
+    "fmt": "{project}_{drawing}-PL",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "3047_D01-PL",
+    "tv": "3047_D01-PL",
+    "want": "3047_D01-PL"
+   },
+   {
+    "name": "this app's shipped format",
+    "fmt": "{project}_{drawing}",
+    "parts": [
+     "3047",
+     "",
+     "D01"
+    ],
+    "vv": "3047_D01",
+    "tv": "3047_D01",
+    "want": "3047_D01"
+   },
+   {
+    "name": "this app's format ignores a phase",
+    "fmt": "{project}_{drawing}",
+    "parts": [
+     "3047",
+     "S1",
+     "D01"
+    ],
+    "vv": "3047_D01",
+    "tv": "3047_D01",
+    "want": "3047_D01"
+   },
+   {
+    "name": "a five-digit code at D100",
+    "fmt": "{project}_{drawing}",
+    "parts": [
+     "57994",
+     "",
+     "D100"
+    ],
+    "vv": "57994_D100",
+    "tv": "57994_D100",
+    "want": "57994_D100"
+   }
+  ],
+  "projects": [
+   {
+    "folder": "2026/3047__Doous",
+    "projectCode": "3047",
+    "sheets": [
+     {
+      "sheet": "Sheet_001",
+      "DrawingNumber": "D01",
+      "DocumentId": "3047_D01",
+      "Scale": "1:50 @ ISO A3"
+     }
+    ]
+   },
+   {
+    "folder": "2026/44371__Gill",
+    "projectCode": "44371",
+    "sheets": [
+     {
+      "sheet": "Sheet_001",
+      "DrawingNumber": "D01",
+      "DocumentId": "44371_D01",
+      "Scale": "1:50 @ ISO A3"
+     }
+    ]
+   },
+   {
+    "folder": "2026/57994__Harris__Scheme-02",
+    "projectCode": "57994",
+    "sheets": [
+     {
+      "sheet": "Sheet_001",
+      "DrawingNumber": "D01",
+      "DocumentId": "57994_D01",
+      "Scale": "1:50 @ ISO A2"
+     },
+     {
+      "sheet": "Sheet_002",
+      "DrawingNumber": "D02",
+      "DocumentId": "57994_D02",
+      "Scale": "NTS @ ISO A3"
+     }
+    ]
+   }
+  ],
+  "strips": [
+   {
+    "sheet": "2026/3047__Doous Sheet_001 (A3 landscape)",
+    "primitives": 28,
+    "changed": [
+     [
+      "DRAWING NO.",
+      "DOCUMENT ID"
+     ],
+     [
+      "D01",
+      "3047_D01"
+     ]
+    ]
+   },
+   {
+    "sheet": "2026/44371__Gill Sheet_001 (A3 landscape)",
+    "primitives": 28,
+    "changed": [
+     [
+      "DRAWING NO.",
+      "DOCUMENT ID"
+     ],
+     [
+      "D01",
+      "44371_D01"
+     ]
+    ]
+   },
+   {
+    "sheet": "2026/57994__Harris__Scheme-02 Sheet_001 (A2 landscape)",
+    "primitives": 28,
+    "changed": [
+     [
+      "DRAWING NO.",
+      "DOCUMENT ID"
+     ],
+     [
+      "D01",
+      "57994_D01"
+     ]
+    ]
+   },
+   {
+    "sheet": "2026/57994__Harris__Scheme-02 Sheet_002 (A3 landscape)",
+    "primitives": 28,
+    "changed": [
+     [
+      "DRAWING NO.",
+      "DOCUMENT ID"
+     ],
+     [
+      "D02",
+      "57994_D02"
+     ]
+    ]
+   }
+  ]
+ },
+ "warnings": [
+  "[ValeVision3D LayoutEditor] Config fetch failed (404) - using built-in defaults."
+ ]
+}

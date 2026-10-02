@@ -1,0 +1,487 @@
+# W1-11 changes
+# (1) TrueVision at b2aa9151 -> landed file (the seams: banner, PORT NOTE)
+=== Na__North__AppConfig__.json
+(diff exit 0: 0 = identical)
+=== Na__North__CompassGizmo__.js
+--- TV b2aa9151/Na__North__CompassGizmo__.js
++++ VV landed/Na__North__CompassGizmo__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - NORTH DIRECTION - COMPASS GIZMO
++// VALEVISION3D - NORTH DIRECTION - COMPASS GIZMO
+ // =============================================================================
+ //
+ // FILE       : Na__North__CompassGizmo__.js
+@@ -46,10 +46,18 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Authored in   : TrueVision3D first (19-Sep-2026)
+-// - ValeVision    : 1.1.0 ported 20-Sep-2026 as ValeVision3D v2.67.0, adapted: ValeVision has
+-//                   no Na__InteractiveOverlays, so its compass is never kept - it is in the
+-//                   scene only while the panel is open. Port the registry, then take this whole.
++// - Ported from   : TrueVision3D 02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js
++// - Source version: 1.1.0 (TrueVision3D v2.84.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-11}}, whole; first ported 20-Sep-2026 for
++//                   ValeVision3D v2.67.0 as 1.0.0, adapted to the missing overlay registry (never
++//                   kept: in the scene only while the panel was open, its visible flag set directly)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - The live 3D frame it is drawn in is not Video Studio's preview: ValeVision's render loop begins
++//     an overlay frame only while that preview is not playing (DR-32), a seam in
++//     Na__AppFlow__LoadingSequence.js, not in this file.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+(diff exit 1: 0 = identical)
+=== Na__North__DevMenu__Editor__.js
+--- TV b2aa9151/Na__North__DevMenu__Editor__.js
++++ VV landed/Na__North__DevMenu__Editor__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - NORTH DIRECTION - DEV MENU EDITOR
++// VALEVISION3D - NORTH DIRECTION - DEV MENU EDITOR
+ // =============================================================================
+ //
+ // FILE       : Na__North__DevMenu__Editor__.js
+@@ -42,11 +42,18 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Authored in   : TrueVision3D first (19-Sep-2026)
+-// - ValeVision    : 1.1.0 ported 20-Sep-2026 as ValeVision3D v2.67.0, adapted: no Show
+-//                   Compass; the panel shuts when a sheet opens and the compass leaves the
+-//                   scene while any sheet picture renders (see that file's header for the
+-//                   fault its own test found).
++// - Ported from   : TrueVision3D 02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js
++// - Source version: 1.1.0 (TrueVision3D v2.84.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-11}}, whole; first ported 20-Sep-2026 for
++//                   ValeVision3D v2.67.0 as 1.0.0, adapted: no Show Compass, and two listeners heard
++//                   by name - na-layouteditor-mode-changed shut the panel when a sheet opened and
++//                   na-layouteditor-snapshot-queue took the compass out while a sheet picture
++//                   rendered. Both retired with this port (DR-32): the compass is an interactive
++//                   overlay, which no render but the live 3D frame can see.
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+(diff exit 1: 0 = identical)
+
+# (2) ValeVision pre-image (01-Oct-2026, before W1-11) -> landed file, line endings ignored
+=== Na__North__AppConfig__.json
+--- VV pre/Na__North__AppConfig__.json
++++ VV landed/Na__North__AppConfig__.json
+@@ -37,7 +37,8 @@
+         "NorthDirection__Gizmo__NorthColour": "#d9534f",
+         "NorthDirection__Gizmo__SouthColour": "#9aa4ad",
+         "NorthDirection__Gizmo__LetterColour": "#d9534f",
+-        "NorthDirection__Gizmo__AimingOpacity": 0.6
++        "NorthDirection__Gizmo__AimingOpacity": 0.6,
++        "NorthDirection__Gizmo__ShownByDefault": false
+     },
+     "NorthDirection__Labels__Config": {
+         "NorthDirection__Labels__Description": "User-facing wording for the Dev menu North Direction section. {bearing} is the north bearing in degrees, {word} a compass word, {name} an elevation's name, {azimuth} its stored bearing.",
+@@ -51,6 +52,9 @@
+         "NorthDirection__Labels__PickFirstHint": "Click where the compass should sit.",
+         "NorthDirection__Labels__PickSecondHint": "Now click towards north. Hold Shift to snap; Esc cancels.",
+         "NorthDirection__Labels__BearingFieldLabel": "Bearing",
++        "NorthDirection__Labels__ShowCompassLabel": "Show Compass",
++        "NorthDirection__Labels__ShowCompassOnHint": "The compass stays in the 3D view with the panel closed, so it can be read while orbiting the model alongside the drawing planes. Kept between visits.",
++        "NorthDirection__Labels__ShowCompassOffHint": "Leave the compass in the 3D view once this panel is closed.",
+         "NorthDirection__Labels__ClearLabel": "Clear North",
+         "NorthDirection__Labels__ClearPrompt": "Clear the north direction? Drawing titles that use it go back to {{Direction}}.",
+         "NorthDirection__Labels__SaveLabel": "Save North",
+=== Na__North__CompassGizmo__.js
+--- VV pre/Na__North__CompassGizmo__.js
++++ VV landed/Na__North__CompassGizmo__.js
+@@ -29,13 +29,15 @@
+ //   it carries the same three helper marks as the elevation plane: layer 1
+ //   (skipped by the profile-line normals pass), naSectionCutHelper (never cut)
+ //   and a late render order.
+-// - REMOVED OUTRIGHT WHEN THE PANEL CLOSES. A compass left in the scene would
+-//   be drawn onto the next elevation rendered for a sheet. TrueVision has
+-//   since made its compass an interactive overlay - registered with its render
+-//   loop and invisible to every render but the live 3D frame - which is what
+-//   lets it offer a Show Compass toggle. This app has no such registry yet, so
+-//   here the compass is in the scene only while the North Direction panel is
+-//   open, and that panel shuts itself when a sheet opens.
++// - AN INTERACTIVE OVERLAY, so it can be LEFT SWITCHED ON. It used to be
++//   removed outright when the panel closed, because a compass left in the
++//   scene would be drawn onto the next elevation rendered for a sheet. That is
++//   now the render loop's job: the group is registered with
++//   Na__InteractiveOverlays and is invisible to every render but the live 3D
++//   frame, so Show says WANTED and object.visible is never touched here.
++// - IsKept / SetKept are the Show Compass toggle, kept in the browser. This
++//   module only records what is wanted; where the compass stands and when it
++//   goes up is Na__North__DevMenu__Editor__'s, which alone holds north.
+ //
+ // INTEGRATION:
+ // - Na__North__DevMenu__Editor__ shows, aims and disposes it.
+@@ -44,22 +46,28 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__CompassGizmo__.js,
+-//                   its 1.1.0 (TrueVision v2.85.0)
+-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.67.0
+-// - Parity        : adapted
+-// - Divergences   : TrueVision registers the compass with Na__InteractiveOverlays, which hides it
+-//                   from every render but the live 3D frame, and so can offer Show Compass (IsKept,
+-//                   SetKept). This app has no such registry, so the compass is simply visible while
+-//                   it is up, and is only ever up while the North Direction panel is open.
+-// - Back-port     : n/a. When Na__InteractiveOverlays is ported, take TrueVision's 1.1.0 whole.
++// - Ported from   : TrueVision3D 02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js
++// - Source version: 1.1.0 (TrueVision3D v2.84.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-11}}, whole; first ported 20-Sep-2026 for
++//                   ValeVision3D v2.67.0 as 1.0.0, adapted to the missing overlay registry (never
++//                   kept: in the scene only while the panel was open, its visible flag set directly)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - The live 3D frame it is drawn in is not Video Studio's preview: ValeVision's render loop begins
++//     an overlay frame only while that preview is not playing (DR-32), a seam in
++//     Na__AppFlow__LoadingSequence.js, not in this file.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
+-// 20-Sep-2026 - Version 1.0.0
+-// - Ported from TrueVision3D's 1.1.0, without its interactive-overlay
+-//   registration and the Show Compass toggle that rests on it.
++// 20-Sep-2026 - Version 1.1.0
++// - Registered as an interactive overlay and given the Show Compass toggle,
++//   so the compass can be left up beside the drawing planes.
++//
++// 19-Sep-2026 - Version 1.0.0
++// - Initial implementation, after Na__Elevation__PlaneGizmo__.
+ //
+ // =============================================================================
+ 
+@@ -78,6 +86,12 @@
+     // @delegate: ./Na__North__ConfigState__.js
+     // ------------------------------------------------------------
+     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
++    import {
++        Na__InteractiveOverlays__Register,
++        Na__InteractiveOverlays__Unregister,
++        Na__InteractiveOverlays__SetWanted,
++        Na__InteractiveOverlays__IsWanted
++    } from '../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js';
+     import { Na__NorthMath__Wrap } from './Na__North__Compass__.js';
+     import { Na__NorthCfg__GetGizmoSetup } from './Na__North__ConfigState__.js';
+     // ------------------------------------------------------------
+@@ -94,6 +108,7 @@
+     // Every length is a fraction of the ring's radius, which is one.
+     // ------------------------------------------------------------
+     const Na__NorthGizmo__GROUP_NAME      = 'Na__North__CompassGizmo';
++    const Na__NorthGizmo__SHOWN_STORE_KEY = 'Na__North__CompassShown';           // <-- The Show Compass toggle, kept between visits
+     const Na__NorthGizmo__HELPER_LAYER    = 1;                                   // <-- Excluded from the profile-line normals pass
+     const Na__NorthGizmo__RING_SEGMENTS   = 96;
+     const Na__NorthGizmo__NEEDLE_LENGTH   = 0.9;
+@@ -117,6 +132,7 @@
+     let Na__NorthGizmo__Scene     = null;   // <-- Scene the compass is added to
+     let Na__NorthGizmo__Group     = null;   // <-- Root group, or null when not built
+     let Na__NorthGizmo__Materials = [];     // <-- Every material, so aiming can fade them together
++    let Na__NorthGizmo__Kept      = null;   // <-- The Show Compass toggle, read lazily so the config has had its chance to load
+     // ------------------------------------------------------------
+ 
+ // endregion -------------------------------------------------------------------
+@@ -207,6 +223,45 @@
+ 
+         [ disc, ring, ticks, south, north, letter ].forEach((object) => Na__NorthGizmo__Group.add(object));
+         Na__NorthGizmo__Scene.add(Na__NorthGizmo__Group);
++        Na__InteractiveOverlays__Register(Na__NorthGizmo__Group);                // <-- Invisible from here on, except inside an interactive 3D frame
++    }
++    // ------------------------------------------------------------
++
++// endregion -------------------------------------------------------------------
++
++
++// -----------------------------------------------------------------------------
++// REGION | The Show Compass Toggle
++// -----------------------------------------------------------------------------
++
++    // FUNCTION | Is the Compass Being Kept in the View?
++    // ------------------------------------------------------------
++    // Kept means: up whether or not the North Direction panel is open, the
++    // way a drawing plane that has been switched on stays up. The browser
++    // remembers it, so it survives a reload; with nothing remembered the
++    // config's own default answers.
++    // ------------------------------------------------------------
++    function Na__NorthGizmo__IsKept() {
++        if (Na__NorthGizmo__Kept !== null) return Na__NorthGizmo__Kept;
++        Na__NorthGizmo__Kept = Na__NorthCfg__GetGizmoSetup().shownByDefault === true;
++        try {
++            const stored = window.localStorage.getItem(Na__NorthGizmo__SHOWN_STORE_KEY);
++            if (stored === 'true' || stored === 'false') Na__NorthGizmo__Kept = (stored === 'true');
++        } catch (error) { /* A browser that refuses storage still toggles, for this visit only */ }
++        return Na__NorthGizmo__Kept;
++    }
++    // ------------------------------------------------------------
++
++
++    // FUNCTION | Keep the Compass in the View, or Stop Keeping It
++    // ------------------------------------------------------------
++    // Says only what is wanted. Putting the compass up or taking it down is
++    // the Dev menu editor's, which alone knows where north stands.
++    // ------------------------------------------------------------
++    function Na__NorthGizmo__SetKept(kept) {
++        Na__NorthGizmo__Kept = (kept === true);
++        try { window.localStorage.setItem(Na__NorthGizmo__SHOWN_STORE_KEY, String(Na__NorthGizmo__Kept)); } catch (error) { /* Session only */ }
++        return Na__NorthGizmo__Kept;
+     }
+     // ------------------------------------------------------------
+ 
+@@ -257,7 +312,7 @@
+         Na__NorthGizmo__Group.rotation.set(0, -Na__NorthMath__Wrap(bearingDeg) * (Math.PI / 180), 0);   // <-- Clockwise seen from above is a negative turn about +Y
+         Na__NorthGizmo__Group.scale.set(radius, 1, radius);
+         Na__NorthGizmo__Materials.forEach((material) => { material.opacity = material.userData.naRestOpacity * (aiming ? setup.aimingOpacity : 1); });
+-        Na__NorthGizmo__Group.visible = true;
++        Na__InteractiveOverlays__SetWanted(Na__NorthGizmo__Group, true);         // <-- Wanted, not visible: the render loop alone sets visible, and only for the live 3D frame
+         Na__RenderLoop__RequestRender();
+         return true;
+     }
+@@ -268,12 +323,12 @@
+     // ------------------------------------------------------------
+     function Na__NorthGizmo__Hide() {
+         if (!Na__NorthGizmo__Group) return false;
+-        Na__NorthGizmo__Group.visible = false;
++        Na__InteractiveOverlays__SetWanted(Na__NorthGizmo__Group, false);
+         Na__RenderLoop__RequestRender();
+         return true;
+     }
+     function Na__NorthGizmo__IsVisible() {
+-        return Boolean(Na__NorthGizmo__Group && Na__NorthGizmo__Group.visible);
++        return Na__InteractiveOverlays__IsWanted(Na__NorthGizmo__Group);         // <-- Never object.visible: between frames that is always false
+     }
+     // ------------------------------------------------------------
+ 
+@@ -282,6 +337,7 @@
+     // ------------------------------------------------------------
+     function Na__NorthGizmo__Dispose() {
+         if (!Na__NorthGizmo__Group) return false;
++        Na__InteractiveOverlays__Unregister(Na__NorthGizmo__Group);              // <-- Handed back invisible, before it leaves the scene
+         if (Na__NorthGizmo__Scene) Na__NorthGizmo__Scene.remove(Na__NorthGizmo__Group);
+         Na__NorthGizmo__Group.traverse((child) => { if (child.geometry) child.geometry.dispose(); });
+         Na__NorthGizmo__Materials.forEach((material) => material.dispose());
+@@ -304,6 +360,8 @@
+     export {
+         Na__NorthGizmo__GROUP_NAME,
+         Na__NorthGizmo__Initialize,
++        Na__NorthGizmo__IsKept,
++        Na__NorthGizmo__SetKept,
+         Na__NorthGizmo__RadiusFor,
+         Na__NorthGizmo__Show,
+         Na__NorthGizmo__Hide,
+=== Na__North__DevMenu__Editor__.js
+--- VV pre/Na__North__DevMenu__Editor__.js
++++ VV landed/Na__North__DevMenu__Editor__.js
+@@ -23,13 +23,14 @@
+ // - SET IS NOT SAVED. Setting north changes the project in memory and every
+ //   open sheet follows at once; Save North keeps it, through the drawings
+ //   block's own save. The status line says when the two differ.
+-// - THE COMPASS IS ONLY IN THE SCENE WHILE THE PANEL IS OPEN, and is disposed
+-//   the moment it closes - and the panel closes itself when a Layout Editor
+-//   sheet opens, because a compass in the scene would be drawn onto whatever
+-//   that sheet renders. It also steps out for as long as any sheet picture is
+-//   queued or rendering (a scene saved from the 3D tab restamps its viewports)
+-//   and comes back after. TrueVision's Show Compass toggle is not here: it
+-//   rests on an interactive-overlay registry this app does not have yet.
++// - SHOW COMPASS KEEPS THE COMPASS UP. Without it the compass is in the scene
++//   only while the panel is open, as it always was, and is disposed the moment
++//   it closes. With it the compass stays - the same bargain a drawing plane
++//   that has been switched on makes - so north can be read while orbiting the
++//   model with the plan and elevation planes switched on beside it. The
++//   browser remembers the toggle, so it survives a reload. It can be left on
++//   safely because the compass is an interactive overlay: no render but the
++//   live 3D frame can see it - see Na__North__CompassGizmo__.
+ //
+ // INTEGRATION:
+ // - Initialised from index.html with the model root and the toast.
+@@ -41,27 +42,27 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__DevMenu__Editor__.js,
+-//                   its 1.1.0 (TrueVision v2.85.0)
+-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.67.0
+-// - Parity        : adapted
+-// - Divergences   : No Show Compass button: keeping the compass up with the panel shut is only safe
+-//                   where renders cannot see it (see Na__North__CompassGizmo__). Instead the panel
+-//                   shuts itself, and the compass goes, when a Layout Editor sheet opens, and the
+-//                   compass steps out of the scene while any sheet picture is queued or rendering.
+-// - Back-port     : n/a. When Na__InteractiveOverlays is ported, take TrueVision's 1.1.0 whole.
++// - Ported from   : TrueVision3D 02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js
++// - Source version: 1.1.0 (TrueVision3D v2.84.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-11}}, whole; first ported 20-Sep-2026 for
++//                   ValeVision3D v2.67.0 as 1.0.0, adapted: no Show Compass, and two listeners heard
++//                   by name - na-layouteditor-mode-changed shut the panel when a sheet opened and
++//                   na-layouteditor-snapshot-queue took the compass out while a sheet picture
++//                   rendered. Both retired with this port (DR-32): the compass is an interactive
++//                   overlay, which no render but the live 3D frame can see.
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
+-// 20-Sep-2026 - Version 1.0.0
+-// - Ported from TrueVision3D's 1.1.0, without Show Compass; the panel shuts
+-//   when a sheet opens.
+-// - FOUND IN THE PORT'S OWN TEST: the compass was rendered into a sheet's 3D
+-//   viewport. The mode controller collapses every dev panel by class before
+-//   it announces a sheet, so a listener that first asked "is my panel open?"
+-//   always heard no, and left the compass in the scene. It no longer asks;
+-//   and the compass also leaves for the length of any snapshot render.
++// 20-Sep-2026 - Version 1.1.0
++// - Show Compass: a persistent toggle, matching the drawing planes.
++//
++// 19-Sep-2026 - Version 1.0.0
++// - Initial implementation, after Na__Elevation__DevMenu__Editor__.
+ //
+ // =============================================================================
+ 
+@@ -91,7 +92,7 @@
+         Na__NorthData__Clear,
+         Na__NorthData__Save
+     } from './Na__North__ProjectJson__Data__.js';
+-    import { Na__NorthGizmo__RadiusFor, Na__NorthGizmo__Show, Na__NorthGizmo__Dispose } from './Na__North__CompassGizmo__.js';
++    import { Na__NorthGizmo__RadiusFor, Na__NorthGizmo__Show, Na__NorthGizmo__Dispose, Na__NorthGizmo__IsKept, Na__NorthGizmo__SetKept } from './Na__North__CompassGizmo__.js';
+     import { Na__NorthPick__Start, Na__NorthPick__Cancel, Na__NorthPick__IsActive, Na__NorthPick__IsAiming } from './Na__North__PickTool__.js';
+     // ------------------------------------------------------------
+ 
+@@ -117,7 +118,6 @@
+     let Na__NorthDev__Initialized = false;
+     let Na__NorthDev__SavedState  = undefined;   // <-- The bearing R2 holds, as far as this session knows: undefined until the first render
+     let Na__NorthDev__AimBearing  = null;        // <-- The bearing under the pointer while aiming; null otherwise
+-    let Na__NorthDev__SheetBusy   = false;       // <-- A sheet picture is queued or rendering: the compass stays out of the scene until it is done
+     // ------------------------------------------------------------
+ 
+ // endregion -------------------------------------------------------------------
+@@ -168,9 +168,10 @@
+ 
+     // HELPER FUNCTION | Put the Stored Compass in the Scene, or Take It Out
+     // ------------------------------------------------------------
+-    // The compass is up while the panel is open, and at no other time - and
+-    // not even then while a sheet picture is being rendered, because this app
+-    // has nothing that hides an authoring aid from a render.
++    // The compass is up while the panel is open, as it always was, AND while
++    // Show Compass is switched on - which is the point of switching it on:
++    // the panel can then be closed and the compass read from the model,
++    // beside whichever drawing planes are switched on.
+     //
+     // Left alone while a compass is being drawn: the pick tool is showing
+     // one that follows the pointer, and north is not set until the second
+@@ -179,7 +180,7 @@
+     function Na__NorthDev__SyncCompass() {
+         if (Na__NorthPick__IsActive()) return;
+         const bearing = Na__NorthData__GetBearingDeg();
+-        const wanted  = Na__NorthDev__IsOpen() && !Na__NorthDev__SheetBusy;
++        const wanted  = Na__NorthGizmo__IsKept() || Na__NorthDev__IsOpen();
+         if (bearing === null || !wanted) { Na__NorthGizmo__Dispose(); return; }  // <-- Nothing to point at, or nobody asking: the geometry goes with it
+         const held   = Na__NorthData__GetOriginMm();
+         const origin = held ? { x : Na__Math__ConvertMmToUnits(held.x), y : Na__Math__ConvertMmToUnits(held.y), z : Na__Math__ConvertMmToUnits(held.z) } : Na__NorthDev__DefaultOrigin();
+@@ -188,6 +189,15 @@
+     // ------------------------------------------------------------
+ 
+ 
++    // HELPER FUNCTION | Switch Show Compass On or Off
++    // ------------------------------------------------------------
++    function Na__NorthDev__ToggleKept() {
++        Na__NorthGizmo__SetKept(!Na__NorthGizmo__IsKept());
++        Na__NorthDev__SyncCompass();
++        Na__NorthDev__Render();
++    }
++    // ------------------------------------------------------------
++
+ // endregion -------------------------------------------------------------------
+ 
+ 
+@@ -394,6 +404,16 @@
+         clear.disabled = picking || !Na__NorthData__IsSet();
+         actions.appendChild(clear);
+ 
++        // SHOW COMPASS | Pressed while the compass is being kept, the same
++        // pressed look a drawing plane's Show plane button wears.
++        const kept = Na__NorthGizmo__IsKept();
++        const keep = Na__NorthDev__Button(Na__NorthCfg__GetLabel('ShowCompassLabel', 'Show Compass'), kept ? 'na-pm-dev__btn--primary' : '', Na__NorthDev__ToggleKept);
++        keep.setAttribute('aria-pressed', String(kept));
++        keep.disabled = picking || !Na__NorthData__IsSet();
++        keep.title    = kept
++            ? Na__NorthCfg__GetLabel('ShowCompassOnHint',  'The compass stays in the 3D view with the panel closed, so it can be read while orbiting the model alongside the drawing planes. Kept between visits.')
++            : Na__NorthCfg__GetLabel('ShowCompassOffHint', 'Leave the compass in the 3D view once this panel is closed.');
++        actions.appendChild(keep);
+         Na__NorthDev__Panel.appendChild(actions);
+ 
+         Na__NorthDev__Panel.appendChild(Na__NorthDev__El('div', 'na-dropdown-menu__panel-title', Na__NorthCfg__GetLabel('ElevationsTitle', 'What the elevations will be called')));
+@@ -449,7 +469,9 @@
+                 Na__NorthDev__Render();                                          // <-- Rebuild on each open so data is fresh
+                 Na__NorthDev__SyncCompass();
+             } else {
+-                // Authoring is done; the compass goes with the panel.
++                // Authoring is done. The compass that was only up because the
++                // panel was goes; a compass SWITCHED ON stays, which is the
++                // point of switching it on.
+                 Na__NorthPick__Cancel();
+                 Na__NorthDev__SyncCompass();
+             }
+@@ -460,49 +482,14 @@
+         window.addEventListener(Na__DrawData__CHANGED_EVENT, () => {
+             Na__NorthDev__SavedState = Na__NorthData__GetBearingDeg();
+             if (Na__NorthDev__IsOpen()) Na__NorthDev__Render();
+-            Na__NorthDev__SyncCompass();
++            Na__NorthDev__SyncCompass();                                         // <-- Also with the panel shut: a kept compass follows the project it belongs to
+         });
+         window.addEventListener(Na__NorthData__CHANGED_EVENT, () => {
+             if (Na__NorthDev__IsOpen() && !Na__NorthPick__IsActive()) Na__NorthDev__RenderLive();
+             Na__NorthDev__SyncCompass();
+         });
+ 
+-        // A SHEET OPENS | The compass must not be in the scene when a sheet
+-        // renders its drawings, so the panel shuts itself. The event is the
+-        // Layout Editor's own, heard by name: the editor loads lazily here and
+-        // must not be imported for the sake of one string.
+-        //
+-        // NOT ASKED WHETHER THE PANEL IS OPEN. The mode controller collapses
+-        // every dev panel by class before it announces, so by now this one
+-        // always reads as shut - and asking first left the compass standing in
+-        // the scene, where the sheet's 3D viewport rendered it into a drawing.
+-        // The announcement is made in the same turn the sheet is set, and a
+-        // render is queued behind a promise, so taking the compass out here is
+-        // always ahead of the first render.
+-        window.addEventListener('na-layouteditor-mode-changed', (event) => {
+-            if (!(event && event.detail && event.detail.isActive)) return;
+-            panel.classList.remove('is-open');
+-            toggle.setAttribute('aria-expanded', 'false');
+-            Na__NorthPick__Cancel();
+-            Na__NorthDev__SyncCompass();
+-        });
+-
+-        // ANY OTHER SHEET PICTURE | A sheet's viewports are also re-rendered
+-        // from the 3D tab - a scene saved in the Presentation editor restamps
+-        // every viewport that shows it - and this panel may be open when that
+-        // happens. The snapshot renderer announces its queue the moment a
+-        // render is booked, ahead of the render itself, so the compass is out
+-        // of the scene before the first one runs and back when the last is
+-        // done. Heard by name, as above. A compass being aimed is put down:
+-        // nobody is mid-click while a scene saves.
+-        window.addEventListener('na-layouteditor-snapshot-queue', (event) => {
+-            const busy = !!(event && event.detail && event.detail.outstanding > 0);
+-            if (busy === Na__NorthDev__SheetBusy) return;
+-            Na__NorthDev__SheetBusy = busy;
+-            if (busy) Na__NorthPick__Cancel();
+-            if (Na__NorthDev__IsOpen()) Na__NorthDev__Render();                  // <-- Draw Compass reads as it should again after a cancelled aim
+-            Na__NorthDev__SyncCompass();
+-        });
++        Na__NorthDev__SyncCompass();                                             // <-- A compass switched on in an earlier visit comes back up with the model
+         return true;
+     }
+     // ------------------------------------------------------------

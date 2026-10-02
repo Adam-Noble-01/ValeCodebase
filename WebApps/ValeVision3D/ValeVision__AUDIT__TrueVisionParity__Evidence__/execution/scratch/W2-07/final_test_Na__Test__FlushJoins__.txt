@@ -1,0 +1,13 @@
+$ node 80__Testing__PrototypeEnvironment\Na__Test__FlushJoins__.test.mjs
+PASS  two faces flush to the double: the seam is cut whole
+PASS  the upper face 13.4 microns up (the measured first floor wall): still a flush join, cut whole
+PASS  20 microns up (under SketchUp's own 0.0254 mm): cut
+PASS  a 1 mm step is a step: the edge comes back untouched
+PASS  an outline against nothing keeps its line
+PASS  a face 1 mm in front of the plane is another surface: kept
+PASS  a join over the left 4 m leaves the right 6 m as a line
+PASS  two joins leave three pieces, each with the owner tag
+
+8 passed, 0 failed
+
+[exit 0, 0.1s]

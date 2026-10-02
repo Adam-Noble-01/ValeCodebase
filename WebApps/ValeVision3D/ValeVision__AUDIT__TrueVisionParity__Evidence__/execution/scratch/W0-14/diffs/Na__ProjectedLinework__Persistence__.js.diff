@@ -1,0 +1,104 @@
+--- before/Na__ProjectedLinework__Persistence__.js
++++ after/Na__ProjectedLinework__Persistence__.js
+@@ -37,23 +37,45 @@
+ //
+ // PORT NOTE:
+-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__LineworkStore__.mjs
+-// - Source version: Lantern Designer rebuild of 07-Aug-2026
+-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
++//                   Designer's VghLantern__ProjectedEdges__LineworkStore__.mjs of 07-Aug-2026; ValeVision's
++//                   own 1.1.0 and 1.2.0 followed, 1.2.0 taken from TrueVision's Edge Styles); since ported
++//                   back whole from TrueVision3D 1.2.1 (HEAD b2aa9151)
++// - Source version: 1.2.1 (TrueVision3D v2.54.0, 14-Sep-2026; read at b2aa9151) - in that release's
++//                   commit; its devlog entry does not name the change (module log 14-Sep-2026)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}}
+ // - Parity        : adapted
+ // - Divergences   :
+-//   - One block per drawing as an R2 asset (Na__AppUtils__R2AssetUpload) with a record reference, not a lantern block.
+-//   - Four line classes per block; IndexedDB copy on the device; bake-before-save.
+-// - Back-port     : none pending.
++//   - Banner and console prefix read ValeVision3D.
++//   - The browser copy lives in IndexedDB ValeVision3D__ProjectedLinework (TrueVision3D__ProjectedLinework
++//     in TrueVision): a database name carries the app's token.
++//   - A stored block's Meta.Description reads "one ValeVision drawing".
++//   - BakeBeforeSave bakes on localhost only (Na__AppUtils__IsRunningOnLocalhost), not whenever
++//     TrueVision's DevGate says the session may author (TD01): the upload is a data-path write only
++//     the local Flask server's worker key can make, so a bake anywhere else is CPU spent on an
++//     upload that cannot land (VV D24, DR-31 (2)). The import sits where TrueVision imports
++//     Na__DevGate__IsAuthoringEnabled.
++//   - Na__PlStore__FolderId's two helpers carry TrueVision's names with ValeVision's meaning
++//     (W0-11): the master-index folderId ("2026/3047__Doous"), and null rather than a guess. The
++//     bake uploads through Na__AppUtils__R2AssetUpload, ValeVision's twin, which resolves the same
++//     folder from the project code (DIV-4).
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 14-Sep-2026 - Version 1.2.1
++// - Fix: FetchAsset read from a folder named after the project code
++//   (26-Projects/PS01), but the bake uploads to the URL's project folder
++//   (26-Projects/PS01__MustersRoad), so a baked block was never fetched from R2.
++//   It now reads from the project folder (Na__PlStore__FolderId), as
++//   Na__LeAssets__Load does.
++//
+ // 13-Sep-2026 - Version 1.2.0
+ // - Asset schema 2: an owner tag per segment, stored as [ id, count ] runs per
+ //   class with the key table in Meta.OwnerKeys.
+ // - An untagged block is refused on read and never written, and the bake will
+-//   not upload an untagged result. Schema 1 assets and browser copies are
+-//   re-rendered once: a drawing restored from one would leave the Layout
+-//   Editor's edge styles doing nothing. Ported from TrueVision3D (Edge Styles).
++//   not upload an untagged result. GPU renders made before every kept render was
++//   routed to the CPU had been cached untagged, and restored them would have
++//   left the Layout Editor edge styles doing nothing.
+ //
+ // 10-Sep-2026 - Version 1.1.0
+@@ -76,7 +98,6 @@
+     import {
+         Na__AppUtils__ResolveAssetUrl,
+-        Na__AppUtils__NormalizeProjectFolderId,
+-        Na__AppUtils__IsRunningOnLocalhost
+-    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
++        Na__AppUtils__GetProjectFolderFromUrl,
++        Na__AppUtils__GetYearFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+     import { Na__DrawData__GetProjectCode } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+     // ------------------------------------------------------------
+@@ -103,4 +124,7 @@
+     // ------------------------------------------------------------
+ 
++    import { Na__AppUtils__IsRunningOnLocalhost } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';   // <-- ValeVision: the data-path gate is the hostname test (VV D24)
++    // ------------------------------------------------------------
++
+     // MODULE IMPORTS | Segment Owner Tags
+     // ------------------------------------------------------------
+@@ -110,5 +134,4 @@
+         Na__PlOwners__Has
+     } from './Na__ProjectedLinework__Owners__.js';
+-    // ------------------------------------------------------------
+ 
+ // endregion -------------------------------------------------------------------
+@@ -442,8 +465,21 @@
+ // -----------------------------------------------------------------------------
+ 
++    // HELPER FUNCTION | The Folder Assets Are Read From ("26/PS01__MustersRoad", or null)
++    // ------------------------------------------------------------
++    // The URL's year and project folder: the folder the bake's upload writes
++    // to, as Na__CfApi__WriteProjectAsset takes it from the URL too. The
++    // project code is not a folder - PS01's assets live in PS01__MustersRoad.
++    // ------------------------------------------------------------
++    function Na__PlStore__FolderId() {
++        const projectFolder = Na__AppUtils__GetProjectFolderFromUrl();
++        return projectFolder ? Na__AppUtils__GetYearFromUrl() + '/' + projectFolder : null;
++    }
++    // ------------------------------------------------------------
++
++
+     // HELPER FUNCTION | Fetch the Asset From R2, Falling Back to GitHub Pages
+     // ------------------------------------------------------------
+     async function Na__PlStore__FetchAsset(relativePath) {
+-        const folderId = Na__AppUtils__NormalizeProjectFolderId(Na__DrawData__GetProjectCode());
++        const folderId = Na__PlStore__FolderId();                                   // <-- Where the bake put it, never a folder named after the code
+         if (!folderId) return null;
+         const urls = Na__AppUtils__ResolveAssetUrl(folderId, relativePath);

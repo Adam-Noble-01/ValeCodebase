@@ -130,3 +130,67 @@ WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
 WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
 WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
 WebApps/ValeSpec/Na__ValeSpecServer__Startup.log
+
+# -----------------------------------------------------------------------------
+# ValeVision3D project content - only its JSON is committed (K1 DR-29 default)
+# -----------------------------------------------------------------------------
+# The Layout Editor's new content lives in each project's own folder under
+# WebApps/Whitecardopedia/Projects/<yyyy>/<folder>/, in TrueVision3D's folder
+# names. Until Adam answers K1 DR-29, only its JSON is committed: rasters,
+# PDFs and archives stay on this machine and on R2.
+#
+# SHEET PICTURES (WebApps/Whitecardopedia/Server__ValeVisionSheetImages__Api__.py).
+# The save files each picture a drawing shows into
+# 05__Layout__DrawingDocs__Images/<document id>/, named <name>__<first ten hex
+# digits of its SHA-256>.webp (or .jpg / .png), and 00__Archive beside the
+# document folders holds the pictures no drawing uses any more. NOTHING under
+# the folder is committed: the stored pictures, the archive, a source picture
+# copied in by hand, a temporary file a crash left. If Adam answers DR-29
+# "commit pictures", this becomes TrueVision3D's allow-list of the stored
+# names, the archive still excluded - these lines added under this one:
+#     !**/05__Layout__DrawingDocs__Images/*/
+#     **/05__Layout__DrawingDocs__Images/00__Archive/
+#     !**/05__Layout__DrawingDocs__Images/*/*__<[0-9a-f] ten times>.webp (one line each for .webp, .jpg, .png)
+**/05__Layout__DrawingDocs__Images/**
+
+# THE SPELLING DICTIONARY (WebApps/ValeVision3D/50__ValeVision__UserConfig/,
+# written by WebApps/Whitecardopedia/Server__ValeVisionUserConfig__Api__.py):
+# the dictionary is committed; a temporary file its atomic write leaves if the
+# server is stopped mid-write (<file>.<random>.tmp) is not.
+WebApps/ValeVision3D/50__ValeVision__UserConfig/*.tmp
+
+# PUBLISHED DOCUMENTS (WebApps/Whitecardopedia/Server__ValeVisionPublished__Api__.py).
+# A publish files each drawing's baked files into its project's
+# 06__Layout__PublishedDocuments/<document id>/: the manifest, sheet and element
+# JSON, SVG linework, WebP tiers, a print PNG and a PDF. Until Adam answers
+# K1 DR-29 only the JSON is committed. An ALLOWLIST, as for the statements
+# below: everything under the folder is excluded, its folders are re-included
+# so git can look inside them, and only *.json comes back. The zips in
+# 00__Archive__Revisions (every superseded revision, local only - TrueVision3D's
+# **/00__Archive/ rule misses the name) are never committed. If Adam answers
+# DR-29 "commit rasters and PDFs" (TrueVision3D commits every published file
+# but the archive), add the .json line's twin for each of .svg, .webp, .png
+# and .pdf, e.g.
+#     !WebApps/Whitecardopedia/Projects/**/06__Layout__PublishedDocuments/**/*.webp
+WebApps/Whitecardopedia/Projects/**/06__Layout__PublishedDocuments/**
+!WebApps/Whitecardopedia/Projects/**/06__Layout__PublishedDocuments/**/
+!WebApps/Whitecardopedia/Projects/**/06__Layout__PublishedDocuments/**/*.json
+WebApps/Whitecardopedia/Projects/**/00__Archive__Revisions/
+
+# STATEMENT DOCUMENTS (WebApps/Whitecardopedia/Server__ValeVisionStatements__Api__.py)
+# - the words are tracked, the pictures are not (TrueVision3D's own rule). A
+# statement folder under 10__StatementDocs holds its markdown, its generated
+# HTML and the photography it is built from. AN ALLOWLIST, not a list of
+# picture extensions: a statement folder collects whatever the job needed -
+# photographs, renders, a zip somebody dropped in - so NOTHING under
+# 10__StatementDocs is tracked except .md, .html and .json. The first line
+# excludes the folder; the second re-includes the directories, without which
+# git cannot look inside to find the rest. What a delete moved into
+# 00__Deleted__Quarantine stays out whole: a deleted statement is never
+# published again through the repository.
+WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**
+!WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/
+!WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.md
+!WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.html
+!WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.json
+WebApps/Whitecardopedia/Projects/**/10__StatementDocs/00__Deleted__Quarantine/

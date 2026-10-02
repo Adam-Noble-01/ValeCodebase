@@ -1,0 +1,14 @@
+!! WebApps/.claude/worktrees/valevision-user-data-arch-976836/
+!! WebApps/ValeVision3D/.claude/worktrees/drawing-layout-editor-controls-6ecdac/
+!! WebApps/ValeVision3D/.claude/worktrees/valevision-config-timeout-c1cffd/
+!! WebApps/ValeVision3D/01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/01__ProductionFiles01__ProductionFiles/VgIcons__IconFabricator__NavMenuIcons__.psd
+!! WebApps/ValeVision3D/01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/01__ProductionFiles/VgIcons__IconFabricator__.psd
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.dev.vars
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__EmailSystem__BuildAndDeploy__.py.--HIDDEN
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__EmailSystem__SecurityOverview__ForIT__Edited__.txt.--HIDDEN
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__EmailSystem__SecurityOverview__ForIT__Raw__.txt.--HIDDEN
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__SourceHash__.txt.--HIDDEN
+!! WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__Source__.json.--HIDDEN
+!! WebApps/Whitecardopedia/Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env
+!! WebApps/Whitecardopedia/src/ThirdParty__VersionLockedDependencies/SERVER__FlaskServerDepencies/bin/flask.exe

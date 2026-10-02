@@ -1,0 +1,355 @@
+
+**A. Drawing core, planes, sections and fog (top level)** (35 files, 12,527 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js | 486 | 1.0.0 | v2.86.0 | adapted | W1-06 |
+| TVM/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js | 491 | 1.0.0 | v2.86.0 | adapted | W1-06 |
+| TVM/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js | 246 | 1.0.0 | v2.86.0 | verbatim | W1-06 |
+| TVM/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js | 156 | 1.0.0 | v2.86.0 | verbatim | W1-06 |
+| TVM/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js | 738 | 1.0.0 | v2.19.0 | excluded: DIV-1: VV keeps 05/Na__RenderEffect__2dProfileLines__ (K2 section 7) | - |
+| TVM/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js | 376 | 1.1.0 | v2.94.0 | path only: FR-09 renames VV ComposerPreset to this path and names; VV body kept (DIV-1, DR-04) | W0-02 |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__CapGeometry__.js | 601 | 1.0.0 | v2.94.0 | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js | 372 | 1.1.0 | v2.12.0-16.2 (f264be71) | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__ConfigState__.js | 298 | 1.0.0 | v2.12.0-16.2 (f264be71) | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__Engine__.js | 712 | 1.2.0 | v2.94.0 | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__Engine__AppConfig__.json | 22 | - | v2.94.0 | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js | 342 | 1.0.0 | v2.94.0 | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js | 291 | 1.0.0 | v2.94.0 | excluded: DIV-2: VV keeps 41__System__CrossSectionView (TF-T21; DR-26, DR-41) | - |
+| TVM/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js | 227 | 1.0.0 | v2.87.0 | adapted | W1-08 |
+| TVM/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js | 337 | 1.0.0 | v2.87.0 | adapted | W1-08 |
+| TVM/45__System__ElevationViews/Na__Elevation__AutoNameText__.js | 176 | 1.0.0 | v2.86.0 | adapted | W1-10 |
+| TVM/45__System__ElevationViews/Na__Elevation__AutoName__.js | 288 | 1.0.0 | v2.86.0 | adapted | W1-10 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json | 76 | - | v2.82.0 | adapted | W2-40 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js | 382 | 1.0.0 | v2.82.0 | adapted | W2-40 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js | 356 | 1.0.0 | v2.82.0 | adapted | W2-40 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js | 397 | 1.0.0 | v2.82.0 | adapted | W2-01 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js | 824 | 1.0.0 | v2.82.0 | adapted | W2-01 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js | 411 | 1.0.0 | v2.82.0 | adapted | W2-40 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js | 828 | 1.1.0 | v2.82.0 | adapted | W2-01 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js | 551 | 1.0.0 | v2.82.0 | adapted | W2-40 |
+| TVM/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css | 142 | - | v2.82.0 | adapted | W2-01 |
+| TVM/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js | 198 | 0.1.0 | v2.86.0 | gated, adapted - DR-26 | W2-05 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json | 44 | - | v2.94.0 | gated, verbatim - DR-15 | W1-09 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js | 263 | 1.0.0 | v2.94.0 | gated, verbatim - DR-15 | W1-09 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js | 314 | 1.0.0 | v2.94.0 | gated, adapted - DR-15 | W2-03 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js | 402 | 1.0.0 | v2.94.0 | gated, verbatim - DR-15 | W1-09 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js | 189 | 1.0.0 | v2.94.0 | gated, verbatim - DR-15 | W1-09 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js | 631 | 1.0.0 | v2.94.0 | gated, adapted - DR-15 | W2-03 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js | 253 | 1.0.0 | v2.94.0 | gated, verbatim - DR-15 | W1-09 |
+| TVM/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css | 107 | - | v2.94.0 | gated, verbatim - DR-15 | W2-03 |
+
+**B. Projected linework (50)** (3 files, 1,435 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js | 807 | 1.3.0 | v2.42.0 | gated, adapted - DR-16 a | W2-06 |
+| TVM/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js | 308 | 1.1.0 | v2.37.0 | gated, adapted - DR-31 | W2-43 |
+| TVM/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js | 320 | 1.0.0 | v2.105.0 | gated, adapted - DR-16 a | W2-43 |
+
+**C. Drafting aids and object snap (LE 26, 27, 28, 32, 33)** (31 files, 8,752 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js | 311 | 1.1.0 | v2.107.0 | adapted | W2-18 |
+| LE/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json | 32 | - | v2.107.0 | adapted | W2-18 |
+| LE/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js | 107 | 1.0.0 | v2.107.0 | verbatim | W1-14 |
+| LE/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css | 199 | - | v2.107.0 | adapted | W2-18 |
+| LE/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js | 669 | 1.0.0 | v2.114.0 | verbatim | W2-18 |
+| LE/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json | 89 | - | v2.114.0 | verbatim | W2-18 |
+| LE/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js | 383 | 1.0.0 | v2.114.0 | verbatim | W1-14 |
+| LE/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js | 247 | 1.0.0 | v2.114.0 | verbatim | W2-18 |
+| LE/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css | 63 | - | v2.114.0 | verbatim | W2-18 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js | 707 | 1.0.0 | v2.149.0 | gated, verbatim* - gesture held (DR-40) | W2-25 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json | 34 | - | v2.149.0 | gated, verbatim* - gesture held (DR-40) | W2-25 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js | 309 | 1.0.0 | v2.129.0 | verbatim | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json | 79 | - | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js | 219 | 1.0.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js | 157 | 1.0.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js | 330 | 1.2.0 | v2.113.0 | verbatim | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js | 296 | 1.1.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js | 265 | 1.0.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js | 350 | 1.0.0 | v2.128.0 | verbatim | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js | 159 | 1.0.0 | v2.128.0 | verbatim | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js | 657 | 1.1.0 | v2.128.0 | verbatim | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js | 565 | 1.2.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js | 337 | 1.0.0 | v2.128.0 | verbatim | W2-42 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css | 432 | - | v2.128.0 | adapted | W2-19 |
+| LE/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js | 638 | 1.6.0 | v2.28.0 | gated, verbatim - gesture held (DR-40) | W2-25 |
+| LE/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js | 230 | 1.0.0 | v2.113.0 | verbatim | W2-18 |
+| LE/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json | 28 | - | v2.113.0 | verbatim | W2-18 |
+| LE/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js | 180 | 1.0.0 | v2.113.0 | verbatim | W1-14 |
+| LE/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js | 550 | 1.0.0 | v2.131.0 | verbatim | W2-18 |
+| LE/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json | 43 | - | v2.131.0 | verbatim | W2-18 |
+| LE/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css | 87 | - | v2.131.0 | verbatim | W2-18 |
+
+**D. Keyboard scopes (LE 31, key files, KeyScope)** (4 files, 1,961 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/03__AppUtils/Na__AppUtils__KeyScope__.js | 237 | 1.1.0 | v2.109.0 | gated, adapted - DR-33 a | W1-29 |
+| LE/03__Core__Config/Na__Hotkeys__DrawingTabs__.json | 1,267 | - | v2.114.0 | rename + content: FR-12 renames VV KeyMappings__.json (W0-03); KeyMap 1.11.0 content in W0-15 (DR-33) | W0-03, W0-15 |
+| LE/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json | 73 | - | v2.109.0 | gated, adapted - DR-33 a | W1-30 |
+| LE/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js | 384 | 1.1.0 | v2.109.0 | gated, adapted - DR-33 a | W1-30 |
+
+**E. Vector tools, Booleans and hatching (LE 36, 37; ShapeRings)** (22 files, 9,250 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js | 385 | 1.1.0 | v2.150.0 | adapted | W1-13 |
+| LE/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js | 997 | 1.5.0 | v2.89.0 | gated, adapted - DR-19 | W1-17 |
+| LE/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js | 456 | 1.1.0 | v2.89.0 | gated, verbatim - DR-19 | W2-29 |
+| LE/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css | 27 | - | v2.89.0 | gated, verbatim - DR-19 | W1-17 |
+| LE/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js | 424 | 1.1.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-41 |
+| LE/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css | 77 | - | v2.129.0 | gated, verbatim - DR-18 a | W2-41 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js | 709 | 1.2.0 | v2.130.0 | gated, verbatim - DR-18 a | W2-41 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js | 470 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js | 690 | 1.1.0 | v2.150.0 | gated, verbatim - DR-18 a | W2-41 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js | 549 | 1.0.0 | v2.150.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js | 353 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json | 208 | - | v2.129.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js | 389 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W1-14 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js | 684 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js | 382 | 1.1.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js | 419 | 1.1.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-41 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js | 480 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js | 218 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js | 153 | 1.0.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js | 296 | 1.1.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-27 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js | 504 | 1.2.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+| LE/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js | 380 | 1.1.0 | v2.129.0 | gated, verbatim - DR-18 a | W2-28 |
+
+**F. Site plans (LE 21; site-plan units)** (8 files, 3,881 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js | 633 | 1.2.0 | v2.55.0 | gated, verbatim - dormant (DR-08 B) | W2-16 |
+| LE/21__System__SitePlanData/Na__SitePlan__GlbParse__.js | 366 | 1.0.0 | v2.48.0 | gated, verbatim - dormant (DR-08 B) | W2-14 |
+| LE/21__System__SitePlanData/Na__SitePlan__Store__.js | 802 | 1.2.0 | v2.48.0 | gated, adapted - dormant (DR-08 B) | W2-14 |
+| LE/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js | 439 | 1.0.0 | v2.93.0 | gated, verbatim - dormant (DR-08 B) | W1-13 |
+| LE/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json | 65 | - | v2.89.0 | gated, verbatim - dormant (DR-08 B) | W1-13 |
+| LE/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js | 240 | 1.0.0 | v2.91.0 | gated, verbatim - dormant (DR-08 B) | W2-14 |
+| LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js | 442 | 1.0.0 | v2.164.0 | gated, verbatim* - dormant (DR-08 B) | W2-39 |
+| LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js | 894 | 1.0.0 | v2.164.0 | gated, adapted - dormant (DR-08 B) | W2-39 |
+
+**G. Viewports, rotation, doors, quality, Model Source** (5 files, 1,462 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/20__System__Viewports/Na__LayoutEditor__ModelSource__.js | 305 | 1.1.0 | v2.32.0 | gated, adapted - dormant (DR-09 a) | W2-16 |
+| LE/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js | 459 | 1.3.0 | v2.42.0 | gated, adapted - DR-16 a | W2-11 |
+| LE/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js | 240 | 1.0.0 | v2.136.0 | adapted | W1-14 |
+| LE/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js | 145 | 1.0.0 | v2.94.0 | gated, verbatim - DR-15 | W2-12 |
+| LE/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js | 313 | 1.0.0 | v2.138.0 | adapted | W1-14 |
+
+**H. Sheet tools and records (shared LE subfolders)** (9 files, 2,201 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js | 292 | 1.0.0 | v2.104.0 | gated, verbatim - DR-14 A | W1-20 |
+| LE/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js | 178 | 1.0.0 | v2.147.0 | adapted | W1-13 |
+| LE/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js | 308 | 1.0.0 | v2.143.0 | adapted | W1-13 |
+| LE/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js | 102 | 1.0.0 | v2.139.0 | adapted | W1-13 |
+| LE/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js | 205 | 1.0.0 | v2.106.0 | adapted | W1-13 |
+| LE/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js | 195 | 1.0.0 | v2.123.0 | gated, adapted - DR-17 | W2-21 |
+| LE/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js | 494 | 1.2.0 | v2.117.0 | gated, adapted - gesture held (DR-40) | W3-03 |
+| LE/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js | 122 | 1.1.0 | v2.63.1-65.1 (4f6bb9ef) | adapted | W2-20 |
+| LE/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js | 305 | 1.0.0 | v2.144.0 | adapted | W2-21 |
+
+**I. Specification, notes, spell check, Specification Scrapbook (LE 50, 58; 55)** (20 files, 7,890 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js | 346 | 1.0.1 | v2.143.0 | adapted | W2-32 |
+| LE/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js | 518 | 1.0.0 | v2.143.0 | verbatim | W3-11 |
+| LE/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js | 268 | 1.0.0 | v2.143.0 | verbatim | W2-22 |
+| LE/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js | 510 | 1.0.0 | v2.147.0 | verbatim | W2-32 |
+| LE/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js | 511 | 1.0.0 | v2.143.0 | verbatim | W3-11 |
+| LE/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js | 1,045 | 1.0.0 | v2.163.0 | adapted | W2-30 |
+| LE/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js | 365 | 1.0.0 | v2.163.0 | verbatim | W2-31 |
+| LE/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js | 303 | 1.0.0 | v2.143.0 | verbatim | W2-32 |
+| LE/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js | 797 | 1.2.0 | v2.91.0 | adapted | W2-35 |
+| LE/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js | 446 | 1.0.1 | v2.91.0 | adapted | W2-35 |
+| LE/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json | 89 | - | v2.91.0 | adapted | W2-35 |
+| LE/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js | 469 | 1.1.0 | v2.144.0 | adapted | W2-35 |
+| LE/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css | 419 | 1.2.0 | v2.91.0 | adapted | W2-35 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__.js | 99 | 1.0.0 | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__Config__.json | 46 | - | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js | 556 | 1.0.0 | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__Field__.js | 630 | 1.0.0 | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css | 115 | 1.0.0 | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js | 211 | 1.0.0 | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20) | W2-34 |
+| TVM/55__Feature__SpellCheck/README__SpellCheck__.md | 147 | - | v2.144.0 | gated, adapted - Vale name/dictionary (DR-20); README rewritten for VV (a new W2-34 target): the Vale dictionary file and route of W0-18; TV's 'NOT in ValeVision' line goes | W2-34 |
+
+**J. Floor areas (LE 59; Area Schedule)** (11 files, 4,890 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js | 668 | 1.1.0 | v2.104.0 | gated, verbatim - DR-14 A | W3-17 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js | 849 | 1.2.2 | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json | 158 | - | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js | 566 | 1.1.0 | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js | 315 | 1.0.0 | v2.125.0 | gated, verbatim - DR-14 A | W3-10 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js | 204 | 1.1.1 | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js | 231 | 1.1.0 | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js | 492 | 1.1.0 | v2.104.0 | gated, verbatim - DR-14 A | W3-10 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js | 309 | 1.0.0 | v2.104.0 | gated, verbatim - DR-14 A | W1-27 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js | 871 | 1.2.1 | v2.104.0 | gated, verbatim - DR-14 A | W3-10 |
+| LE/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css | 227 | - | v2.104.0 | gated, verbatim - DR-14 A | W3-10 |
+
+**K. Title block, Project QR and parametric types (LE 53; QR cell; Cabinet Infill)** (9 files, 4,174 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js | 479 | 1.0.0 | v2.81.0 | gated, verbatim - switched off (DR-12 A); NA content off (DR-43) | W1-22 |
+| LE/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json | 47 | - | v2.81.0 | gated, adapted - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js | 863 | 1.0.0 | v2.81.0 | gated, verbatim - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js | 226 | 1.0.0 | v2.81.0 | gated, verbatim - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js | 196 | 1.1.0 | v2.81.0 | gated, adapted - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js | 397 | 1.2.0 | v2.81.0 | gated, adapted - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/53__Feature__ProjectQrCode/README__ProjectQrCode__.md | 166 | - | v2.81.0 | gated, adapted - switched off (DR-12 A); NA content off (DR-43) | W1-15 |
+| LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js | 990 | 1.2.0 | v2.128.0 | verbatim | W2-38 |
+| LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js | 810 | 1.3.0 | v2.100.0 | gated, verbatim* - switched off (DR-12 A); NA content off (DR-43) | W2-38 |
+
+**L. Drawing Register (LE 51)** (10 files, 3,659 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js | 377 | 1.0.1 | v2.69.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__DeleteDialog__.js | 64 | - | v2.69.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js | 688 | 1.3.0 | v2.79.0 | gated, adapted - DR-11 A code | W4-10 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js | 171 | 1.0.1 | v2.69.0 | gated, adapted - DR-11 A code | W4-10 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js | 196 | 1.0.1 | v2.69.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js | 113 | 1.0.1 | v2.69.0 | gated, adapted - DR-11 A code | W1-13 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js | 846 | 1.1.0 | v2.79.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js | 204 | 1.1.0 | v2.69.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js | 425 | 1.2.0 | v2.79.0 | gated, adapted - DR-11 A code | W4-18 |
+| LE/51__Feature__DrawingRegister/Na__LayoutEditor__Styles__DrawingRegister__.css | 575 | - | v2.78.1 | gated, adapted - DR-11 A code | W4-10 |
+
+**M. Sheet Images (LE 54)** (17 files, 4,709 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js | 309 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js | 196 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json | 122 | - | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js | 525 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js | 389 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js | 472 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js | 259 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js | 382 | 1.2.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js | 118 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W3-02 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js | 172 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js | 229 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js | 112 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js | 464 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W3-18 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js | 212 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js | 304 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W1-16 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js | 208 | 1.0.0 | v2.116.0 | gated, adapted - DR-13 a | W3-18 |
+| LE/54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css | 236 | 1.1.0 | v2.116.0 | gated, adapted - DR-13 a | W3-18 |
+
+**N. Statement Writer (LE 52) and its context-menu renderer (27)** (42 files, 19,652 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__AppConfig__.json | 76 | - | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Gesture__RightClickGuard__.js | 315 | 1.0.0 | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Picking__HitResolver__.js | 318 | 1.0.0 | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__README__.md | 225 | - | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__DoorInteraction__.js | 211 | 1.0.0 | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__ModelVisibility__.js | 621 | 1.0.0 | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css | 157 | - | v2.10.0 | verbatim | W4-11 |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__SystemLogic__.js | 437 | 1.0.0 | v2.10.0 | excluded: 3D right-click menu: skipped for drawing parity (DR-44); only the renderer comes with the Statement Writer (W4-11) | - |
+| TVM/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js | 394 | 1.0.0 | v2.10.0 | gated, verbatim - switched off (DR-10) | W4-11 |
+| LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js | 1,195 | 1.2.0 | v2.95.0 | gated, adapted - switched off (DR-10) | W4-06 |
+| LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js | 361 | 1.0.0 | v2.95.0 | gated, adapted - switched off (DR-10) | W4-05 |
+| LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js | 434 | 1.1.0 | v2.95.0 | gated, adapted - switched off (DR-10) | W4-06 |
+| LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js | 352 | 1.2.0 | v2.95.0 | gated, verbatim - switched off (DR-10) | W4-05 |
+| LE/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js | 245 | 1.0.0 | v2.157.0 | verbatim (lands now with the spec lockstep, DR-10) | W2-30 |
+| LE/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js | 474 | 1.0.0 | v2.165.0 | gated, verbatim - switched off (DR-10) | W4-04 |
+| LE/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js | 421 | 1.0.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-04 |
+| LE/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js | 397 | 1.2.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-04 |
+| LE/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js | 287 | 1.0.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-04 |
+| LE/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js | 501 | 1.0.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim* - switched off (DR-10) | W4-04 |
+| LE/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js | 407 | 1.1.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-06 |
+| LE/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js | 1,039 | 1.6.0 | v2.88.0-95.0 (62dade1c) | gated, adapted - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js | 683 | 1.4.0 | v2.95.0 | gated, verbatim - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js | 724 | 1.3.0 | v2.95.0 | gated, adapted - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js | 839 | 1.2.0 | v2.97.0 | gated, verbatim - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js | 323 | 1.1.0 | v2.162.0 | gated, verbatim - switched off (DR-10) | W4-05 |
+| LE/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js | 570 | 1.0.0 | v2.95.0 | gated, verbatim - switched off (DR-10) | W4-05 |
+| LE/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js | 178 | 1.1.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-06 |
+| LE/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js | 449 | 1.2.0 | v2.88.0-95.0 (62dade1c) | gated, verbatim - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js | 349 | 1.2.0 | v2.88.0-95.0 (62dade1c) | gated, adapted - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js | 312 | 1.2.0 | v2.88.0-95.0 (62dade1c) | gated, adapted - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js | 401 | 1.0.0 | v2.170.0 | gated, adapted - switched off (DR-10) | W4-05 |
+| LE/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css | 1,049 | - | v2.95.0 | gated, verbatim - switched off (DR-10) | W4-15 |
+| LE/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css | 1,330 | 2.1.1 | v2.95.0 | gated, verbatim - switched off (DR-10) | W4-15 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json | 191 | - | v2.162.0 | gated, adapted - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Contents__.js | 248 | 1.0.0 | v2.162.0 | gated, verbatim - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__.js | 579 | 1.0.0 | v2.167.0 | gated, verbatim - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__Live__.js | 140 | 1.0.0 | v2.167.0 | gated, verbatim - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Finishes__.js | 644 | 1.0.0 | v2.168.0 | gated, verbatim - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Footer__.js | 311 | 1.0.0 | v2.167.0 | gated, adapted - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Header__.js | 324 | 1.0.0 | v2.162.0 | gated, adapted - switched off (DR-10) | W4-16 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Registry__.js | 818 | 1.3.0 | v2.162.0 | gated, verbatim - switched off (DR-10) | W4-12 |
+| LE/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js | 323 | 1.1.0 | v2.162.0 | gated, adapted - switched off (DR-10); NA content off (DR-43) | W4-12 |
+
+**O. Publishing, sharing, published documents (LE 65, 66; 52, 53 top level)** (29 files, 9,856 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js | 707 | 1.1.0 | v2.155.0 | gated, adapted - DR-22 a | W4-07 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json | 54 | - | v2.155.0 | gated, adapted - DR-22 a | W4-03 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js | 285 | 1.1.0 | v2.155.0 | gated, adapted - DR-22 a | W4-07 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js | 340 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-03 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js | 479 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-03 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js | 282 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-03 |
+| LE/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js | 457 | 1.1.0 | v2.155.0 | gated, adapted - DR-22 a | W4-03 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js | 454 | 1.0.0 | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-08 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json | 61 | - | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-08 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js | 418 | 1.0.0 | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-07 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js | 487 | 1.0.0 | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-07 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js | 364 | 1.0.0 | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-08 |
+| LE/66__Feature__DocumentSharing/Na__LayoutEditor__Styles__Share__.css | 220 | - | v2.162.0-165.0 (55014c6a) | gated, adapted - DR-23 a | W4-08 |
+| LE/66__Feature__DocumentSharing/README__DocumentSharing__.md | 112 | - | v2.166.0 | gated, adapted - DR-23 a | W4-08 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Config__.json | 133 | - | v2.155.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js | 621 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-02 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Elements__.js | 653 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-02 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js | 596 | 1.0.0 | v2.156.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Paint__.js | 522 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Sheet__.js | 298 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-02 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Styles__Main__.css | 123 | - | v2.155.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Unpublished__.js | 226 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js | 340 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-17 |
+| TVM/52__System__Layout__PublishedDocuments/Na__PubDoc__Viewports__.js | 426 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-02 |
+| TVM/52__System__Layout__PublishedDocuments/README__PublishedDocuments__.md | 60 | - | v2.155.0 | gated, adapted - DR-22 a; README adapted for VV: Vale identity, SCHEMA REF at the VV example folder W4-01 seeds, the Urls line as W4-17's VV Urls; a W4-17 target since Section F's F.8 C30 | W4-17 |
+| TVM/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json | 189 | - | v2.155.0 | gated, adapted - DR-22 a | W4-01 |
+| TVM/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js | 678 | 1.1.0 | v2.155.0 | gated, adapted - DR-22 a | W4-01 |
+| TVM/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js | 172 | 1.0.0 | v2.155.0 | gated, adapted - DR-22 a | W4-01 |
+| TVM/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md | 99 | - | v2.155.0 | gated, adapted - DR-22 a | W4-01 |
+
+**P. PDF fonts** (1 files, 250 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| LE/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js | 250 | 1.0.0 | v2.52.0-54.0 (ffbaee21) | gated, adapted - DR-21 a | W1-25 |
+
+**Q. Colour palette (54 top level)** (6 files, 1,821 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/54__Feature__ColourPalette/Na__ColourPalette__.js | 88 | 1.0.0 | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+| TVM/54__Feature__ColourPalette/Na__ColourPalette__Config__.json | 196 | - | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+| TVM/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js | 448 | 1.1.0 | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+| TVM/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js | 733 | 1.1.0 | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+| TVM/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css | 205 | - | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+| TVM/54__Feature__ColourPalette/README__ColourPalette__.md | 151 | - | v2.126.0 | gated, adapted - Vale name/dictionary (DR-20) | W1-37 |
+
+**R. Transport and project file (80; LocalProjectMirror)** (3 files, 1,669 lines)
+
+| TV file | Lines | TV ver | Since (TV release) | Action | Package |
+|---|---|---|---|---|---|
+| TVM/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js | 447 | 1.2.0 | v2.39.0 | VV body: FR-17: same path and 8 exports over WCP Flask (DIV-4, DR-27) | W0-12 |
+| TVM/80__CloudflareIntegration/FutureCfHelpersEtc__ForServerlessFeaturesSuchAsClientComments__.note | 1 | - | v2.0.1 | excluded: TV note file; nothing to port | - |
+| TVM/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js | 1,221 | 1.5.0 | v2.7.0 | VV body: FR-16: same path, 33 exports over whitecardopedia-editor-api (DIV-4, DR-27) | W0-12 |

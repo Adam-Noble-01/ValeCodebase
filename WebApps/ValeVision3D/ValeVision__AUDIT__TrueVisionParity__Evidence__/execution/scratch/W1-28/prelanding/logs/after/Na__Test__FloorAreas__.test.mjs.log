@@ -1,0 +1,50 @@
+ValeVision3D - floor areas, the measurement
+  PASS  a rectangle 100 x 60 mm encloses 6000 square millimetres of paper
+  PASS  at 1:50 that is 15.00 m2 of floor
+  PASS  at 1:100 it is 60.00 m2 - FOUR times, because the scale is squared
+  PASS  at 1:20 it is 2.40 m2
+  PASS  at 1:1 it is 0.006 m2 - the paper itself
+  PASS  which way round it was drawn makes no difference
+  PASS  the L encloses 10000 - 3600 = 6400 square millimetres
+  PASS  16.00 m round the rectangle at 1:50 (the closing wall counted)
+  PASS  the L is 400 mm of paper round, so 20.00 m at 1:50
+  PASS  two points enclose nothing
+  PASS  three do
+  PASS  a run that encloses nothing measures nothing
+  PASS  a figure of eight is reported as crossing itself
+  PASS  ...and its shoelace really would have answered zero, which is why it is reported
+  PASS  a plain rectangle does not cross itself
+  PASS  nor does an L, whose walls meet only at their corners
+  PASS  nor does a triangle
+  PASS  a rectangle is labelled at its centre
+  PASS  ...and knows it has 30 mm of clear paper round that point
+  PASS  an L is labelled INSIDE the L, not in the bite out of it
+  PASS  ...and that point is further from every wall than the centroid is
+  PASS  a U-shaped room: its centroid falls OUTSIDE it
+  PASS  ...and the visual centre falls inside it
+  PASS  a run with no area is still given a point to label
+  PASS  a rectangle's label sits in the middle of its box (60, 40)
+  PASS  a room with a bay and recesses is labelled in the middle of its box, (35.4, 44.2)
+  PASS  ...which is NOT where its visual centre is - the fault Adam saw
+  PASS  an L has the middle of its box (50, 50) in the bite out of it...
+  PASS  ...so its label falls back to the visual centre, inside the L
+  PASS  a U does the same: never labelled in the gap between its legs
+  PASS  'visual' puts every room's label at its visual centre
+  PASS  a visual centre handed in is used rather than worked out again
+  PASS  an unknown placement reads as the box
+  PASS  a run that encloses nothing is still given a home
+  PASS  two decimals and a square metre sign
+  PASS  square feet convert at 10.7639 to the square metre
+  PASS  both, metres first and feet in brackets
+  PASS  a site measured in thousands keeps its separator
+  PASS  a length is written the same way
+  PASS  zero decimals rounds rather than truncates
+  PASS  the config ships square metres to two decimals
+  PASS  the shipped suffixes are the real signs, not "m2"
+  PASS  the layer is called Floor Areas
+  PASS  a label shrinks to fit rather than running into the next room
+  PASS  the group palette has a colour for every floor of a house and more
+  PASS  every palette colour is a real hex colour
+  PASS  the config formats exactly as the module does
+
+  PASS - every check passed.

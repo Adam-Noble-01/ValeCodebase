@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- W0-16 SCRATCH HARNESS (never shipped). Served by run_harnesses.mjs at the ValeVision3D app root.
+     Reads the html2canvas and PDF.js paths from the REAL config getters (GetStatementSetup,
+     GetDrawingRegisterSetup), injects exactly those scripts the way the Statement Writer and the
+     register preview do (a script tag, the worker handed to PDF.js by path), and proves each works:
+     html2canvas paints a block of this page, and PDF.js opens and rasterises a PDF jsPDF (vendor 05,
+     from the configured JsPdfScriptPath) has just written. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>W0-16 vendor load harness</title>
+</head>
+<body>
+<div id="paint" style="width:240px;height:80px;background:#2b3440;color:#fff;font:16px sans-serif;padding:8px">ValeVision3D vendor 06</div>
+<pre id="out">running...</pre>
+<script type="module">
+import { Na__LeCfg__Ready,
+         Na__LeCfg__GetStatementSetup,
+         Na__LeCfg__GetDrawingRegisterSetup,
+         Na__LeCfg__GetPdfSetup } from './02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+
+const log = [];
+const say = (line) => { log.push(line); document.getElementById('out').textContent = log.join('\n'); };
+const inject = (src) => new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = () => resolve(src); s.onerror = () => reject(new Error('failed to load ' + src));
+    document.head.appendChild(s);
+});
+
+(async () => {
+    const result = { ok : false };
+    try {
+        await Na__LeCfg__Ready();
+        const statement = Na__LeCfg__GetStatementSetup();
+        const register  = Na__LeCfg__GetDrawingRegisterSetup();
+        const pdf       = Na__LeCfg__GetPdfSetup();
+        result.paths = { html2canvas : statement.html2CanvasPath, pdfJs : register.pdfJsScriptPath, pdfJsWorker : register.pdfJsWorkerPath, jsPdf : pdf.jsPdfScriptPath };
+        say('paths from the config getters: ' + JSON.stringify(result.paths));
+
+        await inject(statement.html2CanvasPath);
+        const canvas = await window.html2canvas(document.getElementById('paint'), { logging : false });
+        result.html2canvas = { type : typeof window.html2canvas, width : canvas.width, height : canvas.height };
+        say('html2canvas: ' + JSON.stringify(result.html2canvas));
+
+        await inject(pdf.jsPdfScriptPath);
+        const doc = new window.jspdf.jsPDF({ unit : 'mm', format : 'a4' });
+        doc.text('ValeVision3D vendor check', 20, 30);
+        const bytes = new Uint8Array(doc.output('arraybuffer'));
+
+        await inject(register.pdfJsScriptPath);
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = register.pdfJsWorkerPath;
+        const task = window.pdfjsLib.getDocument({ data : bytes });
+        const pdfDoc = await task.promise;
+        const page = await pdfDoc.getPage(1);
+        const viewport = page.getViewport({ scale : 1 });
+        const target = document.createElement('canvas');
+        target.width = Math.ceil(viewport.width); target.height = Math.ceil(viewport.height);
+        await page.render({ canvasContext : target.getContext('2d'), viewport : viewport }).promise;
+        const text = (await page.getTextContent()).items.map((i) => i.str).join(' ');
+        result.pdfJs = { version : window.pdfjsLib.version, build : window.pdfjsLib.build, pages : pdfDoc.numPages,
+                         canvas : [ target.width, target.height ], text : text,
+                         workerSrc : window.pdfjsLib.GlobalWorkerOptions.workerSrc };
+        say('PDF.js: ' + JSON.stringify(result.pdfJs));
+        result.ok = true;
+        say('DONE');
+    } catch (error) {
+        result.error = String(error && error.stack ? error.stack : error);
+        say('ERROR: ' + result.error);
+    }
+    window.__W0_16 = result;
+})();
+</script>
+</body>
+</html>

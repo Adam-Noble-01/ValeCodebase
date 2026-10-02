@@ -1,0 +1,32 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__SheetsNormaliseOnce__.test.mjs
+exit 0
+
+ValeVision3D - sheets are normalised once per announcement
+  PASS  the first read normalises every sheet once
+  PASS    and hands the normaliser each sheet's place among the sheets, as before
+  PASS    and answers in tab order, leaving out what is not a sheet
+  PASS  a second and a third read normalise nothing
+  PASS  one sheet by id normalises nothing, and finds it
+  PASS  the active sheet normalises nothing, and is the live record
+  PASS  eight reads in a row (one pointer move) normalise nothing
+  PASS  a field written on a record already there brings no pass
+  PASS  an announcement normalises every sheet again, once
+  PASS    and the read after it normalises nothing
+  PASS  a record pushed with no announcement normalises its sheet alone
+  PASS  a record spliced out with no announcement does the same
+  PASS  a list replaced by one the same length normalises its sheet alone
+  PASS  the list the pass itself replaces does not bring the sheet back
+  PASS  a sheet added to the array is normalised, and the others are not
+  PASS  new objects under the old ids (a restore) are all normalised
+  PASS  a different array (a project load) is normalised
+  PASS    and then left alone
+  PASS  Dispatch moves the Revision on BEFORE its listeners run (and Touch goes through it)
+  PASS    the Revision reads live from outside the unit
+  PASS  MUTATION caught: never normalises (IsNormalised always true)
+  PASS  MUTATION caught: always normalises (the old behaviour)
+  PASS  MUTATION caught: ignores announcements (no Revision test)
+  PASS  MUTATION caught: ignores a list's length
+  PASS  MUTATION caught: ignores a list being replaced
+  PASS  MUTATION caught: notes the sheet BEFORE its pass
+
+Every check passed.

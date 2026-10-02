@@ -68,14 +68,24 @@
 //     folder through Flask; TrueVision uploads to R2 directly.
 //   - Row builders, reorder helpers and persistence live in their own modules
 //     (SceneRowBuilders__, SceneReorder__, ScenePersistence__) to keep this file in budget.
-//   - Update Camera, Regen Thumb and Save Scene stay separate buttons (TrueVision folds them into Update Scene).
+//     TrueVision withdrew its copies of that split in v2.68.2, so it is ValeVision's alone.
 //   - Destructive prompts use Na__AppUtils__ConfirmDialog__Show rather than window.confirm.
-//   - The "refuse Add Scene while a drawing is on screen" guard arrives with the drawing systems in Phase 2.
-// - Back-port     : the row-builder split and the confirm dialog.
+// - Back-port     : none for the split (withdrawn by TrueVision in v2.68.2). The confirm
+//                   dialog is half there: TrueVision has the module but no markup or
+//                   styles, so it still falls back to window.confirm; its markup and CSS
+//                   are the TrueVision-lane package WT-05 (held, DR-36).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.4.1 (records hygiene, v2.71.1)
+// - Comments only. The PORT NOTE no longer asks TrueVision to take the
+//   row-builder split, which TrueVision withdrew in v2.68.2, and says the
+//   confirm dialog is half there. Two Divergences lines that had stopped
+//   being true are gone: the three buttons became one Update Scene in
+//   SceneRowBuilders 1.2.0 (19-Sep), and the Add Scene guard arrived in 1.3.1.
+//   This log now reads newest first.
+//
 // 28-Sep-2026 - Version 1.4.0 (per-scene lighting, v2.71.0)
 // - Update Scene and Add Scene From Camera capture the live lighting into
 //   PresentationMode__Scene__Lighting (removed when the viewport shows the
@@ -92,23 +102,23 @@
 // 09-Sep-2026 - Version 1.3.1 (port Phase 2)
 // - Add Scene From Camera refuses while a 2D drawing owns the viewport.
 //
-// 11-Jun-2026 - Version 1.0.0
-// - Initial implementation for Presentation Mode system.
-//
-// 26-Jun-2026 - Version 1.1.0
-// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
-//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
-//
-// 15-Jul-2026 - Version 1.2.0
-// - Save Scene / Save All now capture cross-section geometry + style when
-//   the Capture Cross Sections toggle is ON (was Update Camera / Add only).
-//
 // 09-Sep-2026 - Version 1.3.0
 // - Scene groups (port Phase 1): group editor section, rows clustered under
 //   fold-down group headings, per-group ordering with arrows, drag handle and
 //   Position field, Group dropdown, new scenes filed into the active group,
 //   and the groups-changed listener that persists group edits. Row builders,
 //   reorder helpers and the save/thumbnail code moved to their own modules.
+//
+// 15-Jul-2026 - Version 1.2.0
+// - Save Scene / Save All now capture cross-section geometry + style when
+//   the Capture Cross Sections toggle is ON (was Update Camera / Add only).
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
+//
+// 11-Jun-2026 - Version 1.0.0
+// - Initial implementation for Presentation Mode system.
 //
 // =============================================================================
 
@@ -276,9 +286,9 @@
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing View Broker (is a 2D drawing on screen?)
-    // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+    // @delegate: ../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js
     // ------------------------------------------------------------
-    import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+    import { Na__DrawView__IsActive } from '../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Per-Scene Lighting Capture (Update Scene, Add Scene From Camera)

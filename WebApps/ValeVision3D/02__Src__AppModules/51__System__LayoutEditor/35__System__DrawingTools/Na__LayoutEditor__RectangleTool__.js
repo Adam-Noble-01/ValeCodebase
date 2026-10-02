@@ -14,6 +14,14 @@
 //   opposite one, or press on one corner and drag to the other. Both corners
 //   snap to the linework and the sheet's own vectors exactly as the Draw
 //   tool's points do. Shift holds it square, on the longer of the two sides.
+// - TYPED SIZES. With the first corner down, a width and height typed into
+//   the Measurements box land the opposite corner that far away, towards the
+//   side of the first corner the cursor is on (a negative size goes the other
+//   way; a side left out keeps what the cursor gives). As in SketchUp, typing
+//   a size straight after a rectangle lands resizes that rectangle instead,
+//   for as long as it is still selected and nothing has moved its corners -
+//   its own undo step. Sizes arrive in paper millimetres:
+//   Na__LayoutEditor__Measurements__ has already taken the drawing scale off.
 // - WHAT IT MAKES IS NOT A NEW KIND OF THING. The finished rectangle is a
 //   closed four-point shape in Sheet__Shapes, written through the same
 //   CreateShape call the Draw tool uses, with the same Vectors panel defaults
@@ -21,8 +29,7 @@
 //   polygon: the Select tool drags its corners by their grips, the Vectors
 //   panel restyles it, the eyedropper matches it and the PDF draws it, none of
 //   them knowing a rectangle was involved. There is no rectangle flag on the
-//   record, so no reader has to learn one, and TrueVision and ValeVision write
-//   exactly the same record.
+//   record, so no reader has to learn one and ValeVision reads it unchanged.
 // - WHILE IT IS BEING DRAWN IT IS NOT A RECORD. The preview is a dashed rubber
 //   box on the handles layer, and nothing reaches the model until the second
 //   corner lands. The Draw tool has to create its shape on the first click,
@@ -45,43 +52,69 @@
 //   comes up, Cancel with the other placing tools.
 // - Na__LayoutEditor__Grips__ draws the rubber box, beside the rubber band the
 //   Draw and Dimension tools stretch.
+// - Na__LayoutEditor__Measurements__ reads the box (Measure) and lands or
+//   resizes a rectangle from typed sizes (TypeSize).
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__RectangleTool__.js 1.0.0
-// - Ported on     : 13-Sep-2026
-// - Parity        : verbatim (header only)
-// - Divergences   : none - it writes an ordinary Sheet__Shapes record
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js
+// - Source version: 1.4.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This app's
+//                   copy was its 1.2.0 (14-Sep-2026; 1.0.0 ported 13-Sep-2026 for ValeVision3D v2.25.0,
+//                   then TrueVision's 1.0.1-1.2.0). It now takes Object Snap (the 28 folder, in place of
+//                   this app's 30 Snapping, TrueVision3D v2.129.0, unlogged in this module), area and
+//                   layerId through the defaults (1.3.0, v2.104.0) and the land hook (1.4.0, v2.143.0).
+//                   None of those TrueVision releases is confirmed by Adam in TrueVision; they come across
+//                   under DR-01 (c) and are named so.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none. A new rectangle takes no Hatch default, exactly as in TrueVision: left as it
+//                   is there until Adam confirms the intent (DR-37 (3)).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Sep-2026 - Version 1.4.0
+// - A tool can draw THROUGH this one and make something that is not a vector:
+//   defaults carrying `land` (a function) are handed the four corners when the
+//   rectangle lands - clicked, dragged or typed - instead of a shape being
+//   created. The Note Region tool (50__Feature__Specification) draws a region
+//   so, with this tool's snapping, Shift square, typed sizes and Escape. Such
+//   a box selects nothing and cannot be retyped as a rectangle; with no
+//   `land` nothing here behaves differently.
+//
+// 21-Sep-2026 - Version 1.3.0
+// - The Area tool draws rectangular rooms through this one
+//   (59__Feature__FloorAreas): `area` and `layerId` ride through the defaults
+//   to CreateShape, so the rectangle lands as a measured room on the Floor
+//   Areas layer. With no `area` in the defaults nothing here behaves
+//   differently, and a rectangle is still an ordinary closed vector.
+//
 // 14-Sep-2026 - Version 1.2.0
-// - A rectangle takes the Vectors panel's dashed-edge default as a drawn
-//   shape does.
-// - Ported from TrueVision3D (RectangleTool dashed edges).
+// - A rectangle takes the Vectors panel's dashed-edge default when it is on,
+//   as a drawn shape does.
 //
 // 14-Sep-2026 - Version 1.1.0
-// - Typed sizes: Measure reports the box being drawn (or the rectangle that
-//   just landed) and TypeSize lands or resizes from a typed width and height.
-// - Ported from TrueVision3D v2.46.0.
+// - Typed sizes: the box's opposite corner is kept, Measure reports the box
+//   (or the rectangle that has just landed), and TypeSize lands a rectangle
+//   from a typed width and height - or resizes the one that just landed, while
+//   it is selected and untouched. Land and TypeSize write the shape the same way.
 //
 // 14-Sep-2026 - Version 1.0.2
 // - A rectangle takes the Vectors panel's fill and edge opacity defaults, as a
 //   drawn shape does.
-// - Ported from TrueVision3D v2.35.0.
 //
 // 13-Sep-2026 - Version 1.0.1
 // - A rectangle takes the Vectors panel's gradient default as well as its fill,
 //   exactly as a drawn shape does (Na__LayoutEditor__GradientTool__). Without it
 //   a rectangle drawn with Gradient switched on came out with no fill at all.
+//   Found while porting the gradient to ValeVision.
 //
 // 13-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision, where it was authored first: click and click, or
-//   press and drag; Shift keeps it square; both corners snap; the result is a
-//   plain closed vector shape.
+// - Initial implementation: click and click, or press and drag; Shift keeps it
+//   square; both corners snap; the result is a plain closed vector shape.
 //
 // =============================================================================
 
@@ -95,7 +128,7 @@
     import { Na__LeCfg__GetSelectionSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__CreateShape, Na__LeModel__UpdateShape, Na__LeModel__SetSelection, Na__LeModel__GetSelection } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__GetZoom } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
-    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker } from '../30__System__SheetTools/Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js';
     import { Na__LeGrips__ShowBox, Na__LeGrips__HideBox } from '../30__System__SheetTools/Na__LayoutEditor__Grips__.js';
     // ------------------------------------------------------------
 
@@ -188,10 +221,13 @@
     // ------------------------------------------------------------
     function Na__LeRect__Write(sheet, points, defaults) {
         const d    = defaults || {};
+        if (typeof d.land === 'function') return d.land(sheet, points);        // <-- A tool drawing THROUGH this one that makes something other than a vector (a note region): it is handed the corners, and nothing is selected or kept to retype
         const item = Na__LeModel__CreateShape(sheet, points, {
             strokeColour : d.strokeColour, strokePt : d.strokePt, fillColour : d.filled ? d.fillColour : null,
             fillOpacity : d.fillOpacity, strokeOpacity : d.strokeOpacity,     // <-- The opacity defaults too, as for a drawn shape
-            gradient : d.gradientOn ? d.gradient : null, dash : d.dashOn ? d.dash : null, closed : true, stroked : d.stroked !== false   // <-- The gradient and dashed-edge defaults reach a rectangle exactly as they reach a drawn shape
+            gradient : d.gradientOn ? d.gradient : null, dash : d.dashOn ? d.dash : null, closed : true, stroked : d.stroked !== false,   // <-- The dashed-edge default reaches a rectangle exactly as it reaches a drawn shape
+            area : (d.area && typeof d.area === 'object') ? d.area : null,    // <-- The Area tool drawing a rectangular room: the block that names and measures it
+            layerId : d.layerId || null                                       // <-- ...on the Floor Areas layer
         });                                                                  // <-- Not silent: created and announced at once, so one undo step
         if (!item) return null;
         Na__LeRect__Landed = { id : item.Shape__Id, anchor : [ points[0][0], points[0][1] ], points : points.map((p) => [ p[0], p[1] ]) };
@@ -308,7 +344,6 @@
     // FUNCTION | Abandon the Rectangle Being Drawn
     // ------------------------------------------------------------
     // Nothing was written, so there is nothing to delete and nothing to undo.
-    // ------------------------------------------------------------
     // Putting the tool down also ends the chance to retype the last one.
     // ------------------------------------------------------------
     function Na__LeRect__Cancel() {

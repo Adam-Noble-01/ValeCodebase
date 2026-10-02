@@ -1,0 +1,451 @@
+{
+  "when": "2026-10-02T10:37:21.355Z",
+  "old": false,
+  "out": {
+    "checks": [
+      {
+        "name": "P.1 every export without renderFrame ran (one tile each, section overlay once per tile on the 2D ones)",
+        "pass": true,
+        "detail": {
+          "sheetFogOff1": {
+            "fog": 1,
+            "ovl": 1
+          },
+          "sheetFogOff4": {
+            "fog": 1,
+            "ovl": 1
+          },
+          "sheetNoSrc1": {
+            "fog": 1,
+            "ovl": 1
+          },
+          "drawingFogOn1": {
+            "fog": 1,
+            "ovl": 1
+          },
+          "drawingFogOn4": {
+            "fog": 1,
+            "ovl": 1
+          },
+          "threeD1": {
+            "fog": 0,
+            "ovl": 1
+          },
+          "threeD4": {
+            "fog": 0,
+            "ovl": 1
+          }
+        }
+      },
+      {
+        "name": "R.1 the route draws one frame per tile, and never the composer path's extras: no per-tile fog, no section overlay",
+        "pass": true,
+        "detail": {
+          "f1": [
+            1,
+            0,
+            0
+          ],
+          "f4": [
+            4,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "name": "R.2 the fog image is the fog alone on a transparent ground: only the shader's paper-white veil at the poche, the near block and open paper",
+        "pass": true,
+        "detail": {
+          "cap": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "near": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "paper": [
+            255,
+            255,
+            255,
+            2
+          ]
+        }
+      },
+      {
+        "name": "R.3 ...full past End, part-way inside the fade",
+        "pass": true,
+        "detail": {
+          "far": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "mid": [
+            255,
+            255,
+            255,
+            89
+          ]
+        }
+      },
+      {
+        "name": "R.4 registration: the fog image laid over the unfogged picture gives the fogged drawing at the same pixels (mid, far)",
+        "pass": true,
+        "detail": {
+          "mid": [
+            131,
+            131,
+            131
+          ],
+          "far": [
+            255,
+            255,
+            255
+          ],
+          "midFogged": [
+            131,
+            131,
+            131,
+            255
+          ],
+          "farFogged": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      {
+        "name": "R.5 supersampled (4): the same fog, averaged through the sample target (far full, near and paper clear, mid as the 4-sample fogged drawing)",
+        "pass": true,
+        "detail": {
+          "far": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "mid": [
+            255,
+            255,
+            255,
+            89
+          ],
+          "comp": [
+            131,
+            131,
+            131
+          ],
+          "fogged4": [
+            131,
+            131,
+            131,
+            255
+          ]
+        }
+      },
+      {
+        "name": "R.5b ...and on the supersampled road (linear buffer, sRGB on present) the fog stays paper WHITE, never the grey a colour a step under its alpha gives",
+        "pass": true,
+        "detail": {
+          "mid": [
+            255,
+            255,
+            255,
+            89
+          ],
+          "far": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      {
+        "name": "R.6 a drawing with its fog off gives an entirely transparent image",
+        "pass": true,
+        "detail": 0
+      },
+      {
+        "name": "R.7 the canvas is bound again and the renderer back at its own size after the route (1 and 4 samples)",
+        "pass": true,
+        "detail": {
+          "t1": false,
+          "t4": false,
+          "s": [
+            160,
+            100
+          ]
+        }
+      },
+      {
+        "name": "R.8 a picture baked straight after the route is pixel-identical to one baked before it (nothing left behind)",
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "name": "R.9 no WebGL error",
+        "pass": true,
+        "detail": 0
+      }
+    ],
+    "info": {
+      "samples": {
+        "cap": {
+          "pic": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "fogged": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "fog1": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "fog4": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "pic4": [
+            80,
+            80,
+            80,
+            255
+          ],
+          "fogged4": [
+            80,
+            80,
+            80,
+            255
+          ]
+        },
+        "near": {
+          "pic": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fog1": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "fog4": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "pic4": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged4": [
+            64,
+            64,
+            64,
+            255
+          ]
+        },
+        "mid": {
+          "pic": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged": [
+            131,
+            131,
+            131,
+            255
+          ],
+          "fog1": [
+            255,
+            255,
+            255,
+            89
+          ],
+          "fog4": [
+            255,
+            255,
+            255,
+            89
+          ],
+          "pic4": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged4": [
+            131,
+            131,
+            131,
+            255
+          ]
+        },
+        "far": {
+          "pic": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "fog1": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "fog4": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "pic4": [
+            64,
+            64,
+            64,
+            255
+          ],
+          "fogged4": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "paper": {
+          "pic": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "fogged": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "fog1": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "fog4": [
+            255,
+            255,
+            255,
+            2
+          ],
+          "pic4": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "fogged4": [
+            255,
+            255,
+            255,
+            255
+          ]
+        }
+      },
+      "composite": {
+        "mid": [
+          131,
+          131,
+          131
+        ],
+        "far": [
+          255,
+          255,
+          255
+        ],
+        "midFogged": [
+          131,
+          131,
+          131,
+          255
+        ],
+        "farFogged": [
+          255,
+          255,
+          255,
+          255
+        ]
+      },
+      "glError": 0,
+      "mode": "landed"
+    },
+    "hashes": {
+      "sheetFogOff1": "e9634f75:256000",
+      "sheetFogOff4": "e9634f75:256000",
+      "sheetNoSrc1": "e9634f75:256000",
+      "drawingFogOn1": "82c5b975:256000",
+      "drawingFogOn4": "82c5b975:256000",
+      "threeD1": "cf3a3c5:256000",
+      "threeD4": "cf3a3c5:256000",
+      "fogImage1": "f321c5:256000",
+      "fogImage4": "f321c5:256000"
+    }
+  },
+  "aborted": [],
+  "console": [
+    "log: [ValeVision3D] Cross Section View system initialized",
+    "log: [CrossSection] Section added: Upright Section 1",
+    "warning: [ValeVision3D] Drawing preset: composer not ready, rendering the drawing unstyled.",
+    "warning: [ValeVision3D] 2D Profile Lines: render targets not available from pipeline",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+    "warning: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently"
+  ]
+}

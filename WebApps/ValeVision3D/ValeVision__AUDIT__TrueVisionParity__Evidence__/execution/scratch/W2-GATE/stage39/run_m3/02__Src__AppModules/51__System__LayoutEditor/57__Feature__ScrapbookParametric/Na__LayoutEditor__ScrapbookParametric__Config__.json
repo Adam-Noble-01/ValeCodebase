@@ -1,0 +1,493 @@
+{
+    "LayoutEditor__ScrapbookParametric__Meta": {
+        "Meta__FileName": "Na__LayoutEditor__ScrapbookParametric__Config__.json",
+        "Meta__Description": "The Parametric Scrapbook: scripted sheet elements that are dragged onto the paper like any scrapbook item and then keep answering to their parameters, the way an AutoCAD dynamic block does. Owned by Na__LayoutEditor__ScrapbookParametric__.js (the engine); each element type has a module of its own and a block of its own here. A parametric element lands as an ordinary group of vectors and text, so it moves, copies, prints, exports and undoes like anything drawn by hand; the group record carries a Group__Parametric block, which is what lets it be regenerated. Ungrouping it explodes it: the vectors and text stay, the parameters go.",
+        "Meta__Version": "1.8.0",
+        "Meta__Created": "19-Sep-2026",
+        "Meta__Author": "Adam Noble - Noble Architecture",
+        "Meta__PortedFrom": "TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json, Meta 1.8.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at HEAD b2aa9151), ported 02-Oct-2026 (parity package W2-37) for the types this app registers: the scale bar, the drawing title (with the bar to the right and the 5 mm underline rule), the viewport link, the grips and the link noodle. Every key, number and colour of those is TrueVision's, the checker fill #858585 included. Not here yet: the ProjectQr, AreaSchedule, CabinetInfill and SiteLegend blocks, their tiles, type names, Meta notes and labels, which come with their types (W2-38, W2-39, W3-14). This app's own words: DrawingTitle__PhaseModeNote, Labels__PropsPhaseAuto, Labels__PropsTitleNamed, the Drawing Title + Scale Bar tile's description and the title tiles' previews without a phase (one model per project, so no phase is read), and ScaleBar__MenuScaleNote. The notes that cite PS01, PS02 and RB05 are TrueVision's measurements, kept as the record of how each number was chosen.",
+        "Meta__Block": "Group__Parametric : { Parametric__Type, Parametric__Version, Parametric__Params, Parametric__Link }. The element's place on the paper is never stored: the Move tool and a paste shift a group's members and know nothing of this block, so the generator always writes the element's origin as the first point of its first member and the engine reads it back from there.",
+        "Meta__HouseTitle": "The drawing title was measured on 19-Sep-2026 from the six elevation titles and two plan titles Adam lettered by hand on PS02 D22 and D21. All eight agree: capitals, qualifier first (EXISTING EAST ELEVATION), Open Sans 600 at 3.5 mm in #172b3a, ranged left; an underline 0.4 pt thick and exactly 60 mm long, 1.631 mm under the baseline and 0.171 mm in from the text's left; and the scale bar 6.318 mm under the underline, sharing its left end. He groups title, underline and bar as one object.",
+        "Meta__HouseBar": "The scale bar was measured on 19-Sep-2026 from the twelve bars Adam drew by hand on PS02 D21 Floor Plans and D22 Elevations (A2, 1:50). All twelve agree: five cells of 20 mm in two rows of 1 mm, the top row filled on odd cells and the bottom row on even ones, fill #666666, edge #172b3a at 0.2 pt, an empty cell with no fill at all; Open Sans 400 numerals in #172b3a centred on each division with their baseline 5.314 mm under the bar, 2.5 mm at the two ends and 2 mm between. THE FILL WAS LIGHTENED ON 20-Sep-2026 to #858585 - a fifth of the way from the measured #666666 to white - because Adam found the checker too heavy on the page. Nothing else about the bar moved, and the test fixtures carry the new value.",
+        "Meta__BarRight": "A SCALE BAR PLACED TO THE RIGHT was measured on 20-Sep-2026 from the arrangement Adam laid out by hand over PS01's proposed south east elevation: the title and its underline exactly where they always are, and the bar standing away along the same line with its FOOT on the title's baseline - 3.631 mm (1.631 + the bar's own 2) above the underline - so the two read as one band across the foot of the drawing. Its far end is meant to land under a corner of the building above it, which is why that end is the one that is dragged and the near end is the one that lengthens."
+    },
+    "LayoutEditor__ScrapbookParametric__Elements": {
+        "Elements__Description": "The tiles the Parametric Scrapbook section shows, in this order. An element is a PRESET of a type: Element__Type names a registered element module, Element__Id is the element's own (two elements may share a type; without one it is the type), Element__Params are laid onto every element dropped from it, and Element__PreviewParams are added for the tile and the drag ghost only - a title's tile reads EXISTING EAST ELEVATION where a real drop reads its own viewport. Element__DrawingTypes lists the drawing types an element is offered on ('siteplan', 'architectural'); an element without the key is offered on every sheet. Elements__TypeNames is what each type is called on the sheet's group tag and in the panel.",
+        "Elements__TypeNames": {
+            "ScaleBar": "Scale Bar",
+            "DrawingTitle": "Drawing Title"
+        },
+        "Elements__List": [
+            {
+                "Element__Id": "DrawingTitleWithBar",
+                "Element__Type": "DrawingTitle",
+                "Element__Name": "Drawing Title + Scale Bar",
+                "Element__Description": "The title under a drawing, with its underline and scale bar, written by the drawing it is tied to: North, East, South or West from the north set in the 3D model, and Existing or Proposed when its settings say so (this app has one model per project, so there is no phase to read). Until north is set an elevation reads {{DIRECTION}}. Drag the round socket onto another drawing to retitle it.",
+                "Element__Params": {
+                    "ShowScaleBar": true,
+                    "BarPlacement": "below"
+                },
+                "Element__PreviewParams": {
+                    "ViewKind": "elevation",
+                    "ViewFacing": "East"
+                }
+            },
+            {
+                "Element__Id": "DrawingTitleBarRight",
+                "Element__Type": "DrawingTitle",
+                "Element__Name": "Drawing Title + Scale Bar to the Right",
+                "Element__Description": "The same title, with its scale bar stood away along the same line instead of under it, for a wide elevation whose bar belongs under its far corner. Drag the arrow at the bar's FAR end to carry it along - it snaps to the corners of the drawing above - and the arrow at its NEAR end to lengthen it back towards the title. Its position also steps 50 mm at a time from the panel.",
+                "Element__Params": {
+                    "ShowScaleBar": true,
+                    "BarPlacement": "right"
+                },
+                "Element__PreviewParams": {
+                    "ViewKind": "elevation",
+                    "ViewFacing": "South",
+                    "BarOffsetMm": 70
+                }
+            },
+            {
+                "Element__Id": "DrawingTitle",
+                "Element__Type": "DrawingTitle",
+                "Element__Name": "Drawing Title",
+                "Element__Description": "The title and its underline alone, written by the drawing it is tied to. Drag the arrow at the underline's end to lengthen it; the scale bar can be switched on in its settings.",
+                "Element__Params": {
+                    "ShowScaleBar": false
+                },
+                "Element__PreviewParams": {
+                    "ViewKind": "elevation",
+                    "ViewFacing": "North"
+                }
+            },
+            {
+                "Element__Type": "ScaleBar",
+                "Element__Name": "Scale Bar",
+                "Element__Description": "A checker scale bar that reads the scale of the drawing above it. Drag the arrow at its far end to lengthen it; click the triangle at its zero end for another scale; drag the round socket onto another drawing to tie it to that one."
+            },
+            {
+                "Element__Id": "SiteLegend",
+                "Element__Type": "SiteLegend",
+                "Element__Name": "Site Plan Legend",
+                "Element__Description": "A quick-reference legend of every wash, hatch and line this sheet's site plans actually show inside their frames - the red line, the proposal, woodland, grass, water, hard standing, removals - each with a swatch drawn exactly as the drawing draws it. It re-writes itself whenever a layer is switched on or off, a colour or pattern is changed, or a site plan is moved or cropped. Drag the arrow to set how wide it is at least; click the triangle for more columns, to leave the lines off, or to take a row off the legend.",
+                "Element__DrawingTypes": [
+                    "siteplan"
+                ],
+                "Element__PreviewParams": {
+                    "Data": {
+                        "Rows": [
+                            {
+                                "Key": "ValeVision__SitePlan__RedLineBoundary",
+                                "Label": "Red Line Boundary",
+                                "Kind": "line",
+                                "Line": {
+                                    "Hex": "#E53935",
+                                    "WidthMm": 0.529,
+                                    "DashMm": []
+                                }
+                            },
+                            {
+                                "Key": "ValeVision__SitePlan__ProposedBuildings",
+                                "Label": "Proposed - New Construction",
+                                "Kind": "area",
+                                "Fill": {
+                                    "Hex": "#FF0000",
+                                    "Opacity": 0.1
+                                },
+                                "Line": {
+                                    "Hex": "#E53935",
+                                    "WidthMm": 0.706,
+                                    "DashMm": []
+                                }
+                            },
+                            {
+                                "Key": "ValeVision__SitePlan__TreesMixedWoodland",
+                                "Label": "Mixed Woodland",
+                                "Kind": "area",
+                                "Fill": {
+                                    "Hex": "#DCEDCF",
+                                    "Opacity": 1
+                                },
+                                "Hatch": {
+                                    "Key": "SitePlanHatch__MixedWoodland",
+                                    "Scale": 1,
+                                    "RotationDeg": 0,
+                                    "Colour": "#43A047"
+                                },
+                                "Line": {
+                                    "Hex": "#43A047",
+                                    "WidthMm": 0.265,
+                                    "DashMm": []
+                                }
+                            },
+                            {
+                                "Key": "ValeVision__SitePlan__Grassland",
+                                "Label": "Grassland",
+                                "Kind": "area",
+                                "Fill": {
+                                    "Hex": "#E5F2D6",
+                                    "Opacity": 1
+                                },
+                                "Hatch": {
+                                    "Key": "SitePlanHatch__Grassland",
+                                    "Scale": 1,
+                                    "RotationDeg": 0,
+                                    "Colour": "#43A047"
+                                },
+                                "Line": {
+                                    "Hex": "#666666",
+                                    "WidthMm": 0.176,
+                                    "DashMm": []
+                                }
+                            },
+                            {
+                                "Key": "ValeVision__SitePlan__Waterbodies",
+                                "Label": "Waterbodies",
+                                "Kind": "area",
+                                "Fill": {
+                                    "Hex": "#BAE4FD",
+                                    "Opacity": 1
+                                },
+                                "Hatch": {
+                                    "Key": "SitePlanHatch__PondsAndLakes",
+                                    "Scale": 1,
+                                    "RotationDeg": 0,
+                                    "Colour": "#1E88E5"
+                                },
+                                "Line": {
+                                    "Hex": "#1E88E5",
+                                    "WidthMm": 0.353,
+                                    "DashMm": []
+                                }
+                            },
+                            {
+                                "Key": "ValeVision__SitePlan__TreesToRemove",
+                                "Label": "Trees To Be Removed",
+                                "Kind": "line",
+                                "Line": {
+                                    "Hex": "#E53935",
+                                    "WidthMm": 0.265,
+                                    "DashMm": [
+                                        2.5,
+                                        1.5
+                                    ]
+                                }
+                            }
+                        ],
+                        "Sources": 1
+                    }
+                }
+            }
+        ]
+    },
+    "LayoutEditor__ScrapbookParametric__ScaleBar": {
+        "ScaleBar__Description": "Element one: the scale bar. See Meta__HouseBar for where every size below came from.",
+        "ScaleBar__Rows": 2,
+        "ScaleBar__RowHeightMm": 1,
+        "ScaleBar__FillColour": "#858585",
+        "ScaleBar__StrokeColour": "#172b3a",
+        "ScaleBar__StrokePt": 0.2,
+        "ScaleBar__TextColour": "#172b3a",
+        "ScaleBar__TextWeight": 400,
+        "ScaleBar__EndTextSizeMm": 2.5,
+        "ScaleBar__MidTextSizeMm": 2,
+        "ScaleBar__TextBaselineBelowBarMm": 5.314,
+        "ScaleBar__MinLabelSpacingMm": 7,
+        "ScaleBar__MinLabelSpacingNote": "Divisions closer together than this on the paper are not all numbered: every second, fifth or tenth is, and the two ends always are.",
+        "ScaleBar__TargetLengthMm": 100,
+        "ScaleBar__TargetDivisionMm": 20,
+        "ScaleBar__TargetNote": "What a scale that is not in ScaleBar__Standards is solved towards: the 1, 2, 2.5 or 5 x 10^n division nearest TargetDivisionMm on the paper, and the count of them nearest TargetLengthMm.",
+        "ScaleBar__MinDivisions": 1,
+        "ScaleBar__MaxDivisions": 40,
+        "ScaleBar__MinSubdivisionPaperMm": 1.5,
+        "ScaleBar__DefaultScaleDenominator": 50,
+        "ScaleBar__MenuScaleDenominators": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1250
+        ],
+        "ScaleBar__MenuScaleNote": "The scales the lookup grip's menu and the panel offer. The first three are the app's architectural scales; 1:200 is here because a street elevation wants it, and 1:500 and 1:1250 for a block or location plan drawn by hand. Any scale in ScaleBar__Standards can be added.",
+        "ScaleBar__StandardsNote": "What a bar is put back to when its scale changes. DivisionMm and SubdivisionMm are real-world millimetres; Units is what the numerals count in ('m' or 'mm'). Every row is a 100 mm bar, and all but 1:1, 1:2, 1:20 and 1:200 are the house 5 x 20 mm.",
+        "ScaleBar__Standards": [
+            {
+                "Scale": 1,
+                "DivisionMm": 10,
+                "Divisions": 10,
+                "SubdivisionMm": 2,
+                "Units": "mm"
+            },
+            {
+                "Scale": 2,
+                "DivisionMm": 50,
+                "Divisions": 4,
+                "SubdivisionMm": 10,
+                "Units": "mm"
+            },
+            {
+                "Scale": 5,
+                "DivisionMm": 100,
+                "Divisions": 5,
+                "SubdivisionMm": 20,
+                "Units": "mm"
+            },
+            {
+                "Scale": 10,
+                "DivisionMm": 200,
+                "Divisions": 5,
+                "SubdivisionMm": 50,
+                "Units": "mm"
+            },
+            {
+                "Scale": 20,
+                "DivisionMm": 500,
+                "Divisions": 4,
+                "SubdivisionMm": 100,
+                "Units": "m"
+            },
+            {
+                "Scale": 25,
+                "DivisionMm": 500,
+                "Divisions": 5,
+                "SubdivisionMm": 100,
+                "Units": "m"
+            },
+            {
+                "Scale": 50,
+                "DivisionMm": 1000,
+                "Divisions": 5,
+                "SubdivisionMm": 200,
+                "Units": "m"
+            },
+            {
+                "Scale": 100,
+                "DivisionMm": 2000,
+                "Divisions": 5,
+                "SubdivisionMm": 500,
+                "Units": "m"
+            },
+            {
+                "Scale": 200,
+                "DivisionMm": 5000,
+                "Divisions": 4,
+                "SubdivisionMm": 1000,
+                "Units": "m"
+            },
+            {
+                "Scale": 250,
+                "DivisionMm": 5000,
+                "Divisions": 5,
+                "SubdivisionMm": 1000,
+                "Units": "m"
+            },
+            {
+                "Scale": 500,
+                "DivisionMm": 10000,
+                "Divisions": 5,
+                "SubdivisionMm": 2000,
+                "Units": "m"
+            },
+            {
+                "Scale": 1000,
+                "DivisionMm": 20000,
+                "Divisions": 5,
+                "SubdivisionMm": 5000,
+                "Units": "m"
+            },
+            {
+                "Scale": 1250,
+                "DivisionMm": 25000,
+                "Divisions": 5,
+                "SubdivisionMm": 5000,
+                "Units": "m"
+            },
+            {
+                "Scale": 2500,
+                "DivisionMm": 50000,
+                "Divisions": 5,
+                "SubdivisionMm": 10000,
+                "Units": "m"
+            }
+        ]
+    },
+    "LayoutEditor__ScrapbookParametric__DrawingTitle": {
+        "DrawingTitle__Description": "Element two: the drawing title (Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js). See Meta__HouseTitle for where every size below came from. The origin is the underline's left end; the text stands above it and the scale bar hangs below. The words themselves - Existing, Proposed, Elevation and the two placeholders - belong to 20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json, and the compass words to 46__System__NorthDirection/Na__North__AppConfig__.json, because the editor names unnamed elevation viewports in the same words.",
+        "DrawingTitle__TextSizeMm": 3.5,
+        "DrawingTitle__TextWeight": 600,
+        "DrawingTitle__TextColour": "#172b3a",
+        "DrawingTitle__TextOffsetXMm": -0.171,
+        "DrawingTitle__TextBaselineAboveUnderlineMm": 1.631,
+        "DrawingTitle__UnderlineMm": 60,
+        "DrawingTitle__UnderlineMinMm": 10,
+        "DrawingTitle__UnderlineMaxMm": 400,
+        "DrawingTitle__UnderlineStepMm": 5,
+        "DrawingTitle__UnderlineGrowsToFit": true,
+        "DrawingTitle__UnderlineFitExtraMm": 0.342,
+        "DrawingTitle__UnderlinePastTextMm": 5,
+        "DrawingTitle__UnderlineBarGapMm": 5,
+        "DrawingTitle__UnderlineNote": "UnderlineMm is the LEAST the underline is: sixty millimetres underlines EXISTING EAST ELEVATION with room to spare. With GrowsToFit on, the line ALWAYS runs PastTextMm beyond the end of the words - measured from where the text starts (TextOffsetXMm) plus its width - and is rounded up to a tenth of a millimetre. StepMm is what the stretch grip moves it by when the title has no scale bar.",
+        "DrawingTitle__UnderlinePastTextNote": "Adam, 21-Sep-2026, over RB05's long elevation titles: 'make sure this line always goes at least 5 mm past... because it looks kind of weird being short.' PAPER millimetres, like every size in this block, so it is 5 mm on the sheet at every scale - 500 mm of building at 1:100, 250 at 1:50. Until then the line stopped a hair past the last letter (FitExtraMm), which read as flush, and a title rebuilt before the paper's text metrics had loaded stopped ten per cent SHORT of it: the chrome's estimate is an average width, and capitals are wider than average. The engine now rebuilds any title whose underline no longer ends where this rule puts it, once those metrics are in.",
+        "DrawingTitle__UnderlineBarGapNote": "The one thing allowed to shorten that run: a scale bar stood to the RIGHT, whose numerals hang across the underline's level at its zero end. The run past the words stops BarGapMm short of the bar's zero end rather than strike through them - but never short of the words themselves (their width plus FitExtraMm, the length the line was drawn to before the rule). A bar below, or none, never shortens it.",
+        "DrawingTitle__UnderlineColour": "#172b3a",
+        "DrawingTitle__UnderlineStrokePt": 0.4,
+        "DrawingTitle__ScaleBarBelowUnderlineMm": 6.318,
+        "DrawingTitle__SocketAboveUnderlineMm": 4.2,
+        "DrawingTitle__BarPlacement": "below",
+        "DrawingTitle__BarPlacementNote": "Where the scale bar sits. 'below' is the house title Adam letters by hand: the bar 6.318 mm under the underline, sharing its left end. 'right' stands it away along the same line instead - see Meta__BarRight - for a wide elevation whose bar belongs under its far corner. A title with no bar at all ignores this.",
+        "DrawingTitle__ScaleBarAboveUnderlineMm": 3.631,
+        "DrawingTitle__ScaleBarAboveUnderlineNote": "How far the bar's TOP stands ABOVE the underline when it is placed to the right. 3.631 = TextBaselineAboveUnderlineMm + the bar's own 2 mm, which puts the bar's foot exactly on the title's baseline.",
+        "DrawingTitle__BarOffsetMm": 150,
+        "DrawingTitle__BarOffsetMinMm": 0,
+        "DrawingTitle__BarOffsetMaxMm": 1200,
+        "DrawingTitle__BarOffsetStepMm": 50,
+        "DrawingTitle__BarOffsetNote": "Where the bar's ZERO end stands when it is placed to the right, measured from the element's OWN ORIGIN - the underline's left end - and never from the end of the underline, so retitling a drawing can lengthen the underline without shoving the bar off the corner it was put under. StepMm is what the panel's spinner and a free drag of the far arrow move it by; a drag that lands on a snapped vertex is exact and ignores the step. MaxMm is a paper limit, comfortably past the long edge of an A0.",
+        "DrawingTitle__ShowScaleBar": true,
+        "DrawingTitle__Uppercase": true,
+        "DrawingTitle__PhaseMode": "auto",
+        "DrawingTitle__PhaseModeNote": "auto reads Existing or Proposed off the model the drawing draws - which in this app, with one model per project, is never known, so auto writes nothing; existing and proposed force the word; none leaves it out."
+    },
+    "LayoutEditor__ScrapbookParametric__ViewportLink": {
+        "ViewportLink__Description": "The link between a parametric element and a viewport (Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js). AutoLinkOnInsert links a dropped element to the nearest 2D viewport, measured from the drop point to the viewport's frame; MaxLinkDistanceMm is how far away that viewport may be. A scale bar sits under a drawing's title, which sits under the drawing, so the frame is usually 10 to 30 mm above it. FollowScale regenerates a linked element when its viewport's scale changes, inside the same undo step.",
+        "ViewportLink__AutoLinkOnInsert": true,
+        "ViewportLink__MaxLinkDistanceMm": 80,
+        "ViewportLink__FollowScale": true
+    },
+    "LayoutEditor__ScrapbookParametric__Grips": {
+        "Grips__Description": "The grips a selected parametric element shows. Sizes are screen pixels, held at any zoom like every other grip. Each grip stands its OffsetPx clear of the point its element type gives it, in the direction that type says: for a scale bar the stretch grip off the far end and the lookup grip off the zero end, both level with the middle of the bar.",
+        "Grips__StretchSizePx": 13,
+        "Grips__LookupSizePx": 13,
+        "Grips__StretchOffsetPx": 12,
+        "Grips__LookupOffsetPx": 12,
+        "Grips__SlideSizePx": 13,
+        "Grips__SlideOffsetPx": 12,
+        "Grips__SlideNote": "The slide grip is the double arrow off the FAR end of a scale bar placed to the right of its title. It carries the bar along the line without changing its length, snapping to the projected linework so the end can be put under a corner of the drawing above; the stretch arrow at the bar's near end then lengthens it back towards the title, its far end held where the slide left it. SnapGuidePx is the dashed line drawn from a snapped vertex down to the bar while a slide is held.",
+        "Grips__SnapGuidePx": 1.25,
+        "Grips__ClickSlopPx": 4,
+        "Grips__LinkSizePx": 11,
+        "Grips__LinkOffsetPx": 16,
+        "Grips__PlugSizePx": 13,
+        "Grips__PlugNote": "The plug is the handle on the noodle's FAR end, where it lands on the drawing it is tied to. It is dragged to another drawing exactly as the socket is, for people who reach for the end of the cable rather than the element it comes from."
+    },
+    "LayoutEditor__ScrapbookParametric__Noodle": {
+        "Noodle__Description": "The link noodle (Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js): the curve from a selected element's round socket to what it is tied to, and the outline round that. Px values are screen pixels, held at any zoom. Reach is how far each end of the noodle runs before it turns, in paper millimetres: half the distance between the ends, held between the two limits. ScaleCellInsetMm is how far into the title block's Scale cell the noodle lands for an element tied to the sheet's scale.",
+        "Noodle__Colour": "#12a5dc",
+        "Noodle__Casing": "#ffffff",
+        "Noodle__LinePx": 2,
+        "Noodle__CasingPx": 4.5,
+        "Noodle__TargetDotPx": 4.5,
+        "Noodle__HighlightPx": 1.5,
+        "Noodle__MinReachMm": 10,
+        "Noodle__MaxReachMm": 70,
+        "Noodle__ScaleCellInsetMm": 8
+    },
+    "LayoutEditor__ScrapbookParametric__Labels": {
+        "Labels__Description": "The Parametric Scrapbook's wording. {name} is an element's name, {scale} a scale as the title block writes it, {viewport} a viewport's name, {target} what an element is tied to.",
+        "Labels__LibraryTitle": "Parametric Scrapbook",
+        "Labels__LibraryHint": "Dynamic elements. Drag one onto the sheet, or double-click it; select it afterwards for its grips and its settings.",
+        "Labels__LibraryReadOnly": "Elements can only be placed while sheets are editable.",
+        "Labels__LibraryFailed": "The parametric scrapbook could not be read, so it has no elements.",
+        "Labels__ItemTitle": "{name}: drag onto the sheet, or double-click to place it in the middle of the view.",
+        "Labels__PropsTitle": "Parametric Element",
+        "Labels__PropsScale": "Scale",
+        "Labels__PropsFromViewport": "From viewport ({scale})",
+        "Labels__PropsLink": "Linked to",
+        "Labels__PropsLinkNone": "Not linked",
+        "Labels__PropsLinkSheet": "The sheet's scale ({scale})",
+        "Labels__PropsLinkNearest": "Link to nearest",
+        "Labels__PropsDivisions": "Divisions",
+        "Labels__PropsLength": "{real} long, {paper} mm on the paper.",
+        "Labels__PropsSubdivide": "Split first division",
+        "Labels__PropsSubdivision": "Into",
+        "Labels__PropsUnits": "Show units",
+        "Labels__PropsReset": "Reset to standard",
+        "Labels__PropsExplode": "Ungroup it (Ctrl+Shift+G) to explode it into plain vectors and text.",
+        "Labels__PropsLocked": "Its layer is locked.",
+        "Labels__PropsTitleReads": "Reads: {text}",
+        "Labels__PropsNeedsNorth": "{{Direction}} fills itself in once north is set in the 3D model: Dev Tools, North Direction, Draw Compass.",
+        "Labels__PropsNeedsLink": "Tie it to a drawing to fill {{Drawing}}: drag its round socket onto one.",
+        "Labels__PropsTitleTyped": "Typed by hand, so it no longer follows its drawing. Clear the box to go back to automatic.",
+        "Labels__PropsTitleNamed": "The drawing's viewport has a typed name, which the title uses. Clear that name and the title is written from north.",
+        "Labels__PropsTitleStorey": "Written from the plan's storey, which is chosen per floor plan in the 3D view: Dev Tools, Floor Plans, Storey.",
+        "Labels__PropsTitleText": "Title text",
+        "Labels__PropsTitleAuto": "Automatic",
+        "Labels__PropsPhase": "Existing / Proposed",
+        "Labels__PropsPhaseAuto": "Automatic (none in this app)",
+        "Labels__PropsPhaseExisting": "Existing",
+        "Labels__PropsPhaseProposed": "Proposed",
+        "Labels__PropsPhaseNone": "Leave it out",
+        "Labels__PropsUppercase": "Capitals",
+        "Labels__PropsUnderline": "Underline (mm)",
+        "Labels__PropsShowBar": "Scale bar",
+        "Labels__PropsBarPlace": "Bar sits",
+        "Labels__PropsBarBelow": "Under the title",
+        "Labels__PropsBarRight": "To the right of it",
+        "Labels__PropsBarOffset": "Bar position (mm)",
+        "Labels__PropsBarOffsetNote": "From the title's left edge to the bar's zero end, in 50 mm steps. On the sheet, drag the double arrow at the bar's far end to carry it along - it snaps to the corners of the drawing above - and the arrow at its near end to lengthen it back towards the title.",
+        "Labels__ToastUntiedTitle": "Untied. It keeps what it says.",
+        "Labels__GripStretchWords": "Drag to set how wide the words are set",
+        "Labels__GripLookupOptions": "Options",
+        "Labels__GripCorner": "Drag this corner - the corner opposite stays put. It snaps to the drawing's corners",
+        "Labels__GripBase": "Drag to move it by this corner - it snaps to the drawing's corners",
+        "Labels__MenuFromViewport": "From viewport ({scale})",
+        "Labels__MenuFromNearest": "Link to nearest viewport",
+        "Labels__MenuFromSheet": "From the sheet's scale ({scale})",
+        "Labels__MenuSubdivide": "Split first division",
+        "Labels__MenuUnits": "Show units",
+        "Labels__MenuReset": "Reset length",
+        "Labels__MenuBarRight": "Scale bar to the right",
+        "Labels__GripStretch": "Drag to lengthen or shorten",
+        "Labels__GripStretchBack": "Drag towards the title to lengthen; the far end stays put",
+        "Labels__GripSlide": "Drag to carry the bar along - it snaps to the corners of the drawing above",
+        "Labels__GripLookup": "Scale and options",
+        "Labels__GripLink": "Drag onto a drawing to tie this to it, or onto the title block for the sheet's scale. Let go on bare paper to untie it.",
+        "Labels__GripPlug": "Drag this end onto another drawing to move the tie there, or onto the title block for the sheet's scale. Let go on bare paper to untie it.",
+        "Labels__GripLinkTied": "Tied to {target}.",
+        "Labels__LinkSheetName": "the sheet's scale ({scale})",
+        "Labels__ToastTied": "Tied to {target}.",
+        "Labels__ToastUntied": "Untied. It keeps {scale}.",
+        "Labels__ViewportUnnamed": "Viewport {id}",
+        "Labels__ToastLinked": "Linked to {viewport} at {scale}.",
+        "Labels__ToastNoViewport": "No 2D viewport is near enough to link to."
+    },
+    "LayoutEditor__ScrapbookParametric__SiteLegend": {
+        "SiteLegend__Description": "Element six: the site plan legend (Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js), asked for by Adam on 29-Sep-2026: 'a legend automatically for whatever hatches are found in the current drawing (the hatches and the shading, etc.), and a little quick-reference legend table'. One row per layer the sheet's site plans actually paint INSIDE THEIR FRAMES - an AREA row for a layer whose wash or hatch shows, a LINE row for one drawn as lines alone. The origin is the LEFT END OF THE TOP RULE, with the title above it and the rows below, as the area schedule's is. THE ROWS ARE NOT HERE AND ARE NOT TYPED: they arrive as the Data parameter, read by Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js off the very build the site plan painter paints, so a legend always says what the drawing beside it shows.",
+        "SiteLegend__WidthMm": 60,
+        "SiteLegend__WidthMaxMm": 420,
+        "SiteLegend__WidthStepMm": 2,
+        "SiteLegend__WidthNote": "The width the legend is AT LEAST, in paper millimetres: every column is as wide as its swatch, the gap and its longest label measure, and the legend is never drawn narrower than its words, whatever this says. Set it wider to line the rule up with a title block; any width it adds is shared between the columns. The stretch arrow drags it in 2 mm steps.",
+        "SiteLegend__Columns": 0,
+        "SiteLegend__ColumnsMax": 4,
+        "SiteLegend__AutoRowsPerColumn": 12,
+        "SiteLegend__ColumnGapMm": 6,
+        "SiteLegend__ColumnsNote": "Rows run DOWN each column and then on to the next, as a list is read. Columns 0 is AUTOMATIC, as dropped: another column every AutoRowsPerColumn rows, so RB05's proposed site plan - 22 rows - lands as two columns of 11 rather than one strip 170 mm down the sheet. The lookup triangle and the panel offer automatic or one to ColumnsMax; a number chosen by hand is kept however many rows arrive.",
+        "SiteLegend__TextSizeMm": 2.2,
+        "SiteLegend__TextWeight": 400,
+        "SiteLegend__TextColour": "#172b3a",
+        "SiteLegend__MutedColour": "#5f6b74",
+        "SiteLegend__CharWidthRatio": 0.55,
+        "SiteLegend__TextNote": "House type sizes, as the area schedule's. EVERY GAP BELOW IS TAKEN AS A RATIO TO TextSizeMm, so a larger type size sets the whole legend larger without anything colliding. CharWidthRatio is the average letter width the legend guesses with before the paper's own font metrics have loaded; it is refit to the real ones the moment they do.",
+        "SiteLegend__TitleSizeMm": 3.2,
+        "SiteLegend__TitleWeight": 600,
+        "SiteLegend__TitleColour": "#172b3a",
+        "SiteLegend__TitleAboveRuleMm": 1.8,
+        "SiteLegend__Heading": "Legend",
+        "SiteLegend__RulePt": 0.4,
+        "SiteLegend__RuleColour": "#172b3a",
+        "SiteLegend__TitleNote": "The title over a 0.4 pt rule, the way the area schedule and a drawing title are set; no box round the rows, because a legend read beside a drawing is read by its swatches. Typed over in the panel, the title is kept.",
+        "SiteLegend__FirstRowGapMm": 2.0,
+        "SiteLegend__RowGapMm": 1.6,
+        "SiteLegend__SwatchWidthMm": 12,
+        "SiteLegend__SwatchHeightMm": 6,
+        "SiteLegend__SwatchTextGapMm": 2.4,
+        "SiteLegend__SwatchNote": "A swatch is drawn exactly as the drawing draws that layer: the WASH in its fill colour and opacity, the HATCH's own glyphs at the pattern's paper size, turn, line weight and ink, and the EDGE in the layer's line colour, weight and dash. A line row is a swatch-wide run of the line. Everything comes from the viewport the layer was read from - a colour or pattern changed on that viewport shows here too. 12 x 6 mm is the smallest that carries TWO of the woodland's and the water's glyphs (a 10 x 5 swatch holds one, and 'mixed' woodland shown as one conifer reads as a plantation); the grass tufts are sparse enough that one sits in the middle at this size.",
+        "SiteLegend__GlyphInsetMm": 0.35,
+        "SiteLegend__GlyphSearchStepMm": 0.5,
+        "SiteLegend__GlyphMax": 16,
+        "SiteLegend__GlyphNote": "THE GLYPHS ARE DRAWN, NOT TILED. A hatch on a sheet vector is anchored to the sheet's corner, so a small swatch would show whatever part of the tile happened to fall on it - often nothing, on grass whose tile is 28 x 26 mm with ten tufts - and would change every time the legend moved. Instead the swatch-sized window of the pattern holding the most WHOLE glyphs (never half a tree) is found, a half millimetre at a time, and those glyphs are written as ordinary vectors GlyphInsetMm clear of the edge. GlyphMax caps how many one swatch carries.",
+        "SiteLegend__ShowLines": true,
+        "SiteLegend__RowsNote": "What is listed and in what order. A layer is listed when the site plan PAINTS it inside its frame: switched off in Model Layers, a deck turned off, a location plan's missing hatches, or nothing of the layer inside the crop - and it is not listed. Rows run the reverse of the layers' draw order, so the red line and the proposal lead and the base map comes last. A layer shown by two site plans on one sheet is listed once, as the most detailed drawing shows it. LOCATION PLANS ARE READ ONLY WHEN THE SHEET HAS NO OTHER SITE PLAN: a location plan greys every layer but the red line and the proposal and draws no hatches, so beside a block plan it would only add grey lines - and keep a layer switched off on the block plan listed in its greyed look. The panel's Reads list can still point a legend at one location plan by hand. HiddenByDefault are layers a new legend leaves off - the OS base map and the contours, which frame a drawing rather than say anything a reader must look up; each can be ticked back on. ShowLines lists the line-only layers (the boundary, fences, removals) as well as the washes and hatches.",
+        "SiteLegend__EmptyLabel": "No washes, hatches or lines found on this sheet's site plans"
+    }
+}

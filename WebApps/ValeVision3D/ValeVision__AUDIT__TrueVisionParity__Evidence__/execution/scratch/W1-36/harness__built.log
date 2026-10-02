@@ -1,0 +1,30 @@
+﻿
+  A. The mode controller: Page Up / Page Down, and the sheet keyboard started afresh
+[ValeVision3D] Layout Editor ready (editable).
+  PASS  the mode controller listens for the PC controls' STEP_SHEET_EVENT once
+  PASS  Page Down on the 3D Model tab (no drawing open) opens nothing
+  PASS  a drawing opened from the 3D view: every listener off, the key file re-read, every listener on, then the stage takes the keyboard
+  PASS  Page Down turns to the next drawing, through Enter (text on the paper committed first)
+  PASS  one drawing to another keeps its keyboard as it is (no restart)
+  PASS  Page Down again: the third
+  PASS  Page Down at the last drawing stops there (an end, not a loop)
+  PASS  Page Up turns back
+  PASS  the specification over the sheet: its keyboard stands down
+  PASS  Page Down under the specification turns nothing
+  PASS  back from the specification: the drawing tabs' keyboard started afresh, the stage takes the keyboard
+  PASS  leaving for the 3D view lets every listener go
+  PASS  and Page Down on the 3D Model tab is the mode controller's no more
+
+  B. The PC controls: one wheel zoom a frame, a gesture step
+  PASS  five wheel events before a frame: one frame asked for, no zoom yet, every event taken from the page
+  PASS  the frame applies ONE zoom: the steps multiplied, about the latest pointer, as a gesture step
+  PASS  Detach drops a step still waiting for its frame
+
+  C. The touchscreen controls: a pinch step is a gesture step
+  PASS  two fingers spreading from 100 px to 200 px apart: zoom x2, as a gesture step
+
+  D. A ticked panel checkbox, a press on the paper, then M (this app's real sheet keyboard 1.3.0)
+  PASS  built PC controls 1.4.0: the press takes the keyboard from the checkbox and M picks Move
+  PASS  pre-image PC controls 1.1.0 (the bug): the checkbox keeps the keyboard and M does nothing
+
+  19 passed, 0 failed (built files)

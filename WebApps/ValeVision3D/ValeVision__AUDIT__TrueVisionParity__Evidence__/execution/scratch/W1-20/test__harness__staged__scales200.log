@@ -1,0 +1,89 @@
+﻿loaded: config ready; the real SheetRecords; three variants of the sheet model units; scales [20,50,100,200] (W1-22 row emulated)
+
+=== A. Links and exports
+  PASS  State: exports exactly TrueVision's names (20)
+  PASS  State: every name the unit exported before is still exported
+  PASS  Layers: exports exactly TrueVision's names (16)
+  PASS  Layers: every name the unit exported before is still exported
+  PASS  Shapes: exports exactly TrueVision's names (8)
+  PASS  Shapes: every name the unit exported before is still exported
+  PASS  Viewports: exports exactly TrueVision's names (9)
+  PASS  Viewports: every name the unit exported before is still exported
+  PASS  TextAndDimensions: exports exactly TrueVision's names (11)
+  PASS  TextAndDimensions: every name the unit exported before is still exported
+  PASS  Leaders: exports exactly TrueVision's names (6)
+  PASS  Leaders: every name the unit exported before is still exported
+  PASS  Groups: exports exactly TrueVision's names (7)
+  PASS  Groups: every name the unit exported before is still exported
+  PASS  AreaGroups: exports exactly TrueVision's names (9)
+  PASS  DrawOrder: exports exactly TrueVision's names (2)
+  PASS  DrawOrder: every name the unit exported before is still exported
+  PASS  Common: exports exactly TrueVision's names (9)
+  PASS  Common: every name the unit exported before is still exported
+  PASS  the facade 1.18.0 links over the new units and re-exports 84 names, every one defined
+  PASS  the Sheets unit 1.1.0 links over the new State and the shared Common
+  PASS  AreaGroups links with nothing importing it yet (G2 checks every module) and holds the areas reason
+
+=== B. One script, three variants: new = TrueVision, step by step
+  PASS  new = TrueVision on all 40 steps: every answer, the sheet after each, and every announcement
+  PASS  no step throws on the new units
+  (before this package: 39 of 40 steps answer differently, 10 of them because the function did not exist)
+
+=== C. Acceptance 1 - groups survive a delete elsewhere and a reload; a deleted layer's vector goes to Vectors
+  PASS  new: a group holding a viewport, a leader, a dimension and a note keeps all four through a shape delete elsewhere
+  PASS  new: and through a DeleteItems elsewhere
+  PASS  new: and through a reload (SheetRecords 1.39.0 keeps the kinds; the Sheets unit's GetSheets the same)
+  PASS  before (control): the old PruneGroups dropped those members on the first delete - the bug this package closes
+        old after a shape delete elsewhere: Group_001 null, Group_002 null
+  PASS  new: DeleteLeader takes the leader out of its group, the rest stay
+  PASS  new: DeleteDimension prunes, and a group left with one member dissolves
+  PASS  new: DeleteViewport prunes too
+        old DeleteLeader left Group_001 ["viewport:Viewport_001","leader:Leader_001","dimension:Dim_001","annotation:Text_001"] (no prune: the dead leader stays named)
+  PASS  new: deleting a layer that holds a vector moves the vector to the Vectors layer (Layer_004)
+  PASS  new: and a measured room on it to the Floor Areas layer (Layer_005)
+  PASS  before (control): the old DeleteLayer left the vector on the deleted layer
+  PASS  tv: deleting a layer that holds a vector moves the vector to the Vectors layer (Layer_004)
+  PASS  tv: and a measured room on it to the Floor Areas layer (Layer_005)
+  PASS  new: with no Floor Areas or Images layer, the room and the picture fall back as SheetRecords says (Vectors), never to a dead id
+
+=== D. Acceptance 2 - margin regions, leaderless groups, depthFog, LineTypeScale and 1:200 survive a reload; a drop on a missing layer
+  PASS  the fixture holds margin regions and leaderless groups after its first normalise
+  PASS  a JSON reload: the margin regions survive, byte for byte
+  PASS  a JSON reload: the leaderless groups survive, in their order
+  PASS  a JSON reload: depthFog survives, off where it was switched off and on where on
+  PASS  a JSON reload: Category__LineTypeScale survives on both categories (2.5 and 0.5)
+  PASS  a JSON reload: with 1:200 configured (W1-22's row), a 1:200 viewport is set and survives
+  PASS  a JSON reload: the groups, the area groups and the layer stack are kept
+  PASS  the Sheets unit's GetSheets: the margin regions survive, byte for byte
+  PASS  the Sheets unit's GetSheets: the leaderless groups survive, in their order
+  PASS  the Sheets unit's GetSheets: depthFog survives, off where it was switched off and on where on
+  PASS  the Sheets unit's GetSheets: Category__LineTypeScale survives on both categories (2.5 and 0.5)
+  PASS  the Sheets unit's GetSheets: with 1:200 configured (W1-22's row), a 1:200 viewport is set and survives
+  PASS  the Sheets unit's GetSheets: the groups, the area groups and the layer stack are kept
+  PASS  new: a scrapbook drop naming a missing layer lands with Shape__LayerId set to an existing layer (Vectors)
+  PASS  new: a room in the drop goes to the Floor Areas layer
+  PASS  tv: a scrapbook drop naming a missing layer lands with Shape__LayerId set to an existing layer (Vectors)
+  PASS  tv: a room in the drop goes to the Floor Areas layer
+  PASS  before (control): the old InsertShape kept the dead id "Layer_999" on the record
+
+=== E. Through the facade 1.18.0 and the Sheets unit 1.1.0, over the new units
+  PASS  CreateSheet: a new sheet carries TrueVision's five layers, the layer stack and announces once
+  PASS  a group of a viewport, a leader, a dimension and a line survives a delete elsewhere
+  PASS  and a reload (the facade's GetSheets over the stored JSON)
+  PASS  deleting a layer that holds a vector moves it to the Vectors layer, through the facade
+  PASS  a drop naming a missing layer lands on an existing one, through the facade
+  PASS  DeleteItems of the group record: one record, one announcement, the members stay
+
+=== F. ValeVision's four local sheets: the new units and TrueVision's agree on every layer delete
+  PASS  four sheets found
+  PASS  3047__Doous Sheet_001: PruneGroups changes nothing, old or new (no groups stored here)
+  PASS  3047__Doous Sheet_001: deleting each layer in turn, new = TrueVision and no vector is left on a dead layer
+  PASS  44371__Gill Sheet_001: PruneGroups changes nothing, old or new (no groups stored here)
+  PASS  44371__Gill Sheet_001: deleting each layer in turn, new = TrueVision and no vector is left on a dead layer
+  PASS  57994__Harris__Scheme-02 Sheet_001: PruneGroups changes nothing, old or new (no groups stored here)
+  PASS  57994__Harris__Scheme-02 Sheet_001: deleting each layer in turn, new = TrueVision and no vector is left on a dead layer
+  PASS  57994__Harris__Scheme-02 Sheet_002: PruneGroups changes nothing, old or new (no groups stored here)
+  PASS  57994__Harris__Scheme-02 Sheet_002: deleting each layer in turn, new = TrueVision and no vector is left on a dead layer
+fetched: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json, 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json, 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json, 02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__Config__.json
+
+70 passed, 0 failed

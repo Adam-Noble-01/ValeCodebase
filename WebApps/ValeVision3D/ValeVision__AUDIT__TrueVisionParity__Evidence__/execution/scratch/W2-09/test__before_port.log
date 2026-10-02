@@ -1,0 +1,26 @@
+﻿ValeVision3D - Enhance Whitecard strength
+  PASS  100 is the pass exactly as it was - levels
+  PASS  100 is the pass exactly as it was - sharpen
+  PASS  a caller that passes no strength gets the full pass
+  PASS  a null strength gets the full pass
+  FAIL  0 runs neither pass - the render is handed back untouched  -> {"count":2,"black":0,"white":205,"gamma":1,"opacity":1,"radius":2}
+  FAIL  50 puts the white point halfway  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  FAIL  50 puts the black point halfway  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  FAIL  50 puts the gamma halfway  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  FAIL  50 puts the sharpen opacity halfway  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  FAIL  25 is a quarter of the way, not a preset  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  PASS  the sharpen radius does not move with the dial
+  PASS  a strength over 100 clamps to the full pass
+  FAIL  a negative strength clamps to nothing at all  -> {"count":2,"black":20,"white":180,"gamma":1.4,"opacity":0.8,"radius":2}
+  PASS  no strength ever hands the sharpen an opacity of zero
+  FAIL  a lower strength leaves that grey darker, step by step  -> [200,249,249,249,249]
+  PASS  0 leaves it exactly as the renderer wrote it
+  PASS  full strength clips the whitecard white point to paper white
+  FAIL  a low strength does not clip it yet - that is the whole point of the dial  -> {"CLIPS":205,"atLow":{"count":2,"black":0,"white":205,"gamma":1,"opacity":1,"radius":2}}
+  FAIL  the shipped config gives Enhance Whitecard a percent weight  -> {"Weight__Kind":"none"}
+  FAIL  its range is 0 to 100  -> {"Weight__Kind":"none"}
+  FAIL  its default is the full pass  -> {"Weight__Kind":"none"}
+  FAIL  the built-in fallback row agrees with the shipped config  -> "{ key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false, toggle : true,  weight : { kind : 'none' } },"
+  FAIL  a percent weight is inside the raster cache key
+
+  FAIL - 14 check(s) did not pass.

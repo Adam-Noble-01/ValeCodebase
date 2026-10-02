@@ -1,0 +1,108 @@
+[
+ {
+  "name": "3047__Doous__Sheet_001__flat__fit",
+  "changed": 7749,
+  "edge": 4008,
+  "text": 3650,
+  "other": 91,
+  "cardPixels": [
+   503745,
+   503745
+  ],
+  "otherBbox": [
+   211,
+   439,
+   679,
+   490
+  ]
+ },
+ {
+  "name": "3047__Doous__Sheet_001__flat__z1",
+  "changed": 3117,
+  "edge": 3047,
+  "text": 70,
+  "other": 0,
+  "cardPixels": [
+   368387,
+   368387
+  ]
+ },
+ {
+  "name": "44371__Gill__Sheet_001__flat__fit",
+  "changed": 6942,
+  "edge": 4087,
+  "text": 2713,
+  "other": 142,
+  "cardPixels": [
+   581365,
+   581376
+  ],
+  "otherBbox": [
+   101,
+   30,
+   1412,
+   1078
+  ]
+ },
+ {
+  "name": "44371__Gill__Sheet_001__flat__z1",
+  "changed": 2117,
+  "edge": 2109,
+  "text": 8,
+  "other": 0,
+  "cardPixels": [
+   426600,
+   426600
+  ]
+ },
+ {
+  "name": "57994__Harris__Scheme-02__Sheet_001__flat__fit",
+  "changed": 17148,
+  "edge": 9348,
+  "text": 7793,
+  "other": 7,
+  "cardPixels": [
+   687627,
+   687636
+  ],
+  "otherBbox": [
+   68,
+   643,
+   783,
+   649
+  ]
+ },
+ {
+  "name": "57994__Harris__Scheme-02__Sheet_001__flat__z1",
+  "changed": 4253,
+  "edge": 4082,
+  "text": 171,
+  "other": 0,
+  "cardPixels": [
+   1009823,
+   1009823
+  ]
+ },
+ {
+  "name": "57994__Harris__Scheme-02__Sheet_002__flat__fit",
+  "changed": 0,
+  "edge": 0,
+  "text": 0,
+  "other": 0,
+  "cardPixels": [
+   11,
+   11
+  ]
+ },
+ {
+  "name": "57994__Harris__Scheme-02__Sheet_002__flat__z1",
+  "changed": 0,
+  "edge": 0,
+  "text": 0,
+  "other": 0,
+  "cardPixels": [
+   7,
+   7
+  ]
+ }
+]

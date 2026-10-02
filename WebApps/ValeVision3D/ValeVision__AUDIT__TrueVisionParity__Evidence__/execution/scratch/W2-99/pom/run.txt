@@ -1,0 +1,5 @@
+Appendix D: rows 62, blocked 44, match S11 62, match prereq.json 62, blocked after W0-02 7
+takes: {'vv_body': 4, 'infra': 2, 'hunks': 48, 'whole': 330, 'header': 8, 'reference': 5, 'convergence': 1}
+graph nodes 331, levels 9, cycles 1
+defects 4, hunk defects 0, advisories 0, transport imports 32, tv_bad 0, vv0_bad 0
+wrote D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W2-99\pom\port_order_map__endW2.json and D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W2-99\pom\port_order_map__endW2__copy.json

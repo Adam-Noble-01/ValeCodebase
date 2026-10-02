@@ -33,20 +33,32 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__ModelLayers__.js
-// - Ported on     : 12-Sep-2026
-// - Parity        : verbatim
-// - Divergences   : Header only.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js
+// - Source version: 1.3.0 (TrueVision3D v2.49.0, 14-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was TrueVision's 1.1.0 (ValeVision3D v2.30.0). 1.2.0 (v2.32.0, phase categories), 1.3.0
+//                   (v2.49.0, site plan rows) and the unlogged Fill and Line scale columns (git 55014c6a) come
+//                   across under DR-01 (c); none is recorded as tried by Adam in TrueVision.
+// - Parity        : verbatim (the code is TrueVision 1.3.0's; the banner and this note are the only differences)
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
+// 14-Sep-2026 - Version 1.3.0
+// - A site plan viewport's rows are its site plan layers. The list rebuilds when
+//   the site plan data arrives, and says so while there is none.
+//
+// 13-Sep-2026 - Version 1.2.0
+// - The rows are the categories of the selected viewport's own design phase,
+//   which on a viewport of the existing building are not the proposal's.
+//
+// 12-Sep-2026 - Version 1.1.0
 // - Advanced fold: per-category edge colour, line type and weight inline in
 //   each row, a reset per row, and a reset for the whole viewport. Only shown
 //   for a 2D viewport, which is the only kind with projected linework to style.
-//   Ported from TrueVision3D (Edge Styles).
 //
 // 12-Sep-2026 - Version 1.0.0
 // - Initial implementation.
@@ -63,6 +75,8 @@
     import { Na__LeCfg__GetLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__KIND_2D, Na__LeModel__GetActiveSheet, Na__LeModel__GetSelectedViewport, Na__LeModel__UpdateViewport } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeModelLayers__Ready, Na__LeModelLayers__Groups, Na__LeModelLayers__IsOn } from '../25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js';
+    import { Na__LeSource__CategoryKeys } from '../20__System__Viewports/Na__LayoutEditor__ModelSource__.js';
+    import { Na__SpStore__CHANGED_EVENT, Na__SpStore__GetLayers } from '../21__System__SitePlanData/Na__SitePlan__Store__.js';
     import {
         Na__LeEdge__FIELD,
         Na__LeEdge__CAT_FIELD,
@@ -72,6 +86,7 @@
         Na__LeEdge__LineTypes,
         Na__LeEdge__WeightBounds,
         Na__LeEdge__Effective,
+        Na__LeEdge__FillHex,
         Na__LeEdge__Patch,
         Na__LeEdge__ResetPatch,
         Na__LeEdge__OverrideCount
@@ -151,6 +166,7 @@
         const rebuild = () => { Na__LePanelModelLayers__BuiltKey = null; Na__LePanels__Refresh(Na__LePanelModelLayers__ID); };
         Na__LeModelLayers__Ready().then(rebuild);
         Na__LeEdge__Ready().then(rebuild);
+        window.addEventListener(Na__SpStore__CHANGED_EVENT, (event) => { if (!event.detail || event.detail.reason !== 'layer-loaded') rebuild(); });   // <-- Site plan layers arrive with their data
     }
     // ------------------------------------------------------------
 
@@ -166,8 +182,10 @@
         head.setAttribute('data-na-block', 'edge-head');
         const cells = [
             [ 'na-le-adv-head__spacer', '' ],
-            [ 'na-le-adv-head__cell', Na__LeCfg__GetLabel('EdgeColourHead', 'Colour'), '108px' ],
+            [ 'na-le-adv-head__cell', 'Fill', '34px' ],
+            [ 'na-le-adv-head__cell', Na__LeCfg__GetLabel('LayerLineColourHead', 'Line'), '108px' ],
             [ 'na-le-adv-head__cell', Na__LeCfg__GetLabel('EdgeTypeHead',   'Type'),    '82px' ],
+            [ 'na-le-adv-head__cell', 'Line scale', '52px' ],
             [ 'na-le-adv-head__cell', Na__LeCfg__GetLabel('EdgeWeightHead', 'Weight'),  '74px' ],
             [ 'na-le-adv-head__cell', '', '16px' ]
         ];
@@ -189,6 +207,13 @@
         const cluster = document.createElement('span');
         cluster.className = 'na-le-row__adv na-le-adv';
 
+        const fill = Na__LePanels__Input('color', 'layer-fill');
+        fill.setAttribute('data-na-role', layerKey);
+        fill.setAttribute('aria-label', 'Fill colour');
+        fill.title = 'Fill colour for this layer in this viewport';
+        fill.style.cssText = 'width:30px;min-width:30px;height:22px;padding:1px;flex:0 0 30px;';
+        cluster.appendChild(fill);
+
         const swatch = document.createElement('span');
         swatch.className = 'na-le-adv-swatch';
         cluster.appendChild(swatch);
@@ -202,6 +227,13 @@
         type.classList.add('na-le-adv-type');
         type.setAttribute('data-na-role', layerKey);
         cluster.appendChild(type);
+
+        const scale = Na__LePanels__Input('number', 'edge-scale', { min : 0.1, max : 10, step : 0.05 });
+        scale.setAttribute('data-na-role', layerKey);
+        scale.setAttribute('aria-label', 'Line type scale');
+        scale.style.cssText = 'width:52px;min-width:52px;flex:0 0 52px;';
+        scale.title = 'Dash and dot lengths and gaps: 0.50 is half scale, 1.00 is full scale. Does not change line width.';
+        cluster.appendChild(scale);
 
         const bounds = Na__LeEdge__WeightBounds();
         const weight = Na__LePanels__Input('number', 'edge-weight', { min : bounds.min, max : bounds.max, step : bounds.step });
@@ -266,7 +298,19 @@
         };
         set('edge-colour', effective.colour);
         set('edge-type',   effective.lineType);
+        set('edge-scale',  effective.dashScale.toFixed(2));
+        const scaleInput = row.querySelector('[data-na-control="edge-scale"]');
+        if (scaleInput) scaleInput.disabled = effective.patternMm.length === 0;
         set('edge-weight', effective.weight.toFixed(Na__LeEdge__WeightBounds().decimals));
+        const layer = Na__SpStore__GetLayers().find((item) => item.Layer__CategoryKey === layerKey);
+        const defaultFill = layer && layer.Layer__Style && layer.Layer__Style.FillHex;
+        const fill = row.querySelector('[data-na-control="layer-fill"]');
+        if (fill) {
+            fill.disabled = !defaultFill;
+            fill.style.visibility = defaultFill ? 'visible' : 'hidden';
+            if (document.activeElement !== fill) fill.value = Na__LeEdge__FillHex(viewport, layerKey, defaultFill) || '#ffffff';
+            fill.title = 'Fill colour: ' + (Na__LeEdge__FillHex(viewport, layerKey, defaultFill) || 'none') + ' (Reset Styles restores the exported default)';
+        }
         const swatch = row.querySelector('.na-le-adv-swatch');
         if (swatch) swatch.style.background = effective.hex;
         row.classList.toggle('is-overridden', effective.overridden);
@@ -278,13 +322,13 @@
     // ------------------------------------------------------------
     function Na__LePanelModelLayers__Refresh(body) {
         const viewport = Na__LeModel__GetSelectedViewport();
-        const groups   = Na__LeModelLayers__Groups();
+        const groups   = Na__LeModelLayers__Groups(Na__LeSource__CategoryKeys(viewport));   // <-- The selected viewport's design phase; null keeps the live model's
         const list     = body.querySelector('[data-na-block="list"]');
         const note     = body.querySelector('[data-na-block="note"]');
         const bulk     = body.querySelector('[data-na-block="bulk"]');
 
         if (groups.length === 0) {
-            note.textContent = Na__LeCfg__GetLabel('ModelLayersNoModel', 'No model categories loaded.');
+            note.textContent = (viewport && viewport.Viewport__SitePlan) ? Na__LeCfg__GetLabel('SitePlanNoLayers', 'No site plan layers loaded yet.') : Na__LeCfg__GetLabel('ModelLayersNoModel', 'No model categories loaded.');
             note.hidden = false;
             bulk.hidden = true;
             list.innerHTML = '';
@@ -373,12 +417,18 @@
         Na__LePanels__OnControl('click', 'model-layer-bulk', (e, el, role) => {
             const on    = role === 'on';
             const patch = {};
-            Na__LeModelLayers__Groups().forEach((group) => group.layers.forEach((layer) => { patch[layer.key] = on; }));
+            Na__LeModelLayers__Groups(Na__LeSource__CategoryKeys(Na__LeModel__GetSelectedViewport())).forEach((group) => group.layers.forEach((layer) => { patch[layer.key] = on; }));
             Na__LePanelModelLayers__Apply(patch);
         });
 
+        Na__LePanels__OnControl('change', 'layer-fill', (e, el, key) => Na__LePanelModelLayers__ApplyEdge(key, 'fill', el.value));
         Na__LePanels__OnControl('change', 'edge-colour', (e, el, key) => Na__LePanelModelLayers__ApplyEdge(key, 'colour', el.value));
         Na__LePanels__OnControl('change', 'edge-type',   (e, el, key) => Na__LePanelModelLayers__ApplyEdge(key, 'lineType', el.value));
+        Na__LePanels__OnControl('change', 'edge-scale', (e, el, key) => {
+            const value = Number(el.value);
+            if (Number.isFinite(value) && value > 0) Na__LePanelModelLayers__ApplyEdge(key, 'dashScale', value);
+            Na__LePanels__Refresh(Na__LePanelModelLayers__ID);
+        });
         Na__LePanels__OnControl('change', 'edge-weight', (e, el, key) => {
             if (Number.isFinite(parseFloat(el.value))) Na__LePanelModelLayers__ApplyEdge(key, 'weight', el.value);
         });

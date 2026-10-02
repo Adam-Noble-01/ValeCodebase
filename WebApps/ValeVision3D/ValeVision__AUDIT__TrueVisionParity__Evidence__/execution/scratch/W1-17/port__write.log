@@ -1,0 +1,24 @@
+﻿WROTE    02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js   56888 bytes  seams  sha256 3b45a3ae82c3b64a
+WROTE    52__LayoutEditor__HatchPatternLibrary/HatchLibrary__Index__.json                                                  2850 bytes  Meta__PortedFrom  sha256 2f85f26a9e3e3480
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/HatchPack__Index__.json                     7226 bytes  verbatim  sha256 514672900fe62b70
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BlockCoursing__.json    3970 bytes  verbatim  sha256 2f9e3df413bd4e0b
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Blockwork__.json    4639 bytes  verbatim  sha256 beca6ad4d233bb69
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__BrickCoursing__.json    4306 bytes  verbatim  sha256 1ff252867fbe7588
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Brickwork__.json    4372 bytes  verbatim  sha256 1c0d0dc451e88c01
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__CladdingBoards__.json    3827 bytes  verbatim  sha256 8e72073cb039f80a
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Concrete__.json    7841 bytes  verbatim  sha256 7b131a09bdf42b84
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Earth__.json    4573 bytes  verbatim  sha256 3fea4bc82b1164f9
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Hardcore__.json    6463 bytes  verbatim  sha256 9e9db11e3fab15e1
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationQuilt__.json    4520 bytes  verbatim  sha256 0d074617f086dc15
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__InsulationRigid__.json    3635 bytes  verbatim  sha256 5e3556fb76f58b8a
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__Metal__.json    4036 bytes  verbatim  sha256 66f5b645d0359b12
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__RoofTilesPlain__.json    4011 bytes  verbatim  sha256 30be63f8e74081aa
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__ScreedAndRender__.json    8402 bytes  verbatim  sha256 6f31a6ccfc7ad07a
+WROTE    52__LayoutEditor__HatchPatternLibrary/02__ConstructionMaterialHatches/Na__HatchPattern__Construction__TimberGrain__.json    4851 bytes  verbatim  sha256 cedf1168abbf85bb
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/HatchPack__Index__.json                                 2519 bytes  verbatim  sha256 a8e9d5c50f75db8a
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Grassland__.json            6396 bytes  verbatim  sha256 17e99005dc6f3745
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__Gravel__.json               3102 bytes  verbatim  sha256 d24be3ca94b12cc4
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__MixedWoodland__.json        6325 bytes  verbatim  sha256 3afdd0070bda1a5a
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__PondsAndLakes__.json        4385 bytes  verbatim  sha256 ca70804ba3e9e686
+WROTE    52__LayoutEditor__HatchPatternLibrary/05__SitePlanHatches/Na__HatchPattern__SitePlan__RoughGrassland__.json       6587 bytes  verbatim  sha256 8a8f088aa2ed4121
+files: 23

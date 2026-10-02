@@ -1,0 +1,388 @@
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
+@@ -1,3 +1,3 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - PDF FONTS
++// VALEVISION3D - LAYOUT EDITOR - PDF FONTS
+ // =============================================================================
+@@ -31,2 +31,18 @@
+ //
++// PORT NOTE:
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js
++// - Source version: 1.0.0 (TrueVision3D v2.54.0, 14-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-25}} - the whole file, new in this app.
++// - Parity        : verbatim (the code is TrueVision 1.0.0's; the banner, the three console prefixes
++//                   and this note are the only differences)
++// - Divergences   :
++//   - Banner and console prefixes read ValeVision3D.
++//   - The paths are this app's config values (DR-21): FontBasePath and FontCdnBase both name the
++//     AD04 copies of the Open Sans files on www.noble-architecture.com/assets/ that
++//     Na__CoreUi__Styles__Fonts__.css loads (byte for byte TrueVision's cuts), so each cut is
++//     fetched from one address, once.
++// - Back-port     : none.
++//
++// -----------------------------------------------------------------------------
++//
+ // DEVELOPMENT LOG:
+@@ -142,3 +158,3 @@
+             } catch (cutError) {
+-                console.warn('[TrueVision3D LayoutEditor] PDF font unavailable: ' + cut.fileName, cutError);
++                console.warn('[ValeVision3D LayoutEditor] PDF font unavailable: ' + cut.fileName, cutError);
+                 return null;
+@@ -168,3 +184,3 @@
+         }).catch((loadError) => {
+-            console.warn('[TrueVision3D LayoutEditor] Open Sans could not be loaded for PDF export; Helvetica will be used.', loadError);
++            console.warn('[ValeVision3D LayoutEditor] Open Sans could not be loaded for PDF export; Helvetica will be used.', loadError);
+             Na__LePdfFonts__LoadPromise = null;
+@@ -191,3 +207,3 @@
+         } catch (installError) {
+-            console.warn('[TrueVision3D LayoutEditor] Open Sans could not be embedded in the PDF.', installError);
++            console.warn('[ValeVision3D LayoutEditor] Open Sans could not be embedded in the PDF.', installError);
+             return false;
+
+--- TV@b2aa9151/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+@@ -1,3 +1,3 @@
+ // =============================================================================
+-// TRUEVISION3D - LAYOUT EDITOR - SPECIFICATION PDF DOWNLOAD
++// VALEVISION3D - LAYOUT EDITOR - SPECIFICATION PDF DOWNLOAD
+ // =============================================================================
+@@ -42,4 +42,22 @@
+ // PORT NOTE:
+-// - Ported from   : n/a (TrueVision3D first, 17-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the revision fields.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
++// - Source version: 1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; read at b2aa9151)
++// - Ported on     : 17-Sep-2026 for ValeVision3D v2.56.0; taken whole 02-Oct-2026 for ValeVision3D
++//                   {{VVREL:W1-25}}, with Na__LayoutEditor__PdfFonts__: the Open Sans cuts are in memory
++//                   before a line is measured and installed in the document, as TrueVision's are, and
++//                   the save is awaited. This app's copy before it was its 1.0.2 (01-Oct-2026,
++//                   v2.71.1): TrueVision's 1.0.0 without the two font lines and the awaited save, set
++//                   in Helvetica, with the display-name seam (1.0.2) and the console prefix (1.0.1).
++// - Parity        : adapted
++// - Divergences   :
++//   - The project's name comes from Na__CfApi__GetProjectDisplayName() (the project data the app
++//     loaded), where TrueVision reads the project context its PWA layer publishes on window - which
++//     ValeVision does not have (K2 K4).
++//   - The project code the document prints, numbers itself by and names its file by is
++//     Na__DrawData__GetDocumentCode() (the loaded project's own code, DR-11), where TrueVision reads
++//     Na__DrawData__GetProjectCode(): here that is the ?project= token, which can be a folder id
++//     such as 2026/3047__Doous and printed 2026/3047__Doous_SPEC.
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : the display-name and document-code accessors, in place of the PWA global and the
++//                   ?project= code.
+ //
+@@ -81,3 +99,4 @@
+     import { Na__LeMargin__Wrap } from './Na__LayoutEditor__SpecMargin__.js';       // <-- The sheet margin's wrapper: one string per printed line
+-    import { Na__DrawData__GetProjectCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
++    import { Na__DrawData__GetDocumentCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';   // <-- The project's own code (ValeVision, DR-11): this app's ?project= can be a folder id
++    import { Na__CfApi__GetProjectDisplayName } from '../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';   // <-- The project's name, from the project data the app loaded
+     // ------------------------------------------------------------
+@@ -137,8 +156,4 @@
+         const setup   = Na__LeCfg__GetSpecificationSetup();
+-        const code    = Na__DrawData__GetProjectCode() || '';
+-        let   name    = '';
+-        try {
+-            const context = window.TrueVision__Pwa__ProjectContext;
+-            name = (context && typeof context.get === 'function' && context.get().displayName) || '';
+-        } catch (e) { name = ''; }
++        const code    = Na__DrawData__GetDocumentCode() || '';            // <-- ValeVision seam (DR-11): the project's own code, never the ?project= folder id
++        const name    = Na__CfApi__GetProjectDisplayName() || '';         // <-- ValeVision seam (K2 K4): the loaded project's own name
+         return {
+@@ -426,3 +441,3 @@
+         } catch (error) {
+-            console.warn('[TrueVision3D LayoutEditor] The specification could not be downloaded.', error);
++            console.warn('[ValeVision3D LayoutEditor] The specification could not be downloaded.', error);
+             say(Na__LeCfg__GetLabel('SpecDownloadFailed', 'The specification could not be downloaded.'), 'error');
+
+--- TV@b2aa9151/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css
++++ candidate/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css
+@@ -3,2 +3,9 @@
+ /* ================================================================= */
++
++/* ValeVision3D seam (DR-21): each face is read from the AD04 copy of the
++   same Open Sans file on www.noble-architecture.com/assets/, one source
++   each, where TrueVision reads its own font folder first and its CDN copy
++   second. The PDF exporter embeds the same files (Pdf FontCdnBase in the
++   Layout Editor config), so the screen and the paper share one face. Move
++   both together when a Vale-owned copy is named. */
+ 
+@@ -11,4 +18,3 @@
+     font-display                       : swap;
+-    src                                : url('../../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Regular__.ttf') format('truetype'),
+-                                         url('https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Regular__.ttf') format('truetype');
++    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf') format('truetype');
+ }
+@@ -23,4 +29,3 @@
+     font-display                       : swap;
+-    src                                : url('../../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__SemiBold__.ttf') format('truetype'),
+-                                         url('https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__SemiBold__.ttf') format('truetype');
++    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf') format('truetype');
+ }
+@@ -43,4 +48,3 @@
+     font-display                       : swap;
+-    src                                : url('../../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Medium__.ttf') format('truetype'),
+-                                         url('https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Medium__.ttf') format('truetype');
++    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_04_-_Standard-Font_-_Open-Sans-Medium.ttf') format('truetype');
+ }
+@@ -55,4 +59,3 @@
+     font-display                       : swap;
+-    src                                : url('../../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Light__.ttf') format('truetype'),
+-                                         url('https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/CommonFont-01__OpenSans__Light__.ttf') format('truetype');
++    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf') format('truetype');
+ }
+
+--- preimage/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+@@ -31,4 +31,4 @@
+ // contractor, and a picture of text is none of those. So the pages are set from
+-// the same primitives the sheets are drawn with, in the face its own measurer
+-// uses, and the words in the file are words.
++// the same primitives the sheets are drawn with, through the same embedded Open
++// Sans, and the words in the file are words.
+ //
+@@ -43,14 +43,21 @@
+ // - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+-// - Source version: 1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; still 1.0.0 at HEAD b2aa9151)
+-// - Ported on     : 17-Sep-2026 for ValeVision3D v2.56.0
++// - Source version: 1.0.0 (TrueVision3D v2.63.0, 17-Sep-2026; read at b2aa9151)
++// - Ported on     : 17-Sep-2026 for ValeVision3D v2.56.0; taken whole 02-Oct-2026 for ValeVision3D
++//                   {{VVREL:W1-25}}, with Na__LayoutEditor__PdfFonts__: the Open Sans cuts are in memory
++//                   before a line is measured and installed in the document, as TrueVision's are, and
++//                   the save is awaited. This app's copy before it was its 1.0.2 (01-Oct-2026,
++//                   v2.71.1): TrueVision's 1.0.0 without the two font lines and the awaited save, set
++//                   in Helvetica, with the display-name seam (1.0.2) and the console prefix (1.0.1).
+ // - Parity        : adapted
+ // - Divergences   :
+-//   - ValeVision3D has no Na__LayoutEditor__PdfFonts__ yet, so the pages are set in the face its own
+-//     measurer uses (Helvetica) rather than in an embedded Open Sans. Measurement and painting agree
+-//     either way, which is what the layout depends on.
+ //   - The project's name comes from Na__CfApi__GetProjectDisplayName() (the project data the app
+ //     loaded), where TrueVision reads the project context its PWA layer publishes on window - which
+-//     ValeVision does not have, so this PDF printed no project name before.
++//     ValeVision does not have (K2 K4).
++//   - The project code the document prints, numbers itself by and names its file by is
++//     Na__DrawData__GetDocumentCode() (the loaded project's own code, DR-11), where TrueVision reads
++//     Na__DrawData__GetProjectCode(): here that is the ?project= token, which can be a folder id
++//     such as 2026/3047__Doous and printed 2026/3047__Doous_SPEC.
+ //   - Banner and console prefix read ValeVision3D.
+-// - Back-port     : the display-name accessor, in place of the PWA global.
++// - Back-port     : the display-name and document-code accessors, in place of the PWA global and the
++//                   ?project= code.
+ //
+@@ -59,14 +66,4 @@
+ // DEVELOPMENT LOG:
+-// 01-Oct-2026 - Version 1.0.2 (the project name, v2.71.1)
+-// - Page one names the project under the document's title: the name is
+-//   read from the project data the app loaded, through the transport
+-//   facade's Na__CfApi__GetProjectDisplayName(), as ValeVision has no PWA
+-//   project context to read it from.
+-//
+-// 01-Oct-2026 - Version 1.0.1 (identity hygiene, v2.71.1)
+-// - The warning logged when a download fails carries ValeVision's console
+-//   prefix, [ValeVision3D LayoutEditor]; it carried TrueVision's.
+-//
+ // 17-Sep-2026 - Version 1.0.0
+-// - Ported from TrueVision3D: Download on the Project Specification bar.
++// - Initial implementation: Download on the Project Specification bar.
+ //
+@@ -83,2 +80,3 @@
+     import { Na__LeFileName__Build } from '../60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js';
++    import { Na__LePdfFonts__EnsureLoaded, Na__LePdfFonts__Install } from '../60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js';
+     import { Na__LePdf__EnsureJsPdf } from '../60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js';   // <-- Loads the vendored jsPDF once; the sheets' loader, not a second copy
+@@ -101,3 +99,3 @@
+     import { Na__LeMargin__Wrap } from './Na__LayoutEditor__SpecMargin__.js';       // <-- The sheet margin's wrapper: one string per printed line
+-    import { Na__DrawData__GetProjectCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
++    import { Na__DrawData__GetDocumentCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';   // <-- The project's own code (ValeVision, DR-11): this app's ?project= can be a folder id
+     import { Na__CfApi__GetProjectDisplayName } from '../../80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js';   // <-- The project's name, from the project data the app loaded
+@@ -158,3 +156,3 @@
+         const setup   = Na__LeCfg__GetSpecificationSetup();
+-        const code    = Na__DrawData__GetProjectCode() || '';
++        const code    = Na__DrawData__GetDocumentCode() || '';            // <-- ValeVision seam (DR-11): the project's own code, never the ?project= folder id
+         const name    = Na__CfApi__GetProjectDisplayName() || '';         // <-- ValeVision seam (K2 K4): the loaded project's own name
+@@ -398,3 +396,4 @@
+     async function Na__LeSpecPdf__BuildDocument() {
+-        const JsPdf = await Na__LePdf__EnsureJsPdf();                               // <-- jsPDF injected if it is not there yet
++        const JsPdf = await Na__LePdf__EnsureJsPdf();                               // <-- jsPDF injected if it is not there yet, and Open Sans in memory before a line is measured
++        await Na__LePdfFonts__EnsureLoaded();
+ 
+@@ -408,2 +407,3 @@
+                                 compress : true, putOnlyUsedFonts : true });
++        Na__LePdfFonts__Install(doc);
+         doc.setProperties({
+@@ -437,3 +437,3 @@
+             const built = await Na__LeSpecPdf__BuildDocument();
+-            built.doc.save(built.filename);
++            await built.doc.save(built.filename, { returnPromise : true });
+             say(built.filename, 'ok');
+
+--- preimage/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css
++++ candidate/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css
+@@ -1,4 +1,11 @@
+ /* ================================================================= */
+-/* REGION  |  Custom Font Loading - Open Sans from CDN              */
++/* REGION  |  Custom Font Loading - Open Sans                       */
+ /* ================================================================= */
++
++/* ValeVision3D seam (DR-21): each face is read from the AD04 copy of the
++   same Open Sans file on www.noble-architecture.com/assets/, one source
++   each, where TrueVision reads its own font folder first and its CDN copy
++   second. The PDF exporter embeds the same files (Pdf FontCdnBase in the
++   Layout Editor config), so the screen and the paper share one face. Move
++   both together when a Vale-owned copy is named. */
+ 
+@@ -26,2 +33,21 @@
+ 
++/* Open Sans Font Family - Medium (500) */
++/* ----------------------------------------------------------------- */
++/* ADDED 20-Sep-2026 for the Statement Writer. The house document style sets
++   every heading and every bold run at weight 500, which is the Medium cut.
++   Without this face the browser matched 500 down to Regular and a statement
++   heading came out no heavier than the sentence under it. The TTF was already
++   in the common font folder; only the declaration was missing.
++   SIDE EFFECT, stated rather than hidden: the thirteen places in the app
++   chrome that already ask for weight 500 - toasts, dropdown headings - now
++   get Medium too, which is the weight they were asking for. */
++@font-face {
++    font-family                        : 'Open Sans';
++    font-style                         : normal;
++    font-weight                        : 500;
++    font-display                       : swap;
++    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_04_-_Standard-Font_-_Open-Sans-Medium.ttf') format('truetype');
++}
++
++
+ /* Open Sans Font Family - Light (300) */
+
+--- preimage/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+@@ -22,2 +22,5 @@
+ //   coordinate is a paper millimetre.
++// - Open Sans is embedded before anything is drawn. jsPDF's built-in
++//   Helvetica is only the fallback when the TTF files cannot be fetched.
++//   // @delegate: ./Na__LayoutEditor__PdfFonts__.js
+ //
+@@ -37,3 +40,4 @@
+ //                   strict and pictureCompression options, LoadLibrary and the awaited save
+-//                   02-Oct-2026 for ValeVision3D v2.71.2
++//                   02-Oct-2026 for ValeVision3D v2.71.2; the Open Sans cuts (1.4.0, with
++//                   Na__LayoutEditor__PdfFonts__) 02-Oct-2026 for ValeVision3D {{VVREL:W1-25}}
+ // - Parity        : adapted
+@@ -43,7 +47,5 @@
+ //     always the live model here (ValeVision3D has no design phases).
+-//   - EnsureJsPdf answers what LoadLibrary answers: it does not wait for the Open Sans cuts yet
+-//     (TrueVision3D's 1.4.0, Na__LayoutEditor__PdfFonts__, is not here).
+-//   - Not here yet: TrueVision3D's 1.2.0 and 1.12.0 (site plans, and their strict check), 1.4.0
+-//     (Open Sans), 1.6.0 (depth fog, and its picture's packing), 1.7.0 (the Layers list's paint
+-//     order), 1.8.0 (Sheet Images), 1.9.0 (turned viewports) and 1.10.0 (note regions).
++//   - Not here yet: TrueVision3D's 1.2.0 and 1.12.0 (site plans, and their strict check), 1.6.0
++//     (depth fog, and its picture's packing), 1.7.0 (the Layers list's paint order), 1.8.0 (Sheet
++//     Images), 1.9.0 (turned viewports) and 1.10.0 (note regions).
+ // - Back-port     : none.
+@@ -53,2 +55,12 @@
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.2.3 (TrueVision3D's Open Sans embedding, {{VVREL:W1-25}})
++// - The Open Sans cuts are in memory before any document is measured or
++//   drawn: EnsureJsPdf awaits Na__LePdfFonts__EnsureLoaded once jsPDF is
++//   there, and BuildDocument installs the cuts in each new document, made
++//   with putOnlyUsedFonts so a cut no text is set in stays out of the file.
++//   Ported from TrueVision3D (PdfExporter 1.4.0, 14-Sep-2026).
++// - The page's text is set by the chrome painter, which picks Helvetica
++//   until Na__LayoutEditor__SheetChrome__ 1.14.0 chooses Open Sans through
++//   Na__LePdfFonts__SetFont; until then the file carries Helvetica alone.
++//
+ // 02-Oct-2026 - Version 1.2.2 (TrueVision3D's picture packing and export options, v2.71.2)
+@@ -106,2 +118,3 @@
+     import { Na__LeCfg__GetPdfSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__GetSpecificationSetup, Na__LeCfg__FormatLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
++    import { Na__LePdfFonts__EnsureLoaded, Na__LePdfFonts__Install } from './Na__LayoutEditor__PdfFonts__.js';
+     import { Na__LeFileName__Build } from './Na__LayoutEditor__PdfFilename__.js';   // <-- Shared with the specification download, so both name their files alike
+@@ -150,3 +163,3 @@
+ 
+-    // FUNCTION | Make Sure jsPDF Exists Before Any Document Is Measured or Drawn
++    // FUNCTION | Make Sure jsPDF Exists and Open Sans Is Ready to Embed
+     // ------------------------------------------------------------
+@@ -154,3 +167,4 @@
+         const JsPdf = await Na__LePdf__LoadLibrary();
+-        return JsPdf;                                                             // <-- TrueVision3D also awaits its Open Sans cuts here (Na__LayoutEditor__PdfFonts__, not ported yet)
++        await Na__LePdfFonts__EnsureLoaded();                                     // <-- TTF in memory before any document is measured or drawn
++        return JsPdf;
+     }
+@@ -333,3 +347,4 @@
+         const layout = Na__LeLayout__Solve(sheet);
+-        const doc    = new JsPdf({ orientation : layout.Page.Orientation, unit : 'mm', format : [ layout.Page.WidthMm, layout.Page.HeightMm ], compress : true });
++        const doc    = new JsPdf({ orientation : layout.Page.Orientation, unit : 'mm', format : [ layout.Page.WidthMm, layout.Page.HeightMm ], compress : true, putOnlyUsedFonts : true });
++        Na__LePdfFonts__Install(doc);                                             // <-- Open Sans into this document; Helvetica remains if the TTF never arrived
+         const scales = sheet.Sheet__Viewports.filter((v) => v.Viewport__Kind === Na__LeModel__KIND_2D).map((v) => v.Viewport__ScaleDenominator);
+
+--- preimage/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js
+@@ -43,6 +43,7 @@
+ //   specification's.
+-// - Reads the live specification (Na__LayoutEditor__SpecData__), the project
+-//   code, the project's name (the name part of its folder id, the way the
+-//   share-link emails name a project), and from the config the drawing style,
+-//   the title block's logo and the PDF author.
++// - Reads the live specification (Na__LayoutEditor__SpecData__), the project's
++//   own code (Na__DrawData__GetDocumentCode), the project's name (the name
++//   part of its folder id, the way the share-link emails name a project), and
++//   from the config the drawing style, the title block's logo and the PDF
++//   author.
+ //
+@@ -55,3 +56,7 @@
+ //                   comes from its folder id (TrueVision reads its PWA project
+-//                   context), and the DrawView path is 42__.
++//                   context), and the code the pages print and number the
++//                   document by is the project's own
++//                   (Na__DrawData__GetDocumentCode, DR-11), where TrueVision
++//                   prints its ?project= code - here a folder id such as
++//                   2026/3047__Doous ({{VVREL:W1-25}}).
+ //
+@@ -60,2 +65,9 @@
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.0.1 (the document code, {{VVREL:W1-25}})
++// - The code the pages print - the first page's Project and Document No.
++//   and the running head - is the project's own (3047, from
++//   Na__DrawData__GetDocumentCode), not the ?project= token, which opened
++//   from the gallery is the folder id and printed 2026/3047__Doous_SPEC. The
++//   folder id is still read from the token, for the project's name.
++//
+ // 14-Sep-2026 - Version 1.0.0
+@@ -81,3 +93,3 @@
+     import { Na__LeSpec__GetState, Na__LeSpec__GetGroups, Na__LeSpec__ListNotes, Na__LeSpec__GetRevision, Na__LeSpec__GetDocumentNumber } from './Na__LayoutEditor__SpecData__.js';
+-    import { Na__DrawData__GetProjectCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
++    import { Na__DrawData__GetProjectCode, Na__DrawData__GetDocumentCode } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+     import { Na__AppUtils__NormalizeProjectFolderId } from '../../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+@@ -158,7 +170,10 @@
+     // project, with run-together words parted ("WestFarm" reads "West Farm").
+-    // A folder id with no name part has no name to add.
++    // A folder id with no name part has no name to add. The code the pages
++    // print is the project's own (3047), never the ?project= token the folder
++    // id is read from.
+     // ------------------------------------------------------------
+     function Na__LeSpecDoc__Project() {
+-        const code   = Na__DrawData__GetProjectCode() || '';
+-        const folder = String((code && Na__AppUtils__NormalizeProjectFolderId(String(code))) || '').split('/').pop();
++        const token  = Na__DrawData__GetProjectCode() || '';                      // <-- The ?project= token: it names the project's folder
++        const code   = Na__DrawData__GetDocumentCode() || '';                     // <-- ValeVision seam (DR-11): the project's own code
++        const folder = String((token && Na__AppUtils__NormalizeProjectFolderId(String(token))) || '').split('/').pop();
+         const name   = folder.split('__').slice(1).join(' ').replace(/[_-]+/g, ' ').replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/\s+/g, ' ').trim();
+
+--- preimage/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
++++ candidate/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+@@ -26,4 +26,4 @@
+     "LayoutEditor__Style__Config": {
+-        "LayoutEditor__Style__Description": "How everything printed on a sheet that is not a view is painted. Read by the chrome module, which draws the on-screen sheet and the PDF from one primitive list. FontFamily leads with Helvetica because that is what jsPDF embeds; Open Sans is the app face and metrically close enough for labels.",
+-        "LayoutEditor__Style__FontFamily": "Helvetica, Arial, 'Open Sans', sans-serif",
++        "LayoutEditor__Style__Description": "How everything printed on a sheet that is not a view is painted. Read by the chrome module, which draws the on-screen sheet and the PDF from one primitive list. FontFamily is Open Sans, the app face; the PDF exporter embeds the same three TTF cuts so paper matches the screen.",
++        "LayoutEditor__Style__FontFamily": "'Open Sans', Helvetica, Arial, sans-serif",
+         "LayoutEditor__Style__PaperColour": "#ffffff",
+@@ -48,3 +48,3 @@
+         "LayoutEditor__Style__TitleValueWeight": "normal",
+-        "LayoutEditor__Style__TitleValueWeightNote": "Regular, not bold. jsPDF standard Helvetica only embeds regular and bold by reference - there is no semi-bold cut available without shipping a font file - so regular is the lighter of the two weights this title block can actually offer on both screen and PDF.",
++        "LayoutEditor__Style__TitleValueWeightNote": "Regular, not bold. The PDF embeds Open Sans Light, Regular and SemiBold (the three cuts the app loads), so a title value could print as SemiBold; it stays Regular so the strip still reads as a caption over a value rather than as two bold lines.",
+ 
+@@ -488,3 +488,3 @@
+     "LayoutEditor__Pdf__Config": {
+-        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at the Raster block's export level. The vendored UMD build is injected as a classic script on first use.",
++        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at the Raster block's export level. The vendored UMD build is injected as a classic script on first use. Open Sans is fetched as TTF (the same three cuts the app paints with) and embedded in every document, so Download PDF does not fall back to Helvetica.",
+         "LayoutEditor__Pdf__FilenamePattern": "{drawingCode}__{drawingName}__{paperSize}__{revision}__{date}__.pdf",

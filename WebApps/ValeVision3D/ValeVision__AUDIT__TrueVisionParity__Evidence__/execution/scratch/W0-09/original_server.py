@@ -1,0 +1,1014 @@
+# =============================================================================
+# WHITECARDOPEDIA - FLASK API SERVER
+# =============================================================================
+#
+# FILE       : server.py
+# NAMESPACE  : Whitecardopedia
+# MODULE     : Flask API Server
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Flask API server for localhost project editing capabilities
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Comprehensive Flask API server for Whitecardopedia development
+# - Provides endpoints for reading and writing project.json files
+# - Enables Project Editor tool functionality on localhost
+# - Serves static files from application directory
+# - Implements CORS for local development
+# - Uses bundled Flask dependencies from ThirdParty__VersionLockedDependencies
+#
+# API ENDPOINTS:
+# - GET  /api/check-localhost     : Localhost detection endpoint
+# - GET  /api/editor-config       : Return Worker URL + API key for the project editor (reads Token__CloudflareAPI.env)
+# - GET  /api/refresh-status      : Get refresh counter for client polling
+# - GET  /api/projects            : List all projects from masterConfig.json
+# - GET  /api/projects/discover   : Discover all project folders by scanning filesystem
+# - GET  /api/projects/<folder>   : Get specific project.json data
+# - POST /api/projects/<folder>   : Save updated project.json data (local mirror — called AFTER R2 write)
+# - POST /api/projects/<folder>/visibility : Mirror a gallery-enabled toggle into the local masterConfig/index copies
+# - POST /api/projects/<folder>/rename     : Mirror a live R2 folder rename into the local Projects/ + masterConfig/index copies
+# - POST /api/projects/<folder>/delete     : Permanently delete the local project folder + masterConfig/index entries
+# - POST /api/projects/<folder>/assets      : Save a binary asset into the local project folder
+# - GET  /api/projects/<folder>/drawing-notes : Read ValeVision__DrawingNotes__.json beside project.json
+# - POST /api/projects/<folder>/drawing-notes : Write ValeVision__DrawingNotes__.json beside project.json
+# - GET  /api/valevision/scrapbook              : ValeVision3D Custom Scrapbook index (Server__ValeVisionScrapbook__Api__.py)
+# - POST /api/valevision/scrapbook/items        : Save a Custom Scrapbook item file into an existing category folder
+# - POST /api/valevision/scrapbook/items/delete : Move a Custom Scrapbook item file into its quarantine folder
+# - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
+# - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
+# - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
+# - GET  /assets__CommonApplicationAssets/<path> : Serve shared assets
+#
+# CONSOLE COMMANDS:
+# - --refresh / --Refresh         : Trigger refresh signal to all active clients
+# - --reboot / --Reboot           : Restart the Flask server process
+#
+# =============================================================================
+
+import os
+import re
+import sys
+import json
+import shutil
+import threading
+import time
+from pathlib import Path
+
+# Add bundled Flask dependencies to Python path
+BUNDLED_DEPS_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'src', 'ThirdParty__VersionLockedDependencies', 'SERVER__FlaskServerDepencies'
+)
+if os.path.exists(BUNDLED_DEPS_PATH):
+    sys.path.insert(0, BUNDLED_DEPS_PATH)
+
+from flask import Flask, jsonify, request, send_from_directory, make_response
+from flask_cors import CORS
+
+# -----------------------------------------------------------------------------
+# REGION | Flask Application Configuration
+# -----------------------------------------------------------------------------
+
+# MODULE CONSTANTS | Server Configuration
+# ------------------------------------------------------------
+SERVER_PORT             = 8000                                           # <-- Development server port
+SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
+PROJECTS_BASE_FOLDER    = 'Projects'                                     # <-- Projects base folder (contains year subfolders)
+MASTER_CONFIG_PATH      = '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json'  # <-- Master config file path
+MASTER_INDEX_PATH       = '02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json'  # <-- Master index GH fallback copy
+CLOUDFLARE_ENV_PATH     = 'Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env'              # <-- Cloudflare API credentials env file
+REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
+# ------------------------------------------------------------
+
+
+# INITIALIZATION | Create Flask Application
+# ------------------------------------------------------------
+app = Flask(__name__, static_folder='.')                                 # <-- Create Flask app instance
+CORS(app)                                                                # <-- Enable CORS for all routes
+# ------------------------------------------------------------
+
+
+# INITIALIZATION | Register the ValeVision3D Custom Scrapbook Routes
+# ------------------------------------------------------------
+# The routes live in a file of their own beside this one. A specific route
+# always wins over the catch-all static route at the foot of this file.
+from Server__ValeVisionScrapbook__Api__ import valevision_scrapbook_api  # <-- ValeVision3D Layout Editor Custom Scrapbook item files
+app.register_blueprint(valevision_scrapbook_api)                         # <-- /api/valevision/scrapbook...
+# ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Helper Functions
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Discover All Year Folders in Projects Directory
+# ------------------------------------------------------------
+def discover_year_folders():
+    """Discover all year subfolders (2025, 2026, etc.) in Projects directory"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
+    projects_dir = os.path.join(base_dir, PROJECTS_BASE_FOLDER)         # <-- Build projects path
+    
+    year_folders = []                                                    # <-- Initialize year folders list
+    
+    if not os.path.exists(projects_dir):
+        return year_folders                                              # <-- Return empty if doesn't exist
+    
+    for item in os.listdir(projects_dir):
+        item_path = os.path.join(projects_dir, item)                     # <-- Build full path
+        if os.path.isdir(item_path) and item.isdigit() and len(item) == 4:  # <-- Check if 4-digit year folder
+            year_folders.append(item)                                    # <-- Add year to list
+    
+    return sorted(year_folders, reverse=True)                            # <-- Return sorted (newest first)
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Get Absolute Path for Project File
+# ------------------------------------------------------------
+def get_project_path(folder_id):
+    """Construct absolute path to project folder, searching across all year folders"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
+    
+    # CHECK IF FOLDER_ID ALREADY INCLUDES YEAR (e.g., "2025/ProjectName")
+    if '/' in folder_id or '\\' in folder_id:
+        # Year-aware path provided
+        project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, folder_id.replace('/', os.sep))  # <-- Build path with year
+        return project_path                                              # <-- Return year-aware path
+    
+    # LEGACY SUPPORT: Search across all year folders for backward compatibility
+    year_folders = discover_year_folders()                               # <-- Get all year folders
+    
+    for year in year_folders:
+        year_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, year)
+        exact_path = os.path.join(year_path, folder_id)                  # <-- Build path with year
+        if os.path.exists(exact_path):                                   # <-- Check if project exists in this year
+            return exact_path
+
+        # Numeric ?project=3047 resolves to 3047__Doous on disk.
+        if os.path.isdir(year_path) and '__' not in folder_id:
+            prefix = folder_id + '__'
+            matches = [name for name in os.listdir(year_path) if name.startswith(prefix)]
+            if len(matches) == 1:
+                return os.path.join(year_path, matches[0])
+    
+    # FALLBACK: Return path in latest year even if doesn't exist (for error messages)
+    latest_year = year_folders[0] if year_folders else '2025'            # <-- Get latest year or default
+    project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, latest_year, folder_id)  # <-- Build fallback path
+    return project_path                                                  # <-- Return fallback path
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Validate JSON Structure for Project Data
+# ------------------------------------------------------------
+def validate_project_json(data):
+    """Validate that project JSON has required fields"""
+    required_fields = ['projectName', 'projectCode']                     # <-- Required top-level fields
+    
+    for field in required_fields:
+        if field not in data:
+            return False, f"Missing required field: {field}"             # <-- Return validation error
+    
+    return True, None                                                    # <-- Validation passed
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Trigger Client Refresh
+# ------------------------------------------------------------
+def trigger_refresh():
+    """Increment refresh counter to signal clients to refresh"""
+    global REFRESH_COUNTER
+    REFRESH_COUNTER += 1                                                 # <-- Increment refresh counter
+    print(f' [REFRESH] Refresh signal sent to all clients (counter: {REFRESH_COUNTER})')
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Reboot Server Process
+# ------------------------------------------------------------
+def reboot_server():
+    """Restart the Flask server by re-executing the Python process"""
+    print(' [REBOOT] Restarting server...')
+    print()
+    
+    # Get current Python executable and script path
+    python_executable = sys.executable                                    # <-- Get Python interpreter path
+    script_path = os.path.abspath(__file__)                              # <-- Get current script path
+    
+    # Re-execute the script with same arguments
+    os.execv(python_executable, [python_executable, script_path] + sys.argv[1:])
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Get Project Folders Blacklist from Config
+# ------------------------------------------------------------
+def get_project_blacklist():
+    """Load project folders blacklist from masterConfig.json"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                        # <-- Load master config
+        
+        return config.get('projectFoldersBlacklist', [])                 # <-- Return blacklist array
+    except Exception:
+        return []                                                         # <-- Return empty list on error
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Get Absolute Path to Shared Assets Directory
+# ------------------------------------------------------------
+def get_assets_path():
+    """Get absolute path to assets__CommonApplicationAssets directory (one level up)"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))                # <-- Get server directory
+    parent_dir = os.path.dirname(base_dir)                                # <-- Get parent directory (one level up)
+    assets_path = os.path.join(parent_dir, 'assets__CommonApplicationAssets') # <-- Build assets path
+    return assets_path                                                    # <-- Return absolute assets path
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Discover All Project Folders Recursively
+# ------------------------------------------------------------
+def discover_project_folders():
+    """Recursively scan all year folders for project.json files"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        projects_dir = os.path.join(base_dir, PROJECTS_BASE_FOLDER)      # <-- Build projects base path
+        
+        if not os.path.exists(projects_dir):                             # <-- Check if projects directory exists
+            return []                                                     # <-- Return empty list if not found
+        
+        blacklist = get_project_blacklist()                              # <-- Get blacklist from config
+        discovered_folders = []                                           # <-- Initialize folder list
+        year_folders = discover_year_folders()                           # <-- Get all year folders
+        
+        # SCAN EACH YEAR FOLDER
+        for year in year_folders:
+            year_path = os.path.join(projects_dir, year)                 # <-- Build year folder path
+            
+            # Recursively find all project.json files in this year
+            for root, dirs, files in os.walk(year_path):                 # <-- Walk directory tree
+                if 'project.json' in files:                              # <-- Check if project.json exists
+                    # Get relative path from year folder
+                    rel_path = os.path.relpath(root, year_path)          # <-- Get relative folder path
+                    folder_name = rel_path.replace(os.sep, '/')         # <-- Normalize path separators
+                    
+                    # Check if folder is blacklisted
+                    if folder_name not in blacklist:                     # <-- Skip blacklisted folders
+                        # Include year in the folder path for identification
+                        full_folder_path = f"{year}/{folder_name}"       # <-- Include year prefix
+                        discovered_folders.append(full_folder_path)      # <-- Add to discovered list
+        
+        return sorted(discovered_folders)                                 # <-- Return sorted folder list
+        
+    except Exception as e:
+        print(f' [ERROR] Error discovering project folders: {str(e)}')   # <-- Log discovery error
+        return []                                                         # <-- Return empty list on error
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Parse KEY=VALUE Lines from an Env File
+# ------------------------------------------------------------
+def parse_env_file(env_file_path):
+    """Parse a KEY=VALUE env file into a dict, ignoring comments and blank lines"""
+    env_vars = {}                                                             # <-- Result dict
+
+    if not os.path.exists(env_file_path):
+        return env_vars                                                       # <-- Return empty dict if file missing
+
+    with open(env_file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue                                                      # <-- Skip blank lines and comments
+            if '=' in line:
+                key, _, value = line.partition('=')                          # <-- Split on first '=' only
+                env_vars[key.strip()] = value.strip()                        # <-- Store trimmed key/value
+
+    return env_vars
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Console Command Handler Thread
+# ------------------------------------------------------------
+def console_command_handler():
+    """Handle console input commands in separate thread"""
+    while True:
+        try:
+            command = input().strip()                                     # <-- Read console input
+            command_lower = command.lower()                               # <-- Normalize to lowercase
+            
+            # Check for refresh commands
+            if command_lower == '--refresh':
+                trigger_refresh()                                         # <-- Trigger client refresh
+            
+            # Check for reboot commands
+            elif command_lower == '--reboot':
+                reboot_server()                                           # <-- Restart server
+            
+        except (EOFError, KeyboardInterrupt):
+            break                                                         # <-- Exit on EOF or interrupt
+        except Exception as e:
+            print(f' [ERROR] Console command error: {str(e)}')            # <-- Log errors
+# ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | API Endpoints
+# -----------------------------------------------------------------------------
+
+# API ENDPOINT | Check Localhost Status
+# ------------------------------------------------------------
+@app.route('/api/check-localhost', methods=['GET'])
+def check_localhost():
+    """Endpoint for detecting localhost environment"""
+    return jsonify({
+        'isLocalhost': True,                                             # <-- Confirm localhost status
+        'message': 'Server running on localhost'                         # <-- Status message
+    })
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Get Project Editor Worker Configuration
+# ------------------------------------------------------------
+@app.route('/api/editor-config', methods=['GET'])
+def get_editor_config():
+    """Return Worker URL and API key for the project editor — reads from Token__CloudflareAPI.env"""
+    try:
+        base_dir    = os.path.dirname(os.path.abspath(__file__))              # <-- Get server directory
+        env_path    = os.path.join(base_dir, CLOUDFLARE_ENV_PATH)             # <-- Build env file path
+        env_vars    = parse_env_file(env_path)                                # <-- Parse env file into dict
+
+        worker_url  = env_vars.get('EDITOR_WORKER_URL', '')                  # <-- Worker base URL
+        api_key     = env_vars.get('EDITOR_API_KEY', '')                      # <-- API key for X-Editor-Api-Key header
+
+        if not worker_url or not api_key:
+            return jsonify({
+                'error'   : 'Editor worker config missing — add EDITOR_WORKER_URL and EDITOR_API_KEY to Token__CloudflareAPI.env'
+            }), 503                                                           # <-- Service unavailable until configured
+
+        return jsonify({
+            'workerApiBaseUrl' : worker_url,                                  # <-- Passed to X-Editor-Api-Key fetch
+            'apiKey'           : api_key                                      # <-- Passed as X-Editor-Api-Key header
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error reading editor config: {str(e)}'          # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Get Refresh Status
+# ------------------------------------------------------------
+@app.route('/api/refresh-status', methods=['GET'])
+def get_refresh_status():
+    """Get current refresh counter for client polling"""
+    global REFRESH_COUNTER
+    return jsonify({
+        'refreshCounter': REFRESH_COUNTER,                               # <-- Current refresh counter value
+        'timestamp': time.time()                                         # <-- Current timestamp
+    })
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | List All Projects
+# ------------------------------------------------------------
+@app.route('/api/projects', methods=['GET'])
+def list_projects():
+    """Get list of all projects from masterConfig.json"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                        # <-- Load master config
+        
+        return jsonify(config)                                           # <-- Return config JSON
+        
+    except FileNotFoundError:
+        return jsonify({
+            'error': 'Master config file not found'                      # <-- File not found error
+        }), 404
+        
+    except json.JSONDecodeError:
+        return jsonify({
+            'error': 'Invalid JSON in master config'                     # <-- JSON parse error
+        }), 500
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Get Specific Project Data
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>', methods=['GET'])
+def get_project(folder_id):
+    """Get specific project.json data by folder ID"""
+    try:
+        project_path = get_project_path(folder_id)                       # <-- Get project directory
+        json_path = os.path.join(project_path, 'project.json')           # <-- Build JSON file path
+        
+        if not os.path.exists(json_path):
+            return jsonify({
+                'error': f'Project not found: {folder_id}'               # <-- Project not found
+            }), 404
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            project_data = json.load(f)                                  # <-- Load project JSON
+        
+        return jsonify(project_data)                                     # <-- Return project data
+        
+    except json.JSONDecodeError:
+        return jsonify({
+            'error': f'Invalid JSON in project: {folder_id}'             # <-- JSON parse error
+        }), 500
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Save Updated Project Data
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>', methods=['POST'])
+def save_project(folder_id):
+    """Save updated project.json data"""
+    try:
+        project_data = request.get_json()                                # <-- Get JSON from request body
+        
+        if not project_data:
+            return jsonify({
+                'error': 'No data provided'                              # <-- Missing request data
+            }), 400
+        
+        # VALIDATE JSON STRUCTURE
+        is_valid, error_message = validate_project_json(project_data)    # <-- Validate structure
+        if not is_valid:
+            return jsonify({
+                'error': error_message                                   # <-- Validation failed
+            }), 400
+        
+        # GET PROJECT PATH AND VERIFY IT EXISTS
+        project_path = get_project_path(folder_id)                       # <-- Get project directory
+        json_path = os.path.join(project_path, 'project.json')           # <-- Build JSON file path
+        
+        if not os.path.exists(project_path):
+            return jsonify({
+                'error': f'Project folder not found: {folder_id}'        # <-- Folder doesn't exist
+            }), 404
+        
+        # WRITE UPDATED JSON TO FILE
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(project_data, f, indent=4, ensure_ascii=False)     # <-- Write formatted JSON
+        
+        return jsonify({
+            'success': True,                                             # <-- Success flag
+            'message': f'Project {folder_id} saved successfully'         # <-- Success message
+        })
+        
+    except json.JSONDecodeError:
+        return jsonify({
+            'error': 'Invalid JSON data provided'                        # <-- Invalid JSON in request
+        }), 400
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Mirror Gallery Visibility Toggle Locally
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's masterConfig/index visibility
+# patch (R2 is the SSOT — see CloudflareHandler__ProjectVisibility__.js).
+# Keeps the git-tracked local copies consistent for the next GH Pages push.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/visibility', methods=['POST'])
+def set_project_visibility(folder_id):
+    """Patch the local masterConfig + master index enabled flag (local mirror only)"""
+    try:
+        data = request.get_json()                                        # <-- Get JSON from request body
+
+        if not data or 'enabled' not in data or not isinstance(data['enabled'], bool):
+            return jsonify({
+                'error': 'Missing or invalid required field: enabled (boolean)'  # <-- Validation error
+            }), 400
+
+        enabled     = data['enabled']                                    # <-- New visibility flag
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                       # <-- Load local master config
+
+        found = False
+        for project in config.get('projects', []):
+            if project.get('folderId') == folder_id:
+                project['enabled'] = enabled                             # <-- Patch matching entry only
+                found = True
+                break
+
+        if not found:
+            return jsonify({
+                'error': f'folderId not found in local master config: {folder_id}'  # <-- No matching entry
+            }), 404
+
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)           # <-- Write patched config back
+
+        # BEST-EFFORT | Keep the local master index fallback copy in step too
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            for entry in index_data.get('projects', []):
+                if entry.get('folderId') == folder_id:
+                    entry['enabled'] = enabled                           # <-- Patch matching entry only
+                    break
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig patch above matters most
+
+        return jsonify({
+            'success': True,                                             # <-- Success flag
+            'message': f'Local visibility mirror updated for {folder_id}'  # <-- Success message
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Mirror Project Folder Rename Locally
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's live R2 folder move (R2 is the
+# SSOT — see CloudflareHandler__ProjectRename__.js). Moves whatever local
+# mirror content exists (often just project.json for R2-only projects),
+# writes the corrected project.json, and patches the local masterConfig +
+# master index fallback copies so the next GH Pages push stays consistent.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:old_folder_id>/rename', methods=['POST'])
+def rename_project_mirror(old_folder_id):
+    """Move the local project folder mirror to match a Worker-side R2 rename"""
+    try:
+        data = request.get_json()                                        # <-- Get JSON from request body
+
+        if not data or 'newFolderId' not in data or 'updatedProjectData' not in data:
+            return jsonify({
+                'error': 'Missing required fields: newFolderId, updatedProjectData'  # <-- Validation error
+            }), 400
+
+        new_folder_id         = data['newFolderId']                      # <-- Target folderId
+        updated_project_data  = data['updatedProjectData']                # <-- Corrected project.json content
+
+        if not isinstance(updated_project_data, dict):
+            return jsonify({
+                'error': 'updatedProjectData must be a JSON object'      # <-- Validation error
+            }), 400
+
+        old_path = get_project_path(old_folder_id)                       # <-- Resolve OLD local project directory
+        new_path = get_project_path(new_folder_id)                       # <-- Resolve NEW local project directory
+
+        os.makedirs(os.path.dirname(new_path), exist_ok=True)            # <-- Ensure the target year folder exists
+
+        if os.path.exists(old_path) and os.path.abspath(old_path) != os.path.abspath(new_path):
+            if os.path.exists(new_path):
+                return jsonify({
+                    'error': f'Local target folder already exists: {new_folder_id}'  # <-- Collision guard
+                }), 409
+            shutil.move(old_path, new_path)                               # <-- Move local mirror content (if any)
+        else:
+            os.makedirs(new_path, exist_ok=True)                          # <-- No local folder existed (R2-only project)
+
+        # WRITE THE CORRECTED project.json AT THE NEW LOCATION
+        json_path = os.path.join(new_path, 'project.json')               # <-- Build JSON file path
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(updated_project_data, f, indent=4, ensure_ascii=False)  # <-- Write corrected project data
+
+        # PATCH LOCAL MASTER CONFIG
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                       # <-- Load local master config
+        for project in config.get('projects', []):
+            if project.get('folderId') == old_folder_id:
+                project['folderId'] = new_folder_id                      # <-- Repoint to the new folderId
+                break
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)           # <-- Write patched config back
+
+        # BEST-EFFORT | Keep the local master index fallback copy in step too
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            year = new_folder_id.split('/')[0] if '/' in new_folder_id else ''  # <-- Derive year from new folderId
+            for entry in index_data.get('projects', []):
+                if entry.get('folderId') == old_folder_id:
+                    entry['folderId']    = new_folder_id                 # <-- Repoint to the new folderId
+                    entry['year']        = year                          # <-- Refresh year segment
+                    entry['projectCode'] = updated_project_data.get('projectCode', entry.get('projectCode'))
+                    entry['name']        = updated_project_data.get('projectName', entry.get('name'))
+                    break
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig patch above matters most
+
+        return jsonify({
+            'success': True,                                             # <-- Success flag
+            'message': f'Local mirror moved from {old_folder_id} to {new_folder_id}'  # <-- Success message
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Permanently Delete a Project's Local Mirror
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's permanent R2 delete (R2 is the
+# SSOT — see CloudflareHandler__ProjectDelete__.js). Removes the local
+# project folder entirely, drops the entry from the local masterConfig and
+# master index copies, and verifies the folder no longer exists before
+# reporting success — the "local is checked" half of the two-sided
+# confirmation the editor form shows after a delete.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/delete', methods=['POST'])
+def delete_project_mirror(folder_id):
+    """Permanently delete the local project folder and masterConfig/index entries"""
+    try:
+        project_path = get_project_path(folder_id)                       # <-- Resolve local project directory
+
+        # STEP 1 | Delete the local project folder entirely (tolerant if already absent)
+        if os.path.exists(project_path):
+            shutil.rmtree(project_path)                                  # <-- Remove folder + all contents
+
+        # STEP 2 | Remove the entry from the local master config
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)                                    # <-- Load local master config
+            original_count       = len(config.get('projects', []))
+            config['projects']   = [p for p in config.get('projects', []) if p.get('folderId') != folder_id]
+            config_entry_removed = len(config['projects']) < original_count
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)       # <-- Write patched config back
+        except Exception:
+            config_entry_removed = False                                 # <-- Non-fatal — folder deletion above matters most
+
+        # STEP 3 | Remove the entry from the local master index fallback copy
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            index_data['projects'] = [e for e in index_data.get('projects', []) if e.get('folderId') != folder_id]
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig removal above matters most
+
+        # STEP 4 | VERIFY — the local folder must no longer exist
+        local_verified = not os.path.exists(project_path)
+
+        return jsonify({
+            'success'           : True,                                 # <-- Success flag
+            'folderId'          : folder_id,
+            'localVerified'     : local_verified,
+            'configEntryRemoved': config_entry_removed,
+            'message'           : f'Local mirror deleted for {folder_id}'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Save Presentation Mode Thumbnail WebP
+# ------------------------------------------------------------
+# Receives a multipart/form-data POST with a 'thumbnail' file field.
+# Writes the WebP into Projects/{folder_id}/PresentationMode/Thumbnails/{scene_id}.webp
+# creating subdirectories if needed, then returns the relative URL.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/presentation-thumbnail/<string:scene_id>', methods=['POST'])
+def save_presentation_thumbnail(folder_id, scene_id):
+    """Save a Presentation Mode scene thumbnail WebP to the project folder"""
+    try:
+        thumb_file = request.files.get('thumbnail')                          # <-- Get uploaded file from form-data
+        if not thumb_file:
+            return jsonify({'error': 'No thumbnail file provided'}), 400
+
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        # BUILD TARGET PATH
+        thumbnails_dir = os.path.join(project_path, 'PresentationMode', 'Thumbnails')
+        os.makedirs(thumbnails_dir, exist_ok=True)                           # <-- Create dirs if missing
+
+        # SANITISE SCENE ID to prevent path traversal
+        safe_scene_id = os.path.basename(scene_id).replace('..', '').replace('/', '')
+        dest_path = os.path.join(thumbnails_dir, f'{safe_scene_id}.webp')
+
+        thumb_file.save(dest_path)                                           # <-- Write WebP file to disk
+
+        rel_url = f'PresentationMode/Thumbnails/{safe_scene_id}.webp'       # <-- Relative URL stored in scene JSON
+
+        return jsonify({
+            'success' : True,
+            'url'     : rel_url,
+            'message' : f'Thumbnail saved: {rel_url}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Save Project Asset (thumbnail, baked linework, snapshot)
+# ------------------------------------------------------------
+# Local mirror of the worker asset route. Receives multipart/form-data with
+# a 'path' field (relative to the project folder) and a 'file' field, writes
+# the file under Projects/{folder_id}/{path} and returns the relative path.
+# The path is guarded to the same three asset folders the worker accepts.
+# ------------------------------------------------------------
+ASSET_PATH_GUARD = re.compile(r'^(PresentationMode/Thumbnails|LayoutEditor/(Linework|Snapshots))/[A-Za-z0-9_.-]+\.(webp|png|json)$')
+
+@app.route('/api/projects/<path:folder_id>/assets', methods=['POST'])
+def save_project_asset(folder_id):
+    """Save one binary asset into the project folder (local mirror of the R2 asset route)"""
+    try:
+        rel_path   = (request.form.get('path') or '').strip()
+        asset_file = request.files.get('file')
+        if not asset_file:
+            return jsonify({'error': 'No asset file provided'}), 400
+        if not ASSET_PATH_GUARD.match(rel_path):
+            return jsonify({'error': f'Asset path not allowed: {rel_path}'}), 400
+
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        dest_path = os.path.join(project_path, *rel_path.split('/'))
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)               # <-- Create dirs if missing
+        asset_file.save(dest_path)                                           # <-- Write file to disk
+
+        return jsonify({
+            'success' : True,
+            'path'    : rel_path,
+            'message' : f'Asset saved: {rel_path}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Read or Write Drawing Notes (beside project.json)
+# ------------------------------------------------------------
+# Local sibling of ValeVision__DrawingNotes__.json. Filename is allowlisted
+# internally so the client cannot write an arbitrary file into the folder.
+# GET 404s with { missing: true } when the file is not there yet.
+# ------------------------------------------------------------
+DRAWING_NOTES_FILE = 'ValeVision__DrawingNotes__.json'
+
+@app.route('/api/projects/<path:folder_id>/drawing-notes', methods=['GET', 'POST'])
+def drawing_notes(folder_id):
+    """Read or write ValeVision__DrawingNotes__.json beside project.json"""
+    try:
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        notes_path = os.path.join(project_path, DRAWING_NOTES_FILE)
+
+        if request.method == 'GET':
+            if not os.path.exists(notes_path):
+                return jsonify({'missing': True}), 404
+            with open(notes_path, 'r', encoding='utf-8') as f:
+                return jsonify(json.load(f))
+
+        data = request.get_json(silent=True)
+        if data is None or not isinstance(data, dict):
+            return jsonify({'error': 'Drawing notes must be a JSON object'}), 400
+        with open(notes_path, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+            f.write('\n')
+        return jsonify({
+            'success' : True,
+            'message' : f'Drawing notes saved for {folder_id}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Discover All Project Folders
+# ------------------------------------------------------------
+@app.route('/api/projects/discover', methods=['GET'])
+def discover_projects():
+    """Discover all project folders by recursively scanning for project.json files"""
+    try:
+        folders = discover_project_folders()                             # <-- Discover project folders
+        
+        return jsonify({
+            'folders': folders,                                          # <-- Return discovered folder list
+            'count': len(folders)                                        # <-- Return folder count
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error discovering projects: {str(e)}'     # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Static File Serving
+# -----------------------------------------------------------------------------
+
+# API ENDPOINT | Serve Shared Assets from Parent Directory
+# ------------------------------------------------------------
+@app.route('/assets__CommonApplicationAssets/<path:filename>', methods=['GET'])
+def serve_shared_assets(filename):
+    """Serve static assets from assets__CommonApplicationAssets directory (one level up)"""
+    try:
+        assets_dir = get_assets_path()                                   # <-- Get absolute path to assets directory
+        
+        if not os.path.exists(assets_dir):                               # <-- Check if assets directory exists
+            return jsonify({
+                'error': 'Assets directory not found'                    # <-- Assets directory missing
+            }), 404
+        
+        return send_from_directory(assets_dir, filename)                 # <-- Serve file securely
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Error serving asset: {str(e)}'                   # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve ValeVision3D Files
+# ------------------------------------------------------------
+@app.route('/ValeVision3D/<path:filename>', methods=['GET'])
+def serve_valevision(filename):
+    """Serve ValeVision3D files from sibling directory"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        parent_dir = os.path.dirname(base_dir)                            # <-- Get parent directory
+        valevision_dir = os.path.join(parent_dir, 'ValeVision3D')        # <-- Build ValeVision3D path
+        
+        if not os.path.exists(valevision_dir):                           # <-- Check if ValeVision3D directory exists
+            return jsonify({
+                'error': 'ValeVision3D directory not found'              # <-- Directory missing
+            }), 404
+        
+        # Handle default index.html for directory requests
+        if filename == '' or filename.endswith('/'):
+            filename = os.path.join(filename, 'index.html')              # <-- Append index.html
+        
+        return send_from_directory(valevision_dir, filename)             # <-- Serve file securely
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Error serving ValeVision3D file: {str(e)}'       # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Whitecardopedia Files (Production Path Parity)
+# ------------------------------------------------------------
+@app.route('/Whitecardopedia/<path:filename>', methods=['GET'])
+def serve_whitecardopedia_proxy(filename):
+    """Mirror production path '/Whitecardopedia/<path>' so manifest URLs and PWA
+    module paths resolve identically on localhost dev and GitHub Pages."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        if not os.path.exists(os.path.join(base_dir, filename)):         # <-- Verify file exists
+            return jsonify({'error': f'Whitecardopedia file not found: {filename}'}), 404
+        return send_from_directory(base_dir, filename)                   # <-- Serve from app root
+    except Exception as e:
+        return jsonify({'error': f'Error serving Whitecardopedia file: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Shared Service Worker (Required at Origin Root)
+# ------------------------------------------------------------
+@app.route('/Na__Pwa__ServiceWorker__.js', methods=['GET'])
+def serve_pwa_service_worker():
+    """Serve the WebApps-level service worker stub from origin root.
+    On localhost dev the service worker MUST be reachable at the origin root so
+    its scope can cover both Whitecardopedia (root) and /ValeVision3D/."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        parent_dir = os.path.dirname(base_dir)                            # <-- WebApps parent directory
+        sw_path = os.path.join(parent_dir, 'Na__Pwa__ServiceWorker__.js') # <-- SW absolute path
+
+        if not os.path.exists(sw_path):                                  # <-- Verify SW file exists
+            return jsonify({'error': 'Service worker file not found'}), 404
+
+        response = send_from_directory(parent_dir, 'Na__Pwa__ServiceWorker__.js')   # <-- Serve from parent
+        response.headers['Service-Worker-Allowed'] = '/'                              # <-- Permit broad scope on localhost
+        response.headers['Cache-Control']          = 'no-cache, no-store, must-revalidate'  # <-- Always fresh during dev
+        return response                                                  # <-- Return prepared response
+    except Exception as e:
+        return jsonify({'error': f'Error serving service worker: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Sibling SW Logic File (Localhost Dev Parity)
+# ------------------------------------------------------------
+@app.route('/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/<path:filename>', methods=['GET'])
+def serve_pwa_module_proxy(filename):
+    """Mirror the production module path so that importScripts() inside the
+    service worker resolves identically on localhost dev and production."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        module_dir = os.path.join(base_dir, '02__Src__AppModules', '62__Feature__AppInstallability')   # <-- Local module folder
+        if not os.path.exists(os.path.join(module_dir, filename)):       # <-- Verify file exists
+            return jsonify({'error': f'PWA module not found: {filename}'}), 404
+        return send_from_directory(module_dir, filename)                 # <-- Serve module file
+    except Exception as e:
+        return jsonify({'error': f'Error serving PWA module: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# ROUTE HANDLER | Serve Static Files
+# ------------------------------------------------------------
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serve static files from application directory"""
+    if path == '' or path == '/':
+        path = 'index.html'                                              # <-- Default to index.html
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))                # <-- Get server directory
+    file_path = os.path.join(base_dir, path)                             # <-- Build file path
+
+    if os.path.isfile(file_path):
+        response = send_from_directory(base_dir, path)                   # <-- Serve file
+
+        lowercase_path = path.lower()                                    # <-- Used for extension checks
+        if lowercase_path.endswith('.webmanifest'):
+            response.headers['Content-Type'] = 'application/manifest+json'   # <-- Required MIME for PWA manifest
+        if lowercase_path.endswith(('.html', '.htm')):
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'   # <-- Avoid stale dev HTML
+
+        return response                                                  # <-- Return prepared response
+    else:
+        return send_from_directory(base_dir, 'index.html')               # <-- Fallback to index
+# ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Server Initialization
+# -----------------------------------------------------------------------------
+
+# MAIN | Start Flask Development Server
+# ------------------------------------------------------------
+if __name__ == '__main__':
+    print('=' * 77)
+    print(' WHITECARDOPEDIA - FLASK DEVELOPMENT SERVER')
+    print('=' * 77)
+    print()
+    print(f' Server running at: http://{SERVER_HOST}:{SERVER_PORT}')
+    print(f' Press Ctrl+C to stop the server')
+    print()
+    print(' Console Commands:')
+    print('   --refresh / --Refresh  : Refresh all active clients')
+    print('   --reboot / --Reboot    : Restart the server')
+    print()
+    print('=' * 77)
+    print()
+    
+    # Start console command handler in background thread
+    console_thread = threading.Thread(target=console_command_handler, daemon=True) # <-- Create daemon thread
+    console_thread.start()                                                # <-- Start console handler
+    
+    app.run(
+        host=SERVER_HOST,                                                # <-- Bind to localhost
+        port=SERVER_PORT,                                                # <-- Use port 8000
+        debug=True                                                       # <-- Enable debug mode
+    )
+# ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------

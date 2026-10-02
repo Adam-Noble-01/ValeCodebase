@@ -1,0 +1,31 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - FLUSH JOINS
++// VALEVISION3D - PROJECTED LINEWORK - FLUSH JOINS
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__FlushJoins__.js
+@@ -54,8 +54,19 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : n/a - authored in TrueVision3D
+-// - Back-port     : PENDING to ValeVision3D, on Adam's sign-off.
++// - Ported from   : TrueVision3D 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js
++// - Source version: 1.1.0 (TrueVision3D v2.159.0, 23-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with Storeys, ahead of the rest of folder 50
++//                   (W2-06). TrueVision's own note held it "PENDING to ValeVision3D, on Adam's sign-off". The
++//                   rule itself (1.0.0, TrueVision3D v2.37.0) is the one Adam signed off in TrueVision on
++//                   14-Sep-2026; the 1.1.0 tolerance (v2.159.0) is named as not yet confirmed by Adam there.
++//                   It comes across under DR-01 (c) and DR-31.
++// - Parity        : verbatim, and inert: nothing imports it until CpuBackend 1.3.0 and later arrive with
++//                   W2-06, which also carries the BuildToken bump the 1.1.0 log entry speaks of (DR-31).
++//                   80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs runs this very file.
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //

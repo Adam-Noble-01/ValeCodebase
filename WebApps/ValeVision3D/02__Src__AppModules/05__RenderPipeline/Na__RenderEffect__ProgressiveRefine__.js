@@ -111,9 +111,34 @@
 //
 // SCOPE:
 // - The 3D viewport only. The 2D drawing views (floor plans, elevations,
-//   sections) run through their own composer preset and are excluded by the
-//   caller. Image and video export are untouched: they do their own
-//   supersampling in one synchronous block and always did.
+//   sections) bypass the composer entirely and are excluded by the caller.
+//   Image export is untouched: it does its own supersampling in one
+//   synchronous block per tile and always did.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (1.0.0 and 1.0.1, 16-Sep-2026, ValeVision3D v2.48.0 and v2.48.1);
+//                   TrueVision3D took 1.0.1 whole on 16-Sep-2026 (its v2.56.0) and grew it to 1.0.3;
+//                   since ported back whole from TrueVision3D 1.0.3 (HEAD b2aa9151)
+// - Source version: 1.0.3 (TrueVision3D v2.58.2, 17-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole. This app's copy was its 1.0.1
+//                   with TrueVision's 1.0.3 buffer floor already in (ValeVision3D v2.54.0, unlogged) and
+//                   the optional onSample hook both copies took on 19-Sep-2026 (ValeVision3D v2.59.0).
+//                   New here is 1.0.2: planFrame reads performance.now() itself, and the render loop
+//                   passes it no timestamp (Na__AppFlow__LoadingSequence 1.7.3).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner and the one console warning read ValeVision3D.
+//   - None in behaviour. What differs is the CALLER, as it did when TrueVision took this file:
+//     ValeVision has two engines, reports Video Studio's preview and its legacy elevation camera as
+//     busy, and runs its 2D drawing views through their composer preset (DIV-1) rather than past the
+//     composer. The SCOPE paragraph above is TrueVision's text about TrueVision's caller; here the
+//     drawing views are excluded by the caller in the same way, and image and video export both do
+//     their own supersampling.
+// - Legacy        : TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), lists 1.0.1 above 1.0.3 and
+//                   1.0.2 - TrueVision's own order, kept as written.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
@@ -126,8 +151,23 @@
 //   asks for the frame it needs - except when the frame was never its to
 //   refine, which is what suspend() and the blocked state are for.
 //
+// 17-Sep-2026 - Version 1.0.3
+// - EnsureBuffer floors the composer's buffer size before comparing it with
+//   the supersampler's. EffectComposer stores cssSize x pixelRatio unrounded,
+//   so at 125% or 150% display scaling the size is fractional; the
+//   supersampler rounds and reports the rounded size; the two never matched,
+//   the buffer was rebuilt and the total discarded on EVERY chunk, and the
+//   count sat on the first chunk size for ever. Reproduced at 87 chunks in
+//   3.5 seconds against 4 to converge; floor matches what WebGL allocates.
+//
+// 17-Sep-2026 - Version 1.0.2
+// - planFrame reads performance.now() itself instead of taking the caller's
+//   animation-frame timestamp. Everything else here stamps and measures with
+//   performance.now(), and a refinement chunk blocks long enough for the two
+//   clocks to disagree by a quarter of a second at the moment of the decision.
+//
 // 16-Sep-2026 - Version 1.0.0
-// - Initial implementation for ValeVision3D v2.48.0.
+// - Initial implementation for ValeVision3D v2.48.0, ported here at v2.56.0.
 //
 // =============================================================================
 
@@ -434,19 +474,20 @@
             const readBuffer = composer ? composer.readBuffer : null;
             if (!readBuffer) return null;
 
-            // FLOORED, BECAUSE THE COMPOSER DOES NOT. EffectComposer sizes its
-            // buffers as cssWidth x pixelRatio and stores the product as it comes,
-            // so on any display scaling that is not 100% - 125% and 150% are the
-            // normal cases on a good monitor - readBuffer.width is a number like
-            // 2498.75. The supersampler rounds what it is given and reports the
-            // rounded size, so comparing the two raw fails on EVERY chunk: the
-            // buffer is torn down, the running total discarded with it, and the
-            // chunk drawn again from zero, landing on the first chunk size every
-            // frame for ever. That is the "stuck at 6 of 16" at a full chunk of
-            // GPU work per frame. Floor, not round: WebGL takes texture sizes as
-            // integers and truncates, so the floor is the buffer that actually
-            // exists on the GPU, which makes the equality test exact AND the
-            // accumulation target the same pixel size as the frame it accumulates.
+            // ROUNDED, BECAUSE THE COMPOSER DOES NOT. EffectComposer sizes its
+            // buffers as cssWidth x pixelRatio and stores the product as it
+            // comes, so on any display scaling that is not 100% - 125% and 150%
+            // are the normal cases on a good monitor - readBuffer.width is a
+            // number like 2498.75. The supersampler rounds what it is given and
+            // reports the rounded size, so comparing the two raw would fail on
+            // EVERY chunk: buffer torn down, total discarded, chunk drawn again
+            // from zero, landing on the first chunk size every frame for ever.
+            // That is the "6 of 16" that never moved, at a full chunk of GPU
+            // work per frame. FLOOR, not round: WebGL takes texture sizes as
+            // integers and truncates, so the buffer that actually exists on the
+            // GPU is the floor of the number three.js wrote down. Matching that
+            // makes the equality test exact AND the accumulation target the
+            // same pixel size as the frame it accumulates.
             const width  = Math.max(1, Math.floor(readBuffer.width));
             const height = Math.max(1, Math.floor(readBuffer.height));
             if (!(readBuffer.width > 0) || !(readBuffer.height > 0)) return null;
@@ -507,11 +548,33 @@
             // context:
             //   camera    {THREE.Camera}  The camera the composer is rendering through
             //   sceneBusy {boolean}       Something other than the camera is moving
-            //   now       {number}        performance.now() for this frame
+            //
+            // ONE CLOCK, READ HERE. This used to take the caller's timestamp,
+            // and the caller had only one to give: the animation frame's, which
+            // is the time the FRAME BEGAN - the vsync tick - and not the time
+            // now. Everything else in this module stamps and measures with
+            // performance.now(): reset(), suspend(), release(), setEnabled() and
+            // getPendingWork() all do. Mixing the two is not a rounding
+            // difference, it is two clocks that drift apart by as much as a
+            // frame takes, and a refinement chunk is a frame that takes a
+            // quarter of a second.
+            //
+            // The stall that follows is silent and total. reset() stamps the
+            // change with wall clock; the next plan measures the wait with the
+            // frame clock, finds it short or even negative, and answers "still
+            // settling" - which is the ONE outcome that leaves the running total
+            // untouched. getPendingWork then measures the same wait with wall
+            // clock, finds it long, and answers "come back now". So the loop is
+            // sent straight back to a test that will send it away again, for
+            // ever: sixty frames a second of ordinary frames, no long frames to
+            // show up as violations, the frame rate readout happily reporting
+            // 60fps off those frames, and the sample count frozen wherever the
+            // last chunk left it. On a machine quick enough to fit six samples
+            // into the first chunk, that reads "6 of 16" and never moves.
             // ------------------------------------------------------------
             planFrame(context) {
-                const { camera, sceneBusy, now } = context || {};
-                const frameNow = Number.isFinite(now) ? now : performance.now();
+                const { camera, sceneBusy } = context || {};
+                const frameNow = performance.now();
 
                 if (!isEnabled || isDisposed || !camera) {
                     Na__Refine__DiscardTotal();

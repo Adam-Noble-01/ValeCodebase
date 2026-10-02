@@ -1,0 +1,185 @@
+{
+ "root": "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeVision3D",
+ "mode": "dry-run",
+ "file_moves": [
+  [
+   "F1",
+   "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js",
+   "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__2dProfileLines__.js"
+  ],
+  [
+   "F2",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js",
+   "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js"
+  ],
+  [
+   "F3",
+   "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js",
+   "02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js"
+  ],
+  [
+   "F4",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+   "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenderPreset__.js"
+  ]
+ ],
+ "folder_moves": [
+  [
+   "D1",
+   "40__System__2dElevationsView",
+   "91__System__2dElevationsView"
+  ],
+  [
+   "D2",
+   "42__System__DrawingViewCore",
+   "40__System__DrawingViewCore"
+  ],
+  [
+   "D3",
+   "43__System__FloorPlanViews",
+   "42__System__FloorPlanViews"
+  ],
+  [
+   "D4",
+   "44__System__PlanAnnotations",
+   "43__System__PlanAnnotations"
+  ],
+  [
+   "D5",
+   "45__System__PlanDimensions",
+   "44__System__PlanDimensions"
+  ],
+  [
+   "D6",
+   "46__System__ElevationViews",
+   "45__System__ElevationViews"
+  ],
+  [
+   "D7",
+   "47__System__NorthDirection",
+   "46__System__NorthDirection"
+  ]
+ ],
+ "stats": {
+  "T8": 31,
+  "T1": 2,
+  "T2": 1,
+  "T3": 4,
+  "T4": 2,
+  "T5": 5,
+  "T6": 54,
+  "T7": 233
+ },
+ "files_rewritten": [
+  "02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+  "02__Src__AppModules/02__AppData/Na__AppConfig__Main.json",
+  "02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js",
+  "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js",
+  "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js",
+  "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+  "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js",
+  "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+  "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__FrameRenderer.js",
+  "02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Thumbnails.js",
+  "02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js",
+  "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ActiveView__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Navigation__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css",
+  "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Framing__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js",
+  "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js",
+  "02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Grid__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js",
+  "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ConfigState__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Framing__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__OrthoCamera__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js",
+  "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js",
+  "02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js",
+  "02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js",
+  "02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js",
+  "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+  "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json",
+  "02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js",
+  "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css",
+  "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs",
+  "index.html"
+ ],
+ "t4": {
+  "02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js": [
+   [
+    "../../04__MathUtils/Na__Math__Units.js",
+    "../04__MathUtils/Na__Math__Units.js"
+   ]
+  ],
+  "02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js": [
+   [
+    "../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js",
+    "./Na__RenderEffect__SectionClipping__State.js"
+   ]
+  ]
+ },
+ "wcp_sw": null,
+ "leftovers": []
+}

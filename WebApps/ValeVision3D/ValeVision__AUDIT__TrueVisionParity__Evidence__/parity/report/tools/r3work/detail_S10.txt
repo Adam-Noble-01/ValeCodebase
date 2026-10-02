@@ -1,0 +1,60 @@
+### S10-F07 [wiring/high/update_wiring] Loader facade and ModeController seams needed by the compact strip and the veils
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+VV: 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js; 02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js; 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: VV's strip reaches the editor only through Na__LayoutEditor__Loader__. The facade lacks VIEW_REGISTER, VIEW_STATEMENT, OpenRegister, OpenStatements, IsSitePlanSheet; CheckNames checks only sheet/spec views. WaitForFirstDrawing checks only Active (line 596), so a quiet document-tab entry would hold the loader screen for an unrequested sheet. Na__LeLoad__GetLabel returns fallbacks until the editor loads, so config labels must equal the strip's fall...
+REC: Add the facade exports and CheckNames entries; make WaitForFirstDrawing resolve at once when View !== sheet; add TV tab labels (DrawingsTab..., TabStripNote, SitePlanTabTitle) and reword SpecificationTab, TabsNext/PreviousTitle, NoSheets to TV's, keeping fallbacks equal to config values.
+ADAPT: 
+EVID: VV Loader GetLabel ~558, CheckNames 284-295, AwaitFirstDrawing 376-384, exports ~718-756; VV ModeController 595-600; label key diff TV 603 vs VV 423
+VER: 
+DEP: S03a ModeController
+
+### S10-F16 [wiring/high/update_wiring] Stylesheet loading model: every ported TV sheet needs a VV home (index, loader list or self-link)
+TV: 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+VV: 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css; 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: TV imports all editor CSS from its index at start-up (Surfaces, Main, Paper, DraftMode, DrawingGrid, ObjectSnap, DrawingAxes, Panels, Spec x3, SheetImages, Share, WebViewer last; then ColourPalette, SpellCheck). VV's index imports only Styles__Boot and the loader links 8 sheets on first use. Feature panels (Patterns, VectorTools, Register, Statement, Scrapbooks, FloorAreas) link themselves. A sheet added to VV's index puts editor CSS on every pag...
+REC: Adopt the report's Appendix A: TV index-imported editor sheets go into Na__LeLoad__STYLESHEETS in TV's order (WebViewer last); pre-editor rules into Styles__Boot, including the 3D-furniture hiding block from VV Styles__Main 30-50 once the loader adds the body class early (S10-V01); 54 and 55 into VV's CSS index; self-linking sheets (Patterns, VectorTools, DrawingRegister, the Statement page's two, ScrapbookCustom/Parametric/Specification, FloorAr...
+ADAPT: 
+EVID: TV 03 CSS index 161-190; VV CSS index line 92; VV Loader Na__LeLoad__STYLESHEETS 125-134; TV feature panels use new URL('./...css', import.meta.url)
+VER: Adds the Boot home for the hiding block and the unavoidable cascade-order difference.
+DEP: 
+
+### S10-F17 [tooling/high/needs_decision] Shared Whitecardopedia service-worker token not bumped since 18-Sep
+TV: 
+VV: ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js
+DET: VV is served under WCP's worker (scope covers /ValeVision3D/; live JS/CSS stale-while-revalidate, guarded only by the token). Token is '2026-09-18-1'. VV v2.70.0 wrote that it 'needs bumping with this release' because a warm cache without SnapshotRenderer's new exports breaks the editor until a second visit; it was not bumped, and v2.71.0 changed shell files too. Loader-linked editor sheets are outside the precache list, so the token is their onl...
+REC: Do not bump in every package. Raise once as D-S10-13 with the fix that makes routine bumps cheap: give wpwa-models- and wpwa-thumbs- a token of their own (WCP logic 229-233), then bump the shell token once per VV deploy wave with a log line naming the VV versions. Land WP-S10-15 (registrar: hold the reload while the editor has unsaved work, no reload on a first install, updateViaCache 'none') before the first bump, because a bump reloads every op...
+ADAPT: 
+EVID: WCP 62/Whitecardopedia__Pwa__ServiceWorker__Logic__.js line 229 (token), 250 (scope), 260+ (precache); last commit 4a92a943 2026-09-18; VV devlog v2.70.0 lines 194-197
+VER: The VV ledger (lines 89-94 and 159-173) already records this exact question as Adam's call, raised on 20-Sep-2026 and not changed, because PWA_SW_VERSION_TOKEN also names the models and thumbnails buckets (WCP logic 229-233), so every bump re-downloads every Vale client's GLBs. Slices S04b, S06a, S0...
+DEP: 
+
+### S10-F35 [test/medium/port_test] No TV test covers the strip, fold or veils; port the UI-adjacent TV tests and add a parity gate
+TV: 80__Testing__PrototypeEnvironment/Na__Test__BubbleNoteTooltip__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs; 80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs; 80__Testing__Protot...
+VV: 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs; 80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs
+DET: TV has about 70 Na__Test__ files and none tests the tab strip, the fold or the veils (they were verified by hand in v2.83/v2.158). UI-adjacent TV tests VV lacks: BubbleNoteTooltip, LayerMenu, ColourPalette, DrawingTabKeys, DocumentKeys, SheetPagingWalkExit, VectorQuality, PublishedReader. VV already has Na__Verify__Exports__ and Na__Verify__ModuleGraph__, although an old ledger line says it has no equivalent.
+REC: Port each test with its module; add Na__Verify__UiParity__.mjs (WP-S10-05), which compares the guarded CSS regions and stylesheet order against a TV root passed on the command line.
+ADAPT: 
+EVID: tree_tv 80__Testing (102 entries; 91 Na__Test__ files, 62 of them .mjs) vs tree_vv (30); no TV test references TabStrip, LoadingVeil, AppHeader or na-layout-editor--active (grep); VV ledger lines 44-49.
+VER: 'About 70' test files was an undercount.
+DEP: 
+
+### S10-V01 [wiring/high/update_wiring] VV's 3D-furniture hiding rule is lazily linked, so the proposed early body class would leave menus over the boot veil
+TV: 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css; 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+VV: 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css; 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css; 02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+DET: WP-S10-03 and S10-F04 have VV's loader add body.na-layout-editor--active at the click, before the import, and claim the 3D furniture is hidden at the click. The rule that hides it (body.na-layout-editor--active .na-dropdown-menu, #naBreadcrumbNav, #naPresentationCarousel, #naNavToolbar, #naNavHelpPanel, .na-export-overlay, .na-projected-linework, .controls-instructions-panel { display:none !important }) is in VV LE/10/Styles__Main__.css 30-50, wh...
+REC: As part of WP-S10-03R and before the loader adds the class early: move the block verbatim (comment included) from VV Styles__Main to Styles__Boot and delete it from Styles__Main; make the --boot veil opaque (#ffffff, no blur). Optionally add the VV-only .na-vs-tl selector (S10-V03) to the same rule as a recorded divergence.
+ADAPT: A VV-only home (Boot, loaded at start-up) for a TV rule; identical selectors and effect, TV's timing restored.
+EVID: VV Styles__Main 30-50; VV Styles__Boot 1-273 (no such rule); VV Loader 125-134, 264-278, 320-325; z-indexes: VV DropdownAndToast 42 (1001), NavigationToolbar 41 (1002), ControlsHelpPanel 36 (1003), SceneCarousel 33 (1004); TV Styles__Main 42-51 imported at start-up by TV CSS index 162; VV ModeContro...
+VER: 
+DEP: S10-F04
+
+### S10-V05 [wiring/medium/port_adapted] Shared Whitecardopedia registrar lacks TV registrar 1.1.0-1.3.0: reloads over unsaved work and on a first install
+TV: 02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+VV: ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js
+DET: VV runs under Whitecardopedia's registrar (VV index.html 44). Its controllerchange bridge (registrar 110-150) reloads the page once per session whenever a worker takes control, deferring only for Na__LoadWatchdog__IsLoadingActive. TV's registrar 1.1.0 (19-Sep) also waits while the Layout Editor has unsaved work (window.TrueVision__Pwa__HasUnsavedWork, published by AutoSave); 1.2.0 (19-Sep, TV v2.75.0) does not reload on a FIRST install, so a firs...
+REC: Port the three TV registrar changes into the WCP registrar (Vale's own infrastructure; WP-S10-15) and publish a neutral window.Na__Pwa__HasUnsavedWork from VV AutoSave (Na__LeAuto__HasUnsavedWork is already exported; the name per S03b D-S03b-07). Land before any token bump under D-S10-13. Test Whitecardopedia's own pages as well, since the registrar is shared.
+ADAPT: Neutral flag name rather than TV's TrueVision__ name; registrar stays Whitecardopedia's and keeps its load-watchdog check.
+EVID: WCP Whitecardopedia__Pwa__ServiceWorker__Registrar__.js 28-46 (log), 110-150 (bridge), 195 (register); TV TrueVision__Pwa__ServiceWorker__Registrar__.js 36-62 (log 1.1.0-1.3.0), 125-200; TV AutoSave PublishUnsavedFlag ~560-570; VV AutoSave 48-53, 345, 433; ledger 135-173 and row 236; TV devlog v2.75...
+VER: 
+DEP: D-S03b-07; D-S10-13
+

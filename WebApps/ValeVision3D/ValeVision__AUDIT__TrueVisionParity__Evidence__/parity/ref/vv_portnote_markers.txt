@@ -1,0 +1,1250 @@
+01__AppCore/AppCore__DataLib__Loader.js:24:// - Ported from TrueVision3D AppCore__DataLib__Loader.js (06-Jun-2026).
+01__AppCore/AppCore__DataLib__Loader.js:44:// - Ported from TrueVision3D as part of the MaxEngine render engine port.
+03__AppUtils/Na__AppUtils__DevGate__.js:36:// PORT NOTE:
+03__AppUtils/Na__AppUtils__DevGate__.js:37:// - Ported from   : TrueVision3D 03__AppUtils/Na__AppUtils__DevGate__.js 1.0.0
+03__AppUtils/Na__AppUtils__DevGate__.js:39:// - Parity        : verbatim (console prefix and the data-path note differ)
+03__AppUtils/Na__AppUtils__DevGate__.js:43:// - Back-port     : n/a (this IS the port)
+03__AppUtils/Na__AppUtils__DevGate__.js:55://   Ported from TrueVision3D 1.1.0.
+03__AppUtils/Na__AppUtils__DevGate__.js:58:// - Ported from TrueVision, where it was written for plan decision TD01.
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:32:// PORT NOTE:
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:33:// - Ported from   : none (ValeVision original)
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:35:// - Parity        : new
+03__AppUtils/Na__AppUtils__R2AssetUpload__.js:37:// - Back-port     : candidate.
+03__AppUtils/Na__AppUtils__SnapshotHistory__.js:37:// PORT NOTE:
+03__AppUtils/Na__AppUtils__SnapshotHistory__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js
+03__AppUtils/Na__AppUtils__SnapshotHistory__.js:41:// - Parity        : verbatim
+03__AppUtils/Na__AppUtils__SnapshotHistory__.js:44:// - Back-port     : none pending.
+03__AppUtils/Na__AppUtils__SnapshotHistory__.js:50:// - Ported from TrueVision3D for port Phase 2; logic unchanged.
+05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js:24:// - Ported from TrueVision3D (07-Jun-2026).
+05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js:56:// - Ported from TrueVision3D Na__RenderPipeline__PostProcessing__Setup.js.
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:107:// PORT NOTE:
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:108:// - Ported from   : TrueVision3D 05__RenderPipeline/Na__RenderEffect__Supersampler__.js 1.0.0
+05__RenderPipeline/Na__RenderEffect__Supersampler__.js:110:// - Parity        : verbatim
+06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js:82:    // Ported from TrueVision3D.
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:63:// PORT NOTE:
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:64:// - Ported from   : none
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:66:// - Parity        : new
+06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js:68:// - Back-port     : candidate. TrueVision builds the same two lights in the same place.
+07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js:22:// - Ported from TrueVision3D (27-Feb-2026).
+07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js:15:// - Ported from TrueVision3D (27-Feb-2026).
+10__NavigationAndCameras/Na__NavigationModes__Switcher.js:47:// PORT NOTE:
+10__NavigationAndCameras/Na__NavigationModes__Switcher.js:48:// - Ported from   : TrueVision3D 02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+10__NavigationAndCameras/Na__NavigationModes__Switcher.js:51:// - Parity        : adapted
+10__NavigationAndCameras/Na__NavigationModes__Switcher.js:57:// - Back-port     : TrueVision enters walk and fly on arrival without undoing the entry nudges;
+10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js:28:// - Ported from TrueVision3D (25-May-2026).
+10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js:34:// - Ported from TrueVision3D Na__Navmode__FlyMode__DesktopControls.js.
+10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js:25:// - Ported from TrueVision3D (25-May-2026).
+10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js:36:// - Ported from TrueVision3D Na__Navmode__FlyMode__SystemLogic.js.
+10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js:21:// - Ported from TrueVision3D (25-May-2026).
+10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js:27:// - Ported from TrueVision3D Na__Navmode__FlyMode__TouchScreenControls.js.
+10__NavigationAndCameras/Na__Navmode__ModeTransition.js:24:// - Ported from TrueVision3D (27-Feb-2026 / 25-May-2026).
+10__NavigationAndCameras/Na__Navmode__ModeTransition.js:35:// - Ported from TrueVision3D Na__Navmode__ModeTransition.js.
+10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js:22:// - Ported from TrueVision3D (25-May-2026).
+10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js:34:// - Ported from TrueVision3D Na__UiFeature__FlyModeControls.js.
+10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js:18:// - Ported from TrueVision3D (25-May-2026).
+10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js:29:// - Ported from TrueVision3D Na__UiFeature__FlyModeEventListeners.js.
+10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js:285:    // Ported from TrueVision3D v2.9.0 (29-Aug-2026).
+15__ModelLoader/Na__ModelLoader__ContentStamp__.js:40:// PORT NOTE:
+15__ModelLoader/Na__ModelLoader__ContentStamp__.js:41:// - Ported from   : TrueVision3D 15__ModelLoader/Na__ModelLoader__ContentStamp__.js 1.0.0
+15__ModelLoader/Na__ModelLoader__ContentStamp__.js:43:// - Parity        : verbatim
+15__ModelLoader/Na__ModelLoader__ContentStamp__.js:45:// - Back-port     : none.
+21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js:62:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js:63:// - Ported from   : TrueVision3D 21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js:65:// - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js:75:// - Back-port     : n/a
+21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js:43:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js:44:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js:47:// - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js:52:// - Back-port     : the confirm-dialog form is the better one; carry it to TrueVision when its
+21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js:59:// - Ported from TrueVision3D for the Scene Groups feature (port Phase 1).
+21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js:46:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js:47:// - Ported from   : TrueVision3D 21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js:49:// - Parity        : verbatim
+21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js:51:// - Back-port     : n/a
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:57:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:58:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:63:// - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:74:// - Back-port     : the row-builder split and the confirm dialog.
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:48:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:49:// - Ported from   : none
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:51:// - Parity        : new
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:53:// - Back-port     : candidate, with Na__Scene__PerSceneLighting__.
+21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js:33:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js:34:// - Ported from   : ValeVision3D's own scene editor (regions "Thumbnail Regeneration" and
+21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js:37:// - Parity        : new
+21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js:40:// - Back-port     : none.
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js:33:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js:34:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js:38:// - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js:43:// - Back-port     : the split itself (TrueVision's editor is 1622 lines).
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:51:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:52:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:57:// - Parity        : adapted (split out of the editor)
+21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:64:// - Back-port     : the split itself is worth carrying to TrueVision, whose editor is over budget.
+21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js:45:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js:46:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js
+21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js:49:// - Parity        : verbatim
+21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js:53:// - Back-port     : none pending.
+21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js:59:// - Ported from TrueVision3D for the Scene Groups feature (port Phase 1).
+21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css:20: * PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css:21: * - Ported from   : TrueVision3D 03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneGroupSelector__.css
+21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css:26: * - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css:31: * - Back-port     : none pending.
+21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js:53:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js:54:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js
+21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js:58:// - Parity        : adapted
+21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js:64:// - Back-port     : none pending.
+21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js:42:// PORT NOTE:
+21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js:43:// - Ported from   : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js
+21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js:46:// - Parity        : verbatim
+21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js:51:// - Back-port     : none pending.
+21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js:57:// - Ported from TrueVision3D for the Scene Groups feature (port Phase 1).
+30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js:91:// - Ported from TrueVision3D 2.1.0 (v2.50.0).
+31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js:30:// PORT NOTE:
+31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js:31:// - Parity        : n/a (a re-export)
+42__System__DrawingViewCore/Na__DrawView__ActiveView__.js:57:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__ActiveView__.js:58:// - Ported from   : TrueVision3D 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+42__System__DrawingViewCore/Na__DrawView__ActiveView__.js:61:// - Parity        : verbatim
+42__System__DrawingViewCore/Na__DrawView__ActiveView__.js:65:// - Back-port     : none pending.
+42__System__DrawingViewCore/Na__DrawView__ActiveView__.js:71:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:45:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:46:// - Ported from   : TrueVision3D 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js (purpose only)
+42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:48:// - Parity        : diverged (D12)
+42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:54:// - Back-port     : none.
+42__System__DrawingViewCore/Na__DrawView__ConfigState__.js:35:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__ConfigState__.js:36:// - Ported from   : none (ValeVision original, following the TrueVision ConfigState pattern)
+42__System__DrawingViewCore/Na__DrawView__ConfigState__.js:38:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__ConfigState__.js:40:// - Back-port     : none.
+42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:44:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:45:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__MarkupFocus__.js
+42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:48:// - Parity        : verbatim (relocated)
+42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:53:// - Back-port     : none pending.
+42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js:59:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:49:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:50:// - Ported from   : TrueVision3D 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupMount__.js
+42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:53:// - Parity        : verbatim
+42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:58:// - Back-port     : none pending.
+42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:64:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:40:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:41:// - Ported from   : none
+42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:43:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js:47:// - Back-port     : candidate when TrueVision gains per-drawing style toggles.
+42__System__DrawingViewCore/Na__DrawView__Navigation__.js:42:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__Navigation__.js:43:// - Ported from   : TrueVision3D 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Navigation__.js
+42__System__DrawingViewCore/Na__DrawView__Navigation__.js:46:// - Parity        : verbatim
+42__System__DrawingViewCore/Na__DrawView__Navigation__.js:50:// - Back-port     : none pending.
+42__System__DrawingViewCore/Na__DrawView__Navigation__.js:56:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+42__System__DrawingViewCore/Na__DrawView__ProjectData__.js:38:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__ProjectData__.js:39:// - Ported from   : none. TrueVision nests floor plans inside the presentation block and saves them
+42__System__DrawingViewCore/Na__DrawView__ProjectData__.js:42:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__ProjectData__.js:44:// - Back-port     : candidate once TrueVision adopts a separate drawings block.
+42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:51:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:52:// - Ported from   : none. TrueVision renames the record only; the divergence this module
+42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:56:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:58:// - Back-port     : candidate once TrueVision carries sheet viewports.
+42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js:37:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js
+42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js:41:// - Parity        : verbatim
+42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js:45:// - Back-port     : none pending.
+42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js:51:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:56:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:57:// - Ported from   : TrueVision3D 02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js
+42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:60:// - Parity        : diverged (D07)
+42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js:65:// - Back-port     : none.
+42__System__DrawingViewCore/Na__DrawView__StyleRows__.js:27:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__StyleRows__.js:28:// - Ported from   : none (ValeVision original; TrueVision has no per-drawing styles)
+42__System__DrawingViewCore/Na__DrawView__StyleRows__.js:30:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__StyleRows__.js:32:// - Back-port     : candidate when TrueVision gains per-drawing styles.
+42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:15: * PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:16: * - Ported from : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css (scene row rules)
+42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:18: * - Parity      : verbatim (relocated to the drawing core so Phase 2 has them before the elevation sheet exists)
+42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js:47:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js:48:// - Ported from   : none
+42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js:50:// - Parity        : new
+42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js:52:// - Back-port     : candidate. TrueVision's drawing cards have the same path-without-a-picture gap.
+42__System__DrawingViewCore/Na__DrawView__Transitions__.js:34:// PORT NOTE:
+42__System__DrawingViewCore/Na__DrawView__Transitions__.js:35:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+42__System__DrawingViewCore/Na__DrawView__Transitions__.js:39:// - Parity        : adapted (split)
+42__System__DrawingViewCore/Na__DrawView__Transitions__.js:43:// - Back-port     : the split itself.
+43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js:30:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js:31:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js
+43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js:34:// - Parity        : verbatim
+43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js:38:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js:44:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:41:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:42:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:45:// - Parity        : adapted
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:54:// - Back-port     : Add Ground Floor Plan, the confirm dialog.
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:37:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:41:// - Parity        : adapted
+43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:45:// - Back-port     : the styles row, once TrueVision carries per-drawing styles.
+43__System__FloorPlanViews/Na__FloorPlan__Framing__.js:34:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__Framing__.js:35:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Framing__.js
+43__System__FloorPlanViews/Na__FloorPlan__Framing__.js:38:// - Parity        : adapted
+43__System__FloorPlanViews/Na__FloorPlan__Framing__.js:43:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__Framing__.js:49:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:47:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:48:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:51:// - Parity        : adapted
+43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:58:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js:36:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js:37:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js
+43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js:40:// - Parity        : verbatim
+43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js:44:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js:50:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:37:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:41:// - Parity        : adapted
+43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:47:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js:36:// PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js:37:// - Ported from   : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js
+43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js:40:// - Parity        : verbatim
+43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js:44:// - Back-port     : none pending.
+43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js:50:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css:5: * PORT NOTE:
+43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css:6: * - Ported from : TrueVision3D 02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css
+43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css:8: * - Parity      : verbatim (app-name tokens only)
+44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js:35:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js:36:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Data__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js:39:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js:43:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js:49:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:35:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:36:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:39:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:44:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:50:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:30:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:31:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__History__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:34:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:39:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:45:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:37:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:41:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:46:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:52:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:42:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:43:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:46:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:50:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:56:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css:5: * PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css:6: * - Ported from : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css
+44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css:8: * - Parity      : verbatim (app-name tokens only)
+44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:33:// PORT NOTE:
+44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:34:// - Ported from   : TrueVision3D 02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js
+44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:37:// - Parity        : verbatim
+44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:43:// - Back-port     : none pending.
+44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:49:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js:49:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js:50:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js
+45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js:53:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js:58:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js:64:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js:39:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js:40:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js
+45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js:43:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js:48:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js:54:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:28:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:29:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js (config regions)
+45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:32:// - Parity        : adapted (split)
+45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js:35:// - Back-port     : the split itself.
+45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js:38:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js:39:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js
+45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js:42:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js:47:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js:53:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__Data__.js:36:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Data__.js:37:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js
+45__System__PlanDimensions/Na__PlanDimensions__Data__.js:40:// - Parity        : adapted (split)
+45__System__PlanDimensions/Na__PlanDimensions__Data__.js:44:// - Back-port     : the split itself.
+45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js:36:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js:37:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js
+45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js:40:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js:45:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js:51:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:27:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:28:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js (region Preview Rendering)
+45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:31:// - Parity        : adapted (split)
+45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js:34:// - Back-port     : the split itself.
+45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:41:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:42:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js
+45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:45:// - Parity        : adapted (split)
+45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:49:// - Back-port     : the split itself.
+45__System__PlanDimensions/Na__PlanDimensions__Grid__.js:49:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Grid__.js:50:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Grid__.js
+45__System__PlanDimensions/Na__PlanDimensions__Grid__.js:53:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__Grid__.js:57:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__Grid__.js:63:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__History__.js:29:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__History__.js:30:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__History__.js
+45__System__PlanDimensions/Na__PlanDimensions__History__.js:33:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__History__.js:39:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__History__.js:45:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:38:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:39:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js
+45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:42:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:48:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:54:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:42:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:43:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Overlay__.js
+45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:46:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:51:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:57:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+45__System__PlanDimensions/Na__PlanDimensions__Styles__.css:2: * PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__Styles__.css:3: * - Ported from : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css
+45__System__PlanDimensions/Na__PlanDimensions__Styles__.css:5: * - Parity      : verbatim (app-name tokens only)
+45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:42:// PORT NOTE:
+45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:43:// - Ported from   : TrueVision3D 02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js
+45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:46:// - Parity        : verbatim
+45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:51:// - Back-port     : none pending.
+45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:57:// - Ported from TrueVision3D for port Phase 2; logic unchanged, imports repointed.
+46__System__ElevationViews/Na__Elevation__ConfigState__.js:37:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__ConfigState__.js:38:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ConfigState__.js
+46__System__ElevationViews/Na__Elevation__ConfigState__.js:41:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__ConfigState__.js:46:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__ConfigState__.js:52:// - Ported from TrueVision3D for port Phase 3; logic unchanged, imports repointed.
+46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:41:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:42:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js
+46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:45:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:52:// - Back-port     : Pick Face, the grip and the mode-based group.
+46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:39:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:40:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js
+46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:43:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:46:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__FacePick__.js:38:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__FacePick__.js:39:// - Ported from   : ValeVision3D 40__System__2dElevationsView/Na__ElevationView__SystemLogic.js (face selection rules only)
+46__System__ElevationViews/Na__Elevation__FacePick__.js:41:// - Parity        : new (TrueVision has no face pick by design; see its PlaneGizmo header)
+46__System__ElevationViews/Na__Elevation__FacePick__.js:43:// - Back-port     : candidate.
+46__System__ElevationViews/Na__Elevation__Framing__.js:41:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__Framing__.js:42:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Framing__.js
+46__System__ElevationViews/Na__Elevation__Framing__.js:45:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__Framing__.js:50:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__Framing__.js:56:// - Ported from TrueVision3D for port Phase 3; logic unchanged, imports repointed.
+46__System__ElevationViews/Na__Elevation__GizmoGrip__.js:35:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__GizmoGrip__.js:36:// - Ported from   : ValeVision3D 41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js (axis drag maths)
+46__System__ElevationViews/Na__Elevation__GizmoGrip__.js:38:// - Parity        : new (TrueVision keeps its gizmo read-only by design)
+46__System__ElevationViews/Na__Elevation__GizmoGrip__.js:40:// - Back-port     : candidate.
+46__System__ElevationViews/Na__Elevation__ModeController__.js:50:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__ModeController__.js:51:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js
+46__System__ElevationViews/Na__Elevation__ModeController__.js:54:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__ModeController__.js:61:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__OrthoCamera__.js:39:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__OrthoCamera__.js:40:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__OrthoCamera__.js
+46__System__ElevationViews/Na__Elevation__OrthoCamera__.js:43:// - Parity        : verbatim
+46__System__ElevationViews/Na__Elevation__OrthoCamera__.js:47:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__OrthoCamera__.js:53:// - Ported from TrueVision3D for port Phase 3; logic unchanged, imports repointed.
+46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js:48:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js:49:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__PlaneGizmo__.js
+46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js:52:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js:57:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js:63:// - Ported from TrueVision3D for port Phase 3; logic unchanged, imports repointed.
+46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:51:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:52:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
+46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:55:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:60:// - Back-port     : none pending.
+46__System__ElevationViews/Na__Elevation__SceneLink__.js:41:// PORT NOTE:
+46__System__ElevationViews/Na__Elevation__SceneLink__.js:42:// - Ported from   : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__SceneLink__.js
+46__System__ElevationViews/Na__Elevation__SceneLink__.js:45:// - Parity        : adapted
+46__System__ElevationViews/Na__Elevation__SceneLink__.js:49:// - Back-port     : the mode-based group.
+46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css:5: * PORT NOTE:
+46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css:6: * - Ported from : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css
+46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css:8: * - Parity      : verbatim (app-name tokens only); scene link row rules removed (they live in 42/Na__DrawView__Styles__DevMenu__.css)
+47__System__NorthDirection/Na__North__CompassGizmo__.js:46:// PORT NOTE:
+47__System__NorthDirection/Na__North__CompassGizmo__.js:47:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__CompassGizmo__.js,
+47__System__NorthDirection/Na__North__CompassGizmo__.js:50:// - Parity        : adapted
+47__System__NorthDirection/Na__North__CompassGizmo__.js:55:// - Back-port     : n/a. When Na__InteractiveOverlays is ported, take TrueVision's 1.1.0 whole.
+47__System__NorthDirection/Na__North__CompassGizmo__.js:61:// - Ported from TrueVision3D's 1.1.0, without its interactive-overlay
+47__System__NorthDirection/Na__North__Compass__.js:42:// PORT NOTE:
+47__System__NorthDirection/Na__North__Compass__.js:43:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__Compass__.js,
+47__System__NorthDirection/Na__North__Compass__.js:46:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+47__System__NorthDirection/Na__North__Compass__.js:48:// - Back-port     : n/a (this IS the port)
+47__System__NorthDirection/Na__North__Compass__.js:54:// - Ported from TrueVision3D's 1.0.0.
+47__System__NorthDirection/Na__North__ConfigState__.js:32:// PORT NOTE:
+47__System__NorthDirection/Na__North__ConfigState__.js:33:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__ConfigState__.js,
+47__System__NorthDirection/Na__North__ConfigState__.js:36:// - Parity        : verbatim (the Gizmo setup still reads ShownByDefault, which this app's config does not carry, and answers false)
+47__System__NorthDirection/Na__North__ConfigState__.js:38:// - Back-port     : n/a (this IS the port)
+47__System__NorthDirection/Na__North__ConfigState__.js:44:// - Ported from TrueVision3D's 1.0.0.
+47__System__NorthDirection/Na__North__DevMenu__Editor__.js:43:// PORT NOTE:
+47__System__NorthDirection/Na__North__DevMenu__Editor__.js:44:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__DevMenu__Editor__.js,
+47__System__NorthDirection/Na__North__DevMenu__Editor__.js:47:// - Parity        : adapted
+47__System__NorthDirection/Na__North__DevMenu__Editor__.js:52:// - Back-port     : n/a. When Na__InteractiveOverlays is ported, take TrueVision's 1.1.0 whole.
+47__System__NorthDirection/Na__North__DevMenu__Editor__.js:58:// - Ported from TrueVision3D's 1.1.0, without Show Compass; the panel shuts
+47__System__NorthDirection/Na__North__PickTool__.js:41:// PORT NOTE:
+47__System__NorthDirection/Na__North__PickTool__.js:42:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__PickTool__.js,
+47__System__NorthDirection/Na__North__PickTool__.js:45:// - Parity        : verbatim
+47__System__NorthDirection/Na__North__PickTool__.js:47:// - Back-port     : n/a (this IS the port)
+47__System__NorthDirection/Na__North__PickTool__.js:53:// - Ported from TrueVision3D's 1.0.0.
+47__System__NorthDirection/Na__North__ProjectJson__Data__.js:45:// PORT NOTE:
+47__System__NorthDirection/Na__North__ProjectJson__Data__.js:46:// - Ported from   : TrueVision3D 46__System__NorthDirection/Na__North__ProjectJson__Data__.js,
+47__System__NorthDirection/Na__North__ProjectJson__Data__.js:49:// - Parity        : adapted
+47__System__NorthDirection/Na__North__ProjectJson__Data__.js:53:// - Back-port     : n/a (this IS the port)
+47__System__NorthDirection/Na__North__ProjectJson__Data__.js:59:// - Ported from TrueVision3D's 1.0.0.
+47__System__NorthDirection/Na__North__Styles__DevMenu__.css:20: * PORT NOTE:
+47__System__NorthDirection/Na__North__Styles__DevMenu__.css:21: * - Ported from : TrueVision3D 46__System__NorthDirection/Na__North__Styles__DevMenu__.css
+47__System__NorthDirection/Na__North__Styles__DevMenu__.css:23: * - Parity      : verbatim - every rule is byte for byte TrueVision's
+47__System__NorthDirection/Na__North__Styles__DevMenu__.css:29: * - Ported from TrueVision3D's 1.0.0.
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:35:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:36:// - Ported from   : none (ValeVision original)
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:38:// - Parity        : new (D18)
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:40:// - Back-port     : none.
+50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js:49://   Ported from TrueVision3D (Edge Styles).
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:97:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:98:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ClipKernel__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:101:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:104:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js:116:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:64:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:65:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ClipWorker__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:68:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:71:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js:81:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:30:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:31:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ConfigAccess__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:34:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js:39:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:45:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:46:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__CpuBackend__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:49:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js:53:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:29:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:30:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ToolbarButton__.mjs (purpose only)
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:33:// - Parity        : new
+50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:36:// - Back-port     : none.
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:65:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:66:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__DiffHarness__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:69:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:72:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js:78:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:48:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:49:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__EdgeExtractor__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:52:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js:59:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:30:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:31:// - Ported from   : none (ValeVision original)
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:33:// - Parity        : new
+50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:35:// - Back-port     : none.
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:75:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:76:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__FlatBvh__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:79:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:82:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js:88:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:41:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:42:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ModelStage__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:45:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:48:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:66:// - Ported from TrueVision3D 1.2.0 (v2.64.1). TrueVision's 1.1.0 (the edge
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:55:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:56:// - Ported from   : TrueVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js (1.0.0)
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:58:// - Parity        : verbatim below the header
+50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js:60:// - Back-port     : n/a (this IS the port)
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:38:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:39:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__LineworkStore__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:42:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:46:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:47:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:48:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Pipeline__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:51:// - Parity        : adapted (split)
+50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:58:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:40:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:41:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Projector__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:44:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js:49:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:64:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:65:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__RasterPreview__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:68:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:71:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js:77:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:69:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:70:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Scheduler__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:73:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:76:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js:82:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:45:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:46:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__SoupBuilder__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:49:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js:53:// - Back-port     : the rotation path, should the Lantern Designer ever want a free-bearing view.
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:49:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:50:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__StageSampler__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:53:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js:58:// - Back-port     : InstancedMesh expansion.
+50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css:5: * PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css:6: * - Ported from : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Styles__Main__.css
+50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css:8: * - Parity      : adapted (layer rules only; toolbar button and progress overlay not carried; Dev menu rows added)
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:38:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:39:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__SvgLayer__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:42:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:47:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:48:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:49:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Projector__.mjs (basis table only)
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:52:// - Parity        : new
+50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:55:// - Back-port     : none.
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:82:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:83:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__WebGpuBackend__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:86:// - Parity        : verbatim
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:89:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js:95:// - Ported from the Lantern Designer projection engine for port Phase 4;
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:58:// PORT NOTE:
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:59:// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__WorkerPool__.mjs
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:62:// - Parity        : adapted
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:65:// - Back-port     : none pending.
+50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js:77:// - Ported from the Lantern Designer projection engine for port Phase 4;
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:46:// PORT NOTE:
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:47:// - Ported from   : none
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:49:// - Parity        : new
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:51:// - Back-port     : candidate. TrueVision's Index.html still imports the editor at start-up.
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js:32:// PORT NOTE:
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js:33:// - Ported from   : none
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js:35:// - Parity        : new
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js:37:// - Back-port     : with the loader.
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css:5: * PORT NOTE:
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css:6: * - Ported from : Na__LayoutEditor__Styles__Main__.css (published tab height, tab strip and Dev section rules, moved verbatim)
+51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css:8: * - Parity      : adapted (TrueVision keeps these rules in its Styles__Main, which it loads with the page)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:42:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:43:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/Na__DrawingEditor__Config.json (blocks, purpose)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:45:// - Parity        : new
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:47:// - Back-port     : none.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:78:// - Ported from TrueVision3D v2.52.0 (ConfigState 1.21.0).
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:85:// - Ported from TrueVision3D (ConfigState 1.20.0, v2.50.0).
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:92:// - Ported from TrueVision3D (ConfigState 1.14.0 / 1.17.0 / 1.19.0 / 1.22.0).
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:101:// - Ported from TrueVision3D (groups keys).
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:107:// - Ported from TrueVision3D (ConfigState 1.11.0).
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:112:// - Ported from TrueVision3D v2.44.0 / v2.46.0.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:119:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:126:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:136:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js:141:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:26:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:27:// - Ported from   : split out of Na__LayoutEditor__ConfigState__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:28:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:30:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:30:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:31:// - Ported from   : split out of Na__LayoutEditor__ConfigState__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js:34:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:32:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:33:// - Ported from   : split out of Na__LayoutEditor__ConfigState__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js:36:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:30:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:31:// - Ported from   : split out of Na__LayoutEditor__ConfigState__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:34:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:40:// - Ported from TrueVision3D 1.4.0 (v2.79.0). GetTitleBlockSetup reads the
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:27:// PORT NOTE:
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:28:// - Ported from   : split out of Na__LayoutEditor__ConfigState__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js:31:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:53:// PORT NOTE:
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:54:// - Ported from   : TrueVision3D 51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:56:// - Parity        : adapted
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js:62:// - Back-port     : n/a
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:47:// PORT NOTE:
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:48:// - Ported from   : ValeVision3D 43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js (mode pattern) and Lantern Designer 30__System__DrawingEditorMode
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:50:// - Parity        : new
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:52:// - Back-port     : none.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:80:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:99:// - Ported from TrueVision3D (LineStyleTool).
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:112:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:118:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:134:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:43:// PORT NOTE:
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:44:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (mode tab purpose)
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:46:// - Parity        : new
+51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js:48:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:26:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:27:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js (asset pattern)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:29:// - Parity        : new
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:31:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:42:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:43:// - Ported from   : none originally; the close guard came FROM TrueVision3D
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:47:// - Parity        : close guard verbatim
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:60:// - Back-port     : n/a for the guard (this IS the port).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:71:// - Ported from TrueVision3D v2.30.1 (AutoSave 1.2.0). This closes the open
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js:31:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js:32:// - Ported from   : TrueVision3D v2.70.0 (short sheet tabs), where these three
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js:35:// - Parity        : behaviour verbatim; the split into a leaf is ValeVision's
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js:38:// - Back-port     : offer to TrueVision3D only if its tab strip is ever made
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:39:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:40:// PORT NOTE: Ported from TrueVision3D v2.46.0 on 14-Sep-2026.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:41:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__DrawingScale__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:43:// - Parity        : adapted (ValeVision header and console prefix)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:54:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:39:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:40:// - Ported from   : ValeVision3D 44__System__PlanAnnotations/Na__PlanAnnotations__History__.js (pattern)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:42:// - Parity        : adapted
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:44:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:69:// - Ported from TrueVision3D v2.30.1 (History 1.1.0), the open row in the
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:85:// - Ported from TrueVision3D (History groups step).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:96:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:101:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js:28:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js:29:// - Ported from   : TrueVision3D 51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js 1.0.0
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js:31:// - Parity        : adapted
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js:45:// - Back-port     : no. Both divergences are facts about which business each app belongs to.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:24:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:25:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__ScaleManager__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:27:// - Parity        : adapted
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:29:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js:77:    // PORT NOTE: TrueVision also consults its site plan scale list here. ValeVision
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:28:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:29:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfLayout__.js
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:31:// - Parity        : adapted
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:33:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:43:// - Ported from TrueVision3D (SheetLayout 1.2.0). SpecMargin imports
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:89:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:90:// - Ported from   : none (ValeVision original; Lantern Designer keeps one implicit sheet per lantern)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:92:// - Parity        : new
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:94:// - Back-port     : candidate.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:132:// - Ported from TrueVision3D v2.52.0 (SheetModel 1.24.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:137:// - Ported from TrueVision3D (SheetModel 1.23.0, v2.50.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:143:// - Ported from TrueVision3D (SheetModel dashed edges).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:152:// - Ported from TrueVision3D (SheetModel 1.22.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:160:// - Ported from TrueVision3D (SheetModel 1.18.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:168:// - Ported from TrueVision3D (SheetModel 1.17.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:174:// - Ported from TrueVision3D v2.44.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:182:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:192:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:201:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:206://   Ported from TrueVision3D (Edge Styles).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:217://   Ported from TrueVision.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:47:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:48:// - Ported from   : TrueVision3D 51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js 1.0.0
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:50:// - Parity        : verbatim (the drawings-block path differs, as it does for every
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:54:// - Back-port     : n/a
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:27:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:28:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js:31:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:32:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:33:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js:36:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:30:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:31:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js:34:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:28:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:29:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:30:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js:32:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:29:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:30:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:31:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js:33:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:31:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:32:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:33:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:35:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:34:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:35:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:36:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:38:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:32:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:33:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:36:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js:45://   Ported from TrueVision3D's unit, byte for byte.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:33:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:34:// - Ported from   : split out of Na__LayoutEditor__SheetModel__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:37:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:26:// PORT NOTE:
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:27:// - Ported from   : none (split of Na__LayoutEditor__SheetModel__.js 1.0.0)
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:29:// - Parity        : new
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:31:// - Back-port     : none.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:48://   Ported from TrueVision3D 1.22.0 (v2.79.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:67:// - Ported from TrueVision3D (SheetRecords 1.19.0, v2.50.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:72:// - Ported from TrueVision3D (SheetRecords margin notes size).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:79:// - Ported from TrueVision3D (SheetRecords dashed edges).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:92:// - Ported from TrueVision3D (SheetRecords 1.12.0).
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:100:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:109:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:122://   Ported from TrueVision3D v2.31.0; the field is shared with TrueVision.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:43:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:44:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetManager__.js (BindSheetNavigation region)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:46:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:52:// - Back-port     : the key map idea is worth taking back to LD if its bindings ever need to move.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js:61:// - Ported from TrueVision3D (Controls__Pc 1.1.0, v2.50.0).
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:41:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:42:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetManager__.js (navigation region)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:44:// - Parity        : extended
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js:46:// - Back-port     : the whole module is worth taking back to LD if the drawing editor is ever used on a tablet.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:34:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:35:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetManager__.js (ZoomAt and ApplySheetZoom)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:37:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js:39:// - Back-port     : none.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:36:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:37:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:39:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:41:// - Back-port     : none.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:56:// - Ported from TrueVision3D v2.52.0 (SheetChrome 1.6.0).
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:65:// - Ported from TrueVision3D (SheetChrome 1.5.0).
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:75:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:82://   Ported from TrueVision.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:32:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:33:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetSurface__.js
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:35:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:37:// - Back-port     : none.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:68:// - Ported from TrueVision3D 1.6.0 (v2.64.0).
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:85:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js:92://   Ported from TrueVision.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:5: * PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:6: * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (stage and paper rules)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:8: * - Parity      : adapted (tab strip, frames, handles, rubber band and inline editor are ValeVision's)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css:141:   Ported from TrueVision3D v2.46.0. */
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:5: * PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Main__.css (15-Sep-2026, ValeVision3D v2.47.0), rules moved verbatim
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:7: * - Parity      : as Na__LayoutEditor__Styles__Main__.css; the same split applies to TrueVision's copy
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css:533:/* Ported from TrueVision3D v2.45.0. */
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:7: * PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:8: * - Ported from : TrueVision3D v2.72.0, Na__LayoutEditor__Styles__Surfaces__.css
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:9: * - Parity      : verbatim tokens; only this header and the divergence table
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:47:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:48:// - Ported from   : TrueVision3D 10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js,
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:51:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:54:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:60:// - Ported from TrueVision3D's Cells 1.1.0. That is its v2.79.0 module plus the
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:26:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:27:// - Ported from   : ValeVision3D 35__System__PageLayoutSystem (title block scan as a locked layer)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:29:// - Parity        : new
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:31:// - Back-port     : none.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:42:// PORT NOTE:
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:43:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js (titleblock region)
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:45:// - Parity        : adapted
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:51:// - Back-port     : none.
+51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js:57:// - Ported from TrueVision3D (its Modern 1.2.0 of v2.79.0, with 1.4.0's floor).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:51:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:52:// - Ported from   : ValeVision3D 45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js (skeleton, terminators, text placement)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:54:// - Parity        : adapted
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:56:// - Back-port     : none.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:72:// - Ported from TrueVision3D (DimensionGeometry 1.3.0 to 1.5.1).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:84:// - Ported from TrueVision3D v2.31.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js:38:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js:39:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Groups__.js 1.0.0
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js:41:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js:43:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js:54:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js:55:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__LeaderGeometry__.js 1.0.0
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js:57:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js:59:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:31:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:32:// - Ported from   : ValeVision3D 44__System__PlanAnnotations and 45__System__PlanDimensions (record readers and drawing rules)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:34:// - Parity        : adapted
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:36:// - Back-port     : none.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:71:// - Ported from TrueVision3D v2.52.0 (MarkupBridge 1.12.0).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:77:// - Ported from TrueVision3D (MarkupBridge 1.11.0).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:87:// - Ported from TrueVision3D (MarkupBridge 1.10.0).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:93:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:99:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:106:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:113:// - Ported from TrueVision3D v2.31.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:118:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js:37:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js:38:// PORT NOTE: Ported from TrueVision3D v2.46.0 on 14-Sep-2026.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js:39:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__MeasureParse__.js
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js:41:// - Parity        : adapted (ValeVision header and console prefix)
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js:52:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:32:// PORT NOTE:
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:33:// - Ported from   : none
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:35:// - Parity        : new
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:37:// - Back-port     : none.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:46:// - Ported from TrueVision3D (ShapeGeometry dashed edges).
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:51:// - Ported from TrueVision3D v2.45.0.
+51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js:57:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:40:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:41:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ForceRender__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:43:// - Parity        : verbatim
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:45:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js:54:// - Ported from TrueVision3D 1.1.0 (v2.64.1).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:31:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:32:// - Ported from   : none
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:34:// - Parity        : new
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js:36:// - Back-port     : none.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:51:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:52:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (drawing view slots) and ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:54:// - Parity        : adapted
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:56:// - Back-port     : none.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:69:// - Ported from TrueVision3D 1.11.0 (v2.64.0).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js:86://   Ported from TrueVision3D (Edge Styles).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:43:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:44:// - Ported from   : split out of Na__LayoutEditor__Viewport2d__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:45:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:47:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js:62:// - Ported from TrueVision3D 1.1.0 (v2.64.0), less its design phase lines.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:36:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:37:// - Ported from   : split out of Na__LayoutEditor__Viewport2d__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:38:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:40:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js:51:// - Ported from TrueVision3D 1.1.0 (v2.64.1).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:33:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:34:// - Ported from   : split out of Na__LayoutEditor__Viewport2d__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js:37:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:54:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:55:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Viewport3dZoom__.js 1.0.0
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:57:// - Parity        : verbatim
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:59:// - Back-port     : n/a (authored in TrueVision).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js:69:// - Ported from TrueVision3D 1.0.0 (v2.50.0).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:42:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:43:// - Ported from   : ValeVision3D 21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js (capture and upload pattern)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:45:// - Parity        : new
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:49:// - Back-port     : none.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:75:// - Ported from TrueVision3D 1.7.0 (v2.64.0), less its design phase lines.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:86:// - Ported from TrueVision3D 1.6.0 (v2.50.0), less its design phase lines.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js:94://   Ported from TrueVision3D 1.5.1, where a refused upload did stamp the record.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:92:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:93:// PORT NOTE: Ported from TrueVision3D v2.44.0 on 14-Sep-2026.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:94:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ViewportClipboard__.js
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:96:// - Parity        : adapted (ValeVision header and console prefix)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:108://   Ported from TrueVision3D.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js:120:// - Ported from TrueVision3D v2.44.0.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:31:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:32:// - Ported from   : ValeVision3D 35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js (handle conventions)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:34:// - Parity        : adapted
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:36:// - Back-port     : none.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:45:// - Ported from TrueVision3D (ViewportHandles 1.4.0, v2.50.0).
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js:51:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:48:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:49:// - Ported from   : TrueVision3D 20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js,
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:52:// - Parity        : adapted
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:59:// - Back-port     : n/a. If model groups ever arrive here, take TrueVision's PhaseOf whole.
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:65:// - Ported from TrueVision3D's 1.0.0, without the phase and site plan branches
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js:41:// PORT NOTE:
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js:42:// - Ported from   : TrueVision3D 20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js,
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js:45:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js:47:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js:53:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:46:// PORT NOTE:
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:47:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__EdgeStyles__.js (1.0.0)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:49:// - Parity        : verbatim below the header
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js:55:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:28:// PORT NOTE:
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:29:// - Ported from   : ValeVision3D 30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js (the stack)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:31:// - Parity        : adapted
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js:33:// - Back-port     : none.
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:31:// PORT NOTE:
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:32:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ModelLayers__.js
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:34:// - Parity        : verbatim
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js:41:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:52:// PORT NOTE:
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:53:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__RenderComposites__.js (1.1.0)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:55:// - Parity        : verbatim below the header
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js:62:// - Back-port     : none.
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:34:// PORT NOTE:
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:35:// - Ported from   : ValeVision3D 43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js and 46 (enter and exit sequences)
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:37:// - Parity        : new
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:39:// - Back-port     : none.
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:66:// - Ported from TrueVision3D 1.9.0 and 1.10.0 (v2.64.0, v2.64.1), less their
+51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:74:// - Ported from TrueVision3D 1.8.0 (v2.50.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:35:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:36:// - Ported from   : none
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:38:// - Parity        : new
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js:40:// - Back-port     : none.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:25:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:26:// - Ported from   : none
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:28:// - Parity        : new
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js:30:// - Back-port     : none.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js:56:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js:57:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__EditScope__.js (v2.59.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js:59:// - Parity        : verbatim
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js:62:// - Back-port     : n/a (TrueVision has the original)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:108:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:109:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Eyedropper__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:111:// - Parity        : adapted
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:114:// - Back-port     : n/a (authored in TrueVision)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:129:// - Ported from TrueVision3D v2.57.0 (Eyedropper 1.8.0). The numbering stays
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:137:// - Ported from TrueVision3D (eyedropper dashed edges).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:146:// - Ported from TrueVision3D (eyedropper 1.6.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:152:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:159:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js:168:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:41:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:42:// - Ported from   : ValeVision3D 51 Na__LayoutEditor__ViewportHandles__ (pattern)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:44:// - Parity        : new
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:46:// - Back-port     : none.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:77:// - Ported from TrueVision3D v2.52.0 (Grips 1.6.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:82:// - Ported from TrueVision3D (Grips group render).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:88:// - Ported from TrueVision3D (Grips 1.4.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:93:// - Ported from TrueVision3D v2.45.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js:100:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js:32:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js:33:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ItemClipboard__.js 1.0.0, then 1.2.0 (leaders, paste-in-place)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js:35:// - Parity        : adapted - InsertSet arrived with the Scrapbook port (20-Sep-2026). PasteSet keeps this app's
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js:41:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js:55://   Ported from TrueVision3D's 1.1.0 (InsertSet) and 1.3.0 (the whole record).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:61:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:62:// PORT NOTE: Ported from TrueVision3D v2.47.0 on 14-Sep-2026.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:63:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Measurements__.js
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:65:// - Parity        : adapted (ValeVision header and console prefix)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:86:// - Ported from TrueVision3D v2.47.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:92:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js:98:// - Ported from TrueVision3D v2.40.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:53:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:54:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__SelectionBox__.js 1.0.0
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:56:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:58:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:77:// - Ported from TrueVision3D v2.52.0 (SelectionBox 1.3.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:83:// - Ported from TrueVision3D (SelectionBox 1.2.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js:88:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js:42:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js:43:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__SelectionSet__.js 1.0.0
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js:45:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js:47:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:123:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:124:// - Ported from   : ValeVision3D 35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js (pointer conventions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:126:// - Parity        : new
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:128:// - Back-port     : none.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:176:// - Ported from TrueVision3D v2.52.0 (SheetTools 1.28.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:184:// - Ported from TrueVision3D (SheetTools 1.27.0, v2.50.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:189:// - Ported from TrueVision3D (SheetTools dashed edges).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:195:// - Ported from TrueVision3D (SheetTools 1.26.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:203:// - Ported from TrueVision3D v2.47.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:210:// - Ported from TrueVision3D (SheetTools 1.23.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:218:// - Ported from TrueVision3D (SheetTools 1.19.0).
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:237:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:243:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:259:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:273:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:281:// - Ported from TrueVision3D v2.31.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js:291:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:35:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:36:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:37:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js:39:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:36:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:37:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:38:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:40:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js:57:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:38:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:39:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:40:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js:42:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:37:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:38:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:39:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js:41:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:43:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:44:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:45:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js:47:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:40:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:41:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:42:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js:44:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:40:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:41:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:42:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js:44:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:42:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:43:// - Ported from   : split out of Na__LayoutEditor__SheetTools__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:44:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js:46:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js:41:// PORT NOTE:
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js:42:// - Ported from   : none (AutoCAD object snap conventions)
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js:44:// - Parity        : new
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js:46:// - Back-port     : none.
+51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js:55:// - Ported from TrueVision3D v2.31.0 (its 1.3.0). TONE_VIEWPORT is defined and
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:51:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:52:// - Ported from   : ValeVision3D 51 Na__LayoutEditor__SheetTools__ v1.3.0 (two-click placement, split out and extended)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:54:// - Parity        : new
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:56:// - Back-port     : candidate for the drawing dimension tools (45).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:68:// - Ported from TrueVision3D (DimensionTool 1.5.0 / 1.6.0).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:76:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:82:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js:95:// - Ported from TrueVision3D v2.31.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:103:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:104:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__GradientTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:106:// - Parity        : verbatim
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js:109:// - Back-port     : n/a (authored in TrueVision)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:44:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:45:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__LeaderTool__.js 1.0.0
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:47:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js:49:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:75:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:76:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__LineStyleTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:78:// - Parity        : verbatim
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:81:// - Back-port     : n/a (authored in TrueVision)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js:87:// - Ported from TrueVision3D: the record, the four kinds, the scale, the
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:51:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:52:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__RectangleTool__.js 1.0.0
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:54:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:56:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:64:// - Ported from TrueVision3D (RectangleTool dashed edges).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:69:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:74:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js:82:// - Ported from TrueVision, where it was authored first: click and click, or
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:44:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:45:// PORT NOTE: Ported from TrueVision3D v2.44.0 / v2.46.0 on 14-Sep-2026.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:46:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ShapeTool__.js
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:48:// - Parity        : adapted (ValeVision header)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:56:// - Ported from TrueVision3D (ShapeTool dashed edges).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:64:// - Ported from TrueVision3D v2.44.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:70:// - Ported from TrueVision3D v2.46.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:74:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:85://   Ported from TrueVision.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js:93://   Ported from TrueVision3D 12-Sep-2026, verbatim.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:38:// PORT NOTE:
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:39:// - Ported from   : ValeVision3D 51 Na__LayoutEditor__SheetTools__ v1.3.0 (placement and inline editing, split out)
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:41:// - Parity        : new
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:43:// - Back-port     : none.
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:55:// - Ported from TrueVision3D v2.52.0 (TextTool 1.3.0).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:60:// - Ported from TrueVision3D (TextTool 1.2.0).
+51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js:66:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:35:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:36:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (panel column pattern)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:38:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:40:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:65:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:70:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js:75://   Ported from TrueVision3D 13-Sep-2026 for the Render Composites weights.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:23:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:24:// - Ported from   : ValeVision3D 45__System__PlanDimensions (editor controls purpose)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:26:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:28:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:37:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:44:// - Ported from TrueVision3D v2.43.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:50:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:33:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:34:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (layer panel purpose)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:36:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:38:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js:49:// - Ported from TrueVision, where it was authored first and signed off.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js:39:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js:40:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__Leaders__.js 1.0.0
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js:42:// - Parity        : verbatim (header only)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js:44:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js:54:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:35:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:36:// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__Panel__ModelLayers__.js
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:38:// - Parity        : verbatim
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:40:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js:49://   Ported from TrueVision3D (Edge Styles).
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:47:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:48:// - Ported from   : ValeVision3D 51 Na__LayoutEditor__Panel__Dimensions__ (pattern)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:50:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:52:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:61:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:68:// - Ported from TrueVision3D (Panel__Shapes__ 1.7.0). Draw-at-scale is not
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:75:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js:81:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:24:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:25:// - Ported from   : none
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:27:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js:29:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:32:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:33:// - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__StyleRows__.js (toggle set);
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:36:// - Parity        : verbatim below the header from 1.6.0
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:38:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:47://   Ported from TrueVision3D 13-Sep-2026.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:60://   Ported from TrueVision3D 12-Sep-2026.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:26:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:27:// - Ported from   : ValeVision3D 44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js (controls purpose)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:29:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:31:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:39:// - Ported from TrueVision3D v2.57.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:45:// - Ported from TrueVision3D v2.52.0 (Panel__Text 1.3.0).
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:49:// - Ported from TrueVision3D (Panel Text 1.2.0).
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:55:// - Ported from TrueVision3D v2.34.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:33:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:34:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (view settings purpose)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:36:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:38:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:54:// - Ported from TrueVision3D (Panel__ViewportSettings 1.7.0, v2.50.0).
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:59:// - Ported from TrueVision3D v2.44.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css:5: * PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css:6: * - Ported from : Lantern Designer 30__System__DrawingEditorMode stylesheet (panel column rules)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css:8: * - Parity      : adapted (foldable sections with height grips, delegated controls, layer rows)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:22:// PORT NOTE:
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:23:// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (sheet toolbar purpose)
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:25:// - Parity        : new
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:27:// - Back-port     : none.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:46:// - Ported from TrueVision3D v2.35.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:51:// - Ported from TrueVision3D v2.31.0.
+51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:55:// - Ported from TrueVision3D v2.30.0.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js:30:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js:26:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js:86:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:33:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:34:// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js:37:// - Back-port     : the same split applies to TrueVision's copy. Its GetState
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:32:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:33:// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:36:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:33:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:34:// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js:37:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:41:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:42:// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:43:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js:45:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:43:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:44:// - Ported from   : split out of Na__LayoutEditor__SpecData__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:45:// - Parity        : adapted, as the Transport region already was
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:49:// - Back-port     : the same split applies to TrueVision's copy, whose unit
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:57:// - Ported from TrueVision3D: ReloadFromCloud and ReloadFromLocal, a fast,
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js:51:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js:63:// - Ported from TrueVision3D v2.51.0.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__.js:70:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__.js:90:// - Ported from TrueVision3D v2.51.0.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:36:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:37:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:38:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:40:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js:46:// - Ported from TrueVision3D: wired the Reload R2 and Reload Local buttons to
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:31:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:32:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:33:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:35:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:43://   Ported from TrueVision3D v2.70.0.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:46:// - Ported from TrueVision3D: the Reload R2 and Reload Local buttons beside
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:26:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:27:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:28:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js:30:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:30:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:31:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:32:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js:34:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:32:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:33:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:34:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js:36:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:33:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:34:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:35:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js:37:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:27:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:28:// - Ported from   : split out of Na__LayoutEditor__SpecEditor__.js (15-Sep-2026, ValeVision3D v2.47.0)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:29:// - Parity        : verbatim (moved code)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js:31:// - Back-port     : the same split applies to TrueVision's copy.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js:43:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js:50:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js:63:// - Ported from TrueVision3D (SpecMargin 1.3.0).
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js:68:// - Ported from TrueVision3D (SpecMargin 1.2.0).
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js:75:// - Ported from TrueVision3D (SpecMargin 1.1.0).
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:42:// PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:43:// - Ported from   : TrueVision3D 50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:45:// - Parity        : behavioural
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:51:// - Back-port     : n/a (TrueVision3D authored it)
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:57:// - Ported from TrueVision3D: Download on the Project Specification bar.
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css:6: * PORT NOTE: Ported from TrueVision3D 14-Sep-2026. The palette is the
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:5: * PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Specification__.css (15-Sep-2026, ValeVision3D v2.47.0), rules moved verbatim
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css:7: * - Parity      : as Na__LayoutEditor__Styles__Specification__.css; the same split applies to TrueVision's copy
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css:5: * PORT NOTE:
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css:6: * - Ported from : split out of Na__LayoutEditor__Styles__Specification__.css (15-Sep-2026, ValeVision3D v2.47.0), rules moved verbatim
+51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css:7: * - Parity      : as Na__LayoutEditor__Styles__Specification__.css; the same split applies to TrueVision's copy
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:32:// PORT NOTE:
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:33:// - Ported from   : TrueVision3D 55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js,
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:36:// - Parity        : adapted
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:39:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:45:// - Ported from TrueVision3D's 1.2.0.
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js:33:// PORT NOTE:
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js:34:// - Ported from   : TrueVision3D 55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js,
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js:37:// - Parity        : adapted
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js:44:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js:50:// - Ported from TrueVision3D's 1.1.0.
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js:36:// PORT NOTE:
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js:37:// - Ported from   : TrueVision3D 55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js,
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js:40:// - Parity        : verbatim
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js:42:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js:48:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js:36:// PORT NOTE:
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js:37:// - Ported from   : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js,
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js:40:// - Parity        : verbatim in every code region but two fallback strings, which name this app's server
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js:42:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js:48:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js:42:// PORT NOTE:
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js:43:// - Ported from   : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js,
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js:46:// - Parity        : verbatim in every code region but one string: the description an item file carries names this app
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js:51:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js:57:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js:41:// PORT NOTE:
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js:42:// - Ported from   : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js,
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js:45:// - Parity        : adapted
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js:54:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js:60:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css:18: * PORT NOTE:
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css:19: * - Ported from : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css:21: * - Parity      : verbatim - every rule is byte for byte TrueVision's
+51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css:25: * - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:44:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:45:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:48:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:50:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:56:// - Ported from TrueVision3D's 1.2.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js:56:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js:57:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js:60:// - Parity        : adapted
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js:63:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js:69:// - Ported from TrueVision3D's 1.2.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:49:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:50:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:53:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:55:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:61:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js:45:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js:46:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js:49:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js:51:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js:57:// - Ported from TrueVision3D's 1.1.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:56:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:57:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:60:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:62:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:68:// - Ported from TrueVision3D's 1.2.0, including the plug being hidden while
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:39:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:40:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:43:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:45:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:51:// - Ported from TrueVision3D's 1.0.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:88:// PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:89:// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js,
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:92:// - Parity        : verbatim - every code region is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:94:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:100:// - Ported from TrueVision3D's 1.2.0.
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css:20: * PORT NOTE:
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css:21: * - Ported from : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css (TrueVision v2.85.0)
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css:23: * - Parity      : verbatim - every rule is byte for byte TrueVision's
+51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css:27: * - Ported from TrueVision3D: the grips, the link socket and its noodle, the
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:29:// PORT NOTE:
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:30:// - Ported from   : ValeVision3D 35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js and Lantern Designer SheetChrome DrawToPdf
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:32:// - Parity        : adapted
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:34:// - Back-port     : none.
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:43:// - Ported from TrueVision3D (PdfExporter 1.3.0, v2.50.0).
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:38:// PORT NOTE:
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:39:// - Ported from   : TrueVision3D 60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:41:// - Parity        : verbatim
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:43:// - Back-port     : n/a (TrueVision3D authored it)
+51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:49:// - Ported from TrueVision3D, where it was split out of the PDF exporter so the
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:35:// PORT NOTE:
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:36:// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js (section pattern)
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:38:// - Parity        : new
+51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js:40:// - Back-port     : none.
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css:16: * - Ported from : TrueVision3D 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css:18: * - Parity      : verbatim
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:51:// PORT NOTE:
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:52:// - Ported from   : TrueVision3D 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:54:// - Parity        : adapted
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js:57:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:40:// PORT NOTE:
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:41:// - Ported from   : TrueVision3D 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:43:// - Parity        : verbatim
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js:45:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:44:// PORT NOTE:
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:45:// - Ported from   : TrueVision3D 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:47:// - Parity        : verbatim
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js:49:// - Back-port     : n/a (this IS the port)
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:49:// PORT NOTE:
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:50:// - Ported from   : TrueVision3D 51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:52:// - Parity        : verbatim
+51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js:54:// - Back-port     : n/a (this IS the port)
+70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js:34:// - Ported from TrueVision3D: the menu mounts into the header slot beside the

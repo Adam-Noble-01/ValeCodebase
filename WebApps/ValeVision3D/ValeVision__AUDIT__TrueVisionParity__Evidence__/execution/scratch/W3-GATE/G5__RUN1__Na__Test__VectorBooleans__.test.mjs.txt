@@ -1,0 +1,6 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+  note  random: 600 unions counted, 2226 results sampled at 133558 points
+Vector booleans: 148 passed, 0 failed.

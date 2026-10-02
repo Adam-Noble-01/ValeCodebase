@@ -1,0 +1,370 @@
+<!doctype html>
+<!--
+  W1-38 check page (scratch, never shipped). Served by the Whitecardopedia Flask server at
+  http://localhost:8000/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/scratch/W1-38/panels_check.html
+  It builds the Layout Editor's panel shell (.na-le-shell, the two .na-le-column hosts) with this app's real CSS index
+  and the loader's first four editor sheets (Surfaces, Main, Main__Paper, Panels), mounts the REAL panel host from the
+  live tree, registers the right column's two tabs as the mode controller does (Properties with its hint, and the real
+  Scrapbook tab) and the real Text, Leaders, Dimensions and Vectors panels, plus one probe section holding the Scale
+  row exactly as Panel__ViewportSettings builds it, a linked pair and a locked layer's button.
+  No project is loaded and nothing is saved. The panel host remembers widths, folds and the tab in localStorage, so the
+  page snapshots localStorage first and W138_Restore() puts every key back exactly as it found it.
+  window.W138_Run()            the scripted checks (tabs, slider rows, colour fields, linked pair, lock colour)
+  window.W138_PrepareTyping()  shows the Leaders panel's Fill opacity row and returns the number box's id; the typing
+                               itself (click, Ctrl+A, 4, 0, Enter) is done by a real pointer and keyboard
+  window.W138_AfterTyping()    reads the row back after the typing
+  window.W138_Wrap()           the Scale row at the default and the narrowest right column, with this sheet and with the
+                               pre-image sheet (before W1-38)
+  window.W138_Restore()        localStorage back as found
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>W1-38 Panel Host Check</title>
+    <script>
+        // Snapshot localStorage BEFORE any module runs (the panel host writes widths, folds and the tab).
+        window.W138_StoreBefore = (function () {
+            const out = {};
+            try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); out[k] = localStorage.getItem(k); } } catch (e) { /* unavailable */ }
+            return out;
+        })();
+    </script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three"                        : "../../../../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/"                : "../../../../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+            "three/webgpu"                 : "../../../../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.webgpu.js",
+            "three/tsl"                    : "../../../../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.tsl.js",
+            "three-mesh-bvh"               : "../../../../04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/index.js",
+            "three-mesh-bvh/worker"        : "../../../../04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/workers/index.js",
+            "three-mesh-bvh/webgpu"        : "../../../../04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/webgpu/index.js",
+            "clipper2-js"                  : "../../../../04__Lib__ThirdParty__VersionLocked/03__Vendor__Clipper2Js__v0.9.0/fesm2020/clipper2-js.mjs",
+            "three-edge-projection"        : "../../../../04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/index.js",
+            "three-edge-projection/worker" : "../../../../04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+            "three-edge-projection/webgpu" : "../../../../04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/webgpu/index.js"
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="../../../../03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+    <link rel="stylesheet" href="../../../../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css">
+    <link rel="stylesheet" href="../../../../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css">
+    <link rel="stylesheet" href="../../../../02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css">
+    <link rel="stylesheet" id="w138Panels" href="../../../../02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css">
+    <style>
+        html, body  { margin : 0; height : 100%; background : #dfe5ea; font-family : 'Open Sans', Arial, sans-serif; }
+        .w138-frame { position : fixed; left : 0; right : 0; top : 40px; bottom : 0; }
+        .w138-head  { position : fixed; left : 0; right : 0; top : 0; height : 40px; background : #172b3a; color : #fff; display : flex; align-items : center; padding : 0 16px; font-size : 13px; }
+        .w138-out   { position : absolute; left : 16px; right : 16px; bottom : 16px; max-height : 40%; overflow : auto; background : #fff; border : 1px solid #ccd3d8; padding : 8px; font : 11px/1.4 monospace; white-space : pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="w138-head">W1-38 - PanelHost 1.6.0 and Styles__Panels (scratch check page; nothing is saved)</div>
+    <div class="w138-frame">
+        <div class="na-le-shell">
+            <div class="na-le-column na-le-column--left"></div>
+            <div class="na-le-centre"><div class="w138-out" id="w138Out">loading...</div></div>
+            <div class="na-le-column na-le-column--right"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        const APP = '../../../../02__Src__AppModules/';
+        const out = document.getElementById('w138Out');
+        const say = (text) => { out.textContent = text; };
+        window.W138_Errors = [];
+        window.addEventListener('error', (e) => window.W138_Errors.push(String(e.message || e)));
+        window.addEventListener('unhandledrejection', (e) => window.W138_Errors.push('rejection: ' + String(e.reason && e.reason.message || e.reason)));
+
+        let H, Cfg, Scale, Tools, Pal, Scrap, Text, Leaders, Dims, Shapes;
+        try {
+            [ H, Cfg, Scale, Tools, Pal, Scrap, Text, Leaders, Dims, Shapes ] = await Promise.all([
+                import(APP + '51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js'),
+                import(APP + '51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js'),
+                import(APP + '51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js'),
+                import(APP + '51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js'),
+                import(APP + '54__Feature__ColourPalette/Na__ColourPalette__.js'),
+                import(APP + '51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js'),
+                import(APP + '51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js'),
+                import(APP + '51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js'),
+                import(APP + '51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js'),
+                import(APP + '51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js')
+            ]);
+        } catch (error) {
+            say('IMPORT FAILED: ' + (error && error.stack || error));
+            window.W138_ImportError = String(error && error.stack || error);
+            throw error;
+        }
+
+        await Cfg.Na__LeCfg__Ready();
+        await Pal.Na__ColourPalette__Ready();
+
+        // THE SHELL | as the mode controller mounts it (editable)
+        const left  = document.querySelector('.na-le-column--left');
+        const right = document.querySelector('.na-le-column--right');
+        H.Na__LePanels__Mount({ left, right, editable : true, showToast () {} });
+        const propertiesHint = Cfg.Na__LeCfg__GetLabel('PanelTabPropertiesHint', 'The settings of what is selected on the sheet, or of the next thing each tool places.');
+        H.Na__LePanels__RegisterTab('right', { id : 'properties', title : Cfg.Na__LeCfg__GetLabel('PanelTabProperties', 'Properties'), hint : propertiesHint });
+        Scrap.Na__LePanelScrap__RegisterTab();
+        Text.Na__LePanelText__Register();
+        Leaders.Na__LePanelLeaders__Register();
+        Dims.Na__LePanelDims__Register();
+        Shapes.Na__LePanelShapes__Register();
+
+        // THE PROBE SECTION | the Scale row as Panel__ViewportSettings builds it (live list, and the list once 1:200 joins),
+        // a linked pair as Panel__Dimensions 1.7.0 will, and a locked layer's button as Panel__Layers does
+        const scaleGroup = (denominators, id) => {
+            const scale = document.createElement('div');
+            scale.className = 'na-le-toggle-group';
+            scale.setAttribute('data-na-block', 'scale');
+            scale.setAttribute('data-w138', id);
+            denominators.forEach((d) => scale.appendChild(H.Na__LePanels__Button(Scale.Na__LeScale__FormatLabel(d), 'vp-scale', 'na-le-btn--toggle', d)));
+            return scale;
+        };
+        H.Na__LePanels__RegisterSection('right', {
+            id : 'w138-probe', title : 'W1-38 probe',
+            build (body) {
+                body.appendChild(H.Na__LePanels__Row('Scale', scaleGroup(Scale.Na__LeScale__ListDenominators(), 'scale-live')));
+                body.appendChild(H.Na__LePanels__Row('Scale', scaleGroup([ 20, 50, 100, 200 ], 'scale-four')));
+                body.appendChild(H.Na__LePanels__LinkedPairRow('Ext. lines', {
+                    first  : { control : 'w138-pair-start', caption : 'Start', attributes : { min : 0, step : 0.5 } },
+                    link   : { control : 'w138-pair-link' },
+                    second : { control : 'w138-pair-end',   caption : 'End',   attributes : { min : 0, step : 0.5 } }
+                }));
+                body.appendChild(H.Na__LePanels__Button('Unlock', 'w138-lock', 'na-le-btn--icon na-le-btn--lock is-locked', 'probe'));
+            },
+            refresh () {}
+        });
+        H.Na__LePanels__SetActiveTab('right', 'properties');
+
+        const check = (result, label, got, want) => result.checks.push({ ok : JSON.stringify(got) === JSON.stringify(want), label, got, want });
+        const finish = (result) => {
+            result.passed = result.checks.filter((c) => c.ok).length;
+            result.failed = result.checks.filter((c) => !c.ok).length;
+            result.errors = window.W138_Errors.slice();
+            say(result.checks.map((c) => (c.ok ? 'PASS  ' : 'FAIL  ') + c.label + (c.ok ? '' : '\n      got ' + JSON.stringify(c.got) + '\n      want ' + JSON.stringify(c.want))).join('\n')
+                + '\n\n' + result.passed + ' passed, ' + result.failed + ' failed' + (result.errors.length ? '\nERRORS: ' + result.errors.join(' | ') : ''));
+            return result;
+        };
+
+        // ------------------------------------------------------------------
+        // THE SCRIPTED CHECKS
+        // ------------------------------------------------------------------
+        window.W138_Run = async function () {
+            const result = { checks : [], notes : {} };
+
+            // TABS | hover text = hint, else title
+            const tabs = Array.from(right.querySelectorAll('.na-le-panel__tab'));
+            const strip = right.querySelector('.na-le-panel__tabs');
+            await Scrap.Na__LePanelScrap__RegisterTab && new Promise((r) => setTimeout(r, 300));   // <-- the Scrapbook tab re-reads its wording when its config is in
+            check(result, 'the right column shows its tab strip with two tabs, Properties first',
+                [ !!strip && strip.hidden === false, tabs.map((t) => t.getAttribute('data-na-tab')) ], [ true, [ 'properties', 'scrapbook' ] ]);
+            check(result, 'each tab has hover text: the Properties tab its hint (PanelHost 1.5.0, spec.hint)',
+                [ tabs[0] && tabs[0].title, tabs[0] && tabs[0].title !== tabs[0].textContent ], [ propertiesHint, true ]);
+            check(result, 'and the Scrapbook tab its own hint, not an empty title',
+                [ !!(tabs[1] && tabs[1].title), tabs[1] && tabs[1].title !== tabs[1].textContent ], [ true, true ]);
+            result.notes.tabTitles = tabs.map((t) => [ t.textContent, t.title ]);
+
+            // SLIDER ROWS | every SliderRow-made slider has its number box, same control name, and a suffix span
+            const sliders = Array.from(document.querySelectorAll('.na-le-panel .na-le-input--range'))
+                .filter((s) => s.parentNode.querySelector('[data-na-reading]'));
+            const opacityNames = sliders.map((s) => s.getAttribute('data-na-control'));
+            check(result, 'the opacity slider rows (Leaders fill and line, Vectors fill and edge) are the SliderRow rows on the panels',
+                opacityNames.slice().sort(), [ 'leader-fill-opacity', 'leader-line-opacity', 'shape-edge-opacity', 'shape-fill-opacity' ]);
+            const rows = sliders.map((s) => {
+                const name = s.getAttribute('data-na-control');
+                const row  = s.parentNode;
+                const kids = Array.from(row.children).map((c) => c.className.split(' ')[0] + (c.type ? ':' + c.type : ''));
+                const box  = row.querySelector('.na-le-input--rangebox');
+                const read = row.querySelector('[data-na-reading]');
+                const cs   = box ? getComputedStyle(box) : null;
+                return { name, kids, box : box ? [ box.type, box.getAttribute('data-na-control') === name, box.min, box.max, box.step, box.value === s.value ] : null,
+                         suffix : read ? [ read.className, read.textContent ] : null, boxStyle : cs ? [ cs.width, cs.textAlign ] : null };
+            });
+            check(result, 'every one of them has a number box beside the slider with the slider\'s control name, 0 to 100 by 1, showing the slider\'s figure',
+                rows.map((r) => [ r.name, r.kids, r.box ]),
+                rows.map((r) => [ r.name, [ 'na-le-row__label', 'na-le-input:range', 'na-le-input:number', 'na-le-grad-readout' ], [ 'number', true, '0', '100', '1', true ] ]));
+            check(result, 'and the reading after the box is only the unit, "%", in the suffix span; the box is the sheet\'s 38 px, right-aligned',
+                rows.map((r) => [ r.suffix, r.boxStyle ]),
+                rows.map(() => [ [ 'na-le-grad-readout na-le-range-suffix', '%' ], [ '38px', 'right' ] ]));
+
+            // COLOUR FIELDS | every colour field the panels make is the palette's
+            const fields = Array.from(document.querySelectorAll('.na-le-panel input[type="color"]'));
+            const names  = fields.map((f) => f.getAttribute('data-na-control'));
+            check(result, 'the panels make 9 colour fields from the 8 call sites (Text 1, Leaders 3, Dimensions 1, Vectors 2, the gradient\'s two wells)',
+                names.slice().sort(), [ 'dim-colour', 'leader-fill-colour', 'leader-line-colour', 'leader-text-colour', 'shape-fill', 'shape-grad-end', 'shape-grad-start', 'shape-stroke', 'text-colour' ].sort());
+            check(result, 'every one of them is attached to the palette already (a second Attach is refused)', fields.map((f) => Pal.Na__ColourPalette__Attach(f)), fields.map(() => false));
+            const opens = fields.map((f) => {
+                const click = new MouseEvent('click', { bubbles : true, cancelable : true });
+                f.dispatchEvent(click);
+                const open = Pal.Na__ColourPalette__IsOpen();
+                const root = document.querySelector('.na-colour-palette');
+                const shown = !!root && root.hidden === false;
+                document.dispatchEvent(new KeyboardEvent('keydown', { key : 'Escape', bubbles : true }));
+                return [ f.getAttribute('data-na-control'), click.defaultPrevented, open, shown, Pal.Na__ColourPalette__IsOpen() ];
+            });
+            check(result, 'a click on each is taken from the browser and opens the palette; Escape closes it',
+                opens, fields.map((f) => [ f.getAttribute('data-na-control'), true, true, true, false ]));
+            const textColour = right.querySelector('input[type="color"][data-na-control="text-colour"]');
+            const heard = [];
+            const onInput = () => heard.push('input:' + textColour.value), onChange = () => heard.push('change:' + textColour.value);
+            textColour.addEventListener('input', onInput); textColour.addEventListener('change', onChange);
+            textColour.dispatchEvent(new MouseEvent('click', { bubbles : true, cancelable : true }));
+            const swatch = document.querySelector('.na-colour-palette [data-na-colour-key="ColourPalette__Dimensions__Existing"]');
+            if (swatch) swatch.click();
+            check(result, 'a swatch pick on the Text panel\'s colour arrives as input then change - what the panel\'s own handlers already hear',
+                [ !!swatch, textColour.value, heard ], [ true, '#000096', [ 'input:#000096', 'change:#000096' ] ]);
+            textColour.removeEventListener('input', onInput); textColour.removeEventListener('change', onChange);
+            result.notes.textDefaultsAfterPick = (Tools.Na__LeTools__GetTextDefaults ? Tools.Na__LeTools__GetTextDefaults() : null);
+            fields[0].disabled = true;
+            const click2 = new MouseEvent('click', { bubbles : true, cancelable : true });
+            fields[0].dispatchEvent(click2);
+            check(result, 'a disabled field (the read-only viewer) is left to the browser: no palette', [ click2.defaultPrevented, Pal.Na__ColourPalette__IsOpen() ], [ false, false ]);
+            fields[0].disabled = false;
+
+            // LINKED PAIR | the row draws the pair; ShowLink shows the state (PanelHost 1.2.0 with the Linked Pair region)
+            const pairRow = right.querySelector('.na-le-row--pair');
+            const link = pairRow && pairRow.querySelector('.na-le-pair__link');
+            const shut = link && link.querySelector('.na-le-pair__shackle--shut');
+            const open = link && link.querySelector('.na-le-pair__shackle--open');
+            check(result, 'a linked pair: caption, Start box, padlock, End box; linked to start, the shut shackle drawn and the open one hidden',
+                pairRow ? [ Array.from(pairRow.querySelectorAll('.na-le-pair__caption')).map((c) => c.textContent),
+                            Array.from(pairRow.querySelectorAll('input.na-le-pair__input')).map((i) => [ i.type, i.getAttribute('data-na-control') ]),
+                            link.classList.contains('is-linked'), link.getAttribute('aria-pressed'), getComputedStyle(shut).display, getComputedStyle(open).display,
+                            getComputedStyle(link).color ] : null,
+                [ [ 'Start', 'End' ], [ [ 'number', 'w138-pair-start' ], [ 'number', 'w138-pair-end' ] ], true, 'true', 'inline', 'none', 'rgb(26, 127, 196)' ]);
+            H.Na__LePanels__ShowLink(right, 'w138-pair-link', false, 'Link the two lengths');
+            check(result, 'ShowLink(false) opens it: the open shackle drawn, the shut one hidden, the tooltip and aria label said',
+                [ link.classList.contains('is-linked'), link.getAttribute('aria-pressed'), getComputedStyle(shut).display, getComputedStyle(open).display, link.title, link.getAttribute('aria-label') ],
+                [ false, 'false', 'none', 'inline', 'Link the two lengths', 'Link the two lengths' ]);
+            H.Na__LePanels__ShowLink(right, 'w138-pair-link', true, 'Unlink');
+
+            // THE LOCK | a locked layer's button keeps its faint red (one rule now serves Off, Unlock and Ref)
+            const lock = right.querySelector('.na-le-btn--lock.is-locked');
+            const lcs = getComputedStyle(lock);
+            check(result, 'a locked layer\'s button: #9b3b3b on #fbf3f3, border #e8c9c9, as before',
+                [ lcs.color, lcs.backgroundColor, lcs.borderTopColor ], [ 'rgb(155, 59, 59)', 'rgb(251, 243, 243)', 'rgb(232, 201, 201)' ]);
+
+            window.W138_RunResult = finish(result);
+            return result;
+        };
+
+        // ------------------------------------------------------------------
+        // THE TYPING (a real pointer and keyboard do the typing between these two)
+        // ------------------------------------------------------------------
+        window.W138_PrepareTyping = function () {
+            H.Na__LePanels__FocusSection('leaders');                                  // <-- the accordion as a selection would open it
+            const filled = right.querySelector('[data-na-control="leader-filled"]');
+            if (filled && !filled.checked) filled.click();                            // <-- the Fill tick, through the panel's own handler
+            const box = right.querySelector('.na-le-input--rangebox[data-na-control="leader-fill-opacity"]');
+            const slider = right.querySelector('.na-le-input--range[data-na-control="leader-fill-opacity"]');
+            box.id = 'w138FillOpacityBox';
+            box.scrollIntoView({ block : 'center' });
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+            window.W138_TypingHeard = [];
+            [ 'input', 'change' ].forEach((type) => box.addEventListener(type, () => window.W138_TypingHeard.push(type + ':' + box.value)));
+            const r = box.getBoundingClientRect();
+            return { id : box.id, rowVisible : !box.parentNode.hidden, before : { slider : slider.value, box : box.value, reading : box.parentNode.querySelector('[data-na-reading]').textContent,
+                     defaultsFillOpacity : Tools.Na__LeTools__GetLeaderDefaults().fillOpacity, filled : Tools.Na__LeTools__GetLeaderDefaults().filled },
+                     rect : { x : Math.round(r.left + r.width / 2), y : Math.round(r.top + r.height / 2), w : Math.round(r.width), h : Math.round(r.height) },
+                     dpr : window.devicePixelRatio, inner : [ window.innerWidth, window.innerHeight ] };
+        };
+        window.W138_AfterTyping = function () {
+            const result = { checks : [], notes : {} };
+            const box = right.querySelector('.na-le-input--rangebox[data-na-control="leader-fill-opacity"]');
+            const slider = right.querySelector('.na-le-input--range[data-na-control="leader-fill-opacity"]');
+            const reading = box.parentNode.querySelector('[data-na-reading]');
+            check(result, 'typing 40 and Enter in the Fill opacity box: the box reads 40, the SLIDER MOVED to 40, the reading is "%", and the box let go of the focus',
+                [ box.value, slider.value, reading.textContent, document.activeElement === box ], [ '40', '40', '%', false ]);
+            check(result, 'and the panel\'s own handlers set 40 % on the settings for new leaders (no leader selected)',
+                Tools.Na__LeTools__GetLeaderDefaults().fillOpacity, 0.4);
+            result.notes.heard = window.W138_TypingHeard;
+            check(result, 'the box was typed into (input events) and Enter committed it once (one change)',
+                [ window.W138_TypingHeard.some((e) => e.startsWith('input:')), window.W138_TypingHeard.filter((e) => e.startsWith('change:')) ], [ true, [ 'change:40' ] ]);
+            window.W138_TypingResult = finish(result);
+            return result;
+        };
+
+        // ------------------------------------------------------------------
+        // THE SCALE ROW: wraps instead of clipping (this sheet), against the pre-image sheet
+        // ------------------------------------------------------------------
+        const measure = (label) => Array.from(right.querySelectorAll('[data-w138^="scale-"]')).map((group) => {
+            const g = group.getBoundingClientRect();
+            const scroll = right.querySelector('.na-le-panel__scroll').getBoundingClientRect();
+            const buttons = Array.from(group.children).map((b) => b.getBoundingClientRect());
+            const tops = Array.from(new Set(buttons.map((b) => Math.round(b.top))));
+            const maxRight = Math.max(...buttons.map((b) => b.right));
+            // CLIPPED means past the column: the group grows to its unwrapped content, so the buttons run past the
+            // row and the column's scroller, whose overflow-x is hidden, cuts them off.
+            return { sheet : label, group : group.getAttribute('data-w138'), buttons : group.children.length, columnPx : Math.round(right.getBoundingClientRect().width),
+                     lines : tops.length, overflowPx : Math.round((maxRight - g.right) * 10) / 10, pastColumnPx : Math.round((maxRight - scroll.right) * 10) / 10,
+                     clipped : maxRight > scroll.right + 0.5, flexWrap : getComputedStyle(group).flexWrap };
+        });
+        // A hidden pane draws no frames, so nothing here waits on requestAnimationFrame or a load event: the
+        // sheet is polled until its rules are in, and every measurement reads layout synchronously.
+        const useSheet = (href) => new Promise((resolve, reject) => {
+            const link = document.getElementById('w138Panels');
+            if (link.getAttribute('href') === href && link.sheet) { resolve(); return; }
+            link.setAttribute('href', href);
+            const t0 = Date.now();
+            const poll = () => {
+                let ready = false;
+                try { ready = !!link.sheet && link.sheet.href && link.sheet.href.endsWith(href.replace(/^(\.\.\/)+/, '')) && link.sheet.cssRules.length > 100; } catch (e) { ready = false; }
+                if (ready) resolve();
+                else if (Date.now() - t0 > 15000) reject(new Error('stylesheet did not load: ' + href));
+                else setTimeout(poll, 50);
+            };
+            poll();
+        });
+        window.W138_Wrap = async function () {
+            const result = { checks : [], notes : {} };
+            const LIVE = '../../../../02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css';
+            const PRE  = 'preimage/Na__LayoutEditor__Styles__Panels__.css';
+            const setup = Cfg.Na__LeCfg__GetPanelSetup();
+            const rows = [];
+            for (const [ label, href ] of [ [ 'W1-38 (TrueVision)', LIVE ], [ 'pre-image (before)', PRE ] ]) {
+                await useSheet(href);
+                for (const width of [ setup.rightWidthPx, setup.minWidthPx ]) {
+                    H.Na__LePanels__SetWidth('right', width);
+                    void right.offsetWidth;                                           // <-- layout now, synchronously
+                    rows.push(...measure(label));
+                }
+            }
+            await useSheet(LIVE);
+            H.Na__LePanels__SetWidth('right', setup.rightWidthPx);
+            result.notes.rows = rows;
+            const live = rows.filter((r) => r.sheet.startsWith('W1-38'));
+            const pre  = rows.filter((r) => r.sheet.startsWith('pre-image'));
+            check(result, 'with this sheet no Scale button is ever past the column\'s edge - default and narrowest column, three buttons and four',
+                live.map((r) => [ r.group, r.columnPx, r.clipped ]), live.map((r) => [ r.group, r.columnPx, false ]));
+            check(result, 'in the narrowest column the buttons go onto a second line instead (flex-wrap: wrap)',
+                live.filter((r) => r.columnPx === setup.minWidthPx).map((r) => [ r.group, r.flexWrap, r.lines > 1 ]),
+                live.filter((r) => r.columnPx === setup.minWidthPx).map((r) => [ r.group, 'wrap', true ]));
+            check(result, 'with the pre-image sheet the same rows ran on one line past the column\'s edge in the narrowest column (clipped)',
+                pre.filter((r) => r.columnPx === setup.minWidthPx).map((r) => [ r.group, r.flexWrap, r.clipped, r.lines ]),
+                pre.filter((r) => r.columnPx === setup.minWidthPx).map((r) => [ r.group, 'nowrap', true, 1 ]));
+            window.W138_WrapResult = finish(result);
+            return result;
+        };
+
+        // ------------------------------------------------------------------
+        // localStorage back exactly as found
+        // ------------------------------------------------------------------
+        window.W138_Restore = function () {
+            const before = window.W138_StoreBefore || {};
+            const changed = [];
+            try {
+                const now = {};
+                for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); now[k] = localStorage.getItem(k); }
+                Object.keys(now).forEach((k) => { if (!(k in before)) { localStorage.removeItem(k); changed.push('removed ' + k); } });
+                Object.keys(before).forEach((k) => { if (now[k] !== before[k]) { localStorage.setItem(k, before[k]); changed.push('reset ' + k); } });
+            } catch (e) { changed.push('storage unavailable: ' + e.message); }
+            return changed;
+        };
+
+        window.W138_Ready = true;
+        say('mounted: ' + document.querySelectorAll('.na-le-section').length + ' sections; W138_Run(), W138_PrepareTyping(), W138_AfterTyping(), W138_Wrap(), W138_Restore()');
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+    # PROJECT.JSON
+    if local['projectJson'] and (force or record['missingProjectJson']):
+        key = f"{prefix}/{r2lib.PROJECT_JSON_FILENAME}"
+        if r2lib.na_upload_file(client, bucket, local['projectJson'], key):
+            uploaded += 1

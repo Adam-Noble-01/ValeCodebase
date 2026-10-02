@@ -1,0 +1,4 @@
+﻿PASS  1 the live AutoSave flag holds the staged registrar's reload while sheets are unsaved
+PASS  2 ... and the reload happens once the sheets are saved
+
+2/2 checks passed

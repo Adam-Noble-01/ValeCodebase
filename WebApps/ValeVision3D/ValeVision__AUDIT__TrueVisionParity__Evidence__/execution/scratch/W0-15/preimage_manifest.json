@@ -1,0 +1,115 @@
+{
+  "pin": "b2aa9151",
+  "tv": {
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+      "sha1": "bd14eda34fef9e9b472b68cccb7c74e58a189eec",
+      "bytes": 174262,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js": {
+      "sha1": "4ebd597f69db89fa460e3e1e1c98a8a71662ad27",
+      "bytes": 20446,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js": {
+      "sha1": "6cb37c0dff7ba97411fb42cfb1c5e611a372e912",
+      "bytes": 6530,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js": {
+      "sha1": "ff4eaa792a6504a6a705477c8a6dc73078099a46",
+      "bytes": 37737,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js": {
+      "sha1": "fbd3806432bf21d4c6fd3bf041b961960a084d75",
+      "bytes": 23977,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js": {
+      "sha1": "56d2adc35e202e33322b20eb4d5930ef7f302c72",
+      "bytes": 28815,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js": {
+      "sha1": "a1546a58a5bf0d32bf967ec902457e381e4aa9fa",
+      "bytes": 42001,
+      "eol": "LF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json": {
+      "sha1": "fc8cbf546ec88ec499a3a63234c45c410778e652",
+      "bytes": 61255,
+      "eol": "LF",
+      "bom": false
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs": {
+      "sha1": "053f5c5e4014b05ebc7a21c52e588e9b6e136e35",
+      "bytes": 27522,
+      "eol": "LF",
+      "bom": false
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs": {
+      "sha1": "409f2a8a2e786e89842e5cbfe405ca79ae843004",
+      "bytes": 10385,
+      "eol": "LF",
+      "bom": false
+    }
+  },
+  "vv": {
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json": {
+      "sha1": "79f113487b10b15491092a0aa92978251f7a8115",
+      "bytes": 37081,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": {
+      "sha1": "63fb320747fdfe95628d0a54ee8aa41ed7b5c71b",
+      "bytes": 107188,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js": {
+      "sha1": "8b49c4f99af50bf02e5092fd551ba72b9468dbc5",
+      "bytes": 17563,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js": {
+      "sha1": "44e22832fade82cb16c763bf6ab59e270e1aeb8a",
+      "bytes": 12990,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js": {
+      "sha1": "abdb96a3027fd0ec4832c1c3fec8924b38124eed",
+      "bytes": 26874,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js": {
+      "sha1": "a49b0a3b08e49ce785afbafc4cc49696da2a213a",
+      "bytes": 6679,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js": {
+      "sha1": "8c71ce9ad2d69975b0869721ddb9ee89478b0db0",
+      "bytes": 25690,
+      "eol": "CRLF",
+      "bom": false
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js": {
+      "sha1": "3496777943d854e3f9181feaa3f49808283ed6fa",
+      "bytes": 19340,
+      "eol": "CRLF",
+      "bom": false
+    }
+  }
+}

@@ -1,0 +1,8 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs --files 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js 02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json 80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs
+ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 7 named file(s); 68 folders against the registry; 11 Layout Editor stylesheets
+  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
+  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
+
+  RESULT: PASS (0 fail, 0 warn)

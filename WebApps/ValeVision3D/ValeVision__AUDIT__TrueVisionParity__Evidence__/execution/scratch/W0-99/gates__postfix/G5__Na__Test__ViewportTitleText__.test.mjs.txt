@@ -1,0 +1,34 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - viewport title text
+  PASS  PS02: all six elevation titles come out as Adam lettered them
+  PASS  PS02: every one of them is resolved, with nothing missing
+  PASS  a plan is its qualifier and its drawing's own name
+  PASS  a section is named by its record, not by a compass word
+  PASS  an elevation is named by the compass, not by its record's name
+  PASS  without capitals it is written in the words' own case
+  PASS  north not set: the direction is a placeholder in double braces
+  PASS  north not set: unresolved, and it says what is missing
+  PASS  tied to nothing: {{DRAWING}}, with no qualifier in front of it
+  PASS  tied to nothing: a forced qualifier still does not qualify a placeholder
+  PASS  a 2D viewport whose drawing has gone reads {{DRAWING}} too
+  PASS  HasPlaceholder finds one, and is not fooled by single braces
+  PASS  a typed viewport name is the subject, and still gets its qualifier
+  PASS  a typed name needs no north: nothing is missing
+  PASS  a typed name that opens with the qualifier is not qualified twice
+  PASS  a typed name that opens with the OTHER qualifier is left saying what was typed
+  PASS  a name that merely contains the word is still qualified
+  PASS  a site plan has no phase, so no qualifier
+  PASS  phase mode none leaves the qualifier out
+  PASS  phase mode proposed overrides what the model says
+  PASS  an unknown phase writes no qualifier
+  PASS  a bad phase mode reads as automatic
+  PASS  a typed title replaces everything, trimmed, and is not recased
+  PASS  a blank override is no override
+  PASS  configured words are used
+  PASS  a configured placeholder word is used
+  PASS  bad facts become their empty values and text is tidied to one line
+
+  PASS - every check passed.

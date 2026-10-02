@@ -1,0 +1,18 @@
+{
+  "written": {
+    "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json": {
+      "bytes": 6808,
+      "sha1": "761a1bcc4dbe2fca5405a5521cd4f054e89cdb34"
+    },
+    "02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js": {
+      "bytes": 21046,
+      "sha1": "5c1c4d93a3b9802c0c14715dbe723ef9d7da30af"
+    }
+  },
+  "preimage": "both files and the folder absent before this package",
+  "tv_pin": "b2aa9151",
+  "tv_sha1": {
+    "Na__Hotkeys__DocumentTabs__.json": "761a1bcc4dbe2fca5405a5521cd4f054e89cdb34",
+    "Na__LayoutEditor__DocumentKeys__.js": "b5dcbe87aaa7a9ca36981d17755c18d33fb0eb62"
+  }
+}

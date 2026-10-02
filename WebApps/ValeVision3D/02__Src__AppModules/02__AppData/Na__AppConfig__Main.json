@@ -62,6 +62,7 @@
             "RenderConfig__Linework__PolygonOffsetUnits"  : -4,
             "RenderConfig__Linework__RenderOrder"         : 999,
             "RenderConfig__Linework__DepthBias"           : 0.00015,
+            "RenderConfig__Linework__OrthoDepthBiasMm"    : 2,
             "RenderConfig__Linework__ProjectionOnlyCategoryTokens" : ["Linetype__"],
             "RenderConfig__Linework__ProjectionOnlyNote"  : "Model categories whose linework belongs to 2D DRAWINGS ONLY. The SketchUp linetype tags - dashed, dotted, centre, door swings, clearances, overhead extents, building joins, demolition - say what a line MEANS on a drawing, and mean nothing in a 3D render: drawn there they sit in mid air, and on a drawing that shows a rendered underlay they appear twice, solid in the raster beneath their own dashes. Their fat lines are therefore loaded with material.visible false, so no 3D render draws them - the viewer, the image export and the Layout Editor raster alike - while the objects stay in the scene graph at full visibility for the projected linework pipeline to read. Matched case-insensitively as substrings of the category name; empty the list to draw them in 3D again."
         }
@@ -77,11 +78,11 @@
         "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.40,
         "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
         "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0,
-        "RenderEffect__ProfileLines__Drawing2dDescription"   : "Profile lines on 2D drawings (floor plans, elevations, sections). Rendered through the ortho-aware pre-pass at a fixed width; null colour and threshold fall back to the 3D values above.",
-        "RenderEffect__ProfileLines__Drawing2dEnabled"       : true,
-        "RenderEffect__ProfileLines__Drawing2dEdgeColor"     : null,
-        "RenderEffect__ProfileLines__Drawing2dEdgeThresholdNormal": null,
-        "RenderEffect__ProfileLines__Drawing2dEdgeWidth"     : 1.0
+        "RenderEffect__ProfileLines__Drawing2d__Description"       : "The same silhouette edges applied to the 2D drawings - floor plans, elevations and sections. A parallel view has no shading, so without this every rounded form (curved walls, cylinders, bay windows, downpipes) reads as a blank patch on the sheet. Rendered through the ortho-aware pre-pass at a FIXED width rather than one scaled by camera distance, because a drawn line keeps its weight on the sheet at any zoom. A null colour and threshold fall back to the 3D values above.",
+        "RenderEffect__ProfileLines__Drawing2dEnabled"             : true,
+        "RenderEffect__ProfileLines__Drawing2dEdgeColor"           : null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeThresholdNormal" : null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeWidthMoved"      : "Removed 02-Oct-2026, aligned with TrueVision3D v2.27.0 and v2.30.2. Drawing2dEdgeWidth 1.0 set the fixed profile width of the live floor plan, elevation and section views, which ValeVision renders through its composer preset (40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js, reading Na__DrawView__ConfigState__.js). With the key gone they take DrawingView__Render__ProfileEdgeWidth in 40__System__DrawingViewCore/Na__DrawView__AppConfig__.json - the same 1.0, as is the built-in fallback - so no live view and no sheet moves. A Layout Editor bake takes its width from the profileLinework Composite__Weight in 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json (default 1.0, per viewport); a bake given no Profile Linework weight falls back to the drawing-view width. Re-adding Drawing2dEdgeWidth here would override the drawing-view JSON again: the live views and that bake fallback alike."
     },
     "RenderEngine__Config": {
         "RenderEngine__Config__Description"                : "Dual render engine system. PureEngine = original lightweight whitecard pipeline (ALWAYS the default). MaxEngine = full PBR + SSAO pipeline ported from TrueVision (per-model opt-in). Per-model overrides live in project.json under the same key; this global default applies when project.json has no RenderEngine__Config.",
@@ -369,6 +370,24 @@
         "ProjectData__AssetUrls__IndexFallbackUrl"  : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json",
         "ProjectData__AssetUrls__BuildManifestUrl"  : "https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json"
     },
+    "ProjectData__EditorOwnedKeys": {
+        "ProjectData__EditorOwnedKeys__Description" : "The one list of top-level project.json keys the ValeVision editor owns (dev menus, presentation scenes, cross sections, the Layout Editor). The editor writes them to R2 first, so the local copy can fall behind. Anything that writes project.json whole keeps each listed key that R2 holds from R2's copy: the Whitecardopedia SketchUp cloud sync and the R2 audit/backfill tool (Whitecardopedia/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py) do so, then write the merged document locally too; the sync still re-points IMG-slot scene thumbnails inside R2's copy of PresentationMode__SavedCameraScenes. The editor worker's merge-keys guard and the localhost load overlay take their key lists from here as well. A new top-level key the editor writes joins this list in the same change, or a sync from another machine drops it. Never list a pipeline key (projectCode, projectName, folderId, basePath, images, allImages, displayImages, thumbnailImage, valeVision_ModelUrls, ValeVison3D__SketchUpCameraData): the sync tools refuse a list that does.",
+        "ProjectData__EditorOwnedKeys__Keys"        : [
+            "PresentationMode__SavedCameraScenes",
+            "LayoutEditor__DrawingsData",
+            "LayoutEditor__DrawingRegister",
+            "CrossSection__SceneData",
+            "CrossSection__Config",
+            "Navmode__EnabledModes",
+            "Navmode__OrbitMaxDistanceMm",
+            "Camera__DefaultPosition",
+            "OrbitHelperCube__Position",
+            "FogPlane__Config",
+            "RenderEngine__Config",
+            "VideoStudio__Config",
+            "GridLine__Grid__Offset__Config"
+        ]
+    },
     "LoadResilience__Config": {
         "LoadResilience__Config__Description"           : "Timeouts, retries, and concurrency caps for the load pipeline. All time values are milliseconds. Bump these on slow-CDN deployments; do NOT hardcode in modules.",
         "LoadResilience__Config__ConfigFetchTimeoutMs"  : 10000,
@@ -382,7 +401,7 @@
     },
 
     "DrawingView__Config": {
-        "DrawingView__Config__Description"       : "Shared by every 2D drawing (floor plans, elevations, sections). The paper colour behind a drawing, the section cap fill and profile line the drawing cut is drawn with (the Doous look), and the flight timings into and out of a drawing. System-owned defaults live in 42__System__DrawingViewCore/Na__DrawView__AppConfig__.json.",
+        "DrawingView__Config__Description"       : "Shared by every 2D drawing (floor plans, elevations, sections). The paper colour behind a drawing, the section cap fill and profile line the drawing cut is drawn with (the Doous look), and the flight timings into and out of a drawing. System-owned defaults live in 40__System__DrawingViewCore/Na__DrawView__AppConfig__.json.",
         "DrawingView__Config__BackgroundColour"  : "#ffffff",
         "DrawingView__Config__SectionFillColour" : "#505050",
         "DrawingView__Config__SectionLineColour" : "#505050",

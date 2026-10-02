@@ -28,12 +28,47 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Authored in   : TrueVision3D first (14-Sep-2026)
-// - ValeVision    : ported 14-Sep-2026. Nothing here is app-specific besides console prefix and DrawView path.
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js
+// - Source version: 1.3.0 (TrueVision3D v2.143.0, 22-Sep-2026; 1.2.0 v2.111.0, 1.1.0 v2.78.0;
+//                   read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file over this app's
+//                   1.0.0 (ported 14-Sep-2026; it differed from TrueVision 1.0.0 in nothing but
+//                   the banner). 1.2.0 places the grip when a zoom settles; 1.3.0's badge counts
+//                   only the margin's own lost notes (Report's marginLost). TrueVision's
+//                   v2.143.0 and v2.111.0 entries are NOT tried by Adam; they come across under
+//                   DR-01 (c) and are named so.
+//                   The import of Na__LeTools__IsMoveAuto and its '|| Na__LeTools__IsMoveAuto()'
+//                   term (1.1.0, v2.78.0), held until the SheetTools hub exported it, restored on
+//                   02-Oct-2026 for ValeVision3D v2.71.5 with that hub. While DR-40 item 7 (the
+//                   automatic Move) is held, IsMoveAuto is always false, so the grip still shows
+//                   under Select only.
+// - Parity        : verbatim - TrueVision's file; the banner and this note are the only differences.
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Sep-2026 - Version 1.3.0
+// - The badge counts the margin's own notes that go NOWHERE (Report's
+//   marginLost). With an overspill note region on the sheet the margin's tail
+//   carries on there, so the margin shows no badge for it; the region the
+//   list runs out in wears the badge instead (Na__LayoutEditor__NoteRegions__
+//   Grips__). With no region the count is the margin's overflow, as before.
+//
+// 21-Sep-2026 - Version 1.2.0
+// - The grip is placed when a zoom settles (Na__LeSurface__ZOOM_SETTLED_EVENT),
+//   not on every frame of one. Render re-plans the whole notes margin - every
+//   note wrapped and measured through jsPDF - and nothing in that plan depends
+//   on the zoom; only the grip's width and the badge's scale do, and they can
+//   wait for the wheel to rest like the handles do.
+//
+// 19-Sep-2026 - Version 1.1.0
+// - The grip stays up under a Move tool that came up by itself
+//   (Na__LeTools__IsMoveAuto), as it does under Select. Picking a note now
+//   picks Move up, and that must not take the margin's handle away.
+//
 // 14-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -49,7 +84,7 @@
     import { Na__LeCfg__GetMarginNotesSetup, Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__UpdateMarginNotes } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import {
-        Na__LeSurface__ZOOM_EVENT,
+        Na__LeSurface__ZOOM_SETTLED_EVENT,
         Na__LeSurface__GetElements,
         Na__LeSurface__GetPixelsPerMm,
         Na__LeSurface__GetZoom,
@@ -57,7 +92,7 @@
         Na__LeSurface__Refresh
     } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeLayout__Solve } from '../07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js';
-    import { Na__LeTools__CHANGED_EVENT, Na__LeTools__TOOL_SELECT, Na__LeTools__GetTool } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
+    import { Na__LeTools__CHANGED_EVENT, Na__LeTools__TOOL_SELECT, Na__LeTools__GetTool, Na__LeTools__IsMoveAuto } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
     import { Na__LeSpec__CHANGED_EVENT } from './Na__LayoutEditor__SpecData__.js';
     import { Na__LeMargin__Report } from './Na__LayoutEditor__SpecMargin__.js';
     // ------------------------------------------------------------
@@ -71,7 +106,7 @@
 
     // MODULE CONSTANTS | What Moves the Grip, and the Drag Slop
     // ------------------------------------------------------------
-    const Na__LeMarginGrip__EVENTS  = [ Na__LeModel__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeTools__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT, 'resize' ];
+    const Na__LeMarginGrip__EVENTS  = [ Na__LeModel__CHANGED_EVENT, Na__LeSurface__ZOOM_SETTLED_EVENT, Na__LeTools__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT, 'resize' ];   // <-- A zoom counts when it SETTLES: Render re-plans the whole margin, and it used to on every frame of a wheel
     const Na__LeMarginGrip__SLOP_PX = 2;     // <-- A press that moves less than this changes nothing
     // ------------------------------------------------------------
 
@@ -148,13 +183,13 @@
         grip.style.top    = (rect.Y * ppm) + 'px';
         grip.style.width  = widthPx + 'px';
         grip.style.height = (rect.HeightMm * ppm) + 'px';
-        grip.hidden = !(Na__LeMarginGrip__Editable && (Na__LeMarginGrip__Drag || Na__LeTools__GetTool() === Na__LeTools__TOOL_SELECT));
+        grip.hidden = !(Na__LeMarginGrip__Editable && (Na__LeMarginGrip__Drag || Na__LeTools__GetTool() === Na__LeTools__TOOL_SELECT || Na__LeTools__IsMoveAuto()));   // <-- A Move that came up by itself is still Select at rest: picking a note must not take the grip away
         grip.classList.toggle('is-dragging', !!Na__LeMarginGrip__Drag);
 
         const badge = Na__LeMarginGrip__Badge;
-        badge.hidden = !(report.overflow > 0);
+        badge.hidden = !(report.marginLost > 0);                                 // <-- The margin's own notes that go nowhere: a tail an overspill region carries on is shown there
         if (!badge.hidden) {
-            badge.textContent  = Na__LeCfg__FormatLabel('MarginOverflowBadge', '{count} not shown - widen the margin', { count : report.overflow });
+            badge.textContent  = Na__LeCfg__FormatLabel('MarginOverflowBadge', '{count} not shown - widen the margin', { count : report.marginLost });
             badge.style.left   = ((rect.X + 1.5) * ppm) + 'px';
             badge.style.bottom = ((layout.Page.HeightMm - (rect.Y + rect.HeightMm - 1.5)) * ppm) + 'px';
             badge.style.transform = 'scale(' + (1 / zoom) + ')';                 // <-- Readable at any zoom, anchored at its lower left

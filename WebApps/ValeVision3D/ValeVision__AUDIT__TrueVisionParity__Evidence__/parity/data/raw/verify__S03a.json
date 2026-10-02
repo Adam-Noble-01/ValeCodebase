@@ -1,0 +1,506 @@
+{
+ "slice_id": "S03a",
+ "claims_checked": 96,
+ "confirmed_ids": [
+  "S03a-F01",
+  "S03a-F04",
+  "S03a-F05",
+  "S03a-F08",
+  "S03a-F11",
+  "S03a-F12",
+  "S03a-F13",
+  "S03a-F14",
+  "S03a-F16",
+  "S03a-F18",
+  "S03a-F19",
+  "S03a-F21",
+  "S03a-F23",
+  "S03a-F25",
+  "S03a-F26",
+  "S03a-F27",
+  "S03a-F28",
+  "S03a-F31",
+  "S03a-F37",
+  "S03a-F39",
+  "S03a-F40",
+  "S03a-F41",
+  "S03a-F42",
+  "S03a-F43",
+  "S03a-F44",
+  "S03a-F45",
+  "S03a-F46",
+  "S03a-F47"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S03a-F15",
+   "field": "title",
+   "new_value": "No sheet-key restart or Page Up/Down turning; the Walk/Fly exit already works in VV",
+   "reason": "The Walk part of the original title is wrong for VV: VV's SuspendThreeD always runs the whole Walk/Fly exit."
+  },
+  {
+   "id": "S03a-F15",
+   "field": "detail",
+   "new_value": "PARTLY REFUTED. VV's Enter calls SuspendThreeD() without options (ModeController:524), but VV Transitions 1.0.0 always runs the whole Walk/Fly exit: if (Na__WalkMode__IsActive() || Na__FlyMode__IsActive()) Na__NavToolbar__SetOrbitMode() (42/Na__DrawView__Transitions__.js:114-115). That calls HandleOrbitClick, then the index.html toggle wrappers with 'return-to-orbit', then Na__UiFeature__ToggleWalkMode/ToggleFlyMode(null, SetActiveMode('orbit')) (NavigationToolbar__Controls.js:233-236,403; index.html:2016-2047). TV's v2.112.0 fault was TV-only: its SuspendThreeD called SetActiveMode('orbit'), which only repaints the toolbar. TV's own Transitions PORT NOTE asks to 'check ValeVision's SetOrbitMode really leaves Walk before assuming parity'; it does. What VV really lacks from this cluster: (1) RestartSheetKeys (TV MC 1.25.0, v2.115.0: detach, ReloadKeyMap, attach, TakeKeyboard), run on every entry from another tab. (2) StepSheet and its STEP_SHEET_EVENT listener (TV MC 1.23.0, v2.112.0): Page Up/Down turn the drawings and stop at the ends. (3) The opt-in shape of Transitions 1.1.0. VV's unconditional exit also fires when the snapshot renderer suspends around a viewport picture (SnapshotRenderer:501), so a picture rendered from the 3D tab drops a walker back to Orbit. That is S02a's WP-S02a-11 and S03a-V03.",
+   "reason": "Verified VV Transitions, the NavigationToolbar orbit path and the index.html wrappers. The Walk claim was wrong; the StepSheet and RestartSheetKeys gaps are confirmed."
+  },
+  {
+   "id": "S03a-F15",
+   "field": "recommendation",
+   "new_value": "Port RestartSheetKeys (TV :611-617, called :694/:709) and StepSheet (:810-819) with its listener (:1219) in WP-S03a-V04, after KeyMap 1.11.0 (ReloadKeyMap) and after Controls__Pc's STEP_SHEET_EVENT/TakeKeyboard (S03b). Pass { returnToOrbit : true } in Enter only together with, or after, S02a's Transitions 1.1.0 port (ReturnToOrbit = VV's Na__NavToolbar__SetOrbitMode). Until then VV ignores the option and already leaves Walk. When Transitions becomes opt-in, VV's floor plan and elevation entries must pass the option too (S03a-V03).",
+   "reason": "The original recommendation presented the returnToOrbit change as a fix for a VV bug that does not exist."
+  },
+  {
+   "id": "S03a-F15",
+   "field": "severity",
+   "new_value": "medium",
+   "reason": "With the Walk part refuted, what remains is Page Up/Down turning and the keyboard restart: feature parity, not a live defect."
+  },
+  {
+   "id": "S03a-F15",
+   "field": "evidence",
+   "new_value": "VV 42/Na__DrawView__Transitions__.js:114-115; VV 10/Na__UiFeature__NavigationToolbar__Controls.js:233-236,403; VV index.html:2016-2047,2074-2080; TV 40/Na__DrawView__Transitions__.js PORT NOTE and 1.1.0 log; VV ModeController__.js:524; VV 51/25/Na__LayoutEditor__SnapshotRenderer__.js:501; TV ModeController__.js:611-617,707,810-819,1219",
+   "reason": "Adds the code that disproves the Walk claim."
+  },
+  {
+   "id": "S03a-F30",
+   "field": "detail",
+   "new_value": "TV uses three per-tab hotkey files: 02__AppData/Na__Hotkeys__3dModelTab__.json, LE/03__Core__Config/Na__Hotkeys__DrawingTabs__.json and LE/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json. VV's 3D file is 02__AppData/Na__ValeVision__HotkeysDictionary__.json, and it has TWO runtime consumers. One is the handler (03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js:116). The other is the navigation help panel (10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:84), which renders the keyboard-shortcut rows from the same array. index.html comments at 1261 and 1776 also name the file. TV's Hotkeys__Manager (10__NavigationAndCameras) was itself ported from VV's handler. The array key (Na__TrueVision__/Na__ValeVision__HotkeysDictionary) and the action prefixes are brand-specific. The shared WCP service worker sends any '.+Hotkeys.*.json' through its network-first data bucket, so the new name is cached exactly as the old one is.",
+   "reason": "The rename would have broken the help panel: the survey named only the handler's fetch path."
+  },
+  {
+   "id": "S03a-F30",
+   "field": "recommendation",
+   "new_value": "Rename the VV 3D JSON to Na__Hotkeys__3dModelTab__.json. In the same change, update BOTH fetch paths (handler :116 and NavigationHelpPanel :84) and the index.html comments. Keep VV's array key, its ValeVision__* action names and its handler module (D-S03a-03). Acceptance: the Navigation Help panel still lists every shortcut.",
+   "reason": "Second consumer found by grep."
+  },
+  {
+   "id": "S03a-F30",
+   "field": "evidence",
+   "new_value": "VV HotkeyHandler__.js:116; VV NavigationHelpPanel__Controls.js:84,292-294; VV index.html:1261,1776; WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:245; TV KeyScope 1.1.0 log (rename)",
+   "reason": "Grep of every reference to the dictionary."
+  },
+  {
+   "id": "S03a-F34",
+   "field": "detail",
+   "new_value": "VV's jsPDF (35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js) is identical to TV's 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0 copy apart from line endings (cmp after stripping CR). VV has no html2canvas, which the Statement Writer PDF needs. TV moved jsPDF, html2canvas and the Classic scan in v2.155.0 Phase 0. BUT VV's legacy page layout system is still live. 30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js:627 opens 35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html. That page loads 01__Dependencies__VersionLocked/jspdf.umd.js by a relative script tag (:40) and PageLayoutSystem__TitleBlock__A3__.png by relative path (Na__PageLayoutSystem__Config.json:6, SystemLogic__Main__.js:33). Moving the files would break Image Export's 'send to drawing document' tab.",
+   "reason": "The survey recommended a move without checking the legacy folder's own users."
+  },
+  {
+   "id": "S03a-F34",
+   "field": "recommendation",
+   "new_value": "Mirror TV's locations by COPYING, not moving. Copy jsPDF to 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/. Vendor html2canvas 1.4.1 to 06__Vendor__Html2Canvas__v1.4.1/. Copy the Classic scan to 01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png. Point the Layout Editor at the copies: the AppConfig (Pdf JsPdfScriptPath, TitleBlock ClassicScanAssets), the SheetSetup fallback, the import-map index and the version-lock README. Leave the 35 copies in place until 35 is retired (S09 D-S09-10). See WP-S03a-V02.",
+   "reason": "Keeps Image Export's page layout working."
+  },
+  {
+   "id": "S03a-F34",
+   "field": "action",
+   "new_value": "port_adapted",
+   "reason": "A copy plus a config repoint, not a rename or move."
+  },
+  {
+   "id": "S03a-F07",
+   "field": "evidence",
+   "new_value": "VV ConfigState__KeyMap__.js:63,71-110. Edit__Deselect is enabled on ' ' at :91, and there are no Tool__Move, Tool__SelectSpace or Edit__Save rows. The VV KeyMappings JSON ships Tool__Move M, Tool__SelectSpace ' ', Edit__Save Ctrl+S, and Edit__Deselect switched off. VV ModeController__.js:627-643: OnSaveKey matches only through MatchKeyBinding. TV KeyMap log 1.1.0 (drift noted) and 1.5.0 (fixed, v2.115.0). The VV ledger does NOT record this symptom: row 240 is about where the listeners register.",
+   "reason": "The cited ledger row :240 does not mention the fallback."
+  },
+  {
+   "id": "S03a-F22",
+   "field": "evidence",
+   "new_value": "VV devlog v2.45.0 (:2471-2478): start-up JS 417 files / 9.5 MB -> 345 / 7.6 MB, and the editor's share 73 files / 1.9 MB -> 2 files / 48 KB. tree_tv/tree_vv byte sums: TV LE 289 JS / 7.8 MB, 23 CSS / 418 KB, 27 JSON / 533 KB; VV LE 139 JS / 3.2 MB, 11 CSS / 158 KB, 11 JSON / 223 KB. TV Index.html:901-904 statically imports the mode controller, tab strip, Dev menu and share-open. Import walk: only TV 40/Na__DrawView__RenameDrawing__.js:130 reaches into LE from outside, by dynamic import. Not evidence: TrueVision__NOTES__LayoutEditorPerformance__.md is an authoring-performance audit, and the v2.155.0 phone crashes were viewport rendering in the viewer.",
+   "reason": "The NOTES file and the phone crashes do not measure start-up weight."
+  },
+  {
+   "id": "S03a-F03",
+   "field": "detail",
+   "new_value": "TV's Rows use DocumentId 'Document ID', and the Revision row has ValuePrefix 'Revision' (SheetSetup 1.8.0, v2.109.0). TV also has RowWidthFactorByPaper {A2:1.2, A1:1.2} and the Project QR cell. The QR cell is 25 TitleBlock QrCell* keys: 16 settings and 9 notes, with QrCellEnabled true in TV. SheetSetup 1.5.0/1.6.0 reads the 16 settings. TV also has the Classic anchor DocumentId. VV's Rows keep DrawingNumber 'Drawing No.', because that is where a VV number is typed (ledger 339: 'not ported - needs a register').",
+   "reason": "Recounted: 25 keys (16 settings + 9 notes), not 17."
+  },
+  {
+   "id": "S03a-F09",
+   "field": "detail",
+   "new_value": "VV SheetSetup 1.1.0-1.3.0 are ports of TV 1.2.0-1.4.0, so VV's content stands at about TV 1.4.0. Missing: GetVectorQualitySetup, GetPlanDoorsSetup, GetModelSourceSetup and the private PdfFontCuts. GetTitleBlockSetup lacks rowWidthFactorByPaper and 16 qrCell fields (1.5.0/1.6.0/1.8.0). Also missing: site plan scales, the viewport rotate fields, DefaultStyles.depthFog (1.7.0, v2.94), the PDF font fields, and the 20/50/100/200 scales and Hide-swings fallbacks (1.9.0, v2.140). VV defect: GetScaleSetup repeats six keys in one object literal (lines 235-246).",
+   "reason": "Recounted: 16 qrCell fields, not 17. Also adds the VV-to-TV version mapping."
+  },
+  {
+   "id": "S03a-F10",
+   "field": "detail",
+   "new_value": "Both apps have the same 10 getters: Text, Dimension, Selection, EditScope, Shape, Measure, Leader, Eyedropper, Clipboard and Snapping. VV's return fewer fields. Missing: dimension defaultExtensionMm/defaultAtScale/round-up (1.4.0, v2.139); selection pickDragPx/doubleClickMs/doubleClickSlopPx and edit-scope autoMoveOnSelect/autoMoveKinds (1.1.0, v2.78); shape defaultAtScale; measure arrayMaxCount (1.3.0, v2.119); leader noteTooltip/noteTooltipMs (1.5.0, v2.144); snapping sheetChrome (1.2.0, v2.114) and five viewport-carry fields. No VV module reads any of these fields today (grep), so they stay inert until their tools port.",
+   "reason": "Recounted: 10 getters, not 12. The inertness claim was checked by grep."
+  },
+  {
+   "id": "S03a-F20",
+   "field": "detail",
+   "new_value": "VV LoadingVeil 1.0.0 ported TV's coming-out veil and exports DrawingSettled for the loader. It has no FirstOpen, by design, because the loader screen covers going in (VV v2.70.0). Two gaps remain against TV's going-in wait. (1) The SPECIFICATION job: TV waits on Na__LeSpec__EnsureLoaded() with 'Reading the Project Specification', while VV's WaitForFirstDrawing waits on drawings only. This is a real gap. (2) The text-metrics job ('Preparing the Drawing Fonts') was left out on purpose, in VV v2.70.0 and in this file's PORT NOTE, because VV has no PdfFonts module. VV's PreloadMetrics (ModeController 467-475) still loads jsPDF but returns nothing. The job becomes meaningful when D-S03a-05 brings PdfFonts. Also: TV's FirstOpen answers once per session and is skipped only for the quiet entry under a document tab, so the first drawing tab after that still gets the veil. VV's loader screen covers only the editor's first load (S03a-V05).",
+   "reason": "The survey presented the deliberate omission of the fonts job as a plain gap, and missed the once-per-session difference."
+  },
+  {
+   "id": "S03a-F20",
+   "field": "recommendation",
+   "new_value": "Keep the adaptation. Add the specification job to WaitForFirstDrawing now, using EnsureLoaded's promise and TV's status line. Make PreloadMetrics return its promise as TV does (:632-640), and add the fonts job when PdfFonts ports (D-S03a-05). Build the jobs on TV's track/Advance/Settled code (a VV FirstOpenJobs helper), not as a second veil. Decide D-S03a-11 for the first drawing tab after a document-tab entry.",
+   "reason": "Separates what can land now from what depends on PdfFonts."
+  },
+  {
+   "id": "S03a-F24",
+   "field": "recommendation",
+   "new_value": "Add to the facade: Na__LeLoad__OpenRegister(options), Na__LeLoad__OpenStatements(options), Na__LeLoad__IsSitePlanSheet(sheet), and the copies Na__LeLoad__VIEW_REGISTER = 'register' and Na__LeLoad__VIEW_STATEMENT = 'statement', both added to CheckNames. The document-tab feature-presence answer should be a static map in the loader that each feature package flips when it lands, not a runtime probe. IsSitePlanSheet: before load, read record.Sheet__DrawingType === 'siteplan' (SheetViews, Loader.js:187-196, must start carrying Sheet__DrawingType). After load, call editor.model.Na__LeModel__IsSitePlanSheet only if it exists, and answer false otherwise: VV's SheetModel has no such export until the site plan port (S04a). OpenRegister and OpenStatements must refuse cleanly, returning false and loading nothing, while their features are absent. Add a literal modelSource import to ImportEditor once ModelSource exists. Add a boot path that runs only when ?open= is present: Require(), then a literal import of 66/Na__LayoutEditor__Share__Open__.js and its Initialize.",
+   "reason": "VV's SheetViews has no Sheet__DrawingType, and VV's SheetModel does not export IsSitePlanSheet. The original would throw or misreport."
+  },
+  {
+   "id": "S03a-F33",
+   "field": "recommendation",
+   "new_value": "Port the four tests, adapted to VV's file names, VV's folder numbers and VV's handler (in place of Hotkeys__Manager). Port each with the package that makes it pass. Na__Test__DrawingTabKeys__: the fallback-parity and ReloadKeyMap sections with WP-S03a-02; the ControlKeepsKey, SheetTools-keyboard and Controls__Pc capture sections only after the S05a keyboard and S03b Controls__Pc ports. Na__Test__DocumentKeys__: the scope and 3D-hotkey sections with WP-S03a-V03; the document-key sections with WP-S03a-09. Na__Test__SheetPagingWalkExit__: paging with WP-S03a-V04 plus Controls__Pc 1.3.0. Its check that 'a bare SuspendThreeD() leaves Walk running' FAILS on VV until S02a's Transitions 1.1.0 lands. Na__Test__AuthoringZoomMax__: the config half with WP-S03a-V01; the clamp half with the Navigation port. Add Na__Test__AppConfigParity__, Na__Test__LoaderFacade__ and Na__Test__LoaderStylesheets__.",
+   "reason": "Several tests assert behaviour that VV gets only from other slices' packages. Ported early, they fail."
+  },
+  {
+   "id": "S03a-F38",
+   "field": "detail",
+   "new_value": "VV's Style FontFamily leads with Helvetica because VV has no PdfFonts module (VV ledger 1169), and its title block cells were re-measured in Helvetica. TV embeds Open Sans 300/400/600, from a same-origin path with the NA CDN as fallback. VV's own decision D14 says Open Sans 300/400/600. VV's tree holds no Open Sans TTF. BUT VV already loads the three Open Sans TTF cuts at run time for its screen font, from www.noble-architecture.com/assets/AD04_... (VV/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css:12,23 and the 300 block). So an NA host is already a VV runtime dependency. S10's D-S10-05 asks the same question.",
+   "reason": "The survey implied VV never depends on NA-hosted fonts. It already does, for the screen."
+  },
+  {
+   "id": "S03a-F38",
+   "field": "recommendation",
+   "new_value": "Adopt Open Sans embedding: port PdfFonts, put Open Sans first in Style FontFamily, and re-measure the title block cells. Host the three cuts wherever D-S10-05 decides. The better target is a same-origin VV asset folder, for the PDF cuts and the screen CSS alike, so that VV stops depending on an NA host.",
+   "reason": "Aligns with D-S10-05 and with VV's existing screen-font dependency."
+  },
+  {
+   "id": "S03a-F02",
+   "field": "evidence",
+   "new_value": "TV AppConfig lines 341 (PlanDoors), 1193 (DrawingRegister) and 1271 (Statement). VV linetype keys are ValeVision__Linetype__* (grep, 8 keys). There is no Open Sans TTF file under VV/ or WebApps/, but VV's screen font CSS fetches the cuts from www.noble-architecture.com/assets/AD04_... (Na__CoreUi__Styles__Fonts__.css).",
+   "reason": "Notes that VV already fetches remote Open Sans TTFs."
+  },
+  {
+   "id": "S03a-F06",
+   "field": "recommendation",
+   "new_value": "Take TV's barrel together with its units, keeping VV's INTEGRATION header (the loader initialises the editor) and VV's console prefix. ORDER MATTERS. The barrel statically imports ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier and IsCopyDragKey from the KeyMap unit (TV ConfigState__.js:236-253), and the five TV-only getters from SheetSetup/EditorSetup. If it lands before the units export those names, module linking fails and the whole editor stops loading. Land the five getters with SheetSetup/EditorSetup (WP-S03a-V01). Land the four KeyMap names with KeyMap 1.11.0 (WP-S03a-02).",
+   "reason": "The proposed WP sequence would have broken module linking (S03a-V01)."
+  },
+  {
+   "id": "S03a-F17",
+   "field": "detail",
+   "new_value": "TV: 3D Model | Drawings | Specification | Document Register | Design Statements. Drawings is a menu of every drawing, with the open one marked and a '+ New sheet' row. The strip shows from the 3D view whenever the project has a sheet. There is no rename or drag; the arrows step the tabs, and landing on Drawings opens a drawing. VV 1.5.0: one tab per sheet plus a + tab, rename and drag, and a spec tab only while a drawing is open. TV's own PORT NOTE reads 'Back-port: PENDING to ValeVision3D (offer after Adam's sign-off)'. TV v2.158.0 leaves three label questions to Adam: 'Document Register' or 'Drawing Register'; 'Design Statements' or 'Design Statement'; and what the Drawings tab reads while a drawing is open. All three are config labels, so VV follows TV's AppConfig. TV's strip also reads Na__LeModel__IsSitePlanSheet (for the menu row class and the rebuild signature), which VV's SheetModel does not export (see S03a-F24).",
+   "reason": "Adds TV's own sign-off note, the open label questions and the IsSitePlanSheet dependency."
+  },
+  {
+   "id": "S03a-F29",
+   "field": "detail",
+   "new_value": "VV's HotkeyHandler (53-56, 91-101) has no scope check and no contenteditable test. It and the sheet keyboard (SheetTools:476) both listen on window, and the sheet never checks defaultPrevented. On a drawing tab: T selects Text AND calls SetWalkMode (index.html 1795); R picks Rectangle AND resets the hidden camera; V toggles the carousel. Digits and Page Up/Down drive the hidden carousel whenever its toggled state is on, because Na__PresentationMode__UI__IsCarouselVisible returns a state flag, not CSS visibility. The Measurements box is not affected: it listens on window in the capture phase and stops the key (Measurements__.js:577-600, 879). TV v2.110.0 fixed the same report. Not run in a browser. Once the guard lands, Page Up/Down on a drawing tab do nothing until VV's Controls__Pc answers Nav__PreviousSheet/NextSheet (S03b/S05a). That interim is acceptable: today those keys move the hidden camera.",
+   "reason": "Adds the carousel-flag, Measurements-capture and Page Up/Down interim details, all verified in code."
+  },
+  {
+   "id": "S03a-F32",
+   "field": "detail",
+   "new_value": "In both apps' Na__UiFeature__Styles__AppHeader__.css: --Vale_HeaderFoldDuration is 1000ms, --Vale_HeaderFoldEase is cubic-bezier(0.40,0.00,0.20,1) and --Vale_HeaderFoldDelay is 1000ms (TV 210-212, VV 206-208). The body.na-layout-editor--active header, .na-le-tabs and .na-le-host rules are the same, with a one-way delay and no reduced-motion branch; only comments differ in the fold region (git diff -w). The fold is CSS only (TV v2.83.0). VV ported it in v2.70.0. Two adjacent differences are not the fold: the narrow-screen title (TV 18px, VV hidden: brand, D-S10-08), and the 3D canvas. VV places the canvas BELOW a visible tab strip (Na__CoreUi__Styles__RenderCanvas__.css:9,14); TV leaves the strip over it (S10 D-S10-04). With TabStrip 2.0.0 the strip shows over the 3D view on every project with drawings. The Drawings menu is placed when it opens, and again on scroll and resize, not during the fold. That is identical in TV.",
+   "reason": "Confirmed the fold. Adds the canvas difference that TabStrip 2.0.0 makes visible, and the menu-placement fact."
+  },
+  {
+   "id": "S03a-F35",
+   "field": "detail",
+   "new_value": "TV ModeController says 'Parity: verbatim, Divergences: console prefix only' (40-45). TV LoadingVeil says 'Back-port: PENDING to ValeVision3D', although VV ported it in v2.70.0 (53-54). TV DevMenu says 'verbatim'. TV TabStrip says 'Back-port: PENDING to ValeVision3D (offer after Adam's sign-off)'. VV ModeController and TabStrip still say 'Parity: new'. The VV ConfigState units still say 'Back-port: the same split applies' (done in TV v2.55.0). VV Loader__.js DESCRIPTION still says the editor arrives with 'its three stylesheets'; Na__LeLoad__STYLESHEETS now links eight. TV's ModeController log has no entry for v2.155.0.",
+   "reason": "Adds two more stale headers found during verification."
+  },
+  {
+   "id": "S03a-F36",
+   "field": "detail",
+   "new_value": "Several small TV fixes. TV's .na-le-tabs__tab--spec margin rule (Styles__Specification__.css:23) and the SheetTabEditTitle label (AppConfig:623) have been dead since TabStrip 2.0.0: no JS references them. TV's DevMenu NoSheets fallback (:207) is stale. TV Index.html:1730 still comments '3D Model plus one tab per sheet'. TV lacks VV's scene-broadcast refresh; ledger row 1231 names two files for it: the mode controller listeners (VV 1.15.1), and Panel__ViewportSettings 1.4.1, which rebuilds the Add Viewport scene list on every refresh. TV still fills that list once (Panel__ViewportSettings__.js:646-647). TV's three Measure labels are misplaced (S03a-F05). The ModeController log is missing its v2.155.0 entry.",
+   "reason": "Completes the back-port list: ViewportSettings is half of the ledger row, and one TV comment is stale."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S03a-V01",
+   "category": "wiring",
+   "title": "Barrel ahead of its units breaks module linking",
+   "detail": "TV's ConfigState barrel (1.29.0) statically imports four names from ConfigState__KeyMap__ (TV ConfigState__.js:236-253): ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier and IsCopyDragKey. It also imports GetVectorQualitySetup, GetPlanDoorsSetup, GetModelSourceSetup, GetDrawingRegisterSetup and GetStatementSetup from SheetSetup/EditorSetup. An ES module fails at link time when a named import is missing. WP-S03a-01 takes 'the six ConfigState files' while WP-S03a-02 ports KeyMap later. Taking TV's barrel while VV's KeyMap is still 1.0.0 would stop the whole editor loading, behind the VV loader's error screen. The barrel's code differs from VV's only in these nine names (git diff -w).",
+   "recommendation": "Land each of the barrel's names with the unit that exports it. The five getters go with SheetSetup/EditorSetup (WP-S03a-V01). The four KeyMap names go with KeyMap 1.11.0 and the key-file rename (WP-S03a-02). Gate every config package on Na__Verify__Exports__.mjs (it checks imported names) and Na__Verify__ModuleGraph__.mjs.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "TV 51/03__Core__Config/Na__LayoutEditor__ConfigState__.js:226-298; VV ConfigState__KeyMap__.js exports 12 names, none of them ReloadKeyMap/GetCopyDragModifier/GetMoveAnchorModifier/IsCopyDragKey; git diff -w ConfigState__.js (import/export lists only); survey WP-S03a-01 scope",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js"
+   ],
+   "tv_version": "1.29.0",
+   "vv_version": "1.17.0",
+   "est_lines": 0,
+   "depends_on": []
+  },
+  {
+   "id": "S03a-V02",
+   "category": "ui",
+   "title": "Selecting a viewport should fold the markup group (TV MC 1.21.0)",
+   "detail": "TV's SectionForKind returns FOLD_GROUP ('') for a viewport, and FocusPanelFor(kind, items) then folds the whole accordion group ('if (section === null) return false; return FocusSection(section || null)'). So Text, Dimensions, Shapes and Leaders (and later Images, Floor Areas and Patterns) do not stand open over a selected drawing (TV ModeController__.js:1036,1048,1101,1107). VV's SectionForKind(kind) returns null for a viewport and leaves the folds as they were (VV ModeController__.js:736,754,759). VV's PanelHost FocusSection(null) already folds the whole group (VV PanelHost__.js:474), so the viewport rule does not depend on any TV-only feature. Only the single-site-plan -> 'patterns' branch and the areas/images branches wait for their features.",
+   "recommendation": "In WP-S03a-V04, add the FOLD_GROUP constant, the two-argument SectionForKind/FocusPanelFor, and FocusPanelForSelection passing the expanded items, with the viewport rule. Leave the OneSitePlan, AllAreas and AllImages branches to the site plan, Floor Areas and Sheet Images packages.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "TV ModeController__.js:1036 (FOLD_GROUP), :1048-1100 (SectionForKind, OneSitePlan, AllImages, AllAreas), :1101-1115; VV ModeController__.js:736-766; VV PanelHost__.js:474-485; TV ModeController 1.21.0 log",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tv_version": "1.32.0",
+   "vv_version": "1.18.0",
+   "est_lines": 25,
+   "depends_on": []
+  },
+  {
+   "id": "S03a-V03",
+   "category": "wiring",
+   "title": "Transitions opt-in would strip the Walk exit from VV's plan and elevation entries",
+   "detail": "VV Transitions 1.0.0 SuspendThreeD() always leaves Walk/Fly, through Na__NavToolbar__SetOrbitMode. Three VV callers rely on that: the Layout Editor (ModeController:524), the floor plan controller (43/Na__FloorPlan__ModeController__.js:465) and the elevation controller (46/Na__Elevation__ModeController__.js:526). A fourth caller, the snapshot renderer (51/25/Na__LayoutEditor__SnapshotRenderer__.js:501), does NOT want it. It suspends around every viewport picture, so a picture rendered from the 3D tab (a bake, a quiet re-stamp after a drawing rename) drops a walker back to Orbit. TV removed that behaviour in Transitions 1.1.0 (v2.112.0). TV's own plan and elevation controllers never call Transitions, so TV only had to pass the option from the Layout Editor (:707). S02a's WP-S02a-11 ports the opt-in and names only the Layout Editor caller.",
+   "recommendation": "When Transitions 1.1.0 lands (S02a WP-S02a-11; ReturnToOrbit = VV's Na__NavToolbar__SetOrbitMode), pass { returnToOrbit : true } from all three VV drawing entries (Layout Editor, floor plan, elevation) in the same change. Leave the snapshot renderer call bare. Acceptance: entering a plan, an elevation or a drawing tab while walking leaves Walk; baking or re-stamping a viewport picture from the 3D tab while walking does not.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "VV grep of Na__DrawView__Transitions__SuspendThreeD callers: 51 ModeController:524, 43 FloorPlan MC:465, 46 Elevation MC:526, 51/25 SnapshotRenderer:501. TV callers: LE ModeController:707 (with the option), SnapshotRenderer:905 (bare). TV Transitions 1.1.0 log; S02a WP-S02a-11.",
+   "tv_paths": [
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js"
+   ],
+   "tv_version": "1.1.0",
+   "vv_version": "1.0.0",
+   "est_lines": 6,
+   "depends_on": [
+    "S02a WP-S02a-11"
+   ]
+  },
+  {
+   "id": "S03a-V04",
+   "category": "drift",
+   "title": "VV 3D hotkey dictionary dispatches its documentation rows",
+   "detail": "Na__ValeVision__HotkeysDictionary__.json holds ten ValeVision__DrawingMarkup__Contextual rows (D, O, Arrows, Alt, Shift, Ctrl+Z, Ctrl+Y, Ctrl+C / Ctrl+V, Delete, Escape). They sit in the same array the handler dispatches, so that they can be listed in the help panel's Advanced fold. index.html registers no callback for that action, and the handler calls preventDefault BEFORE it dispatches (HotkeyHandler__.js:91-101). So a bare D, O, Delete or Escape, outside a text field and on any tab, is taken from the browser and logs 'No callback for action ValeVision__DrawingMarkup__Contextual' on every press. TV's 3D file keeps only dispatchable bindings in its array (15) and documents the context keys in separate reference blocks (Na__Hotkeys__Movement__Reference, Na__Hotkeys__Ui__Reference). Low impact today: the only VV listeners that check defaultPrevented are the mode controller's Ctrl+S handler and the Measurements box, and both run in the capture phase, before this handler.",
+   "recommendation": "With the key-scope guard (WP-S03a-V03), skip any binding whose action has no registered callback before calling preventDefault. Alternatively, move the documentation rows into a reference block (TV's shape) and have the navigation help panel read it. Either way, keep the rows visible in VV's help panel.",
+   "action": "port_adapted",
+   "severity": "low",
+   "evidence": "VV 02__AppData/Na__ValeVision__HotkeysDictionary__.json (28 rows, 10 Contextual); VV HotkeyHandler__.js:74-82,91-101; VV index.html:1792-1809 (no Contextual callback); VV NavigationHelpPanel__Controls.js:292-294; TV 02__AppData/Na__Hotkeys__3dModelTab__.json (15 bindings plus reference blocks); grep: defaultPrevented checked only at ModeController:629 and Measurements:584",
+   "tv_paths": [
+    "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js"
+   ],
+   "est_lines": 10,
+   "depends_on": [
+    "S03a-F28"
+   ]
+  },
+  {
+   "id": "S03a-V05",
+   "category": "ui",
+   "title": "First drawing tab after a document-tab entry: TV veils it, VV does not",
+   "detail": "TV's first-open veil runs once per session (Na__LeVeil__FirstUsed, LoadingVeil:124,317). It is skipped only for the quiet entry under a document tab (EnterUnder; Enter calls FirstOpen when !Quiet, ModeController:733). So when a session starts on the Specification, Register or Statements and the reader then opens a drawing, 'Your Drawings Are Loading' covers that first drawing while its viewports render. In VV the loader screen covers only the editor's first load; after that, WithEditor runs every action with no screen (Loader.js:388-422). A first drawing tab opened after a document tab therefore gets no cover. This becomes reachable once TabStrip 2.0.0 shows the document tabs from the 3D view.",
+   "recommendation": "Decide with D-S03a-09 / D-S03a-11. For the same behaviour as TV, have the loader show its screen on the first sheet view of a session whose editor was first loaded for a document view, waiting on WaitForFirstDrawing. This is a loader-only change, with no second overlay.",
+   "action": "needs_decision",
+   "severity": "low",
+   "evidence": "TV ModeController__.js:722-737,883-888; TV LoadingVeil__.js:103,124,317; VV Loader__.js:376-422",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js"
+   ],
+   "est_lines": 20,
+   "depends_on": [
+    "WP-S03a-05",
+    "WP-S03a-06",
+    "D-S03a-11"
+   ]
+  }
+ ],
+ "refuted_work_packages": [
+  {
+   "id": "WP-S03a-01",
+   "reason": "Its scope says 'the six ConfigState files' with the barrel taken whole, while KeyMap 1.11.0 lands later in WP-S03a-02. TV's barrel statically imports ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier and IsCopyDragKey from the KeyMap unit (TV ConfigState__.js:236-253). On VV's KeyMap 1.0.0, module linking fails and the editor never loads, so the WP's own acceptance ('an existing VV sheet opens unchanged') cannot pass. Replaced by WP-S03a-V01."
+  },
+  {
+   "id": "WP-S03a-03",
+   "reason": "Its 3D-dictionary rename updates only the handler's fetch path (:116). The navigation help panel (10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js:84) fetches the same file and would lose every shortcut row. The WP also misses the dispatched documentation rows (S03a-V04), the Page Up/Down interim before Controls__Pc answers Nav__PreviousSheet/NextSheet, and the shared service-worker token step. Replaced by WP-S03a-V03."
+  },
+  {
+   "id": "WP-S03a-04",
+   "reason": "Its Walk acceptance ('opening a drawing while walking leaves Walk; the toolbar reads Orbit') already passes on VV today, because VV's SuspendThreeD always exits Walk; it proves nothing. The returnToOrbit option matters only with S02a's Transitions 1.1.0 opt-in, which must also reach VV's floor plan and elevation entries (S03a-V03). The WP also omits TV 1.21.0's feature-independent rule that selecting a viewport folds the markup group (S03a-V02). Replaced by WP-S03a-V04."
+  },
+  {
+   "id": "WP-S03a-11",
+   "reason": "'Move' breaks VV's live legacy page layout. 30__System__ImageExport (:627) opens 35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html, which loads jspdf.umd.js (script tag :40) and PageLayoutSystem__TitleBlock__A3__.png by relative path. Its acceptance grep ('no module still references 35 for these three assets') cannot pass while 35 exists. Replaced by WP-S03a-V02 (copy)."
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S03a-V01",
+   "title": "Config foundation, sequenced (replaces WP-S03a-01)",
+   "scope": "The AppConfig additive pass exactly as WP-S03a-01 defines it: TV's compact formatting; every TV-only key, block, note and label; VV values for NA paths; the behaviour-changing values withheld (title block Rows/DocumentId, AccordionSections, Style FontFamily, the 13 label rewordings); TV's three Selection-block Measure labels NOT copied. Port SheetSetup 1.9.0, ToolSetup 1.5.0 and EditorSetup 1.6.0 with the VV fallbacks re-applied; Readers gets its port note only. Take the barrel ConfigState__ at TV 1.29.0 EXCEPT its four KeyMap names (ReloadKeyMap, GetCopyDragModifier, GetMoveAnchorModifier, IsCopyDragKey); WP-S03a-02 adds those in the same change as KeyMap 1.11.0. Pdf JsPdfScriptPath and TitleBlock ClassicScanAssets stay on the 35 paths until WP-S03a-V02.",
+   "depends_on": [],
+   "size": "L",
+   "acceptance": [
+    "The Python key-tree diff of VV against TV shows only the allow-listed seams: 16 brand values, the NA-path values with their VV replacements, the VV-only labels and the withheld values",
+    "Na__Verify__Exports__.mjs and Na__Verify__ModuleGraph__.mjs pass; the editor loads through the loader with no module-link error in the console",
+    "node --check passes on every changed module",
+    "An existing VV sheet opens, renders and exports its PDF unchanged; the strip and Dev menu wording are unchanged",
+    "GetScaleSetup returns each key once"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js"
+   ],
+   "files_vv": [
+    "80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js"
+   ],
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs (config half)"
+   ],
+   "risk": "A barrel name that lands ahead of its unit stops the whole editor at link time. Run the exports harness before anything else."
+  },
+  {
+   "id": "WP-S03a-V02",
+   "title": "Library and asset placement by copy (replaces WP-S03a-11)",
+   "scope": "Copy VV's jsPDF to 04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js (identical bytes apart from line endings). Vendor html2canvas 1.4.1 to 04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js. Copy the Classic scan to 01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png. Point the Layout Editor's AppConfig (Pdf JsPdfScriptPath, TitleBlock ClassicScanAssets) and the SheetSetup fallback at the copies, and update Vale__Dependencies__ImportMap__Index__.json and Vale__Dependencies__VersionLock__README__.md. Leave the 35__System__PageLayoutSystem copies in place: Image Export's page-layout tab still loads them by relative path. Retiring 35 is S09 D-S09-10's call.",
+   "depends_on": [
+    "WP-S03a-V01"
+   ],
+   "size": "S",
+   "acceptance": [
+    "The Layout Editor's Download PDF and the Classic title block render exactly as before, from the new paths",
+    "Image Export's 'send to drawing document' tab still loads jsPDF and its title block, with no 404 in the network panel",
+    "No Layout Editor module or LE config references 35__System__PageLayoutSystem (grep)"
+   ],
+   "files_tv": [
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+    "04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js",
+    "01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png"
+   ],
+   "files_vv": [
+    "04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+    "04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js",
+    "01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+    "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__ImportMap__Index__.json",
+    "04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md"
+   ],
+   "tests_to_port": [],
+   "risk": "Low, provided nothing is deleted from 35."
+  },
+  {
+   "id": "WP-S03a-V03",
+   "title": "Key scope and the 3D hotkey guard (replaces WP-S03a-03)",
+   "scope": "Port 03__AppUtils/Na__AppUtils__KeyScope__.js 1.1.0 verbatim; its header names VV's handler and key files. In VV's Na__AppUtils__ValeVision__HotkeyHandler__.js: test Na__KeyScope__Is(Na__KeyScope__MODEL) first; use Na__KeyScope__IsTypingTarget instead of the tag-only test; and skip a binding whose action has no registered callback before preventDefault (S03a-V04). Mode controller: add the Na__LeMode__KeyScope reader and Na__KeyScope__Follow in Initialize. If D-S03a-03 is (a): rename 02__AppData/Na__ValeVision__HotkeysDictionary__.json to Na__Hotkeys__3dModelTab__.json and update BOTH fetches (handler :116, Na__UiFeature__NavigationHelpPanel__Controls.js:84) and the index.html comments (:1261, :1776). Ship with, or just before, Controls__Pc's Nav__PreviousSheet/NextSheet (S03b/S05a). Record the shared service-worker token step (D-S09-06). Dedupe with S05a WP-S05a-01 and S09 WP-S09-05: one owner per file.",
+   "depends_on": [
+    "WP-S03a-02",
+    "S03b/S05a Controls__Pc Nav__PreviousSheet/NextSheet (same release or earlier)"
+   ],
+   "size": "M",
+   "acceptance": [
+    "On a drawing tab, T/R/V/B/Y/1-9/PageUp/PageDown leave the hidden camera, Walk mode and the carousel untouched",
+    "On the 3D Model tab, R still resets the view and T still enters Walk where Walk is enabled; a contenteditable keeps its letters",
+    "The Navigation Help panel still lists every shortcut, including the Advanced fold",
+    "D, O and Escape on the 3D tab no longer log 'No callback for action'",
+    "Before the editor loads, the scope reads as model"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js",
+    "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json"
+   ],
+   "files_vv": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js"
+   ],
+   "hot_files": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js",
+    "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json",
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "index.html"
+   ],
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs (scope and 3D-hotkey sections, adapted to VV's handler)"
+   ],
+   "risk": "Low. The KeyScope module has no imports, and the guard only removes actions on non-3D tabs. The one trap is a rename without the help panel path."
+  },
+  {
+   "id": "WP-S03a-V04",
+   "title": "Mode controller core realignment (replaces WP-S03a-04)",
+   "scope": "Port TV's feature-independent hunks: RestartSheetKeys (1.25.0); StepSheet and its STEP_SHEET_EVENT listener (1.23.0); EnterUnder with the Quiet flag (1.30.0); the VIEW_REGISTER/VIEW_STATEMENT constants; OpenRegister and OpenStatements, which refuse cleanly while their features are absent; PreloadMetrics returning its promise; the Leave ordering; the two-argument SectionForKind/FocusPanelFor/FocusPanelForSelection with the viewport FOLD_GROUP rule (S03a-V02). The site plan, Floor Areas and Sheet Images branches wait for their features. Add SuspendThreeD({ returnToOrbit : true }) in Enter in the same change as S02a's WP-S02a-11 (Transitions 1.1.0); that package also adds the option to VV's floor plan and elevation entries (S03a-V03). Keep the VV seams: folder numbers, console prefix, Layout Mode IsAvailable, WaitForFirstDrawing, the scene-broadcast listeners, the loader INTEGRATION header, and the Snapping path until ObjectSnap ports.",
+   "depends_on": [
+    "WP-S03a-02",
+    "WP-S03a-V03",
+    "S03b Controls__Pc STEP_SHEET_EVENT and TakeKeyboard",
+    "S02a WP-S02a-11 (Transitions 1.1.0) for the returnToOrbit line only"
+   ],
+   "size": "L",
+   "acceptance": [
+    "Page Up/Down turn the drawings in tab order and stop at the ends",
+    "Returning from the specification restarts the sheet keyboard: a held key or a half-typed value is dropped, and the stage has focus",
+    "Selecting a viewport folds Text, Dimensions, Shapes and Leaders; selecting text opens Text alone",
+    "Non-regression: opening a drawing, a plan or an elevation while walking still leaves Walk, and the toolbar reads Orbit",
+    "After Transitions 1.1.0: re-stamping or baking a viewport picture from the 3D tab while walking does not leave Walk",
+    "git diff --no-index -w against TV shows only the listed VV seams plus the hunks of features not yet ported"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js"
+   ],
+   "tests_to_port": [
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs (the paging sections now; the walk-exit sections after S02a WP-S02a-11)"
+   ],
+   "risk": "The mode controller is the most contended file in the port: serialise this with every feature package's hunk (WP-S03a-12)."
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S03a-11",
+   "question": "When a VV session's first Layout Editor entry is a document tab (the Specification; later the Register or Statements), should the first DRAWING tab opened afterwards get a loading cover? TV's once-per-session first-open veil gives it one.",
+   "options": "(a) Yes: the loader shows its screen on the first sheet view of a session whose editor was loaded for a document view, waiting on WaitForFirstDrawing. (b) No: VV's cover stays tied to the editor's first load.",
+   "recommendation": "(a), for an identical experience. It is a loader-only change, with no second overlay. Decide together with D-S03a-09 (loading wording) and D-S10-03.",
+   "blocks": [
+    "S03a-V05",
+    "WP-S03a-05"
+   ]
+  }
+ ],
+ "coverage_gaps_closed": [
+  "The two TV docs in scope were re-read and mapped to their owners: TrueVision__PLAN__DrawingMenus__.md belongs to S02a; TrueVision__NOTES__LayoutEditorPerformance__.md belongs to S03b/S04a and is not loader evidence",
+  "Found a second runtime consumer of VV's 3D hotkey dictionary: NavigationHelpPanel__Controls.js:84",
+  "VV's legacy 35__System__PageLayoutSystem is still live through Image Export, which forbids moving jsPDF and the Classic scan",
+  "Found TV 1.21.0's viewport FOLD_GROUP rule, which can land in VV now",
+  "Identified the VV callers of Transitions SuspendThreeD that an opt-in would change (43 FloorPlan, 46 Elevation, SnapshotRenderer)",
+  "Found that VV's 3D dictionary documentation rows are dispatched and preventDefaulted",
+  "Found the first-drawing-tab cover difference after a quiet document entry",
+  "Found the barrel/unit link-order hazard in the proposed WP sequence",
+  "Listed the cross-slice duplicate ownership (S05a, S09) and duplicate decisions (S09, S10)"
+ ],
+ "notes": "The slice is strong and mostly accurate. I opened all 16 critical and high findings against the files, plus 25 of the 31 medium and low ones. Independent recounts matched the survey: 356 AppConfig key differences, the 16 brand values, the misplaced TV labels, 59/36 key bindings, the 31-import mode controller walk, the 11-v-6 Ready chain, the 10/6 tab-strip CSS rules, the loader facade and the ledger contradiction. The top-bar fold is confirmed identical.\n\nThe main error: S03a-F15 and headline item 2 say VV keeps Walk running under the editor. That is wrong. VV's SuspendThreeD always runs the whole Walk/Fly exit through Na__NavToolbar__SetOrbitMode; TV's v2.112.0 bug was TV-only. What VV lacks is the opt-in, so that the snapshot renderer stops ejecting a walker. When that lands (S02a WP-S02a-11), VV's floor plan and elevation entries must pass the option too (S03a-V03).\n\nTwo recommendations would have broken VV:\n- WP-S03a-01 takes TV's barrel ahead of KeyMap 1.11.0. That is a static-import link failure, and the editor would not load.\n- WP-S03a-11 moves jsPDF and the Classic scan, but legacy 35 is still opened by Image Export. Copy instead.\n\nOne rename was incomplete: the 3D dictionary has a second consumer, the help panel.\n\nMinor count fixes: 25 QR keys (16 settings + 9 notes), not 17; 10 ToolSetup getters, not 12. One wrong ledger citation (:240). The NOTES doc was misused as loader evidence.\n\nFour work packages are replaced: WP-S03a-01/03/04/11 -> V01/V03/V04/V02. Dependants re-point: WP-02 -> V01; WP-05 and WP-12 -> V04; WP-09 -> V03/V04.\n\nThe planner must dedupe. KeyScope, the 3D-hotkey guard, the key-file rename and DocumentKeys are also proposed by S05a (WP-S05a-01/02/05) and S09 (WP-S09-05). Decisions D-S03a-01/02/04/09/10/05/06 duplicate D-S09-01/03/07/08 and D-S10-01/02/03/05. Nothing was run in a browser."
+}

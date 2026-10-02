@@ -1,0 +1,169 @@
+﻿diff --git a/before/Na__LayoutEditor__PdfExporter__.js b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+index 6b9dd16f..757787af 100644
+--- a/before/Na__LayoutEditor__PdfExporter__.js
++++ b/D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js
+@@ -33,18 +33,39 @@
+ //                   file's own sequence; the log below names each one
+ // - Source version: 1.12.0 (TrueVision3D v2.160.0, 23-Sep-2026; read at HEAD b2aa9151)
+ // - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5); the linework call's shape
+-//                   01-Oct-2026 for ValeVision3D {{VVREL:W1-23}}
++//                   01-Oct-2026 for ValeVision3D {{VVREL:W1-23}}; the picture packing (1.11.0), the
++//                   strict and pictureCompression options, LoadLibrary and the awaited save
++//                   02-Oct-2026 for ValeVision3D {{VVREL:W1-24}}
+ // - Parity        : adapted
+ // - Divergences   :
+ //   - Against its sources: any paper size; vector content; primitives shared with the screen.
+ //   - EnsureLinework is handed the viewport's Model Source, as TrueVision3D's exporter does; it is
+ //     always the live model here (ValeVision3D has no design phases).
+-//   - Not here yet: TrueVision3D's 1.4.0 to 1.12.0.
++//   - EnsureJsPdf answers what LoadLibrary answers: it does not wait for the Open Sans cuts yet
++//     (TrueVision3D's 1.4.0, Na__LayoutEditor__PdfFonts__, is not here).
++//   - Not here yet: TrueVision3D's 1.2.0 and 1.12.0 (site plans, and their strict check), 1.4.0
++//     (Open Sans), 1.6.0 (depth fog, and its picture's packing), 1.7.0 (the Layers list's paint
++//     order), 1.8.0 (Sheet Images), 1.9.0 (turned viewports) and 1.10.0 (note regions).
+ // - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 02-Oct-2026 - Version 1.2.2 (TrueVision3D's picture packing and export options, {{VVREL:W1-24}})
++// - Viewport pictures (the 2D underlay and the 3D picture) are packed 'FAST' -
++//   the Sub predictor - through Na__LePdf__AddPicture. jsPDF's default on a
++//   compressed document is Paeth, and Chrome's PDF viewer (and Android's)
++//   garbles a Paeth picture over 60 MB decoded into black blocks and streaks.
++//   Pictures come out larger, with the same pixels. options.pictureCompression
++//   can override it. Ported from TrueVision3D (PdfExporter 1.11.0, v2.155.0).
++// - BuildDocument, DrawViewport and ExportSheet take TrueVision3D's options:
++//   { strict : true } throws when a 2D viewport's drawing source is missing or
++//   a 3D viewport could not be rendered, where the default leaves the frame
++//   empty and still exports. Download PDF and the Dev menu pass no options.
++// - Na__LePdf__LoadLibrary loads jsPDF alone and is exported; EnsureJsPdf
++//   awaits it, as TrueVision3D's does. ExportSheet awaits the save
++//   (returnPromise), so its toast follows the hand-over to the browser.
++//
+ // 01-Oct-2026 - Version 1.2.1 (TrueVision3D's linework call, {{VVREL:W1-23}})
+ // - A 2D viewport's linework is asked for with the viewport's Model Source,
+ //   as TrueVision3D's exporter asks: EnsureLinework(definition, null, false,
+@@ -109,9 +130,9 @@
+     // ------------------------------------------------------------
+ 
+ 
+-    // FUNCTION | Make Sure window.jspdf.jsPDF Exists (injects the vendored UMD once)
++    // FUNCTION | Load the Vendored jsPDF UMD Once
+     // ------------------------------------------------------------
+-    function Na__LePdf__EnsureJsPdf() {
++    function Na__LePdf__LoadLibrary() {
+         if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+         if (Na__LePdf__LoadPromise) return Na__LePdf__LoadPromise;
+         Na__LePdf__LoadPromise = new Promise((resolve, reject) => {
+@@ -126,6 +147,15 @@
+     }
+     // ------------------------------------------------------------
+ 
++
++    // FUNCTION | Make Sure jsPDF Exists Before Any Document Is Measured or Drawn
++    // ------------------------------------------------------------
++    async function Na__LePdf__EnsureJsPdf() {
++        const JsPdf = await Na__LePdf__LoadLibrary();
++        return JsPdf;                                                             // <-- TrueVision3D also awaits its Open Sans cuts here (Na__LayoutEditor__PdfFonts__, not ported yet)
++    }
++    // ------------------------------------------------------------
++
+ // endregion -------------------------------------------------------------------
+ 
+ 
+@@ -213,17 +243,35 @@
+     // ------------------------------------------------------------
+ 
+ 
++    // HELPER FUNCTION | Put One Viewport Picture on the Page
++    // ------------------------------------------------------------
++    // EVERY VIEWPORT PICTURE IS PACKED 'FAST'. Given no compression, jsPDF
++    // picks 'SLOW' on a compressed document - the Paeth predictor on every
++    // row - and Chrome's PDF viewer, the same engine as Android's, paints
++    // black blocks and streaks over any such picture over 60,000,000 decoded
++    // bytes (PS01 D01's proposed plan, 4518 x 5183 px, 70.3 MB). 'FAST' is the
++    // Sub predictor, which never reads the row above, so it cannot happen; the
++    // cost is a larger picture. Sheet Images have always been packed this way.
++    // options.pictureCompression overrides it for a caller that wants other.
++    // ------------------------------------------------------------
++    function Na__LePdf__AddPicture(doc, dataUrl, x, y, widthMm, heightMm, options) {
++        const packing = (options && typeof options.pictureCompression === 'string') ? options.pictureCompression : 'FAST';
++        doc.addImage(dataUrl, 'PNG', x, y, widthMm, heightMm, undefined, packing);
++    }
++    // ------------------------------------------------------------
++
++
+     // HELPER FUNCTION | Draw One Viewport
+     // ------------------------------------------------------------
+-    async function Na__LePdf__DrawViewport(doc, sheet, viewport) {
++    async function Na__LePdf__DrawViewport(doc, sheet, viewport, options) {
+         const frame   = viewport.Viewport__FrameMm;
+         const clipped = Na__LePdf__BeginClip(doc, frame);
+         try {
+             if (viewport.Viewport__Kind === Na__LeModel__KIND_2D) {
+                 const described = Na__LeVp2d__Describe(viewport);
+-                if (!described.definition) return;
++                if (!described.definition) { if (options && options.strict) throw new Error('A viewport drawing source is missing.'); return; }
+                 const underlay = await Na__LeVp2d__RenderForExport(viewport);
+-                if (underlay && underlay.dataUrl) doc.addImage(underlay.dataUrl, 'PNG', frame.X, frame.Y, frame.WidthMm, frame.HeightMm);
++                if (underlay && underlay.dataUrl) Na__LePdf__AddPicture(doc, underlay.dataUrl, frame.X, frame.Y, frame.WidthMm, frame.HeightMm, options);
+                 if (viewport.Viewport__Styles.projectedLinework !== false) {
+                     const classes = await Na__LeVp2d__EnsureLinework(described.definition, null, false, described.modelSource);   // <-- The viewport's own Model Source (the live model here)
+                     if (classes) Na__LePdf__DrawLinework(doc, sheet, viewport, described, classes);
+@@ -234,9 +282,10 @@
+                 return;
+             }
+             const dataUrl = await Na__LeVp3d__RenderForExport(sheet, viewport);
++            if (!dataUrl && options && options.strict) throw new Error('A 3D viewport could not be rendered.');
+             if (dataUrl) {
+                 const rect = Na__LeVp3d__ExportRectMm(viewport);                   // <-- The picture's own rectangle, or the frame when it shows a window of a zoomed picture
+-                doc.addImage(dataUrl, 'PNG', frame.X + rect.X, frame.Y + rect.Y, rect.WidthMm, rect.HeightMm);
++                Na__LePdf__AddPicture(doc, dataUrl, frame.X + rect.X, frame.Y + rect.Y, rect.WidthMm, rect.HeightMm, options);
+             }
+         } finally {
+             Na__LePdf__EndClip(doc, clipped);
+@@ -278,7 +327,7 @@
+ 
+     // FUNCTION | Build the Document for a Sheet (returns the jsPDF instance)
+     // ------------------------------------------------------------
+-    async function Na__LePdf__BuildDocument(sheet) {
++    async function Na__LePdf__BuildDocument(sheet, options) {
+         const JsPdf  = await Na__LePdf__EnsureJsPdf();
+         const setup  = Na__LeCfg__GetPdfSetup();
+         const layout = Na__LeLayout__Solve(sheet);
+@@ -303,7 +352,7 @@
+             .filter((e) => Na__LeModel__IsLayerVisible(sheet, e.v.Viewport__LayerId))
+             .sort((a, b) => (b.rank - a.rank) || (a.i - b.i))
+             .map((e) => e.v);
+-        for (let i = 0; i < ordered.length; i++) await Na__LePdf__DrawViewport(doc, sheet, ordered[i]);   // <-- Pictures at the raster export level
++        for (let i = 0; i < ordered.length; i++) await Na__LePdf__DrawViewport(doc, sheet, ordered[i], options);   // <-- Pictures at the raster export level
+ 
+         // SHEET MARKUP AND CHROME
+         Na__LeChrome__DrawToPdf(doc, Na__LeMarkup__BuildSheetPrimitives(sheet, layout, null));
+@@ -315,14 +364,14 @@
+ 
+     // FUNCTION | Export a Sheet and Hand the File to the Browser
+     // ------------------------------------------------------------
+-    async function Na__LePdf__ExportSheet(sheet, showToast) {
++    async function Na__LePdf__ExportSheet(sheet, showToast, options) {
+         const toast = (typeof showToast === 'function') ? showToast : () => {};
+         if (!sheet) return false;
+         try {
+             const cap = Na__LeCfg__GetSpecificationSetup().loadTimeoutMs;
+             await Promise.race([ Na__LeSpec__EnsureLoaded(), new Promise((resolve) => { window.setTimeout(resolve, cap); }) ]);   // <-- The notes margin prints its notes, not an empty column
+-            const built = await Na__LePdf__BuildDocument(sheet);
+-            built.doc.save(built.filename);
++            const built = await Na__LePdf__BuildDocument(sheet, options);
++            await built.doc.save(built.filename, { returnPromise : true });
+             const margin = Na__LeMargin__Report(sheet, null);
+             if (margin.on && margin.overflow > 0) toast(Na__LeCfg__FormatLabel('PdfMarginOverflow', 'PDF downloaded, but {count} margin note(s) did not fit and were left out. Widen the notes margin or make its text smaller.', { count : margin.overflow }), true);
+             else toast(Na__LeCfg__GetLabel('PdfReadyMessage', 'PDF downloaded.'), false);
+@@ -346,6 +395,7 @@
+     // ------------------------------------------------------------
+     export {
+         Na__LePdf__EnsureJsPdf,
++        Na__LePdf__LoadLibrary,                                                 // <-- jsPDF ALONE, for the statement PDF: it draws no text, so the Open Sans cuts EnsureJsPdf also fetches would be half a megabyte a reader never uses
+         Na__LePdf__BuildDocument,
+         Na__LePdf__ExportSheet
+     };

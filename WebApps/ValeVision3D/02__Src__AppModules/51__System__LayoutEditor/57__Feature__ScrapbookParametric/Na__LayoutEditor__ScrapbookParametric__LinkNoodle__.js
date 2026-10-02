@@ -54,20 +54,50 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js,
-//                   its 1.2.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
-// - Parity        : verbatim - every code region is byte for byte TrueVision's
-// - Divergences   : Header, console prefix and folder numbers only.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js
+// - Source version: 1.2.2 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before
+//                   it was TrueVision's 1.2.0 (ValeVision3D v2.68.0) with the 1.2.1 chrome-slot
+//                   hunk replayed by parity package W1-28. 1.2.1 (v2.106.0) records no try and
+//                   1.2.2 (v2.138.0) is "NOT tried by Adam" in TrueVision: ported under DR-01 (c)
+//                   and named. 1.2.2 reads a turned frame through the ViewportRotation leaf (W1-14);
+//                   frames turn only once the rotation handles land (W3-06).
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.2.0, including the plug being hidden while
-//   either end is dragged - a fault found in this port's own test and fixed
-//   in both apps the same hour.
+// 21-Sep-2026 - Version 1.2.2
+// - A tie to a turned viewport (Viewport__RotationDeg) lands on the upright box
+//   round its frame as it stands.
+//
+// 21-Sep-2026 - Version 1.2.1
+// - ScaleCell reads the title block's labels from EVERY .na-le-paper__chrome
+//   SVG. The sheet surface now stacks the paper in the Layers list's order and
+//   each viewport's frame and caption sit in a chrome slot of their own, so the
+//   first chrome SVG on the paper is a caption and the Scale label was never
+//   found in it - the noodle fell back to the middle of the band.
+//
+// 20-Sep-2026 - Version 1.2.0
+// - THE PLUG. The noodle's far end is a handle as well as its near one. Adam:
+//   "for a lot of users it's going to be more logical to grab the end point and
+//   move that to whatever they want to tag... like dragging a rope or a cable".
+//   Both ends start the one drag, so there is one behaviour, not two.
+// - The plug is hidden while either end is dragged. The live noodle took the
+//   finished tie away but left the plug's dot sitting at the far end of a
+//   noodle that was no longer there - found while testing the ValeVision port.
+//   Hidden rather than removed: it may be the element the press began on.
+//
+// 20-Sep-2026 - Version 1.1.0
+// - Untying an element that has no scale bar - a Drawing Title on its own -
+//   says it keeps what it says, not that it keeps a scale.
+//
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation: the noodle, the outlined target, the socket and
+//   the drag that re-ties.
 //
 // =============================================================================
 
@@ -109,6 +139,7 @@
         Na__LeParamLink__SetLink,
         Na__LeParamLink__SetSheetLink
     } from './Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js';
+    import { Na__LeVpRot__Bounds } from '../20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: the box round a turned frame
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -266,12 +297,12 @@
         if (!band || !(band.WidthMm > 0)) return null;
         const whole  = { box : band, point : { x : band.X + (band.WidthMm * 0.75), y : band.Y } };
         const paper  = Na__LeSurface__GetElements().paper;
-        const chrome = paper ? paper.querySelector('.na-le-paper__chrome') : null;
+        const texts  = paper ? Array.from(paper.querySelectorAll('.na-le-paper__chrome text')) : [];   // <-- EVERY chrome slot: the surface stacks each viewport's caption in a slot of its own, so the first is no longer the title block's
         const setup  = Na__LeCfg__GetTitleBlockSetup();
         const row    = (setup && Array.isArray(setup.rows)) ? setup.rows.find((entry) => entry && entry.Key === Na__LeParamNoodle__SCALE_KEY) : null;
-        if (!chrome || !row) return whole;
+        if (!texts.length || !row) return whole;
         const wanted = String(row.Label || row.Key).trim().toLowerCase();
-        const inBand = Array.from(chrome.querySelectorAll('text')).map((el) => ({ x : parseFloat(el.getAttribute('x')), y : parseFloat(el.getAttribute('y')), text : (el.textContent || '').trim().toLowerCase() }))
+        const inBand = texts.map((el) => ({ x : parseFloat(el.getAttribute('x')), y : parseFloat(el.getAttribute('y')), text : (el.textContent || '').trim().toLowerCase() }))
             .filter((t) => Number.isFinite(t.x) && Number.isFinite(t.y) && t.y >= band.Y && t.y <= band.Y + band.HeightMm);
         const label  = inBand.find((t) => t.text === wanted);
         if (!label) return whole;
@@ -293,7 +324,7 @@
         const none = { kind : Na__LeParamLink__KIND_NONE, viewport : null, box : null };
         if (!sheet || !pointMm) return none;
         const viewport = Na__LeDrawScale__ViewportAt(sheet, pointMm);
-        if (viewport) return { kind : Na__LeParamLink__KIND_VIEWPORT, viewport : viewport, box : viewport.Viewport__FrameMm };
+        if (viewport) return { kind : Na__LeParamLink__KIND_VIEWPORT, viewport : viewport, box : Na__LeVpRot__Bounds(viewport) };   // <-- The box round the frame as it stands
         const layout = Na__LeSurface__GetLayout();
         const band   = layout ? layout.TitleBlock : null;
         if (band && pointMm.x >= band.X && pointMm.x <= band.X + band.WidthMm && pointMm.y >= band.Y && pointMm.y <= band.Y + band.HeightMm) {
@@ -355,7 +386,7 @@
     // ------------------------------------------------------------
     function Na__LeParamNoodle__LandingFor(tied, socket) {
         if (tied.kind === Na__LeParamLink__KIND_VIEWPORT && tied.viewport) {
-            const box = tied.viewport.Viewport__FrameMm;
+            const box = Na__LeVpRot__Bounds(tied.viewport);                     // <-- The box round the frame as it stands, turned or not
             return { box : box, land : Na__LeParamNoodle__LandOn(box, socket) };
         }
         if (tied.kind === Na__LeParamLink__KIND_SHEET) {

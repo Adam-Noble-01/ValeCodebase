@@ -1,0 +1,16 @@
+﻿ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 4 named file(s) - 3 PORT NOTE(s), 3 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 2 since rewritten (their full checks apply)
+
+  PENDING  4 release placeholder(s) in 3 file(s), for the wave's Parity Scribe: W1-32 x4
+      02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:59  {{VVREL:W1-32}}
+      02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:86  {{VVREL:W1-32}}
+      02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js:35  {{VVREL:W1-32}}
+      80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs:46  {{VVREL:W1-32}}
+
+  Baseline entries that no longer apply (the file was written since 01-Oct-2026):
+      02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js
+      02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js
+
+  RESULT: PASS (0 fail, 0 warn, 4 pending)

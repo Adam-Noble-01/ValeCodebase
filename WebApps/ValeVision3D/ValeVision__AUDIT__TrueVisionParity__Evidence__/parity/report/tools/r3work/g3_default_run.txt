@@ -1,0 +1,292 @@
+K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked: css @import 28, new URL 34, path strings 152, folder tokens 11
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:216  } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:420  // @delegate: ../42__System__DrawingViewCore/
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:421  // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:422  // @delegate: ../46__System__ElevationViews/Na__Elevation__ModeController__.js
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:424  import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:425  import { Na__DrawView__ComposerPreset__RenderFrame } from '../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:426  import { Na__DrawMarkup__SyncFrame } from '../42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:427  import { Na__DrawData__LOADED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:428  import { Na__FloorPlanMode__HandleResize } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:429  import { Na__ElevationMode__HandleResize } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:727  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:1319  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js
+  FAIL G1 retired name  02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js:1323  if (!Na__DrawView__ComposerPreset__RenderFrame()) {
+  FAIL G1 retired name  02__Src__AppModules/02__AppData/Na__AppConfig__Main.json:385  "DrawingView__Config__Description"       : "Shared by every 2D drawing (floor plans, elevations, sections). The paper colour behind a drawin
+  FAIL G1 retired name  02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js:5  // FILE       : Na__AppUtils__SnapshotHistory__.js
+  FAIL G1 retired name  02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js:384  // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:279  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js:281  import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:84  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js:86  import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:149  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+  FAIL G1 retired name  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js:154  } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+  FAIL G1 retired name  02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__FrameRenderer.js:112  import { Na__DistanceCulling__Update } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+  FAIL G1 retired name  02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Thumbnails.js:117  import { Na__DistanceCulling__Update }        from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+  FAIL G1 retired name  02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js:67  const Na__Elev__CONFIG_PATH = './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__Config.json';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:5  // FILE       : Na__DrawView__ComposerPreset__.js
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:91  // @delegate: ../40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:93  import { Na__2dProfileLines__Create } from '../40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:274  function Na__DrawView__ComposerPreset__Enter(context) {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:276  if (Na__DrawPreset__Active) Na__DrawView__ComposerPreset__Exit();       // <-- Never stack two presets
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:311  Na__DrawView__ComposerPreset__ApplyStyles(Na__DrawPreset__Styles);
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:324  Na__PresentationMode__Thumbnail__SetFrameRenderer(Na__DrawView__ComposerPreset__RenderFrame); // <-- Captures render the same frame
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:333  function Na__DrawView__ComposerPreset__Exit() {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:368  function Na__DrawView__ComposerPreset__ApplyStyles(styles) {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:405  function Na__DrawView__ComposerPreset__RenderFrame() {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:426  function Na__DrawView__ComposerPreset__IsActive() {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:434  function Na__DrawView__ComposerPreset__GetCamera() {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:447  function Na__DrawView__ComposerPreset__GetExportOverrides() {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:486  function Na__DrawView__ComposerPreset__Initialize(context) {
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:507  Na__DrawView__ComposerPreset__ApplyStyles(Na__DrawPreset__Styles);
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:523  Na__DrawView__ComposerPreset__Initialize,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:524  Na__DrawView__ComposerPreset__Enter,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:525  Na__DrawView__ComposerPreset__Exit,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:526  Na__DrawView__ComposerPreset__ApplyStyles,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:527  Na__DrawView__ComposerPreset__RenderFrame,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:528  Na__DrawView__ComposerPreset__IsActive,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:529  Na__DrawView__ComposerPreset__GetCamera,
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js:530  Na__DrawView__ComposerPreset__GetExportOverrides
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js:30  // - Na__DrawView__ComposerPreset__, Na__DrawView__MaterialPreset__ and
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:82  // @delegate: ../44__System__PlanAnnotations/
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:89  } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:94  } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:99  } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:103  } from '../44__System__PlanAnnotations/Na__PlanAnnotations__History__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:107  } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:112  // @delegate: ../45__System__PlanDimensions/
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:116  } from '../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:121  } from '../45__System__PlanDimensions/Na__PlanDimensions__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:127  } from '../45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:132  } from '../45__System__PlanDimensions/Na__PlanDimensions__Editor__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:136  } from '../45__System__PlanDimensions/Na__PlanDimensions__Grid__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:140  } from '../45__System__PlanDimensions/Na__PlanDimensions__History__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:144  } from '../45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:148  } from '../45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:152  } from '../45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js:160  } from '../45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:98  // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:99  // @delegate: ../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:104  } from '../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js:108  } from '../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css:67  * 42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js for why.
+  FAIL G1 retired name  02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js:63  } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:104  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:105  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:106  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:112  } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:113  import { Na__DrawView__SectionAdapter__SetPlaneHeightMm } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:114  import { Na__DrawSceneRow__Build } from '../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:115  import { Na__DrawThumb__Queue, Na__DrawThumb__FindMissing } from '../42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:159  import { Na__DrawRename__RenameFloorPlan } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:164  } from '../42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:180  // @delegate: ../45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:183  import { Na__PlanDimClient__SetAllowed } from '../45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js:184  import { Na__PlanDim__GetLabel } from '../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:89  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__StyleRows__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js:94  } from '../42__System__DrawingViewCore/Na__DrawView__StyleRows__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:103  // @delegate: ../42__System__DrawingViewCore/
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:110  } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:118  } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:120  Na__DrawView__ComposerPreset__Enter,
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:121  Na__DrawView__ComposerPreset__Exit,
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:122  Na__DrawView__ComposerPreset__ApplyStyles
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:123  } from '../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:128  } from '../42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:134  } from '../42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:138  } from '../42__System__DrawingViewCore/Na__DrawView__Navigation__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:143  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:144  import { Na__DrawData__IsElevationScene } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:193  import { Na__PlanAnno__Load } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:194  import { Na__PlanDim__Load } from '../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:195  import { Na__PlanDim__GetPlanDimensions } from '../45__System__PlanDimensions/Na__PlanDimensions__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:346  Na__DrawView__ComposerPreset__Enter({ camera : Na__FpCam__GetCamera(), styles : styles });
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:357  Na__DrawView__ComposerPreset__Exit();
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:628  Na__DrawView__ComposerPreset__ApplyStyles(styles);
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:82  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js:90  } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:43  //   - Focus arbiter imported from 42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js under the Na__DrawFocus__ namespace.
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:69  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:70  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__Navigation__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:72  import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:73  import { Na__DrawNav__SetSuppressed } from '../42__System__DrawingViewCore/Na__DrawView__Navigation__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js:78  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:38  //   - Snapshot history imported from Na__AppUtils__SnapshotHistory__.js (double-underscore file name).
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:63  // @delegate: ../03__AppUtils/Na__AppUtils__SnapshotHistory__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js:65  import { Na__SnapHist__Create } from '../03__AppUtils/Na__AppUtils__SnapshotHistory__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:45  //   - Focus arbiter imported from 42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js under the Na__DrawFocus__ namespace.
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:74  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js:85  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:86  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js:92  } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:41  //   - Focus arbiter imported from 42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js under the Na__DrawFocus__ namespace.
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:85  // @delegate: ../45__System__PlanDimensions/Na__PlanDimensions__Editor__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:93  } from '../45__System__PlanDimensions/Na__PlanDimensions__Editor__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:98  // @delegate: ../45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:99  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:105  } from '../45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:106  import { Na__PlanDimGrid__AXIS_X } from '../45__System__PlanDimensions/Na__PlanDimensions__Grid__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:109  } from '../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:116  } from '../45__System__PlanDimensions/Na__PlanDimensions__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:117  import { Na__PlanDimEdit__GetSelectedRecord } from '../45__System__PlanDimensions/Na__PlanDimensions__Editor__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:118  import { Na__PlanDimLayer__Sync } from '../45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js';
+  FAIL G1 retired name  02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js:123  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js';
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:48  //   - Focus arbiter imported from 42__System__DrawingViewCore (relocated module, Na__DrawFocus__ namespace).
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:120  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js:157  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js';
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js:38  //   - Snapshot history imported from Na__AppUtils__SnapshotHistory__.js.
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js:59  // @delegate: ../03__AppUtils/Na__AppUtils__SnapshotHistory__.js
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js:61  import { Na__SnapHist__Create } from '../03__AppUtils/Na__AppUtils__SnapshotHistory__.js';
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:46  //   - Focus arbiter imported from 42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js under the Na__DrawFocus__ namespace.
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:68  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js:81  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js';
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:82  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js:89  } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:71  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
+  FAIL G1 retired name  02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js:73  import { Na__DrawView__ProjectPlaneMm } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:94  // @delegate: ../42__System__DrawingViewCore/
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:100  } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:101  import { Na__DrawView__SectionAdapter__SetPlaneDistanceMm } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:102  import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:103  import { Na__DrawSceneRow__Build } from '../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:104  import { Na__DrawThumb__Queue, Na__DrawThumb__FindMissing } from '../42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:172  import { Na__DrawRename__RenameElevation } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js:177  } from '../42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:93  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__StyleRows__.js
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js:98  } from '../42__System__DrawingViewCore/Na__DrawView__StyleRows__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js:39  // - Ported from   : ValeVision3D 40__System__2dElevationsView/Na__ElevationView__SystemLogic.js (face selection rules only)
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:95  // @delegate: ../42__System__DrawingViewCore/
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:102  } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:110  } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:112  Na__DrawView__ComposerPreset__Enter,
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:113  Na__DrawView__ComposerPreset__Exit,
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:114  Na__DrawView__ComposerPreset__ApplyStyles
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:115  } from '../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:120  } from '../42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:126  } from '../42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:130  } from '../42__System__DrawingViewCore/Na__DrawView__Navigation__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:135  } from '../42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:139  } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:195  // @delegate: ../44__System__PlanAnnotations/
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:196  // @delegate: ../45__System__PlanDimensions/
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:198  import { Na__PlanAnno__Load } from '../44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:199  import { Na__PlanDim__Load } from '../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:375  Na__DrawView__ComposerPreset__Enter({ camera : Na__ElevCam__GetCamera(), styles : styles });
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:386  Na__DrawView__ComposerPreset__Exit();
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js:716  Na__DrawView__ComposerPreset__ApplyStyles(styles);
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:96  // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js:102  } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js:82  import { Na__DrawData__CHANGED_EVENT, Na__DrawData__GetElevationsArray } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js:71  import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js:41  // // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+  FAIL G1 retired name  02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js:70  import { Na__DrawData__GetBlock, Na__DrawData__Save } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js:93  import { Na__DrawData__CHANGED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js:52  import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js:93  import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js:81  import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:110  import { Na__FpMode__CHANGED_EVENT } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:111  import { Na__ElevMode__CHANGED_EVENT } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js:112  import { Na__DrawData__CHANGED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js:64  import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:77  // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:78  // @delegate: ../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:86  } from '../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:95  } from '../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:100  import { Na__FloorPlanMode__GetActivePlan } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js:101  import { Na__ElevationMode__GetActiveElevation } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js:88  } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:48  // - Ported from   : ValeVision3D 43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js (mode pattern) and Lantern Designer 30__Syst
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:65  //   project's north direction (47__System__NorthDirection) once it is set.
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:191  import { Na__DrawCfg__Load } from '../../42__System__DrawingViewCore/Na__DrawView__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:243  import { Na__FloorPlanMode__IsEngaged, Na__FloorPlanMode__ExitPlan, Na__FloorPlanMode__EnterPlan, Na__FloorPlanMode__SetEditMode } from '../
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:244  import { Na__ElevationMode__IsEngaged, Na__ElevationMode__ExitElevation, Na__ElevationMode__EnterElevation, Na__ElevationMode__SetEditMode }
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:246  import { Na__DrawView__Transitions__SuspendThreeD, Na__DrawView__Transitions__ResumeThreeD } from '../../42__System__DrawingViewCore/Na__Dra
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js:249  import { Na__DrawData__GetLayoutModeEnabled, Na__DrawData__SetLayoutModeEnabled } from '../../42__System__DrawingViewCore/Na__DrawView__Proj
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js:54  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js:112  import { Na__DrawData__CHANGED_EVENT, Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js'
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js:40  // - Ported from   : ValeVision3D 44__System__PlanAnnotations/Na__PlanAnnotations__History__.js (pattern)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js:252  } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js:78  import { Na__DrawData__GetCommonFields, Na__DrawData__SetCommonField } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.j
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js:66  import { Na__DrawData__SHEETS_KEY, Na__DrawData__GetBlock } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:61  import { Na__FpData__GetPlanById } from '../../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js:62  import { Na__ElevData__GetElevationById } from '../../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js:192  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js:52  // - Ported from   : ValeVision3D 45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js (skeleton, terminators, text placement)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:32  // - Ported from   : ValeVision3D 44__System__PlanAnnotations and 45__System__PlanDimensions (record readers and drawing rules)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:172  import { Na__FpData__GetAnnotations } from '../../43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:173  import { Na__ElevData__GetAnnotations, Na__ElevData__GetDimensions } from '../../46__System__ElevationViews/Na__Elevation__ProjectJson__Data
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:174  import { Na__PlanAnno__ReadAll, Na__PlanAnno__Read, Na__PlanAnno__GetTextSetup } from '../../44__System__PlanAnnotations/Na__PlanAnnotations
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:179  } from '../../45__System__PlanDimensions/Na__PlanDimensions__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:180  import { Na__PlanDim__GetLineSetup, Na__PlanDim__GetTextSetup } from '../../45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js'
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:23  //   (47__System__NorthDirection). Until north is set it is empty, and a title
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:44  // // @delegate: ../../47__System__NorthDirection/Na__North__ProjectJson__Data__.js
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:98  import { Na__ElevData__IsSection } from '../../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:99  import { Na__NorthCfg__Load } from '../../47__System__NorthDirection/Na__North__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js:100  import { Na__NorthData__CHANGED_EVENT, Na__NorthData__IsSet, Na__NorthData__FacingWordForAzimuth } from '../../47__System__NorthDirection/Na
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:35  // - Ported from   : ValeVision3D 43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js and 46 (enter and exit sequences)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:127  } from '../../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:129  Na__DrawView__ComposerPreset__Enter,
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:130  Na__DrawView__ComposerPreset__Exit,
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:131  Na__DrawView__ComposerPreset__GetExportOverrides
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:132  } from '../../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:136  } from '../../42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:141  } from '../../42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:146  import { Na__FpCfg__GetCameraSetup } from '../../43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:147  import { Na__FpData__GetCutHeightMm, Na__FpData__GetViewDepthMm, Na__FpData__GetSavedView } from '../../43__System__FloorPlanViews/Na__Floor
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:148  import { Na__ElevCfg__GetCameraSetup } from '../../46__System__ElevationViews/Na__Elevation__ConfigState__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:155  } from '../../46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:502  Na__DrawView__ComposerPreset__Enter({ camera : camera, styles : styles || {}, edgeWidthPx : wantProfile ? weights.profilePx : null });
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:513  elevationOverrides     : Na__DrawView__ComposerPreset__GetExportOverrides(),
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js:526  Na__DrawView__ComposerPreset__Exit();
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js:24  // - Ported from   : ValeVision3D 45__System__PlanDimensions (editor controls purpose)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js:33  // - Ported from   : ValeVision3D 42__System__DrawingViewCore/Na__DrawView__StyleRows__.js (toggle set);
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js:27  // - Ported from   : ValeVision3D 44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js (controls purpose)
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js:118  import { Na__DrawData__IsFloorPlanScene, Na__DrawData__IsElevationScene, Na__DrawData__SCENE_PLAN_ID_KEY, Na__DrawData__SCENE_ELEVATION_ID_K
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js:199  import { Na__DrawData__CHANGED_EVENT } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js:54  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js:86  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js:82  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js:79  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:50  //                   core is 42__System__DrawingViewCore here.
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js:88  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json:90  "DrawingTitle__Description"                  : "Element two: the drawing title (Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js). S
+  FAIL G1 retired name  02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js:79  import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:85  @import url('../02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css');
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:86  @import url('../02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css');
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:87  @import url('../02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css');
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:88  @import url('../02__Src__AppModules/47__System__NorthDirection/Na__North__Styles__DevMenu__.css');
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:89  @import url('../02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
+  FAIL G1 retired name  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css:90  @import url('../02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
+  FAIL G1 retired name  80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs:53  const SYSTEM     = resolve(SCRIPT_DIR, '..', '02__Src__AppModules', '47__System__NorthDirection');
+  FAIL G1 retired name  index.html:887  <!-- @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js -->
+  FAIL G1 retired name  index.html:901  <!-- @delegate: ./02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js -->
+  FAIL G1 retired name  index.html:915  <!-- @delegate: ./02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js -->
+  FAIL G1 retired name  index.html:1375  import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationV
+  FAIL G1 retired name  index.html:1376  import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides
+  FAIL G1 retired name  index.html:1405  // @delegate: ./02__Src__AppModules/42__System__DrawingViewCore/
+  FAIL G1 retired name  index.html:1406  // @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/
+  FAIL G1 retired name  index.html:1407  // @delegate: ./02__Src__AppModules/46__System__ElevationViews/
+  FAIL G1 retired name  index.html:1409  import { Na__DrawCfg__SetAppConfig, Na__DrawCfg__Load } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.
+  FAIL G1 retired name  index.html:1410  import { Na__DrawView__ProjectData__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+  FAIL G1 retired name  index.html:1411  import { Na__DrawView__Transitions__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+  FAIL G1 retired name  index.html:1412  import { Na__DrawView__ComposerPreset__Initialize, Na__DrawView__ComposerPreset__GetExportOverrides } from './02__Src__AppModules/42__System
+  FAIL G1 retired name  index.html:1413  import { Na__DrawView__MaterialPreset__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.j
+  FAIL G1 retired name  index.html:1414  import { Na__FloorPlanMode__Initialize } from './02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+  FAIL G1 retired name  index.html:1415  import { Na__FloorPlan__DevMenu__Initialize } from './02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js';
+  FAIL G1 retired name  index.html:1416  import { Na__ElevGizmo__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js';
+  FAIL G1 retired name  index.html:1417  import { Na__ElevPick__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js';
+  FAIL G1 retired name  index.html:1418  import { Na__ElevGrip__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js';
+  FAIL G1 retired name  index.html:1419  import { Na__ElevationMode__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js';
+  FAIL G1 retired name  index.html:1420  import { Na__Elevation__DevMenu__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js';
+  FAIL G1 retired name  index.html:1421  import { Na__North__DevMenu__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js';
+  FAIL G1 retired name  index.html:1422  import { Na__NorthGizmo__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__CompassGizmo__.js';
+  FAIL G1 retired name  index.html:1423  import { Na__NorthPick__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js';
+  FAIL G1 retired name  index.html:1874  () => Na__ElevationView__GetExportOverrides() || Na__DrawView__ComposerPreset__GetExportOverrides() // <-- Ortho overrides: legacy Elevation
+  FAIL G1 retired name  index.html:2203  // @delegate: ./02__Src__AppModules/42__System__DrawingViewCore/
+  FAIL G1 retired name  index.html:2204  // @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/
+  FAIL G1 retired name  index.html:2205  // @delegate: ./02__Src__AppModules/46__System__ElevationViews/
+  FAIL G1 retired name  index.html:2211  Na__DrawView__ComposerPreset__Initialize({
+  FAIL G1 retired name  index.html:2249  // @delegate: ./02__Src__AppModules/47__System__NorthDirection/
+RESULT: FAIL (288 fail, 1 warn)

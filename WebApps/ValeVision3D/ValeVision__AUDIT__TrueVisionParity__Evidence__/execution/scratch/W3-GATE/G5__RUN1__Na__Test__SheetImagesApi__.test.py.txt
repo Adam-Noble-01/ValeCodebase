@@ -1,0 +1,57 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe 80__Testing__PrototypeEnvironment/Na__Test__SheetImagesApi__.test.py
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+PASS the Projects folder is Whitecardopedia/Projects
+PASS the images folder keeps TrueVision's name, 05__Layout__DrawingDocs__Images, with its 00__Archive
+PASS list before any picture: exists False
+PASS no images folder made by a list
+[SheetImages] Stored 9999_D01/FrontCgi__69847600db.webp (106 bytes)
+PASS upload creates
+PASS images folder made on demand
+PASS same picture again: created False
+PASS hash mismatch refused
+PASS type mismatch refused
+PASS folder .. refused
+PASS archive folder refused
+PASS slash in folder refused
+PASS project .. refused
+[SheetImages] Filed FrontCgi__69847600db.webp under 9999_D02 (from 9999_D01)
+PASS reconcile copies into the new folder
+PASS old copy still there (copy, not move)
+PASS nothing archived without archive flag
+[SheetImages] Archived 1 picture(s) no drawing uses: 9999_D01/FrontCgi__69847600db.webp
+PASS archive moves the unused managed copy
+PASS archived file exists
+PASS unmanaged file left alone
+PASS folder with the unmanaged file kept
+[SheetImages] Filed FrontCgi__69847600db.webp under 9999_D01 (from 9999_D02)
+PASS restored from anywhere (live copy preferred over archive)
+PASS missing reported
+[SheetImages] Stored 9999_D02/RearCgi__6193fe2a97.webp (106 bytes)
+[SheetImages] Filed RearCgi__6193fe2a97.webp under 9999_D01 (from 9999_D02)
+[SheetImages] Archived 2 picture(s) no drawing uses: 9999_D01/FrontCgi__69847600db.webp, 9999_D02/RearCgi__6193fe2a97.webp
+PASS swap: both present in new homes
+PASS swap: stale copies archived
+PASS list reports archive entries marked
+[SheetImages] Archived 2 picture(s) no drawing uses: 9999_D01/RearCgi__6193fe2a97.webp, 9999_D02/FrontCgi__69847600db.webp
+PASS delete all: 9999_D02 removed when empty
+PASS nothing is deleted: every stored picture is still on disk, now in the archive
+PASS uploads land only in the images folder (the project folder holds nothing else new)
+PASS ...and nothing is written outside the Projects folder
+PASS folder-id=YYYY/Folder names the project too
+[SheetImages] Stored FN-0001_D01/Site__52f7c9f13c.webp (106 bytes)
+PASS a project folder name with a space takes a picture
+PASS ...and lists it by project-folder and year
+PASS a 2-digit year, a project that is not there and a ".." folder id are refused (404)
+PASS ...and make no folder
+PASS reconcile refuses the archive, ".." and a path as a home
+PASS a reconcile body that is not a JSON object is refused
+PASS bytes that are not a picture, and no bytes, are refused
+[SheetImages] Stored 9999_D03/Plain.webp (106 bytes)
+PASS a different picture under a stored name is refused (409) and the stored one kept
+PASS no temporary file is left in the images folder
+PASS server.py serves the three routes
+PASS ...and its list answers from the Projects folder (not the JSON 404 for unknown routes)
+PASS the Projects folder is pointed back at Whitecardopedia/Projects
+FAILURES: 0

@@ -1,0 +1,32 @@
+﻿Config loaded. jsPDF present: true
+
+A2   1:50 @ ISO A2
+A3   NTS @ ISO A3
+A2   1:500 & 1:1250 @ ISO A2
+A3   1:20 & 1:50 & 1:100 @ ISO A3
+A4   1:50 & 1:100 @ ISO A4
+A1   1:20 @ ISO A1
+frame  135 mm   LOCATION PLAN   1:1250
+frame  135 mm   BLOCK PLAN   1:500
+frame  120 mm   FRONT ELEVATION   1:50
+frame  120 mm   SIDE ELEVATION   1:20
+frame   45 mm   PROPOSED FRONT ELEVATION   1:100
+frame   38 mm   PROPOSED FRONT ELEVATION   1:...
+frame   28 mm   PROPOSED FRONT ELE...
+
+DONE - 6 sheets built with no error.
+
+__TEST_RESULT: [
+ "D01 - Floor Plans => 1:50 @ ISO A2",
+ "D03 - 3D Images => NTS @ ISO A3",
+ "D10 - Site Plan => 1:500 & 1:1250 @ ISO A2",
+ "Mixed architectural, A3 => 1:20 & 1:50 & 1:100 @ ISO A3",
+ "Mixed, smallest paper => 1:50 & 1:100 @ ISO A4",
+ "Single scale, A1 => 1:20 @ ISO A1"
+]
+missing (404): /WebApps/ValeVision3D/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png
+aborted off-machine: none
+console warnings and errors:
+  error: Failed to load resource: the server responded with a status of 404 (Not Found)
+  warning: [ValeVision3D LayoutEditor] Asset unavailable: ../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png Error: HTTP 404
+    at http://vv.test/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js:1053:37

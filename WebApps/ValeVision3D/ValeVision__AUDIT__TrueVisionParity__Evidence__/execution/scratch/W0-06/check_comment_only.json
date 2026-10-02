@@ -1,0 +1,56 @@
+{
+ "02__Src__AppModules\\03__AppUtils\\Na__AppUtils__R2AssetUpload__.js": {
+  "eol_pre": "LF",
+  "eol_now": "LF",
+  "lines_added": 19,
+  "lines_removed": 5,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": []
+ },
+ "02__Src__AppModules\\21__System__PresentationMode\\Na__PresentationMode__DevMenu__SceneEditor.js": {
+  "eol_pre": "CRLF",
+  "eol_now": "CRLF",
+  "lines_added": 24,
+  "lines_removed": 14,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": [
+   "-    import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';",
+   "+    import { Na__DrawView__IsActive } from '../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js';"
+  ]
+ },
+ "02__Src__AppModules\\21__System__PresentationMode\\Na__PresentationMode__DevMenu__SceneReorder__.js": {
+  "eol_pre": "LF",
+  "eol_now": "LF",
+  "lines_added": 7,
+  "lines_removed": 1,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": []
+ },
+ "02__Src__AppModules\\21__System__PresentationMode\\Na__PresentationMode__DevMenu__SceneRowBuilders__.js": {
+  "eol_pre": "CRLF",
+  "eol_now": "CRLF",
+  "lines_added": 7,
+  "lines_removed": 1,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": [
+   "-    } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';",
+   "+    } from '../40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';"
+  ]
+ },
+ "02__Src__AppModules\\51__System__LayoutEditor\\07__Core__SheetData\\Na__LayoutEditor__History__.js": {
+  "eol_pre": "CRLF",
+  "eol_now": "CRLF",
+  "lines_added": 10,
+  "lines_removed": 1,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": []
+ },
+ "02__Src__AppModules\\51__System__LayoutEditor\\40__Ui__Panels\\Na__LayoutEditor__Toolbar__.js": {
+  "eol_pre": "CRLF",
+  "eol_now": "CRLF",
+  "lines_added": 35,
+  "lines_removed": 8,
+  "non_comment_changes_vs_preimage": [],
+  "non_comment_lines_vs_HEAD": []
+ }
+}

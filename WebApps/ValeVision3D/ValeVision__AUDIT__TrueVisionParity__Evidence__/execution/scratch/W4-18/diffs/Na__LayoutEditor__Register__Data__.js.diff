@@ -1,0 +1,40 @@
+--- TV b2aa9151/Na__LayoutEditor__Register__Data__.js
++++ VV/Na__LayoutEditor__Register__Data__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - DRAWING REGISTER DATA
++// VALEVISION3D - LAYOUT EDITOR - DRAWING REGISTER DATA
+@@ -29,2 +29,20 @@
+-// - Ported from   : n/a (TrueVision3D first, 19-Sep-2026)
+-// - Back-port     : offer to ValeVision3D with the register tab.
++// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js
++// - Source version: 1.0.1 (TrueVision3D v2.69.0, 19-Sep-2026, the first release whose log names the Drawing
++//                   Register; last changed in TrueVision commit 32767407 the same day, where AdoptNumbering took the deleted
++//                   sheet id for the typed-number delete, a change its log does not record; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
++//                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - TRANSPORT (DIV-4, DR-27): Na__CfApi__* and Na__LocalMirror__* are ValeVision's facade at TrueVision's
++//     paths (W0-12), never TrueVision's own client; the register block is a top-level key of this app's
++//     project.json under VaApps/Projects/<folderId>/.
++//   - Load Local reads the repository copy beside ValeVision__DrawingNotes__.json, the sibling the facade
++//     names (K2 F9), and that copy is project.json (K2 R2), where TrueVision names its own two files.
++//   - TODO(OVH-MIGRATION): on the OVHcloud VPS the facade's ReadProjectData and MergeAndSaveKeys are answered
++//     by ValeVision's own Flask service (same origin), so "R2" and "local" become one store. TrueVision's
++//     Save to R2 / Load R2 split and its R2 wording in toasts and dialogs are kept, call shapes unchanged, until
++//     the register bar (W4-10) and the migration settle them; the two cloud branches carry the marker.
++// - Back-port     : the two file names belong in config on both sides (a Notes file name and a project file name
++//                   the facade answers), so the Load Local line ports unchanged.
+@@ -265,0 +284,2 @@
++                // TODO(OVH-MIGRATION): on the VPS this read and the merge below reach ValeVision's Flask service
++                // through the facade (same origin), and the local write after them is the same store.
+@@ -317,0 +338,2 @@
++                // TODO(OVH-MIGRATION): on the VPS this read reaches ValeVision's Flask service through the
++                // facade (same origin); Load R2 and Load Local then read one store.
+@@ -320 +342 @@
+-                const location = Na__CfApi__ProjectFileLocation('TrueVision__DrawingNotes__.json');
++                const location = Na__CfApi__ProjectFileLocation('ValeVision__DrawingNotes__.json');   // <-- ValeVision seam (K2 F9): the sibling file the facade names
+@@ -322 +344 @@
+-                const response = await fetch(new URL('TrueVision__ProjectData__.json', location.repoUrl).href, { cache : 'no-store' });
++                const response = await fetch(new URL('project.json', location.repoUrl).href, { cache : 'no-store' });   // <-- ValeVision seam (K2 R2): this app's project data file, beside it

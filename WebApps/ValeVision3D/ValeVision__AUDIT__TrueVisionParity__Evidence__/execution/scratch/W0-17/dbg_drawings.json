@@ -1,0 +1,230 @@
+{
+ "scenario": "drawings",
+ "pass": true,
+ "checks": [
+  {
+   "name": "start-up block found in index.html directly above INITIALIZE LOADING SEQUENCE",
+   "ok": true,
+   "detail": {
+    "blockLines": 38
+   }
+  },
+  {
+   "name": "window listeners armed by the start-up block (before the loading sequence)",
+   "ok": true,
+   "detail": {
+    "na-layouteditor-drawingsdata-loaded": [
+     "startup-block"
+    ],
+    "na-crosssection-scenedata-loaded": [
+     "startup-block"
+    ],
+    "na-crosssection-sketchup-sections-loaded": [
+     "startup-block"
+    ],
+    "na-pm-scene-activated": [
+     "startup-block"
+    ]
+   }
+  },
+  {
+   "name": "DrawCfg config fetch started inside the start-up block (not awaited)",
+   "ok": true,
+   "detail": [
+    {
+     "url": "VV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__AppConfig__.json",
+     "phase": "startup-block"
+    }
+   ]
+  },
+  {
+   "name": "console switches exposed on window by the start-up block",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "Na__DevGate__Unlock / Lock already on window when the loading sequence first dispatched",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "Na__DrawCfg__Load() resolved true (system JSON read; same promise the LE ready chain waits on)",
+   "ok": true,
+   "detail": {
+    "loadResult": true
+   }
+  },
+  {
+   "name": "second Na__SectSceneData__Initialize (the 41 controls call) is a no-op: one listener per event",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "no console.error during start-up and load",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "project WITH drawings: block adopted (2 plans, 1 elevation, 1 sheet) - what the Dev menus list",
+   "ok": true,
+   "detail": {
+    "p": 2,
+    "e": 1,
+    "s": 1
+   }
+  },
+  {
+   "name": "drawings data logged once",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "section bindings block adopted once",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "SketchUp sections enabled the cross-section feature",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "scene change to a bound scene restores its saved cut",
+   "ok": true,
+   "detail": [
+    {
+     "name": "Plan Cut 1200",
+     "mode": "PLAN",
+     "normalXyz": [
+      0,
+      -1,
+      0
+     ],
+     "positionMm": 1200,
+     "enabled": true,
+     "gizmoVisible": true
+    }
+   ]
+  },
+  {
+   "name": "scene change to an unbound scene clears every cut",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "scene change to a SketchUp-sectioned scene applies the SketchUp plane",
+   "ok": true,
+   "detail": [
+    {
+     "name": "SU Section",
+     "mode": "UPRIGHT",
+     "normalXyz": [
+      1,
+      0,
+      0
+     ],
+     "positionMm": 2500,
+     "enabled": true,
+     "gizmoVisible": true
+    }
+   ]
+  },
+  {
+   "name": "a drawing approach scene is left to the drawing (no restore)",
+   "ok": true,
+   "detail": [
+    {
+     "name": "SU Section",
+     "mode": "UPRIGHT",
+     "normalXyz": [
+      1,
+      0,
+      0
+     ],
+     "positionMm": 2500,
+     "enabled": true,
+     "gizmoVisible": true
+    }
+   ]
+  },
+  {
+   "name": "back to the bound scene restores it again",
+   "ok": true,
+   "detail": [
+    {
+     "name": "Plan Cut 1200",
+     "mode": "PLAN",
+     "normalXyz": [
+      0,
+      -1,
+      0
+     ],
+     "positionMm": 1200,
+     "enabled": true,
+     "gizmoVisible": true
+    }
+   ]
+  },
+  {
+   "name": "localhost: authoring open, Dev menu revealed and mounted in the header slot",
+   "ok": true,
+   "detail": {
+    "authoring": true,
+    "display": "",
+    "mounted": true
+   }
+  }
+ ],
+ "errors": [],
+ "warnings": 0,
+ "logs": [
+  [
+   "log",
+   "[ValeVision3D] Cross Section scene data bindings initialized"
+  ],
+  [
+   "log",
+   "[ValeVision3D] Cross Section View system initialized"
+  ],
+  [
+   "log",
+   "[CrossSection] Scene data block loaded (2 scene binding(s))"
+  ],
+  [
+   "log",
+   "[ValeVision3D] Drawings data loaded: 2 plan(s), 1 elevation(s), 1 sheet(s)."
+  ],
+  [
+   "log",
+   "[CrossSection] SketchUp section planes loaded for 1 scene(s) — feature auto-enabled"
+  ],
+  [
+   "log",
+   "[CrossSection] Section added: Plan Section 1"
+  ],
+  [
+   "log",
+   "[CrossSection] Applied scene snapshot: 1 section(s)"
+  ],
+  [
+   "log",
+   "[CrossSection] Applied scene snapshot: 0 section(s)"
+  ],
+  [
+   "log",
+   "[CrossSection] Section added: Upright Section 1"
+  ],
+  [
+   "log",
+   "[CrossSection] Applied scene snapshot: 1 section(s)"
+  ],
+  [
+   "log",
+   "[CrossSection] Section added: Plan Section 2"
+  ],
+  [
+   "log",
+   "[CrossSection] Applied scene snapshot: 1 section(s)"
+  ]
+ ]
+}

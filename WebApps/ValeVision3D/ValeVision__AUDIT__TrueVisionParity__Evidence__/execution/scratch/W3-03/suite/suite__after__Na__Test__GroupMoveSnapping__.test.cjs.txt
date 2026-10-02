@@ -1,0 +1,49 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs
+exit 0
+
+TAP version 13
+# Subtest: nested group snaps a descendant vertex to an external vector and moves every member equally
+ok 1 - nested group snaps a descendant vertex to an external vector and moves every member equally
+  ---
+  duration_ms: 8.207
+  type: 'test'
+  ...
+# Subtest: group snaps to a vector midpoint
+ok 2 - group snaps to a vector midpoint
+  ---
+  duration_ms: 3.1445
+  type: 'test'
+  ...
+# Subtest: group snaps to viewport linework
+ok 3 - group snaps to viewport linework
+  ---
+  duration_ms: 3.4573
+  type: 'test'
+  ...
+# Subtest: moving shapes, dimensions and viewports are excluded together; single-vertex exclusions still work
+ok 4 - moving shapes, dimensions and viewports are excluded together; single-vertex exclusions still work
+  ---
+  duration_ms: 2.9931
+  type: 'test'
+  ...
+# Subtest: arrow and Shift constraints survive snapping; typed distances bypass it
+ok 5 - arrow and Shift constraints survive snapping; typed distances bypass it
+  ---
+  duration_ms: 6.9207
+  type: 'test'
+  ...
+# Subtest: disabled snapping leaves movement free and locked members stay put
+ok 6 - disabled snapping leaves movement free and locked members stay put
+  ---
+  duration_ms: 2.2648
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 32.9475

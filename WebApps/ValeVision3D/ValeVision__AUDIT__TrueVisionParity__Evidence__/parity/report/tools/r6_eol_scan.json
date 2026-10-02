@@ -1,0 +1,2069 @@
+{
+ "summary": {
+  "VV": {
+   "total": {
+    "crlf": 321,
+    "lf": 192,
+    "mixed": 1
+   },
+   "per_top": {
+    "02__Src__AppModules/01__AppCore": {
+     "crlf": 5
+    },
+    "02__Src__AppModules/02__AppData": {
+     "crlf": 2,
+     "lf": 1
+    },
+    "02__Src__AppModules/03__AppUtils": {
+     "crlf": 4,
+     "lf": 6
+    },
+    "02__Src__AppModules/04__MathUtils": {
+     "crlf": 1
+    },
+    "02__Src__AppModules/05__RenderPipeline": {
+     "crlf": 8,
+     "lf": 4
+    },
+    "02__Src__AppModules/06__Scene__LightingEffects": {
+     "crlf": 1,
+     "lf": 1
+    },
+    "02__Src__AppModules/07__Scene__EnvironmentEffects": {
+     "crlf": 2
+    },
+    "02__Src__AppModules/10__NavigationAndCameras": {
+     "lf": 9,
+     "crlf": 12
+    },
+    "02__Src__AppModules/11__CameraUtils": {
+     "crlf": 7
+    },
+    "02__Src__AppModules/15__ModelLoader": {
+     "lf": 2
+    },
+    "02__Src__AppModules/20__System__MaterialsSystem": {
+     "crlf": 2
+    },
+    "02__Src__AppModules/21__System__PresentationMode": {
+     "lf": 10,
+     "crlf": 7
+    },
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem": {
+     "crlf": 3,
+     "lf": 1
+    },
+    "02__Src__AppModules/26__System__ToggleModelElements": {
+     "crlf": 3
+    },
+    "02__Src__AppModules/28__System__GridLineSystem": {
+     "crlf": 3
+    },
+    "02__Src__AppModules/29__System__FogPlaneSystem": {
+     "crlf": 7
+    },
+    "02__Src__AppModules/30__System__ImageExport": {
+     "lf": 6,
+     "crlf": 3
+    },
+    "02__Src__AppModules/31__System__VideoStudio": {
+     "lf": 15,
+     "crlf": 3
+    },
+    "02__Src__AppModules/35__System__PageLayoutSystem": {
+     "lf": 5,
+     "crlf": 4,
+     "mixed": 1
+    },
+    "02__Src__AppModules/40__System__2dElevationsView": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/41__System__CrossSectionView": {
+     "lf": 6,
+     "crlf": 1
+    },
+    "02__Src__AppModules/42__System__DrawingViewCore": {
+     "lf": 14,
+     "crlf": 3
+    },
+    "02__Src__AppModules/43__System__FloorPlanViews": {
+     "lf": 10
+    },
+    "02__Src__AppModules/44__System__PlanAnnotations": {
+     "lf": 8
+    },
+    "02__Src__AppModules/45__System__PlanDimensions": {
+     "lf": 15
+    },
+    "02__Src__AppModules/46__System__ElevationViews": {
+     "lf": 13
+    },
+    "02__Src__AppModules/47__System__NorthDirection": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/50__System__ProjectedLinework": {
+     "crlf": 16,
+     "lf": 9
+    },
+    "02__Src__AppModules/51__System__LayoutEditor": {
+     "crlf": 149,
+     "lf": 12
+    },
+    "02__Src__AppModules/60__Feature__FullScreenMode": {
+     "crlf": 4
+    },
+    "02__Src__AppModules/61__Feature__ShareProjectLink": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/62__Feature__EmailWorkers": {
+     "crlf": 14,
+     "lf": 3
+    },
+    "02__Src__AppModules/63__Feature__AppNotificationEmail": {
+     "lf": 2,
+     "crlf": 1
+    },
+    "02__Src__AppModules/64__Feature__BreadcrumbNav": {
+     "lf": 2
+    },
+    "02__Src__AppModules/69__System__SketchUpToValeVision__Utilities": {
+     "lf": 3
+    },
+    "02__Src__AppModules/70__System__DevTools": {
+     "crlf": 5,
+     "lf": 1
+    },
+    "02__Src__AppModules/71__System__ExportRenderLayers": {
+     "crlf": 1,
+     "lf": 27
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__BaseLayout__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__RenderCanvas__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__ImageExport__Styles__ViewportOverlays__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__ControlsHelpPanel__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DevToolsMenu__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__Styles__PrototypeSandbox__.css": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookServer__.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__CompletedFeaturesDocs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__CurrentFeatureTestScripts": {
+     "crlf": 2
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__README__.md": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json": {
+     "crlf": 1
+    }
+   },
+   "root_files": {
+    "index.html": "crlf",
+    "install-guide.html": "crlf",
+    "Research__RubySceneData__RIPDOWN__.md": "crlf",
+    "TASK__25-Jun-2026__SketchUpToGlb__.md": "crlf",
+    "ValeVision__DEVLOG__.md": "crlf",
+    "ValeVision__PARITY__TrueVisionLedger__.md": "crlf",
+    "ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md": "lf",
+    "ValeVision__README__.md": "crlf"
+   }
+  },
+  "TV": {
+   "total": {
+    "crlf": 707,
+    "none": 1,
+    "lf": 45
+   },
+   "per_top": {
+    "02__Src__AppModules/01__AppCore": {
+     "crlf": 3,
+     "none": 1
+    },
+    "02__Src__AppModules/02__AppData": {
+     "crlf": 2
+    },
+    "02__Src__AppModules/03__AppUtils": {
+     "crlf": 6,
+     "lf": 1
+    },
+    "02__Src__AppModules/04__MathUtils": {
+     "crlf": 1
+    },
+    "02__Src__AppModules/05__RenderPipeline": {
+     "crlf": 8,
+     "lf": 1
+    },
+    "02__Src__AppModules/06__Scene__LightingEffects": {
+     "crlf": 1,
+     "lf": 1
+    },
+    "02__Src__AppModules/07__Scene__EnvironmentEffects": {
+     "crlf": 3
+    },
+    "02__Src__AppModules/10__NavigationAndCameras": {
+     "crlf": 21
+    },
+    "02__Src__AppModules/11__CameraUtils": {
+     "crlf": 5
+    },
+    "02__Src__AppModules/15__ModelLoader": {
+     "lf": 1,
+     "crlf": 3
+    },
+    "02__Src__AppModules/20__System__MaterialsSystem": {
+     "crlf": 2
+    },
+    "02__Src__AppModules/21__System__PresentationMode": {
+     "crlf": 13,
+     "lf": 1
+    },
+    "02__Src__AppModules/25__System__3dObject__InteractionSystem": {
+     "crlf": 5
+    },
+    "02__Src__AppModules/26__System__ToggleModelElements": {
+     "crlf": 10
+    },
+    "02__Src__AppModules/27__System__ContextMenuSystem": {
+     "crlf": 9
+    },
+    "02__Src__AppModules/30__System__ImageExport": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/40__System__DrawingViewCore": {
+     "crlf": 21
+    },
+    "02__Src__AppModules/41__System__SectionCutEngine": {
+     "crlf": 7
+    },
+    "02__Src__AppModules/42__System__FloorPlanViews": {
+     "crlf": 12
+    },
+    "02__Src__AppModules/43__System__PlanAnnotations": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/44__System__PlanDimensions": {
+     "crlf": 15
+    },
+    "02__Src__AppModules/45__System__ElevationViews": {
+     "crlf": 15
+    },
+    "02__Src__AppModules/46__System__NorthDirection": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/47__System__DrawingPlanes": {
+     "crlf": 9
+    },
+    "02__Src__AppModules/48__System__CrossSectionViews": {
+     "crlf": 1
+    },
+    "02__Src__AppModules/49__System__ElevationDepthFog": {
+     "crlf": 8
+    },
+    "02__Src__AppModules/50__System__ProjectedLinework": {
+     "crlf": 28
+    },
+    "02__Src__AppModules/51__System__LayoutEditor": {
+     "crlf": 324,
+     "lf": 17
+    },
+    "02__Src__AppModules/52__System__Layout__PublishedDocuments": {
+     "crlf": 11
+    },
+    "02__Src__AppModules/53__Data__Layout__PublishedSchema": {
+     "crlf": 4
+    },
+    "02__Src__AppModules/54__Feature__ColourPalette": {
+     "crlf": 6
+    },
+    "02__Src__AppModules/55__Feature__SpellCheck": {
+     "lf": 7
+    },
+    "02__Src__AppModules/62__Feature__AppInstallability": {
+     "crlf": 16
+    },
+    "02__Src__AppModules/70__System__DevTools": {
+     "crlf": 5,
+     "lf": 1
+    },
+    "02__Src__AppModules/75__System__UserInstructionsSystem": {
+     "crlf": 4
+    },
+    "02__Src__AppModules/76__System__FullscreenMode": {
+     "crlf": 2,
+     "lf": 1
+    },
+    "02__Src__AppModules/80__CloudflareIntegration": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__BaseLayout__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__CoreUi__Styles__RenderCanvas__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__ImageExport__Styles__ViewportOverlays__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__ControlsHelpPanel__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DevMenu__CacheAndStorage__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DevToolsMenu__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css": {
+     "lf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css": {
+     "crlf": 1
+    },
+    "03__Style__AppStylesheets/Na__UiFeature__Styles__SceneInspector__.css": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__TestEnv__Styles__PrototypeSandbox__.css": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__AreaSchedule__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__BubbleNoteTooltip__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__CopyDrag__.test.cjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__CrossSheetClipboard__.test.cjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DimensionRoundUp__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingProfileLines__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__FloorPlanStoreyLevel__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__IosTextureProbe__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveAnchor__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__Decode__.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ProjectRecordAddress__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__Reference__TyporaTheme__.css": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookCabinetInfill__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookServer__.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ScrapbookSiteLegend__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SetMoveLeaderTips__.test.cjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetImagesApi__.test.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SheetsNormaliseOnce__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__Output__.html": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SitePlanFaces__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SitePlanStore__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecInlineEdit__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecLockstep__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__SpellCheckField__.html": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementDomRoundTrip__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementFigureTitle__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementFigure__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementLockstep__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementPublish__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementRoundTrip__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementSchedule__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementServer__.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementTyping__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StatementTypography__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__UserSpellingsApi__.test.py": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs": {
+     "lf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorQuality__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__VectorTools__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/Na__Verify__RubySyntax__.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__README__.md": {
+     "crlf": 1
+    },
+    "80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json": {
+     "crlf": 1
+    }
+   },
+   "root_files": {
+    "DEPENDENCY_CHART.md": "crlf",
+    "Index.html": "crlf",
+    "Na__Pwa__ServiceWorker__.js": "crlf",
+    "TrueVision__DEVLOG__.md": "crlf",
+    "TrueVision__NOTES__DrawingNumberingSchema__.md": "crlf",
+    "TrueVision__NOTES__LayoutEditorPerformance__.md": "crlf",
+    "TrueVision__NOTES__SitePlanComposites__Design__.md": "crlf",
+    "TrueVision__NOTES__SitePlanComposites__Survey__.md": "crlf",
+    "TrueVision__NOTES__StandardDrawingGroups__.md": "crlf",
+    "TrueVision__NOTES__StatementWriter__.md": "crlf",
+    "TrueVision__PLAN__DraftMode__.md": "crlf",
+    "TrueVision__PLAN__DrawingMenus__.md": "crlf",
+    "TrueVision__PLAN__DrawingPlanes__.md": "crlf",
+    "TrueVision__PLAN__ElevationDepthFog__.md": "crlf",
+    "TrueVision__PLAN__FloorAreas__.md": "crlf",
+    "TrueVision__PLAN__PublishingSystem__.md": "crlf",
+    "TrueVision__PLAN__ScrapbookSystem__.md": "crlf",
+    "TrueVision__PLAN__SheetImages__.md": "crlf",
+    "TrueVision__PLAN__SitePlanComposites__.md": "crlf",
+    "TrueVision__PLAN__SitePlanDrawings__.md": "crlf",
+    "TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md": "crlf",
+    "TrueVision__PLAN__VectorTools__.md": "crlf",
+    "TrueVision__README__.md": "crlf",
+    "TrueVision__TASKS__v2.0.1__CodebaseMigration__.md": "crlf",
+    "TrueVision__TASKS__v2.0.2__UpdateSubdirectories__.md": "crlf",
+    "__StupidProof__Plan__Fix__ProfileLines__GPU__Drain__.md": "crlf"
+   }
+  },
+  "WCP": {
+   "server.py": "crlf",
+   "Server__ValeVisionScrapbook__Api__.py": "crlf",
+   "02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js": "lf",
+   "02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js": "crlf",
+   "CloudflareWorker/src/index.js": "crlf"
+  }
+ },
+ "files": {
+  "VV/02__Src__AppModules/01__AppCore/AppCore__DataLib__Loader.js": "crlf",
+  "VV/02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js": "crlf",
+  "VV/02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js": "crlf",
+  "VV/02__Src__AppModules/01__AppCore/Na__AppCore__LoadWatchdog__.js": "crlf",
+  "VV/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js": "crlf",
+  "VV/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json": "crlf",
+  "VV/02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json": "crlf",
+  "VV/02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js": "crlf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__LoadingOverlay__.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2DrawingNotes__.js": "crlf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ResilientLoad__.js": "crlf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory__.js": "lf",
+  "VV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js": "crlf",
+  "VV/02__Src__AppModules/04__MathUtils/Na__Math__Units.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js": "lf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js": "lf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderEngine__State.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js": "lf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js": "lf",
+  "VV/02__Src__AppModules/05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js": "crlf",
+  "VV/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js": "crlf",
+  "VV/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js": "crlf",
+  "VV/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js": "lf",
+  "VV/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js": "crlf",
+  "VV/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Camera__ProjectStartState.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__Switcher.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__ModeTransition.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitMode__SystemLogic.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js": "lf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js": "crlf",
+  "VV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__NavLockNotification.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js": "crlf",
+  "VV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js": "crlf",
+  "VV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__ContentStamp__.js": "lf",
+  "VV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js": "lf",
+  "VV/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js": "crlf",
+  "VV/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__ScenePersistence__.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js": "lf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js": "crlf",
+  "VV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js": "lf",
+  "VV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js": "crlf",
+  "VV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md": "crlf",
+  "VV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js": "lf",
+  "VV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js": "crlf",
+  "VV/02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__README__.md": "crlf",
+  "VV/02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__SystemLogic__.js": "crlf",
+  "VV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js": "crlf",
+  "VV/02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__Config.json": "crlf",
+  "VV/02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__GridCreationLogic.js": "crlf",
+  "VV/02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__CameraConstraint.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__Config.json": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__PlaneCreation.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js": "crlf",
+  "VV/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js": "crlf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__AsyncYield__.js": "lf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js": "lf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Levels.js": "lf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js": "lf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js": "crlf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js": "lf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js": "crlf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js": "crlf",
+  "VV/02__Src__AppModules/30__System__ImageExport/Na__UiFeature__LineworkSettings__Controls.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Camera__PathSampler.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js": "crlf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Edit__UndoHistory.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__FrameRenderer.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__Mp4Muxer.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js": "crlf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Export__VideoEncoder.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__ModelLayers.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__SceneAnimations.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__ProjectJson__VideoData.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Stylesheet__.css": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__ContextMenu.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Stylesheet__.css": "crlf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Thumbnails.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__KeyframeDragger.js": "lf",
+  "VV/02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__PathVisualizer.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Config.json": "crlf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html": "crlf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js": "lf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Styles__Main__.css": "crlf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js": "crlf",
+  "VV/02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js": "mixed",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationNav__DesktopControls.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationNav__TouchScreenControls.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__Config.json": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__RenderEffect__2dProfileLines__.js": "crlf",
+  "VV/02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js": "crlf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__CapGeometry.js": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__Config.json": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__PlaneGizmo.js": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js": "lf",
+  "VV/02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js": "crlf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ActiveView__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js": "crlf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js": "crlf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Navigation__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js": "crlf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__StyleRows__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js": "lf",
+  "VV/02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Framing__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js": "lf",
+  "VV/02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Data__.js": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__History__.js": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css": "lf",
+  "VV/02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Data__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Editor__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Grid__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__History__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Overlay__.js": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css": "lf",
+  "VV/02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__AppConfig__.json": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ConfigState__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Framing__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__OrthoCamera__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__SceneLink__.js": "lf",
+  "VV/02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css": "lf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__AppConfig__.json": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__CompassGizmo__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__Compass__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__ConfigState__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__ProjectJson__Data__.js": "crlf",
+  "VV/02__Src__AppModules/47__System__NorthDirection/Na__North__Styles__DevMenu__.css": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js": "lf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js": "crlf",
+  "VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__LoadingScreen__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js": "crlf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js": "lf",
+  "VV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js": "lf",
+  "VV/02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__BrowserSupportLogic__.js": "crlf",
+  "VV/02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__Stylesheet__.css": "crlf",
+  "VV/02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js": "crlf",
+  "VV/02__Src__AppModules/60__Feature__FullScreenMode/NewFeature__AddFullScreenButton__.md": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__DownloadEmail__Logic__.js": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__.js": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__Stylesheet__.css": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__GenerateEmail__Logic__.js": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__ProjectEmail__Template__.html": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UiInteractionLogic__.js": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UrlGeneratorLogic__.js": "crlf",
+  "VV/02__Src__AppModules/61__Feature__ShareProjectLink/00__Archive/Na__Feature__ShareProjectLink__ProjectEmail__Template__Version_1.0.0__10-Apr-2026__.html": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Decryptor__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__ApiClient__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthManager__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthOverlay__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__Config.json": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js": "lf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__PayloadBuilder__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__README__.md": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/package-lock.json": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/package.json": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.wrangler/tmp/bundle-MffNOU/middleware-insertion-facade.js": "lf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.wrangler/tmp/dev-vYHEyg/index.js": "lf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/assets/Na__Email__AddressBook__Encrypted__.json": "crlf",
+  "VV/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/src/index.js": "crlf",
+  "VV/02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js": "lf",
+  "VV/02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html": "crlf",
+  "VV/02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js": "lf",
+  "VV/02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js": "lf",
+  "VV/02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Stylesheet__.css": "lf",
+  "VV/02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js": "lf",
+  "VV/02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__ConvertSceneData__.js": "lf",
+  "VV/02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__LoadSceneData__.js": "lf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js": "crlf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js": "crlf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js": "lf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js": "crlf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js": "crlf",
+  "VV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js": "crlf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__DevMenu__Controls__.js": "crlf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__Stylesheet__.css": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__BatchExporter__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__CanvasInvert__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__ColourHash__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__DepthRange__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__ExportLineMaterial__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__FileWriter__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__FullscreenPass__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__GBufferPass__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Manifest__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__PassRegistry__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__PassRenderers__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__AlbedoBuffer__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__AmbientOcclusion__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__GrayControl__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__IdMasks__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__InpaintMask__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__ShadowMask__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__Structural__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__SurfacePreset__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__PreviewController__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__RenderTargetPool__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__SceneClassifier__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__SceneStateGuard__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__SessionState__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__SurfaceRenderer__.js": "lf",
+  "VV/02__Src__AppModules/71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__TiledPassRenderer__.js": "lf",
+  "VV/03__Style__AppStylesheets/Na__CoreUi__Styles__BaseLayout__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__CoreUi__Styles__RenderCanvas__.css": "lf",
+  "VV/03__Style__AppStylesheets/Na__ImageExport__Styles__ViewportOverlays__.css": "lf",
+  "VV/03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__ControlsHelpPanel__.css": "lf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__DevToolsMenu__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css": "lf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css": "crlf",
+  "VV/03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css": "lf",
+  "VV/80__Testing__PrototypeEnvironment/Na__TestEnv__Styles__PrototypeSandbox__.css": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs": "lf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookServer__.py": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js": "lf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__README__.md": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__CompletedFeaturesDocs/Test__ModelInteraction__Animation__ClickToOpenDoors__.md": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__CurrentFeatureTestScripts/Test__TopLevelContainer__BuildingModelsByStorey__.js": "crlf",
+  "VV/80__Testing__PrototypeEnvironment/TestEnv__CurrentFeatureTestScripts/Test__TopLevelContainer__BuildingModelsByStorey__.md": "crlf",
+  "VV/index.html": "crlf",
+  "VV/install-guide.html": "crlf",
+  "VV/Research__RubySceneData__RIPDOWN__.md": "crlf",
+  "VV/TASK__25-Jun-2026__SketchUpToGlb__.md": "crlf",
+  "VV/ValeVision__DEVLOG__.md": "crlf",
+  "VV/ValeVision__PARITY__TrueVisionLedger__.md": "crlf",
+  "VV/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md": "lf",
+  "VV/ValeVision__README__.md": "crlf",
+  "TV/02__Src__AppModules/01__AppCore/AppCore__DataLib__Loader.js": "crlf",
+  "TV/02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js": "crlf",
+  "TV/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js": "crlf",
+  "TV/02__Src__AppModules/01__AppCore/Na__AppLoader__ProjectDataLoader__.js": "none",
+  "TV/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json": "crlf",
+  "TV/02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js": "lf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js": "crlf",
+  "TV/02__Src__AppModules/03__AppUtils/Na__AppUtils__SnapshotHistory.js": "crlf",
+  "TV/02__Src__AppModules/04__MathUtils/Na__Math__Units.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js": "crlf",
+  "TV/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js": "lf",
+  "TV/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js": "crlf",
+  "TV/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js": "lf",
+  "TV/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js": "crlf",
+  "TV/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js": "crlf",
+  "TV/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Camera__ProjectStartState.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__Switcher.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__ModeTransition.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitMode__SystemLogic.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js": "crlf",
+  "TV/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js": "crlf",
+  "TV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js": "crlf",
+  "TV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js": "crlf",
+  "TV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js": "crlf",
+  "TV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js": "crlf",
+  "TV/02__Src__AppModules/11__CameraUtils/Na__UiFeature__ViewModeFov__DevControls.js": "crlf",
+  "TV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__ContentStamp__.js": "lf",
+  "TV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__InstanceConsolidation__.js": "crlf",
+  "TV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__LineworkColours__.js": "crlf",
+  "TV/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js": "crlf",
+  "TV/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js": "crlf",
+  "TV/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__GroupEditor__.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js": "lf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__SceneGroups__Data__.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js": "crlf",
+  "TV/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Visibility__StateCapture.js": "crlf",
+  "TV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js": "crlf",
+  "TV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md": "crlf",
+  "TV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js": "crlf",
+  "TV/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js": "crlf",
+  "TV/02__Src__AppModules/25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/3dObject__IsolateBuildingStoreys__SystemLogic__.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__README__.md": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__SystemLogic__.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__DevMenu__LocalhostOnly.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelGroupSelector.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelGroupTransitionOverlay__.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__StoreyIsolate__Controls.js": "crlf",
+  "TV/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__StoreyView__Controls.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Gesture__RightClickGuard__.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Picking__HitResolver__.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__README__.md": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__DoorInteraction__.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Section__ModelVisibility__.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__SystemLogic__.js": "crlf",
+  "TV/02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__AsyncYield__.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Levels.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TilePlan__.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js": "crlf",
+  "TV/02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ActiveView__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupFocus__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MarkupMount__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Navigation__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProfileLines__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__StyleRows__.js": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Transitions__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapGeometry__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__CapMeshes__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Engine__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js": "crlf",
+  "TV/02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__StoreyRow__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Framing__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__OrthoCamera__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ProjectJson__Data__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__SceneLink__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__StoreyLevel__.js": "crlf",
+  "TV/02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Data__.js": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__History__.js": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Hotkeys__.js": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Overlay__.js": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css": "crlf",
+  "TV/02__Src__AppModules/43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__AxisLock__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ClientMode__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Crosshair__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Disclaimer__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Grid__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__History__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Hotkeys__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Overlay__.js": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css": "crlf",
+  "TV/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__VertexEditor__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoNameText__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__AutoName__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__FacePick__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Framing__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__GizmoGrip__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__OrthoCamera__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__PlaneGizmo__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__SceneLink__.js": "crlf",
+  "TV/02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__Compass__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__PickTool__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__ProjectJson__Data__.js": "crlf",
+  "TV/02__Src__AppModules/46__System__NorthDirection/Na__North__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js": "crlf",
+  "TV/02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Maths__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RecordData__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Shader__.js": "crlf",
+  "TV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ClipWorker__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DiffHarness__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlatBvh__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Owners__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__RasterPreview__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Scheduler__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SoupBuilder__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js": "crlf",
+  "TV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__WorkerPool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__TabStrip__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ProjectRecord__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Common__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__DrawOrder__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Groups__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Layers__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Leaders__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Shapes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__TextAndDimensions__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Viewports__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__NoteRegions__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionRounding__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__Groups__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MeasureParse__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__PaintOrder__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeRings__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ForceRender__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__RasterQuality__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__VectorQuality__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3dZoom__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportClipboard__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SitePlanComposites__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContentEditing__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__CopyDrag__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HitResolution__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerDrag__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__PointerPress__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ToolState__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__GradientTool__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__ShapeTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__HatchPatterns__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Curves__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Grips__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Regions__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Actions__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Builders__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__NoteDrag__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Notes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Render__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__State__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__DeleteDialog__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Export__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Numbering__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Preview__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Styles__DrawingRegister__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Index__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__Transport__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Images__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Figure__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Inline__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Render__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Serialise__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Manager__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/03__Ui__Page/Na__LayoutEditor__Statement__Page__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Cards__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Figure__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Typing__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/05__Ui__Reader/Na__LayoutEditor__Statement__Reader__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/06__Export__Pdf/Na__LayoutEditor__Statement__Pdf__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Images__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__Page__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Contents__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__DrawingSchedule__Live__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Finishes__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Footer__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Header__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__Registry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Encoder__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Painter__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__ProjectLink__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/Na__ProjectQr__Symbol__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/53__Feature__ProjectQrCode/README__ProjectQrCode__.md": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Panel__SheetImages__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Crop__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Encode__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Geometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Handles__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Insert__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Menu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Painter__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Paint__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Pdf__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Publish__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Setup__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Source__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__AreaSchedule__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Geometry__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__LabelGrip__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Menu__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Paint__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Table__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__FloorAreas__Tool__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Panel__FloorAreas__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/59__Feature__FloorAreas/Na__LayoutEditor__Styles__FloorAreas__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Panel__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Raster__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Sheet__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Transport__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/65__Feature__DocumentPublishing/Na__LayoutEditor__Publish__Viewports__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Button__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Config__.json": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Links__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Manifest__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Share__Open__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/Na__LayoutEditor__Styles__Share__.css": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/66__Feature__DocumentSharing/README__DocumentSharing__.md": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__.js": "crlf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Drawings__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__Spec__.js": "lf",
+  "TV/02__Src__AppModules/51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js": "lf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Config__.json": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Document__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Elements__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__LoadingScreen__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Paint__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Sheet__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Styles__Main__.css": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Unpublished__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Urls__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/Na__PubDoc__Viewports__.js": "crlf",
+  "TV/02__Src__AppModules/52__System__Layout__PublishedDocuments/README__PublishedDocuments__.md": "crlf",
+  "TV/02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json": "crlf",
+  "TV/02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js": "crlf",
+  "TV/02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Version__.js": "crlf",
+  "TV/02__Src__AppModules/53__Data__Layout__PublishedSchema/README__PublishedSchema__.md": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__.js": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Config__.json": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Manager__.js": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Picker__.js": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/Na__ColourPalette__Styles__.css": "crlf",
+  "TV/02__Src__AppModules/54__Feature__ColourPalette/README__ColourPalette__.md": "crlf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__.js": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Config__.json": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Field__.js": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__Styles__.css": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js": "lf",
+  "TV/02__Src__AppModules/55__Feature__SpellCheck/README__SpellCheck__.md": "lf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/README__PwaInstallability__.md": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__Chromium__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__GenericManual__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__InstalledStandalone__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__IosNonSafari__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__IosSafari__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Handler__MacSafari__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__InstallController__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Manifest__Builder__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__PlatformDetector__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__PromptUi__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Registrar__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__SessionState__.js": "crlf",
+  "TV/02__Src__AppModules/62__Feature__AppInstallability/TrueVision__Pwa__Url__Constructor__.js": "crlf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__AssetCullDistance__DevControls.js": "crlf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__CacheAndStorage__Controls.js": "crlf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js": "crlf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js": "crlf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js": "lf",
+  "TV/02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js": "crlf",
+  "TV/02__Src__AppModules/75__System__UserInstructionsSystem/Na__UiFeature__Styles__UserInstructions__.css": "crlf",
+  "TV/02__Src__AppModules/75__System__UserInstructionsSystem/Na__UiFeature__UserInstructions__MenuItem.js": "crlf",
+  "TV/02__Src__AppModules/75__System__UserInstructionsSystem/Na__UserInstructions__Content__.html": "crlf",
+  "TV/02__Src__AppModules/75__System__UserInstructionsSystem/Na__UserInstructions__SystemLogic.js": "crlf",
+  "TV/02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__FullscreenMode__Prompt.js": "crlf",
+  "TV/02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__FullscreenMode__SystemLogic.js": "crlf",
+  "TV/02__Src__AppModules/76__System__FullscreenMode/Na__UiFeature__Styles__FullscreenMode__.css": "lf",
+  "TV/02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js": "crlf",
+  "TV/03__Style__AppStylesheets/Na__CoreUi__Styles__BaseLayout__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__CoreUi__Styles__RenderCanvas__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__ImageExport__Styles__ViewportOverlays__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__ControlsHelpPanel__.css": "lf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__DevMenu__CacheAndStorage__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__DevToolsMenu__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css": "lf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css": "crlf",
+  "TV/03__Style__AppStylesheets/Na__UiFeature__Styles__SceneInspector__.css": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__TestEnv__ObjectSnapBundle__.cjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__TestEnv__Styles__PrototypeSandbox__.css": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__AreaSchedule__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__AuthoringZoomMax__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__BubbleNoteTooltip__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__CopyDrag__.test.cjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__CrossSheetClipboard__.test.cjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DimensionRoundUp__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DocumentKeys__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingAxes__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingGrid__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingProfileLines__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__DrawingTabKeys__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ElevationGeometry__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__EnhanceWhitecardStrength__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__FloorPlanStoreyLevel__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__GroupMoveSnapping__.test.cjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__HatchLineControls__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__HideSwings__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__IosTextureProbe__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__LayerMenu__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__LayerStack__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__LeaderlessNotes__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__MoveAnchor__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__MoveRetype__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__NoteRegions__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ObjectSnap__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__OrthoMode__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__PaintedOnThePoint__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ProjectQr__Decode__.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ProjectRecordAddress__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedReader__Harness__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__PublishedSchema__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__Reference__TyporaTheme__.css": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookApi__.test.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookCabinetInfill__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookDrawingTitle__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookProjectQr__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookServer__.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ScrapbookSiteLegend__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SetMoveLeaderTips__.test.cjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ShareLinks__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SheetImagesApi__.test.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SheetImages__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SheetsNormaliseOnce__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SitePlanComposites__Output__.html": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SitePlanFaces__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SitePlanStore__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SpecInlineEdit__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SpecLockstep__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckDictionary__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__SpellCheckField__.html": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementDomRoundTrip__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementFigureTitle__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementFigure__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementFinishes__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementLockstep__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementPublish__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementRoundTrip__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementSchedule__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementServer__.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementStandard__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementTyping__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StatementTypography__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__StoreyBand__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__UserSpellingsApi__.test.py": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__VectorBooleans__.test.mjs": "lf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__VectorQuality__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__VectorTools__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/Na__Verify__RubySyntax__.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/TestEnv__README__.md": "crlf",
+  "TV/80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json": "crlf",
+  "TV/DEPENDENCY_CHART.md": "crlf",
+  "TV/Index.html": "crlf",
+  "TV/Na__Pwa__ServiceWorker__.js": "crlf",
+  "TV/TrueVision__DEVLOG__.md": "crlf",
+  "TV/TrueVision__NOTES__DrawingNumberingSchema__.md": "crlf",
+  "TV/TrueVision__NOTES__LayoutEditorPerformance__.md": "crlf",
+  "TV/TrueVision__NOTES__SitePlanComposites__Design__.md": "crlf",
+  "TV/TrueVision__NOTES__SitePlanComposites__Survey__.md": "crlf",
+  "TV/TrueVision__NOTES__StandardDrawingGroups__.md": "crlf",
+  "TV/TrueVision__NOTES__StatementWriter__.md": "crlf",
+  "TV/TrueVision__PLAN__DraftMode__.md": "crlf",
+  "TV/TrueVision__PLAN__DrawingMenus__.md": "crlf",
+  "TV/TrueVision__PLAN__DrawingPlanes__.md": "crlf",
+  "TV/TrueVision__PLAN__ElevationDepthFog__.md": "crlf",
+  "TV/TrueVision__PLAN__FloorAreas__.md": "crlf",
+  "TV/TrueVision__PLAN__PublishingSystem__.md": "crlf",
+  "TV/TrueVision__PLAN__ScrapbookSystem__.md": "crlf",
+  "TV/TrueVision__PLAN__SheetImages__.md": "crlf",
+  "TV/TrueVision__PLAN__SitePlanComposites__.md": "crlf",
+  "TV/TrueVision__PLAN__SitePlanDrawings__.md": "crlf",
+  "TV/TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md": "crlf",
+  "TV/TrueVision__PLAN__VectorTools__.md": "crlf",
+  "TV/TrueVision__README__.md": "crlf",
+  "TV/TrueVision__TASKS__v2.0.1__CodebaseMigration__.md": "crlf",
+  "TV/TrueVision__TASKS__v2.0.2__UpdateSubdirectories__.md": "crlf",
+  "TV/__StupidProof__Plan__Fix__ProfileLines__GPU__Drain__.md": "crlf",
+  "WCP/server.py": "crlf",
+  "WCP/Server__ValeVisionScrapbook__Api__.py": "crlf",
+  "WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js": "lf",
+  "WCP/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js": "crlf",
+  "WCP/CloudflareWorker/src/index.js": "crlf"
+ }
+}

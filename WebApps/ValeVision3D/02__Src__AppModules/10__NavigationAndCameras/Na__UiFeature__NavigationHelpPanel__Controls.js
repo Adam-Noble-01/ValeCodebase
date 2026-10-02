@@ -19,7 +19,7 @@
 //   enabled for the current model (project.json Navmode__EnabledModes),
 //   keeping the instructions relevant to what the user can actually do.
 // - Keyboard Shortcuts section is populated dynamically from
-//   Na__ValeVision__HotkeysDictionary__.json so the panel stays in sync
+//   Na__Hotkeys__3dModelTab__.json so the panel stays in sync
 //   with the dictionary without any manual HTML edits.
 // - Entries with Na__Hotkey__Advanced: true go into a collapsed
 //   "Advanced Hotkeys" sub-dropdown under Keyboard Shortcuts.
@@ -40,6 +40,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.4.1 (hotkey file names, v2.71.1)
+// - Reads the Keyboard Shortcuts rows from the 3D tab's hotkey file under
+//   TrueVision's per-tab name, 02__AppData/Na__Hotkeys__3dModelTab__.json.
+//   The dictionary's content, root key and rows are unchanged.
+//
 // 30-Jul-2026 - Version 1.4.0
 // - Advanced Hotkeys collapsible sub-section under Keyboard Shortcuts;
 //   dictionary entries flagged Na__Hotkey__Advanced: true render there.
@@ -81,7 +86,7 @@
 
     // MODULE CONSTANTS | Hotkey Dictionary Path
     // ------------------------------------------------------------
-    const Na__NavHelp__HotkeyDictPath = '02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json'; // <-- Source JSON for keyboard shortcut rows
+    const Na__NavHelp__HotkeyDictPath = '02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json'; // <-- Source JSON for keyboard shortcut rows
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | CSS Classes

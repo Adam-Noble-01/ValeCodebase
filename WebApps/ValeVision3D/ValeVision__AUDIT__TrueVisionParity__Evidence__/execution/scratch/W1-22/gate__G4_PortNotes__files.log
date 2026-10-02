@@ -1,0 +1,26 @@
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 10 named file(s) - 8 PORT NOTE(s), 7 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 0 still as recorded, 5 since rewritten (their full checks apply)
+
+  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+      WARN  :37    source-version-form  Source version "none of its own - the sheet as TrueVision3D v2.72.0 wrote it (19-Sep-2026; read at b2aa915" lacks the TrueVision module version (K2 H5: "<x.y.z> (TrueVision3D v2.N.0, DD-Mon-YYYY; read at <pin>)")   [legacy: a stylesheet carries no module version, so the Source version names the release that wrote it.]
+
+  PENDING  8 release placeholder(s) in 8 file(s), for the wave's Parity Scribe: W1-22 x8
+      02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js:49  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js:31  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css:41  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js:42  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js:35  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js:41  {{VVREL:W1-22}}
+      02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js:41  {{VVREL:W1-22}}
+      80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs:36  {{VVREL:W1-22}}
+
+  Baseline entries that no longer apply (the file was written since 01-Oct-2026):
+      02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+      02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+      02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+      02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+      80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs
+
+  RESULT: PASS (0 fail, 1 warn, 8 pending)

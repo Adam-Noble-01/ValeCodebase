@@ -1,0 +1,7 @@
+﻿Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js -> planted fault exit 1 failing checks 2 (caught)
+       FAIL  an infill taller than it is wide turns its words a quarter turn back: they read UP the sheet  -> 90
+       FAIL  told to, a tall infill keeps its words across, and a wide one turns them up
+Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js -> clean copy exit 0
+Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js -> planted fault exit 1 failing checks 1 (caught)
+       FAIL  the type keeps every choice through a rebuild
+Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js -> clean copy exit 0

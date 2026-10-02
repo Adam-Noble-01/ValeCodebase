@@ -1,0 +1,11 @@
+﻿wrote  76ab7127    66661 B  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js
+wrote  3f7e973d    30005 B  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js
+wrote  78d8cc85    41234 B  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js
+wrote  d275e45f    36968 B  02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+wrote  2c846f62    28065 B  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js
+wrote  d88dadb9    21933 B  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js
+wrote  83ff2784    12178 B  80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html
+wrote  06883696    20303 B  80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs
+wrote  543b7919   173986 B  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+wrote  c6739f68    39300 B  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+wrote  c369fe72    28334 B  80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs

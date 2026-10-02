@@ -73,6 +73,12 @@
 //   before the drop announces itself, by the same before-announce route, so
 //   the drop and the re-link are one undo step. Linking after the drop had
 //   returned made two: the history had already taken the drop by then.
+// - AND WORDS THAT WERE MEASURED WRONG. Refresh also asks the engine to refit
+//   whatever draws from a measurement of its words (Na__LeParam__Refit), tied
+//   or not: a title rebuilt before the paper's text metrics had loaded was
+//   drawn to the chrome's estimate, and a sheet's first refresh of a session
+//   runs before they land. The panel books one more refresh the moment they
+//   do (BookRefresh). One announcement carries both kinds of change.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__Panel__ScrapbookParametric__ calls Attach once, drops
@@ -86,18 +92,81 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : TrueVision3D 57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js,
-//                   its 1.2.0 (TrueVision v2.85.0)
-// - Ported on     : 20-Sep-2026 for ValeVision3D v2.68.0
-// - Parity        : verbatim - every code region is byte for byte TrueVision's
-// - Divergences   : Header, console prefix and folder numbers only.
-// - Back-port     : n/a (this IS the port)
+// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js
+// - Source version: 1.5.1 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.5, the whole 1.5.1 file: Nearest leaves
+//                   out a viewport on a reference layer (1.5.0, v2.123.0) and DistanceTo measures to
+//                   the frame as it stands through the ViewportRotation leaf (1.5.1, v2.138.0). This
+//                   app's copy before it was 1.4.0 (ValeVision3D v2.71.4; its first copy, 1.0.0, was
+//                   TrueVision's 1.2.0 at v2.68.0, 20-Sep-2026). Neither release is confirmed by Adam
+//                   in TrueVision: ported under DR-01 (c) and named.
+// - Parity        : verbatim - TrueVision's file; the banner, the console prefix and this note are
+//                   the only differences.
+// - Divergences   :
+//   - Banner and console prefix read ValeVision3D.
+// - Legacy        : TrueVision's DEVELOPMENT LOG, taken verbatim (DR-34), carries two 1.3.0 entries
+//                   (20-Sep-2026 ViewLevel above 21-Sep-2026 linkable) - TrueVision's own numbering,
+//                   kept as written.
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 20-Sep-2026 - Version 1.0.0
-// - Ported from TrueVision3D's 1.2.0.
+// 21-Sep-2026 - Version 1.5.1
+// - DistanceTo measures to the frame as it stands, turned
+//   (Viewport__RotationDeg) or not.
+//
+// 21-Sep-2026 - Version 1.5.0
+// - Nearest leaves out a viewport on a REFERENCE layer (the Layers panel's
+//   Ref), so a scale bar or a title dropped beside one, or asked to Link to
+//   nearest, never binds to it: Adam wants nothing to "snap or bind to" a
+//   reference layer. The panel's list still offers it, and the noodle can
+//   still be dragged onto it - a link chosen by hand is the user's.
+//
+// 21-Sep-2026 - Version 1.4.0
+// - Refresh refits as well as reconciles. Once the active sheet's linked
+//   elements are in line with their viewports, the engine rebuilds any
+//   element whose measured words no longer fit (Na__LeParam__Refit) - linked
+//   or not, since an untied title has an underline too - and the one
+//   announcement carries both. BookRefresh is exported, so the panel can book
+//   a refresh the moment the paper's text metrics land.
+// - FactsPatch compares a viewport's facts as the type would STORE them, run
+//   through its own normalise. Raw, a name with two spaces round its dash -
+//   all of RB05's elevations - never matched the element's single-spaced
+//   copy, so every refresh rebuilt those titles for nothing: an undo step
+//   and a dirty sheet on every visit, and a line drawn to the estimate on
+//   the first visit of every session.
+//
+// 20-Sep-2026 - Version 1.3.0
+// - FactsOf answers ViewLevel as well: the storey of the floor plan a viewport
+//   draws, '' for anything else. It follows its viewport as the other facts
+//   do; a storey chosen in the Dev menu arrives as the identity module's
+//   'level' announcement, which books the same refresh north does.
+//
+// 21-Sep-2026 - Version 1.3.0
+// - A type may say it is never tied to a viewport (linkable : false). It is
+//   then dropped with no link and no scale laid over its preset, and a sheet
+//   that gains one does not adopt it. The Project Portal block reads the
+//   project, not a drawing, and a cable from it to the nearest elevation
+//   would say something untrue about what it is.
+//
+// 20-Sep-2026 - Version 1.2.0
+// - Facts: FactsOf, and the facts a type asks for laid in on a drop, a link,
+//   an adoption and a follow. InsertLinked takes an element's preset
+//   parameters. Refresh, and the three things that call it. Following the
+//   facts does not wait on ViewportLink FollowScale, which is about scale.
+//
+// 19-Sep-2026 - Version 1.1.0
+// - A second kind of link: the sheet's own scale (SetSheetLink). Describe says
+//   what an element is tied to - a viewport, the sheet, or nothing - for the
+//   panel, the lookup menu and the link noodle, which draws it
+//   (Na__LayoutEditor__ScrapbookParametric__LinkNoodle__). An element dropped
+//   out of reach of any drawing is tied to the sheet's scale rather than to
+//   nothing.
+//
+// 19-Sep-2026 - Version 1.0.0
+// - Initial implementation: Nearest, Resolve, DenominatorFor, SetLink,
+//   InsertLinked, InsertAdopting and the scale follower.
 //
 // =============================================================================
 
@@ -117,6 +186,7 @@
         Na__LeModel__GetGroupById,
         Na__LeModel__GetViewportById,
         Na__LeModel__IsLayerVisible,
+        Na__LeModel__IsLayerSelectable,
         Na__LeModel__MarkDirty
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeDrawScale__SheetDenominator, Na__LeDrawScale__Label } from '../07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js';
@@ -124,6 +194,7 @@
     import { Na__LeGroup__Bounds } from '../15__Core__Markup/Na__LayoutEditor__Groups__.js';
     import { Na__LePanels__IsEditable, Na__LePanels__Refresh } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
     import { Na__LeViewId__CHANGED_EVENT, Na__LeViewId__Describe } from '../20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js';
+    import { Na__LeVpRot__DistanceTo } from '../20__System__Viewports/Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: distance to a turned frame
     import {
         Na__LeParam__FIELD,
         Na__LeParam__Block,
@@ -131,12 +202,14 @@
         Na__LeParam__GetBlock,
         Na__LeParam__GetBlockById,
         Na__LeParam__GetType,
+        Na__LeParam__IsLinkable,
         Na__LeParam__GetParams,
         Na__LeParam__ListOnSheet,
         Na__LeParam__Insert,
         Na__LeParam__Announce,
         Na__LeParam__Regenerate,
-        Na__LeParam__ResetToStandard
+        Na__LeParam__ResetToStandard,
+        Na__LeParam__Refit
     } from './Na__LayoutEditor__ScrapbookParametric__.js';
     // ------------------------------------------------------------
 
@@ -207,10 +280,7 @@
     // HELPER FUNCTION | How Far a Paper Point Is From a Viewport's Frame (zero inside it)
     // ------------------------------------------------------------
     function Na__LeParamLink__DistanceTo(viewport, pointMm) {
-        const frame = viewport.Viewport__FrameMm || {};
-        const dx = Math.max(frame.X - pointMm.x, 0, pointMm.x - (frame.X + frame.WidthMm));
-        const dy = Math.max(frame.Y - pointMm.y, 0, pointMm.y - (frame.Y + frame.HeightMm));
-        return Math.hypot(dx, dy);
+        return Na__LeVpRot__DistanceTo(viewport, pointMm);                       // <-- The frame as it stands, turned or not
     }
     // ------------------------------------------------------------
 
@@ -218,7 +288,9 @@
     // FUNCTION | The Linkable Viewport Nearest a Paper Point, or Null
     // ------------------------------------------------------------
     // Shown viewports only: nobody means to link to a drawing they cannot
-    // see. maxDistanceMm defaults to the config's; pass Infinity to take the
+    // see - nor to one on a reference layer, which nothing binds to. The
+    // panel's list and the noodle can still pick either by hand.
+    // maxDistanceMm defaults to the config's; pass Infinity to take the
     // nearest however far it is, which is what Link to nearest does.
     // ------------------------------------------------------------
     function Na__LeParamLink__Nearest(sheet, pointMm, maxDistanceMm) {
@@ -226,7 +298,7 @@
         const reach = (maxDistanceMm === undefined) ? Na__LeParamLink__Setup().maxDistance : maxDistanceMm;
         let best = null, bestGap = Infinity;
         Na__LeParamLink__Candidates(sheet).forEach((viewport) => {
-            if (!Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId)) return;
+            if (!Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId) || !Na__LeModel__IsLayerSelectable(sheet, viewport.Viewport__LayerId)) return;
             const gap = Na__LeParamLink__DistanceTo(viewport, pointMm);
             if (gap <= reach && gap < bestGap) { best = viewport; bestGap = gap; }
         });
@@ -254,13 +326,14 @@
 
     // FUNCTION | What a Viewport Is a Drawing Of, as the Parameters a Type May Ask For
     // ------------------------------------------------------------
-    // { ViewKind, ViewPhase, ViewFacing, ViewName, ViewDrawing } - the
-    // viewport identity module's facts under the names an element stores
-    // them by. ViewFacing is '' until north is set in the 3D model.
+    // { ViewKind, ViewPhase, ViewFacing, ViewLevel, ViewName, ViewDrawing } -
+    // the viewport identity module's facts under the names an element stores
+    // them by. ViewFacing is '' until north is set in the 3D model; ViewLevel
+    // is a floor plan's storey and '' for everything else.
     // ------------------------------------------------------------
     function Na__LeParamLink__FactsOf(viewport) {
         const facts = Na__LeViewId__Describe(viewport);
-        return { ViewKind : facts.kind, ViewPhase : facts.phase, ViewFacing : facts.facing, ViewName : facts.name, ViewDrawing : facts.drawing };
+        return { ViewKind : facts.kind, ViewPhase : facts.phase, ViewFacing : facts.facing, ViewLevel : facts.level || '', ViewName : facts.name, ViewDrawing : facts.drawing };
     }
     // ------------------------------------------------------------
 
@@ -281,13 +354,23 @@
 
     // HELPER FUNCTION | The Facts of an Element That No Longer Match Its Viewport ({} when all do)
     // ------------------------------------------------------------
+    // COMPARED AS THE TYPE WOULD STORE THEM. The element's own parameters are
+    // normalised - one line, trimmed, single spaces - and a viewport's facts
+    // are not: RB05 names its elevations "South East Elevation  -  House
+    // Front Fascade", two spaces either side of the dash. Compared raw, the
+    // two never matched, so every refresh rebuilt the title for nothing - and
+    // the first of a session runs before the paper's text metrics have
+    // loaded, which is how its underline came to be drawn to an estimate.
+    // ------------------------------------------------------------
     function Na__LeParamLink__FactsPatch(sheet, groupId, viewport) {
         const block = Na__LeParam__GetBlockById(sheet, groupId);
         if (!block || !viewport) return {};
-        const wanted = Na__LeParamLink__FactsForType(block.Parametric__Type, viewport);
-        const held   = Na__LeParam__GetParams(sheet, groupId) || {};
-        const patch  = {};
-        Object.keys(wanted).forEach((key) => { if (wanted[key] !== held[key]) patch[key] = wanted[key]; });
+        const wanted     = Na__LeParamLink__FactsForType(block.Parametric__Type, viewport);
+        const held       = Na__LeParam__GetParams(sheet, groupId) || {};
+        const definition = Na__LeParam__GetType(block.Parametric__Type);
+        const settled    = (definition && typeof definition.normalise === 'function') ? definition.normalise(Object.assign({}, held, wanted)) : wanted;   // <-- What a rebuild with them would store
+        const patch      = {};
+        Object.keys(wanted).forEach((key) => { if (settled[key] !== held[key]) patch[key] = wanted[key]; });
         return patch;
     }
     // ------------------------------------------------------------
@@ -455,6 +538,10 @@
     // ------------------------------------------------------------
     function Na__LeParamLink__InsertLinked(sheet, type, centreMm, preset) {
         if (!sheet || !centreMm) return null;
+        // A TYPE THAT IS NEVER TIED TO A DRAWING IS DROPPED AND NOTHING MORE.
+        // No link, and no scale laid over its preset either: a scale it has
+        // no use for would sit in its parameters looking like an answer.
+        if (!Na__LeParam__IsLinkable(type)) return Na__LeParam__Insert(sheet, type, centreMm, (preset && typeof preset === 'object') ? preset : {}, null);
         const auto        = Na__LeParamLink__Setup().autoLink;
         const viewport    = auto ? Na__LeParamLink__Nearest(sheet, centreMm) : null;
         const denominator = viewport ? viewport.Viewport__ScaleDenominator : Na__LeDrawScale__SheetDenominator(sheet);
@@ -479,7 +566,8 @@
         Na__LeParam__ListOnSheet(sheet).forEach((group) => {
             if (known.has(group.Group__Id)) return;
             const block = Na__LeParam__GetBlock(group);
-            if (!block || Na__LeParamLink__Describe(sheet, block).kind !== Na__LeParamLink__KIND_NONE) return;
+            if (!block || !Na__LeParam__IsLinkable(block.Parametric__Type)) return;   // <-- A type that is never tied to a drawing is not adopted by one it happens to have landed beside
+            if (Na__LeParamLink__Describe(sheet, block).kind !== Na__LeParamLink__KIND_NONE) return;
             const centre      = Na__LeParamLink__CentreOf(sheet, group.Group__Id);
             const viewport    = centre ? Na__LeParamLink__Nearest(sheet, centre) : null;
             const link        = viewport ? Na__LeParamLink__Make(sheet, viewport) : Na__LeParamLink__MakeSheet(sheet);   // <-- Out of reach of any drawing: the sheet's scale
@@ -613,12 +701,17 @@
     // the design phases arriving, an elevation's bearing edited. There is no
     // announcement to run ahead of, so this makes its own, through the last
     // element it rebuilt. Returns how many elements changed.
+    // AND FOR WORDS MEASURED WRONG: the engine's Refit rebuilds, in the same
+    // step, any element on the sheet - tied or not - whose records no longer
+    // fit what its words measure now. It does nothing until the paper's own
+    // text metrics have loaded.
     // ------------------------------------------------------------
     function Na__LeParamLink__Refresh(sheet) {
         if (!sheet || Na__LeParamLink__Following) return 0;
         Na__LeParamLink__Following = true;                                      // <-- Held through the announcement too, so the hook does not reconcile what has just been reconciled
         try {
             const changed = Na__LeParamLink__Reconcile(sheet, Na__LeParamLink__Setup().followScale);
+            Na__LeParam__Refit(sheet).forEach((groupId) => { if (changed.indexOf(groupId) === -1) changed.push(groupId); });   // <-- Words drawn to an estimate, or before the rule: the same step
             if (!changed.length) return 0;
             Na__LeModel__MarkDirty();
             Na__LeSurface__Refresh('markup');
@@ -639,6 +732,8 @@
     // Never from inside the event that asked for it: a refresh announces, and
     // an announcement inside an announcement reaches later listeners out of
     // order. Editable sheets only - a reader's copy says what was saved.
+    // Exported for the panel, which books one when the paper's text metrics
+    // land, so the sheet on screen is refit without waiting to be re-opened.
     // ------------------------------------------------------------
     function Na__LeParamLink__BookRefresh() {
         if (Na__LeParamLink__Refreshing) return;
@@ -696,6 +791,7 @@
         Na__LeParamLink__ViewportName,
         Na__LeParamLink__FactsOf,
         Na__LeParamLink__Refresh,
+        Na__LeParamLink__BookRefresh,
         Na__LeParamLink__KIND_VIEWPORT,
         Na__LeParamLink__KIND_SHEET,
         Na__LeParamLink__KIND_NONE,

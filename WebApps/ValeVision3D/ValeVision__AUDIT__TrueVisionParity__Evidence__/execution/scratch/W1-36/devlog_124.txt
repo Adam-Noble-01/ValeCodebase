@@ -1,0 +1,40 @@
+﻿====================================================================================================
+LINE 4193
+## TrueVision3D v2.124.0  -  21-Sep-2026
+### Undo, Redo, Fit and the Zoom Readout Leave the Drawing Toolbar; Their Keys Stay
+
+**Overview**
+- From Adam, over a crop of the Layout Editor toolbar (Undo, Redo, Fit, 162%): "Remove these and clean up the code
+  for them. Keep the hotkeys, but these are useless. I never use them, and I'm going to need the space to add a new
+  feature."
+
+**What changed**
+- `Na__LayoutEditor__Toolbar__.js` 1.19.0: the Undo, Redo, Fit and zoom readout buttons are gone, with the two
+  separators that fenced them. The strip is 245 px shorter, measured in the app with the same classes and words.
+  - Nothing left on it reads the undo depth or the zoom, so it no longer listens for `Na__LeHist__CHANGED_EVENT` or
+    `Na__LeSurface__ZOOM_EVENT`. `SyncZoom`, its listener and the imports from History, Navigation and SheetSurface
+    are gone with them.
+  - An undo still re-syncs the toolbar, through the model change it announces (`Na__LeModel__AnnounceRestore`). An
+    edit now costs one full toolbar sync where it cost two.
+- Comments brought up to date in `Na__LayoutEditor__Navigation__.js` (who calls Fit and ZoomTo) and
+  `Na__LayoutEditor__Eyedropper__.js` (what re-syncs the toolbar). No behaviour change in either.
+- Kept as they were:
+  - Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z.
+  - The right-click menu's Zoom to fit, Undo and Redo.
+  - The key map's `Nav__ZoomFit` (F) and `Nav__ZoomActualSize` (1), which still ship switched off.
+  - The web viewer's own Fit button.
+  - The `Undo` and `Redo` labels, which the right-click menu and the specification bar still read.
+- No new import anywhere, so no service worker token bump.
+
+**How it was proved**
+- `Na__Verify__Exports__.mjs` passes (456 files).
+- In the app on PS01 D01, with fresh modules from a no-store server and a fetch guard refusing every write (none was
+  attempted):
+  - The toolbar reads name | Select ... Ortho | Raster | Save Sheets, Download PDF. There is no Undo, Redo, Fit or
+    zoom button, and no doubled separator.
+  - An arrow-key nudge of Text_004, then Ctrl+Z, Ctrl+Y and Ctrl+Z on the stage: undone, redone and undone again. The
+    sheet ended byte-identical to where it began, and the toolbar synced once per step.
+  - A right click on bare paper at 250% offered Zoom to fit, Undo and Redo. Zoom to fit went back to the fitted 51%.
+- NOT tried by Adam; NOT in ValeVision.
+
+# ---------------------------------------------------------

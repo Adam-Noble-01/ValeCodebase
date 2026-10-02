@@ -1,0 +1,94 @@
+--- before/Na__PresentationMode__Thumbnail__Renderer.js
++++ after/Na__PresentationMode__Thumbnail__Renderer.js
+@@ -28,8 +28,45 @@
+ //   Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp().
+ // - SetRenderContext is called from index.html after the renderer exists.
++// - CaptureAndUpload is called by the Presentation Scenes editor (through
++//   ScenePersistence, and by its batch Update All Thumbnails), the floor plan
++//   and elevation Dev editors and Na__DrawView__ThumbnailBake__.
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Authored in   : ValeVision3D first (1.0.0, 11-Jun-2026); TrueVision3D took it on 21-Jun-2026
++//                   for its Presentation Mode transplant, and each app has grown its own 1.1.0 since
++// - Twin          : TrueVision3D 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js 1.1.0
++// - Source version: 1.1.0 (TrueVision3D v2.18.0, 07-Sep-2026; read at b2aa9151) - its
++//                   CaptureAndUpload(sceneId, targetWidthPx) call shape
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}} (the call shape only)
++// - Parity        : diverged (DIV-1: a drawing's frame comes from the drawing composer preset)
++// - Divergences   :
++//   - A 2D drawing is captured through the frame renderer the drawing composer preset
++//     registers (SetFrameRenderer, a ValeVision-only export); TrueVision draws the drawing
++//     here, flat, with its profile-line, depth-fog and section-cut overlays.
++//   - The 3D path draws the cross-section caps through Na__SectionClipping__GetOverlayRenderer,
++//     where TrueVision calls its SectionCut engine.
++//   - CaptureAndUpload writes through Na__AppUtils__R2AssetUpload (the worker's asset route,
++//     then the Flask mirror), where TrueVision calls Na__CfApi__WriteThumbnailWebp, and it
++//     also takes ValeVision's (sceneId, projectCode, showToast) shape. ok means R2 took the
++//     picture (r2Success).
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+ // DEVELOPMENT LOG:
++// 01-Oct-2026 - Version 1.1.1 (TrueVision's call shape, {{VVREL:W0-14}})
++// - CaptureAndUpload also takes TrueVision's (sceneId) and (sceneId,
++//   targetWidthPx) shapes: with no project code passed it uses the active
++//   scene set's, else the URL's, and a number is the thumbnail width.
++//   Presentation Scenes > Update All Thumbnails calls it with the scene id
++//   alone and had failed every scene.
++// - ok now means R2 took the picture (r2Success): Na__AppUtils__R2AssetUpload
++//   no longer throws on a failure, it says so, and a refused upload must
++//   never hand its path to a scene record. The three-argument form is
++//   otherwise unchanged.
++//
+ // 09-Sep-2026 - Version 1.1.0 (port Phase 2)
+ // - SetFrameRenderer lets the drawing composer preset render a capture the
+@@ -52,4 +89,10 @@
+     import { Na__SectionClipping__GetOverlayRenderer } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
+     import { Na__AppUtils__R2AssetUpload } from '../03__AppUtils/Na__AppUtils__R2AssetUpload__.js';
++    // ------------------------------------------------------------
++
++    // MODULE IMPORTS | The Project Code When a Caller Passes None (TrueVision's call shape)
++    // ------------------------------------------------------------
++    import { Na__PresentationMode__ProjectJson__GetActiveProjectCode } from './Na__PresentationMode__ProjectJson__SceneData.js';
++    import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+     // ------------------------------------------------------------
+ 
+@@ -225,10 +268,22 @@
+     // FUNCTION | Capture the Viewport and Upload It as a Scene's Thumbnail (R2-First)
+     // ------------------------------------------------------------
+-    // Returns { ok, relUrl, publicUrl } or { ok: false, error }.
+-    // ------------------------------------------------------------
+-    async function Na__PresentationMode__Thumbnail__CaptureAndUpload(sceneId, projectCode, showToast) {
++    // Two call shapes, one path:
++    //   CaptureAndUpload(sceneId, projectCode, showToast) - ValeVision's callers
++    //   CaptureAndUpload(sceneId[, targetWidthPx])        - TrueVision's, so its
++    //                                                       callers port unchanged
++    // When the second argument is not a string the project code is the active
++    // scene set's, else the URL's; a number is the thumbnail's width.
++    // Returns { ok, relUrl, publicUrl } or { ok: false, error }. ok means R2
++    // took the picture (r2Success), so a refused or failed upload never hands
++    // a caller a path to write onto its scene record.
++    // ------------------------------------------------------------
++    async function Na__PresentationMode__Thumbnail__CaptureAndUpload(sceneId, second, showToast) {
++        const projectCode = (typeof second === 'string')
++            ? second                                                         // <-- ValeVision's shape: the caller's code, as before
++            : (Na__PresentationMode__ProjectJson__GetActiveProjectCode() || Na__AppUtils__GetProjectCodeFromUrl());
++        const targetWidthPx = (typeof second === 'number' && Number.isFinite(second) && second > 0) ? second : undefined;
+         if (!sceneId || !projectCode) return { ok : false, error : 'missing scene id or project code' };
+ 
+-        const blob = await Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp();
++        const blob = await Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp(targetWidthPx);
+         if (!blob) return { ok : false, error : 'render failed' };
+ 
+@@ -236,4 +291,7 @@
+         try {
+             const result = await Na__AppUtils__R2AssetUpload(blob, projectCode, relUrl, showToast);
++            if (!result || result.r2Success !== true) {
++                return { ok : false, error : (result && result.error) || 'thumbnail upload failed' };   // <-- Never a path R2 did not take
++            }
+             return { ok : true, relUrl : relUrl, publicUrl : result.publicUrl || null };
+         } catch (error) {

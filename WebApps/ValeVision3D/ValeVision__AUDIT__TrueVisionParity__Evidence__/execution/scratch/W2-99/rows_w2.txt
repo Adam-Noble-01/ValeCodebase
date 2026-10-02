@@ -1,0 +1,1478 @@
+== 01__AppCore/Na__AppFlow__LoadingSequence.js [3.1] ['W2-07'] 
+   row src : 1.3.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151) - hunks only (W0-13) [was: unrecorded]
+   row cur : 1.3.1 | parity: diverged (VV load contract, PD-08: hunks only, never whole); next: keep_vv_divergence (re-check hunks); W0-13 (v2.71.1): TrueVision's overlay, merge-base and scene-ready hunks replayed (TV v2.7.1, v2.8.0, v2.21.0); W1-01 (v2.71.2): TrueVision v2.82.0's overlay bracket replayed - BeginFrame after the
+   row open: 13-Sep 1.3.0; 28-Sep 1.3.1 [2.71.0]; after W0-13: 1.3.0's design-phase start-up waits for W1-01 (DR-09), the progressive-render remainder for W2-07; after W1-01: TrueVision's design-phase start-up is not taken (DR-09 (a): the library lands uninitialised); the engine-hold stand-down, the thrown-frame
+   row pk  : W0-02, W0-13, W1-01, W2-07 | blocked: -
+   PN Source: 1.3.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151)
+   PN Parity: diverged (two independent lines since 24-Feb-2026, TrueVision 1.3.1 and ValeVision 1.7.x: never taken whole; TrueVision's hunks are replayed into ValeVision's sequence)
+   PN log   : 02-Oct-2026 1.7.3 (the progressive-render loop guards, v2.71.4)
+== 02__AppData/Na__AppConfig__Main.json [3.2] ['W2-08'] 
+   row src : -
+   row cur : - | parity: drifted (282 diff lines); W0-07 (v2.71.1): the ValeVision-only block ProjectData__EditorOwnedKeys (13 keys), the one list the sync, the worker's merge-keys guard and the localhost overlay read; W1-03 (v2.71.2): TrueVision's models.RenderConfig__Linework.RenderConfig__Linework__OrthoDepthBiasMm = 2 (
+   row open: -
+   row pk  : W0-02, W0-07, W1-03, W2-08 | blocked: -
+== 03__AppUtils/Na__AppUtils__R2DrawingNotes__.js [3.6] ['W2-33'] DELETED
+   row src : -
+   row cur : - | parity: VV-only; retire when the specification transport moves onto the facade (FR-18)
+   row open: -
+   row pk  : W2-30, W2-33 | blocked: -
+== 05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js [3.6] ['W2-13'] 
+   row src : -
+   row cur : - | parity: VV-only; keep: DIV-1 linework settings state (K2 section 7)
+   row open: -
+   row pk  : W2-13 | blocked: -
+   PN Source: 1.13.0 (TrueVision3D v2.161.0, 28-Sep-2026; read at b2aa9151) - the rules themselves are TrueVision commit 6076ec10 (21-Sep-2026), unlogged in that module's log
+   PN Parity: adapted (DR-31 (3), D-S04a-08) - TrueVision's rules, applied through this module
+   PN log   : 02-Oct-2026 1.2.0 (v2.71.4)
+== 05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js [3.4] ['W2-07'] 
+   row src : unrecorded
+   row cur : 1.0.1 | parity: shared (outside S11 c.1); taken by W2-07
+   row open: see its package
+   row pk  : W2-07 | blocked: -
+   PN Source: 1.0.3 (TrueVision3D v2.58.2, 17-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 16-Sep-2026 1.0.1
+== 30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js [3.1] ['W2-03', 'W2-12'] 
+   row src : unrecorded
+   row cur : 2.1.0 | parity: drifted (792 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-03, W2-12 | blocked: -
+   PN Parity: diverged (the same tile plan, gutter, sub-frustum and restore discipline; every tile of a picture here goes through the live EffectComposer, DIV-1)
+   PN log   : 08-Jul-2026 1.0.0
+== 40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js [3.3] ['W2-03'] 
+   row src : - (VV-authored as ComposerPreset 1.0.0; TV's file is its interface twin)
+   row cur : 1.1.0 | parity: diverged (DIV-1): TV's file name and eight exports over VV's EffectComposer body (FR-09); paired by path in Wave 0
+   row open: -
+   row pk  : W0-02, W2-03 | blocked: -
+   PN Parity: diverged (DIV-1: identical eight exports, composer route instead of TV's overlay route)
+   PN log   : 02-Oct-2026 1.4.0 (elevation depth fog, v2.71.4)
+== 40__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js [3.1] ['W2-02'] 
+   row src : unrecorded
+   row cur : 1.0.0 | parity: diverged (DIV-2: TV's path and 13 exports, VV body); next: keep_vv_divergence
+   row open: 10-Sep 1.0.0
+   row pk  : W2-02 | blocked: -
+   PN Source: 1.0.0 (TrueVision3D v2.21.0, 10-Sep-2026; read at b2aa9151) for the twin. The six calls of R6 F.8 C25 stand for TrueVision3D's own calls at the same pin: Na__SectSerialize__Serialize and __Apply (1.0.0, v2.21.0), the ConfigState appearance width, and the engine's SetModelRoot and RenderDepthInto (en
+   PN Parity: diverged (DIV-2: TrueVision3D's FILE, MODULE, banner and export names, the six included as F.8 C25 fixes them for both apps; ValeVision3D's body)
+   PN log   : 02-Oct-2026 1.3.0 (the six section calls, v2.71.4)
+== 40__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js [3.6] ['W2-04', 'W2-05'] 
+   row src : -
+   row cur : - | parity: VV-only; keep: VV-only drawing thumbnail bake; a seam in TV's 2.x Dev menus; offered to TV only by WT-06 (held)
+   row open: -
+   row pk  : W2-04, W2-05, WT-06 | blocked: -
+   PN Parity: new
+   PN log   : 02-Oct-2026 1.0.3 (Elevations menu rebuild, v2.71.4)
+== 41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js [3.6] ['W2-02'] 
+   row src : -
+   row cur : - | parity: VV-only; keep: DIV-2, VV's live Cross Sections tool and section engine (TD06 schema); name kept with a README (DR-26, D66); gate ids renamed by W2-05
+   row open: -
+   row pk  : W2-02, W2-05 | blocked: -
+   PN log   : 14-Jul-2026 1.1.0
+== 41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js [3.6] ['W2-05'] 
+   row src : -
+   row cur : - | parity: VV-only; keep: DIV-2, VV's live Cross Sections tool and section engine (TD06 schema); name kept with a README (DR-26, D66); gate ids renamed by W2-05
+   row open: -
+   row pk  : W2-02, W2-05 | blocked: -
+   PN log   : 02-Oct-2026 1.0.1 (Cross Sections placeholder, v2.71.4)
+== 42__System__FloorPlanViews/Na__FloorPlan__AppConfig__.json [3.2] ['W2-04'] 
+   row src : -
+   row cur : - | parity: adapted (additive) - TrueVision's FloorPlanViews__StoreyLevels__Config block and its six storey labels at TrueVision's places (W1-08, v2.71.2) [was: verbatim (header only)]
+   row open: -
+   row pk  : W1-08, W2-04 | blocked: -
+== 42__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js [3.1] ['W2-04'] 
+   row src : 1.0.0 (31-Aug-2026)
+   row cur : 2.0.0 | parity: drifted (1280 diff lines); next: port_whole_reapply_vv
+   row open: 20-Sep 2.0.0 [2.21.0]; 20-Sep 1.1.0
+   row pk  : W2-04 | blocked: 5 modules: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__DevMenu__Controls__.js` (missing, W2-01); `Na__DrawingPlanes__Grip__.js` 
+   PN Source: 2.0.0 (TrueVision3D v2.86.0, 20-Sep-2026; read at b2aa9151) - with 1.1.0 (v2.82.0) and the storey row of v2.87.0. None of the three is confirmed by Adam in TrueVision yet; ported under DR-01 (c)
+   PN Parity: adapted
+   PN log   : 20-Sep-2026 2.0.0 (Floor Plans and Elevations menu rebuild)
+== 42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js [3.1] ['W2-04'] 
+   row src : 1.0.0 (31-Aug-2026)
+   row cur : 2.0.0 | parity: drifted (239 diff lines); next: port_adapted
+   row open: 20-Sep 2.0.0
+   row pk  : W2-04 | blocked: none
+   PN Source: 2.0.0 (TrueVision3D v2.86.0, 20-Sep-2026; read at b2aa9151) - with the storey row of v2.87.0. Neither is confirmed by Adam in TrueVision yet; ported under DR-01 (c)
+   PN Parity: adapted
+   PN log   : 20-Sep-2026 2.0.0 (Floor Plans and Elevations menu rebuild)
+== 42__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css [3.1] ['W2-04'] 
+   row src : no version of its own - TrueVision3D v2.87.0's sheet (20-Sep-2026, commit bef15277; read at b2aa9151) - taken whole (W1-08) [was: unrecorded]
+   row cur : - | parity: adapted - TrueVision's sheet whole with ValeVision's Style Toggles region kept (D33, DR-32) (W1-08, v2.71.2) [was: drifted (60 diff lines); next: no_action (re-verify VV seams)]
+   row open: none (taken whole at b2aa9151) [was: none (date rule)]
+   row pk  : W1-08, W2-04 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.87.0 left it, with its Storey Dropdown region (20-Sep-2026, commit bef15277; read at b2aa9151)
+   PN Parity: adapted
+== 45__System__ElevationViews/Na__Elevation__AppConfig__.json [3.2] ['W2-05'] 
+   row src : -
+   row cur : - | parity: adapted (label union) - TrueVision's twelve labels at TrueVision's places (W1-10, v2.71.2) [was: verbatim (header only)]
+   row open: -
+   row pk  : W1-10, W2-05 | blocked: -
+== 45__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js [3.1] ['W2-05'] 
+   row src : 1.0.0 (07-Sep-2026)
+   row cur : 2.1.0 | parity: drifted (1549 diff lines); next: port_whole_reapply_vv
+   row open: 20-Sep 2.1.0; 20-Sep 2.0.0 [2.21.0]; 20-Sep 1.1.0
+   row pk  : W2-05 | blocked: 5 modules: `Na__DrawingPlanes__Bounds__.js` (missing, W2-40); `Na__DrawingPlanes__DevMenu__Controls__.js` (missing, W2-01); `Na__DrawingPlanes__Grip__.js` (miss
+   PN Source: 2.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - with 2.0.0 (v2.86.0) and 1.1.0 (v2.82.0). None of the three is confirmed by Adam in TrueVision yet; ported under DR-01 (c)
+   PN Parity: adapted
+   PN log   : 20-Sep-2026 2.1.0 (Elevation Depth Fog)
+== 45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js [3.1] ['W2-05'] 
+   row src : 1.0.0 (07-Sep-2026)
+   row cur : 2.1.0 | parity: drifted (572 diff lines); next: port_whole_reapply_vv
+   row open: 20-Sep 2.1.0; 20-Sep 2.0.0
+   row pk  : W2-05 | blocked: `Na__ElevationDepthFog__DevMenu__Row__.js` (missing, W2-03)
+   PN Source: 2.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - with 2.0.0 (v2.86.0). Neither is confirmed by Adam in TrueVision yet; ported under DR-01 (c)
+   PN Parity: adapted
+   PN log   : 20-Sep-2026 2.1.0 (Elevation Depth Fog)
+== 45__System__ElevationViews/Na__Elevation__ModeController__.js [3.1] ['W2-03'] 
+   row src : 1.0.0 (TrueVision3D v2.18.0, 07-Sep-2026); TrueVision's file is at 1.1.0 (v2.94.0, the depth-fog source, W2-03) [was: 1.0.0 (07-Sep-2026)]
+   row cur : 1.1.0 | parity: drifted (381 diff lines); next: port_whole_reapply_vv; W1-04 (v2.71.2): TakeViewport asks SuspendThreeD({ returnToOrbit : true }) (a ValeVision-only hunk; module 1.1.2)
+   row open: 20-Sep 1.1.0
+   row pk  : W0-02, W1-04, W2-03 | blocked: -
+   PN Source: 1.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - its depth-fog source hook, replayed onto the 1.0.0 port of TrueVision3D v2.18.0 (07-Sep-2026)
+   PN Parity: adapted
+   PN log   : 02-Oct-2026 1.1.3 (v2.71.4)
+== 45__System__ElevationViews/Na__Elevation__ProjectJson__Data__.js [3.1] ['W2-05'] 
+   row src : 1.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - taken whole (W1-10) [was: 1.0.0 (07-Sep-2026)]
+   row cur : 1.1.0 | parity: adapted - TrueVision 1.1.0 taken whole (W1-10, v2.71.2); module 1.1.1 -> 1.1.0 (DR-34 (a)); every elevation now carries its Elevation__DepthFog block, off [was: drifted (518 diff lines); next: port_whole_reapply_vv]
+   row open: none (TV 1.1.0 taken whole at b2aa9151) [was: 20-Sep 1.1.0]
+   row pk  : W1-10, W2-05 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: adapted. TrueVision's code and its first-argument convention: sceneConfig is the presentation block, read only to find a drawing's scene, and the records are read from LayoutEditor__DrawingsData through Na__DrawData__GetElevationsArray. The normaliser and the creator write Elevation__DepthFog, switc
+   PN log   : 20-Sep-2026 1.1.0 (Elevation Depth Fog)
+== 45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css [3.1] ['W2-05'] 
+   row src : no version of its own - TrueVision3D v2.86.0's sheet (20-Sep-2026, commit bef15277; read at b2aa9151) - taken whole (W1-10) [was: unrecorded]
+   row cur : - | parity: adapted - TrueVision's sheet whole (the identity region) with ValeVision's Compass Preset Strip kept until W2-05 (W1-10, v2.71.2) [was: drifted (181 diff lines); next: no_action (re-verify VV seams)]
+   row open: none (taken whole at b2aa9151) [was: none (date rule)]
+   row pk  : W1-10, W2-05 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.86.0 left it, with its Name, and Which Elevation This Is region (20-Sep-2026, commit bef15277; read at b2aa9151)
+   PN Parity: verbatim. The Carousel Card Status rules are also in 40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css, word for word and imported after this sheet, as in TrueVision.
+== 50__System__ProjectedLinework/Na__ProjectedLinework__AppConfig__.json [3.2] ['W2-06'] 
+   row src : -
+   row cur : - | parity: verbatim (header only)
+   row open: -
+   row pk  : W2-06 | blocked: -
+== 50__System__ProjectedLinework/Na__ProjectedLinework__AuthoredEdges__.js [3.1] ['W2-06'] 
+   row src : unrecorded
+   row cur : 1.2.0 | parity: drifted (116 diff lines); next: port_adapted
+   row open: 14-Sep 1.2.0
+   row pk  : W2-06 | blocked: `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06); `Na__ProjectedLinework__StageSampler__.js` (+1 name, W2-06)
+   PN Source: 1.2.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151), with the per-node LineworkModifier owners TrueVision added unlogged on 21-Sep-2026 (the commit of TrueVision3D v2.98.0; its DEVELOPMENT LOG does not record them)
+   PN Parity: verbatim
+   PN log   : 14-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__ClipKernel__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026 (created 07-Aug-2026)
+   row cur : - | parity: drifted (51 diff lines); next: port_adapted
+   row open: 14-Sep 1.2.0
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. Without SeamsOcclude the output is byte-identical to 1.1.0.
+   PN log   : 14-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026 (created 06-Aug-2026)
+   row cur : 1.2.0 | parity: drifted (101 diff lines); next: port_adapted
+   row open: 21-Sep 1.2.0
+   row pk  : W0-02, W2-06 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151), with GetLineworkModifiers, which TrueVision added unlogged on 20-21 Sep-2026 (the commits of TrueVision3D v2.95.0 and v2.98.0)
+   PN Parity: adapted
+   PN log   : 21-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__CpuBackend__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : - | parity: drifted (113 diff lines); next: port_adapted
+   row open: 21-Sep 1.4.0
+   row pk  : W2-06 | blocked: `Na__ProjectedLinework__FlushJoins__.js` (missing, W2-43); `Na__ProjectedLinework__Storeys__.js` (missing, W2-43)
+   PN Source: 1.4.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. The 1.3.1 log entry's "Back-port PENDING to ValeVision3D" is TrueVision's history: this app took that change as its own 1.2.1 on 18-Sep-2026.
+   PN log   : 21-Sep-2026 1.4.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.1.0 | parity: drifted (62 diff lines); next: port_adapted
+   row open: 14-Sep 1.1.0
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 14-Sep-2026 1.1.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__EdgeExtractor__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.3.0 | parity: drifted (105 diff lines); next: port_adapted
+   row open: 14-Sep 1.3.0
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.3.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 14-Sep-2026 1.3.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.2.0 | parity: verbatim (header only); next: port_adapted (was no_action)
+   row open: none (date rule)
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.64.1, 18-Sep-2026; read at b2aa9151) - new here is its 1.1.0, the edge rules in the fingerprint (TrueVision3D v2.37.0, 14-Sep-2026)
+   PN Parity: verbatim
+   PN log   : 18-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.5.0 | parity: drifted (148 diff lines); next: port_whole_reapply_vv
+   row open: 13-Sep 1.2.0; 14-Sep 1.4.0; 14-Sep 1.3.0; 21-Sep 1.5.0
+   row pk  : W0-02, W2-06 | blocked: `Na__ProjectedLinework__DoorPose__.js` (missing, W2-06); `Na__ProjectedLinework__Storeys__.js` (missing, W2-43)
+   PN Source: 1.5.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. The optional model root and fingerprint of 1.2.0 (TrueVision3D v2.32.0, its design phases) come across as TrueVision wrote them (DR-09 (a)): no caller in this app passes either, so every render describes and collects the live model as before; the two comments that name TrueVision as their 
+   PN log   : 21-Sep-2026 1.5.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__Projector__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.5.0 | parity: drifted (175 diff lines); next: port_adapted
+   row open: 21-Sep 1.5.0
+   row pk  : W2-06 | blocked: `Na__ProjectedLinework__DoorPose__.js` (missing, W2-06); `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+   PN Source: 1.5.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.5.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.2.0 | parity: drifted (118 diff lines); next: port_adapted
+   row open: 14-Sep 1.1.0; 20-Sep 1.2.0
+   row pk  : W2-06 | blocked: `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+   PN Source: 1.2.0 (TrueVision3D v2.98.0, 21-Sep-2026; read at b2aa9151) - the module log dates 1.2.0 20-Sep-2026; it shipped in the commits of v2.95.0 and v2.98.0 and no TrueVision devlog entry names it. Its 1.1.0 is TrueVision3D v2.42.0 (posed door panels).
+   PN Parity: verbatim
+   PN log   : 20-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026
+   row cur : 1.2.0 | parity: drifted (122 diff lines); next: port_adapted
+   row open: 14-Sep 1.2.0; 14-Sep 1.1.0
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.48.1, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. A definition built outside the Layout Editor carries DoorPose null, which the record hash leaves out, so every existing hash is unchanged. Flags reads both the record's Styles__X and the viewport's x spelling; this app's GetStyles answers the viewport spelling, so the value read is the sam
+   PN log   : 14-Sep-2026 1.2.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__WebGpuBackend__.js [3.1] ['W2-06'] 
+   row src : Lantern Designer rebuild of 07-Aug-2026 (created 07-Aug-2026)
+   row cur : - | parity: drifted (53 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-06 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.21.0, 10-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (a comment sync: the code was already identical)
+   PN log   : 09-Sep-2026 1.0.0
+== 51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js [3.6] ['W2-17', 'W2-18', 'W2-19'] 
+   row src : -
+   row cur : - | parity: VV-only; keep: permanent VV divergence, the lazy loader (DR-24 (a), D64; PD-05); not a back-port candidate; W1-31, W1-33, W1-34 (v2.71.2): TrueVision's entry points and view names mirrored (VIEW_REGISTER, VIEW_STATEMENT, Ready, HasFeature, IsSitePlanSheet, OpenRegister and OpenStatements, refusing u
+   row open: -
+   row pk  : W1-31, W1-33, W1-34, W4-08, W1-21 | blocked: -
+   PN Parity: new - a permanent ValeVision seam (DR-24 (a))
+   PN log   : 02-Oct-2026 1.1.7 (v2.71.4)
+== 51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json [3.2] ['W2-14', 'W2-29', 'W2-36'] 
+   row src : -
+   row cur : - | parity: adapted - every TrueVision key, block, note and label in one additive pass, in TrueVision's formatting (W0-15); the jsPDF path and the Classic scan repointed (W0-16); 79 listed seams held by Na__Test__AppConfigParity__ (v2.71.1) [was: drifted (2083 diff lines)]; W1-32, W1-34, W1-35 (v2.71.2): the Fo
+   row open: -
+   row pk  : W0-03, W0-15, W0-16, W1-32, W1-34, W1-35, W1-22, W1-25, W2-14, W2-29, W2-36, W3-07, W3-09, W3-10, W5-01, W5-05, W5-07, W1-26 (outside its list) | blocked: -
+== 51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js [3.1] ['W2-16', 'W2-19', 'W2-29', 'W2-31', 'W2-35'] 
+   row src : 1.32.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151) - hunks only (W1-32, W1-33, W1-34, W1-36) [was: cites TrueVision3D v2.57.0]
+   row cur : 1.32.0 | parity: adapted (hunk replay; never whole before W5-03) - the KeyScope reader and Follow, DocumentKeys Ready and Initialize, the view names, EnterUnder and Quiet, FOLD_GROUP, PreloadMetrics' promise, the refusing OpenRegister and OpenStatements (W1-32); the first-open veil at TrueVision's call site (W1-33);
+   row open: the feature hunks of 1.21.0-1.32.0 stay with their packages (W2-16, W2-19, W2-29, W2-31, W2-35, W3-05, W3-07, W3-09, W3-10, W3-11, W4-09, W4-10, W4-13) [was: 21-Sep 1.28.0; 21-Sep 1.27.0; 21-Sep 1.26.0; 21-Sep 1.25.0; 21-Sep 1.24.0; 21-Sep 1.23.0; 21-Sep 1.22.0; 21-Sep 1.21.0 [2.57.0,2.104.0]; 22-Se
+   row pk  : W0-02, W1-31, W1-32, W1-33, W1-34, W1-36, W2-19, W2-29, W2-31, W2-35, W2-16, W3-05, W3-07, W3-09, W3-10, W3-11, W4-10, W4-09, W4-13, W5-03, W5-07 | blocked: 23 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__Panel__DrawingGrid_
+   PN Source: 1.32.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151) - the hunks the 1.18.1, 1.18.2, 1.18.3, 1.18.4, 1.18.5, 1.18.6, 1.18.7, 1.18.8 and 1.18.9 entries name. Every other difference from that file is a seam listed here or a hunk that arrives with its own feature.
+   PN Parity: adapted (hunk replay; not yet whole)
+   PN log   : 02-Oct-2026 1.18.9 (Model Source and the site plan composites, v2.71.4)
+== 51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css [3.1] ['W2-19', 'W2-20', 'W2-24', 'W2-25'] 
+   row src : the regions "Paper and Its Layers" and "Viewport Frames" as TrueVision3D v2.142.0 left them (22-Sep-2026; read at b2aa9151) - taken (W1-28) [was: cites TrueVision3D v2.45.0]
+   row cur : - | parity: adapted - TrueVision's two stack regions verbatim (the layer stack, the zoom hold, the per-slot fade, clear frames, the vector hold rule, the fog image) (W1-28, v2.71.3); ValeVision's misplaced fade rule removed [was: drifted (429 diff lines); next: no_action (re-verify VV seams)]
+   row open: the other regions stay with their packages (W2-20, W2-19, W2-24, W2-25, W5-02) [was: none (date rule)]
+   row pk  : W1-28, W2-20, W2-19, W2-24, W2-25, W5-02 | blocked: -
+   PN Parity: as Na__LayoutEditor__Styles__Main__.css; the same split applies to TrueVision's copy
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__.js [3.1] ['W2-16'] 
+   row src : 1.16.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at b2aa9151) - call-shape hunks (W1-23) [was: - (from Lantern Designer)]
+   row cur : 1.16.0 | parity: drifted (337 diff lines); next: port_whole_reapply_vv; W1-23 (v2.71.2): Fill, ForceRender and RenderForExport hand the Model Source where TrueVision's do; module 1.8.1
+   row open: 20-Sep 1.12.0; 21-Sep 1.15.0; 21-Sep 1.14.0; 21-Sep 1.13.0; 29-Sep 1.16.0
+   row pk  : W1-23, W2-16 | blocked: 6 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__
+   PN Source: 1.16.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.16.0's; the banner and this note are the only differences)
+   PN log   : 29-Sep-2026 1.16.0 (TrueVision)
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js [3.1] ['W2-16'] 
+   row src : 1.4.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151) - call-shape hunks (W1-23) [was: unrecorded]
+   row cur : 1.4.0 | parity: drifted (261 diff lines); next: port_whole_reapply_vv; W1-23 (v2.71.2): the underlay render takes TrueVision's Render2d call (phase id, stillWanted); module 1.1.1
+   row open: 20-Sep 1.2.0; 21-Sep 1.4.0; 21-Sep 1.3.0
+   row pk  : W1-23, W2-16 | blocked: `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__Viewport2d__DepthFog__.js` (missing, W2-12); `Na__ProjectedLinework__ConfigAccess__.js` 
+   PN Source: 1.4.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.4.0's; the banner and this note are the only differences)
+   PN log   : 21-Sep-2026 1.4.0 (TrueVision)
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js [3.1] ['W2-16'] 
+   row src : 1.2.0 (TrueVision3D v2.95.0, 20-Sep-2026; read at b2aa9151) - call-shape hunks (W1-23) [was: unrecorded]
+   row cur : 1.2.0 | parity: drifted (123 diff lines); next: port_adapted; W1-23 (v2.71.2): EnsureLinework(definition, onPhase, force, modelSource, waited); module 1.1.1
+   row open: 20-Sep 1.2.0
+   row pk  : W1-23, W2-16 | blocked: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16)
+   PN Source: 1.2.0 (TrueVision3D v2.95.0, 20-Sep-2026, git 62dade1c, unlogged in its devlog; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.2.0's; the banner, the console prefix and this note are the only differences)
+   PN log   : 20-Sep-2026 1.2.0
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__Window__.js [3.1] ['W2-16'] 
+   row src : 1.2.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151) - Describe's hunk (W1-23) [was: unrecorded]
+   row cur : 1.2.0 | parity: drifted (93 diff lines); next: port_adapted; W1-23 (v2.71.2): Describe returns a live-model Model Source, never null (S04a verifier); module 1.0.1
+   row open: 21-Sep 1.2.0; 21-Sep 1.1.0
+   row pk  : W1-23, W2-16 | blocked: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11)
+   PN Source: 1.2.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.2.0's; the banner and this note are the only differences)
+   PN log   : 21-Sep-2026 1.2.0 (TrueVision)
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js [3.1] ['W2-16'] 
+   row src : 1.8.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at b2aa9151) - the render call's hunk (W1-23) [was: unrecorded]
+   row cur : 1.8.1 | parity: drifted (157 diff lines); next: port_adapted (was no_action (re-verify VV seams)); W1-23 (v2.71.2): RenderNow passes TrueVision's Render3d shape (renderId null: the live model); module 1.6.2
+   row open: none (date rule)
+   row pk  : W1-23, W2-16 | blocked: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16)
+   PN Source: 1.8.1 (TrueVision3D v2.161.0, 28-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.8.1's; the banner and this note are the only differences)
+   PN log   : 28-Sep-2026 1.8.1 (per-scene lighting, v2.161.0)
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js [3.1] ['W2-16'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.1.0 | parity: drifted (152 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+   row open: none (date rule)
+   row pk  : W2-16 | blocked: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16)
+   PN Source: 1.1.0 (TrueVision3D v2.87.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.1.0's; the banner, the console prefix and this note are the only differences)
+   PN log   : 20-Sep-2026 1.1.0
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportIdentity__Config__.json [3.2] ['W2-10'] 
+   row src : -
+   row cur : - | parity: verbatim (header only)
+   row open: -
+   row pk  : W2-10 | blocked: -
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js [3.1] ['W2-10'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.1.0 | parity: drifted (141 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+   row open: none (date rule)
+   row pk  : W2-10 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.87.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.1.0's; the banner and this note are the only differences)
+   PN log   : 20-Sep-2026 1.1.0
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js [3.1] ['W2-16'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: drifted (133 diff lines); next: port_adapted
+   row open: 14-Sep 1.1.0
+   row pk  : W2-16 | blocked: `Na__SitePlan__Store__.js` (missing, W2-14)
+   PN Source: 1.1.0 (TrueVision3D v2.49.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: adapted (app token only)
+   PN log   : 14-Sep-2026 1.1.0
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__Config__.json [3.2] ['W2-16'] 
+   row src : -
+   row cur : - | parity: verbatim (header only)
+   row open: -
+   row pk  : W2-16 | blocked: -
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__Enhance__.js [3.1] ['W2-09'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: drifted (98 diff lines); next: port_adapted
+   row open: 20-Sep 1.1.0
+   row pk  : W2-09 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.93.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.1.0's; the banner, the console prefix and this note are the only differences)
+   PN log   : 20-Sep-2026 1.1.0
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js [3.1] ['W2-16'] 
+   row src : unrecorded
+   row cur : 1.4.0 | parity: drifted (111 diff lines); next: port_adapted
+   row open: 14-Sep 1.3.0; 20-Sep 1.4.0
+   row pk  : W2-16 | blocked: `Na__SitePlan__Store__.js` (missing, W2-14)
+   PN Source: 1.4.0 (TrueVision3D v2.95.0, 20-Sep-2026, git 62dade1c, unlogged in its devlog; read at b2aa9151)
+   PN Parity: adapted (app token only)
+   PN log   : 20-Sep-2026 1.4.0
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__ModelLayers__Config__.json [3.2] ['W2-13'] 
+   row src : -
+   row cur : - | parity: drifted (141 diff lines)
+   row open: -
+   row pk  : W2-13 | blocked: -
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js [3.1] ['W2-09'] 
+   row src : unrecorded
+   row cur : 1.3.0 | parity: drifted (76 diff lines); next: port_adapted
+   row open: 20-Sep 1.3.0; 20-Sep 1.2.0
+   row pk  : W2-09 | blocked: none
+   PN Source: 1.3.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151) - 1.2.0, the percent kind, is TrueVision3D v2.93.0 of the same day
+   PN Parity: verbatim (the code is TrueVision 1.3.0's; the banner, the console prefix and this note are the only differences)
+   PN log   : 20-Sep-2026 1.3.0
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__RenderComposites__Config__.json [3.2] ['W2-09', 'W2-12'] 
+   row src : -
+   row cur : - | parity: verbatim (header only)
+   row open: -
+   row pk  : W2-09, W2-12 | blocked: -
+== 51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js [3.1] ['W2-15'] 
+   row src : 1.13.0 (TrueVision3D v2.161.0, 28-Sep-2026; read at b2aa9151) - signature hunks only (W1-23) [was: unrecorded]
+   row cur : 1.13.0 | parity: drifted (700 diff lines); next: port_adapted (hunks only, DIV-1) (was no_action (re-verify VV seams)); W1-23 (v2.71.2): Render2d and Render3d take TrueVision's positional signatures (modelSourceId, stillWanted, depthFog / viewWindow); GetModelRoot and both fingerprints take an optional modelSourceId
+   row open: none (date rule)
+   row pk  : W0-02, W1-23, W2-15 | blocked: -
+   PN Source: 1.13.0 (TrueVision3D v2.161.0, 28-Sep-2026; read at HEAD b2aa9151). Every TrueVision3D hunk from 1.6.0 to 1.13.0, and the unlogged nested modifier rules (6076ec10), is in this file as of 1.8.0
+   PN Parity: diverged (DIV-1: ValeVision3D's composer route)
+   PN log   : 02-Oct-2026 1.8.0 (TrueVision3D's 1.6.0 to 1.13.0 hunks, v2.71.4)
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__AxisLock__.js [3.1] ['W2-25'] 
+   row src : unrecorded
+   row cur : 1.0.0 | parity: verbatim (header only); next: no_action
+   row open: none (date rule)
+   row pk  : W2-25, W3-03 | blocked: -
+   PN Parity: new
+   PN log   : 10-Sep-2026 1.0.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ContextMenu__.js [3.1] ['W2-20'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: drifted (303 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.1.0
+   row pk  : W2-20 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.123.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim - TrueVision's file; the banner and this note are the only differences. TrueVision's own note held 1.1.0 for Adam's sign-off (v2.123.0: "NOT tried by Adam"), not given yet. Ported under DR-01 (c): the Port Record names every TrueVision release it carries that Adam has not confirmed in TrueV
+   PN log   : 21-Sep-2026 1.1.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__EditScope__.js [3.1] ['W2-21'] 
+   row src : unrecorded
+   row cur : 1.4.0 | parity: drifted (233 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.2.0; 21-Sep 1.1.1; 22-Sep 1.4.0; 22-Sep 1.3.0
+   row pk  : W2-21 | blocked: none
+   PN Source: 1.4.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.4.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js [3.1] ['W2-21'] 
+   row src : cites TrueVision3D v2.57.0
+   row cur : - | parity: drifted (114 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.9.0; 21-Sep 1.8.2; 21-Sep 1.8.1
+   row pk  : W2-21 | blocked: none
+   PN Source: 1.9.0 (TrueVision3D v2.139.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.9.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Grips__.js [3.1] ['W2-24'] 
+   row src : cites TrueVision3D v2.52.0
+   row cur : 1.12.0 | parity: drifted (372 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.11.0; 21-Sep 1.10.0; 21-Sep 1.9.0; 22-Sep 1.12.0
+   row pk  : W2-24 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.12.0 (TrueVision3D v2.151.0, 22-Sep-2026, commit a2e0a836 - named in no TrueVision devlog entry; read at b2aa9151)
+   PN Parity: verbatim - TrueVision's file; the banner, the two console prefixes and this note are the only differences. 1.9.0 (v2.116.0), 1.10.0 (v2.129.0) and 1.11.0 (v2.137.0) are "NOT tried by Adam" in TrueVision, and 1.12.0 has no devlog entry: ported under DR-01 (c), each named for the Parity Scribe.
+   PN log   : 22-Sep-2026 1.12.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__ItemClipboard__.js [3.1] ['W2-21'] 
+   row src : unrecorded
+   row cur : 1.7.0 | parity: drifted (540 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.6.0; 21-Sep 1.5.0; 21-Sep 1.4.0; 22-Sep 1.7.0
+   row pk  : W2-21 | blocked: `Na__LayoutEditor__EditScope__.js` (+1 name, W2-21)
+   PN Source: 1.7.0 (TrueVision3D v2.142.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.7.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Measurements__.js [3.1] ['W2-23'] 
+   row src : cites TrueVision3D v2.47.0
+   row cur : 1.10.0 | parity: drifted (393 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.9.0; 21-Sep 1.8.0; 21-Sep 1.7.0; 21-Sep 1.6.0; 21-Sep 1.5.1; 22-Sep 1.10.0
+   row pk  : W0-03, W2-23 | blocked: `Na__LayoutEditor__NoteRegions__Tool__.js` (missing, W2-22)
+   PN Source: 1.10.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.10.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionBox__.js [3.1] ['W2-21'] 
+   row src : cites TrueVision3D v2.52.0
+   row cur : 1.7.0 | parity: drifted (91 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.6.0; 21-Sep 1.5.0; 22-Sep 1.7.0
+   row pk  : W2-21 | blocked: none
+   PN Source: 1.7.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.7.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SelectionSet__.js [3.1] ['W2-21'] 
+   row src : unrecorded
+   row cur : 1.2.0 | parity: drifted (218 diff lines); next: port_adapted
+   row open: 21-Sep 1.1.0; 22-Sep 1.2.0
+   row pk  : W2-21 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.141.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js [3.1] ['W2-19'] 
+   row src : cites TrueVision3D v2.57.0
+   row cur : 1.7.0 | parity: drifted (235 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.5.0; 21-Sep 1.4.0; 21-Sep 1.3.0; 21-Sep 1.2.0; 22-Sep 1.7.0; 22-Sep 1.6.0
+   row pk  : W2-19, W3-03 | blocked: 7 modules: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__LayoutEditor__PlanDoors__.js` (missing, W2-11); `Na__LayoutEditor__ObjectSnap__.js` (miss
+   PN Parity: verbatim (moved code)
+   PN log   : 02-Oct-2026 1.2.1 (v2.71.4)
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__Keyboard__.js [3.1] ['W2-19'] 
+   row src : cites TrueVision3D v2.58.0
+   row cur : 1.18.0 | parity: drifted (560 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.13.0; 21-Sep 1.12.0; 21-Sep 1.11.0; 21-Sep 1.10.0; 21-Sep 1.9.0; 21-Sep 1.8.0; 21-Sep 1.7.0; 22-Sep 1.18.0; 22-Sep 1.17.0; 22-Sep 1.16.0; 22-Sep 1.15.0; 22-Sep 1.14.0
+   row pk  : W2-19, W3-03 | blocked: 11 modules: `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__ObjectSnap__.js` (mis
+   PN Parity: verbatim (moved code)
+   PN log   : 02-Oct-2026 1.3.1 (v2.71.4)
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js [3.6] ['W2-19'] 
+   row src : -
+   row cur : - | parity: VV-only; retire: re-export shim over LE/28__System__ObjectSnap (FR-14, W2-19), deleted when its 10 importing files move (FR-15, W3-08)
+   row open: -
+   row pk  : W2-19, W3-08 | blocked: -
+   PN Parity: diverged (a ValeVision shim; TrueVision's copy no longer exists)
+   PN log   : 02-Oct-2026 2.0.0 (v2.71.4)
+== 51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__DimensionTool__.js [3.1] ['W2-26'] 
+   row src : cites TrueVision3D v2.46.0
+   row cur : 1.12.0 | parity: drifted (163 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.12.0; 21-Sep 1.11.0; 21-Sep 1.10.0; 21-Sep 1.9.0; 21-Sep 1.8.0
+   row pk  : W2-26 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.12.0 (TrueVision3D v2.139.0, 21-Sep-2026; read at b2aa9151), with the create hunk of TrueVision3D v2.152.0 (23-Sep-2026) that TrueVision's module log does not record
+   PN Parity: verbatim
+   PN log   : 23-Sep-2026 1.13.0
+== 51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__LeaderTool__.js [3.1] ['W2-26'] 
+   row src : unrecorded
+   row cur : 1.2.0 | parity: verbatim (header only); next: port_adapted
+   row open: 21-Sep 1.2.0
+   row pk  : W2-26 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.2.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.2.0
+== 51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__RectangleTool__.js [3.1] ['W2-26'] 
+   row src : cites TrueVision3D v2.46.0
+   row cur : 1.4.0 | parity: drifted (66 diff lines); next: port_adapted
+   row open: 21-Sep 1.3.0; 22-Sep 1.4.0
+   row pk  : W2-26 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.4.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.4.0
+== 51__System__LayoutEditor/35__System__DrawingTools/Na__LayoutEditor__TextTool__.js [3.1] ['W2-26'] 
+   row src : cites TrueVision3D v2.52.0
+   row cur : 1.4.0 | parity: verbatim (header only); next: port_adapted
+   row open: 21-Sep 1.4.0
+   row pk  : W2-26 | blocked: none
+   PN Source: 1.4.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.4.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js [3.1] ['W2-36'] 
+   row src : - (from Lantern Designer)
+   row cur : 1.3.0 | parity: drifted (68 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.2.0; 21-Sep 1.1.1; 23-Sep 1.3.0
+   row pk  : W2-36, W3-13 | blocked: none
+   PN Source: 1.3.0 (TrueVision3D v2.154.0, 23-Sep-2026; read at b2aa9151) - the hunks the 1.1.1 and 1.1.2 entries name. Every other difference from that file is TrueVision's Ref switch.
+   PN Parity: adapted (hunk replay; not yet whole)
+   PN log   : 02-Oct-2026 1.1.2 (v2.71.4)
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js [3.1] ['W2-36'] 
+   row src : cites TrueVision3D v2.57.0
+   row cur : 1.2.0 | parity: drifted (30 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-36 | blocked: -
+   PN Source: 1.2.0 (TrueVision3D v2.57.0, 17-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 17-Sep-2026 1.2.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js [3.1] ['W2-16'] 
+   row src : unrecorded
+   row cur : 1.3.0 | parity: drifted (66 diff lines); next: port_adapted
+   row open: 14-Sep 1.3.0
+   row pk  : W2-16 | blocked: `Na__LayoutEditor__ModelSource__.js` (missing, W2-16); `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__EdgeStyles__.js` (+1 name, W2-16)
+   PN Source: 1.3.0 (TrueVision3D v2.49.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.3.0's; the banner and this note are the only differences)
+   PN log   : 14-Sep-2026 1.3.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js [3.1] ['W2-36'] 
+   row src : cites TrueVision3D v2.57.0
+   row cur : 1.9.0 | parity: drifted (300 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.9.0; 21-Sep 1.8.2; 21-Sep 1.8.1
+   row pk  : W2-36, W3-12 | blocked: none
+   PN Source: 1.9.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151) - the hunks the 1.8.1 and 1.8.2 entries name (TrueVision's 1.8.1, v2.106.0, and 1.8.2, v2.116.0).
+   PN Parity: adapted (hunk replay; not yet whole)
+   PN log   : 02-Oct-2026 1.8.2 (v2.71.4)
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js [3.1] ['W2-36'] 
+   row src : unrecorded
+   row cur : 1.7.0 | parity: drifted (50 diff lines); next: port_adapted
+   row open: 20-Sep 1.7.0
+   row pk  : W2-36 | blocked: none
+   PN Source: 1.7.0 (TrueVision3D v2.93.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.7.0's; the banner and this note are the only differences)
+   PN log   : 20-Sep-2026 1.7.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js [3.1] ['W2-36'] 
+   row src : cites TrueVision3D v2.57.0
+   row cur : 1.4.0 | parity: drifted (53 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-36 | blocked: none
+   PN Source: 1.4.0 (TrueVision3D v2.57.0, 17-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.4.0's; the banner and this note are the only differences)
+   PN log   : 17-Sep-2026 1.4.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js [3.1] ['W2-19'] 
+   row src : hunks up to TrueVision's Toolbar 1.12.0 (v2.70.0), then 1.17.0 (named in no release entry) and 1.19.0 (TrueVision3D v2.124.0, 21-Sep-2026); TrueVision's file is 1.24.0 (read at b2aa9151) (W1-35) [was: hunks up to TrueVision's Toolbar 1.12.0 (TrueVision3D v2.70.0, 19-Sep-2026)]
+   row cur : 1.24.0 | parity: adapted (hunk replay; never whole before W5-01) - Notes, Undo, Redo, Fit and 100% gone (W1-35, v2.71.2; DR-40 item 3); VV module 1.9.4 [was: drifted (366 diff lines); next: port_whole_reapply_vv]
+   row open: 1.13.0-1.16.0, 1.18.0 and 1.20.0-1.24.0 (Draft, Ortho, Grid, Image, the Snap split and menu, Circle, Arc, Axes, the lockstep note, Share; W2-19, W5-01) [was: 21-Sep 1.22.0; 21-Sep 1.21.0; 21-Sep 1.20.0; 21-Sep 1.19.0; 21-Sep 1.18.0; 21-Sep 1.17.0; 21-Sep 1.16.0; 21-Sep 1.15.0; 21-Sep 1.14.0; 21-Sep 
+   row pk  : W0-06, W1-35, W2-19, W5-01 | blocked: 11 modules: `Na__LayoutEditor__DraftMode__.js` (missing, W2-18); `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18); `Na__LayoutEditor__ObjectSnap__.js` (mis
+   PN Source: hunks up to TrueVision's Toolbar 1.12.0 (TrueVision3D v2.70.0, 19-Sep-2026), then its 1.17.0 (the Notes toggle; 21-Sep-2026, named in no TrueVision3D release entry) and 1.19.0 (Undo, Redo, Fit and the zoom readout; TrueVision3D v2.124.0, 21-Sep-2026); TrueVision's file is 1.24.0 (read at b2aa9151)
+   PN Parity: adapted
+   PN log   : 02-Oct-2026 1.9.5 (object snap's own folder, v2.71.4)
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js [3.1] ['W2-32'] 
+   row src : - (authored in ValeVision first; TrueVision's file is its twin)
+   row cur : 1.3.0 | parity: drifted (35 diff lines); next: port_whole_reapply_vv
+   row open: 19-Sep 1.1.0; 21-Sep 1.2.0; 22-Sep 1.3.0
+   row pk  : W2-32, W3-03 | blocked: `Na__LayoutEditor__SheetTools__.js` (+1 name, W2-32)
+   PN Source: 1.3.0 (TrueVision3D v2.143.0, 22-Sep-2026; 1.2.0 v2.111.0, 1.1.0 v2.78.0; read at b2aa9151)
+   PN Parity: adapted (TrueVision 1.3.0's code less one held term, below)
+   PN log   : 22-Sep-2026 1.3.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js [3.1] ['W2-30'] 
+   row src : - (authored in ValeVision first; TrueVision's file is its twin)
+   row cur : - | parity: drifted (98 diff lines); next: port_adapted
+   row open: 22-Sep 1.4.0; 29-Sep 1.5.0
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__SpecData__Lockstep__.js` (missing, W2-30); `Na__LayoutEditor__SpecData__Document__.js` (+1 name, W2-30); `Na__LayoutEditor__SpecData__State__
+   PN Source: 1.5.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.5.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js [3.1] ['W2-30'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: drifted (119 diff lines); next: port_adapted
+   row open: 29-Sep 1.1.0
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__SpecData__State__.js` (+4 names, W2-30)
+   PN Source: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.1.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Draft__.js [3.1] ['W2-30'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: verbatim (header only); next: port_adapted
+   row open: 29-Sep 1.1.0
+   row pk  : W2-30 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.1.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Editing__.js [3.1] ['W2-30'] 
+   row src : unrecorded
+   row cur : 1.1.0 | parity: verbatim (header only); next: port_adapted
+   row open: 29-Sep 1.1.0
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__SpecData__Lockstep__.js` (missing, W2-30)
+   PN Source: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.1.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js [3.1] ['W2-30'] 
+   row src : unrecorded
+   row cur : 1.2.0 | parity: drifted (56 diff lines); next: port_adapted
+   row open: 22-Sep 1.1.0; 29-Sep 1.2.0
+   row pk  : W2-30 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: adapted
+   PN log   : 29-Sep-2026 1.2.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Transport__.js [3.1] ['W2-30'] 
+   row src : unrecorded
+   row cur : 1.3.0 | parity: drifted (394 diff lines); next: port_whole_reapply_vv
+   row open: 22-Sep 1.2.0; 29-Sep 1.3.0
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__SpecData__Lockstep__.js` (missing, W2-30); `Na__LayoutEditor__SpecData__Document__.js` (+1 name, W2-30); `Na__LayoutEditor__SpecData__State__
+   PN Source: 1.3.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.3.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecEditor__Bar__.js [3.1] ['W2-31'] 
+   row src : cites TrueVision3D v2.70.0
+   row cur : 1.4.0 | parity: drifted (73 diff lines); next: port_adapted
+   row open: 29-Sep 1.4.0 [2.166.0]; 29-Sep 1.3.0
+   row pk  : W2-31, W4-08 | blocked: `Na__LayoutEditor__Statement__Lockstep__.js` (missing, W2-30); `Na__LayoutEditor__Share__Button__.js` (missing, W4-08)
+   PN Source: 1.3.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151). TrueVision's file at the pin is 1.4.0; its one 1.4.0 change, the Share button in Read (v2.166.0), is left out and comes with the document-sharing port (DR-05; D-S06b-07 (a)).
+   PN Parity: adapted
+   PN log   : 29-Sep-2026 1.3.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLinks__.js [3.1] ['W2-30'] 
+   row src : - (authored in ValeVision first; TrueVision's file is its twin)
+   row cur : 1.2.0 | parity: drifted (49 diff lines); next: port_adapted
+   row open: 18-Sep 1.1.0; 22-Sep 1.2.0
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__SpecData__.js` (+1 name, W2-30)
+   PN Source: 1.2.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__.js [3.1] ['W2-32'] 
+   row src : - (authored in ValeVision first; TrueVision's file is its twin)
+   row cur : 1.5.0 | parity: drifted (404 diff lines); next: port_whole_reapply_vv
+   row open: 22-Sep 1.5.0; 22-Sep 1.4.0
+   row pk  : W2-32 | blocked: `Na__LayoutEditor__NoteRegions__.js` (missing, W2-32); `Na__LayoutEditor__SpecMargin__Column__.js` (missing, W2-32)
+   PN Source: 1.5.0 (TrueVision3D v2.147.0, 22-Sep-2026; 1.4.0 came with v2.143.0; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.5.0's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.5.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css [3.1] ['W2-31'] 
+   row src : cites TrueVision3D v2.51.0
+   row cur : - | parity: drifted (189 diff lines); next: no_action (re-verify VV seams); W1-34 (v2.71.2): the dead .na-le-tabs__tab--spec rule removed (TrueVision still carries it; offered to WT-08)
+   row open: none (date rule)
+   row pk  : W1-34, W2-31 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.163.0 left it (29-Sep-2026; read at b2aa9151; its EXTENDED line says v2.162.0, the devlog v2.163.0).
+   PN Parity: adapted (every rule and comment is TrueVision's but one rule left out)
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css [3.1] ['W2-32'] 
+   row src : unrecorded
+   row cur : - | parity: drifted (309 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-32 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.147.0 left it (22-Sep-2026; read at b2aa9151). This app split it out of Styles__Specification first (15-Sep-2026, v2.47.0); TrueVision made the same split in its v2.55.0.
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Scrapbook__TileDrag__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.2.0 | parity: drifted (134 diff lines); next: port_adapted
+   row open: 21-Sep 1.2.0
+   row pk  : W2-37 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.2.0 (TrueVision3D v2.134.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.2.0
+== 51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__.js [3.1] ['W2-36'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.0.0 | parity: drifted (38 diff lines); next: no_action (re-verify VV seams)
+   row open: none (date rule)
+   row pk  : W2-36 | blocked: -
+   PN Source: 1.0.0 (TrueVision3D v2.85.0, 19-Sep-2026, with the unversioned measured-room hunk of TrueVision3D v2.104.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim but for one string
+   PN log   : 19-Sep-2026 1.0.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : - | parity: drifted (343 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.7.0; 21-Sep 1.6.0; 21-Sep 1.5.0; 21-Sep 1.4.0
+   row pk  : W2-37 | blocked: none
+   PN Source: 1.7.0 (TrueVision3D v2.134.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: adapted - TrueVision 1.7.0's code with the one seam below
+   PN log   : 21-Sep-2026 1.7.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Config__.json [3.2] ['W2-37'] 
+   row src : -
+   row cur : - | parity: drifted (474 diff lines)
+   row open: -
+   row pk  : W2-37, W3-14 | blocked: -
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : - | parity: drifted (328 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.3.0
+   row pk  : W2-37 | blocked: `Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js` (+1 name, W2-37)
+   PN Source: 1.3.0 (TrueVision3D v2.122.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.3.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__Grips__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.6.0 | parity: drifted (361 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.6.0; 21-Sep 1.5.0; 21-Sep 1.4.0; 21-Sep 1.3.0
+   row pk  : W2-37 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js` (+2 names, W2-37)
+   PN Source: 1.6.0 (TrueVision3D v2.134.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.6.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js [3.1] ['W2-37'] 
+   row src : 1.2.0 (TrueVision3D v2.85.0, 20-Sep-2026) with 1.2.1's ScaleCell (v2.106.0, 21-Sep-2026; read at b2aa9151) - one hunk (W1-28) [was: cites TrueVision3D v2.85.0]
+   row cur : 1.2.2 | parity: verbatim (1.2.1's code) - TrueVision's ScaleCell hunk replayed as an unavoidable importer update of the layer stack (W1-28, v2.71.3); VV module 1.0.1 [was: drifted (53 diff lines); next: port_adapted]
+   row open: 21-Sep 1.2.2 (a tie to a turned viewport; W2-37's whole take) [was: 21-Sep 1.2.2; 21-Sep 1.2.1]
+   row pk  : W2-37, W1-28 (importer update) | blocked: none
+   PN Source: 1.2.2 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.2.2
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.1.0 | parity: drifted (41 diff lines); next: port_adapted (was no_action (re-verify VV seams))
+   row open: none (date rule)
+   row pk  : W2-37 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.96.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 20-Sep-2026 1.1.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : - | parity: drifted (140 diff lines); next: port_whole_reapply_vv
+   row open: 21-Sep 1.5.1; 21-Sep 1.5.0; 21-Sep 1.4.0; 21-Sep 1.3.0
+   row pk  : W2-37, W3-13 | blocked: `Na__LayoutEditor__ScrapbookParametric__.js` (+2 names, W2-37)
+   PN Source: 1.4.0 (TrueVision3D v2.122.0, 21-Sep-2026; read at b2aa9151 - TrueVision's 1.5.1 there with the 1.5.0 and 1.5.1 hunks taken back out; equal to its commit d76d7638 less 1.5.0, so 1.4.0 exactly as TrueVision wrote it)
+   PN Parity: adapted - TrueVision 1.4.0; 1.5.0 and 1.5.1 not yet taken
+   PN log   : 21-Sep-2026 1.4.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Styles__ScrapbookParametric__.css [3.1] ['W2-37'] 
+   row src : cites TrueVision3D v2.85.0
+   row cur : 1.3.0 | parity: drifted (108 diff lines); next: port_adapted
+   row open: 21-Sep 1.3.0; 21-Sep 1.2.0
+   row pk  : W2-37 | blocked: -
+   PN Source: 1.3.0 (TrueVision3D v2.134.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.3.0
+== 51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js [3.1] ['W2-17'] 
+   row src : unrecorded
+   row cur : 1.3.0 | parity: drifted (224 diff lines); next: no_action (re-verify VV seams); W1-34 (v2.71.2): the NoSheets fallback equals the config's (TrueVision's) value; module 1.4.1
+   row open: none (date rule)
+   row pk  : W1-34, W2-17, W5-07 | blocked: -
+   PN Parity: diverged - this app's module, newer than TrueVision's in its architecture (WP-S03a-08: keep this file, take TrueVision's behaviour through the loader)
+   PN log   : 02-Oct-2026 1.4.2 (v2.71.4)
+== 47__System__DrawingPlanes/Na__DrawingPlanes__AppConfig__.json [3.5 LANDS] ['W2-40'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-40 | blocked: -
+== 47__System__DrawingPlanes/Na__DrawingPlanes__Bounds__.js [3.5 LANDS] ['W2-40'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-40 | blocked: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40)
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: only Na__DrawingPlanes__Overlay__ asks it for frames, and that arrives with W2-01. The config's token lists are verbatim too (S02a-F43): TrueVision's note that ValeVision's category keys are shorter ("Landscape", "Walls") does not hold. ValeVision's loader names each group under
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__ConfigState__.js [3.5 LANDS] ['W2-40'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-40 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: Na__PlaneOverlay__Initialize, which starts the load, and every other reader arrive with W2-01. Na__DrawingPlanes__AppConfig__.json beside it is TrueVision's file byte for byte, so the fallbacks still mirror the shipped JSON exactly, the bounds tokens included (checked against Va
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__DevMenu__Controls__.js [3.5 LANDS] ['W2-01'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-01 | blocked: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Grip__.js` (missing, W2-01); `Na__DrawingPlanes__Overlay__.js` (missing, W2-01)
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. Its BuildBar and BuildRowControls are called by the Floor Plans and Elevations Dev-menu editors, which take TrueVision's 2.x editors with W2-04 and W2-05; until then only its Initialize runs (index.html) and nothing is built.
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js [3.5 LANDS] ['W2-01'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-01 | blocked: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40); `Na__DrawingPlanes__Overlay__.js` (missing, W2-01); `N
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. Started from index.html after the Layout Editor block, as TrueVision does. Until the Floor Plans and Elevations Dev-menu editors register their sources (W2-04, W2-05) no plane can go up, so nothing is added to the scene and no canvas listener is attached. As in TrueVision it supersedes Na_
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__Maths__.js [3.5 LANDS] ['W2-40'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-40 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: nothing outside this folder imports it until the overlay, the grip and the Dev-menu controls arrive with W2-01, which also brings its test, 80__Testing__PrototypeEnvironment/Na__Test__DrawingPlanes__.test.mjs (47 checks).
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__Overlay__.js [3.5 LANDS] ['W2-01'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-01 | blocked: `Na__DrawingPlanes__Bounds__.js` (missing, W2-40); `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40); `Na__DrawingPlanes__Maths__.js` (missing, W2-40); `Na
+   PN Source: 1.1.0 (TrueVision3D v2.84.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. Started from index.html after the Layout Editor block, as TrueVision does. Until the Floor Plans and Elevations Dev-menu editors register their sources (W2-04, W2-05) no plane can go up, so nothing is added to the scene and no canvas listener is attached. The planes' root group goes into t
+   PN log   : 20-Sep-2026 1.1.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__PlaneMesh__.js [3.5 LANDS] ['W2-40'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-40 | blocked: `Na__DrawingPlanes__ConfigState__.js` (missing, W2-40)
+   PN Source: 1.0.0 (TrueVision3D v2.82.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: only Na__DrawingPlanes__Overlay__ owns plane handles, and that arrives with W2-01. Its helper marks are the ones ValeVision's elevation PlaneGizmo and North CompassGizmo already carry (layer 1, naSectionCutHelper, a late render order). ValeVision's own section engine (41__System
+   PN log   : 20-Sep-2026 1.0.0
+== 47__System__DrawingPlanes/Na__DrawingPlanes__Styles__DevMenu__.css [3.5 LANDS] ['W2-01'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.82.0)
+   row pk  : W2-01 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.82.0 left it (20-Sep-2026, commit 66cdd175; read at b2aa9151)
+   PN Parity: verbatim (the rules are TrueVision's; the banner and this note are the only differences). Imported by 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css after the floor plan, elevation and north Dev sheets, where TrueVision's index has it.
+== 48__System__CrossSectionViews/Na__CrossSection__DevMenu__Editor__.js [3.5 LANDS] ['W2-05'] 
+   row src : -
+   row cur : 0.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.86.0)
+   row pk  : W2-05 | blocked: none
+   PN Source: 0.1.0 (TrueVision3D v2.86.0, 20-Sep-2026; read at b2aa9151) - not confirmed by Adam in TrueVision yet; ported under DR-01 (c)
+   PN Parity: verbatim. Its DOM ids are TrueVision's: ValeVision's own Cross Section Tool gate gave them up and is naCrossSectionToolDev* (K2 S4, DR-26).
+   PN log   : 20-Sep-2026 0.1.0
+== 49__System__ElevationDepthFog/Na__ElevationDepthFog__DevMenu__Row__.js [3.5 LANDS] ['W2-03'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.94.0)
+   row pk  : W2-03 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert until the Elevations Dev menu rebuild (W2-05) places it under View depth and hands it the elevation's accessors; nothing imports it before then.
+   PN log   : 20-Sep-2026 1.0.0
+== 49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js [3.5 LANDS] ['W2-03'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.94.0)
+   row pk  : W2-03 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: adapted. The layer is TrueVision's as it stands, as TrueVision's own note foresaw; one import and its one call differ (DIV-2), and so do its callers (DIV-1).
+   PN log   : 20-Sep-2026 1.0.0
+== 49__System__ElevationDepthFog/Na__ElevationDepthFog__Styles__DevMenu__.css [3.5 LANDS] ['W2-03'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.94.0)
+   row pk  : W2-03 | blocked: -
+   PN Source: none of its own - the sheet as TrueVision3D v2.94.0 left it (20-Sep-2026, commit 62dade1c; read at b2aa9151)
+   PN Parity: verbatim (the rules are TrueVision's; the banner and this note are the only differences). Imported by 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css after the elevation, north and drawing-plane Dev sheets and before the Drawing View Core sheet, where TrueVision's index has it.
+== 50__System__ProjectedLinework/Na__ProjectedLinework__DoorPose__.js [3.5 LANDS] ['W2-06'] 
+   row src : -
+   row cur : 1.3.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.42.0)
+   row pk  : W2-06 | blocked: `Na__ProjectedLinework__Storeys__.js` (missing, W2-43); `Na__ProjectedLinework__ConfigAccess__.js` (+1 name, W2-06)
+   PN Source: 1.3.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. The door module 1.9.0 contract and FindDoorGroups it imports landed with W1-02. Only the projector and the pipeline call it so far, and no drawing outside the Layout Editor carries a DoorPose, so they read the model exactly as before; its Layout Editor callers (PlanDoors, SnapshotRenderer)
+   PN log   : 21-Sep-2026 1.3.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__FlushJoins__.js [3.5 LANDS] ['W2-43'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.37.0)
+   row pk  : W2-43 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.159.0, 23-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: nothing imports it until CpuBackend 1.3.0 and later arrive with W2-06, which also carries the BuildToken bump the 1.1.0 log entry speaks of (DR-31). 80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs runs this very file.
+   PN log   : 23-Sep-2026 1.1.0
+== 50__System__ProjectedLinework/Na__ProjectedLinework__Storeys__.js [3.5 LANDS] ['W2-43'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.105.0)
+   row pk  : W2-43 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.105.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and inert: nothing imports it until DoorPose, Projector 1.5.0 and CpuBackend 1.4.0 arrive with W2-06. Its Storey__<Key>__<Element> match is unanchored, so the storey categories this app's model loader already builds (Na__ModelLoader__MultiModel.js) match as they stand.
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ModelSource__.js [3.5 LANDS] ['W2-16'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.32.0)
+   row pk  : W2-16 | blocked: `Na__LayoutEditor__Viewport2d__SitePlan__.js` (missing, W2-16); `Na__SitePlan__Store__.js` (missing, W2-14)
+   PN Source: 1.1.0 (TrueVision3D v2.49.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (dormant). The design phase library is never initialised here (DR-09 (a)): it registers no groups, so HasChoices is false, Resolve answers the live model (renderId null) for every viewport, WaitFor(null) resolves true at once, MenuItems is empty and the Viewport panel's Model Source row sta
+   PN log   : 14-Sep-2026 1.1.0
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__PlanDoors__.js [3.5 LANDS] ['W2-11'] 
+   row src : -
+   row cur : 1.3.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.42.0)
+   row pk  : W2-11 | blocked: `Na__ProjectedLinework__DoorPose__.js` (missing, W2-06)
+   PN Source: 1.3.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim. Inert as it lands: nothing imports it yet, so no drawing changes. Its callers arrive with later packages - Viewport2d and its Window and Frame units (PoseFor, ShutPoseFor, SwingExcludeTokens, RasterLayers), the SnapshotRenderer door pose, SheetTools (At, ToggleSoon, CancelPending, MenuItem
+   PN log   : 21-Sep-2026 1.3.0 (TrueVision)
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__DepthFog__.js [3.5 LANDS] ['W2-12'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.94.0)
+   row pk  : W2-12 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 20-Sep-2026 1.0.0
+== 51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport2d__SitePlan__.js [3.5 LANDS] ['W2-16'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.55.0)
+   row pk  : W2-16 | blocked: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__Viewport2d__Linework__.js` (+1 name, W2-16); `Na__LayoutEditor__EdgeStyles__.js` (+1 name, W2-16
+   PN Source: 1.2.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (dormant, DR-08 (B)): no sheet is a site plan until LayoutEditor__Sheet__SitePlanDrawingsEnabled is switched on and a Vale data pipeline publishes a site plan store, so nothing here paints.
+   PN log   : 29-Sep-2026 1.2.0
+== 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__GlbParse__.js [3.5 LANDS] ['W2-14'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.48.0)
+   row pk  : W2-14 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.48.0, 14-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and dormant: ValeVision has no site plan data yet (DR-08 (B)). Taken whole on purpose, overriding TrueVision's composites plan section 3.5 ('a surgical merge of the non-site-plan parts only'), so the site plan store and painter can come across whole.
+   PN log   : 14-Sep-2026 1.0.0
+== 51__System__LayoutEditor/21__System__SitePlanData/Na__SitePlan__Store__.js [3.5 LANDS] ['W2-14'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.48.0)
+   row pk  : W2-14 | blocked: `Na__SitePlan__GlbParse__.js` (missing, W2-14)
+   PN Source: 1.2.0 (TrueVision3D v2.132.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: adapted, and dormant: ValeVision has no site plan data pipeline yet (DR-08 (B); the pipeline is W5-06, held), so every store resolves empty. Taken whole on purpose, overriding TrueVision's composites plan section 3.5 ('a surgical merge of the non-site-plan parts only'). Everything outside the seams 
+   PN log   : 21-Sep-2026 1.2.0
+== 51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__.js [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.107.0)
+   row pk  : W2-18 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.111.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.1.0
+== 51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__DraftMode__Config__.json [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.107.0)
+   row pk  : W2-18 | blocked: -
+== 51__System__LayoutEditor/26__System__DraftMode/Na__LayoutEditor__Styles__DraftMode__.css [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.107.0)
+   row pk  : W2-18 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D v2.111.0 left it (21-Sep-2026; read at b2aa9151): created with v2.107.0 (21-Sep-2026), refined with v2.111.0 (the zoom settle)
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.114.0)
+   row pk  : W2-18 | blocked: `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+   PN Source: 1.0.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__Config__.json [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.114.0)
+   row pk  : W2-18 | blocked: -
+== 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Panel__DrawingGrid__.js [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.114.0)
+   row pk  : W2-18 | blocked: `Na__LayoutEditor__DrawingGrid__.js` (missing, W2-18)
+   PN Source: 1.0.0 (TrueVision3D v2.114.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/27__System__DrawingGrid/Na__LayoutEditor__Styles__DrawingGrid__.css [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.114.0)
+   row pk  : W2-18 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D v2.129.0 left it (21-Sep-2026; read at b2aa9151): created with v2.114.0 (21-Sep-2026); the grid snap ring moved to the Object Snap stylesheet with v2.129.0
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__.js [3.5 LANDS] ['W2-25'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.149.0)
+   row pk  : W2-25 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42); `Na__LayoutEditor__Measurements__.js`
+   PN Source: 1.0.0 (TrueVision3D v2.149.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__MoveAnchor__Config__.json [3.5 LANDS] ['W2-25'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.149.0)
+   row pk  : W2-25 | blocked: -
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-19 | blocked: `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42); `Na__LayoutEditor__Measurements__.js`
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Config__.json [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: -
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Geometry__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Glyphs__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__GridMoves__.js [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.113.0)
+   row pk  : W2-19 | blocked: `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42)
+   PN Source: 1.2.0 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.2.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Index__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42)
+   PN Source: 1.1.0 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.1.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Marker__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: `Na__LayoutEditor__ObjectSnap__Glyphs__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42)
+   PN Source: 1.1.0 (TrueVision3D v2.137.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Menu__.js [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-19 | blocked: `Na__LayoutEditor__ObjectSnap__.js` (missing, W2-19); `Na__LayoutEditor__ObjectSnap__Glyphs__.js` (missing, W2-42)
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Moves__.js [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-19 | blocked: `Na__LayoutEditor__ObjectSnap__GridMoves__.js` (missing, W2-19); `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-19 | blocked: 5 modules: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__Index__.js` (missing, W2-42); `Na__LayoutEditor__Objec
+   PN Source: 1.1.0 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.1.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Sources__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: `Na__LayoutEditor__ObjectSnap__Geometry__.js` (missing, W2-42); `Na__LayoutEditor__ObjectSnap__State__.js` (missing, W2-42)
+   PN Source: 1.2.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__State__.js [3.5 LANDS] ['W2-42'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-42 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.129.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__Styles__ObjectSnap__.css [3.5 LANDS] ['W2-19'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-19 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D v2.149.0 left it (22-Sep-2026, commit a2e0a836; read at b2aa9151): created with v2.129.0 (21-Sep-2026), the marker placed by its transform with v2.137.0 (21-Sep-2026), the Move Anchor region with v2.149.0
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/28__System__ObjectSnap/Na__LayoutEditor__ViewportSnapMove__.js [3.5 LANDS] ['W2-25'] 
+   row src : -
+   row cur : 1.6.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.28.0)
+   row pk  : W2-25 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19)
+   PN Source: 1.6.0 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.6.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__LayerMenu__.js [3.5 LANDS] ['W2-21'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.123.0)
+   row pk  : W2-21 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.123.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__HoverTooltip__.js [3.5 LANDS] ['W2-20'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.63.1-65.1 (4f6bb9ef))
+   row pk  : W2-20 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim - TrueVision's file; the banner and this note are the only differences. 1.0.0 came in TrueVision commit 4f6bb9ef with v2.65.0 (18-Sep-2026) and is not named in that devlog entry, which is why this app's port of v2.65.0 (v2.58.0) missed it. TrueVision's v2.144.0 entry says "NOT tried by Adam
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__NoteTooltip__.js [3.5 LANDS] ['W2-21'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-21 | blocked: `Na__LayoutEditor__SheetTools__HoverTooltip__.js` (missing, W2-20)
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.113.0)
+   row pk  : W2-18 | blocked: `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+   PN Source: 1.0.0 (TrueVision3D v2.113.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/32__System__OrthoMode/Na__LayoutEditor__OrthoMode__Config__.json [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.113.0)
+   row pk  : W2-18 | blocked: -
+== 51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.131.0)
+   row pk  : W2-18 | blocked: `Na__LayoutEditor__ObjectSnap__Marker__.js` (missing, W2-42); `Na__LayoutEditor__Measurements__.js` (+1 name, W2-23)
+   PN Source: 1.0.0 (TrueVision3D v2.131.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__Config__.json [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.131.0)
+   row pk  : W2-18 | blocked: -
+== 51__System__LayoutEditor/33__System__DrawingAxes/Na__LayoutEditor__Styles__DrawingAxes__.css [3.5 LANDS] ['W2-18'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.131.0)
+   row pk  : W2-18 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D v2.131.0 left it (21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Panel__Patterns__.js [3.5 LANDS] ['W2-29'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.89.0)
+   row pk  : W2-29 | blocked: `Na__SitePlan__Store__.js` (missing, W2-14)
+   PN Source: 1.1.0 (TrueVision3D v2.126.0, 21-Sep-2026; read at b2aa9151) - with the site plan store's import path TrueVision3D v2.155.0 gave it (23-Sep-2026, 21__System__SitePlanData)
+   PN Parity: verbatim, with its site plan half dormant (DR-08 (B), DR-19): no Vale author can make a site plan viewport while LayoutEditor__Sheet__SitePlanDrawingsEnabled is false, so the layer rows never show and the section is the hatch library with its intro note - what TrueVision shows with no site plan view
+   PN log   : 21-Sep-2026 1.1.0
+== 51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css [3.5 LANDS] ['W2-29'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.89.0)
+   row pk  : W1-17 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D created it with the Patterns panel (20-Sep-2026, commit 62dade1c, the site plan composites work TrueVision's devlog first names in v2.89.0) and left it to the pin (read at b2aa9151, no later change)
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Panel__VectorTools__.js [3.5 LANDS] ['W2-41'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-41 | blocked: `Na__LayoutEditor__VectorTools__OffsetTool__.js` (missing, W2-41); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools_
+   PN Source: 1.1.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.0.0 was v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css [3.5 LANDS] ['W2-41'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-41 | blocked: -
+   PN Source: none of its own - the sheet carries no version or log; taken as TrueVision3D v2.150.0 left it (22-Sep-2026, commit a2e0a836; read at b2aa9151): created with v2.130.0 (21-Sep-2026), the Boolean section's rule added with v2.150.0; no later change to the pin
+   PN Parity: verbatim (every rule and comment is TrueVision's; the banner and this note are the only differences)
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__.js [3.5 LANDS] ['W2-41'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.130.0)
+   row pk  : W2-41 | blocked: 9 modules: `Na__LayoutEditor__VectorTools__ArcTool__.js` (missing, W2-28); `Na__LayoutEditor__VectorTools__BooleanTool__.js` (missing, W2-41); `Na__LayoutEditor
+   PN Source: 1.2.0 (TrueVision3D v2.151.0, 22-Sep-2026; 1.1.0 was v2.150.0, 22-Sep-2026, and 1.0.0 v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__ArcTool__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); `Na__LayoutEditor__VectorTools__Se
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__BooleanTool__.js [3.5 LANDS] ['W2-41'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.150.0)
+   row pk  : W2-41 | blocked: 6 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Boolean__.js` (missing, W2-27); `Na__LayoutEditor__Vect
+   PN Source: 1.1.0 (TrueVision3D v2.151.0, 22-Sep-2026; 1.0.0 was v2.150.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Boolean__.js [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.150.0)
+   row pk  : W2-27 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__CircleTool__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Preview__.js` (missing, W2-28); `Na__LayoutEditor__VectorTools__Se
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Config__.json [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-27 | blocked: -
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Geometry__.js [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-27 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__JoinTool__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: 6 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__Vec
+   PN Source: 1.1.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.0.0 was v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__OffsetTool__.js [3.5 LANDS] ['W2-41'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-41 | blocked: 7 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__Vec
+   PN Source: 1.1.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.0.0 was v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Offset__.js [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-27 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Preview__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27)
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Setup__.js [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-27 | blocked: `Na__LayoutEditor__VectorTools__State__.js` (missing, W2-27)
+   PN Source: 1.0.0 (TrueVision3D v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__State__.js [3.5 LANDS] ['W2-27'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-27 | blocked: none
+   PN Source: 1.1.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.0.0 was v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__Targets__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__Setup__.js` (missing, W2-27); `Na__LayoutEditor__VectorTools__S
+   PN Source: 1.2.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.1.0 was v2.138.0 and 1.0.0 was v2.130.0, both 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__VectorTools__TrimTool__.js [3.5 LANDS] ['W2-28'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.129.0)
+   row pk  : W2-28 | blocked: 6 modules: `Na__LayoutEditor__ObjectSnap__Search__.js` (missing, W2-19); `Na__LayoutEditor__VectorTools__Geometry__.js` (missing, W2-27); `Na__LayoutEditor__Vec
+   PN Source: 1.1.0 (TrueVision3D v2.150.0, 22-Sep-2026; 1.0.0 was v2.130.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.1.0
+== 51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__SitePlanComposites__.js [3.5 LANDS] ['W2-14'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.91.0)
+   row pk  : W2-14 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.89.0, 20-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim, and dormant (DR-08 (B)): the mode controller registers it with the viewport convergence (W2-16), and it shows only on a site plan sheet, which a Vale author cannot make while LayoutEditor__Sheet__SitePlanDrawingsEnabled is false. Taken whole on purpose, overriding TrueVision's composites p
+   PN log   : 20-Sep-2026 1.0.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__.js [3.5 LANDS] ['W2-32'] 
+   row src : -
+   row cur : 1.0.1 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.143.0)
+   row pk  : W2-32 | blocked: `Na__LayoutEditor__SpecMargin__Column__.js` (missing, W2-32)
+   PN Source: 1.0.1 (TrueVision3D v2.147.0, 22-Sep-2026; 1.0.0 came with v2.143.0; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.0.1's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.0.1
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__NoteRegions__Tool__.js [3.5 LANDS] ['W2-22'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.143.0)
+   row pk  : W2-22 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.0.0's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js [3.5 LANDS] ['W2-32'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.147.0)
+   row pk  : W2-32 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.147.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.0.0's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Lockstep__.js [3.5 LANDS] ['W2-30'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.163.0)
+   row pk  : W2-30 | blocked: `Na__LayoutEditor__Statement__Lockstep__.js` (missing, W2-30); `Na__LayoutEditor__SpecData__Document__.js` (+2 names, W2-30); `Na__LayoutEditor__SpecData__Draft
+   PN Source: 1.0.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.0.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecLockstep__.js [3.5 LANDS] ['W2-31'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.163.0)
+   row pk  : W2-31 | blocked: `Na__LayoutEditor__Statement__Lockstep__.js` (missing, W2-30); `Na__LayoutEditor__SpecData__.js` (+2 names, W2-30)
+   PN Source: 1.0.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.0.0
+== 51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecMargin__Column__.js [3.5 LANDS] ['W2-32'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.143.0)
+   row pk  : W2-32 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.143.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the code is TrueVision 1.0.0's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.0.0
+== 51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Lockstep__.js [3.5 LANDS] ['W2-30'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.157.0)
+   row pk  : W2-30 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.157.0, 23-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 23-Sep-2026 1.0.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js [3.5 LANDS] ['W2-38'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.128.0)
+   row pk  : W2-38 | blocked: none
+   PN Source: 1.2.0 (TrueVision3D v2.151.0, 22-Sep-2026 - the fill's own rule, commit a2e0a836, unlogged in the devlog; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js [3.5 LANDS] ['W2-38'] 
+   row src : -
+   row cur : 1.3.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.100.0)
+   row pk  : W2-38 | blocked: none
+   PN Source: 1.3.0 (TrueVision3D v2.109.0, 21-Sep-2026, with v2.155.0's @delegate path to 51__System__LayoutEditor/53__Feature__ProjectQrCode; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.3.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js [3.5 LANDS] ['W2-39'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.164.0)
+   row pk  : W2-39 | blocked: `Na__SitePlan__Store__.js` (missing, W2-14); `Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js` (missing, W2-39); `Na__LayoutEditor__Viewport2d__.js` (+2 
+   PN Source: 1.0.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.0.0
+== 51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js [3.5 LANDS] ['W2-39'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.164.0)
+   row pk  : W2-39 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.164.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: adapted
+   PN log   : 29-Sep-2026 1.0.0
+== 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Panel__ScrapbookSpecification__.js [3.5 LANDS] ['W2-35'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.91.0)
+   row pk  : W2-35 | blocked: `Na__LayoutEditor__ScrapbookSpecification__.js` (missing, W2-35); `Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js` (missing, W2-35); `Na__LayoutEditor
+   PN Source: 1.2.0 (TrueVision3D v2.151.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__.js [3.5 LANDS] ['W2-35'] 
+   row src : -
+   row cur : 1.0.1 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.91.0)
+   row pk  : W2-35 | blocked: none
+   PN Source: 1.0.1 (TrueVision3D v2.138.0, 21-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 21-Sep-2026 1.0.1
+== 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__Config__.json [3.5 LANDS] ['W2-35'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.91.0)
+   row pk  : W2-35 | blocked: -
+== 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js [3.5 LANDS] ['W2-35'] 
+   row src : -
+   row cur : 1.1.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-35 | blocked: `Na__LayoutEditor__ScrapbookSpecification__.js` (missing, W2-35); `Na__SpellCheck__.js` (missing, W2-34); `Na__LayoutEditor__SpecData__.js` (+1 name, W2-30)
+   PN Source: 1.1.0 (TrueVision3D v2.163.0, 29-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 29-Sep-2026 1.1.0
+== 51__System__LayoutEditor/58__Feature__ScrapbookSpecification/Na__LayoutEditor__Styles__ScrapbookSpecification__.css [3.5 LANDS] ['W2-35'] 
+   row src : -
+   row cur : 1.2.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.91.0)
+   row pk  : W2-35 | blocked: -
+   PN Source: 1.2.0 (TrueVision3D v2.151.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.2.0
+== 55__Feature__SpellCheck/Na__SpellCheck__.js [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: `Na__SpellCheck__Dictionary__.js` (missing, W2-34); `Na__SpellCheck__Field__.js` (missing, W2-34); `Na__SpellCheck__WordBar__.js` (missing, W2-34)
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.0.0
+== 55__Feature__SpellCheck/Na__SpellCheck__Config__.json [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: -
+== 55__Feature__SpellCheck/Na__SpellCheck__Dictionary__.js [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: none
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: adapted
+   PN log   : 22-Sep-2026 1.0.0
+== 55__Feature__SpellCheck/Na__SpellCheck__Field__.js [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: `Na__SpellCheck__Dictionary__.js` (missing, W2-34)
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim
+   PN log   : 22-Sep-2026 1.0.0
+== 55__Feature__SpellCheck/Na__SpellCheck__Styles__.css [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: -
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: verbatim (the rules are TrueVision's; the banner and this note are the only differences)
+   PN log   : 22-Sep-2026 1.0.0
+== 55__Feature__SpellCheck/Na__SpellCheck__WordBar__.js [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : 1.0.0 | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: `Na__SpellCheck__Dictionary__.js` (missing, W2-34); `Na__SpellCheck__Field__.js` (missing, W2-34)
+   PN Source: 1.0.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+   PN Parity: adapted (strings only)
+   PN log   : 22-Sep-2026 1.0.0
+== 55__Feature__SpellCheck/README__SpellCheck__.md [3.5 LANDS] ['W2-34'] 
+   row src : -
+   row cur : - | parity: TV-only (not yet in VV)
+   row open: all (first TV release naming it: v2.144.0)
+   row pk  : W2-34 | blocked: -
+
+NO ROW (1):
+   03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css  (outside 02__Src__AppModules)

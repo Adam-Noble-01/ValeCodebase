@@ -1,0 +1,39 @@
+
+1. Export and import lists against TrueVision
+  ok    Na__LayoutEditor__VectorTools__State__: 38 exports, identical to TrueVision
+  ok    Na__LayoutEditor__VectorTools__State__: imports identical (none)
+  ok    Na__LayoutEditor__VectorTools__Setup__: 4 exports, identical to TrueVision
+  ok    Na__LayoutEditor__VectorTools__Setup__: imports identical (Na__LeVec__ApplyDefaults <- Na__LayoutEditor__VectorTools__State__.js)
+  ok    Na__LayoutEditor__VectorTools__Geometry__: 20 exports, identical to TrueVision
+  ok    Na__LayoutEditor__VectorTools__Geometry__: imports identical (none)
+  ok    Na__LayoutEditor__VectorTools__Offset__: 7 exports, identical to TrueVision
+  ok    Na__LayoutEditor__VectorTools__Offset__: imports identical (Na__LeVecCurve__ArcPoints <- Na__LayoutEditor__VectorTools__Curves__.js)
+  ok    Na__LayoutEditor__VectorTools__Boolean__: 10 exports, identical to TrueVision
+  ok    Na__LayoutEditor__VectorTools__Boolean__: imports identical (ClipType,Clipper,Clipper64,FillRule,Path64,Paths64,Point64 <- clipper2-js.mjs)
+  ok    config: identical to TrueVision but for Meta__PortedFrom
+
+2. Imports with no browser
+  ok    no window existed while the five loaded (Setup skips its fetch)
+
+3. Under a browser stand-in
+  ok    State import: no storage read, no write, no event, no listener
+  ok    Setup asked for its config once, by its own name
+  ok    Setup: the config's panel title is read
+  ok    Setup: a behaviour number is read
+  ok    State took the defaults (arc mode twoPoint, sizes 100)
+  ok    loading wrote nothing and sent no event (reads only)
+  ok    no warning while the config is there
+  ok    config missing: Ready resolves (null) and the fallback stands
+  ok    config missing: one warning, [ValeVision3D LayoutEditor] prefix
+
+4. Boolean answers against TrueVision
+  ok    Union of three walls that share edges - identical to TrueVision
+  ok    Subtract: a frame (room as a hole) - identical to TrueVision
+  ok    Intersect of two circles - identical to TrueVision
+  ok    Divide of a cut across - identical to TrueVision
+  ok    OuterShell of a frame - identical to TrueVision
+  ok    Overlaps - identical to TrueVision
+  ok    the three walls unite into ONE piece (TV v2.150.0's own trap)
+  ok    the frame keeps its room as a hole, area 10000 - 3600
+
+W2-27 acceptance: 29 passed, 0 failed.

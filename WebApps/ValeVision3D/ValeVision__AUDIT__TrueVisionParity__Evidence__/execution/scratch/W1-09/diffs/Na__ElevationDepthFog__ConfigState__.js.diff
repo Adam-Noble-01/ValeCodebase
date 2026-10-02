@@ -1,0 +1,25 @@
+--- TV@b2aa9151/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js
++++ VV/02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - ELEVATION DEPTH FOG - CONFIG STATE
++// VALEVISION3D - ELEVATION DEPTH FOG - CONFIG STATE
+@@ -32,2 +32,11 @@
+-// - Authored in   : TrueVision3D first (20-Sep-2026)
+-// - ValeVision    : not yet ported.
++// - Ported from   : TrueVision3D 02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__ConfigState__.js
++// - Source version: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-09}}, with the fog system's other pure leaves.
++//                   TrueVision's own note said "not yet ported" and its fog plan still awaits Adam's
++//                   test; it comes across under DR-01 (c), and v2.94.0 is named as not yet confirmed by
++//                   Adam in TrueVision.
++// - Parity        : verbatim, and inert: nothing outside this folder imports it until the elevation data
++//                   module (W1-10) and the render layer, Dev row and wiring (W2-03) arrive (DR-15).
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+@@ -123 +132 @@
+-                console.warn('[TrueVision3D] Elevation depth fog config fetch failed (' + response.status + ') - using built-in defaults.');
++                console.warn('[ValeVision3D] Elevation depth fog config fetch failed (' + response.status + ') - using built-in defaults.');
+@@ -129 +138 @@
+-            console.warn('[TrueVision3D] Elevation depth fog config unreadable - using built-in defaults.', error);
++            console.warn('[ValeVision3D] Elevation depth fog config unreadable - using built-in defaults.', error);

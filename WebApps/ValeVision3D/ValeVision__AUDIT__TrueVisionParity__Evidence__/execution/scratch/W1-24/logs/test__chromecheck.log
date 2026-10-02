@@ -1,0 +1,5 @@
+﻿source picture: coloured pixels 0.0000%, dark pixels 1.5036%
+before__big     page (303, 57, 997, 1041)  coloured 47.491%  dark 2.755%  -> GARBLED
+candidate__big  page (303, 57, 997, 1041)  coloured 0.000%  dark 0.000%  -> clean
+live__big       page (303, 57, 997, 1041)  coloured 0.000%  dark 0.000%  -> clean
+RESULT: PASS - the FAST picture paints clean in Chromium's PDF viewer

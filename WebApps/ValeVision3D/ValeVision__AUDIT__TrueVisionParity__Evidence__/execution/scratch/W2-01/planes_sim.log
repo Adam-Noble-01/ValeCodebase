@@ -1,0 +1,25 @@
+[1] link and evaluate the three new modules through the import map
+  PASS Overlay, Grip and DevMenu Controls linked and evaluated (three r184)
+  PASS Na__DrawingPlanes__Overlay__.js: 30 exports, as its export block
+  PASS Na__DrawingPlanes__Grip__.js: 8 exports, as its export block
+  PASS Na__DrawingPlanes__DevMenu__Controls__.js: 5 exports, as its export block
+[2] the three index.html inits; inert while no plane is up
+  PASS Initialize x3 true; scene still holds only the model root; no canvas listener attached; no plane up
+[3] sized from the building, standing 100 mm above the ground cut
+  PASS elevation plane: width 13.800 m = 10.8 building + 2 x 1.5 overshoot (the landscape is 80 m); ground cut 0.050, bottom edge 0.150 = cut + 0.100; top 7.750 = roof 6.25 + 1.5
+  PASS plan plane: 13.800 x 11.000 m (building 10.8 x 8 plus overshoot), at y 1.600
+[4] the planes root: in the scene, outside the model root, hidden between frames
+  PASS root "Na__DrawingPlanes__Overlay" is a child of the scene, not the model root; visible only between BeginFrame and EndFrame (a thumbnail, sheet viewport or export render never calls BeginFrame)
+  PASS a plane is up: the grip has attached its canvas pointerdown listener in the capture phase
+[5] drag along the normal, absolute snap, Escape restores, release commits
+  PASS press on the face at (418, 386) px takes the drag; orbit suppressed
+  PASS drag 1.2 m along the normal from 6 013 (off-grid): position 7200 mm, a multiple of 50 (ABSOLUTE snap, not 6 013 + n x 50)
+  PASS the plane follows the record live (frame z = 7.200)
+  PASS Escape mid-drag: position back to exactly 6 013 mm, orbit restored, onCommit re-derives ([6013])
+  PASS increment 250 mm: released at 7250 mm (multiple of 250), committed once
+  PASS snap kept under Na__DrawingPlanes__Snap: {"enabled":true,"incrementMm":250}
+[6] the Dev bar and row controls build; the shown set is kept per project
+  PASS BuildBar and BuildRowControls return elements (DIV, DIV)
+  PASS Na__DrawingPlanes__Shown is keyed by the ?project= folderId: {"2026/3047__Doous":["elevation:Elevation_001","plan:FloorPlan_001"]}
+
+17 checks passed.

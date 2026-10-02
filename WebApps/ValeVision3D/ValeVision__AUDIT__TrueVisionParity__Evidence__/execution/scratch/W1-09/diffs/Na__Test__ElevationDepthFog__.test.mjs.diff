@@ -1,0 +1,25 @@
+--- TV@b2aa9151/80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs
++++ VV/80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs
+@@ -2 +2 @@
+-// TRUEVISION3D - TEST - ELEVATION DEPTH FOG - MATHS
++// VALEVISION3D - TEST - ELEVATION DEPTH FOG - MATHS
+@@ -16 +16 @@
+-// - THE FIXTURE IS RB05'S SOUTH WEST ELEVATION: azimuth 270, plane through
++// - THE FIXTURE IS A MEASURED SOUTH WEST ELEVATION: azimuth 270, plane through
+@@ -27,0 +28,13 @@
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__ElevationDepthFog__.test.mjs
++// - Source version: 1.0.0 (TrueVision3D v2.94.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W1-09}}, with the module it proves
++// - Parity        : verbatim - every check is TrueVision's, run against this app's own Maths module
++// - Divergences   :
++//   - Banner reads ValeVision3D.
++//   - The fixture keeps every number but no longer names the TrueVision project it was measured
++//     on (the DESCRIPTION and the BEHIND THE PLANE note; S02b-F49).
++// - Back-port     : none.
+@@ -162 +175 @@
+-    // RB05 South West Elevation. Azimuth 270: the viewer stands to the WEST
++    // The measured South West Elevation. Azimuth 270: the viewer stands to the WEST

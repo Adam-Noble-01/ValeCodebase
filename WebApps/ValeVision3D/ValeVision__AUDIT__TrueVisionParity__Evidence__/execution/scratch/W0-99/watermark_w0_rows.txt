@@ -1,0 +1,163 @@
+watermark rows: 173
+v2.24.0    L1061  VV-ORIGIN              | VV VV v2.21.x (origin); Dev | pk -
+           title: The Drawing Editor Arrives - Tabs, Sheets, Viewports at Scale
+           notes: TV's Layout Editor arrives (ported FROM VV, Phases A-F). DevGate and both Na__Verify__ harnesses returned to VV in v2.22.0.
+v2.30.2    L1051  **PARTIAL**            | VV -                        | pk W0-17, W2-08
+           title: The Drawing View Reads Its Own Config
+           notes: Class corrected from S11's N/A (Section E.1.2): VV loads the drawing-view config, but after the loading sequence starts; TV moved it (and ProjectData, section scene data) ahead of StartLoadingSequence; Drawing2d keys not aligned (S09-F07 (TV Index.html:1556-15
+v2.32.1    L1048  PORTED                 | VV VV v2.31.1               | pk -
+           title: A Refused Snapshot Upload No Longer Claims a Picture R2 Never Received
+           notes: Refused snapshot upload never counted as baked.
+v2.36.0    L1044  PORTED                 | VV unrecorded (commit 66937 | pk -
+           title: Project Specification & Margin Notes - Notes Numbered by Their Place, Bubbles That Follow Them
+           notes: Project Specification + margin notes. VV devlog has NO entry (v2.44.0 notes: "has no entry of its own"); TV plan U row still says "Pending".
+v2.39.0    L1036  **PARTIAL**            | VV -                        | pk W1-05, W0-12
+           title: Save Sheets Says Where the Sheets Went - R2 and a Local Copy
+           notes: Save Sheets says where sheets went: TV LocalProjectMirror__ is transport (DIV-4, VV mirrors via Flask in R2SaveProjectJson); VV lacks SavedLocalMessage/SavedLocalFailedMessage labels and toast. TV: "waits for Adam's sign-off".
+v2.54.0    L1019  PORTED                 | VV VV v2.44.0               | pk -
+           title: Margin Notes Spread Out When the Column Has Room
+           notes: Margin notes spread out (SpecMargin 1.3.0; SheetLayout MarginRect).
+v2.63.0    L1006  PORTED                 | VV VV v2.56.0               | pk -
+           title: The Specification Is a Document Now: It Has a Revision, a Number, and a Download
+           notes: Spec revision/number/download.
+v2.67.0    L996   **PARTIAL**            | VV VV v2.62.0               | pk W0-08, W1-07
+           title: An Hour of Drawing Sat Behind One Button, and Ctrl+W Never Asked
+           notes: Class corrected from S11's PORTED (Section E.1.2): close guard ported, but not the TrueVision__Pwa__HasUnsavedWork hold-off: the shared Whitecardopedia registrar reloads open VV pages over unsaved sheets (S11 Appendix A note; S10-V05 (WCP registrar 110-150, 19
+v2.71.0    L990   **REOPENED**           | VV -                        | pk W1-13, W1-19, W1-21, W1-22
+           title: A Drawing Number Was Three Facts in a Trench Coat, and Renumbering Shot Two of Them
+           notes: Class corrected from S11's DELIBERATE (Section E.1.2): Document ID: K1 DR-11 default ports A's code with {project}_{drawing} until Vale phases exist (DR-11; S07a-F14; S03b-F04). Document ID = project+phase+drawing code (Sheet__Fields__DocumentId, ComposeDocume
+v2.74.0    L987   PORTED                 | VV VV v2.65.0               | pk -
+           title: One Client, One Site, One Place to Type Them
+           notes: Common client/site address on the drawings block. Adapted ProjectRecord (no Project Admin) - permanent divergence.
+v2.75.0    L986   **NOT-CONSIDERED**     | VV -                        | pk W2-21, W0-08
+           title: Safari Reads the First Manifest and Never Looks Again, and the First One Was the Wrong One
+           notes: Class corrected from S11's NOT-DRAWING (Section E.1.2): not presentation-only: batch commit 32767407 (v2.69.0-v2.75.0, subject v2.75.0) carried ItemClipboard 1.3.0 (Ctrl+X, one clipboard, exact cross-sheet paste) and registrar 1.2.0 (no reload on a first insta
+v2.77.0    L983   PORTED                 | VV VV v2.68.0               | pk -
+           title: The Tab and the Noodle Were Both in the Pictures, and I Read Them as Decoration
+           notes: Scrapbook tab (PanelHost RegisterTab) + linking noodle.
+v2.78.0    L982   **NOT-CONSIDERED**     | VV -                        | pk W3-01, W3-03, W3-04, W5-01
+           title: Selecting Something Is the First Half of Moving It, So Select Now Picks Move Up
+           notes: Select picks Move up (PicksUpMove, AutoMoveOnSelect absent in VV). TV: "Not yet in ValeVision". Prerequisite of v2.118.0/v2.153.0 behaviour.
+v2.79.0    L980   PORTED                 | VV VV v2.66.0               | pk -
+           title: A Title Block Cell Is a Width in Millimetres, Not a Share of the Paper - and a Drawing Now S...
+           notes: Title block cell widths in mm + Status. Adapted: Drawing No. not Document ID; widths re-measured for Helvetica; logo text and logo cell not ported (Vale identity).
+v2.81.0    L977   **NOT-CONSIDERED**     | VV -                        | pk W1-15, W1-22, W1-26
+           title: A Drawing Can Be Scanned Into Its Own Model - Once Its Address Was Short Enough for the Titl...
+           notes: QR cell in the title block (TitleBlock__QrCell, 53__Feature__ProjectQrCode). Ledger L126 says "53__System__ProjectQrCode does not exist here" (wrong folder name: TV path is LE/53__Feature__ProjectQrCode).
+v2.88.0    L970   DELIBERATE             | VV -                        | pk W1-12
+           title: The Site Address Was Only Ever Written Down in a Quotation, and Not Every Job Has One
+           notes: Site address read from Project Admin quotations/PlanVision (ProjectRecord 1.1.0). VV has no Project Admin; VV ProjectRecord reads project config (ledger "Common title block fields": permanent divergence). Section E.1.2 note: stays a VV divergence (no Project A
+v2.94.0    L964   **NOT-CONSIDERED**     | VV -                        | pk W1-09, W2-03, W2-12, W2-16
+           title: An Elevation Drew the Coach House Forty Metres Back as Hard as the Wall in Front of It, So E...
+           notes: Elevation depth fog (49__System__ElevationDepthFog, Elevation__DepthFog/FloorPlan__DepthFog, Viewport2d__DepthFog). TV: "everything else carries over"; VV renders drawings through its composer (DIV-1) so the two draw calls land elsewhere.
+v2.95.0    L963   **NOT-CONSIDERED**     | VV -                        | pk W4-04, W4-05, W4-06, W4-12, W4-13, W4-15, W4-16, W2-13
+           title: The Statements a Project Is Won On Were the One Document the App Could Not Open, So It Now W...
+           notes: Statement Writer (52__Feature__StatementWriter, ~40 files). NA planning statements - VV identity decision (S07b). Section E.1.2 note: batch commit 62dade1c (v2.88.0-v2.95.0, subject v2.95.0) also carried unlogged nested LineworkModifier styling (SSOT 76-79)
+v2.104.0   L954   **NOT-CONSIDERED**     | VV -                        | pk W1-27, W3-10, W3-17, W1-20
+           title: A Room's Area Is Not Something to Store, It Is a Question to Ask the Drawing Underneath It
+           notes: Floor Areas (59__Feature__FloorAreas, SheetModel__AreaGroups, AreaSchedule). History step reason "areas".
+v2.106.0   L952   **NOT-CONSIDERED**     | VV -                        | pk W1-28, W1-19, W1-13
+           title: The Layers List Was Only Ever the Order of the Viewports; Now It Is the Order of the Sheet
+           notes: Layers list = paint order of the sheet (PaintOrder__, Sheet__LayerStack). Record/rendering semantics change - high-impact parity item (S03b WP-S03b-07).
+v2.107.0   L951   **PENDING-SIGNOFF**    | VV -                        | pk W2-18, W2-16, W3-05
+           title: Draft Mode, on LayOut's Own Key: A Heavy Sheet Was Never Slow to Draw, Only to Draw Again at...
+           notes: Draft Mode on LayOut's key (26__System__DraftMode). TV: "Not ported. It waits for Adam's sign-off, then the question".
+v2.109.0   L949   **NOT-CONSIDERED**     | VV -                        | pk W1-22, W2-38
+           title: The Big Sheets Give the Small Title Block Cells Air, the Rev Cell Says "Revision A", and the...
+           notes: Title block cells widen on big sheets, "Revision A", portal block at 20 mm (LeTitleCells__Widen, RowWidthFactorByPaper). TV: "VV has the cells solver at v1.1.0 and no portal block". Cells half portable now.
+v2.111.0   L947   **PENDING-SIGNOFF**    | VV -                        | pk W1-28, W2-18, W1-36
+           title: Zoom Now, Redraw When It Rests: a Wheel Notch Was Rebuilding Things That Had Nothing to Do W...
+           notes: Zoom now, redraw when it rests (ZoomSettleMs, HoldPaperWhileZooming). TV: "Not ported. Goes with Draft mode, on Adam's sign-off".
+v2.112.0   L946   **NOT-CONSIDERED**     | VV -                        | pk W1-36, W1-04, W4-10, W1-32
+           title: Page Down Turns the Drawing, Ctrl+S Saves the Register, and Opening a Drawing Really Leaves...
+           notes: Page Down steps sheets, Ctrl+S saves the register, opening a drawing leaves Walk (LeMode__StepSheet, Nav__NextSheet, Transitions). Register half N/A until a register exists. Section E.1.2 note: the Walk/Fly exit third already works in VV (VV 42/Na__DrawView__T
+v2.113.0   L945   **NOT-CONSIDERED**     | VV -                        | pk W2-18, W3-05, W1-14
+           title: Ortho Mode on F8, as in AutoCAD: a Held Shift, Latched - and Shift Then Frees It
+           notes: Ortho mode F8 (32__System__OrthoMode).
+v2.114.0   L944   **NOT-CONSIDERED**     | VV -                        | pk W2-18, W3-05, W1-14
+           title: The Drawing Grid: SketchUp LayOut's Grid, Shown on F6 and Snapped To on F7 - and the Title B...
+           notes: Drawing Grid F6/F7 (27__System__DrawingGrid); title block becomes snappable.
+v2.115.0   L943   **NOT-CONSIDERED**     | VV -                        | pk W1-29, W1-30, W1-36, W0-03
+           title: M Was Never Stuck: Every Click on the Paper Left the Keyboard in Whatever Panel Control Had...
+           notes: Keyboard left in panel controls (KeyScope__, Na__Hotkeys__3dModelTab/DocumentTabs/DrawingTabs json, 31__System__DocumentKeys). Replaces LE KeyMappings json - module rename (S03a).
+v2.116.0   L942   **NOT-CONSIDERED**     | VV -                        | pk W1-16, W3-18, W3-02, W3-09, W0-18
+           title: Sheet Images: a Picture on a Drawing Is Filed Under That Drawing's Number, Wherever the Numb...
+           notes: Sheet Images filed under the drawing number (54__Feature__SheetImages, Shape__Image, TrueVisionSheetImages API). Needs a VV Flask/R2 image route (DIV-4) and Document ID decision.
+v2.117.0   L941   **NOT-CONSIDERED**     | VV -                        | pk W3-03, W3-04, W2-21, W2-25
+           title: Ctrl-Drag Copies, as in SketchUp LayOut: Duplicate and Move Are One Gesture, and Every Lock...
+           notes: Ctrl-drag copies (SheetTools__CopyDrag).
+v2.118.0   L940   **NOT-CONSIDERED**     | VV -                        | pk W3-03, W3-01, W3-04, W2-23
+           title: The Measurements Box Froze the Moment a Move Began, and a Move Could Not Be Corrected: It No...
+           notes: Measurements box reads every move step; retype the last move (GetMoveRetype absent in VV). PointerDrag 1.12.0, HitResolution 1.5.0.
+v2.119.0   L939   **NOT-CONSIDERED**     | VV -                        | pk W3-03, W1-13, W2-23, W3-04
+           title: Copy Arrays, SketchUp's Way: Drag a Copy, Type 1000 and Enter, Then 3x - or /3 to Divide the...
+           notes: Copy arrays (drag a copy, type 1000, then 3x or /3; SheetTools__CopyDrag). Needs v2.117.0.
+v2.122.0   L936   **NOT-CONSIDERED**     | VV -                        | pk W2-37, W1-26, W3-13
+           title: A Drawing Title's Underline Runs Five Millimetres Past Its Words, and No Longer Stops Short...
+           notes: Drawing Title underline runs 5 mm past its words (DrawingTitle__UnderlinePastTextMm). VV DrawingTitle is TV 1.0.0-equivalent.
+v2.123.0   L935   **NOT-CONSIDERED**     | VV -                        | pk W2-21, W3-13, W1-20, W3-03
+           title: A Right Click Moves Anything to Another Drawing Layer, and a Layer Can Be Made a Reference:...
+           notes: Right-click Move to layer + reference layers (LayerMenu__, Layer__Selectable, LeModel__MoveToLayer).
+v2.127.0   L931   **NOT-CONSIDERED**     | VV -                        | pk W2-21, W1-20, W1-21, W3-03
+           title: A Paste on Another Sheet Brings Its Layer: Found by Name, or Made Where It Sat in the List,...
+           notes: Cross-sheet paste brings its layer (LeClip__Landing, LeModel__GetLayerByName).
+v2.130.0   L928   **NOT-CONSIDERED**     | VV -                        | pk W2-27, W2-28, W1-14, W3-07
+           title: The Vector Editor Could Draw a Line and a Rectangle and Move Their Points; It Can Now Trim,...
+           notes: Vector editor trim/extend/join/split/offset/fillet/chamfer, circles and arcs (37__System__VectorTools, Shape__Curve).
+v2.131.0   L927   **NOT-CONSIDERED**     | VV -                        | pk W2-18, W2-42, W3-05
+           title: The Drawing Axes Overlay (F9): SketchUp's Red and Green Axes, Carried by the Cursor Out to t...
+           notes: Drawing Axes overlay F9 (33__System__DrawingAxes).
+v2.135.0   L923   **NOT-CONSIDERED**     | VV -                        | pk W1-36
+           title: An Author Zooms In to 6400%; the Web Viewer Still Stops at 800%
+           notes: Author zoom to 6400%, web viewer 800% (Navigation 1.3.0, DevGate-gated ZoomMax). Test Na__Test__AuthoringZoomMax__.
+v2.136.0   L922   **NOT-CONSIDERED**     | VV -                        | pk W1-14, W1-28, W1-21, W5-01
+           title: Dimensioning a Heavy Plan: the Pointer Move Drops From 12 ms to Half a Millisecond, and a Ne...
+           notes: Heavy-plan pointer performance + Vector quality Low/Medium/High (VectorQuality__, LeModel__Revision, LeSurface__PutSlot). Not confirmed by Adam.
+v2.138.0   L920   **NOT-CONSIDERED**     | VV -                        | pk W1-14, W3-06, W3-03
+           title: Viewports Turn on the Page: a Round Grip Off the Top of the Frame Turns the Whole Viewport A...
+           notes: Viewport rotation grip (Viewport__RotationDeg, ViewportRotation__). Touches snaps, crops, boxes, doors, PDF; prerequisite of v2.140-v2.142, v2.144.
+v2.139.0   L919   **NOT-CONSIDERED**     | VV -                        | pk W1-13, W2-26, W3-12, W1-28
+           title: Round Up to 5 mm: a Dimension Can Show Its Figure Raised to the Next 5 mm, With an Asterisk...
+           notes: Round dimension up to 5 mm with asterisk (Dimension__RoundUp, DimensionRounding__ absent in VV).
+v2.139.1   L918   NOT-DRAWING            | VV -                        | pk -
+           title: Project Data Is Always Asked of the CDN, So a Tab Never Runs on a Previous Build's Layer List
+           notes: TV project-data fetch gets cache:no-cache. VV loader differs (build-manifest token + no-store manifest fetch, Na__AppUtils__ProjectLoader 1.0.0). Not applicable as written; check VV project.json caching separately. Section E.1.2 note: not needed: VV's project.
+v2.140.0   L917   **NOT-CONSIDERED**     | VV -                        | pk W2-11, W2-16, W3-15, W1-22
+           title: Hide Swings: a Roof Plan No Longer Draws the Top Storey's Door Swings Over Its Roof - and 1:...
+           notes: Hide swings (Viewport__HideSwings) and 1:200 scale. Rides on plan doors (v2.42.0) and storeys (v2.105.0).
+v2.141.0   L916   **NOT-CONSIDERED**     | VV -                        | pk W2-21, W3-03, W1-28, W1-14
+           title: A Leader Travels With What It Is Moved With, and a Group Takes Its Leaders and Dimensions
+           notes: A leader travels with what it is moved with; groups take leaders and dimensions (CopyDrag, LeMarkup__DimensionBounds absent in VV).
+v2.142.0   L915   **NOT-CONSIDERED**     | VV -                        | pk W2-21, W1-28, W3-03
+           title: A Viewport Groups With Its Notes, and What Is Placed Inside an Open Group Joins It
+           notes: A viewport groups with its notes; placing inside an open group joins it (Groups, EditScope, ItemClipboard). Builds on v2.138.0 (LeVpRot) and v2.116.0 (SheetImages__Insert).
+v2.143.0   L914   **NOT-CONSIDERED**     | VV -                        | pk W2-22, W2-32, W3-11, W3-03
+           title: Overspill Note Regions: Boxes Drawn Anywhere on a Sheet That Hold the Notes the Margin Cannot
+           notes: Overspill note regions (NoteRegions__, SheetRecords__NoteRegions, SpecMargin__Column, Region__ keys).
+v2.144.0   L913   **NOT-CONSIDERED**     | VV -                        | pk W2-34, W2-35, W3-03, W0-18
+           title: A Specification Note Is Reworded Beside the Drawing, Spell-Checked With the Practice's Own D...
+           notes: Spec note reworded beside the drawing + practice dictionary spell check (55__Feature__SpellCheck, 58 RowEditor, NoteTooltip, 50__TrueVision__UserConfig, TrueVisionUserConfig API). VV needs a Flask user-config route (WCP).
+v2.146.0   L911   **NOT-CONSIDERED**     | VV -                        | pk W1-07, W0-12, W1-05, W1-06
+           title: Three Guards Round the Project File: a Draft Is Judged Before It Goes Back, a Save Is Judged...
+           notes: Three guards round the project file (DrawingsData__SavedIso, LocalProjectMirror, ProjectVision local server). Transport-specific (DIV-4): VV needs its own Flask route in WCP/server.py + R2SaveProjectJson guard.
+v2.147.0   L910   **NOT-CONSIDERED**     | VV -                        | pk W2-32, W1-21, W1-13, W1-19
+           title: Leaderless Notes: Whole Specification Groups Listed on a Sheet With No Bubble Pointing at Th...
+           notes: Leaderless notes (Panel__MarginNotes__Leaderless, SheetRecords__LeaderlessNotes). VV SpecMargin 1.3.0-equivalent lacks it.
+v2.149.0   L908   **NOT-CONSIDERED**     | VV -                        | pk W2-25, W3-03, W3-04
+           title: The Move Anchor: Ctrl+Click an Item, Put the Red Cross on a Point, and Move It From That Poi...
+           notes: Move Anchor (Ctrl+click red cross; MoveAnchor__ + config, Styles__ObjectSnap). TV devlog has no VV line. Needs 28__System__ObjectSnap.
+v2.151.0   L906   **NOT-CONSIDERED**     | VV -                        | pk W2-41, W3-03, W1-36, W3-07
+           title: The Boolean Keys: Shift+U Union, Shift+S Subtract, Shift+T Trim and Shift+O Outer Shell, on...
+           notes: Boolean keys Shift+U/S/T/O (VectorTools__BooleanTool, Na__Hotkeys__DrawingTabs__.json). Needs v2.150.0 and the key-scope split (v2.110.0/v2.115.0).
+v2.155.0   L902   **NOT-CONSIDERED**     | VV -                        | pk W4-01, W4-17, W4-02, W4-03, W4-07, W4-09, W0-16, W6-03
+           title: Publishing: Drawings Are Baked Once on the Authoring Machine, and the Web Viewer Only Shows...
+           notes: Confirmed by Adam in TrueVision. Publishing: drawings baked once, web viewer shows files (65__Feature__DocumentPublishing, 52/53 top-level folders, PublishedDocuments schema). CONFIRMED by Adam in TV. Needs VV R2/worker routes (DIV-4).
+v2.157.0   L900   **NOT-CONSIDERED**     | VV -                        | pk W2-30, W4-06, W4-12
+           title: Statement Writer Lockstep: The App's Copy and the Markdown File Are Checked Against Each Oth...
+           notes: Statement Writer lockstep with its markdown file. Statement writer chain.
+v2.158.0   L899   **NOT-CONSIDERED**     | VV -                        | pk W1-34, W4-13, W1-31, W1-32
+           title: The Tab Strip Is Five Tabs: 3D Model, Drawings (a Menu of Every Drawing), Specification, Doc...
+           notes: Tab strip = five tabs (3D Model, Drawings menu, Specification, Document Register, Design Statements); TabStrip 2.0.0, LeMode__EnterUnder. VV TabStrip 1.5.0 still one tab per sheet. Major UI parity item (S03a/S10).
+v2.163.0   L894   **NOT-CONSIDERED**     | VV -                        | pk W2-30, W2-31, W2-35
+           title: The Project Specification Is Kept in Step With Its File, as a Statement Is: an Agent's Edit...
+           notes: Specification lockstep with its file (SpecData__Lockstep, SpecLockstep). TV: port needs the Statement Writer's pure rules file (Statement__Lockstep__).

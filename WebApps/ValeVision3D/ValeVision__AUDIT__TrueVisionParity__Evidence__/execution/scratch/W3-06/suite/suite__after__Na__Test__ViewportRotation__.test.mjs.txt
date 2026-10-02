@@ -1,0 +1,67 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ViewportRotation__.test.mjs
+exit 0
+
+
+ValeVision3D - rotatable viewports
+
+  The geometry (the real ViewportRotation leaf)
+  PASS  an angle wraps into (-180, 180]
+  PASS  Shift holds quarter turns counted from level
+  PASS  free, it settles on a right angle within the detent and nowhere else
+  PASS  the middle of the frame is what it turns about
+  PASS  a quarter turn clockwise carries the level top-left corner to the top right of where it was (y runs down)
+  PASS  ToFrame undoes ToPaper
+  PASS  the turned corners, level top-left first
+  PASS  the box round a quarter-turned frame is its height wide and its width tall
+  PASS  a level frame's box is the frame itself
+  PASS  a point inside the turned frame but outside the level one is inside
+  PASS  and one inside the level frame but outside the turned one is not
+  PASS  the distance to a turned frame is measured to its turned edge
+  PASS  the CSS turn is nothing when level, and appended after the translate when turned
+  PASS  a level viewport opens no graphics state
+  PASS  a turned one opens one and writes one cm
+  PASS  the matrix puts each level point where the turn puts it on the paper (to a hundredth of a point, 0.004 mm)
+
+  The handles (the shipped ViewportHandles unit)
+  PASS  the press remembers the turn, the middle and the angle it was grabbed at
+  PASS  swung to due right: a quarter turn clockwise
+  PASS  free, a hand a little past it stays where it is, to a tenth
+  PASS  Shift holds it to the quarter turn
+  PASS  Shift: swung round to straight down is a half turn (180, never -180), and round to the left a quarter turn back
+  PASS  within the detent of a right angle it settles there without Shift
+  PASS  too near the middle to read an angle, it holds still
+  PASS  a turn is counted from where the viewport already stood
+  PASS  the rotate grip stands straight out from the top edge, turned with the frame
+  PASS  the grip is found at the handles' hit radius, and nowhere else
+  PASS  dragging the turned right edge down the paper lengthens the frame along it
+  PASS  and the edge opposite stays exactly where it was on the paper
+  PASS  and the drawing stays put: the same drawing point is at the same paper point
+  PASS  dragging it ACROSS the paper does nothing to that edge
+  PASS  a level frame crops exactly as it always has
+  PASS  a pan on a quarter-turned drawing slides it the way the hand went (down the paper is along its own x)
+  PASS  a move is still a plain paper move, turned or not
+  PASS  a 3D picture slides in the frame's own axes
+  PASS  a handle's resize arrow turns with the frame
+  PASS  and is the one it always was on a level frame
+  PASS  the turned frame is hit where it is painted: a handle, the band, the inside
+
+  The window and the snap index (the shipped units)
+  PASS  a level window's ToPaper and ToFrame agree
+  PASS  the drawing point at the window's middle is at the frame's middle, turned or not
+  PASS  a turned window's ToPaper carries the turn, and FromPaper undoes it
+  PASS  the window names its turn
+  PASS  a turned drawing's line is filed where it is painted: 40 mm DOWN the paper from the middle, not across
+  PASS  a line running off the level frame is clipped at the frame's own edge (and its half-millimetre pad), then turned
+
+  The frame line and caption (the shipped SheetChrome unit, and jsPDF itself)
+  PASS  a level viewport's frame line and caption are loose primitives, as they always were
+  PASS  a turned one's are one group, turned about the middle of the frame
+  PASS  built level inside it: the same primitives the level viewport gets
+  PASS  on screen: one SVG rotate about the middle, round the lot
+  PASS  a group with no turn is written exactly as before
+  PASS  in the PDF: the graphics states balance
+  PASS  and the turn is written as a cm of a 30 degree rotation
+  PASS  before the frame's rectangle is drawn
+  PASS  a level frame writes no cm at all
+
+Every check passed.

@@ -1,0 +1,14 @@
+$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-02\path_gate_records_exempt.py --root D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+(exit 0)
+
+(records-exempt wrapper: HISTORY = (DEVLOG|PARITY__TrueVisionLedger|__PLAN__|__AUDIT__TrueVisionParity__|__WORKING_MEMORY__TrueVisionParity__))
+K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked: css @import 28, new URL 34, path strings 159, folder tokens 13
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:1205 -> ./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.min.js
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:1206 -> ./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.worker.min.js
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json:1332 -> ./04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:216 -> ./04__Lib__ThirdParty__VersionLocked/06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:405 -> ./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.min.js
+  WARN G4 path string   02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js:406 -> ./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.worker.min.js
+  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+RESULT: PASS (0 fail, 7 warn)

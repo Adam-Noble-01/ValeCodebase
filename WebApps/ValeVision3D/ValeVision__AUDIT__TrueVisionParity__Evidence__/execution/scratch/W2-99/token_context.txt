@@ -1,0 +1,229 @@
+COMMENT Na__AppFlow__LoadingSequence.js:65  //                   ValeVision3D v2.71.2; the render loop's guards 02-Oct-2026 for ValeVision3D {{VVREL:W2-07}}
+COMMENT Na__AppFlow__LoadingSequence.js:100  // 02-Oct-2026 - Version 1.7.3 (the progressive-render loop guards, {{VVREL:W2-07}})
+COMMENT Na__RenderEffect__LineworkSettings__State.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-13}}
+COMMENT Na__RenderEffect__LineworkSettings__State.js:68  // 02-Oct-2026 - Version 1.2.0 ({{VVREL:W2-13}})
+COMMENT Na__RenderEffect__ProgressiveRefine__.js:125  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-07}} - whole. This app's copy was its 1.0.1
+COMMENT Na__ImageExport__StaticExport__TiledRenderer.js:129  // 02-Oct-2026 - Version 1.5.0 ({{VVREL:W2-03}})
+COMMENT Na__ImageExport__StaticExport__TiledRenderer.js:141  // 02-Oct-2026 - Version 1.6.0 ({{VVREL:W2-12}})
+COMMENT Na__DrawView__RenderPreset__.js:69  // 02-Oct-2026 - Version 1.4.0 (elevation depth fog, {{VVREL:W2-03}})
+COMMENT Na__DrawView__SectionAdapter__.js:81  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-02}} (version 1.3.0: the six calls)
+COMMENT Na__DrawView__SectionAdapter__.js:107  // 02-Oct-2026 - Version 1.3.0 (the six section calls, {{VVREL:W2-02}})
+COMMENT Na__DrawView__ThumbnailBake__.js:59  // 02-Oct-2026 - Version 1.0.3 (Elevations menu rebuild, {{VVREL:W2-05}})
+COMMENT Na__DrawView__ThumbnailBake__.js:63  // 02-Oct-2026 - Version 1.0.2 (Floor Plans menu rebuild, {{VVREL:W2-04}})
+COMMENT Na__CrossSectionView__SystemLogic.js:40  // 02-Oct-2026 - Drawing adapter export RenderDepthInto ({{VVREL:W2-02}})
+COMMENT Na__UiFeature__CrossSectionView__DevControls.js:32  // 02-Oct-2026 - Version 1.0.1 (Cross Sections placeholder, {{VVREL:W2-05}})
+COMMENT Na__FloorPlan__DevMenu__Editor__.js:58  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-04}}, whole; first ported 09-Sep-2026 for
+COMMENT Na__FloorPlan__DevMenu__RowBuilders__.js:41  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-04}}, whole; first ported 09-Sep-2026 for
+COMMENT Na__FloorPlan__Styles__DevMenu__.css:28  *     DR-32 keeps (.na-fp-dev__styles, .na-fp-dev__style); since {{VVREL:W2-04}} they sit under the
+COMMENT Na__FloorPlan__Styles__DevMenu__.css:31  *     the panel head's + (.na-fp-dev__quick-add, D11, DR-32; added {{VVREL:W2-04}}).
+COMMENT Na__Elevation__DevMenu__Editor__.js:66  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-05}}, whole; first ported 09-Sep-2026 for
+COMMENT Na__Elevation__DevMenu__RowBuilders__.js:55  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-05}}, whole; first ported 09-Sep-2026 for
+COMMENT Na__Elevation__ModeController__.js:55  //                   for ValeVision3D {{VVREL:W2-03}} (v2.94.0 not yet confirmed by Adam in TrueVision, DR-01 (c))
+COMMENT Na__Elevation__ModeController__.js:71  // 02-Oct-2026 - Version 1.1.3 ({{VVREL:W2-03}})
+COMMENT Na__Elevation__ProjectJson__Data__.js:68  //                   in {{VVREL:W2-05}} (R0.2.11 Q-AZIMUTH (b), R6 F.8 C20).
+COMMENT Na__Elevation__ProjectJson__Data__.js:83  //     (OC-11, since {{VVREL:W2-05}}); TrueVision stores the list as given. The projection trims either
+COMMENT Na__Elevation__Styles__DevMenu__.css:24  *                   ValeVision3D v2.19.0 (port Phase 3). Since {{VVREL:W2-05}} TrueVision's rules only:
+COMMENT Na__DrawingPlanes__Bounds__.js:50  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-40}}, with the Drawing Planes system's
+COMMENT Na__DrawingPlanes__ConfigState__.js:31  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-40}}, with the Drawing Planes system's
+COMMENT Na__DrawingPlanes__DevMenu__Controls__.js:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-01}}, with the rest of the Drawing
+COMMENT Na__DrawingPlanes__Grip__.js:61  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-01}}, with the rest of the Drawing
+COMMENT Na__DrawingPlanes__Maths__.js:56  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-40}}, with the Drawing Planes system's
+COMMENT Na__DrawingPlanes__Overlay__.js:82  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-01}}, with the rest of the Drawing
+COMMENT Na__DrawingPlanes__PlaneMesh__.js:58  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-40}}, with the Drawing Planes system's
+COMMENT Na__DrawingPlanes__Styles__DevMenu__.css:24  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-01}}, with the Drawing Planes modules.
+COMMENT Na__CrossSection__DevMenu__Editor__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-05}}
+COMMENT Na__ElevationDepthFog__DevMenu__Row__.js:55  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-03}}, with the fog's render layer and its 3D wiring.
+COMMENT Na__ElevationDepthFog__RenderLayer__.js:72  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-03}}, with the fog's Dev row and its 3D wiring.
+COMMENT Na__ElevationDepthFog__Styles__DevMenu__.css:23  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-03}}, with the fog's render layer and Dev row.
+COMMENT Na__ProjectedLinework__AuthoredEdges__.js:51  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__ClipKernel__.js:116  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__ConfigAccess__.js:38  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__CpuBackend__.js:78  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__DevMenu__Controls__.js:36  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__DoorPose__.js:61  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD);
+COMMENT Na__ProjectedLinework__EdgeExtractor__.js:66  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__FlushJoins__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with Storeys, ahead of the rest of folder 50
+COMMENT Na__ProjectedLinework__ModelStage__.js:51  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__Pipeline__.js:53  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__Projector__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__StageSampler__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__Storeys__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with FlushJoins, ahead of the rest of folder
+COMMENT Na__ProjectedLinework__ViewDefinition__.js:55  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__ProjectedLinework__WebGpuBackend__.js:88  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
+COMMENT Na__LayoutEditor__Loader__.js:148  // 02-Oct-2026 - Version 1.1.7 ({{VVREL:W2-17}})
+COMMENT Na__LayoutEditor__Loader__.js:158  // 02-Oct-2026 - Version 1.1.6 ({{VVREL:W2-18}})
+COMMENT Na__LayoutEditor__Loader__.js:171  // 02-Oct-2026 - Version 1.1.5 ({{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__ModeController__.js:63  //                   02-Oct-2026 for ValeVision3D {{VVREL:W2-16}} (Model Source and the site plan composites)
+COMMENT Na__LayoutEditor__ModeController__.js:98  // 02-Oct-2026 - Version 1.18.9 (Model Source and the site plan composites, {{VVREL:W2-16}})
+COMMENT Na__LayoutEditor__ModeController__.js:111  // 02-Oct-2026 - Version 1.18.8 (the left column's two tabs, {{VVREL:W2-35}})
+COMMENT Na__LayoutEditor__ModeController__.js:124  // 02-Oct-2026 - Version 1.18.7 (the specification lockstep, {{VVREL:W2-31}})
+COMMENT Na__LayoutEditor__ModeController__.js:133  // 02-Oct-2026 - Version 1.18.6 (the Patterns panel and the hatch ready chain, {{VVREL:W2-29}})
+COMMENT Na__LayoutEditor__ModeController__.js:147  // 02-Oct-2026 - Version 1.18.5 (object snap's own folder, {{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__Styles__Main__Paper__.css:15  * - Context menu: 02-Oct-2026 for ValeVision3D {{VVREL:W2-20}}: the menu's mixed, hinted, hint, submenu, open
+COMMENT Na__LayoutEditor__Styles__Main__Paper__.css:19  * - Object snap : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}: the snap marker's rules (.na-le-osnap with its
+COMMENT Na__LayoutEditor__Styles__Main__Paper__.css:25  * - Grips       : 02-Oct-2026 for ValeVision3D {{VVREL:W2-24}}: the rubber band and the rubber box (2 px,
+COMMENT Na__LayoutEditor__Styles__Main__Paper__.css:30  * - Carry       : 02-Oct-2026 for ValeVision3D {{VVREL:W2-25}}: TrueVision3D's VIEWPORT CARRY rules
+COMMENT Na__LayoutEditor__ModelSource__.js:43  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}. 1.0.0 (v2.32.0) and 1.1.0 (v2.49.0) come
+COMMENT Na__LayoutEditor__PlanDoors__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-11}};
+COMMENT Na__LayoutEditor__Viewport2d__.js:66  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Viewport2d__DepthFog__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-12}}, with the Render Composites Depth Fog
+COMMENT Na__LayoutEditor__Viewport2d__Frame__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Viewport2d__Linework__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Viewport2d__SitePlan__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}. 1.0.0 (v2.55.0), 1.1.0 (v2.101.0) and 1.2.0
+COMMENT Na__LayoutEditor__Viewport2d__Window__.js:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Viewport3d__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__ViewportIdentity__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__ViewportTitleText__.js:63  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-10}}, the whole file. This app's copy
+COMMENT Na__SitePlan__GlbParse__.js:31  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-14}}
+COMMENT Na__SitePlan__Store__.js:64  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-14}}
+COMMENT Na__LayoutEditor__EdgeStyles__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Enhance__.js:64  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-09}}, the whole file. This app's copy
+COMMENT Na__LayoutEditor__ModelLayers__.js:34  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__RenderComposites__.js:65  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-09}}, the whole file. This app's copy
+COMMENT Na__LayoutEditor__SnapshotRenderer__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-15}} (TrueVision3D's 1.6.0-1.13.0 hunks, 1.8.0)
+COMMENT Na__LayoutEditor__SnapshotRenderer__.js:75  // 02-Oct-2026 - Version 1.8.0 (TrueVision3D's 1.6.0 to 1.13.0 hunks, {{VVREL:W2-15}})
+COMMENT Na__LayoutEditor__DraftMode__.js:65  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, landed inert:
+COMMENT Na__LayoutEditor__Styles__DraftMode__.css:35  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, linked by
+COMMENT Na__LayoutEditor__DrawingGrid__.js:64  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, landed inert:
+COMMENT Na__LayoutEditor__Panel__DrawingGrid__.js:38  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, landed inert:
+COMMENT Na__LayoutEditor__Styles__DrawingGrid__.css:30  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, linked by
+COMMENT Na__LayoutEditor__MoveAnchor__.js:90  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-25}}, landed inert: nothing imports
+COMMENT Na__LayoutEditor__ObjectSnap__.js:62  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}},
+COMMENT Na__LayoutEditor__ObjectSnap__Geometry__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__ObjectSnap__Glyphs__.js:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__ObjectSnap__GridMoves__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}},
+COMMENT Na__LayoutEditor__ObjectSnap__Index__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__ObjectSnap__Marker__.js:67  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__ObjectSnap__Menu__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}},
+COMMENT Na__LayoutEditor__ObjectSnap__Moves__.js:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}},
+COMMENT Na__LayoutEditor__ObjectSnap__Search__.js:70  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}},
+COMMENT Na__LayoutEditor__ObjectSnap__Sources__.js:64  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__ObjectSnap__State__.js:47  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-42}}, landed inert with the
+COMMENT Na__LayoutEditor__Styles__ObjectSnap__.css:41  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}, linked by
+COMMENT Na__LayoutEditor__ViewportSnapMove__.js:77  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-25}}, landed inert: nothing imports
+COMMENT Na__LayoutEditor__AxisLock__.js:43  //                   at b2aa9151) on 02-Oct-2026 for ValeVision3D {{VVREL:W2-25}}, with the
+COMMENT Na__LayoutEditor__ContextMenu__.js:43  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-20}}
+COMMENT Na__LayoutEditor__EditScope__.js:71  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - whole. TrueVision authored it
+COMMENT Na__LayoutEditor__Eyedropper__.js:113  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - whole. TrueVision authored it
+COMMENT Na__LayoutEditor__Grips__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-24}}, with the band, box, grip-state and
+COMMENT Na__LayoutEditor__ItemClipboard__.js:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - whole. TrueVision authored it
+COMMENT Na__LayoutEditor__LayerMenu__.js:47  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - new here. TrueVision's v2.123.0
+COMMENT Na__LayoutEditor__Measurements__.js:77  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-23}} - whole, with TrueVision's log. This app's
+COMMENT Na__LayoutEditor__SelectionBox__.js:60  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - whole. TrueVision authored it
+COMMENT Na__LayoutEditor__SelectionSet__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - whole. TrueVision authored it
+COMMENT Na__LayoutEditor__SheetTools__ContextMenu__.js:45  // 02-Oct-2026 - Version 1.2.1 ({{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__SheetTools__HoverTooltip__.js:32  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-20}}
+COMMENT Na__LayoutEditor__SheetTools__Keyboard__.js:46  // 02-Oct-2026 - Version 1.3.1 ({{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__SheetTools__NoteTooltip__.js:50  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}} - new here. TrueVision's v2.144.0
+COMMENT Na__LayoutEditor__Snapping__.js:51  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}: the snapping itself went to
+COMMENT Na__LayoutEditor__Snapping__.js:63  // 02-Oct-2026 - Version 2.0.0 ({{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__OrthoMode__.js:79  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, landed inert:
+COMMENT Na__LayoutEditor__DrawingAxes__.js:73  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, landed inert:
+COMMENT Na__LayoutEditor__Styles__DrawingAxes__.css:33  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-18}}, linked by
+COMMENT Na__LayoutEditor__DimensionTool__.js:68  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-26}} - whole, with TrueVision's log. This app's
+COMMENT Na__LayoutEditor__LeaderTool__.js:47  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-26}} - whole, with TrueVision's log. This app's
+COMMENT Na__LayoutEditor__RectangleTool__.js:63  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-26}} - whole, with TrueVision's log. This app's
+COMMENT Na__LayoutEditor__TextTool__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-26}} - whole, with TrueVision's log. This app's
+COMMENT Na__LayoutEditor__Panel__Patterns__.js:34  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-29}}
+COMMENT Na__LayoutEditor__Styles__Patterns__.css:14  - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-29}}, linked only by
+COMMENT Na__LayoutEditor__Panel__VectorTools__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-41}}
+COMMENT Na__LayoutEditor__Styles__VectorTools__.css:29  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-41}}, linked only by
+COMMENT Na__LayoutEditor__VectorTools__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-41}}
+COMMENT Na__LayoutEditor__VectorTools__ArcTool__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__VectorTools__BooleanTool__.js:65  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-41}}
+COMMENT Na__LayoutEditor__VectorTools__Boolean__.js:63  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-27}}
+COMMENT Na__LayoutEditor__VectorTools__CircleTool__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__VectorTools__Geometry__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-27}}
+COMMENT Na__LayoutEditor__VectorTools__JoinTool__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__VectorTools__OffsetTool__.js:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-41}}
+COMMENT Na__LayoutEditor__VectorTools__Offset__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-27}}
+COMMENT Na__LayoutEditor__VectorTools__Preview__.js:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__VectorTools__Setup__.js:29  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-27}}
+COMMENT Na__LayoutEditor__VectorTools__State__.js:47  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-27}}
+COMMENT Na__LayoutEditor__VectorTools__Targets__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__VectorTools__TrimTool__.js:50  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-28}}
+COMMENT Na__LayoutEditor__Panel__Layers__.js:45  //                   for ValeVision3D {{VVREL:W2-36}}
+COMMENT Na__LayoutEditor__Panel__Layers__.js:56  // 02-Oct-2026 - Version 1.1.2 ({{VVREL:W2-36}})
+COMMENT Na__LayoutEditor__Panel__Layers__.js:62  // 02-Oct-2026 - Version 1.1.1 ({{VVREL:W2-36}})
+COMMENT Na__LayoutEditor__Panel__Leaders__.js:43  //                   {{VVREL:W2-36}}, with TrueVision's log. This app's copy already held the code of
+COMMENT Na__LayoutEditor__Panel__ModelLayers__.js:38  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, the whole file. This app's copy before it
+COMMENT Na__LayoutEditor__Panel__Shapes__.js:56  //                   for ValeVision3D {{VVREL:W2-36}}
+COMMENT Na__LayoutEditor__Panel__Shapes__.js:68  // 02-Oct-2026 - Version 1.8.2 ({{VVREL:W2-36}})
+COMMENT Na__LayoutEditor__Panel__Shapes__.js:74  // 02-Oct-2026 - Version 1.8.1 ({{VVREL:W2-36}})
+COMMENT Na__LayoutEditor__Panel__SitePlanComposites__.js:39  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-14}}
+COMMENT Na__LayoutEditor__Panel__Styles__.js:38  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-36}} - whole, with TrueVision's log. This
+COMMENT Na__LayoutEditor__Panel__Text__.js:31  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-36}} - whole, with TrueVision's log. This
+COMMENT Na__LayoutEditor__Toolbar__.js:56  // 02-Oct-2026 - Version 1.9.5 (object snap's own folder, {{VVREL:W2-19}})
+COMMENT Na__LayoutEditor__MarginGrip__.js:34  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, the whole file over this app's
+COMMENT Na__LayoutEditor__NoteRegions__.js:66  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, the whole file, new to this
+COMMENT Na__LayoutEditor__NoteRegions__Tool__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-22}}, the whole file, new to this
+COMMENT Na__LayoutEditor__Panel__MarginNotes__Leaderless__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, the whole file, new to this
+COMMENT Na__LayoutEditor__SpecData__.js:100  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.3.0
+COMMENT Na__LayoutEditor__SpecData__Document__.js:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.0.0
+COMMENT Na__LayoutEditor__SpecData__Draft__.js:36  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.0.0
+COMMENT Na__LayoutEditor__SpecData__Editing__.js:37  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.0.0
+COMMENT Na__LayoutEditor__SpecData__Lockstep__.js:88  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole, new. Straight onto the transport
+COMMENT Na__LayoutEditor__SpecData__State__.js:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.0.0
+COMMENT Na__LayoutEditor__SpecData__Transport__.js:54  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole, over the transport facade
+COMMENT Na__LayoutEditor__SpecEditor__Bar__.js:36  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-31}} - taken whole. This app's copy
+COMMENT Na__LayoutEditor__SpecLinks__.js:46  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole. This app's copy was its 1.0.0
+COMMENT Na__LayoutEditor__SpecLockstep__.js:47  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-31}} - whole, new. TrueVision made it a
+COMMENT Na__LayoutEditor__SpecMargin__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, the whole file. This app's
+COMMENT Na__LayoutEditor__SpecMargin__Column__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, the whole file, new to this
+COMMENT Na__LayoutEditor__Styles__Specification__.css:20  * - Ported on     : 14-Sep-2026 (the first copy), taken whole 02-Oct-2026 for ValeVision3D {{VVREL:W2-31}}.
+COMMENT Na__LayoutEditor__Styles__Specification__Notes__.css:10  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}} - whole. New here: the regions "Overspill
+COMMENT Na__LayoutEditor__Statement__Lockstep__.js:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}} - whole, new, at TrueVision's path, ahead
+COMMENT Na__LayoutEditor__Scrapbook__TileDrag__.js:48  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file. This app's copy before
+COMMENT Na__LayoutEditor__ScrapbookCustom__.js:47  //                   ValeVision3D {{VVREL:W2-36}}, taking the measured-room hunk: a Shape__Area keeps its
+COMMENT Na__LayoutEditor__ScrapbookParametric__.js:76  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file. This app's copy before
+COMMENT Na__LayoutEditor__ScrapbookParametric__CabinetInfill__.js:85  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-38}}, the whole file, new in this app.
+COMMENT Na__LayoutEditor__ScrapbookParametric__DrawingTitle__.js:84  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file, with the grips that
+COMMENT Na__LayoutEditor__ScrapbookParametric__Grips__.js:68  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file, with the drawing title
+COMMENT Na__LayoutEditor__ScrapbookParametric__LinkNoodle__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file. This app's copy before
+COMMENT Na__LayoutEditor__ScrapbookParametric__ProjectQr__.js:61  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-38}}, the whole file, new in this app.
+COMMENT Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole file. This app's copy before
+COMMENT Na__LayoutEditor__ScrapbookParametric__SiteLegendLink__.js:56  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-39}}, the whole file, new in this app.
+COMMENT Na__LayoutEditor__ScrapbookParametric__SiteLegend__.js:61  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-39}}, the whole file, new in this app.
+COMMENT Na__LayoutEditor__ScrapbookParametric__ViewportLink__.js:99  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole 1.4.0 file. This app's copy
+COMMENT Na__LayoutEditor__Styles__ScrapbookParametric__.css:23  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, the whole sheet, still linked by
+COMMENT Na__LayoutEditor__Panel__ScrapbookSpecification__.js:63  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-35}}, new in this app. 1.2.0 sits in
+COMMENT Na__LayoutEditor__ScrapbookSpecification__.js:56  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-35}}, new in this app with the left
+COMMENT Na__LayoutEditor__ScrapbookSpecification__RowEditor__.js:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-35}}, new in this app. 1.0.0 (v2.144.0)
+COMMENT Na__LayoutEditor__Styles__ScrapbookSpecification__.css:37  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-35}}, new in this app, linked by
+COMMENT Na__LayoutEditor__DevMenu__Controls__.js:43  // - Ported on     : 19-Sep-2026 (the tab names, 1.4.0); 02-Oct-2026 for ValeVision3D {{VVREL:W2-17}}
+COMMENT Na__LayoutEditor__DevMenu__Controls__.js:65  // 02-Oct-2026 - Version 1.4.2 ({{VVREL:W2-17}})
+COMMENT Na__SpellCheck__.js:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__SpellCheck__Dictionary__.js:62  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__SpellCheck__Field__.js:59  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__SpellCheck__Styles__.css:29  * - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__SpellCheck__WordBar__.js:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__TestEnv__ObjectSnapBundle__.cjs:43  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}, with the object
+COMMENT Na__Test__AppConfigParity__.test.mjs:56  // 02-Oct-2026 - Version 1.0.6 ({{VVREL:W2-36}})
+COMMENT Na__Test__AppConfigParity__.test.mjs:65  // 02-Oct-2026 - Version 1.0.5 ({{VVREL:W2-14}})
+COMMENT Na__Test__DrawingPlanes__.test.mjs:31  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-01}}, with the Drawing Planes modules
+COMMENT Na__Test__EnhanceWhitecardStrength__.test.mjs:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-09}}, with Enhance 1.1.0, Render
+COMMENT Na__Test__FlushJoins__.test.mjs:43  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with the module it proves
+COMMENT Na__Test__HideSwings__.test.mjs:40  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, with the viewport convergence that puts
+COMMENT Na__Test__LayerMenu__.test.mjs:56  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-21}}, with LayerMenu 1.0.0 and
+COMMENT Na__Test__LeaderlessNotes__.test.mjs:43  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, with SpecMargin 1.5.0, its
+COMMENT Na__Test__LineworkModifiers__.test.mjs:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-13}}
+COMMENT Na__Test__LoaderFacade__.test.mjs:70  // 02-Oct-2026 - Version 1.0.2 ({{VVREL:W2-17}})
+COMMENT Na__Test__NoteRegions__.test.mjs:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-32}}, with SpecMargin 1.5.0, its
+COMMENT Na__Test__ObjectSnap__.test.mjs:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-19}}, with the object
+COMMENT Na__Test__PaintedOnThePoint__.test.mjs:49  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-24}}, with Grips 1.12.0. It runs
+COMMENT Na__Test__ScrapbookCabinetInfill__.test.mjs:39  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-38}}, new in this app, with the
+COMMENT Na__Test__ScrapbookDrawingTitle__.test.mjs:34  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, with the drawing title 1.3.0. This
+COMMENT Na__Test__ScrapbookProjectQr__.test.mjs:39  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-38}}, new in this app, with the
+COMMENT Na__Test__ScrapbookScaleBar__.test.mjs:33  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-37}}, with the scale bar 1.1.0 and the config
+COMMENT Na__Test__ScrapbookSiteLegend__.test.mjs:38  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-39}}, new in this app, with the
+COMMENT Na__Test__SitePlanComposites__.test.mjs:52  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-14}}
+COMMENT Na__Test__SitePlanFaces__.test.mjs:42  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-16}}, with the site plan painter (dormant,
+COMMENT Na__Test__SitePlanStore__.test.mjs:45  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-14}}
+COMMENT Na__Test__SpecInlineEdit__.test.mjs:57  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-35}}, with the Specification tab
+COMMENT Na__Test__SpecLockstep__.test.mjs:62  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}}, with the specification lockstep
+COMMENT Na__Test__SpellCheckDictionary__.test.mjs:51  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__Test__SpellCheckField__.html:44  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-34}}
+COMMENT Na__Test__StatementLockstep__.test.mjs:30  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-30}}, with the rules file it tests
+COMMENT Na__Test__StoreyBand__.test.mjs:33  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}}, with the folder-50 port it proves
+COMMENT Na__Test__ViewportTitleText__.test.mjs:30  // - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-10}}, with ViewportTitleText 1.1.0.
+tokens: 228; outside a comment: 0

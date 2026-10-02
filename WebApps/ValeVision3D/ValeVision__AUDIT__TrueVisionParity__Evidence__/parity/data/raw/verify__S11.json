@@ -1,0 +1,475 @@
+{
+ "slice_id": "S11",
+ "claims_checked": 190,
+ "confirmed_ids": [
+  "S11-F02",
+  "S11-F03",
+  "S11-F04",
+  "S11-F06",
+  "S11-F07",
+  "S11-F08",
+  "S11-F09",
+  "S11-F12",
+  "S11-F13",
+  "S11-F18",
+  "S11-F19",
+  "S11-F22",
+  "S11-F23",
+  "S11-F24",
+  "S11-F25",
+  "S11-F28",
+  "S11-F29",
+  "S11-F30",
+  "S11-F31",
+  "S11-F32",
+  "S11-F33",
+  "S11-F35",
+  "S11-F36",
+  "S11-F37",
+  "S11-F41",
+  "S11-F42",
+  "S11-F45",
+  "S11-F46",
+  "S11-F48"
+ ],
+ "refuted": [],
+ "corrections": [
+  {
+   "id": "S11-F01",
+   "field": "detail",
+   "new_value": "Newest TV release ported: v2.85.0 (VV v2.68.0, 20-Sep). Last VV port release: v2.70.0 (TV v2.83.0). TV then released v2.86.0-v2.172.0: 88 headings from 20 to 29 Sep (12/43/12/9 on 20/21/22/23-Sep, then 1 on 28-Sep and 11 on 29-Sep). Of these, 77 were never considered, 7 are parked on Adam's sign-off, 1 is deliberate (v2.88.0), 1 is VV-origin (v2.161.0) and 2 are not drawing work (v2.92.0, the presentation group image export, and v2.139.1). The low-water mark is v2.28.0. 18 releases between v2.28.0 and v2.85.0 are open or partial: 10 PENDING-SIGNOFF, 6 PARTIAL and 2 NOT-CONSIDERED (v2.78.0, v2.81.0). The 10 pending include v2.48.0, v2.49.0 and v2.49.1, whose ValeVision question was put to Adam on 14-Sep-2026 (TV/TrueVision__PLAN__SitePlanDrawings__.md L761). The verifier-corrected 177-row classification is 55 PORTED / 6 PARTIAL / 17 PENDING-SIGNOFF / 79 NOT-CONSIDERED / 6 DELIBERATE / 8 NOT-DRAWING / 4 VV-ORIGIN / 2 N/A, with owning slice and tests in report Appendix A. TV's own feature PLAN files park a further 16 NOT-CONSIDERED rows on sign-off.",
+   "reason": "Verifier reclassified v2.92.0 (presentation only, so NOT-DRAWING under the brief's categories). It also reclassified the site plan trio: TV's SitePlanDrawings plan records that the VV question was asked on 14-Sep, so it was considered, not 'never considered'."
+  },
+  {
+   "id": "S11-F05",
+   "field": "evidence",
+   "new_value": "VV LE/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js:317-322 still builds Undo (317), Redo (318) and Fit (322). Sheet__LayerStack and Na__DrawData__IsLoaded are absent in VV. TV TabStrip 2.0.0 vs VV 1.5.0.",
+   "reason": "The cited lines 318/323 are Redo and the 100% button. Undo and Fit are at 317 and 322."
+  },
+  {
+   "id": "S11-F10",
+   "field": "title",
+   "new_value": "Projected linework: flush joins, plan doors, storeys and hide swings open; 14 TV PORT NOTEs in folder 50 say 'PENDING to ValeVision3D'",
+   "reason": "There are 14 such files in TV 02__Src__AppModules/50__System__ProjectedLinework, not 9: AuthoredEdges, ClipKernel, ConfigAccess, CpuBackend, DevMenu__Controls, DoorPose, EdgeExtractor, FlushJoins, ModelStage, Pipeline, Projector, StageSampler, Storeys and ViewDefinition."
+  },
+  {
+   "id": "S11-F10",
+   "field": "detail",
+   "new_value": "Ported to TV v2.64.1/v2.63.2. Open: v2.37.0 flush joins, seams occlude and LineworkFirst; v2.42.0 plan doors and v2.48.1 doors shut on elevations (DoorPose); v2.105.0 one storey per plan (Storeys); v2.140.0 hide swings; v2.159.0 flush tolerance. For v2.37.0, VV has no FlushJoins module, and VV ModelStage also lacks TV 1.1.0's edge-rule fingerprint (TV L150-152), although c.1 row 74 calls that pair header-only. 14 TV files in 50/ carry 'Back-port : ... PENDING to ValeVision3D, on Adam's sign-off'. TV Pipeline 1.5.0 has 4 log entries after VV's 10-Sep port.",
+   "reason": "Corrected the PORT NOTE count, and added the hidden ModelStage gap that belongs to v2.37.0."
+  },
+  {
+   "id": "S11-F11",
+   "field": "detail",
+   "new_value": "Open: v2.82.0 drawing planes (47__System__DrawingPlanes); v2.84.0 planes half plus the InteractiveOverlays registry (Show Compass); v2.86.0 Floor Plans/Elevations menus rebuilt (DraftGuard, DevRowShell, AutoName, Elevation__NameIsAuto, the 48 Cross Sections placeholder); v2.87.0 floor plan storey level; v2.94.0/v2.103.0 elevation depth fog (49). Ledger L87 parks v2.86.0/v2.87.0 'awaiting sign-off there'. Porting v2.82.0 also retires VV's live FacePick, GizmoGrip and PlaneGizmo. The PORT NOTE of TV's 47/Na__DrawingPlanes__Grip__.js (L59-61) says it 'Supersedes Na__Elevation__GizmoGrip__ and Na__Elevation__FacePick__ there when it is' ported, and TV keeps its own copies initialised from Index.html but unused (TV devlog v2.86.0 L7921). See S11-V09.",
+   "reason": "The survey did not notice that DrawingPlanes supersedes VV's FacePick/GizmoGrip. That is a wiring consequence S02a must handle."
+  },
+  {
+   "id": "S11-F14",
+   "field": "title",
+   "new_value": "Statement Writer absent (12 TV releases v2.95.0-v2.172.0)",
+   "reason": "Appendix A has 12 LE-STMT rows: v2.95.0, v2.97.0, v2.99.0, v2.157.0, v2.162.0, v2.165.0 and v2.167.0-v2.172.0. Not 13."
+  },
+  {
+   "id": "S11-F14",
+   "field": "detail",
+   "new_value": "52__Feature__StatementWriter (33 files, 16,898 lines) has standard sections, including 'TrueVision 3D Project Hub', a drawing schedule synced from the register, a finishes comparison, publishing, the web reader and pictures on R2. This is NA planning-statement content. Most of the 12 TV entries end 'NOT in ValeVision (no statement tab there)', but v2.95.0 itself has no ValeVision line. v2.163.0 (specification lockstep) also needs the Statement Writer's pure rules file (Statement__Lockstep__).",
+   "reason": "Corrected the release count. Also, 'every TV entry ends ...' is not true for v2.95.0."
+  },
+  {
+   "id": "S11-F15",
+   "field": "detail",
+   "new_value": "Releases: v2.48.0 drawing type + site plan store; v2.49.0/v2.49.1 site plan viewports at 1:500/1:1250; v2.89.0 site plan composites; v2.101.0 field hatches; v2.132.0 tagged face fills; v2.160.0 holes in publish/print; v2.164.0 legend. VV sheets have one drawing type. VV's AvailableScaleDenominators is [20,50,100]; TV's is [20,50,100,200], plus site plan scales. The question is not new. Adam confirmed site plan viewports in TV on 14-Sep-2026, and the ValeVision question was put to him that day (TV/TrueVision__PLAN__SitePlanDrawings__.md L756-761, phase 7 '~ Asked 14-Sep-2026'). So v2.48.0, v2.49.0 and v2.49.1 are PENDING-SIGNOFF. TV/TrueVision__PLAN__SitePlanComposites__.md L516-521 sets the port rule. VV's EdgeStyles, SheetRecords and ScaleManager contain no 'SitePlan', and a whole-file copy would import Na__SpStore__* and fail Na__Verify__Exports__. Any port is therefore 'a surgical merge of the non-site-plan parts only', offered after Adam confirms the TV work.",
+   "reason": "The survey missed TV's feature plans. They show the decision is already pending with Adam, and they set a merge rule that contradicts whole-file ports of SheetRecords and ScaleManager."
+  },
+  {
+   "id": "S11-F17",
+   "field": "detail",
+   "new_value": "Adds 54__Feature__ColourPalette above every colour field (v2.126.0), together with hatch line weight and colour and the construction materials hatch pack, and native colour-mixer placement (v2.133.0). The palette reads its own Na__ColourPalette__Config__.json. Its Monochrome group was copied from the NA DataLib SSOT on 21-Sep (Meta__SsotSource). So there is no runtime DataLib dependency, but the swatch set is NA's, and VV needs its own config with Vale colours.",
+   "reason": "Clarifies that the SSOT is a snapshot inside a local JSON, not a runtime dependency. The port is a config swap, not new plumbing."
+  },
+  {
+   "id": "S11-F20",
+   "field": "detail",
+   "new_value": "VV MultiModel.js:683-692 applies a fixed gl_FragDepth -= 0.00015, tuned for perspective log depth. Through the drawing ortho cameras TV measured it as about 75 mm, which draws lines through faces in plan and elevation base images. TV 1.3.0 (14-Sep) uses RenderConfig__Linework__OrthoDepthBiasMm (2 mm) via abs(projectionMatrix[2][2])/2 for orthographic cameras and leaves perspective unchanged. On 18-Sep VV took TV 1.3.1, 1.3.2 and 1.4.0 (VV log 1.2.3 and 1.3.0) but skipped 1.3.0. That cherry-pick is why report c.1 row 253 wrongly says no_action; the verifier corrected the row to port_adapted.",
+   "reason": "c.1 row 253 contradicted this finding. The cause is a cherry-picked port that the date-based watermark cannot see."
+  },
+  {
+   "id": "S11-F21",
+   "field": "detail",
+   "new_value": "Five problems in the ledger header. (1) L29 says Pick Face, grip and the scene-editor splits all landed, but the splits were withdrawn and deleted in TV v2.68.2. (2) TV plan L765 says FacePick+GizmoGrip are 'not yet ported', yet both files are in TV (ported from VV, initialised from TV Index.html L911-912). They are NOT imported by DrawingPlanes or North: TV v2.82.0 superseded them with 47__System__DrawingPlanes Grip ('Aim at face'), and TV v2.86.0 records them as 'still on disk and initialised, unused since v2.82.0'. (3) L39-42 lists the Lantern Designer items as outstanding, but both apps have them (SoupBuilder ViewMapFromBasis/TurnPoint, EdgeExtractor TurnPoint, ClipWorker/WorkerPool HiddenSegments). (4) L44-49 says VV lacks DevGate and the Na__Verify__ harnesses, but VV has them (ledger L867-868; added in VV v2.22.0, commit 39d361d3). (5) L11-12 points to a TV working copy under D:/WE10_--_Public-Repo_--_Live-Website, which does not exist. L29 and L34-37 also overstate the dimension splits, the style rows and the per-drawing style toggles, which landed in TV as files or data only (S11-V03).",
+   "reason": "The survey said FacePick/GizmoGrip were imported by 47/Na__DrawingPlanes__Grip__.js and 46/Na__North__PickTool__.js. Neither imports them. Their only importer is TV Index.html, and DrawingPlanes Grip's PORT NOTE says it supersedes them."
+  },
+  {
+   "id": "S11-F26",
+   "field": "evidence",
+   "new_value": "ref/ledger_index.txt has 30 'Return trip' headings, not 27. Ledger L1214-1246 ordering. No row after L87 references TV > v2.87.0 except per-scene lighting.",
+   "reason": "grep -c '^### Return trip' on the ledger returns 30."
+  },
+  {
+   "id": "S11-F27",
+   "field": "detail",
+   "new_value": "Statuses re-checked in TV source. Withdrawn: scene row builders/reorder (TV v2.68.2). Closed: R2 asset upload; Pick Face/grip (landed, then superseded in TV v2.82.0 by DrawingPlanes, so TV's copies are dead code); the whole LE; per-scene lighting (TV v2.161.0); the Lantern Designer items (present in both apps). HALF: the confirm dialog (module in TV, but no markup or CSS, so it falls back to window.confirm). HALF: the dimension config/preview splits. The files are present, but TV's Data__ (988 lines) and Editor__ (907) were never slimmed, and TV's mode controllers load Data's copy. The split ConfigState is imported only by LE MarkupBridge and is never loaded; EditorPreview has no importer. HALF: shared style rows/config state (DrawView ConfigState is wired, but StyleRows has no importer). Open: the per-drawing style toggles (record keys only; nothing calls Na__FpData__SetStyle/SetExcludeTokens or the Elevation equivalents, and TV's 2.0.0 row builders build no Styles or Exclusions rows), the Ground Floor Plan quick action, sections filed by type, pose-preserving mode release, the loader, the Add Viewport refresh fix, ThumbnailBake, the scrapbook .gitkeep and the test bytecode guard.",
+   "reason": "The survey marked the per-drawing style toggles, the dimension splits and the shared style rows CLOSED from file presence alone. Import and caller checks show the toggles never landed in TV, and the other two are only half done."
+  },
+  {
+   "id": "S11-F34",
+   "field": "detail",
+   "new_value": "Rows U (spec), Y (VCB), AI (3D zoom), AJ (spec read), AK (rotate text), AM (margin), AP (short tabs) and N ('ValeVision has the same fault') still read pending, although VV ported them (commit 66937440, v2.35.0, v2.42.0, v2.43.0, v2.41.0, v2.44.0, v2.61.0, v2.64.0). Row L is half stale: ViewportClipboard went across in VV v2.35.0, ViewportSnapMove did not. Row C 'FacePick + GizmoGrip - Not yet ported' is wrong: they were ported, then superseded by DrawingPlanes in v2.82.0. Two Phase C rows overstate TV: 'Confirm dialog, dimension config + preview splits | x' (no confirm-dialog DOM; the split was never wired) and 'Styles, exclusions, linework asset on both records | x' (no style UI). Section 4.1's folder map lacks TV 46 North -> VV 47 and any VV slot for TV 47-49. The file was last committed on 19-Sep (32767407). The 12 TV feature PLAN files also carry their own 'ValeVision port' phases.",
+   "reason": "Adds the half-stale row L, the two overstated Phase C rows, and the TV feature plans, all verified in TV."
+  },
+  {
+   "id": "S11-F38",
+   "field": "detail",
+   "new_value": "VV History__ carries two 1.3.0 entries: 14-Sep groups at L80, and 20-Sep Common fields at L49, written above 1.4.0. VV Toolbar__ lists 1.9.0 and 1.8.0 twice each. The v2.70.0 edits to ModeController and Loader are missing from their logs (S10). Some PORT NOTEs still read 'Ported from: Lantern Designer / Parity: new' (ConfigState, ModeController, TabStrip, Assets). There are 40 split-unit 'same split applies to TrueVision's copy' fields (TV made the same split in v2.55.0) and 13 'Back-port : candidate' fields. These are stale: R2AssetUpload, PerSceneLighting, SceneLightingRows, ProjectData, RenameDrawing, MaterialPreset, FacePick and GizmoGrip. These are NOT stale: StyleRows and the PlanDimensions ConfigState/EditorPreview 'the split itself' fields, because TV has the files but never wired them (S11-V03).",
+   "reason": "History's fault is a duplicate version (so it needs a renumber, not a reorder). There are 13 'candidate' fields, not about 15, and some of the fields the survey called stale are still accurate."
+  },
+  {
+   "id": "S11-F39",
+   "field": "detail",
+   "new_value": "VV restarts each ported LE module at its own 1.0.0 and keeps the TV version only in prose (VV LinkNoodle 1.0.0 = TV 1.2.0). So drift_all tv_ver and vv_ver cannot be compared, the ledger's 'same version' claims cannot be checked, and out-of-order VV logs mislead tools. The 'Source version' line the survey proposes already exists in 72 VV files, as '// - Source version: <TV module x.y.z> (<date>)': 20 in 50, 13 in 45, 9 in 46, 8 in 43, 8 in 21, 6 in 44, 6 in 42 and 2 elsewhere. They were written at the Phase 0-5 port and never refreshed. No LE file has one, and TV has none. drift_all.tsv reads that line as vv_ver (for example, VV 43/Na__FloorPlan__ModeController__.js is recorded 1.1.0, but its log tops at 1.2.2), so vv_ver is the TV origin version for those 72 rows. This is why the S11 per-module watermark had to be computed from dev-log dates.",
+   "reason": "D-S11-03 should extend an existing convention, and the Module Register must not seed VV versions from drift_all.tsv."
+  },
+  {
+   "id": "S11-F40",
+   "field": "recommendation",
+   "new_value": "Adopt B10 and the Appendix C templates. Run WP-S11-04 after every wave. The integration gate is both Na__Verify__ harnesses plus the ported tests. Add B10 items 8-9. Item 8: each wave names one owner for every other hot file (VV index.html, the loader STYLESHEETS list, LE AppConfig.json, 02__AppData/Na__AppConfig__Main.json, the ConfigState units, SheetRecords, SheetModel*, ModeController, Toolbar and the SheetTools units), so two packages never both take one of them whole in the same wave. Item 9: an import pre-check before any whole-file take (Appendix D, WP-S11-08).",
+   "reason": "The procedure serialised only the two documents. Module-level hot files and missing imports also collide or break the gate."
+  },
+  {
+   "id": "S11-F43",
+   "field": "detail",
+   "new_value": "D22 (a tab per sheet, Layout Mode switch) is superseded by TV's five-tab strip (v2.158.0). D27 (scales 20/50/100) is superseded by TV's 1:200 and site plan scales. D31 (layer type tag, top draws frontmost) is superseded by the Layers list being paint order plus reference layers (v2.106.0, v2.123.0). D28 is open (S11-F31), D11 partly open (S11-F32), and D35 is reopened by PdfFonts. D33 (per-drawing style toggles on plan and elevation records) is the reverse case: VV is ahead, because TV has the record keys but never built the editor UI (S11-V03, D-S11-10). VV plan L3 still says 'Nothing has been built yet' (parity target TV v2.19.0, L7).",
+   "reason": "D33 was missing. It is the one VV decision where TV is behind, and it decides a seam for the S02a whole-file ports."
+  },
+  {
+   "id": "S11-F44",
+   "field": "recommendation",
+   "new_value": "D-S11-08 option (a): VV renames Na__AppUtils__SnapshotHistory__.js to TV's Na__AppUtils__SnapshotHistory.js, and updates its 2 importers (44/45 __History__.js), its PORT NOTE and the Module Register. TV is the naming lead and no TV file changes. The trailing-'__' rule is not uniform anyway: Na__AppUtils__ConfirmDialog.js and Na__AppUtils__ProjectLoader.js lack it in both apps.",
+   "reason": "Option (b) edits the lead app to enforce a convention its own 03__AppUtils does not follow. Option (a) aligns VV to TV at the cost of two importers."
+  },
+  {
+   "id": "S11-F47",
+   "field": "recommendation",
+   "new_value": "WP-S11-03: add VV/80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs (Node, no dependencies), proved by deliberate break like the existing harnesses. Compute open TV versions by version citation, not by dates: a TV log entry is open unless VV's PORT NOTE or log cites that TV module version, or a later whole-file take. Dates miss cherry-picked and masked entries (MultiModel 1.3.0, ModelStage 1.1.0, Viewport3d 1.8.0, BatchOps 1.1.0). Parse the existing '- Source version: x.y.z (date)' form as well as the new one. Add an --imports mode that lists a TV file's imports missing in VV (reproducing Appendix D).",
+   "reason": "The date algorithm the survey proposes to automate is the one shown to miss real gaps."
+  },
+  {
+   "id": "S11-F49",
+   "field": "detail",
+   "new_value": "Of 261 shared drawing-system module pairs, c.1 recommends 62 port_whole_reapply_vv, 64 port_adapted, 4 keep_vv_divergence (SectionAdapter, ProjectLoader, LoadingSequence, ProjectRecord) and 131 no_action. The heaviest gaps are SheetRecords (16 newer TV entries), SheetTools__PointerDrag (15), ModeController (12), Toolbar (12), SheetTools__Keyboard (12) and ConfigState__KeyMap (11). The verifier found the table cannot be executed as written. At least ten no_action rows hide TV changes VV lacks (S11-V01: ModelStage, Viewport3d, ViewportIdentity, ViewportTitleText, SnapshotRenderer, Panel__Scrapbook, ScaleBar, BatchOps, SceneEditor, MultiModel). 44 of the 62 port_whole rows import TV modules VV does not have, and three lack a transport seam (S11-V02). Four plan/elevation rows lack the StyleRows seam, and two PlanDimensions rows must keep VV (S11-V03). For 72 files, the VV versions taken from drift_all are TV origin versions (S11-V06).",
+   "reason": "The original detail presented c.1 as ready to seed the Module Register. The verifier's code diffs and import resolution show it is not."
+  },
+  {
+   "id": "S11-F49",
+   "field": "recommendation",
+   "new_value": "Seed the Module Register from report c.1 only after applying the 'Verifier corrections to c.1' table and Appendix D. Every package diffs -w against TV HEAD and runs the import pre-check before taking a file whole. The open-versions column is computed by version citation (WP-S11-03), not by date.",
+   "reason": "The date rule, the header-only label and the missing-import blind spot each produced wrong actions."
+  }
+ ],
+ "added_findings": [
+  {
+   "id": "S11-V01",
+   "category": "drift",
+   "title": "Ten c.1 'no_action' rows hide TV changes VV lacks (the date rule is defeated)",
+   "detail": "The c.1 watermark flags only TV log entries dated after VV's newest entry. That misses cherry-picked ports, VV's own later edits, and code differences hidden in 'header-only' rows. Rows wrongly marked no_action, each checked in code: 74 ModelStage (TV 1.1.0, 14-Sep, the v2.37.0 edge-rule fingerprint at TV L150-152; VV took 1.2.0 but not 1.1.0; drift_all calls the pair header-only). 140 Viewport3d (TV 1.8.0, 21-Sep, v2.107.0 Draft mode, hidden by VV's 28-Sep v2.71.0 entry). 143/144 ViewportIdentity and ViewportTitleText (TV 1.1.0, 20-Sep, the v2.87.0 storey fact; TV devlog L7782 'one fact behind'). 149 SnapshotRenderer (TV 1.12.0 depth-fog source and 1.12.1 storey doors, hidden by VV's 28-Sep entry). 210 Panel__Scrapbook (TV 1.2.1 tab hint). 222 ScaleBar (TV 1.1.0 Na__LeParamBar__PaperMm, v2.96.0). 241/244 BatchOps and SceneEditor (TV 1.1.0 { groupName } and 1.3.0 Na__PmDev__RunImageExport, v2.92.0, hidden by VV's 28-Sep entries). 253 MultiModel (TV 1.3.0 depth bias, v2.38.1, skipped while VV took 1.3.1/1.3.2/1.4.0). Rows 57/60 (North CompassGizmo and DevMenu Editor) also wait on InteractiveOverlays (v2.84.0 half), as VV's own PORT NOTE says.",
+   "recommendation": "Apply the report's 'Verifier corrections to c.1' table before seeding the Module Register. Treat no_action as 'not yet proven': every package diffs -w against TV HEAD. Compute open TV versions by version citation, not by date (WP-S11-03).",
+   "action": "port_adapted",
+   "severity": "high",
+   "evidence": "TV 50/Na__ProjectedLinework__ModelStage__.js log 1.1.0 (L70) and L150-152 (absent in VV). TV LE/20/Na__LayoutEditor__Viewport3d__.js log 21-Sep 1.8.0 (no 'DraftMode' anywhere in VV). TV LE/25/Na__LayoutEditor__SnapshotRenderer__.js 1.12.0/1.12.1 (no Na__PlDoors__Apply in VV). TV 21/Na__PresentationMode__DevMenu__BatchOps__.js 1.1.0 and SceneEditor 1.3.0 (no RunImageExport or groupName in VV BatchOps). TV 15/Na__ModelLoader__MultiModel.js log 1.3.0 (L47) vs VV log 1.3.0 = TV 1.4.0, 1.2.3 = TV 1.3.2. Script: scratchpad/parity/work_s11v/codediff.py.",
+   "tv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js",
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js",
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__ScrapbookParametric__ScaleBar__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__Viewport3d__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js",
+    "02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js"
+   ],
+   "tv_version": "v2.37.0, v2.38.1, v2.87.0, v2.92.0, v2.94.0, v2.96.0, v2.105.0, v2.107.0",
+   "depends_on": [
+    "S02a",
+    "S02b",
+    "S04a",
+    "S04b",
+    "S06a"
+   ]
+  },
+  {
+   "id": "S11-V02",
+   "category": "wiring",
+   "title": "44 of 62 'port_whole_reapply_vv' rows import TV modules VV lacks; 3 import TV's Cloudflare client with no seam",
+   "detail": "Every import of the 62 TV files was resolved against VV, with the folder map applied (report Appendix D). 44 files import at least one module VV does not have, so taking them whole today breaks Na__Verify__Exports__ and ModuleGraph. The hubs are worst: LE ModeController (27 missing imports), SheetTools__PointerDrag (12), Toolbar (12), SheetTools__Keyboard (11), SheetTools__ContextMenu (9), Panel__ScrapbookParametric (9), Elevation DevMenu Editor (9) and FloorPlan DevMenu Editor (8). Five rows import TV transport (80__CloudflareIntegration ApiClient or LocalProjectMirror). Rows 7 (ProjectData) and 194 (SpecData__Transport) list a DIV-4 seam. Rows 111 (SheetModel__Sheets: Na__CfApi__GetLoadedProjectData), 217 (Panel__ScrapbookParametric: Na__CfApi__GetLoadedProjectData) and 246 (PresentationMode SceneData: Na__CfApi__BuildContentCdnUrl) have adaptation '-'. A swarm agent following c.1 would either fail the gate, or copy TV's worker client into VV and break VV's own transport.",
+   "recommendation": "Order the waves leaves-first (WP-S11-08). Take a TV file whole only after everything it imports exists in VV; until then port hunks or add VV-safe stubs, recorded as seams. Add transport seams to rows 111, 217 and 246 that re-point to VV's own project-data and CDN accessors (S12). Never port 80__CloudflareIntegration or LocalProjectMirror__.",
+   "action": "update_wiring",
+   "severity": "high",
+   "evidence": "scratchpad/parity/work_s11v/prereq.py and prereq.json; report Appendix D. TV LE/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js:113, LE/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js:200, 21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js:64.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetModel__Sheets__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js"
+   ],
+   "depends_on": [
+    "S09",
+    "S12",
+    "WP-S11-08"
+   ]
+  },
+  {
+   "id": "S11-V03",
+   "category": "drift",
+   "title": "Back-ports B5 calls closed landed in TV only as files: VV is ahead on dimension config, StyleRows and per-drawing styles",
+   "detail": "(1) PlanDimensions split. TV 44/ has ConfigState__ and EditorPreview__, but TV's Data__ (988 lines) still defines every getter itself, and Editor__ (907) was not slimmed either. TV's FloorPlan and Elevation mode controllers load Data's copy (L161, L179). The only importer of the split ConfigState is LE MarkupBridge (L259, line and text setup). That copy's Na__PlanDim__Config is never loaded, so it serves fallbacks (static reading, not run). EditorPreview has no importer. VV is single-sourced: its mode controllers load from ConfigState (43 L194, 46 L199), and VV Data defines no getters. (2) TV 40/Na__DrawView__StyleRows__.js has no importer or caller. (3) Per-drawing style toggles (VV D33). TV has the record keys and reads them in MaterialPreset (L250-251) and RenderPreset, but Na__FpData__SetStyle, SetExcludeTokens and the Elevation equivalents have no caller, and TV's 2.0.0 row builders build no Styles or Exclusions rows. VV builds them through StyleRows (43 RowBuilders L92-93, L367-368; 46 RowBuilders L96-97, L563-564). c.1 recommends port_whole_reapply_vv for TV's 2.0.0 editors and row builders (rows 16, 17, 46, 47) with no StyleRows seam, and no_action for Data/Editor (rows 35, 38). Taking those TV files whole would delete VV's Styles/Exclusions UI and re-duplicate VV's dimension config.",
+   "recommendation": "Record these as VV-ahead divergences in the ledger, and keep ledger rows L1219, L1220 and L1225 open. Add the seam 'keep VV's Styles and Exclusions rows' to c.1 rows 16, 17, 46 and 47, and make rows 35 and 38 keep_vv_divergence. Finish the work in TV through WP-S11-09 once D-S11-06 and D-S11-10 are decided.",
+   "action": "keep_vv_divergence",
+   "severity": "high",
+   "evidence": "TV 44__System__PlanDimensions/Na__PlanDimensions__Data__.js (988 lines, defines Na__PlanDim__GetLineSetup etc.); TV 42/Na__FloorPlan__ModeController__.js:161 and 45/Na__Elevation__ModeController__.js:179 import Load from Data; TV LE/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js:259 is the only ConfigState importer; no importer of TV 40/Na__DrawView__StyleRows__.js or 44/Na__PlanDimensions__EditorPreview__.js; VV 43/Na__FloorPlan__DevMenu__RowBuilders__.js:92-93,367-368; TV plan L565, L762-763.",
+   "tv_paths": [
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js",
+    "02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__StyleRows__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js",
+    "02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__StyleRows__.js",
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "vv_adaptation": "Keep VV's Styles and Exclusions rows and its single-sourced PlanDimensions ConfigState through every whole-file port of TV's plan/elevation editors, row builders and PlanDimensions Data/Editor.",
+   "depends_on": [
+    "D-S11-06",
+    "D-S11-10",
+    "S02a",
+    "S02b"
+   ]
+  },
+  {
+   "id": "S11-V04",
+   "category": "ledger",
+   "title": "TV's 12 feature PLAN files carry ValeVision port phases the survey never read; the site plan VV question was asked on 14-Sep",
+   "detail": "Besides the realign plan, the TV root holds 12 PLAN files and 6 NOTES files, and several carry explicit ValeVision rows: FloorAreas phase 9, open 'only once Adam has signed TrueVision off' (L268, L330); ScrapbookSystem phase 7 (L323); SheetImages 'OPEN - offer after Adam confirms' (L132); VectorTools 'offer once Adam confirms' (L337); SitePlanComposites P10; SitePlanDrawings phase 7 ('ValeVision question ~ Asked 14-Sep-2026', after Adam confirmed site plan viewports, L756-761); and status lines in DraftMode, DrawingMenus, DrawingPlanes and ElevationDepthFog. SitePlanComposites also sets a port rule (L516-521): any VV port is 'a surgical merge of the non-site-plan parts only', because whole-file copies of EdgeStyles, SheetRecords and ScaleManager import Na__SpStore__*. Consequences: v2.48.0, v2.49.0 and v2.49.1 are PENDING-SIGNOFF, not NOT-CONSIDERED (reclassified); 16 further NOT-CONSIDERED rows are parked by these plans (annotated); and each plan is the spec its porting package should follow.",
+   "recommendation": "Give the Release Watermark a 'TV plan phase' column. The scribe closes the TV plan phase rows with each port (a TV-side edit, under WP-S11-07). Each feature package reads its TV PLAN first. S04a follows the SitePlanComposites surgical-merge rule.",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "evidence": "TV root: TrueVision__PLAN__FloorAreas__.md L268/L330, __ScrapbookSystem__.md L323, __SheetImages__.md L132, __VectorTools__.md L337, __SitePlanComposites__.md L516-521 and P10 (L801), __SitePlanDrawings__.md L687/L756-761.",
+   "tv_paths": [
+    "TrueVision__PLAN__SitePlanDrawings__.md",
+    "TrueVision__PLAN__SitePlanComposites__.md",
+    "TrueVision__PLAN__FloorAreas__.md",
+    "TrueVision__PLAN__ScrapbookSystem__.md",
+    "TrueVision__PLAN__SheetImages__.md",
+    "TrueVision__PLAN__VectorTools__.md"
+   ],
+   "vv_paths": [
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "tv_version": "v2.48.0-v2.49.1, v2.89.0, v2.96.0-v2.164.0",
+   "depends_on": [
+    "D-S04a-01",
+    "WP-S11-01",
+    "WP-S11-07"
+   ]
+  },
+  {
+   "id": "S11-V05",
+   "category": "ledger",
+   "title": "v2.92.0 (one group's images) is presentation-only, unported and has no owning package",
+   "detail": "Appendix A classed v2.92.0 as NOT-CONSIDERED, owned by 'S11 (presentation)', but no WP-S11 covers it. By the brief's categories it is NOT-DRAWING, and it is now reclassified. It is still a parity gap: VV BatchOps has no { groupName } export, and VV SceneEditor has no Na__PmDev__RunImageExport. c.1 rows 241 and 244 hid it as no_action. TV devlog L7317 says: 'Not in ValeVision, and NOT yet tried by Adam.'",
+   "recommendation": "Assign it to S10 (broader UI parity) or to a small presentation package, or record Adam's decision that presentation features are outside this alignment. Port it with VV's per-scene lighting seam (VV BatchOps: 'The restore point keeps the light').",
+   "action": "needs_decision",
+   "severity": "low",
+   "evidence": "TV devlog v2.92.0 (L7224-7325); TV 21/Na__PresentationMode__DevMenu__BatchOps__.js 1.1.0; TV 21/Na__PresentationMode__DevMenu__SceneEditor.js 1.3.0.",
+   "tv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__BatchOps__.js",
+    "02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js"
+   ],
+   "tv_version": "v2.92.0",
+   "depends_on": [
+    "S10"
+   ],
+   "est_lines": 80
+  },
+  {
+   "id": "S11-V06",
+   "category": "tooling",
+   "title": "The 'Source version' PORT NOTE line already exists in 72 VV files, and drift_all.tsv reads it as VV's version",
+   "detail": "72 VV files carry '// - Source version: <TV module x.y.z> (<date>)': 20 in 50__System__ProjectedLinework, 13 in 45, 9 in 46, 8 in 43, 8 in 21, 6 in 44, 6 in 42 and 2 elsewhere. The forms vary, for example '1.0.0 (31-Aug-2026)' or 'Lantern Designer rebuild of 07-Aug-2026'. They were written at the Phase 0-5 port and never refreshed by the return-trip ports. No 51__System__LayoutEditor file has one, and TV has none. drift_all.tsv takes this value as vv_ver (VV 43/Na__FloorPlan__ModeController__.js is recorded 1.1.0, but its log tops at 1.2.2), so vv_ver for those rows is the TV origin version, not VV's own. D-S11-03 proposes a 'new' line that duplicates this convention.",
+   "recommendation": "Amend D-S11-03: extend the existing line rather than invent one (for example '- Source version: 1.1.0 (TrueVision3D v2.19.0, 07-Sep-2026)'), and refresh it on every port. WP-S11-03 parses both forms. The Module Register takes VV versions from each file's DEVELOPMENT LOG top, never from drift_all.tsv vv_ver.",
+   "action": "fix_ledger",
+   "severity": "medium",
+   "evidence": "grep -rl -e '- Source version' over VV 02__Src__AppModules returns 72 files (0 in TV); VV 43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js:49 vs log L63; ref/drift_all.tsv row Na__FloorPlan__ModeController__.js vv_ver 1.1.0.",
+   "vv_paths": [
+    "02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "ValeVision__PARITY__TrueVisionLedger__.md"
+   ],
+   "depends_on": [
+    "D-S11-03",
+    "WP-S11-03"
+   ]
+  },
+  {
+   "id": "S11-V07",
+   "category": "module_naming",
+   "title": "Moving VV Snapping__ into TV's ObjectSnap family rewrites 11 VV importers",
+   "detail": "VV LE/30__System__SheetTools/Na__LayoutEditor__Snapping__.js (1.2.0) becomes TV's LE/28__System__ObjectSnap family: ObjectSnap__ plus Search, Index, Marker, Moves, GridMoves, Sources, State, Geometry, Glyphs, Menu, Config and Styles, with MoveAnchor__ and ViewportSnapMove__ in the same folder. The ObjectSnap PORT NOTE (L61) says it 'came across from 30__System__SheetTools/Na__LayoutEditor__Snapping__.js'. 11 VV modules import Snapping__: ModeController, SheetTools, SheetTools__ContextMenu, __HitResolution, __Keyboard, __PointerDrag, DimensionTool, LeaderTool, RectangleTool, ShapeTool and Toolbar. Ledger L1128 also puts ViewportSnapMove in 20__System__Viewports, but TV holds it in LE/28__System__ObjectSnap.",
+   "recommendation": "S04b does the move in one package together with the ObjectSnap port: delete Snapping__, rewrite all 11 importers in the same commit, run both harnesses, and have the scribe record the rename in the Module Register. Schedule it before the SheetTools hub ports (WP-S11-08).",
+   "action": "rename_move",
+   "severity": "medium",
+   "evidence": "grep 'Na__LayoutEditor__Snapping__' across VV 02__Src__AppModules returns 12 files (11 importers plus the module itself); TV LE/28__System__ObjectSnap listing; TV Na__LayoutEditor__ObjectSnap__.js:61.",
+   "tv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/28__System__ObjectSnap/"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Snapping__.js"
+   ],
+   "tv_version": "v2.129.0",
+   "depends_on": [
+    "S04b",
+    "WP-S11-08"
+   ]
+  },
+  {
+   "id": "S11-V08",
+   "category": "module_naming",
+   "title": "VV's 3D-tab hotkey dictionary is part of the key-scope alignment (S11-F16 names only the LE key map)",
+   "detail": "TV v2.110.0/v2.115.0 introduced one hotkey file per kind of tab (TV 03__AppUtils/Na__AppUtils__KeyScope__.js L26-28). The three files are 02__AppData/Na__Hotkeys__3dModelTab__.json (read by 10__NavigationAndCameras/Na__Hotkeys__Manager.js, which 'acts only in the model scope'), LE/03__Core__Config/Na__Hotkeys__DrawingTabs__.json and LE/31__System__DocumentKeys/Na__Hotkeys__DocumentTabs__.json. VV's 3D-tab keys live in the VV-only 02__AppData/Na__ValeVision__HotkeysDictionary__.json, read by 03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js, index.html and 10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js. S11-F16 covers only LE KeyMappings -> Hotkeys__DrawingTabs.",
+   "recommendation": "S03a decides one of two routes and records it in the Module Register: rename and scope VV's dictionary and handler to TV's Na__Hotkeys__3dModelTab__ / Na__Hotkeys__Manager pattern, or keep VV's handler but scope it through KeyScope. Either way, VV's 3D keys must stop firing in drawing and document tabs, as TV v2.110.0 requires.",
+   "action": "needs_decision",
+   "severity": "low",
+   "evidence": "ref/tree_tv.tsv and tree_vv.tsv hotkey rows; TV Na__AppUtils__KeyScope__.js:16-28,56; grep 'HotkeysDictionary' in VV (4 files).",
+   "tv_paths": [
+    "02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json",
+    "02__Src__AppModules/10__NavigationAndCameras/Na__Hotkeys__Manager.js",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json",
+    "02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js"
+   ],
+   "tv_version": "v2.110.0, v2.115.0",
+   "depends_on": [
+    "S03a",
+    "S05a"
+   ]
+  },
+  {
+   "id": "S11-V09",
+   "category": "wiring",
+   "title": "Porting TV v2.82.0 DrawingPlanes retires VV's live FacePick, GizmoGrip and PlaneGizmo",
+   "detail": "TV's 45/Na__Elevation__FacePick__.js and __GizmoGrip__.js were back-ported from VV and are initialised from TV Index.html L910-912, but nothing uses them. TV v2.82.0 built 47__System__DrawingPlanes with its own grip and face pick (Na__PlaneGrip__StartFacePick, 'Aim at face'). Its PORT NOTE (Grip L59-61) reads: 'ValeVision: not yet ported. Supersedes Na__Elevation__GizmoGrip__ and Na__Elevation__FacePick__ there when it is.' TV v2.86.0 (devlog L7921) lists PlaneGizmo, GizmoGrip and FacePick as 'still on disk and initialised, unused since v2.82.0'. In VV these modules are live, and VV's editors hang behaviour on Pick Face: Pick Face queues a thumbnail bake (ledger L1103-1109), and Re-pick exists. The survey said DrawingPlanes and North import them; neither does.",
+   "recommendation": "S02a's DrawingPlanes package should do three things. (a) Move VV's Pick Face hooks (bake queueing, Re-pick) onto DrawingPlanes 'Aim at face'. (b) Either leave VV's FacePick/GizmoGrip/PlaneGizmo initialised but unused, as TV does, or retire them, decided once for both apps. (c) Correct ledger rows L29 and L1223 and TV plan row C.",
+   "action": "update_wiring",
+   "severity": "medium",
+   "evidence": "TV Index.html:910-912; TV 47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js:59-61,698; TV 46__System__NorthDirection/Na__North__PickTool__.js:49 ('after Na__Elevation__FacePick__', no import); TV devlog L7921; VV ledger L1103-1109.",
+   "tv_paths": [
+    "02__Src__AppModules/47__System__DrawingPlanes/Na__DrawingPlanes__Grip__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__FacePick__.js",
+    "Index.html"
+   ],
+   "vv_paths": [
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js",
+    "02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js"
+   ],
+   "tv_version": "v2.82.0, v2.86.0",
+   "depends_on": [
+    "S02a"
+   ]
+  }
+ ],
+ "added_work_packages": [
+  {
+   "id": "WP-S11-08",
+   "title": "Port-order map from the TV import graph (leaves first, hubs last)",
+   "scope": "For every TV drawing-system and LE module the swarm will take whole, compute the closure of its imports that do not exist in VV (folder map TV 40->42 ... 46->47 applied), as report Appendix D does for the 62 c.1 rows. Emit a 'blocked-by' column for the ledger's Module Register and a leaves-first wave order: a module is taken whole only after everything it imports exists in VV, and until then it gets hunks (port_adapted) or a VV-safe stub, recorded as a seam. Hubs come last: LE ModeController (27 missing imports), SheetTools__PointerDrag (12), Toolbar (12), SheetTools__Keyboard (11), SheetTools__ContextMenu (9), Panel__ScrapbookParametric (9), and the Elevation and FloorPlan DevMenu Editors (9, 8). Every import of 80__CloudflareIntegration, LocalProjectMirror__ or a NAAPPS route is flagged as a transport seam (DIV-4), never a port. Starting point: scratchpad/parity/work_s11v/prereq.py.",
+   "depends_on": [],
+   "size": "S",
+   "acceptance": [
+    "Reproduces report Appendix D for the 62 c.1 port_whole rows (44 blocked)",
+    "Every TV import targeting 80__CloudflareIntegration or LocalProjectMirror__ is labelled 'transport seam (DIV-4)'",
+    "Produces a wave order in which no package takes a file whole before its imports exist in VV",
+    "Output handed to the planner before wave 1 and to the Parity Scribe for the Module Register"
+   ],
+   "files_tv": [],
+   "files_vv": [],
+   "hot_files": [],
+   "risk": "None to either app (read-only analysis). If skipped, whole-file ports fail Na__Verify__Exports__ or tempt agents to copy TV's Cloudflare client into VV.",
+   "tests_to_port": []
+  },
+  {
+   "id": "WP-S11-09",
+   "title": "Finish TV's half-landed VV back-ports: PlanDimensions split and per-drawing Styles/Exclusions rows (TV side, Adam's approval only)",
+   "scope": "(1) PlanDimensions split. Make TV 44/Na__PlanDimensions__Data__.js and __Editor__.js import from the split ConfigState__ and EditorPreview__, and delete their duplicate getters, so one loaded config serves the plan view and the LE MarkupBridge (today MarkupBridge reads the never-loaded copy). Repoint the TV importers to ConfigState as VV does (AxisLock, ClientMode, Overlay, PlanAnnotations Toolbar, DrawView MarkupMount, FloorPlan and Elevation ModeControllers). (2) Per-drawing style toggles (VV D33). Wire 40/Na__DrawView__StyleRows__.js Styles and Exclusions rows into TV's 2.0.0 floor plan and elevation row builders, following the VV 43/46 RowBuilders pattern; or, if Adam decides otherwise under D-S11-10, record that TV drops them and VV follows.",
+   "depends_on": [
+    "D-S11-06",
+    "D-S11-10"
+   ],
+   "size": "S",
+   "acceptance": [
+    "TV Na__PlanDimensions__Data__.js no longer defines Na__PlDim__GetLineSetup and the other getters; exactly one module holds the loaded config",
+    "TV LE MarkupBridge reads configured (not fallback) dimension line and text settings",
+    "A plan's and an elevation's Styles toggle and Exclusions field change the drawing in TV as they do in VV",
+    "TV Na__Verify__ModuleGraph__ and Na__Verify__Exports__ pass",
+    "VV ledger rows L1219, L1220 and L1225 closed with the TV version"
+   ],
+   "files_tv": [
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Data__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Editor__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__ConfigState__.js",
+    "02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__EditorPreview__.js",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__DevMenu__RowBuilders__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__DevMenu__RowBuilders__.js"
+   ],
+   "files_vv": [],
+   "hot_files": [
+    "TrueVision__DEVLOG__.md",
+    "02__Src__AppModules/42__System__FloorPlanViews/Na__FloorPlan__ModeController__.js",
+    "02__Src__AppModules/45__System__ElevationViews/Na__Elevation__ModeController__.js",
+    "02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js"
+   ],
+   "risk": "Edits the lead app and may race other TV sessions; re-read the files before writing. Behaviour in TV changes only where it was silently wrong (fallback dimension settings in the LE). TV's service worker token needs a bump if exports move.",
+   "tests_to_port": []
+  }
+ ],
+ "added_decisions": [
+  {
+   "id": "D-S11-10",
+   "question": "Per-drawing style toggles (VV decision D33). VV edits each plan's and elevation's Styles and Exclusions rows in the Dev editors. TV has the record keys and reads them, but has no UI to set them (its StyleRows module is dead and its 2.0.0 row builders build no such rows). For an identical experience, which way?",
+   "options": "(a) back-port the rows to TV's 2.0.0 row builders, which TV plan L565 always intended (WP-S11-09); (b) VV drops its rows to match TV; (c) keep VV ahead as a recorded divergence",
+   "recommendation": "(a), as a TV package under D-S11-06. Until then, (c): every whole-file port of TV's plan and elevation editors and row builders re-applies VV's rows as a seam.",
+   "blocks": [
+    "S02a whole-file ports of 42/43 and 45/46 DevMenu Editor and RowBuilders",
+    "WP-S11-09"
+   ]
+  }
+ ],
+ "refuted_work_packages": [],
+ "coverage_gaps_closed": [
+  "TV root feature PLAN files (12) and NOTES files (6), which carry explicit ValeVision port phases, the 14-Sep site plan question, and the SitePlanComposites surgical-merge rule",
+  "Code-level diff of every c.1 no_action row (comments stripped, folder renumbering normalised): ten rows hide TV changes VV lacks",
+  "Import resolution of all 62 c.1 port_whole_reapply_vv TV files against VV: 44 blocked, 3 with an un-seamed TV Cloudflare dependency (report Appendix D)",
+  "Wiring checks of B5's 'closed' back-ports in TV (importers and callers of StyleRows, the PlanDimensions split, FacePick/GizmoGrip, the style setters)",
+  "Existing VV 'Source version' PORT NOTE lines (72 files), and how drift_all.tsv parses them",
+  "VV-only 3D-tab hotkey dictionary and handler vs TV's per-tab hotkey files",
+  "Re-run of both VV Na__Verify__ harnesses (415 files PASS; 517 modules, 0 failures), confirming that dynamic import() of the lazy editor is in the graph",
+  "All 172 Appendix A devlog line references and dates re-validated (0 mismatches)"
+ ],
+ "notes": "The S11 survey was strong on the release backbone. Its counts, line references, watermark (TV v2.85.0 high / v2.28.0 low), ledger-hygiene findings, service-worker evidence and harness baseline all checked out, and every 'absent in VV' identifier I probed (about 110) is genuinely absent. Its weak points come from reading files' presence and dates instead of wiring.\n\n1. B5 marks three back-ports CLOSED (dimension split, shared style rows, per-drawing style toggles) that landed in TV only as files or data. VV is ahead there, and c.1's whole-file recommendations for the plan/elevation editors, row builders and PlanDimensions Data/Editor would delete VV behaviour (S11-V03).\n2. The c.1 module table is not executable as written. Ten no_action rows hide TV changes VV lacks (cherry-picked ports, masking by VV's 28-Sep v2.71.0 edits, header-only rows with code; S11-V01). 44 of the 62 port_whole rows import TV modules VV does not have, three of them TV's Cloudflare client with no transport seam (S11-V02, Appendix D). WP-S11-08 should run before wave 1 to order the waves leaves-first, with hub files last.\n3. TV's FacePick/GizmoGrip are not imported by DrawingPlanes or North. DrawingPlanes superseded them in v2.82.0, and its port retires VV's live modules (S11-V09).\n4. The survey did not read TV's 12 feature PLAN files. They record that the site plan VV question was asked on 14-Sep (v2.48.0/v2.49.0/v2.49.1 reclassified to PENDING-SIGNOFF), and they park 16 more releases.\n\nCorrected tally: 55/6/17/79/6/8/4/2. Smaller fixes: 12 Statement Writer releases (not 13), 30 return-trip sections (not 27), 14 TV '50/' PENDING notes (not 9), History's duplicate 1.3.0, the existing VV 'Source version' convention (72 files) that drift_all misreads as vv_ver, and D-S11-08 flipped to option (a).\n\nNothing was refuted outright. The report was edited in place (VERIFIER notes, a c.1 corrections table, Appendix D, a Verification section); the pre-verifier copy is at scratchpad/parity/work_s11v/S11__report_before_verifier.md.\n\nTo watch: the TV MarkupBridge-reads-fallbacks consequence is from static reading only. About 40 drifted no_action rows still show code differences I did not attribute, so each package must diff -w against TV HEAD."
+}

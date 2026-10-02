@@ -1,0 +1,33 @@
+esbuild version       : 0.17.19
+errors / warnings     : 0 / 0
+bundle bytes          : 118053
+inputs                : 15
+    src/CloudflareHelper__Cors__.js
+    src/handlers/CloudflareHandler__ProjectEditor__.js
+    src/CloudflareHelper__MasterConfigR2__.js
+    src/CloudflareHelper__MasterIndexR2__.js
+    src/CloudflareHelper__BuildManifest__.js
+    src/handlers/CloudflareHandler__ProjectVisibility__.js
+    src/handlers/CloudflareHandler__ProjectRename__.js
+    src/handlers/CloudflareHandler__ProjectDelete__.js
+    src/handlers/CloudflareHandler__ProjectAsset__.js
+    src/handlers/CloudflareHandler__DrawingNotes__.js
+    ../../ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json
+    src/CloudflareHelper__PathGuards__.js
+    src/handlers/CloudflareHandler__ProjectMerge__.js
+    src/handlers/CloudflareHandler__ProjectFiles__.js
+    src/index.js
+config bundled from   : ../../ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json
+bundle names the list : true
+bundle has no JSON import left: true
+  PASS  bundle: health reports 1.6.0 and the route list
+  PASS  bundle: merge-keys sets a listed key
+  PASS  bundle: merge-keys refuses a pipeline key
+  PASS  bundle: merge-keys refuses an unlisted key inside a listed prefix
+  PASS  bundle: files write and read
+  PASS  bundle: "/2026/delete" is refused
+  PASS  bundle: unknown route answers a JSON 404 without the key
+  PASS  bundle: the build manifest was never written
+bundle smoke: 8/8
+
+exit 0

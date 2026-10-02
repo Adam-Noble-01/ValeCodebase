@@ -1,0 +1,29 @@
+
+W1-14 acceptance
+
+  1. Exports: VV = TrueVision (pin b2aa9151)
+  PASS  Na__LayoutEditor__ViewportRotation__.js: 15 exports, imports []
+  PASS  Na__LayoutEditor__VectorTools__Curves__.js: 14 exports, imports []
+  PASS  Na__LayoutEditor__DraftMode__State__.js: 3 exports, imports []
+  PASS  Na__LayoutEditor__DrawingGrid__State__.js: 14 exports, imports []
+  PASS  Na__LayoutEditor__OrthoMode__State__.js: 6 exports, imports []
+  PASS  Na__LayoutEditor__VectorQuality__.js: 11 exports, imports [Na__LeCfg__GetVectorQualitySetup]
+
+  2. Inert on import (all six VV modules, fresh)
+  PASS  no storage read or write, no body class, no listener, no event
+
+  3. Off with no UI present (a browser that never switched them)
+  PASS  Ortho is off
+  PASS  so only a held Shift holds the axis, as it always has
+  PASS  Grid Snap is off and the grid is not shown
+  PASS  a grid snap leaves a point where it is (a new object)
+  PASS  Draft is off
+  PASS  reading them wrote nothing, announced nothing and drew nothing
+  PASS  private mode (storage throws): Ortho off, Grid Snap off, grid hidden
+
+  4. Vector quality, unwired
+  PASS  nothing is held until a caller asks
+  PASS  the level reads the config default, medium
+  PASS  and reading it took no hold and sent no event
+
+Every check passed.

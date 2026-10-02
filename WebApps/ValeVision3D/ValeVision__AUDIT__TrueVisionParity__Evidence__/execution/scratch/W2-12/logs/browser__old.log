@@ -1,0 +1,7 @@
+PASS P.1 every export without renderFrame ran (one tile each, section overlay once per tile on the 2D ones)
+
+mode    : OLD (pre-image TiledRenderer); served 41 files; aborted 0
+hashes  : {"sheetFogOff1":"e9634f75:256000","sheetFogOff4":"e9634f75:256000","sheetNoSrc1":"e9634f75:256000","drawingFogOn1":"82c5b975:256000","drawingFogOn4":"82c5b975:256000","threeD1":"cf3a3c5:256000","threeD4":"cf3a3c5:256000"}
+info    : {"mode":"OLD (pre-image TiledRenderer)"}
+console : 11 line(s), 0 error(s)
+RESULT: 1/1 PASS

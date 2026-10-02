@@ -1,0 +1,45 @@
+/* =============================================================================
+   VALEVISION3D - LAYOUT EDITOR - PATTERNS PANEL
+   =============================================================================
+   The hatch library tiles in the right column. Loaded by
+   Na__LayoutEditor__Panel__Patterns__ from its own folder, as the Custom
+   Scrapbook panel loads its stylesheet.
+
+   PORT NOTE:
+   - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/36__System__HatchPatternTools/Na__LayoutEditor__Styles__Patterns__.css
+   - Source version: none of its own - the sheet carries no version or log; taken as
+                     TrueVision3D created it with the Patterns panel (20-Sep-2026, commit
+                     62dade1c, the site plan composites work TrueVision's devlog first names in
+                     v2.89.0) and left it to the pin (read at b2aa9151, no later change)
+   - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-29}}, linked only by
+                     Na__LayoutEditor__Panel__Patterns__'s own <link>, as in TrueVision (nothing
+                     to register in the loader list or the CSS index). Named as not yet
+                     confirmed by Adam in TrueVision (DR-01 (c)).
+   - Parity        : verbatim (every rule and comment is TrueVision's; the banner and this note
+                     are the only differences)
+   - Divergences   :
+     - Banner reads ValeVision3D.
+   - Legacy        : the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so
+                     the Source version line names the change that created it (R6 OC-07).
+   - Back-port     : none.
+   ============================================================================= */
+
+.na-le-hatch-library            { display: block; margin-top: 8px; }
+
+.na-le-hatch-pack               { margin-bottom: 10px; }
+.na-le-hatch-pack__title        { margin: 0 0 4px; font-size: 10px; font-weight: 600;
+                                  text-transform: uppercase; letter-spacing: 0.04em;
+                                  color: var(--na-le-text-muted, #6b7280); }
+.na-le-hatch-pack__tiles        { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+
+.na-le-hatch-tile               { display: block; width: 100%; padding: 0; cursor: pointer;
+                                  background: var(--na-le-surface, #fff);
+                                  border: 1px solid var(--na-le-border, #d7dbe0); border-radius: 3px;
+                                  text-align: left; overflow: hidden; }
+.na-le-hatch-tile:hover         { border-color: var(--na-le-accent, #2f6b33); }
+.na-le-hatch-tile__art          { display: block; line-height: 0; background: #f7f8f9; }
+.na-le-hatch-tile__art svg      { display: block; width: 100%; height: auto; }
+.na-le-hatch-tile__name         { display: block; padding: 3px 5px; font-size: 10px;
+                                  color: var(--na-le-text, #1f2933);
+                                  border-top: 1px solid var(--na-le-border, #d7dbe0);
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

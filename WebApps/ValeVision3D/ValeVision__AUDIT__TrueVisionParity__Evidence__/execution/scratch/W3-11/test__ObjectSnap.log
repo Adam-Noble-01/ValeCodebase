@@ -1,0 +1,122 @@
+ValeVision3D - object snap: the running modes, what a hit belongs to, and the grips' check
+
+  The maths (the real Geometry unit)
+  PASS  a perpendicular from (4, 7) lands on the line at (4, 0), four tenths of the way along
+  PASS  ...and one from beyond the end lands on the LINE, off the SEGMENT (t above 1)
+  PASS  a segment with no length has no perpendicular
+  PASS  the nearest point on a segment is its end when the foot runs off it
+  PASS  two diagonals cross in the middle
+  PASS  a line that STOPS on another touches it, and that counts (a T junction)
+  PASS  parallel lines never cross, overlapping or not
+  PASS  lines that would cross beyond their ends do not
+  PASS  a rectangle's centre of area is its middle
+  PASS  an L-shaped room balances off the middle of its box, inside the L
+  PASS  three points in a line have no area: the middle of the points
+  PASS  a level line is filed under every square it runs through
+  PASS  a plumb one likewise
+  PASS  a line that only CLIPS the corner of a square is still filed under it (sampling along it misses this)
+  PASS  a shallow diagonal names the squares it passes through and no others
+  PASS  a steeper one: it climbs into the next row BEFORE it leaves the first column
+
+  The switches (the real State unit)
+  PASS  object snap starts on, as it always has
+  PASS  Endpoint, Midpoint, Intersection, Perpendicular and Centre start on; Nearest starts OFF
+  PASS  every kind of object starts in reach
+  PASS  a mode and a target switched are remembered in this browser
+  PASS  a config's defaults never override what the browser has chosen - only what it has not
+  PASS  a name that is not a mode is refused
+  PASS  F3 keeps the storage key it has always had
+
+  The search (the real State, Geometry, Index, Sources and Search units)
+
+    Endpoint and Midpoint, and what each hit belongs to
+  PASS  the end of a wall line of the drawing: a square, the viewports' purple
+  PASS  the corner of a vector: a square, the vectors' blue
+  PASS  the middle of a vector's edge: a triangle
+  PASS  the corner of a text box: the text's orange - text could not be snapped to before
+  PASS  ...and the middle of its box: a centre
+  PASS  a point a dimension measures: the dimensions' red
+  PASS  a corner of the sheet's border: the paper's slate
+  PASS  a line hidden by the frame offers nothing: its end is past the viewport's edge
+  PASS  ...but where the frame CUTS it is not an endpoint either
+  PASS  hidden lines stay out of it until the config asks for them
+
+    Intersection
+  PASS  the wall and the jamb cross at (200, 150) and share no endpoint: a cross, purple
+  PASS  a construction line crossing the wall: neither search alone has both lines; the crossing is the sheet's blue
+  PASS  where a crossing and an endpoint coincide, the endpoint's written-down coordinates win
+
+    The drawing outranks a vector's copy of it
+  PASS  a vector's vertex exactly on a corner of the drawing: the DRAWING's point is taken, and the marker is purple
+  PASS  ...and one a hair off it (0.04 mm): still the drawing's corner, so the new point lands ON the wall, not on the copy
+  PASS  ...but a vertex the drawing has no point near is the vector's own, and blue says so
+
+    Perpendicular
+  PASS  with nothing to be square FROM there is no perpendicular: the first point of a line
+  PASS  a line drawn from (170, 110) meets the wall square on at (170, 150): a boxed right angle
+  PASS  ...from anywhere: the foot is under the point it is drawn from, not under the cursor
+  PASS  a foot that would land OFF the end of the wall is refused
+  PASS  a vertex dragged between two neighbours may be square from EITHER of them
+  PASS  square on to a VECTOR works the same: the room's top edge, from a point above it
+  PASS  a corner beside the foot still wins: an endpoint outweighs a perpendicular
+
+    Centre, and the Vector Tools' circles
+  PASS  the centre of area of a closed vector: a circle
+  PASS  a circle offers its centre
+  PASS  ...and its four quadrant points, as endpoints
+  PASS  ...but NOT a vertex every few millimetres round it (48 of them here)
+  PASS  without the curve hint the same points are an ordinary polygon, and every vertex snaps
+
+    Nearest
+  PASS  off by default: a cursor beside the wall, away from any point, finds nothing
+  PASS  switched on: the closest point on the wall, an hourglass
+  PASS  ...but only when no other mode has a point in reach: an endpoint beside it still wins
+
+    Switching modes and targets
+  PASS  Midpoint off: the middle of an edge finds nothing
+  PASS  Text out of reach: its corner finds nothing, while the vector beside it still snaps
+  PASS  Viewport linework out of reach: the wall's end finds nothing, and there is nothing to carry the viewport by
+  PASS  a viewport is carried by a point of its OWN linework
+  PASS  the config's Endpoints switch still rules the mode out altogether, as before there was a menu
+  PASS  F3 off: nothing at all
+
+    What is left out
+  PASS  a vertex in motion never snaps to itself, nor to the middles of the two edges it drags
+  PASS  ...but the rest of its own vector is still there to close onto
+  PASS  a vector moved whole leaves all of itself out
+  PASS  a carried viewport leaves its own linework out
+  PASS  a text item in a moved selection leaves itself out
+
+    Snap, the marker and the grid
+  PASS  Snap hands back the point, its kind and what it belongs to, and shows that marker
+  PASS  nothing in reach: the point is its own and the marker goes
+  PASS  Grid Snap on: the grid answers where no object snap reaches, in the grid's own colour
+  PASS  ...unless the caller keeps steps of its own ({ grid : false })
+
+    Overspill note regions: on the paper, like the notes margin
+  PASS  a region's corner: a square, the paper's slate
+  PASS  ...the middle of a side: a triangle
+  PASS  ...its centre: a circle
+  PASS  ...and square on to a side from a point above it: a boxed right angle
+  PASS  a region being dragged never snaps to itself
+  PASS  one hanging off the page offers where it is DRAWN, moved onto the page
+  PASS  regions switched off offer nothing, kept or not
+  PASS  ...nor does a sheet that is not the one on screen
+
+  Is a vertex ON the drawing (OnLinework): green, a green ring, or blue
+  PASS  exactly on the end of the wall: a point (solid green)
+  PASS  exactly on its middle: a point
+  PASS  where the wall and the jamb cross, which is no endpoint of either: still a point
+  PASS  somewhere along the wall, at no particular place: a line (a green ring)
+  PASS  a fraction of a millimetre off the wall - it only LOOKS as if it is on it: free (blue)
+  PASS  on a vector, but not on the drawing: free. The check is about the DRAWING
+  PASS  F3 and the running modes do not come into it: it is a check, not a snap
+  PASS  a hidden viewport is not there to be on
+  PASS  SegmentsInBox hands a trim or an extend the lines of the drawing a box touches, each once
+
+  The glyphs (the real Glyphs unit)
+  PASS  every kind of snap has a marker of its own
+  PASS  every marker is drawn in currentColor over a white casing, so the stylesheet owns its colour
+  PASS  every mode the menu lists has a picture, and the grid and the inferred line (which it does not list) have none
+
+  Every check passed.

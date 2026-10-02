@@ -1,0 +1,11 @@
+ABSENT                                          - 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftMaths__.js
+ABSENT                                          - 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DrawingUsage__.js
+ABSENT                                          - 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js
+ABSENT                                          - 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__DraftGuard__.js
+5ca7f3a63a4a99a25754246b742fd8adb86b5dac    12359 LF    02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js
+1fc5b1368eb87bff688585821d8419e19ff3c5ea    20259 LF    02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+556ad970b54d22282ee8e49c84de422768cc49e8     5630 LF    02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css
+e8b7ff1d1327f2c6c1dc3d6b99a28902e04d179e    23007 CRLF  02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js
+370a28cf39b949287e07d5562c6bbbb5cf6a7acc    40300 CRLF  03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css
+c074af21d992a27c005debcfe6115ff358d3a48a     5961 CRLF  03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
+ABSENT                                          - 80__Testing__PrototypeEnvironment/Na__Test__DrawingDrafts__.test.mjs

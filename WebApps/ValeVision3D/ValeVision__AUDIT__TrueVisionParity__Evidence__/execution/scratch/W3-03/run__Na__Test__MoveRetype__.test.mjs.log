@@ -1,0 +1,56 @@
+ValeVision3D - the Measurements box during a move, and the retype
+
+  The box reads a whole-object move on every step
+  PASS  a vector moved whole: refreshed at every step, reading 5, 10, 15
+  PASS  a note moved: refreshed at every step
+  PASS  a leader moved whole: refreshed at every step
+  PASS  a dimension moved whole: refreshed at every step
+  PASS  a press that is not yet a drag reads nothing, not the distance to the last hover
+
+  A vector moved whole along a held axis stays on it through a snap
+  PASS  Shift held across: the snap gives x, y stays on the axis (it went 1.2 mm off)
+  PASS  ...and the ring sits where the corner lands on the line
+  PASS  free (no Shift, no Ortho): the snap still wins outright
+  PASS  Shift held down the paper: the snap gives y, x stays
+  PASS  no snap in reach: the grid is handed the held axis, or none
+
+  The last move stays on offer to a typed value
+  PASS  let go by the mouse: the release announces once
+  PASS  ...and the move stays in the box, reading 13
+  PASS  a value typed next lands it that far from where it STARTED
+  PASS  another value replaces it (not added to it)
+  PASS  a minus sign runs back the other way from the start
+  PASS  the box reads the distance alone
+  PASS  every value was its own announcement (its own undo step)
+  PASS  Grid Snap on: a typed value is exact, the grid is never asked
+  PASS  another selection: the move is no longer on offer
+  PASS  ...back to the same one, untouched: on offer again
+  PASS  anything that moves it since ends the run
+  PASS  another sheet ends it
+  PASS  a drag in flight puts it to sleep
+  PASS  ...and it wakes once the drag is gone, if it moved nothing
+
+  A first value typed while the drag is held, then more
+  PASS  the first value, mouse still down: exact along the drag
+  PASS  the second: from where it started, along the same line
+  PASS  the pointer wandering after the value moves nothing
+  PASS  a click on it that moves nothing keeps the offer
+  PASS  a minus first value: 5 back up the drag
+  PASS  ...and a value after it runs the way the drag went
+
+  A selection moved as one, and a viewport frame
+  PASS  every member lands again from its own start
+  PASS  ...announced once for the lot, each time
+  PASS  a frame let go: reads 10, and is no move of the whole-object kind
+  PASS  a value lands the frame that far from where it started, same size
+
+  A vertex and a dimension end let go by the mouse
+  PASS  the vertex gets the record a typed value writes
+  PASS  ...and the last whole move is forgotten: one record at a time
+  PASS  a typed length then moves it from where it started
+  PASS  a vertex a minus value finished keeps its typed line
+  PASS  a dimension end gets its record: the fixed end, the end let go
+  PASS  the box reads the span it was let go at
+  PASS  a typed span then sets it, the other end fixed
+
+  Every check passed.

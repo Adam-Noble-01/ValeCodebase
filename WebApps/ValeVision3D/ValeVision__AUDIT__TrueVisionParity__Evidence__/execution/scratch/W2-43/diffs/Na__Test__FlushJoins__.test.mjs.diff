@@ -1,0 +1,46 @@
+--- TV@b2aa9151/80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs
++++ VV/80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - TEST - FLUSH JOINS (a seam between two flush faces is not a line)
++// VALEVISION3D - TEST - FLUSH JOINS (a seam between two flush faces is not a line)
+ // =============================================================================
+ //
+ // FILE       : Na__Test__FlushJoins__.test.mjs
+@@ -27,13 +27,26 @@
+ //   the 1e-6 the pipeline lifts every edge.
+ //
+ // WHAT IT GUARDS:
+-// - THE TOLERANCE (23-Sep-2026, v2.159.0). RB05's first floor walls start
++// - THE TOLERANCE (23-Sep-2026, v2.159.0). A measured house's first floor walls start
+ //   0.0000134 m above the slab they stand on - a seam SketchUp itself (0.0254 mm
+ //   tolerance) cannot tell from flush - and at a 1e-6 line tolerance that
+ //   seam drew a line across every elevation. It is cut at 0.1 mm.
+ // - THE OTHER SIDE OF THE RULE. A 1 mm step is a step; an outline against
+ //   nothing keeps its line; a face 1 mm in front of the plane is another
+ //   surface; a join over half the edge leaves the other half.
++//
++// -----------------------------------------------------------------------------
++//
++// PORT NOTE:
++// - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__FlushJoins__.test.mjs
++// - Source version: 1.0.0 (TrueVision3D v2.159.0, 23-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-43}}, with the module it proves
++// - Parity        : verbatim - every check is TrueVision's, run against this app's own FlushJoins module
++// - Divergences   :
++//   - Banner reads ValeVision3D.
++//   - The fixture keeps every number but no longer names the TrueVision project it was measured
++//     on (WHAT IT GUARDS and the 13.4 micron case's label; S02b-F49).
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+@@ -134,7 +147,7 @@
+ {
+   const edges = seam(0, 10, 3.9)
+   const got   = cut(soup(lower.concat(rect(0, 10, 3.9 + 0.0000134, 7, 0))), edges)
+-  check('the upper face 13.4 microns up (RB05\'s first floor wall): still a flush join, cut whole', [ got.Count, got.CutEdges ], [ 0, 1 ])
++  check('the upper face 13.4 microns up (the measured first floor wall): still a flush join, cut whole', [ got.Count, got.CutEdges ], [ 0, 1 ])
+ }
+ {
+   const edges = seam(0, 10, 3.9)

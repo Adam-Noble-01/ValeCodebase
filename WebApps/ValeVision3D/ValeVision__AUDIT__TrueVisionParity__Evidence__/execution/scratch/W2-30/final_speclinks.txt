@@ -1,0 +1,21 @@
+
+W2-30 - specification links: the broken-link and note resolvers (root D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+
+  PASS  before Initialize nothing is registered: not broken, no note
+  PASS  a linked bubble before the specification loads is not broken (pending)
+[ValeVision3D] Layout Editor: project specification loaded from the cloud (2 note(s)).
+  PASS  loaded: a bubble linked to a note that exists is not broken
+  PASS  NoteFor(leader) answers { noteId, code, title, linked, locate }
+  PASS  locate() dispatches na-layouteditor-spec-locate with the note and the leader
+  PASS  ...which is the barrel's LOCATE_EVENT
+  PASS  an unlinked bubble reading a note's code: linked false
+  PASS  a bubble reading a code no note has: no note
+  PASS  a linked bubble on screen: no red halo
+  PASS  the note is deleted: the bubble linked to it reads broken (IsBroken)
+  PASS  ...and has no note
+  PASS  ...on screen (showBrokenHalos) it draws one red halo
+  PASS  ...for a PDF (no options) it draws none
+  PASS  undo brings the note back: not broken
+
+  ALL PASSED
+

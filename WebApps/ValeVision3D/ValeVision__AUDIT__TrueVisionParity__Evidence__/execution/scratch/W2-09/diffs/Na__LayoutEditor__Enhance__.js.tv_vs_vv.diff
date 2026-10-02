@@ -1,0 +1,29 @@
+--- TV@b2aa9151
++++ VV-live
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - ENHANCE WHITECARD
++// VALEVISION3D - LAYOUT EDITOR - ENHANCE WHITECARD
+@@ -57,5 +57,15 @@
+-// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__Enhance__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim
+-// - Divergences   : Console prefix, header and folder numbers only.
+-// - Back-port     : n/a (this IS the back-port)
++// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5: the image export's
++//                   levels and high-pass sharpen stack from 30__System__ImageExport/
++//                   Na__ImageExport__PostProcessEffects__Pipeline.js, in a fixed two-effect order with the
++//                   Layout Editor config's parameters); TrueVision3D took it verbatim as its 1.0.0 for its
++//                   v2.21.0 re-alignment (10-Sep-2026) and authored 1.1.0 there; since ported back whole
++//                   from TrueVision3D 1.1.0 (HEAD b2aa9151)
++// - Source version: 1.1.0 (TrueVision3D v2.93.0, 20-Sep-2026; read at b2aa9151)
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-09}}, the whole file. This app's copy
++//                   before it was its own 1.0.0. TrueVision's v2.93.0 entry says NOT signed off by
++//                   Adam; it comes across under DR-01 (c) and is named so.
++// - Parity        : verbatim (the code is TrueVision 1.1.0's; the banner, the console prefix and this
++//                   note are the only differences)
++// - Divergences   :
++//   - Banner and console prefix read ValeVision3D.
++// - Back-port     : none.
+@@ -153 +163 @@
+-            console.warn('[TrueVision3D LayoutEditor] Enhance Whitecard pass failed; the plain render is used:', error);
++            console.warn('[ValeVision3D LayoutEditor] Enhance Whitecard pass failed; the plain render is used:', error);

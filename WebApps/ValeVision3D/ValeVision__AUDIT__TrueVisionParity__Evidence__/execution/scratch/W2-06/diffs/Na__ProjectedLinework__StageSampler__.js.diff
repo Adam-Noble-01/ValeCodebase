@@ -1,0 +1,45 @@
+--- TV@b2aa9151/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js
++++ VV/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js
+@@ -1,5 +1,5 @@
+ // =============================================================================
+-// TRUEVISION3D - PROJECTED LINEWORK - STAGE SAMPLER
++// VALEVISION3D - PROJECTED LINEWORK - STAGE SAMPLER
+ // =============================================================================
+ //
+ // FILE       : Na__ProjectedLinework__StageSampler__.js
+@@ -47,12 +47,20 @@
+ // -----------------------------------------------------------------------------
+ //
+ // PORT NOTE:
+-// - Ported from   : ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__StageSampler__.js
+-// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+-// - Parity        : verbatim, bar 1.1.0
+-// - Divergences   : Console prefix, header and folder numbers; the posed door
+-//                   panels of 1.1.0, authored here first.
+-// - Back-port     : 1.1.0 PENDING to ValeVision3D, on Adam's sign-off.
++// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
++//                   Designer's VghLantern__ProjectedEdges__StageSampler__.mjs of 07-Aug-2026;
++//                   ValeVision's own 1.1.0 (13-Sep-2026) took TrueVision's owner table);
++//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
++// - Source version: 1.2.0 (TrueVision3D v2.98.0, 21-Sep-2026; read at b2aa9151) - the module log dates
++//                   1.2.0 20-Sep-2026; it shipped in the commits of v2.95.0 and v2.98.0 and no TrueVision
++//                   devlog entry names it. Its 1.1.0 is TrueVision3D v2.42.0 (posed door panels).
++// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W2-06}} (folder 50 to TrueVision HEAD)
++// - Parity        : verbatim
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - The name-matching comment's example category reads ValeVision__MainBuildingModel__Existing
++//     (TrueVision__ in TrueVision): a runtime category key carries the app's token (K2 K3).
++// - Back-port     : none.
+ //
+ // -----------------------------------------------------------------------------
+ //
+@@ -150,7 +158,7 @@
+     // name has to match it. Substrings are right for the tokens a drawing record
+     // carries, which are written by hand and meant loosely ("furniture"). They
+     // are wrong for anything naming a model category in full, because the
+-    // category names nest: "TrueVision__MainBuildingModel__Existing" is a
++    // category names nest: "ValeVision__MainBuildingModel__Existing" is a
+     // substring of nine longer keys, and a viewport asking to hide the existing
+     // building would lose its walls, roofs and windows as well. The Layout
+     // Editor's Model Layers panel emits '=' tokens for that reason.

@@ -1,0 +1,55 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__ViewportTitleText__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - viewport title text
+  PASS  PS02: all six elevation titles come out as Adam lettered them
+  PASS  PS02: every one of them is resolved, with nothing missing
+  PASS  a plan is its qualifier and its drawing's own name
+  PASS  a section is named by its record, not by a compass word
+  PASS  an elevation is named by the compass, not by its record's name
+  PASS  without capitals it is written in the words' own case
+  PASS  north not set: the direction is a placeholder in double braces
+  PASS  north not set: unresolved, and it says what is missing
+  PASS  tied to nothing: {{DRAWING}}, with no qualifier in front of it
+  PASS  tied to nothing: a forced qualifier still does not qualify a placeholder
+  PASS  a 2D viewport whose drawing has gone reads {{DRAWING}} too
+  PASS  HasPlaceholder finds one, and is not fooled by single braces
+  PASS  a typed viewport name is the subject, and still gets its qualifier
+  PASS  a typed name needs no north: nothing is missing
+  PASS  a typed name that opens with the qualifier is not qualified twice
+  PASS  a typed name that opens with the OTHER qualifier is left saying what was typed
+  PASS  a name that merely contains the word is still qualified
+  PASS  a site plan has no phase, so no qualifier
+  PASS  phase mode none leaves the qualifier out
+  PASS  phase mode proposed overrides what the model says
+  PASS  an unknown phase writes no qualifier
+  PASS  a bad phase mode reads as automatic
+  PASS  a typed title replaces everything, trimmed, and is not recased
+  PASS  a blank override is no override
+  PASS  configured words are used
+  PASS  a configured placeholder word is used
+  PASS  PS02 D21: both plan titles come out as Adam lettered them, typed viewport names and all
+  PASS  PS02 D21: resolved, and the subject is said to have come from the storey
+  PASS  an unnamed plan viewport is its storey, not its record's "Floor Plan 1"
+  PASS  a roof plan is a ROOF PLAN, never a roof floor plan
+  PASS  a plan with no storey is its record's name, as it always was
+  PASS  phase mode none leaves a storey title bare
+  PASS  without capitals a storey title is in its own case
+  PASS  a typed name with words of its own is kept exactly as typed
+  PASS  PS02 D21 reassigned to the roof: the typed "Proposed Floor Plan" still gives way, "Floor" saying nothing
+  PASS  a typed name that DISAGREES with the storey is kept: "Ground Floor Plan" on a roof plan
+  PASS  the words that only say "a plan" come from the config too
+  PASS  a numbered typed name is kept: "Floor Plan 2"
+  PASS  a typed name that is the storey, or less, gives way to it
+  PASS  "Proposed Floor Plan" typed on a viewport of the EXISTING model: the model is believed
+  PASS  the opening qualifier is recognised in the configured words too
+  PASS  SaysNoMore, asked directly
+  PASS  an elevation that somehow carries a storey is still named by the compass
+  PASS  a typed name on an elevation still always wins
+  PASS  a site plan and a section ignore a storey
+  PASS  Compose says which fact the subject came from
+  PASS  bad facts become their empty values and text is tidied to one line
+  PASS  facts with no storey at all have an empty one
+
+  PASS - every check passed.

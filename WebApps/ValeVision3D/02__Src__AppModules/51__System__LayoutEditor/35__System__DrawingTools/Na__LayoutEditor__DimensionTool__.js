@@ -23,63 +23,133 @@
 //   or releasing it redraws at once. Without it, two points at different
 //   heights - the eaves of one wall and the foot of the next - could only be
 //   given a sloping dimension.
+// - ORTHO MODE (F8) IS A LATCHED SHIFT. With it on, every new dimension is
+//   ortho with nothing held - AutoCAD's DIMLINEAR - and holding Shift gives
+//   an aligned one instead, AutoCAD's Shift override (the rule is Ortho XOR
+//   Shift, Na__LayoutEditor__OrthoMode__State__). The two measured points
+//   are picked exactly as before: neither Shift nor Ortho bends the span.
 // - INFERENCE. While the line moves, a parallel dimension nearby pulls it
 //   onto its own line, so a run of dimensions lines up - an ortho one with
 //   any other dimension running the same way. The same happens when the
 //   round grip of an existing dimension is dragged.
+// - TYPED DISTANCES (Na__LayoutEditor__Measurements__). After the first
+//   click, a length typed into the Measurements box picks the end exactly
+//   that far along the band, standing in for the second click. While the
+//   line follows the cursor, a typed distance puts the line that far from
+//   what it measures, on the cursor's side, and finishes as the third click
+//   would. Both arrive in paper millimetres; the span asks its caller for the
+//   length at the scale of the drawing its midpoint lands on, the drawing the
+//   dimension will belong to.
+// - AT SCALE. A new dimension takes the Dimensions panel's Measure at scale
+//   setting as Dimension__AtScale (Na__LayoutEditor__DrawingScale__).
 // - The value can be overridden inline: double-click the dimension and
 //   type. Typing the measured value back clears the override.
 // - The dimension joins the frontmost 2D viewport under its midpoint, so
 //   it measures the model at that viewport's scale.
 // - Its snap and inference markers are orange, the dimension tone; the Draw
 //   and Rectangle tools snap in blue and a carried viewport in purple.
-// - TYPED DISTANCES. With the start down, a length typed into the Measurements
-//   box picks the end that far along the band. With the line following the
-//   cursor, a typed distance puts the line that far from what it measures, on
-//   the side the cursor is on, and finishes. Lengths arrive in paper millimetres:
-//   Na__LayoutEditor__Measurements__ has already taken the drawing scale off.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__SheetTools__ owns the pointer and the keys and
 //   delegates here; it runs Move again when Shift goes down or up.
 // - Na__LayoutEditor__DimensionGeometry__ owns the orientation maths.
-// - Na__LayoutEditor__Measurements__ reads the placement (Measure) and
-//   places a typed span or offset (TypeSpan, TypeOffset).
+// - Na__LayoutEditor__Measurements__ reads the placement (Measure) and hands
+//   it typed distances (TypeSpan, TypeOffset).
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 51 Na__LayoutEditor__SheetTools__ v1.3.0 (two-click placement, split out and extended)
-// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.8 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
-// - Back-port     : candidate for the drawing dimension tools (45).
-// - TrueVision    : 1.2.0 (Shift ortho, the dimension snap tone) was authored in
-//                   TrueVision3D v2.31.0 and ported back 13-Sep-2026; everything below
-//                   the header is verbatim
+// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5: the two-click placement
+//                   split out of Na__LayoutEditor__SheetTools__ 1.3.0); TrueVision3D took it whole on
+//                   10-Sep-2026 (its v2.21.0) and grew it to 1.12.0; since ported back whole from
+//                   TrueVision3D 1.12.0 (HEAD b2aa9151)
+// - Source version: 1.12.0 (TrueVision3D v2.139.0, 21-Sep-2026; read at b2aa9151), with the create hunk of
+//                   TrueVision3D v2.152.0 (23-Sep-2026) that TrueVision's module log does not record
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This app's
+//                   copy was its 1.5.0 (14-Sep-2026): TrueVision 1.1.0, 1.2.0 and 1.5.0-1.7.0, with 1.3.0's
+//                   typed distances but not its atScale. It now takes atScale on create (1.3.0, v2.40.0),
+//                   the extension-line fields (1.4.0, v2.41.0), Ortho XOR Shift (1.8.0, v2.113.0), the
+//                   line on the drawing grid (1.9.0, v2.114.0), no inference onto a reference layer
+//                   (1.10.0, v2.123.0), Object Snap with targets and options.from (1.11.0, v2.129.0), Round
+//                   up (1.12.0, v2.139.0) and Line pt / Dashed lines on create (v2.152.0, logged below as
+//                   1.13.0). None of those TrueVision releases is confirmed by Adam in TrueVision; they come
+//                   across under DR-01 (c) and are named so.
+// - Parity        : verbatim
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+//   - The DEVELOPMENT LOG has a 1.13.0 entry TrueVision's has not: its v2.152.0 hunk (linePt and dash
+//     on a new dimension) is in TrueVision's code but not in its module log. The code is TrueVision's.
+// - Back-port     : offered, not made (DR-36): TrueVision's log could take the same 1.13.0 entry, and its
+//                   DESCRIPTION still calls the markers orange, the dimension tone, which 1.11.0 retired.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 14-Sep-2026 - Version 1.5.0
+// 23-Sep-2026 - Version 1.13.0
+// - A new dimension carries the Dimensions panel's Line pt (linePt) and, when
+//   its Dashed lines toggle is on, its dash (TrueVision3D v2.152.0). Logged
+//   here by ValeVision3D: TrueVision's code has it, its module log does not.
+//
+// 21-Sep-2026 - Version 1.12.0
+// - A new dimension carries the Round up to 5 mm setting (Dimension__RoundUp)
+//   when the Dimensions panel has it on for new dimensions.
+//
+// 21-Sep-2026 - Version 1.11.0
+// - Snaps through the Object Snap folder (28__System__ObjectSnap, __Search__).
+//   The marker's colour no longer says "the Dimension tool is snapping" (the
+//   orange tone is gone): it says what the point belongs to, so a measured
+//   point picked off the drawing is marked purple and one picked off a vector
+//   blue. The inferred line keeps a marker of its own - a dashed circle, in
+//   the dimensions' red, because it lines up with another DIMENSION.
+// - SnapOrLock hands the snap the span's first point (options.from), so the
+//   Perpendicular mode can find where the span would meet a line square on:
+//   the way to measure from a corner straight across to a wall.
+//
+// 21-Sep-2026 - Version 1.10.0
+// - The inference onto a parallel dimension's line leaves out a dimension on
+//   a REFERENCE layer (the Layers panel's Ref), as it leaves out a hidden
+//   one: nothing snaps or lines up to a reference layer. The measured points
+//   already come through Na__LeOsnap__Snap, which offers nothing there.
+//
+// 21-Sep-2026 - Version 1.9.0
+// - OffsetFor reads the cursor off the drawing grid while Grid Snap is on
+//   (F7, Na__LayoutEditor__DrawingGrid__), so the third click and the line's
+//   offset drag put a level or plumb dimension line on a grid line; the
+//   inference onto a parallel dimension's line still wins. The two measured
+//   points reach the grid through Na__LeOsnap__Snap.
+//
+// 21-Sep-2026 - Version 1.8.0
+// - Ortho mode (F8, Na__LayoutEditor__OrthoMode__): OrientationFor and Span
+//   ask Na__LeOrtho__Resolve(shift) - Ortho XOR Shift - where they asked Shift
+//   alone, so with Ortho on a new dimension is horizontal or vertical from its
+//   first frame and a held Shift makes it aligned. Every caller (the clicks,
+//   the move, Shift's redraw and a typed offset) follows without a change.
+//
+// 14-Sep-2026 - Version 1.7.0
 // - BeginTextEdit opens the field with the value's handing: left or right
-//   once the text has been dragged off the line, centred while it sits on
-//   it, at the place the value actually reads.
-// - Ported from TrueVision3D (DimensionTool 1.5.0 / 1.6.0).
+//   justified once the text has been dragged off the line, centred on it.
 //
-// 14-Sep-2026 - Version 1.4.0
-// - Typed distances: Measure reports the span then the offset, TypeSpan picks
-//   the end a typed length along the band, TypeOffset puts the line that far
-//   from what it measures and finishes. Span is the shared second-click path.
-// - Left out TrueVision's Dimension__AtScale and extension-line fields on
-//   CreateDimension: this tree has not taken those panel rows.
-// - Ported from TrueVision3D v2.46.0.
+// 14-Sep-2026 - Version 1.6.0
+// - BeginTextEdit opens the field over the value where it actually sits,
+//   including after it has been dragged off the line.
 //
-// 14-Sep-2026 - Version 1.3.0
+// 14-Sep-2026 - Version 1.5.0
 // - A new dimension takes the Dimensions panel's terminator size
 //   (tickLengthMm), so its ticks, arrows or dots are already the Size mm
 //   setting while its line follows the cursor.
-// - Ported from TrueVision3D v2.43.0.
+//
+// 14-Sep-2026 - Version 1.4.0
+// - A new dimension takes the Dimensions panel's extension line lengths and
+//   the padlock between them (startExtensionMm, endExtensionMm,
+//   extensionsLinked), so its lines are already short while its line follows
+//   the cursor.
+//
+// 14-Sep-2026 - Version 1.3.0
+// - Typed distances: the band's end and the cursor are kept while placing;
+//   Measure reports the placement, TypeSpan picks the end a typed length along
+//   the band and TypeOffset sets the line's distance and finishes. The second
+//   click and TypeSpan create the dimension the same way (Span).
+// - A new dimension carries the atScale default (Dimension__AtScale).
 //
 // 13-Sep-2026 - Version 1.2.0
 // - Shift makes the dimension ortho while its line is placed: horizontal or
@@ -92,7 +162,6 @@
 // - Snap and inference markers are drawn in the dimension tone (orange).
 // - IsPlacingLine: whether the line is following the cursor, for the sheet
 //   tools' Shift redraw.
-// - Ported from TrueVision3D v2.31.0.
 //
 // 10-Sep-2026 - Version 1.1.0
 // - Arrow key axis lock on the span (Na__LayoutEditor__AxisLock__), which
@@ -116,6 +185,7 @@
         Na__LeModel__KIND_2D,
         Na__LeModel__GetActiveSheet,
         Na__LeModel__IsLayerVisible,
+        Na__LeModel__IsLayerSelectable,
         Na__LeModel__CreateDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension,
@@ -126,9 +196,11 @@
     import { Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__DimensionValueMm, Na__LeMarkup__FormatDimension, Na__LeMarkup__DimensionTextLayout } from '../15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeDimGeo__ALIGNED, Na__LeDimGeo__Frame, Na__LeDimGeo__OrthoToward } from '../15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeChrome__MeasureTextMm } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js';
-    import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from '../30__System__SheetTools/Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__TARGET_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__Search__.js';
+    import { Na__LeGrid__SnapPoint } from '../27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__State__.js';   // <-- Grid Snap (F7): a leaf, the nearest grid point
     import { Na__LeGrips__ShowBand, Na__LeGrips__HideBand } from '../30__System__SheetTools/Na__LayoutEditor__Grips__.js';
     import { Na__LeAxis__Get, Na__LeAxis__Clear, Na__LeAxis__Apply } from '../30__System__SheetTools/Na__LayoutEditor__AxisLock__.js';
+    import { Na__LeOrtho__Resolve } from '../32__System__OrthoMode/Na__LayoutEditor__OrthoMode__State__.js';
     import { Na__LeText__OpenField } from './Na__LayoutEditor__TextTool__.js';
     // ------------------------------------------------------------
 
@@ -142,14 +214,18 @@
     // MODULE CONSTANTS | Inference
     // ------------------------------------------------------------
     const Na__LeDim__PARALLEL_DOT = 0.9995;        // <-- Two dimensions are parallel when their directions agree this closely
-    const Na__LeDim__INFER_KIND   = 'infer';       // <-- Marker style for an inferred line
-    const Na__LeDim__TYPED_MIN_MM = 1e-4;          // <-- Shorter than this (paper mm) is no length and no direction
-    const Na__LeDim__TYPED_PASSES = 3;             // <-- How many times a typed span re-asks its length at the new midpoint
+    const Na__LeDim__INFER_KIND   = 'infer';       // <-- Marker style for an inferred line: the object snap's KIND_INFER, a dashed circle (written out, so nothing imported is read while this module loads)
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Typed Distances
+    // ------------------------------------------------------------
+    const Na__LeDim__TYPED_MIN_MM = 1e-4;          // <-- A typed span shorter than this (paper mm) is no span, and a band this short no direction
+    const Na__LeDim__TYPED_PASSES = 3;             // <-- How often a typed span re-reads the scale where its midpoint lands
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Placement in Progress
     // ------------------------------------------------------------
-    let Na__LeDim__Placement = null;   // <-- { phase : 1 | 2, startMm, endMm, id }
+    let Na__LeDim__Placement = null;   // <-- { phase : 1 | 2, startMm, endMm, id, aim : { x, y } the band's end, cursor : { x, y } the line's cursor }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -166,20 +242,26 @@
     // still measures to the vertex under the cursor. Shift has no say here:
     // it makes the finished dimension ortho instead, and an ortho dimension
     // measures one axis whatever the span, so bending the span to an axis
-    // would only move the end off the point that was picked.
+    // would only move the end off the point that was picked. Ortho mode
+    // (F8) has no say here either, for the same reason: it makes the
+    // dimension ortho exactly as Shift does.
     // ------------------------------------------------------------
     function Na__LeDim__SnapOrLock(sheet, start, point) {
-        const snap = Na__LeOsnap__Snap(sheet, point, null, Na__LeOsnap__TONE_DIMENSION);
+        const snap = Na__LeOsnap__Snap(sheet, point, null, start ? { from : start } : null);   // <-- from: a Perpendicular snap is square to the span's first point, so a corner can be measured square on to a wall
         const at   = snap.snapped ? { x : snap.x, y : snap.y } : { x : point.x, y : point.y };
         return Na__LeAxis__Get() ? Na__LeAxis__Apply(start, at) : at;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The Orientation the Line Asks For: Ortho While Shift Is Held, Aligned Otherwise
+    // HELPER FUNCTION | The Orientation the Line Asks For: Ortho While Shift Is Held (or Ortho Mode Is On), Aligned Otherwise
+    // ------------------------------------------------------------
+    // Ortho mode (F8) is a latched Shift here too: on, the line is horizontal
+    // or vertical with nothing held, and a held Shift gives an aligned one -
+    // AutoCAD's rule, Ortho XOR Shift (Na__LayoutEditor__OrthoMode__State__).
     // ------------------------------------------------------------
     function Na__LeDim__OrientationFor(dim, pointMm, shift) {
-        if (!shift) return Na__LeDimGeo__ALIGNED;
+        if (!Na__LeOrtho__Resolve(shift)) return Na__LeDimGeo__ALIGNED;
         return Na__LeDimGeo__OrthoToward(
             { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
             { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
@@ -196,6 +278,10 @@
     // Returns { offsetMm, inferred (the other line's offset or null), foot (where the marker sits) }.
     // ------------------------------------------------------------
     function Na__LeDim__OffsetFor(sheet, dim, pointMm) {
+        // GRID SNAP (F7): the line goes through the grid point nearest the
+        // cursor, so a level or plumb dimension line lands on a grid line. A
+        // parallel dimension's line in reach still wins, below.
+        pointMm = Na__LeGrid__SnapPoint(pointMm);
         const sx = dim.Dimension__StartXMm, sy = dim.Dimension__StartYMm;
         const frame = Na__LeDimGeo__Frame({ x : sx, y : sy }, { x : dim.Dimension__EndXMm, y : dim.Dimension__EndYMm }, dim.Dimension__Orientation);
         if (!frame) return { offsetMm : dim.Dimension__OffsetMm, inferred : null, foot : { x : pointMm.x, y : pointMm.y } };
@@ -207,6 +293,7 @@
         let inferred = null, bestGap = radiusMm;
         sheet.Sheet__Dimensions.forEach((other) => {
             if (other.Dimension__Id === dim.Dimension__Id || !Na__LeModel__IsLayerVisible(sheet, other.Dimension__LayerId)) return;
+            if (!Na__LeModel__IsLayerSelectable(sheet, other.Dimension__LayerId)) return;   // <-- Nor one on a reference layer: nothing lines up to it
             const sk = Na__LeMarkup__DimensionSkeleton(other);
             if (!sk || Math.abs((sk.dirX * dirX) + (sk.dirY * dirY)) < Na__LeDim__PARALLEL_DOT) return;
             const d   = ((sk.DS.x - sx) * perpX) + ((sk.DS.y - sy) * perpY);   // <-- Where its line sits, measured from our start
@@ -240,7 +327,7 @@
     // FUNCTION | Show the Inference Marker, or Hide It
     // ------------------------------------------------------------
     function Na__LeDim__ShowInference(result) {
-        if (result && result.inferred !== null) Na__LeOsnap__ShowMarker({ x : result.foot.x, y : result.foot.y, kind : Na__LeDim__INFER_KIND }, Na__LeOsnap__TONE_DIMENSION);
+        if (result && result.inferred !== null) Na__LeOsnap__ShowMarker({ x : result.foot.x, y : result.foot.y, kind : Na__LeDim__INFER_KIND, target : Na__LeOsnap__TARGET_DIMENSION });   // <-- It lines up with another DIMENSION's line: the dimensions' colour
         else Na__LeOsnap__HideMarker();
     }
     // ------------------------------------------------------------
@@ -261,7 +348,12 @@
         const item = Na__LeModel__CreateDimension(sheet, p.startMm, end, {
             viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
             colour : d.colour, terminator : d.terminator, tickLengthMm : d.tickLengthMm, precision : d.precision, unitsSuffix : d.unitsSuffix,
-            orientation : shift ? Na__LeDimGeo__OrthoToward(p.startMm, end, end, null, Na__LeCfg__GetSelectionSetup().dragThresholdMm) : Na__LeDimGeo__ALIGNED,   // <-- Shift already down: ortho from the first frame
+            atScale : d.atScale !== false,                                    // <-- Measure at scale: the drawing's real size, unless the panel says paper
+            roundUp : d.roundUp === true,                                     // <-- Round up to 5 mm: only when the panel says so
+            linePt : Number.isFinite(d.linePt) ? d.linePt : null,             // <-- Line weight: null draws at the sheet's Dimension pt
+            dash : d.dashOn === true ? d.dash : null,                         // <-- Dashed lines only when the panel's toggle is on
+            startExtensionMm : d.startExtensionMm, endExtensionMm : d.endExtensionMm, extensionsLinked : d.extensionsLinked,   // <-- Fixed length extension lines; the model keeps only what differs from the full line
+            orientation : Na__LeOrtho__Resolve(shift) ? Na__LeDimGeo__OrthoToward(p.startMm, end, end, null, Na__LeCfg__GetSelectionSetup().dragThresholdMm) : Na__LeDimGeo__ALIGNED,   // <-- Shift already down, or Ortho on: ortho from the first frame
             silent : true
         });
         Na__LeAxis__Clear();
@@ -283,12 +375,13 @@
 
     // FUNCTION | A Click With the Dimension Tool
     // ------------------------------------------------------------
-    // defaults: { offsetMm, textSizeMm, colour, terminator, tickLengthMm, precision, unitsSuffix }
+    // defaults: { offsetMm, textSizeMm, colour, terminator, tickLengthMm, precision, unitsSuffix, atScale, roundUp,
+    //             startExtensionMm, endExtensionMm, extensionsLinked }
     // ------------------------------------------------------------
     function Na__LeDim__Click(sheet, pointMm, shift, defaults) {
         const p = Na__LeDim__Placement;
         if (!p) {
-            const first = Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION);
+            const first = Na__LeOsnap__Snap(sheet, pointMm, null);
             Na__LeDim__Placement = { phase : 1, startMm : { x : first.x, y : first.y }, endMm : null, id : null, aim : null, cursor : null };
             Na__LeAxis__Clear();                                              // <-- The point landed: the lock is spent
             Na__LeGrips__ShowBand(Na__LeDim__Placement.startMm, Na__LeDim__Placement.startMm, null);
@@ -313,7 +406,7 @@
     // ------------------------------------------------------------
     function Na__LeDim__Move(sheet, pointMm, shift) {
         const p = Na__LeDim__Placement;
-        if (!p) { Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION); return false; }   // <-- Marker before the first click
+        if (!p) { Na__LeOsnap__Snap(sheet, pointMm, null); return false; }   // <-- Marker before the first click
         if (p.phase === 1) {
             const end = Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm);
             p.aim = { x : end.x, y : end.y };                                 // <-- Where the band ends is the way a typed length runs

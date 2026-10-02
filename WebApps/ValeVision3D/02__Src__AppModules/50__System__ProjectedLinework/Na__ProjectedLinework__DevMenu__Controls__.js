@@ -16,10 +16,11 @@
 //   list (cached, stale, missing).
 //
 // - THE DIFF holds the shipping backend against the untouched vendored
-//   generator on the drawing on screen with the cut and the hidden class
+//   generator on the drawing on screen with the cut, the hidden class and the
+//   three 3D-matching rules (linework first, seams occlude, hide flush joins)
 //   off, because those are the parts the vendored generator cannot do, and
-//   reports every segment that moved. That is how a kernel change is
-//   accepted: not by looking at the drawing and deciding it seems fine.
+//   reports every segment that moved. That is how a kernel change is accepted:
+//   not by looking at the drawing and deciding it seems fine.
 //
 // INTEGRATION:
 // - Initialized from index.html alongside the other localhost-only dev tools.
@@ -27,22 +28,24 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ToolbarButton__.mjs (purpose only)
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : new
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__ToolbarButton__.mjs (purpose only) of 07-Aug-2026;
+//                   ValeVision's own 1.1.0 (13-Sep-2026, the backend picker wording) is a different 1.1.0);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.1.0 (TrueVision3D v2.37.0, 14-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim
 // - Divergences   :
-//   - A Dev menu section instead of a toolbar button; the console debug helpers become buttons.
+//   - Banner and console prefix read ValeVision3D.
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Sep-2026 - Version 1.1.0
-// - The backend picker says what each choice still does: auto reads "cpu - tags
-//   every line", and the GPU and legacy choices are marked Run Diff only, because
-//   every kept render now runs on the CPU. The hardware line says the GPU is
-//   measured by Run Diff alone. Ported from TrueVision3D (Edge Styles).
+// 14-Sep-2026 - Version 1.1.0
+// - The timings table says whether linework first ran and for how many
+//   categories, whether seams occluded and whether flush joins were hidden;
+//   the Diff note says both sides ran with all three rules off.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -90,7 +93,7 @@
         Na__ProjectedLinework__DiffHarness__Compare,
         Na__ProjectedLinework__DiffHarness__LogReport
     } from './Na__ProjectedLinework__DiffHarness__.js';
-    import { Na__DrawData__CHANGED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__DrawData__CHANGED_EVENT } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -232,7 +235,10 @@
 
         const describeHardware = (probe) => {
             if (!probe) { hardware.textContent = 'Checking graphics hardware...'; return; }
-            if (!probe.Capable) { hardware.textContent = 'GPU: not used - ' + probe.Reason; return; }
+            if (!probe.Capable) {
+                hardware.textContent = 'GPU: not used - ' + probe.Reason;
+                return;
+            }
             const a = probe.Adapter || {};
             const name = [ a.Vendor, a.Architecture ].filter(Boolean).join(' ');
             hardware.textContent = 'GPU: ' + (name || 'hardware adapter')
@@ -242,7 +248,6 @@
 
         describeHardware(Na__ProjectedLinework__WebGpuBackend__GetProbe());
         void Na__ProjectedLinework__WebGpuBackend__ProbeHardware().then(describeHardware);
-
         return wrapper;
     }
     // ------------------------------------------------------------
@@ -262,6 +267,9 @@
             [ 'Occluders',    String(report.OccluderCount) ],
             [ 'Edges',        String(report.EdgeCount) ],
             [ 'Cut lines',    String(report.IntersectionCount || 0) ],
+            [ 'Linework first', report.LineworkFirst ? ('on, ' + (report.LineworkCategoryCount || 0) + ' categories') : 'off - every mesh crease' ],
+            [ 'Seams occlude',  report.SeamsOcclude ? 'on' : 'off - seams open' ],
+            [ 'Flush joins',    report.HideFlushJoins ? 'hidden' : 'drawn' ],
             [ 'Segments',     String(report.SegmentCount) ],
             [ 'Project ms',   String(report.ProjectMs) ],
             [ 'Total ms',     String(report.TotalMs) ]
@@ -303,9 +311,9 @@
             const because  = resolved === 'cpu' ? (definition.Cut ? ' - tagged, has a cut' : ' - tagged') : '';
 
             const backend = document.createElement('span');
-            backend.className        = 'na-pl-dev__backend';
-            backend.textContent      = resolved + because;
-            backend.style.opacity    = '0.7';
+            backend.className   = 'na-pl-dev__backend';
+            backend.textContent = resolved + because;
+            backend.style.opacity = '0.7';
             backend.style.marginLeft = 'auto';
             backend.style.paddingRight = '8px';
 
@@ -371,10 +379,16 @@
             // Against 'legacy' the Diff answers "is our kernel still right".
             // Against 'webgpu' it answers "is the card worth using, and does it
             // agree" - the question that matters once auto can choose the card.
-            // `plain` has already had its cut stripped for the comparison, so
-            // this is about the hardware and nothing else.
+            // The GPU is only offered where it could actually run: it ignores the
+            // drawing cut, and `plain` has already had its cut stripped for the
+            // comparison, so this is about the hardware and nothing else.
             const rival = Na__ProjectedLinework__WebGpuBackend__IsHardwareCapable() ? 'webgpu' : 'legacy';
 
+            // THE 3D-MATCHING RULES ARE OFF ON BOTH SIDES (linework first, seams
+            // occlude, hide flush joins). Naming the backend is what turns them off
+            // (Na__PlProjector__BuildOptions): the vendored generators apply none of
+            // them, so the CPU does not either, and a kernel change is still
+            // measured against a like-for-like drawing.
             const runs = {};
             for (const backend of [ 'cpu', rival ]) {
                 const options   = Na__PlProjector__BuildOptions(plain, backend);
@@ -392,7 +406,7 @@
                 ? (rivalMs < cpuMs ? ' - ' + rival + ' is ' + (cpuMs / rivalMs).toFixed(1) + 'x faster'
                                    : ' - cpu is ' + (rivalMs / cpuMs).toFixed(1) + 'x faster')
                 : '';
-            Na__PlDev__LastNote = 'Diff: cpu ' + cpuMs + ' ms, ' + rival + ' ' + rivalMs + ' ms' + verdict + '. See the console table.';
+            Na__PlDev__LastNote = 'Diff: cpu ' + cpuMs + ' ms, ' + rival + ' ' + rivalMs + ' ms' + verdict + '. Both sides ran without the 3D-matching rules (linework first, seams occlude, flush joins). See the console table.';
         } catch (diffError) {
             console.error('[ValeVision3D ProjectedLinework] Diff failed:', diffError);
             Na__PlDev__LastNote = 'Diff failed - see console.';

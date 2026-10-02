@@ -1,0 +1,105 @@
+﻿W1-05 node check - LIVE files (C:\Users\adamw\AppData\Local\Temp\na-w1-05-check-5En3kd)
+
+A. THE INTERFACE | TrueVision 1.6.0's names plus ValeVision's two
+  PASS  every one of TrueVision 1.6.0's 30 exports is exported
+  PASS  the two ValeVision-only exports are kept (DR-25, K2 X2)
+  FAIL  nothing else is exported  -> ["Na__DrawData__GetDocumentCode"]
+  PASS  SAVED_ISO_KEY is LayoutEditor__DrawingsData__SavedIso
+  PASS  Save takes (showToast, report, registerKeys)
+  PASS  IsLoaded is false before a project's block arrives
+  PASS  the facade is configured on localhost with the master-index folder
+  FAIL  the module imports only TrueVision's seven names (the vm-stubbed DraftGuard test resolves them all)
+  PASS  R2 judging is OFF in the shipped file (DR-30)
+
+B. A SAVE WITH A REPORT | merge-keys to R2, then the guarded local copy; the payload guard; the save steps
+  PASS  IsLoaded is true once the block is adopted, before the base is known
+  PASS  the base is the local server's fingerprint of the block on disk
+  PASS  the load was announced once
+  PASS  a step without an id is refused
+  PASS  the save returns true
+  PASS  with a report the drawings save toasts nothing itself (the caller says where it landed: one toast)
+  PASS  report.cloudSaved and report.local (ok, with the file's new fingerprint) are filled
+  PASS  the throwing step is a note on report.steps, marked as an error
+  PASS  the steps ran before / payload / after, each phase in registration order
+  PASS  the payload phase got the stamped, guarded copy and the state the before phase left
+  PASS  the after phase saw the local copy's result
+  PASS  the guard was handed a stamped COPY, not the live block
+  PASS  R2 was written through merge-keys exactly once, with the drawings and the presentation block
+  PASS  R2 judging is off: merge-keys carries no drawingsBase (DR-30)
+  PASS  no whole-document save and no build-manifest bump on Worker 1.6.0
+  PASS  the block on R2 is stamped LayoutEditor__DrawingsData__SavedIso
+  PASS  LayoutModeEnabled survives the save (R2 and disk)
+  PASS  R2 and the disk got exactly the same drawings block (guard and step edits included)
+  PASS  the live block kept its own records (no guard or step mark, sheets as they were) and now carries the stamp
+  PASS  the local write carried the base it was built on (X-ValeVision-Drawings-Base)
+  PASS  order: the pre-save fingerprint, then R2 (merge-keys), then the fresh local read, then the local write
+  PASS  the base is now the file's new fingerprint
+  PASS  every other key of project.json is untouched on R2 and on disk
+  PASS  one "saved" announcement after the "loaded" one
+  PASS  every R2 key written sits under VaApps/Projects/2026/3047__Doous/
+  PASS  no unexpected request, no new route sent to an old Worker
+  PASS  without a report a clean save shows no toast
+  PASS  without a report a failing step is shown once, as an error, and the save still lands
+
+C. A DISK BLOCK CHANGED SINCE LOAD | the save is refused before R2 with the v2.146 words
+  PASS  the save returns false
+  PASS  one red toast, TrueVision v2.146.0's words
+  PASS  report.conflict is true
+  PASS  R2 was not touched: no Worker request at all
+  PASS  the disk was not touched: no local write
+  PASS  no "saved" announcement
+
+D. WORKER 1.5.0 | the facade's whole-document save over the fresh local copy, then the local copy
+  PASS  saved, with the local copy written
+  PASS  R2 got the whole document through the existing save route, once, before the local write
+  PASS  no 1.6.0 route was sent to the 1.5.0 Worker
+  PASS  R2's document is the full project with the stamped block
+  PASS  the disk got the same block
+
+E. SECTION BINDINGS | ride the save when present (TD06, DIV-2)
+  PASS  no provider registered: no CrossSection__SceneData key in the save
+  PASS  ValeVision's 41 scene data registered on Initialize: an untouched project (null block) still gains no key
+  PASS  once its block is loaded, the drawings save carries it as the third key, as loaded
+  PASS  the local copy carries it too
+  PASS  the bindings keep ValeVision's entry schema (CrossSection__SceneBinding__*), untouched by the save
+  PASS  a binding captured in this window rides the next save
+  PASS  a provider that throws costs the bindings, never the drawings: the save lands without them, with a warning
+  PASS  a non-function clears the registration
+
+F. NORTH | Save(showToast, report) passes the report to the drawings save
+  PASS  Save takes (showToast, report)
+  PASS  north is saved with the drawings, R2 and disk, and the report says where
+  PASS  the north record is in the drawings block on R2 and on disk
+  PASS  no toast from the save itself (the North editor says it was saved)
+  PASS  the one-argument call ValeVision's North editor makes still saves
+
+G. THE LIVE SITE (GitHub Pages) | not configured: refused with TrueVision's words, no Worker, no Flask
+  PASS  the web build's base is the block's own stamp (none on Doous yet)
+  PASS  the save is refused with one red toast
+  PASS  no request to the Worker or to any local server
+
+H. R2 JUDGING ON (the flag flipped in a test copy only) | drawingsBase sent; a moved R2 refuses
+  PASS  the test copy differs from the shipped file by the flag alone
+  PASS  the save sends drawingsBase iso:<the stamp it loaded> and lands
+  PASS  the next save is built on the stamp the last one wrote, and lands
+  PASS  refused: false, report.conflict, one red toast naming R2
+  PASS  R2 untouched and no local write
+  PASS  a block that never had a stamp is sent as drawingsBase none
+
+I. THE REAL LOCAL SERVER | WebApps/Whitecardopedia/server.py through Flask's test client, on a TEMPORARY copy of 2026/3047__Doous
+  PASS  the base is server.py's fingerprint of the temporary copy
+  PASS  the save lands: R2 by merge-keys, then server.py's guarded POST
+  PASS  the temporary project.json carries the stamped block with LayoutModeEnabled
+  PASS  server.py kept a backup of the copy it overwrote, outside the repository
+  PASS  the base is the new fingerprint server.py answered
+  PASS  every other key of the temporary project.json is as it was
+  PASS  refused before R2 with the v2.146 words
+  PASS  the temporary file is as the other window left it
+  PASS  the real 2026/3047__Doous project.json and notes are byte-for-byte unchanged
+
+RESULT: FAIL - 77 passed, 2 failed
+    [warn] [ValeVision3D] Save step "stepTwo" failed in its payload phase; the drawings save goes on. Error: planted failure
+    [warn] [ValeVision3D] Save step "broken" failed in its before phase; the drawings save goes on. Error: nope
+    [warn] [ValeVision3D] Drawings save refused: Not saved: the project's drawings on disk are not the ones this window loaded - they were saved elsewhere at 11:49 on 01/10 since. Reload to pick them up; this window's unsaved changes will be offered as a draft.
+    [warn] [ValeVision3D] Section bindings provider failed; saving drawings without them. Error: provider broke
+    [warn] [ValeVision3D] Drawings save refused: Not saved: the project's drawings on disk are not the ones this window loaded - they were saved elsewhere at 23:35 on 01/10 since. Reload to pick them up; this window's unsaved changes will be offered as a draft.

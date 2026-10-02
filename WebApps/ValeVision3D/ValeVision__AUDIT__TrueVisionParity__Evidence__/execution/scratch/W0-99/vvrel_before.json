@@ -1,0 +1,460 @@
+{
+ "in_scope": [
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+   "line": 52,
+   "token": "{{VVREL:W0-13}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-13}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js",
+   "line": 77,
+   "token": "{{VVREL:W0-13}}",
+   "text": "// 01-Oct-2026 - Version 1.7.1 (TrueVision transport wiring, {{VVREL:W0-13}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+   "line": 64,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-12}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__LocalProjectMirror__.js",
+   "line": 88,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 (transport facade, {{VVREL:W0-12}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+   "line": 34,
+   "token": "{{VVREL:W0-11}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-11}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js",
+   "line": 97,
+   "token": "{{VVREL:W0-11}}",
+   "text": "// 01-Oct-2026 - Version 1.4.1 (TrueVision identity helpers, {{VVREL:W0-11}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+   "line": 54,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}} (the contract only; the transport"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+   "line": 78,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// 01-Oct-2026 - Version 1.0.2 (TrueVision's upload contract, {{VVREL:W0-14}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js",
+   "line": 91,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js",
+   "line": 25,
+   "token": "{{VVREL:W0-03}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 (hotkey file names, {{VVREL:W0-03}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js",
+   "line": 46,
+   "token": "{{VVREL:W0-02}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 (drawing-folder renumber, {{VVREL:W0-02}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js",
+   "line": 37,
+   "token": "{{VVREL:W0-03}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-03}} (TrueVision's NAMESPACE and MODULE lines only)"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js",
+   "line": 43,
+   "token": "{{VVREL:W0-03}}",
+   "text": "// 01-Oct-2026 - Version 1.4.1 (hotkey file names, {{VVREL:W0-03}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js",
+   "line": 81,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.4.1 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneReorder__.js",
+   "line": 50,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneRowBuilders__.js",
+   "line": 71,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.3.1 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+   "line": 42,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}} (the call shape only)"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js",
+   "line": 60,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// 01-Oct-2026 - Version 1.1.1 (TrueVision's call shape, {{VVREL:W0-14}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+   "line": 47,
+   "token": "{{VVREL:W0-02}}",
+   "text": "//                   renamed to TrueVision's interface name in ValeVision3D {{VVREL:W0-02}} (folder renumber, W0-02)"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js",
+   "line": 61,
+   "token": "{{VVREL:W0-02}}",
+   "text": "// 01-Oct-2026 - Version 1.3.1 (drawing-folder renumber, {{VVREL:W0-02}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/44__System__PlanDimensions/Na__PlanDimensions__Styles__.css",
+   "line": 25,
+   "token": "{{VVREL:W0-03}}",
+   "text": "*                   ValeVision3D {{VVREL:W0-03}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js",
+   "line": 45,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__.js",
+   "line": 50,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js",
+   "line": 32,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+   "line": 33,
+   "token": "{{VVREL:W0-03}}",
+   "text": "//                   {{VVREL:W0-03}}); since ported back whole from TrueVision3D 1.11.0 (HEAD b2aa9151)"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__KeyMap__.js",
+   "line": 35,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__Readers__.js",
+   "line": 37,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}} (this PORT NOTE only; the code was already equal)"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js",
+   "line": 39,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__ToolSetup__.js",
+   "line": 31,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js",
+   "line": 31,
+   "token": "{{VVREL:W0-14}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-14}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+   "line": 54,
+   "token": "{{VVREL:W0-08}}",
+   "text": "//                   unsaved-work flag 01-Oct-2026 for ValeVision3D {{VVREL:W0-08}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__AutoSave__.js",
+   "line": 84,
+   "token": "{{VVREL:W0-08}}",
+   "text": "//   it is, nothing reads the flag. Ported for ValeVision3D {{VVREL:W0-08}}."
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__History__.js",
+   "line": 49,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.4.2 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js",
+   "line": 51,
+   "token": "{{VVREL:W0-06}}",
+   "text": "// 01-Oct-2026 - Version 1.9.3 (records hygiene, {{VVREL:W0-06}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+   "line": 60,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// 01-Oct-2026 - Version 1.0.2 (the project name, {{VVREL:W0-12}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js",
+   "line": 66,
+   "token": "{{VVREL:W0-03}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 (identity hygiene, {{VVREL:W0-03}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+   "line": 63,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-12}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js",
+   "line": 101,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 (transport facade, {{VVREL:W0-12}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs",
+   "line": 56,
+   "token": "{{VVREL:W0-16}}",
+   "text": "// 01-Oct-2026 - Version 1.0.1 ({{VVREL:W0-16}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs",
+   "line": 63,
+   "token": "{{VVREL:W0-15}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-15}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingNotesRoute__.test.py",
+   "line": 47,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# - Authored in   : ValeVision3D first ({{VVREL:W0-09}}); no TrueVision twin - TrueVision's sibling-file route"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__DrawingNotesRoute__.test.py",
+   "line": 58,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-09}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__LoaderStylesheets__.test.mjs",
+   "line": 55,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-04}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py",
+   "line": 52,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-09}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py",
+   "line": 49,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Authored in   : ValeVision3D first ({{VVREL:W0-19}}); no TrueVision twin - TrueVision's published documents"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__PublishedApi__.test.py",
+   "line": 60,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-19}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__SheetImagesApi__.test.py",
+   "line": 50,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__StatementServer__.py",
+   "line": 59,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-19}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TransportFacade__.test.mjs",
+   "line": 46,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// - Authored in   : ValeVision3D first ({{VVREL:W0-12}}); no TrueVision twin - TrueVision's own tests stub its"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TransportFacade__.test.mjs",
+   "line": 54,
+   "token": "{{VVREL:W0-12}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-12}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__UserSpellingsApi__.test.py",
+   "line": 49,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs",
+   "line": 60,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.1.0 ({{VVREL:W0-04}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs",
+   "line": 55,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.1.0 ({{VVREL:W0-04}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs",
+   "line": 94,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-04}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs",
+   "line": 95,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-04}})"
+  },
+  {
+   "file": "WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Verify__UiParity__.mjs",
+   "line": 73,
+   "token": "{{VVREL:W0-04}}",
+   "text": "// 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-04}})"
+  }
+ ],
+ "vv_other": [
+  {
+   "file": "WebApps/ValeVision3D/04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md",
+   "line": 62,
+   "token": "{{VVREL:W0-16}}",
+   "text": "- 01-Oct-2026: the document-output vendors, for ValeVision3D {{VVREL:W0-16}}: jsPDF 4.1.0 copied to"
+  }
+ ],
+ "vv_root_files": [
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 1575,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| 13 | Records | PORT NOTE with K2 H5 fields including `Source version`; on a whole-file take the module takes TV's version and DEVELOPMENT LOG (DR-34); the new log entry carries `{{VVREL:<wp_id>}}`; "
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 4273,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| P8 | The two records belong to the Parity Scribe | Never edit `VV/ValeVision__DEVLOG__.md` or `VV/ValeVision__PARITY__TrueVisionLedger__.md` (the one exception is W0-06, the records restructure, whi"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 4309,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "// - Ported on     : DD-Mon-YYYY for ValeVision3D {{VVREL:<wp_id>}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5039,
+   "token": "{{VVREL:x}}",
+   "text": "| W0-04 | Swarm gates: naming lint, port-note verifier, UI parity gate, loader-stylesheet test, harness fixes | **=** `R/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs`<br>**TV:** `TV"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5246,
+   "token": "{{VVREL:}}",
+   "text": "| Parity Scribe | W0-99 ... W5-99, W6-04 | `VV/ValeVision__DEVLOG__.md`, `VV/ValeVision__PARITY__TrueVisionLedger__.md` (plus the PLAN and README where its package lists them); `{{VVREL:}}` resolution"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5390,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| G7 | Port Record returned; devlog and ledger untouched; `{{VVREL:<wp_id>}}` wherever a module log names the VV release | every package | n/a | integrator |"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5447,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| Module header (PORT NOTE + DEVELOPMENT LOG line) | the package agent | in the package | P10 skeleton; module log lines carry `{{VVREL:<wp_id>}}` |"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5469,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "**Scribe procedure** (S11 B10 item 3, unchanged, with the fresh-read rule made explicit): (a) `git -C VCB status --short` and a fresh read of the top of `VV/ValeVision__DEVLOG__.md`; compare with the "
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5575,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "2. Port: write the TV text, re-apply the seams, write the header (F.1 P10), log lines with {{VVREL:<wp_id>}}."
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5665,
+   "token": "{{VVREL:W1-33}}",
+   "text": "the CSS moves; module log lines end \"for ValeVision3D {{VVREL:W1-33}}\". Patch with a Python script that keeps"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md",
+   "line": 200,
+   "token": "{{VVREL:}}",
+   "text": "- `R5 (S11 B10): coding packages never edit the ledger or the VV devlog; the Parity Scribe pass of each wave allocates VV versions (step size per W0-01: Adam's devlog memory says patch bumps, DR-34 as"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md",
+   "line": 216,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "- `G7: the package returns a Port Record (S11 Appendix C) and never edits VV/ValeVision__PARITY__TrueVisionLedger__.md or VV/ValeVision__DEVLOG__.md; module DEVELOPMENT LOG lines carry {{VVREL:<wp_id>"
+  }
+ ],
+ "wcp": [
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionPublished__Api__.py",
+   "line": 53,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-19}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionShared__Lib__.py",
+   "line": 68,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-09}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionShared__Lib__.py",
+   "line": 98,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-09}})"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionSheetImages__Api__.py",
+   "line": 56,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionStatements__Api__.py",
+   "line": 61,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-19}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionUserConfig__Api__.py",
+   "line": 59,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  }
+ ]
+}

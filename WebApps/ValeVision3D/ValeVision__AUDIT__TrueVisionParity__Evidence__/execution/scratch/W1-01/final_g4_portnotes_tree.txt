@@ -1,0 +1,11 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Verify__PortNotes__.mjs --fails-only
+ValeVision3D - port notes, module logs and release placeholders
+  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
+  checked  : 525 files in 02__Src__AppModules, 03__Style__AppStylesheets, 80__Testing__PrototypeEnvironment and index.html - 305 PORT NOTE(s), 407 DEVELOPMENT LOG(s)
+  baseline : Na__Verify__ParityBaseline__.json - 139 file(s) recorded 2026-10-01; 130 still as recorded, 9 since rewritten (their full checks apply)
+
+  PENDING  27 release placeholder(s) in 22 file(s), for the wave's Parity Scribe: W1-01 x8, W1-02 x2, W1-03 x4, W1-04 x3, W1-05 x3, W1-14 x7
+
+  RESULT: PASS (0 fail, 141 warn, 27 pending)
+
+[exit 0, 0.3s]

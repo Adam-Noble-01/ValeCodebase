@@ -1,0 +1,67 @@
+$ node 80__Testing__PrototypeEnvironment\Na__Test__DrawingDrafts__.test.mjs
+ValeVision3D - drawing drafts, drawing usage, elevation auto names
+  fixture : 2026/3047__Doous project data on disk
+
+Draft maths - is it changed
+  PASS  an untouched record is not changed
+  PASS  panning and zooming a preview is not a change
+  PASS  ...but it IS one when the view keys are not named
+  PASS  the same data in another key order is not a change
+  PASS  a moved plane and a new bearing are exactly the two changes
+  PASS  a key added since the snapshot is a change
+  PASS  a snapshot of nothing is empty text
+  PASS  nothing is reported against an empty snapshot
+
+Draft maths - put it back, in place
+  PASS  after a restore nothing is changed
+  PASS  the record is the SAME object
+  PASS  its annotation array is the SAME array
+  PASS  ...holding only what was there before
+  PASS  a key added since the snapshot has gone
+  PASS  the view the author left it at is NOT put back
+  PASS  it says which keys it touched
+  PASS  restoring again touches nothing
+
+Draft maths - somebody else saves while a drawing is half moved
+  PASS  the record is found and swapped
+  PASS  the save writes the plane where it was last updated
+  PASS  the live record still holds the draft
+  PASS  every other elevation in the save is untouched
+  PASS  the sheets in the save are untouched
+  PASS  a save that does not carry the block is left alone
+  PASS  an id that is not in the save swaps nothing
+
+Drawing usage - which sheet viewports are drawn from a drawing
+  PASS  "TEST ELEVATION" is drawn by 1 viewport(s)
+  PASS  the per-sheet counts add up
+  PASS  a sheet is named by its short code and its name
+  PASS  a drawing nothing uses reads as nothing
+  PASS  no drawing id reads as nothing
+  PASS  a 3D viewport on the same scene is not a use
+  PASS  a 2D viewport with no drawing id falls back to its scene
+  PASS  short code from a register number
+  PASS  a sheet with no number is just its name
+  PASS  the sentence names every sheet
+  PASS  one viewport is singular
+  PASS  nothing using it says nothing
+
+Elevation auto names
+  PASS  an elevation is named from its compass word
+  PASS  a section says so
+  PASS  no compass word is NO name, never a guess
+  PASS  config can reword it
+  PASS  an empty config format falls back to the shipped one
+  PASS  the sentence says which elevation and which way it looks
+  PASS  with north not set it says so and claims nothing
+  PASS  a name nobody holds is kept
+  PASS  the second of a name is numbered
+  PASS  ...and the third
+  PASS  a hand-lettered "North Elevation" is recognised as automatic
+  PASS  so is its numbered twin
+  PASS  "Coach House North Elevation" is the author's own
+  PASS  "North Elevation Rear" is the author's own
+  PASS  nothing is recognised while north is not set
+
+ALL CHECKS PASSED
+
+[exit 0, 0.1s]

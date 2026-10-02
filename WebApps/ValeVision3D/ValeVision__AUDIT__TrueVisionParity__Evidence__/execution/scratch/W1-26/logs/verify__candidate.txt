@@ -1,0 +1,326 @@
+﻿
+=== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js  vs TrueVision @ b2aa9151:  -7 +15
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - SHEET CHROME
+    +// VALEVISION3D - LAYOUT EDITOR - SHEET CHROME
+    @@ -39,2 +39,9 @@
+    -// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__SheetChrome__.js
+    -// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+    +// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from Lantern Designer's
+    +//                   30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js); TrueVision3D
+    +//                   took it whole on 10-Sep-2026 (its v2.21.0) and grew it to 1.14.0; since ported back
+    +//                   whole from TrueVision3D 1.14.0 (HEAD b2aa9151)
+    +// - Source version: 1.14.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - whole. This app's copy was its 1.5.0
+    +//                   (15-Sep-2026): TrueVision's 1.6.0 code with 1.8.0's FitCaptionFont (ValeVision3D
+    +//                   v2.54.1), measuring and printing every run in jsPDF's Helvetica. Text is now measured
+    +//                   and printed in the Open Sans cuts the PDF embeds (Na__LayoutEditor__PdfFonts__).
+    @@ -42,2 +49,3 @@
+    -// - Divergences   : Console prefix, header and folder numbers only.
+    -// - Back-port     : n/a (this IS the back-port)
+    +// - Divergences   :
+    +//   - Banner and console prefix read ValeVision3D.
+    +// - Back-port     : none.
+    @@ -1024 +1032 @@
+    -            catch (drawError) { console.warn('[TrueVision3D LayoutEditor] Primitive could not be drawn:', primitive.Kind, drawError); }
+    +            catch (drawError) { console.warn('[ValeVision3D LayoutEditor] Primitive could not be drawn:', primitive.Kind, drawError); }
+    @@ -1057 +1065 @@
+    -            console.warn('[TrueVision3D LayoutEditor] Asset unavailable: ' + path, assetError);
+    +            console.warn('[ValeVision3D LayoutEditor] Asset unavailable: ' + path, assetError);
+
+=== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js  vs TrueVision @ b2aa9151:  -5 +11
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - SHAPE GEOMETRY
+    +// VALEVISION3D - LAYOUT EDITOR - SHAPE GEOMETRY
+    @@ -38,2 +38,7 @@
+    -// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__ShapeGeometry__.js
+    -// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+    +// - Authored in   : ValeVision3D first (1.0.0, 10-Sep-2026, v2.21.8, port Phase 5); TrueVision3D took it
+    +//                   whole the same day (its v2.21.0 re-alignment) and grew it to 1.9.0; since ported back
+    +//                   whole from TrueVision3D 1.9.0 (HEAD b2aa9151)
+    +// - Source version: 1.9.0 (TrueVision3D v2.150.0, 22-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - whole. This app's copy was its 1.5.0
+    +//                   (14-Sep-2026), TrueVision's 1.5.0. A box carrying Shape__Qr paints the project's code
+    +//                   only while the Project QR Code system is switched on, which it is not here (DR-12).
+    @@ -41,2 +46,3 @@
+    -// - Divergences   : Console prefix, header and folder numbers; holed shapes (Shape__Holes), TrueVision first on 22-Sep-2026.
+    -// - Back-port     : n/a (this IS the back-port)
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +// - Back-port     : none.
+
+=== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js  vs TrueVision @ b2aa9151:  -11 +14
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - DIMENSION GEOMETRY
+    +// VALEVISION3D - LAYOUT EDITOR - DIMENSION GEOMETRY
+    @@ -60,10 +60,13 @@
+    -// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__DimensionGeometry__.js
+    -// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+    -// - Parity        : verbatim to 1.0.0
+    -// - Divergences   : Console prefix, header and folder numbers only.
+    -// - Back-port     : n/a (this IS the back-port)
+    -// - Ahead         : 1.1.0 (ortho orientations) and 1.2.0 (fixed length
+    -//                   extension lines) were authored here first; the ValeVision
+    -//                   back-port of extension lines waits. 1.3.0 to 1.5.1 (text
+    -//                   leader, justified side, outward hook, softer bow) were
+    -//                   authored here and ported to ValeVision3D v2.37.0.
+    +// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from this app's own
+    +//                   44__System__PlanDimensions/Na__PlanDimensions__Overlay__.js: the skeleton, terminators and
+    +//                   text placement); TrueVision3D took it whole on 10-Sep-2026 (its v2.21.0) and authored
+    +//                   1.1.0 to 1.6.0 there; since ported back whole from TrueVision3D 1.6.0 (HEAD b2aa9151)
+    +// - Source version: 1.6.0 (TrueVision3D v2.152.0, 23-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - whole. This app's copy was its 1.2.0
+    +//                   (14-Sep-2026): TrueVision's 1.1.0 (ortho, v2.31.0) and 1.3.0 to 1.5.1 (the text leader,
+    +//                   ValeVision3D v2.37.0) without 1.2.0's fixed-length extension lines, which come across
+    +//                   now with 1.6.0's dashed rules.
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +// - Back-port     : none.
+
+=== 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js  vs TrueVision @ b2aa9151:  -5 +13
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - LEADER GEOMETRY
+    +// VALEVISION3D - LAYOUT EDITOR - LEADER GEOMETRY
+    @@ -55,4 +55,12 @@
+    -// - Authored in   : TrueVision3D first (14-Sep-2026)
+    -// - ValeVision    : 1.0.0 ported 14-Sep-2026 as ValeVision v2.32.0, verbatim
+    -//                   below the header. Nothing here is app-specific; the record
+    -//                   fields are shared. Later versions wait for their own sign-off.
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js
+    +// - Source version: 1.3.0 (TrueVision3D v2.144.0, 22-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - whole. This app's copy was its 1.0.0
+    +//                   (14-Sep-2026, ValeVision3D v2.32.0) with 1.1.0's code resolver. 1.2.0 (the broken-link
+    +//                   halo) and 1.3.0 (the note resolver), which TrueVision's note held for their own
+    +//                   sign-off, come across in dependency order (DR-01 (c)): both answer nothing until the
+    +//                   specification registers their resolvers, and the halo is drawn only for a caller that
+    +//                   asks for it, never for a PDF.
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +// - Back-port     : none.
+
+=== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js  vs TrueVision @ b2aa9151:  -8 +14
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - TITLE BLOCK QR CELL
+    +// VALEVISION3D - LAYOUT EDITOR - TITLE BLOCK QR CELL
+    @@ -59,7 +59,13 @@
+    -// - Authored in   : TrueVision3D first (19-Sep-2026), after Lantern Designer's
+    -//                   VghLantern__SheetChrome__SolveTermsCell / BuildTermsCell.
+    -// - Divergences   : The square carries a true quiet zone (Lantern's was
+    -//                   declared in config and read by nothing); the text block is
+    -//                   centred as a whole; the body is justified as a whole or
+    -//                   not at all; and there is a compact form for narrow paper.
+    -// - ValeVision    : not yet ported.
+    +// - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js
+    +// - Source version: 1.0.0 (TrueVision3D v2.81.0, 20-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - new here, and SWITCHED OFF: TitleBlock
+    +//                   QrCellEnabled is false and so is the Project QR Code system's ProjectQr__Enabled
+    +//                   (DR-12), so Solve answers null and the fields keep the whole strip, as they always have.
+    +// - Parity        : verbatim
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +// - Lineage       : authored in TrueVision3D (19-Sep-2026) after Lantern Designer's
+    +//                   VghLantern__SheetChrome__SolveTermsCell / BuildTermsCell, with a true quiet zone (Lantern's
+    +//                   was declared in config and read by nothing), the text block centred as a whole, the body
+    +//                   justified as a whole or not at all, and a compact form for narrow paper.
+    +// - Back-port     : none.
+
+=== 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js  vs TrueVision @ b2aa9151:  -12 +22
+    @@ -2 +2 @@
+    -// TRUEVISION3D - LAYOUT EDITOR - TITLE BLOCK (MODERN)
+    +// VALEVISION3D - LAYOUT EDITOR - TITLE BLOCK (MODERN)
+    @@ -52,7 +52,18 @@
+    -// - Ported from   : ValeVision3D 51__System__LayoutEditor/Na__LayoutEditor__TitleBlock__Modern__.js
+    -// - Ported on     : 10-Sep-2026 for TrueVision3D v2.21.0 (re-alignment)
+    -// - Parity        : verbatim until v1.2.0
+    -// - Divergences   : Console prefix, header and folder numbers; from v1.2.0 the
+    -//                   cell widths (paper millimetres solved against the text,
+    -//                   TrueVision first on 19-Sep-2026) and the logo fallback text.
+    -// - Back-port     : n/a (this IS the back-port)
+    +// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, from the title block region
+    +//                   of Lantern Designer's 30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js);
+    +//                   TrueVision3D took it whole on 10-Sep-2026 (its v2.21.0) and authored 1.2.0 to 1.5.0 there;
+    +//                   since ported back whole from TrueVision3D 1.5.0 (HEAD b2aa9151)
+    +// - Source version: 1.5.0 (TrueVision3D v2.109.0, 21-Sep-2026; read at b2aa9151)
+    +// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}} - whole. This app's copy was its 1.2.0
+    +//                   (20-Sep-2026, ValeVision3D v2.66.0): TrueVision's 1.2.0 with 1.4.0's floor and this app's
+    +//                   own logo text. New here: the Rev cell's "Revision" prefix, a fifth more for the fixed
+    +//                   cells on A2 and A1, and the QR cell - solved first, but switched off (DR-12).
+    +// - Parity        : adapted
+    +// - Divergences   :
+    +//   - Banner reads ValeVision3D. (No console output in this file.)
+    +//   - The logo's stand-in text, drawn while the logo loads and printed if it never arrives, is config:
+    +//     setup.logoFallbackText (TitleBlock LogoFallbackText, "VALE GARDEN HOUSES", a key only this app
+    +//     has - DR-43). TrueVision keeps its own office's name in the constant LOGO_FALLBACK_TEXT, which is
+    +//     not carried here.
+    +// - Back-port     : TrueVision could read the same key (DR-42 (9)); this file would then be its own below
+    +//                   the header.
+    @@ -144,3 +155,2 @@
+    -    // MODULE CONSTANTS | The Logo's Stand-In and the Fit Tolerance
+    -    // ------------------------------------------------------------
+    -    const Na__LeTitleModern__LOGO_FALLBACK_TEXT = 'NOBLE ARCHITECTURE';          // <-- Drawn while the logo loads, and printed if it never arrives
+    +    // MODULE CONSTANTS | The Fit Tolerance (the Logo's Stand-In Text Is Config: TitleBlock LogoFallbackText)
+    +    // ------------------------------------------------------------
+    @@ -267 +277 @@
+    -                Text : Na__LeTitleModern__LOGO_FALLBACK_TEXT, FontMm : setup.fontSizeValueMm, Weight : style.titleValueWeight, Colour : style.inkColour, Align : 'center'
+    +                Text : setup.logoFallbackText, FontMm : setup.fontSizeValueMm, Weight : style.titleValueWeight, Colour : style.inkColour, Align : 'center'
+
+=== 80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html  vs TrueVision @ b2aa9151:  -10 +25
+    @@ -3 +3 @@
+    -     TRUEVISION3D - TEST - TITLE BLOCK SCALE CELL
+    +     VALEVISION3D - TEST - TITLE BLOCK SCALE CELL
+    @@ -6 +6 @@
+    -     for sheet shapes that match PS01's four sheets, so the Scale cell can be
+    +     for sheet shapes that match a real pack's four sheets, so the Scale cell can be
+    @@ -14,2 +14,17 @@
+    -     USAGE: serve the repo root and open
+    -       /na-apps/30__TrueVision__CoreAppCode/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html
+    +     USAGE: serve the ValeCodebase root and open
+    +       /WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html
+    +     (or, on the local Flask server, /ValeVision3D/80__Testing__PrototypeEnvironment/ and this file's name)
+    +
+    +     PORT NOTE:
+    +     - Ported from   : TrueVision3D 80__Testing__PrototypeEnvironment/Na__Test__TitleBlockScaleCell__.html
+    +     - Source version: none of its own - the page as TrueVision3D v2.155.0 left it (23-Sep-2026; v2.61.0
+    +                       made it and v2.61.1 added the captions, 17-Sep-2026; read at b2aa9151)
+    +     - Legacy        : a test page carries no module version, so the Source version names the releases
+    +                       that wrote it.
+    +     - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}}, with SheetChrome 1.14.0
+    +     - Parity        : adapted
+    +     - Divergences   :
+    +       - Banner, heading and USAGE path are this app's.
+    +       - The four sheets carry this app's Vale fixture values: TrueVision's named its own job (its
+    +         project code in the case titles, a client and street in the fields).
+    +     - Back-port     : none.
+    @@ -35 +50 @@
+    -<h1>TrueVision3D - title block Scale cell</h1>
+    +<h1>ValeVision3D - title block Scale cell</h1>
+    @@ -83,2 +98,2 @@
+    -        Sheet__Fields      : { Sheet__Fields__Client : 'Musters Road Ltd',
+    -                               Sheet__Fields__SiteAddress : '42 Musters Road, West Bridgford, NG2' },
+    +        Sheet__Fields      : { Sheet__Fields__Client : 'Mordaunt',
+    +                               Sheet__Fields__SiteAddress : 'The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE' },
+    @@ -97,3 +112,3 @@
+    -    [ 'PS01 D01 - Floor Plans',  sheet('D01 - Floor Plans', 1, 'A2', 'landscape', [ 50, 50 ]) ],
+    -    [ 'PS01 D03 - 3D Images',    sheet('D03 - 3D Images',   3, 'A3', 'landscape', [ null, null, null ]) ],
+    -    [ 'PS01 D10 - Site Plan',    sheet('D10 - Site Plan',   4, 'A2', 'landscape', [ 500, 1250 ], 'siteplan') ],
+    +    [ 'D01 - Floor Plans',       sheet('D01 - Floor Plans', 1, 'A2', 'landscape', [ 50, 50 ]) ],
+    +    [ 'D03 - 3D Images',         sheet('D03 - 3D Images',   3, 'A3', 'landscape', [ null, null, null ]) ],
+    +    [ 'D10 - Site Plan',         sheet('D10 - Site Plan',   4, 'A2', 'landscape', [ 500, 1250 ], 'siteplan') ],
+
+=== 80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs  vs live:  -28 +30
+    @@ -18,4 +18,5 @@
+    -//   with the 1.4 mm padding either side - measured with the vendored jsPDF in
+    -//   its built-in Helvetica at 2.2 mm, the face this app prints its title
+    -//   block in until the PDF embeds Open Sans. Written out rather than measured
+    -//   here, so the test needs no font and does not change when a drawing does.
+    +//   with the 1.4 mm padding either side - measured on 02-Oct-2026 with the
+    +//   vendored jsPDF and the real Open Sans Regular cut at 2.2 mm, the face the
+    +//   chrome measures and the PDF prints the title block in. Written out rather
+    +//   than measured here, so the test needs no font and does not change when a
+    +//   drawing does.
+    @@ -38 +39,3 @@
+    -//                   v2.66.0): the same checks against a Drawing No. cell, without Widen.
+    +//                   v2.66.0): the same checks against a Drawing No. cell, without Widen. The fixture was
+    +//                   re-measured in Open Sans on 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}}, when
+    +//                   SheetChrome 1.14.0 moved the chrome's measuring onto the embedded cuts.
+    @@ -42,5 +45,4 @@
+    -//   - The fixture is a Vale sheet measured in jsPDF's Helvetica (the Open Sans re-measure comes with
+    -//     SheetChrome 1.14.0), beside a 34 mm logo cell, so every strip is 6 mm wider than TrueVision's;
+    -//     its Document ID is composed {project}_{drawing} (57079_D12), the format this app ships until
+    -//     Vale's own stages are supplied. A few checks name this app's own history (the old shares cut
+    -//     an 88 mm title at 71 mm; the number cell had 49 mm).
+    +//   - The fixture is a Vale sheet, measured in Open Sans as TrueVision's is, beside a 34 mm logo cell,
+    +//     so every strip is 6 mm wider than TrueVision's; its Document ID is composed {project}_{drawing}
+    +//     (57079_D12), the format this app ships until Vale's own stages are supplied. A few checks name
+    +//     this app's own history (the old shares cut a 92 mm title at 71 mm; the number cell had 49 mm).
+    @@ -90 +92 @@
+    -    // Text width + 2.8 mm of padding, Helvetica at 2.2 mm (labels at 1.6 mm tracked 0.05).
+    +    // Text width + 2.8 mm of padding, Open Sans Regular at 2.2 mm (labels at 1.6 mm tracked 0.05).
+    @@ -92,9 +94,9 @@
+    -        Client      : 12.02,     // Mordaunt
+    -        SiteAddress : 60.35,     // The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE
+    -        Title       : 87.72,     // Permitted Development Compliance - Existing Conditions & Design Proposal Elevations
+    -        DocumentId  : 14.61,     // 57079_D12 - the label DOCUMENT ID is wider than the value
+    -        Revision    : 6.21,      // B - the label REV is wider than the value. "Revision B" (13.25) once the strip prints the Rev cell's prefix, on paper with room; on a strip too narrow for every va
+    -        Scale       : 17.56,     // 1:50 @ ISO A2
+    -        Date        : 15.16,     // 19 Sep 2026
+    -        DrawnBy     : 23.08,     // Vale Garden Houses
+    -        Status      : 19.26      // FOR PLANNING
+    +        Client      : 13.05,     // Mordaunt
+    +        SiteAddress : 62.15,     // The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE
+    +        Title       : 91.61,     // Permitted Development Compliance - Existing Conditions & Design Proposal Elevations
+    +        DocumentId  : 14.37,     // 57079_D12 - the label DOCUMENT ID is wider than the value
+    +        Revision    : 5.78,      // B - the label REV is wider than the value. "Revision B" (13.32) since the strip prints the Rev cell's prefix, on paper with room; on a strip too narrow for every v
+    +        Scale       : 17.02,     // 1:50 @ ISO A2
+    +        Date        : 15.28,     // 19 Sep 2026
+    +        DrawnBy     : 23.55,     // Vale Garden Houses
+    +        Status      : 18.62      // FOR PLANNING
+    @@ -104 +106 @@
+    -    const FLOORS = { Client : 8.76, SiteAddress : 15.06, Title : 15.95, DocumentId : 14.61, Revision : 6.21, Scale : 8.25, Date : 7.05, DrawnBy : 11.78, Status : 8.99 };
+    +    const FLOORS = { Client : 8.36, SiteAddress : 13.88, Title : 15.25, DocumentId : 14.37, Revision : 5.78, Scale : 7.67, Date : 6.94, DrawnBy : 11.39, Status : 8.80 };
+    @@ -139,3 +141,3 @@
+    -    // Measured 20-Sep-2026, Helvetica at 2.2 mm plus 2.8 mm of padding. A status added to the config since is not in this table and is not judged.
+    -    const STATUS_NEEDS = { 'PRELIMINARY' : 17.63, 'FOR INFORMATION' : 23.17, 'FOR COMMENT' : 19.39, 'FOR COORDINATION' : 24.89, 'FOR APPROVAL' : 19.65, 'FOR PLANNING' : 19.26,
+    -                           'FOR BUILDING CONTROL' : 29.77, 'FOR PRICING' : 17.21, 'FOR TENDER' : 17.06, 'FOR CONSTRUCTION' : 25.75, 'AS BUILT' : 12.28, 'SUPERSEDED' : 17.85 };
+    +    // Measured 19-Sep-2026, Open Sans Regular at 2.2 mm plus 2.8 mm of padding. A status added to the config since is not in this table and is not judged.
+    +    const STATUS_NEEDS = { 'PRELIMINARY' : 16.70, 'FOR INFORMATION' : 22.62, 'FOR COMMENT' : 18.72, 'FOR COORDINATION' : 24.19, 'FOR APPROVAL' : 18.53, 'FOR PLANNING' : 18.62,
+    +                           'FOR BUILDING CONTROL' : 28.58, 'FOR PRICING' : 16.13, 'FOR TENDER' : 15.84, 'FOR CONSTRUCTION' : 24.29, 'AS BUILT' : 11.97, 'SUPERSEDED' : 16.36 };
+    @@ -163 +165 @@
+    -    check('an 88 mm title, cut at 71 mm under the old shares, now fits', a3.byKey.Title >= NEEDS.Title, a3.byKey.Title.toFixed(1) + ' mm against ' + NEEDS.Title);
+    +    check('a 92 mm title, cut at 71 mm under the old shares, now fits', a3.byKey.Title >= NEEDS.Title, a3.byKey.Title.toFixed(1) + ' mm against ' + NEEDS.Title);
+    @@ -171 +173 @@
+    -    check('the Site Address, with 9.6 mm to spare, gave less than the Rev cell with 21.8', (70 - longTitle.byKey.SiteAddress) < (28 - longTitle.byKey.Revision));
+    +    check('the Site Address, with 7.85 mm to spare, gave less than the Rev cell with 22.2', (70 - longTitle.byKey.SiteAddress) < (28 - longTitle.byKey.Revision));
+    @@ -176,2 +178,2 @@
+    -    const threeScales = solve(STRIP.A2, { Scale : 32.63 });
+    -    check('a three-scale label is never cut: the Scale cell grows to hold it', near(threeScales.byKey.Scale, 32.63), threeScales.byKey.Scale.toFixed(2));
+    +    const threeScales = solve(STRIP.A2, { Scale : 32.47 });
+    +    check('a three-scale label is never cut: the Scale cell grows to hold it', near(threeScales.byKey.Scale, 32.47), threeScales.byKey.Scale.toFixed(2));
+
+=== 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json  vs live:  -2 +3
+    @@ -59,0 +60 @@
+    +        "LayoutEditor__TitleBlock__LogoFallbackText": "VALE GARDEN HOUSES",
+    @@ -75 +76 @@
+    -        "LayoutEditor__TitleBlock__DocumentIdNote": "The strip used to call this cell Drawing No. and print whatever sat in Sheet__Fields__DrawingNumber. That field now holds the sequential number al
+    +        "LayoutEditor__TitleBlock__DocumentIdNote": "The strip used to call this cell Drawing No. and print whatever sat in Sheet__Fields__DrawingNumber. That field now holds the sequential number al
+    @@ -109 +110 @@
+    -        "LayoutEditor__TitleBlock__QrCellNote": "THE RIGHT-HAND END OF THE STRIP IS THE PROJECT'S QR CODE AND A NOTE SAYING WHAT SCANNING IT DOES, so anybody holding a drawing can point a phone at it
+    +        "LayoutEditor__TitleBlock__QrCellNote": "THE RIGHT-HAND END OF THE STRIP IS THE PROJECT'S QR CODE AND A NOTE SAYING WHAT SCANNING IT DOES, so anybody holding a drawing can point a phone at it
+
+=== 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js  vs live:  -5 +10
+    @@ -41 +41,3 @@
+    -//                   02-Oct-2026 for ValeVision3D {{VVREL:W1-22}}
+    +//                   02-Oct-2026 for ValeVision3D {{VVREL:W1-22}}; the style font fallback came level
+    +//                   (Open Sans first, the chrome measuring and printing in the embedded cuts) and the
+    +//                   logo's stand-in text reader was added on 02-Oct-2026 for ValeVision3D {{VVREL:W1-26}}
+    @@ -48,2 +50,3 @@
+    -//   - As the shipped config does until it is switched on: the style font keeps Helvetica first until
+    -//     the PDF embeds Open Sans.
+    +//   - One title block reader TrueVision does not have: logoFallbackText (TitleBlock LogoFallbackText,
+    +//     "VALE GARDEN HOUSES"), the text TitleBlock__Modern__ draws in the logo cell while the logo loads;
+    +//     TrueVision keeps its own office's name in a constant there (DR-43).
+    @@ -53 +56,2 @@
+    -// - Back-port     : none.
+    +// - Back-port     : TrueVision could read the logo's stand-in text from its config the same way
+    +//                   (DR-42 (9)).
+    @@ -196 +200 @@
+    -            fontFamily        : Na__LeCfg__Val('Style', 'FontFamily', "Helvetica, Arial, 'Open Sans', sans-serif"),
+    +            fontFamily        : Na__LeCfg__Val('Style', 'FontFamily', "'Open Sans', Helvetica, Arial, sans-serif"),
+    @@ -251,0 +256 @@
+    +            logoFallbackText    : Na__LeCfg__Val('TitleBlock', 'LogoFallbackText', 'VALE GARDEN HOUSES'),   // <-- ValeVision: drawn in the logo cell while the logo loads, and printed if it never arr
+
+=== 80__Testing__PrototypeEnvironment/Na__Test__AppConfigParity__.test.mjs  vs live:  -0 +10
+    @@ -55,0 +56,8 @@
+    +// 02-Oct-2026 - Version 1.0.3 ({{VVREL:W1-26}})
+    +// - Two entries added with the Modern title block 1.5.0 and its QR cell
+    +//   (W1-26): the Vale logo's stand-in text, TitleBlock LogoFallbackText,
+    +//   a key only this app has (brand, read by TitleBlock__Modern__ in place
+    +//   of TrueVision's constant); and the QR cell note's path to the Project
+    +//   QR Code config, corrected here where TrueVision's still names the
+    +//   folder before its v2.155.0 move (tv-defect, for WT-08).
+    +//
+    @@ -132,0 +141,2 @@
+    +        [ 'value',   'TitleBlock/QrCellNote',                  'tv-defect', 'WT-08', "names the Project QR Code config where it stood before TrueVision v2.155.0 moved the folder under the Layout Edit
+    +        [ 'vv-only', 'TitleBlock/LogoFallbackText',            'brand',     'permanent', "the Vale logo's stand-in text, read by TitleBlock__Modern__ (TrueVision keeps its own as a constant; offered 

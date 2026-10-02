@@ -40,11 +40,17 @@
 //   - Split out of the editor so the editor stays inside the 1000-line budget; the helpers take
 //     (scenes, config) arguments instead of reading the editor's module state.
 //   - The drag state lives here rather than in the editor.
-// - Back-port     : the split itself (TrueVision's editor is 1622 lines).
+// - Back-port     : none - TrueVision withdrew this split in its v2.68.2 (19-Sep-2026: its
+//                   copies were never imported and were deleted, "do not re-port"). The
+//                   split is a deliberate, permanent ValeVision divergence.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Oct-2026 - Version 1.0.1 (records hygiene, v2.71.1)
+// - Comments only. The PORT NOTE no longer asks TrueVision to take this
+//   split: TrueVision withdrew it in v2.68.2, so it is ValeVision's alone.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial split from the scene editor during port Phase 1.
 //

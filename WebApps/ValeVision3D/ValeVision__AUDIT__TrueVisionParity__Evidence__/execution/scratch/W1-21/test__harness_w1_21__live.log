@@ -1,0 +1,82 @@
+﻿
+=== A. Acceptance 1 - the first open of a session, through the loader
+  PASS  new: "loaded" is announced exactly once while the editor opens
+  PASS  new: ...by the sheet model's late start, before the loader carries on (the loader announces nothing)
+  PASS  new: ...after the start-up pass attached History and AutoSave (the microtask)
+  PASS  new: History heard the load (its depths announced for no sheet)
+  PASS  new: SeedCommonFields ran: the pack's client and site address are seeded and announced
+  PASS  new: the History baseline: a field edit on the opened sheet is one undo step and Undo restores it
+  PASS  new: CheckNames is silent with the real sheet model (DRAWING_SITEPLAN row included)
+  PASS  new: a second drawings load in the same page is heard once
+  PASS  control old (before W1-21): announced once, but by the loader after the mode controller started (no late start)
+  PASS  control old: the common field seed never ran on the first open (S03b-F07)
+  PASS  control old: a second drawings load was heard twice
+  PASS  control mixed (the new model with the old loader): "loaded" twice - why AnnounceProjectLoad goes in the same change
+
+=== B. Acceptance 1 - a restored draft keeps the model dirty with the close guard active
+  PASS  new, first open with a draft waiting: restored, dirty, the close guard asks
+  PASS  new, a draft put back by a second drawings load: restored, dirty, the close guard asks
+  PASS  control old: the second hearing cleared the dirty flag the restore set, and the close guard stayed silent
+
+=== C. Acceptance 2 - GetSheets between announcements; RenumberSheets
+  PASS  new: no renormalising between announcements (the same Sheet__Groups list after 11 reads)
+  PASS  new: an announcement brings the sheet back to the normaliser
+  PASS  control old: every read renormalised
+  PASS  new, no register block: create, duplicate, delete and reorder leave every stored Sheet__Fields__DrawingNumber untouched
+  PASS  new, no register block: Sheet__Order stays 1..n down the tab order after every step
+  PASS  new: the delete keeps the dragged tab order (TrueVision 1.20.0 fix)
+  PASS  new: an unnumbered sheet's tab reads the default code ("D01 - Plans"); typed numbers keep theirs; a typed empty number shows the name alone
+  PASS  control old: the delete put back the array order (VV bug)
+  PASS  control TrueVision's own unit, no register block: it stamps the series over typed numbers (why the seam)
+  PASS  with a register block: every step leaves the sheets exactly as TrueVision's own unit does (byte-identical)
+  PASS  with a register block: the register numbers the pack down the tab order (D01, D02 ...)
+  PASS  no case threw or logged an error (renumber)
+
+=== D. Acceptance 3 - the notes margin
+  PASS  every existing local sheet was read (4 sheets, 2 with a margin record)
+  PASS  every existing margin record normalises byte-identical (new model = this app's old model)
+  PASS  the margin keys this app already had give byte-identical records, on every local sheet
+  PASS  ...and gain no RegionsOn, Regions, LeaderlessOn or LeaderlessGroups key
+  PASS  new: enabled - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: widthMm - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: heading - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: textSizeMm - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: includeGeneral - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: groupHeadings - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: regionsOn - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: leaderlessOn - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: leaderlessGroup - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: leaderlessGroup 2 - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: leaderlessMove - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: AddNoteRegion - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: UpdateNoteRegion - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: UpdateNoteRegion group - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: DeleteNoteRegion - one "margin" announcement, one undo step, undo and redo exact
+  PASS  new: silent region and margin updates announce nothing and mark the model dirty
+  PASS  new: a margin change then a text edit are two undo steps (the first Ctrl+Z takes only the text)
+  PASS  control old: a margin change was no step (the six keys it had announced "margin" and recorded nothing)
+  PASS  control old: one Ctrl+Z took the margin change and the text edit together
+  PASS  no error logged (margin, new)
+
+=== E. Acceptance 3 - undoing a vector delete still writes nothing to R2
+  PASS  new: drawing, deleting and undoing the delete of a vector wrote nothing to R2
+  PASS  new: the harness sees saves - a rename and its undo each write once (structural)
+
+=== F. The interim state closed - Save Sheets says where the sheets went
+  PASS  new: R2 and the local copy -> "Sheets saved to R2 and locally."
+  PASS  new: no local server -> "Sheets saved to R2."
+  PASS  new: the local copy failed -> one red toast naming the cause
+  PASS  control old: a save that worked said nothing (the interim state W1-05 named)
+
+=== G. History 1.7.0 - the areas step and the register rewrite
+  PASS  new: a floor area group added is one "areas" announcement and one undo step, and Undo removes it
+  PASS  new: after "register-updated" an undo keeps the number the register wrote (TrueVision History 1.6.0)
+  PASS  control old: the undo put back the number from before the register (no rewrite)
+
+=== H. The loader names a drawing as the model does, before the load and after it
+  PASS  the loader's pre-load answers equal the loaded model's, sheet by sheet (number, short code, tab label)
+  PASS  ...and its answers after the load are the same
+  PASS  the expected reading: D01 for the unnumbered first sheet, A-101 typed, D04 for the sheet with no order, the typed empty number alone
+  PASS  control old: before W1-21 the loader read the stored number only, so the menu and the model disagreed once the Sheets unit is TrueVision's
+
+Every check held (64).

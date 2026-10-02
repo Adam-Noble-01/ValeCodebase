@@ -1,0 +1,62 @@
+ValeVision3D - leaderless notes: the record, the model, and what the sheet lists
+
+  The record (the shipped SheetRecords and its LeaderlessNotes leaf)
+  PASS  a margin record without them gains no key
+  PASS  LeaderlessOn false and an empty list are both dropped
+  PASS  the groups are kept with the switch off, so switching on puts them back
+  PASS  only a real true switches it on
+  PASS  strings only, in their order, no repeats; an id the specification lacks is KEPT
+  PASS  beside the regions: both kept, the regions first
+  PASS  a normalised record normalises byte-identical
+  PASS  the readers: on, kept, and listed only while on
+  PASS  the readers on a sheet with no margin record
+  PASS  the reader hands back a copy: changing it changes nothing
+  PASS  a tick joins the foot of the list
+  PASS  a group ticked twice stays where it is
+  PASS  an untick takes it out and keeps the rest in order
+  PASS  a tick with no id changes nothing
+  PASS  dropped on a later group it lands after it (the Layers grip's rule)
+  PASS  dropped on an earlier group it lands before it
+  PASS  to the very top and the very foot
+  PASS  an index past either end is held to it
+  PASS  a group the list lacks, no move, or no index: unchanged
+
+  The model (the shipped Sheets unit)
+  PASS  the switch on a sheet with no margin record makes one, the margin OFF
+  PASS  ...announced once as margin
+  PASS  three ticks: in the order ticked, each one announcement
+  PASS  a move: the introduction to the top
+  PASS  an untick: the rest keep their order
+  PASS  the switch off drops LeaderlessOn and keeps the list
+  PASS  unticking the last drops the list and leaves the switch on
+  PASS  ...every change one announcement
+  PASS  an ordinary margin change adds no leaderless key
+
+  What the sheet lists (the shipped SpecMargin, Column and NoteRegions)
+  PASS  no leaderless groups: the linked notes, then the general notes
+  PASS  the switch off: the same list, the same plan, the same report bar the switch
+  PASS  ...and the report counts none
+  PASS  switched on with nothing ticked: the same list again
+  PASS  the introduction group is listed whole, first
+  PASS  the counts: 4 without leaders, 3 linked, 2 general, 9 in all
+  PASS  ...and the margin prints them first
+  PASS  two groups print in the sheet's order, each whole, before the linked notes
+  PASS  a linked note of a listed group is listed once, in its group's place
+  PASS  ...counted as linked, not as leaderless: the counts still add up
+  PASS  a general group ticked leads, and is not listed again at the foot
+  PASS  ...counted as leaderless, not general
+  PASS  ...even with List general notes off
+  PASS  a group id the specification does not have lists nothing
+  PASS  while the specification loads: pending, nothing listed, none counted
+  PASS  with group headings: the introduction's heading comes first
+  PASS  a region ticking the group takes all of its notes, which leave the margin
+  PASS  a narrow margin starts with the introduction and the overspill carries on in the same order
+  PASS  ...nothing lost
+  PASS  the margin off and no overspill region: the group is not listed, which is not lost
+
+  3047__Doous, its first sheet, from the project file on this machine
+  PASS  the sheet lists no FN note today but those its bubbles point at
+  PASS  ticked: the FN group leads its list, then everything else it listed before, in the same order
+  PASS  ...and they are the margin's (the sheet has no region)
+
+Every check passed

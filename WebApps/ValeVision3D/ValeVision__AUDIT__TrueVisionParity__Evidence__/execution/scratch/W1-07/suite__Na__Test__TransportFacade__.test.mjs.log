@@ -1,0 +1,201 @@
+ValeVision3D - transport facade
+
+THE INTERFACE | TrueVision's names, parameters and constants
+  PASS  every one of TrueVision's 33 client exports is exported
+  PASS  the client exports nothing else but the ValeVision-only display-name accessor
+  PASS  the 28 names TrueVision's modules import are all among them
+  PASS  each client function takes TrueVision's parameters (same count)
+  PASS  the two sheet-image constants keep TrueVision's values
+  PASS  the mirror exports exactly TrueVision's 8 names
+  PASS  each mirror function takes TrueVision's parameters (same count)
+  PASS  the display-name accessor is a function of no arguments
+
+KEYS AND URLS | localhost:8000, ?project=2026/3047__Doous
+  PASS  before Initialize nothing is configured and no folder is answered
+  PASS  Initialize runs once: a second call answers the same promise
+  PASS  Initialize: configured, the folder from the master index, Worker 1.6.0 and its routes
+  PASS  ...reading the editor config from the local server and the Worker's /health once each
+  PASS  IsConfigured answers synchronously, true
+  PASS  GetProjectContext: folder, four-digit year, code and folderId
+  PASS  the notes file: R2 key under VaApps/Projects/2026/3047__Doous/
+  PASS  ...its CDN URL
+  PASS  ...and its repository URL on the Flask server (/Whitecardopedia/Projects/..., not the app folder)
+  PASS  the statement index is a sibling file too
+  PASS  project.json, TrueVision's notes name and any other name are refused (null)
+  PASS  a statement: key under 10__StatementDocs/ at the project root
+  PASS  ...its CDN URL encoded per segment
+  PASS  ...its repository URL and its path
+  PASS  statements refuse "..", a sixth level and a foreign type
+  PASS  a sheet picture: key under 05__Layout__DrawingDocs__Images/<document>/
+  PASS  ...CDN and repository URLs
+  PASS  ...and the path under the repository root a Pages fallback is built from
+  PASS  sheet pictures refuse the archive folder, ".." and a name with a space
+  PASS  the sheet pictures key prefix
+  PASS  a published file: key under 06__Layout__PublishedDocuments/, hashed names immutable
+  PASS  ...a fixed name is not immutable, and its URLs are right
+  PASS  the published archive never leaves the machine
+  PASS  published prefixes: the root and one document
+  PASS  BuildContentCdnUrl: VaApps layout, no app-content level
+  PASS  ...a two-digit year reads as 20NN
+  PASS  admin and PlanVision files: ValeVision has none (null)
+  PASS  no project data loaded: the display name is empty
+  PASS  the loaded project data is registered as it was given
+  PASS  2026/3047__Doous: its display name is "Doous"
+  PASS  an alias wins, trimmed (as Whitecardopedia shows it)
+  PASS  ...then displayName
+  PASS  ...then projectName
+  PASS  anything but an object registers nothing
+  PASS  no request went anywhere but the index, the editor config and /health
+
+SAVES | Worker 1.6.0 (merge-keys and the files routes listed)
+  PASS  a merge goes to merge-keys with the keys in set, and lands
+  PASS  ...the URL names the project folder, encoded per segment, with the editor key
+  PASS  ...no top-level projectCode in the body, no drawingsBase unless asked
+  PASS  ...R2 holds the block, every other key as it was
+  PASS  ...the loaded copy is kept current
+  PASS  ...no whole-document save and no build-manifest bump
+  PASS  MergeAndSaveKeys is queued: the second merge starts only after the first has answered
+  PASS  ...and the later save is the one R2 keeps
+  PASS  DeleteProjectKeys: merge-keys { remove }, the legacy camera key allowed
+  PASS  pipeline keys are refused on every path (set and remove), and the legacy camera key is never set
+  PASS  ...and nothing was sent
+  PASS  an empty merge is a no-op success; an unreadable one resolves with an error (never throws)
+  PASS  a stale drawingsBase is refused by the Worker: conflict, with the stamp on R2, nothing written
+  PASS  ...a current one lands and answers the new stamp
+  PASS  ...drawingsBase null is sent as "none"
+  PASS  a 503 retry from the Worker is sent again, and lands
+  PASS  a key the deployed Worker refuses falls back to a whole-document save
+  PASS  ...merged over a fresh copy from the local server (GET /api/projects/2026/3047__Doous)
+  PASS  ...which keeps the pipeline keys and bumps the build manifest once
+  PASS  merge-keys answering 409 missing falls back to the whole-document save, which creates project.json
+  PASS  ReadProjectData goes through the Worker's project route, fresh
+  PASS  ...and answers missing with {} when R2 has none
+  PASS  WriteProjectData passes the Worker's refusal back (no projectCode)
+  PASS  WriteProjectFile: files/write with the file name as the path, no bump
+  PASS  ReadProjectFile: files/read answers the document
+  PASS  ...a file R2 does not have is missing, not a failure
+  PASS  ...project.json is not a sibling file
+  PASS  WriteThumbnailWebp: files/upload of the bytes as image/webp, relUrl answered
+  PASS  ...a scene id that leaves the folder is refused
+  PASS  WriteProjectAsset (JSON): files/write, relUrl and the CDN publicUrl
+  PASS  WriteProjectAsset (Blob): files/upload
+  PASS  ...a path outside the three asset folders is refused
+  PASS  assets through the files routes never bump the build manifest
+  PASS  WriteStatementFile (text): files/write under 10__StatementDocs/, CDN link answered
+  PASS  ReadStatementFile: the text comes back
+  PASS  WriteStatementFile (Blob): files/upload
+  PASS  ...a statement R2 does not have is missing
+  PASS  UploadSheetImage: files/upload into the document folder, the R2 key answered
+  PASS  ListSheetImages: every page followed, only names one folder deep, keys under the project
+  PASS  CopySheetImage: files/copy inside the family, the new key answered
+  PASS  ...a picture not on R2 is missing
+  PASS  DeleteSheetImage: files/delete of that one path
+  PASS  the archive folder and an empty picture are refused before anything is sent
+  PASS  UploadPublished: files/upload under 06__Layout__PublishedDocuments/ with the type its name calls for
+  PASS  ListPublished: paths relative to the published root, for one document or all
+  PASS  DeletePublished: files/delete of that one path
+  PASS  ...the archive is refused
+  PASS  every Worker call named 2026/3047__Doous and carried the editor key
+  PASS  every R2 key written sits under VaApps/Projects/2026/3047__Doous/
+  PASS  no new-route call ever carried a top-level projectCode
+  PASS  no unexpected request
+
+AN OLDER WORKER | 1.5.0 lists no routes: only save, assets and drawing-notes are called
+  PASS  Initialize: configured, with the three routes every Worker has
+  PASS  MergeAndSaveKeys falls back to the whole-document save
+  PASS  ...on a FRESH copy from the local server, not the copy the window loaded
+  PASS  ...the local copy read before the Worker was written
+  PASS  ...and the loaded copy becomes what was written
+  PASS  DeleteProjectKeys falls back the same way
+  PASS  ReadProjectData reads the CDN copy, fresh (?t= and no-store)
+  PASS  ReadProjectFile (notes) goes through drawing-notes
+  PASS  ReadProjectFile (statement index) reads the CDN
+  PASS  WriteProjectFile (notes) goes through drawing-notes (which bumps, as it always has)
+  PASS  ...the statement index cannot be written: refused, naming Worker 1.6.0, nothing sent
+  PASS  WriteThumbnailWebp goes through /assets as base64, its bytes intact
+  PASS  WriteProjectAsset (JSON) goes through /assets as UTF-8 base64
+  PASS  sheet pictures, published files and statements are refused, naming Worker 1.6.0, with nothing sent
+  PASS  no route the Worker did not list was ever called
+  PASS  no unexpected request
+
+NO WORKER | the Worker unreachable, or no editor config
+  PASS  an unreachable Worker: still configured, with only the three routes every Worker has
+  PASS  ...a save resolves "Worker unreachable" and never throws
+  PASS  no editor config from the local server: not configured, the Worker never asked
+  PASS  ...a save answers "Worker not configured" and names the env file
+
+THE LIVE SITE | adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D, ?project=2026/3047__Doous
+  PASS  Initialize: not configured, though the project folder is known
+  PASS  ...the editor config and the Worker are never asked
+  PASS  repository URLs on the GitHub Pages sub-path
+  PASS  ...and a sheet picture's Pages fallback (PagesBaseUrl + "/" + relative) is its repository URL
+  PASS  ReadProjectData works through the CDN
+  PASS  ReadProjectFile works through the CDN
+  PASS  ReadStatementFile works through the CDN
+  PASS  ...no request reached a local server (no Flask on the live site)
+  PASS  every write answers "Worker not configured"
+  PASS  the local mirror reports skipped for everything
+  PASS  ...and still nothing reached a local server or the Worker
+  PASS  no unexpected request
+
+PROJECT IDENTITY | the folder comes from the URL token through the master index, never from project.json
+  PASS  ?project=3047 (a bare code) resolves to 2026/3047__Doous
+  PASS  a token the index does not know: no folder, not configured (the Worker config is there)
+  PASS  ...every write is refused, naming the master index, and nothing is sent
+  PASS  ...no location is answered (never a guessed "2026/<code>")
+  PASS  a project.json carrying a stale folderId still writes to the index folder (Worker and local server)
+  PASS  a folder with a space resolves through the index
+  PASS  ...its R2 key keeps the space; its CDN and repository URLs encode it per segment
+  PASS  ...the Worker and the local server are called with the folder encoded per segment
+
+THE LOCAL MIRROR | localhost:8000, the local server in memory
+  PASS  DrawingsFingerprint: the digest and stamp the local server reports, read fresh
+  PASS  MergeKeys: a fresh GET, then the merged document POSTed to /api/projects/2026/3047__Doous
+  PASS  ...with the base in X-ValeVision-Drawings-Base, answering the new fingerprint and the backup
+  PASS  a base the disk has moved on from is refused: conflict, the fingerprint on disk, nothing written
+  PASS  drawingsBase null is sent as "none"
+  PASS  no options: no header, not judged
+  PASS  MergeKeys is queued: the second read waits for the first write
+  PASS  WriteSiblingFile: POST /api/projects/2026/3047__Doous/files/ValeVision__DrawingNotes__.json
+  PASS  ...any other name, and anything but an object, refused before anything is sent
+  PASS  a server without the fingerprint route (its JSON 404 "Project not found") reads as unsupported
+  PASS  ...as does a 404 for a missing project file (saves stay unjudged)
+  PASS  a 405 from the Whitecardopedia server (its /api/health says so) asks for a restart
+  PASS  a static server (501, no /api/health) is "no local save server"
+  PASS  StatementTree: GET /api/valevision/statements/tree?project-folder=3047__Doous&year=2026
+  PASS  ...a server without the statement routes says to restart it (never "no statements yet")
+  PASS  the statement writes POST /api/valevision/statements/<route>?project-folder=&year= with TrueVision's bodies
+  PASS  ...a statement file that is not text is refused
+  PASS  no unexpected request
+
+NEVER THROWS | every export, called with nonsense, on both hosts
+  PASS  no export throws or rejects, whatever it is given (312 calls)
+
+THE REAL LOCAL SERVER | WebApps/Whitecardopedia/server.py, Flask test client, a temporary copy of 2026/3047__Doous
+  PASS  server.py answers /api/health as the Whitecardopedia local server
+  PASS  Worker 1.5.0: the whole-document save is built on server.py's own copy of the project
+  PASS  DrawingsFingerprint: server.py fingerprints the drawings on disk
+  PASS  a drawings save reaches server.py and the repository copy of project.json
+  PASS  ...every other key of the file kept
+  PASS  ...the answer carries the new fingerprint and the copy server.py kept, outside the repository
+  PASS  the same base again is refused by server.py: conflict, the file untouched
+  PASS  WriteSiblingFile: server.py writes the notes whole, 4-space JSON, LF and a final newline
+  PASS  the notes file's repository URL is served by server.py (/Whitecardopedia/Projects/...)
+  PASS  ...and a file that is not there is a real 404, not the app shell
+  PASS  StatementTree against server.py resolves with a well-formed answer (ok, or why not)
+  PASS  no route the Worker did not list was called, and no unexpected request
+  PASS  the real 2026/3047__Doous project.json and notes are byte-for-byte unchanged
+
+THE SPECIFICATION PDF AND IDENTITY
+  PASS  SpecPdf imports Na__CfApi__GetProjectDisplayName from the facade at TrueVision's path
+  PASS  ...and its document facts take the project name from it
+  PASS  ...and it reads no PWA global of an app
+  PASS  no ValeVision module reads the project context of TrueVision's PWA (544 files)
+  PASS  no NA portal prefix, app-content folder or TrueVision API path in ValeVision's code (PORT NOTEs exempt)
+  PASS  80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js: no TrueVision transport, key, banner, prefix or global anywhere in it
+  PASS  ...banner VALEVISION3D and a PORT NOTE with TrueVision's source version
+  PASS  03__AppUtils/Na__AppUtils__LocalProjectMirror__.js: no TrueVision transport, key, banner, prefix or global anywhere in it
+  PASS  ...banner VALEVISION3D and a PORT NOTE with TrueVision's source version
+
+  175 passed, 0 failed; the modules logged 6 line(s) along the way.
+  PASS - every check passed.

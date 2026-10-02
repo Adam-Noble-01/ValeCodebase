@@ -1,0 +1,3 @@
+$ node --check 02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js
+(exit 0)
+

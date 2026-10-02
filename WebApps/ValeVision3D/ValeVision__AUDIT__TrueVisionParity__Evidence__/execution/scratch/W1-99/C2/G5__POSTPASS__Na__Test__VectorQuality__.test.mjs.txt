@@ -1,0 +1,40 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__VectorQuality__.test.mjs
+(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
+exit 0
+
+ValeVision3D - vector quality
+  PASS  a browser that has never chosen starts on the config default
+  PASS    and Medium rests let go
+  PASS  Medium takes the hold on a redraw
+  PASS  Medium keeps it while redraws keep coming (2 s in, the last one 1 s ago)
+  PASS    still held 1199 ms after the last redraw
+  PASS    let go 1201 ms after the last redraw
+  PASS    with no timer left running
+  PASS    and taken again by the next redraw
+  PASS  choosing High answers High
+  PASS    lets go at once
+  PASS    and a redraw at High takes nothing
+  PASS    is remembered in this browser
+  PASS    and announced once
+  PASS  choosing Low holds at once
+  PASS    and a minute of quiet after a redraw does not let go
+  PASS  choosing the level already chosen announces nothing
+  PASS  a level that is no level changes nothing
+  PASS  Medium's timer, overtaken by Low, does not let go of Low's hold
+  PASS    and overtaken by High, leaves nothing held
+  PASS  a browser that chose Low last time is held from Ready
+  PASS  a stored level that is no level falls back to the config's
+  PASS  one rule holds the 2D frame
+  PASS    keyed on the body class the module sets
+  PASS    standing down in the web viewer
+  PASS    by will-change: opacity
+  PASS    and NOT by the transform hint, which keeps the layer at the scale it was first drawn at
+  PASS    on the frame, not the linework inside it
+  PASS  MUTATION caught: Medium never lets go (no timer)
+  PASS  MUTATION caught: Medium lets go from the FIRST redraw, not the last (timer not restarted)
+  PASS  MUTATION caught: High holds on a redraw (the level is not asked)
+  PASS  MUTATION caught: Low rests let go
+  PASS  MUTATION caught: a change of level leaves Medium's timer running
+  PASS  MUTATION caught: the level is not remembered
+
+Every check passed.

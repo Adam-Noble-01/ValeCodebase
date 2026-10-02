@@ -1,0 +1,19 @@
+﻿before__small.pdf  (14402 bytes)
+  /I0 1100x760  2.5 MB decoded  stream 8985 bytes  /Predictor 14  rows: Paeth x760  pixels IDENTICAL to the source  -> PASS
+  /I1 640x400  0.8 MB decoded  stream 1478 bytes  /Predictor 14  rows: Paeth x400  pixels IDENTICAL to the source  -> PASS
+candidate__small.pdf  (46705 bytes)
+  /I0 1100x760  2.5 MB decoded  stream 33507 bytes  /Predictor 11  rows: Sub x760  pixels IDENTICAL to the source  -> PASS
+  /I1 640x400  0.8 MB decoded  stream 9255 bytes  /Predictor 11  rows: Sub x400  pixels IDENTICAL to the source  -> PASS
+candidate__small__SLOW.pdf  (14411 bytes)
+  /I0 1100x760  2.5 MB decoded  stream 8985 bytes  /Predictor 14  rows: Paeth x760  pixels IDENTICAL to the source  -> PASS
+  /I1 640x400  0.8 MB decoded  stream 1478 bytes  /Predictor 14  rows: Paeth x400  pixels IDENTICAL to the source  -> PASS
+before__big.pdf  (217104 bytes)
+  /I0 4518x5183  70.3 MB decoded  stream 213491 bytes  /Predictor 14  rows: Paeth x5183  pixels IDENTICAL to the source  -> PASS
+candidate__big.pdf  (1086513 bytes)
+  /I0 4518x5183  70.3 MB decoded  stream 1082895 bytes  /Predictor 11  rows: Sub x5183  pixels IDENTICAL to the source  -> PASS
+live__small.pdf  (46700 bytes)
+  /I0 1100x760  2.5 MB decoded  stream 33507 bytes  /Predictor 11  rows: Sub x760  pixels IDENTICAL to the source  -> PASS
+  /I1 640x400  0.8 MB decoded  stream 9255 bytes  /Predictor 11  rows: Sub x400  pixels IDENTICAL to the source  -> PASS
+live__big.pdf  (1086508 bytes)
+  /I0 4518x5183  70.3 MB decoded  stream 1082895 bytes  /Predictor 11  rows: Sub x5183  pixels IDENTICAL to the source  -> PASS
+RESULT: PASS

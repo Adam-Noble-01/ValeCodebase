@@ -1,0 +1,6 @@
+PASS  a shape's hatch keeps its own weight and colour once set
+PASS  null, zero and a word are "the standard" and store nothing - so a hatch from before the controls saves byte for byte as it did
+PASS  a site plan layer keeps them too
+PASS  and a layer whose weight and colour were put back to standard leaves nothing behind
+
+4 passed, 0 failed

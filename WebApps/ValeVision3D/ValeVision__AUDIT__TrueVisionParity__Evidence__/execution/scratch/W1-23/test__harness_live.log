@@ -1,0 +1,19 @@
+﻿W1-23 harness - set: live (Render2d takes 11 arguments, Render3d 10)
+  scenarios S1-S7: 288 events -> D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W1-23\harness__live.json
+  RenderToCanvas calls: 10; unstubbed names called: none
+  PASS  C1 Viewport_001: described.modelSource.renderId reads null (no TypeError)
+  PASS  C1 Viewport_001: modelSource has Resolve's shape exactly
+  PASS  C1 Viewport_001: a new object each call; source, definition and window unchanged in shape
+  PASS  C1 Viewport_NoDrawing: described.modelSource.renderId reads null (no TypeError)
+  PASS  C1 Viewport_NoDrawing: modelSource has Resolve's shape exactly
+  PASS  C1 Viewport_NoDrawing: a new object each call; source, definition and window unchanged in shape
+  PASS  C2 Render3d: stillWanted in the tenth slot is asked (false -> null, nothing rendered)
+  PASS  C2 Render3d: the ninth slot is the view window the tiled renderer draws
+  PASS  C3 Render2d: stillWanted in the tenth slot is asked (false -> null, nothing rendered)
+  PASS  C3 Render2d: a depth fog source (eleventh slot) answers null, renders nothing and queues nothing
+  PASS  C3 Render2d: with the design phase slot null and nothing after it, the picture is drawn
+  PASS  C4 GetModelFingerprint answers the live model's for any design phase
+  PASS  C4 GetPipelineFingerprint answers the live model's for any design phase
+  PASS  C4 GetModelRoot answers the live root for any design phase
+  PASS  C5 EnsureLinework(definition, null, true, modelSource) keys exactly as EnsureLinework(definition, null, true)
+  every contract check passed

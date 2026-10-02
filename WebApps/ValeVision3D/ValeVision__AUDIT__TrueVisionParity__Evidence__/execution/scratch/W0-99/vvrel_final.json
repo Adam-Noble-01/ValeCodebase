@@ -1,0 +1,123 @@
+{
+ "in_scope": [],
+ "vv_other": [
+  {
+   "file": "WebApps/ValeVision3D/04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md",
+   "line": 62,
+   "token": "{{VVREL:W0-16}}",
+   "text": "- 01-Oct-2026: the document-output vendors, for ValeVision3D {{VVREL:W0-16}}: jsPDF 4.1.0 copied to"
+  }
+ ],
+ "vv_root_files": [
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 1575,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| 13 | Records | PORT NOTE with K2 H5 fields including `Source version`; on a whole-file take the module takes TV's version and DEVELOPMENT LOG (DR-34); the new log entry carries `{{VVREL:<wp_id>}}`; "
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 4273,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| P8 | The two records belong to the Parity Scribe | Never edit `VV/ValeVision__DEVLOG__.md` or `VV/ValeVision__PARITY__TrueVisionLedger__.md` (the one exception is W0-06, the records restructure, whi"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 4309,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "// - Ported on     : DD-Mon-YYYY for ValeVision3D {{VVREL:<wp_id>}}"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5039,
+   "token": "{{VVREL:x}}",
+   "text": "| W0-04 | Swarm gates: naming lint, port-note verifier, UI parity gate, loader-stylesheet test, harness fixes | **=** `R/80__Testing__PrototypeEnvironment/Na__Verify__ModuleGraph__.mjs`<br>**TV:** `TV"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5246,
+   "token": "{{VVREL:}}",
+   "text": "| Parity Scribe | W0-99 ... W5-99, W6-04 | `VV/ValeVision__DEVLOG__.md`, `VV/ValeVision__PARITY__TrueVisionLedger__.md` (plus the PLAN and README where its package lists them); `{{VVREL:}}` resolution"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5390,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| G7 | Port Record returned; devlog and ledger untouched; `{{VVREL:<wp_id>}}` wherever a module log names the VV release | every package | n/a | integrator |"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5447,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "| Module header (PORT NOTE + DEVELOPMENT LOG line) | the package agent | in the package | P10 skeleton; module log lines carry `{{VVREL:<wp_id>}}` |"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5469,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "**Scribe procedure** (S11 B10 item 3, unchanged, with the fresh-read rule made explicit): (a) `git -C VCB status --short` and a fresh read of the top of `VV/ValeVision__DEVLOG__.md`; compare with the "
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5575,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "2. Port: write the TV text, re-apply the seams, write the header (F.1 P10), log lines with {{VVREL:<wp_id>}}."
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md",
+   "line": 5665,
+   "token": "{{VVREL:W1-33}}",
+   "text": "the CSS moves; module log lines end \"for ValeVision3D {{VVREL:W1-33}}\". Patch with a Python script that keeps"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md",
+   "line": 200,
+   "token": "{{VVREL:}}",
+   "text": "- `R5 (S11 B10): coding packages never edit the ledger or the VV devlog; the Parity Scribe pass of each wave allocates VV versions (step size per W0-01: Adam's devlog memory says patch bumps, DR-34 as"
+  },
+  {
+   "file": "WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md",
+   "line": 216,
+   "token": "{{VVREL:<wp_id>}}",
+   "text": "- `G7: the package returns a Port Record (S11 Appendix C) and never edits VV/ValeVision__PARITY__TrueVisionLedger__.md or VV/ValeVision__DEVLOG__.md; module DEVELOPMENT LOG lines carry {{VVREL:<wp_id>"
+  }
+ ],
+ "wcp": [
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionPublished__Api__.py",
+   "line": 53,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-19}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionShared__Lib__.py",
+   "line": 68,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-09}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionShared__Lib__.py",
+   "line": 98,
+   "token": "{{VVREL:W0-09}}",
+   "text": "# 01-Oct-2026 - Version 1.0.0 ({{VVREL:W0-09}})"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionSheetImages__Api__.py",
+   "line": 56,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionStatements__Api__.py",
+   "line": 61,
+   "token": "{{VVREL:W0-19}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-19}}"
+  },
+  {
+   "file": "WebApps/Whitecardopedia/Server__ValeVisionUserConfig__Api__.py",
+   "line": 59,
+   "token": "{{VVREL:W0-18}}",
+   "text": "# - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-18}}"
+  }
+ ]
+}

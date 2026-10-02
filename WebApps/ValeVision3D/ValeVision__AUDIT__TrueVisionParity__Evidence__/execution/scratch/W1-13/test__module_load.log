@@ -1,0 +1,24 @@
+ValeVision3D - W1-13 modules load with no consumer
+  PASS  Na__LayoutEditor__ShapeRings__.js evaluates; exports = TrueVision's 17 names; no imports
+  PASS  Na__LayoutEditor__DimensionRounding__.js evaluates; exports = TrueVision's 1 names; no imports
+  PASS  Na__LayoutEditor__MeasureParse__.js evaluates; exports = TrueVision's 11 names; no imports
+  PASS  Na__LayoutEditor__SheetRecords__LeaderlessNotes__.js evaluates; exports = TrueVision's 6 names; no imports
+  PASS  Na__LayoutEditor__Register__Numbering__.js evaluates; exports = TrueVision's 2 names; no imports
+  PASS  Na__LayoutEditor__PaintOrder__.js evaluates; exports = TrueVision's 7 names; imports Na__LeModel__GetLayers answered by ValeVision's real units
+  PASS  Na__LayoutEditor__SheetRecords__NoteRegions__.js evaluates; exports = TrueVision's 11 names; imports Na__LeCfg__GetMarginNotesSetup answered by ValeVision's real units
+  PASS  Na__LayoutEditor__ScaleManager__.js evaluates; exports = TrueVision's 8 names; imports Na__LeCfg__GetScaleSetup answered by ValeVision's real units
+  PASS  Na__LayoutEditor__SitePlanComposites__.js evaluates; exports = TrueVision's 20 names; imports Na__LeScale__Coerce answered by ValeVision's real units
+  PASS  ShapeRings: a square with a square hole - edges, area and the hole is outside
+  PASS  DimensionRounding: 6,413 reads 6,415, marked
+  PASS  MeasureParse 1.1.0: 3x, /3 and a refusal
+  PASS  LeaderlessNotes: a tick joins the foot
+  PASS  Register Numbering: D01, D02, a jump to D10, written to DrawingNumber in order; a digit-led prefix refused
+  PASS  PaintOrder: back to front over ValeVision's real GetLayers - hidden layer left out, unknown layer frontmost, paper over the frontmost drawing
+  PASS  NoteRegions: a new region over ValeVision's config (least size 15 mm, borders true)
+  PASS  ScaleManager 1.2.1: the architectural list is ValeVision's; the site plan list answers only when asked
+  PASS  SitePlanComposites (dormant): the built-in decks before Ready, block at 1:500, location at 1:1250, greyscale by luminance
+  PASS  SitePlanComposites: Ready() reads the landed config file (three decks, labels from the file, 1:500 boundary)
+  PASS  MeasureParse: Length, Pair and Format answer exactly as 1.0.0 did (126/126)
+  PASS  MeasureParse: REASON_UNIT unchanged
+
+Every check passed.

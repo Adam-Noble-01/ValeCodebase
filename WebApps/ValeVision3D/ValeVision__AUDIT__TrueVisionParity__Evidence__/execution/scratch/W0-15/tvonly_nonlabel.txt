@@ -1,0 +1,200 @@
+﻿===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__LogoCellWidthMmNote
+  TV: "Was 34 with 1.4 mm of LogoPaddingHMm, which left the mark 1.4 mm from the frame on one side and from the Client cell's rule on the other - Adam, 19-Sep-2026: 'Give me a little space left and right of the logo as well, so it's not so hemmed in.' The mark itself is unchanged: LogoMaxHeightMm and the strip height are what size it (31.1 x 7.6 mm), so widening the cell to 40 and the padding to 4 only adds air, about 4.4 mm either side."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__DocumentIdNote
+  TV: "The strip used to call this cell Drawing No. and print whatever sat in Sheet__Fields__DrawingNumber. That field now holds the sequential number alone (D01), so the cell reads the composed DocumentId instead and is labelled for what it actually is: an identifier with the job, the phase and the drawing in it, not a number. The identifier's length barely moves - the job code and the phase are fixed, and the drawing number gains one digit past D99 - so the cell is 24 mm: WW88_T04_D100, the widest code the schema can compose, measures 20.4. See TrueVision__NOTES__DrawingNumberingSchema__.md."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__ValuePrefixNote
+  TV: "A row's ValuePrefix is printed in front of its value, with a space, whenever there is a value to print. It is how the Rev cell reads 'Revision A' rather than a lone letter - Adam, 21-Sep-2026: 'it looks a bit silly with just a letter in'. It is PRINTED, never stored: the sheet still holds 'A', so the Drawing Register's column, the Sheet panel's box and the PDF file name's {revision} token (RevA) are all unchanged. A value that already starts with the prefix or a word it begins with ('Rev B', 'Revision B') keeps only the letter, so it can never print 'Revision Rev B'. An empty value prints nothing, prefix included. A prefix never costs another cell its text: on a strip too narrow for every v
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__RowWidthFactorByPaperNote
+  TV: "Every row EXCEPT the Flex ones (the Drawing Title) is this much wider on the paper named - Adam, 21-Sep-2026: on A2 and A1 give the site address and each box on the right '20% more space', the drawing title excepted. Paper sizes not listed use the rows as they are. THE FIFTH IS ON WHAT THE CELL PRINTS AT, not on its WidthMm: RB05's address, 'West Beacon Farm, Deans Lane, Woodhouse Eaves, Leicestershire, LE12 8TE', had already grown its 70 mm cell to 84 to fit, and a fifth on the 70 would have been 84 again - no air at all for the one cell Adam pointed at; it is 100.8 now. THE EXTRA IS PAID ONLY OUT OF THE DRAWING TITLE'S SPARE ROOM, never out of its text: the cells take their fifth only whi
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__RowWidthFactorByPaper
+  TV: {"A2": 1.2, "A1": 1.2}
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellNote
+  TV: "THE RIGHT-HAND END OF THE STRIP IS THE PROJECT'S QR CODE AND A NOTE SAYING WHAT SCANNING IT DOES, so anybody holding a drawing can point a phone at it and be standing in the 3D model. It mirrors the logo cell at the left: an absolute width in paper millimetres off the end of the strip, the same on every paper, with the Rows solved across what is left between the two - so Status is the last FIELD and this cell stands beyond it, in the sheet's bottom right corner. It is modelled on Lantern Designer's terms cell, and at this strip height it is that cell's size: an 8.79 mm code with 0.61 mm round it. These keys say WHERE the code goes and how its note is set. WHAT it says - the address, the wor
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellEnabled
+  TV: true
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellWidthMm
+  TV: 56
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellWidthMmNote
+  TV: "The whole cell: the note's column, then the code with its clear margin either side. The code and its margins take 10 mm of this, PaddingHMm and TextGapMm another 2.4, which leaves the note a column of 43.6 mm. MEASURED, NOT GUESSED: every width from 42 to 58 was wrapped against the shipped words in Open Sans at three body sizes, and this column is the one that sets the body at 1.5 mm in TWO LINES OF ALMOST EXACTLY EQUAL LENGTH - '...and view the building' over 'in full 3D, and to freely navigate and take a tour.' - flush without any letter spacing to speak of (0.004 mm). A millimetre either side wraps the same words into one long line and one short, or three with a widow, so re-measure if t
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellTextGapMm
+  TV: 1
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellTextGapMmNote
+  TV: "The note stops this far short of the code's quiet zone. The zone alone is 0.61 mm, and a line of type ending that close to the symbol reads as touching it."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellNoteMinFieldRoomMm
+  TV: 250
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellNoteMinFieldRoomMmNote
+  TV: "ON NARROW PAPER THE NOTE GOES BEFORE ANY FIELD IS CUT. If the whole cell would leave the fields less strip than this, the cell is drawn COMPACT instead: the code at its full size with Note CompactText turned up its left side, 12.4 mm wide in place of 56. Measured in Open Sans on 19-Sep-2026, a sheet's fields need from 193 mm at their text (PS01 with a short title) to 299 mm (a long client, three scales and an 84 character title). So 250 keeps the note on A3 landscape and everything larger - the fields are left 314 mm, which holds the worst of those whole - and drops it on A4 landscape and A3 portrait, where the whole cell would leave 191 mm and the compact one leaves 235; and on A4 portrait
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellCompactFontMm
+  TV: 1.6
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellCompactMinFontMm
+  TV: 1.2
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellCompactPaddingMm
+  TV: 1.2
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellCompactNote
+  TV: "The compact caption is bold, takes the labels' uppercasing and tracking, and reads upward, its baseline on the edge of the code's quiet zone and its capitals standing clear of it to the left. CompactPaddingMm is the clear paper between those capitals and the cell's rule. It has only the code's own 8.79 mm to run along: a caption that will not fit at CompactFontMm is set smaller rather than cut, because half an instruction is no instruction, and one that would have to go under CompactMinFontMm is left out altogether with the band it would have stood in - a code with no caption is still a code, and print too small to read is not a caption. The shipped '3D MODEL' fits at the full 1.6."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellPaddingHMm
+  TV: 1.4
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellPaddingVMm
+  TV: 1.1
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellPaddingNote
+  TV: "PaddingHMm is the fields' own FieldPaddingHMm, so the note starts where a field's label would. PaddingVMm is Lantern Designer's: the most the note's block may fill of the strip's height before it loses a line."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellHeadingFontMm
+  TV: 2
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellBodyFontMm
+  TV: 1.5
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellFontNote
+  TV: "Lantern Designer's heading size, bold, with the labels' uppercasing and tracking, so the cell reads as part of the title block rather than as a sticker on it. The body is regular and muted, and 1.5 where Lantern's is 1.3: it is a lowercase sentence that a client has to be able to read, and two lines of it leave the strip room to spare. It inverts the caption-over-value rhythm of the field cells on purpose - those caption a value the reader is looking for, this one tells them to do something, so the instruction leads."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellLineSpacing
+  TV: 1.22
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellHeadingGapMm
+  TV: 0.3
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellBodyMaxLines
+  TV: 4
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellBodyMaxLinesNote
+  TV: "The most body lines ever set; fewer when the strip is too low for them (at 10 mm, three fit under the heading). Copy that will not fit ends in an ellipsis rather than overflowing the strip, which on a title block would read as a printing fault. The heading and body are centred in the strip's height as one block, measured from the top of the heading's capitals to the last baseline, so it sits level with the code beside it."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellBodyJustify
+  TV: true
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellJustifyMaxTrackingMm
+  TV: 0.1
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__QrCellJustifyNote
+  TV: "Every body line but the last is stretched to the column by letter spacing, so the note reads as a block with a flush right edge beside a square code (Lantern Designer's terms cell does the same). ALL OF THEM OR NONE: if any line would need more than JustifyMaxTrackingMm after every character, the whole block is left at its natural spacing - one flush line over one ragged one reads as a fault, where a wholly ragged block reads as a choice."
+===== /LayoutEditor__TitleBlock__Config/LayoutEditor__TitleBlock__ClassicFieldAnchors/A3/DocumentId
+  TV: {"X": 330, "Y": 289, "FontMm": 2.2, "Align": "left"}
+===== /LayoutEditor__Scales__Config/LayoutEditor__Scales__SitePlanScaleDenominators
+  TV: [100, 200, 500, 1250, 2500, 5000]
+===== /LayoutEditor__Scales__Config/LayoutEditor__Scales__SitePlanDefaultScaleDenominator
+  TV: 500
+===== /LayoutEditor__Viewport__Config/LayoutEditor__Viewport__DefaultStyles/DepthFog
+  TV: true
+===== /LayoutEditor__Viewport__Config/LayoutEditor__Viewport__RotateNote
+  TV: "ROTATION (Viewport__RotationDeg, degrees clockwise). A selected viewport shows a round grip on a short stem off the middle of its top edge; drag it to turn the whole viewport - frame, drawing or picture, frame line and caption - about the middle of its frame, or type an angle in the Viewport panel's Rotation box. Shift holds a drag to RotateStepDeg steps counted from level (90: a quarter turn); without Shift a drag settles on a right angle once within RotateDetentDeg of one. RotateGripOffsetPx is how far off the top edge the grip stands on screen, at any zoom. Right-click a viewport for Rotate 90 degrees either way and Reset rotation. Nothing is rendered again for a turn - the picture and t
+===== /LayoutEditor__Viewport__Config/LayoutEditor__Viewport__RotateStepDeg
+  TV: 90
+===== /LayoutEditor__Viewport__Config/LayoutEditor__Viewport__RotateDetentDeg
+  TV: 2
+===== /LayoutEditor__Viewport__Config/LayoutEditor__Viewport__RotateGripOffsetPx
+  TV: 22
+===== /LayoutEditor__VectorQuality__Config
+  TV: {"LayoutEditor__VectorQuality__Description": "The toolbar's Vector control (Na__LayoutEditor__VectorQuality__): how a 2D viewport's linework is drawn while a sheet is worked on. High never holds the drawing: every line is drawn as vectors every time, the cleanest, and a heavy plan is slow to dimension and to drag things over. Medium holds the drawing as a compositor layer of its own only while the sheet is being redrawn, and lets it go after ReleaseAfterMs of quiet, when it is drawn clean again: fast to edit, as clean as High at rest. Low holds it all the time: no pause as an edit starts or ends and a smoother wheel zoom, always a touch soft. Nothing is rendered again when the level changes,
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__DefaultExtensionMm
+  TV: null
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__ExtensionNote
+  TV: "DefaultExtensionMm is how far a new dimension's extension lines run back from the dimension line towards the points it measures, in paper millimetres; null draws the full lines. The Dimensions panel's Ext. lines row sets a start and an end length for each dimension, linked by the padlock between them, and the eyedropper copies them. The points themselves never move: a dimension still measures from them and they are still snap points."
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__DefaultAtScale
+  TV: true
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__DefaultRoundUp
+  TV: false
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__RoundUpStepMm
+  TV: 5
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__RoundUpMarker
+  TV: "*"
+===== /LayoutEditor__Dimensions__Config/LayoutEditor__Dimensions__RoundUpNote
+  TV: "ROUND UP (the Dimensions panel's Round up to 5 mm, under Units; OFF by default - DefaultRoundUp). On, a dimension's figure is raised to the next multiple of RoundUpStepMm at or above it - 6,413 reads 6,415, 6,416 reads 6,420 - and RoundUpMarker is printed straight after the figure (6,415* or 8,325* mm), so a rounded size is always marked. It rounds the figure the dimension would print at its own Decimals, so a size that reads exactly 2,810 stays 2,810 and carries no marker: only a figure the rounding actually raised is marked. An override is printed as typed, never rounded. The panel's Measures line keeps showing the exact figure. The record keeps the switch as Dimension__RoundUp, written o
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__AuthoringZoomMaxNote
+  TV: "HOW CLOSE, AND FOR WHOM - Adam, 21-Sep-2026: 'I can't get close enough into things... make an exception for the local host version'. The viewers do not need to zoom that far, and the live web should not have to keep drawing huge zooms. ZoomMax is a reader's ceiling: the web document viewer's, and any session's that may not author. AuthoringZoomMax is the ceiling wherever authoring is on - localhost, or a device unlocked with ?authoring=on - and is never taken below ZoomMax. Zoom 1 puts ScreenPixelsPerMm (3.2) screen pixels on a paper millimetre, so 8 is 25.6 px to the millimetre and 64 is 205: a 20 mm frame member drawn at 1:100 is 5 px across at 8 and 41 px at 64. Lines keep their printed 
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__AuthoringZoomMax
+  TV: 64
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__ZoomSettleNote
+  TV: "ZOOM NOW, REDRAW WHEN IT RESTS - Adam, 21-Sep-2026: 'there should be a debounce, so it waits a little bit after you stop zooming before it tries to redraw'. A wheel or pinch zoom only changes the paper's scale while it is under way; ZoomSettleMs after the last step the zoom 'settles' once, and everything that follows the zoom happens then, together: the selection handles and grips are counter-scaled again, the notes margin grip, group boxes, eyedropper boxes and the Measurements box are placed, Draft mode's hairlines are re-solved - and the sheet is drawn again, crisp, at its new zoom. Wheel steps are also gathered into one per animation frame. A single zoom (Fit, 100%, a resize) settles at
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__ZoomSettleMs
+  TV: 350
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__HoldPaperWhileZoomingNote
+  TV: "While a zoom gesture is under way the paper is held as one composited layer (will-change: transform), so each step scales the picture already drawn instead of rasterising every line, fill, hatch and picture on the sheet again; it is drawn crisp once, when the zoom settles. Measured on RB05's ground floor plan in headless Chrome: 76-110 ms a zoom step without it, 17-20 ms (50-60 frames a second) with it, zooming in and out alike. The sheet is soft while the wheel turns and sharp a moment after. False rasterises every step, as before."
+===== /LayoutEditor__Navigation__Config/LayoutEditor__Navigation__HoldPaperWhileZooming
+  TV: true
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__SheetChrome
+  TV: true
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__SheetChromeNote
+  TV: "The sheet's own paper as snap points (Adam, 21-Sep-2026: 'make points on the title block inferencible and snappable', to start construction lines from): the border's four corners and the middle of each side, the title block strip's corners, every cell divider's two ends and middle, and the notes margin's divider where it meets the border and the title block. A line drawn from the corner of the title block starts exactly there. Endpoints and Midpoints above still decide which kinds are offered; the classic scanned title block has no lines to offer."
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__ViewportCarryNote
+  TV: "Viewports move by a point, the way a block moves in CAD. With the Select tool, hover a 2D viewport's linework: the snap marker shows the point a press would carry it by. Drag, and that point snaps to every OTHER viewport's endpoints and midpoints (and the sheet's own vectors and dimension points). Rest the cursor on another drawing's point for AcquireDwellMs - before the drag or during it - and it is acquired as a tracking point (a small cross): the move then locks level with it or plumb below it, with a dashed guide, which is how two elevations line up side by side without being laid over each other. AcquireMax is how many are held at once, oldest dropped first; they are used up by the mov
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__ViewportCarry
+  TV: true
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__ViewportTracking
+  TV: true
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__AcquireDwellMs
+  TV: 400
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__AcquireMax
+  TV: 3
+===== /LayoutEditor__Snapping__Config/LayoutEditor__Snapping__TrackMarkerSizePx
+  TV: 11
+===== /LayoutEditor__ModelSource__Config
+  TV: {"LayoutEditor__ModelSource__Description": "Which design phase a viewport draws - the Model Source row of the Viewport panel, and the Model items on a viewport's right-click menu. The choices are the project's modelGroups (the existing building, a scheme, the next scheme); a viewport that names none draws the Project Default, which is the phase the 3D view opens with: the newest group whose label does not say 'existing'. Everything else stays the viewport's own - scene, cut, window, scale, render composites, model layers, edge styles - so a copy of a viewport switched to another phase is the same view of that model: an existing and a proposed elevation that line up exactly. A phase the 3D vi
+===== /LayoutEditor__PlanDoors__Config
+  TV: {"LayoutEditor__PlanDoors__Description": "Doors on 2D viewports: open on plans, shut on elevations and sections. With OpenOnPlans on, a plan draws every door OPEN - in its linework, its base image and the PDF - whatever the 3D view shows, and the model's doors are put straight back afterwards. Each door opens exactly as a click in the 3D view opens it (the ADR / MOD / ROT naming contract): hinged leaves swing, bifolds fold, sliders slide. DrawSwings adds the arc each open hinged leaf's far edge sweeps, at the leaf's floor level and in the Doors layer's line style, one segment per SwingStepDegrees of swing; bifolds and sliders have no arc. With ClickToToggle on, a click on a door in the SELEC
+===== /LayoutEditor__Selection__Config/LayoutEditor__Selection__PickDragNote
+  TV: "A press that PICKS is a pick first. The press that selects something, and the second press of a double click (one landing within DoubleClickSlopPx on screen and DoubleClickMs of the last, on the same item), has to travel PickDragPx on screen before it moves anything - so a pick with a wobble in it never nudges a note, and a fast double click always steps inside rather than shifting what it landed on. It applies where a double click means something: a whole-object move, a viewport's frame or content, a leader, a dimension's value. A press on something already selected moves at the ordinary DragThresholdMm, and vertices, measured points, crop handles and the rotate grip always do. DoubleClick
+===== /LayoutEditor__Selection__Config/LayoutEditor__Selection__PickDragPx
+  TV: 8
+===== /LayoutEditor__Selection__Config/LayoutEditor__Selection__DoubleClickMs
+  TV: 500
+===== /LayoutEditor__Selection__Config/LayoutEditor__Selection__DoubleClickSlopPx
+  TV: 6
+===== /LayoutEditor__Selection__Config/LayoutEditor__Labels__MeasureOffsetAgain
+  TV: "Type another distance to slide it again."
+===== /LayoutEditor__Selection__Config/LayoutEditor__Labels__MeasureNoOffsetSide
+  TV: "Drag the line to one side, then press Enter."
+===== /LayoutEditor__Selection__Config/LayoutEditor__Labels__MeasureDimOffsetTitle
+  TV: "Drag the line clear of the drawing, then type how far off it should sit and press Enter. Type another distance to slide it again."
+===== /LayoutEditor__EditScope__Config/LayoutEditor__EditScope__AutoMoveNote
+  TV: "AutoMoveOnSelect is what stops MoveToolRequired being a chore. Selecting a note, a vector, a leader's bubble or a group is nearly always the first half of moving it, so a Select press on one of the AutoMoveKinds picks the Move tool up by itself and the same press can carry on into the drag. Kinds: annotation (text), shape (vectors), leader (its bubble, note or curve - never its endpoint, which re-points it and stays a grip), group (ordinary and parametric alike), and - left out on purpose - dimension and viewport, which still wait for M so a drawing or a measurement is never shifted by a stray drag. A Move that came up by itself goes back to Select by itself: on a press on anything not list
+===== /LayoutEditor__EditScope__Config/LayoutEditor__EditScope__AutoMoveOnSelect
+  TV: true
+===== /LayoutEditor__EditScope__Config/LayoutEditor__EditScope__AutoMoveKinds
+  TV: ["annotation", "shape", "leader", "group"]
+===== /LayoutEditor__Shapes__Config/LayoutEditor__Shapes__DefaultAtScale
+  TV: true
+===== /LayoutEditor__Shapes__Config/LayoutEditor__Shapes__AtScaleNote
+  TV: "Draw at scale - the first control of the Vectors panel, on by default. On, the sizes typed into the Measurements box while the Draw or Rectangle tool is up are real sizes at the drawing's scale: the scale of the 2D viewport under the first point, or the sheet's scale off every viewport (the scale its 2D viewports share, the biggest drawing's when they differ, the Scales default when it has none). 2500 at 1:50 draws 50 mm of paper, and a dimension measuring it at the same scale reads 2500 back. Off, typed sizes are paper millimetres. A setting of the drawing tools, not of a shape: a shape is paper points either way."
+===== /LayoutEditor__Leader__Config/LayoutEditor__Leader__NoteTooltip
+  TV: true
+===== /LayoutEditor__Leader__Config/LayoutEditor__Leader__NoteTooltipMs
+  TV: 500
+===== /LayoutEditor__Leader__Config/LayoutEditor__Leader__NoteTooltipNote
+  TV: "With Select or Move up, resting the pointer on a specification bubble's circle for NoteTooltipMs names its note beside the pointer - the code in bold, then the note's title (EW01  Loggia Arcade) - so a code can be read zoomed in, with the notes margin off the screen. A bubble linked to a note, or unlinked but reading a note's code, names it; one on a locked layer too, one on a reference layer not. Moving straight on to the next bubble names that one at once. NoteTooltip false turns it off; 0 ms shows it at once."
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__FontFamily
+  TV: "OpenSans"
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__FontFamilyNote
+  TV: "jsPDF family name for the embedded cuts. No space: jsPDF looks fonts up by this exact id. The screen CSS family remains 'Open Sans'."
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__FontBasePath
+  TV: "../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/"
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__FontCdnBase
+  TV: "https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/"
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__FontsNote
+  TV: "One TTF per jsPDF style. Weight is the Open Sans cut the app already loads (300 Light, 400 Regular, 600 SemiBold). Style is the jsPDF face name setFont asks for: light, normal, bold. Local FontBasePath is tried first (same origin); FontCdnBase is the fallback, matching Na__CoreUi__Styles__Fonts__.css."
+===== /LayoutEditor__Pdf__Config/LayoutEditor__Pdf__Fonts
+  TV: [{"Style": "light", "Weight": 300, "FileName": "CommonFont-01__OpenSans__Light__.ttf"}, {"Style": "normal", "Weight": 400, "FileName": "CommonFont-01__OpenSans__Regular__.ttf"}, {"Style": "bold", "Weight": 600, "FileName": "CommonFont-01__OpenSans__SemiBold__.ttf"}]
+===== /LayoutEditor__Specification__Config/LayoutEditor__Specification__LegacyFileName
+  TV: "TrueVision__ProjectSpecification__.json"
+===== /LayoutEditor__Specification__Config/LayoutEditor__Specification__LockstepEnabled
+  TV: true
+===== /LayoutEditor__Specification__Config/LayoutEditor__Specification__LockstepPollMs
+  TV: 3000
+===== /LayoutEditor__Specification__Config/LayoutEditor__Specification__AutoSaveLocalMs
+  TV: 4000
+===== /LayoutEditor__Specification__Config/LayoutEditor__Specification__LockstepNote
+  TV: "Keeps the specification in the app and its local file (FileName) in step, as the Statement Writer does with a statement's markdown. Agents and hand edits change the local file directly, so on localhost the app looks at it on load, every LockstepPollMs while the drawing editor is open, when the window gets the focus back, and immediately before every write - the autosave, Enter in the drawing's Specification tab, Save Sheets and Sync. If the file no longer holds what the app last read or wrote, nothing is written and the app asks which copy to keep - its own (kept in this browser as a JSON draft) or the file - showing when each last changed and which notes differ. The copy not chosen is kept
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionsNote
+  TV: "Overspill Note Regions: boxes drawn on the sheet that hold notes too, switched on per sheet with Overspill Note Regions in the Margin Notes panel and each drawn by dragging a box, snapping as the Rectangle tool does. A region lists the notes of the groups ticked in it, which then leave the margin (a group ticked in two goes to the first), and a region with Overspill ticked takes whatever did not fit where it was meant to go, in specification order - the margin's tail first of all - after its own groups. With the margin off, every note no region claims waits for the overspill regions. A region is painted paper like the margin, laid out by the margin's rules at the margin's text size, with Re
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionMinSizeMm
+  TV: 15
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionPaddingMm
+  TV: 3
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionOverspillTitle
+  TV: "NOTES (CONTINUED)"
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionGroupsTitle
+  TV: "NOTES"
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionBordersDefault
+  TV: true
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__RegionGripPx
+  TV: 10
+===== /LayoutEditor__MarginNotes__Config/LayoutEditor__MarginNotes__LeaderlessNote
+  TV: "Leaderless Notes: whole specification groups a sheet lists whether or not a bubble on it links to them - a project introduction, or a block of notes that needs no leader. Switched on per sheet with Leaderless Notes in the Margin Notes panel, where each group is ticked; the ticked groups form a stack whose order is the print order, dragged by a grip (or moved with the arrow keys on it), and a group ticked joins the foot of the stack. They are listed FIRST, before the notes the sheet's bubbles link to and the general notes, each group's notes in specification order; a note of theirs a bubble links to as well is listed once, in its group's place. Everything else is as for any note: the margin'
+===== /LayoutEditor__Measurements__Config/LayoutEditor__Measurements__ArrayMaxCount
+  TV: 200
+===== /LayoutEditor__Measurements__Config/LayoutEditor__Measurements__ArrayMaxCount__Note
+  TV: "SketchUp's copy arrays, typed after a Ctrl-drag copy: 3x (x3, *3, 3*) puts copies at the copy's distance, twice it and three times it; /3 (3/) divides that distance into three. This is the most copies one count may make, so a slip of the finger (3000x) cannot fill the sheet with viewports."
+===== /LayoutEditor__DrawingRegister__Config
+  TV: {"LayoutEditor__DrawingRegister__Description": "Pack numbering and PDF defaults. Revision notes live in the self-contained LayoutEditor__DrawingRegister project block. Sheet ids remain unchanged.", "LayoutEditor__DrawingRegister__Prefix": "D", "LayoutEditor__DrawingRegister__Start": 1, "LayoutEditor__DrawingRegister__Digits": 2, "LayoutEditor__DrawingRegister__PdfMarginMm": 14, "LayoutEditor__DrawingRegister__PdfFontPt": 9, "LayoutEditor__DrawingRegister__PdfJsScriptPath": "/na-apps/20__PlanVision__CoreAppCode/01__AppDependencies__VersionLocked/PdfJs__3.11.174/build/pdf.min.js", "LayoutEditor__DrawingRegister__PdfJsWorkerPath": "/na-apps/20__PlanVision__CoreAppCode/01__AppDependencies__Versi
+===== /LayoutEditor__Statement__Config
+  TV: {"LayoutEditor__Statement__Description": "The Statement Writer tab: the project's written documents - a pre-application statement, a design and access statement, a heritage statement - each authored in markdown and read as one endless A4 page. A statement is a FOLDER under FolderName in the project's TrueVision content, holding one markdown file and the pictures it uses. The folders are numbered (01__, 02__) so they order themselves, and IndexFileName is the sibling JSON that remembers which markdown file in each folder is the statement, what it is called and when it was last published. Everything else in a statement folder - project notes, reference photography - is left alone: this app own

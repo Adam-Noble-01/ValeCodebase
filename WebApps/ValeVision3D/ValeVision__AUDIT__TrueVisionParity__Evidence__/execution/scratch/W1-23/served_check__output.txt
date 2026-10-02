@@ -1,0 +1,8 @@
+﻿/api/check-localhost -> 200
+200  Na__LayoutEditor__SnapshotRenderer__.js       served == disk (sha256 0b63f7f1a3c7e700)
+200  Na__LayoutEditor__Viewport2d__Window__.js     served == disk (sha256 79db5eccd2a121de)
+200  Na__LayoutEditor__Viewport2d__Frame__.js      served == disk (sha256 f24672a049f05946)
+200  Na__LayoutEditor__Viewport2d__Linework__.js   served == disk (sha256 88c0c6a6c2793089)
+200  Na__LayoutEditor__Viewport2d__.js             served == disk (sha256 14acfcca485b6b10)
+200  Na__LayoutEditor__Viewport3d__.js             served == disk (sha256 9524c6159f1a49ef)
+200  Na__LayoutEditor__PdfExporter__.js            served == disk (sha256 3bd517ccdff0eba7)

@@ -1,0 +1,436 @@
+--- tv/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
++++ vv/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+@@ -27,2 +27,2 @@
+-        "LayoutEditor__Style__Description": "How everything printed on a sheet that is not a view is painted. Read by the chrome module, which draws the on-screen sheet and the PDF from one primitive list. FontFamily is Open Sans, the app face; the PDF exporter embeds the same three TTF cuts so paper matches the screen.",
+-        "LayoutEditor__Style__FontFamily": "'Open Sans', Helvetica, Arial, sans-serif",
++        "LayoutEditor__Style__Description": "How everything printed on a sheet that is not a view is painted. Read by the chrome module, which draws the on-screen sheet and the PDF from one primitive list. FontFamily leads with Helvetica because that is what jsPDF embeds; Open Sans is the app face and metrically close enough for labels.",
++        "LayoutEditor__Style__FontFamily": "Helvetica, Arial, 'Open Sans', sans-serif",
+@@ -49 +49 @@
+-        "LayoutEditor__Style__TitleValueWeightNote": "Regular, not bold. The PDF embeds Open Sans Light, Regular and SemiBold (the three cuts the app loads), so a title value could print as SemiBold; it stays Regular so the strip still reads as a caption over a value rather than as two bold lines.",
++        "LayoutEditor__Style__TitleValueWeightNote": "Regular, not bold. jsPDF standard Helvetica only embeds regular and bold by reference - there is no semi-bold cut available without shipping a font file - so regular is the lighter of the two weights this title block can actually offer on both screen and PDF.",
+@@ -59,3 +59,2 @@
+-        "LayoutEditor__TitleBlock__LogoAssetPath": "../01__Assets__NaApps__CommonAssets/NaApps__CommonGraphics/NaBrandGraphic__CompanyLogo__w2048xh500px__.png",
+-        "LayoutEditor__TitleBlock__LogoCellWidthMm": 40,
+-        "LayoutEditor__TitleBlock__LogoCellWidthMmNote": "Was 34 with 1.4 mm of LogoPaddingHMm, which left the mark 1.4 mm from the frame on one side and from the Client cell's rule on the other - Adam, 19-Sep-2026: 'Give me a little space left and right of the logo as well, so it's not so hemmed in.' The mark itself is unchanged: LogoMaxHeightMm and the strip height are what size it (31.1 x 7.6 mm), so widening the cell to 40 and the padding to 4 only adds air, about 4.4 mm either side.",
++        "LayoutEditor__TitleBlock__LogoAssetPath": "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
++        "LayoutEditor__TitleBlock__LogoCellWidthMm": 34,
+@@ -63,5 +62,5 @@
+-        "LayoutEditor__TitleBlock__LogoMaxHeightMm": 8,
+-        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeight": 4.096,
+-        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeightNote": "The asset is 2048 x 500 px, so 4.096 (re-measured 10-Sep-2026 when the Vale mark was replaced with the Noble Architecture one; the Vale asset was 2000 x 444 and 4.5). The asset cache hands the chrome a data URL and no dimensions, and both painters stretch an image to whatever rectangle they are given, so the aspect has to be stated here rather than measured. It was assumed to be 4.2, which printed the Vale mark 7 percent too tall on every sheet. Re-measure this if the logo file is ever replaced.",
+-        "LayoutEditor__TitleBlock__LogoPaddingVMm": 1.2,
+-        "LayoutEditor__TitleBlock__LogoPaddingHMm": 4,
++        "LayoutEditor__TitleBlock__LogoMaxHeightMm": 5.5,
++        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeight": 4.5,
++        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeightNote": "The asset is 2000 x 444 px. The asset cache hands the chrome a data URL and no dimensions, and both painters stretch an image to whatever rectangle they are given, so the aspect has to be stated here rather than measured. It was assumed to be 4.2, which printed the Vale mark 7 percent too tall on every sheet. Re-measure this if the logo file is ever replaced.",
++        "LayoutEditor__TitleBlock__LogoPaddingVMm": 1.8,
++        "LayoutEditor__TitleBlock__LogoPaddingHMm": 2.5,
+@@ -75,3 +74,3 @@
+-        "LayoutEditor__TitleBlock__DrawnByDefault": "Noble Architecture",
+-        "LayoutEditor__TitleBlock__DocumentIdNote": "The strip used to call this cell Drawing No. and print whatever sat in Sheet__Fields__DrawingNumber. That field now holds the sequential number alone (D01), so the cell reads the composed DocumentId instead and is labelled for what it actually is: an identifier with the job, the phase and the drawing in it, not a number. The identifier's length barely moves - the job code and the phase are fixed, and the drawing number gains one digit past D99 - so the cell is 24 mm: WW88_T04_D100, the widest code the schema can compose, measures 20.4. See TrueVision__NOTES__DrawingNumberingSchema__.md.",
+-        "LayoutEditor__TitleBlock__RowsNote": "WidthMm IS PAPER MILLIMETRES, the same on every paper size, the way the logo already is. Until 19-Sep-2026 these were relative shares of the strip, so every cell grew with the paper: on A2 the Client cell was 76 mm for 'Mr P. Samra' and the Document ID 71 mm for twelve characters, while the Drawing Title - the one value that is ever long - was cut off at 92 mm. Adam: 'there are certain fields that are never going to need more size, so they kind of seem needlessly oversized... The one thing that does need the space is the drawing name.' A row with Flex takes what the paper has left over, shared by weight if more than one has it, and its WidthMm is the least it is ever given; the Drawing Title is the one that ships with it. NO VALUE IS CUT OFF WHILE ANOTHER CELL HAS ROOM TO SPARE: a cell whose text will not fit grows, out of the paper's spare room first and then out of the room other cells are not using, which is how Site Address and the title 'grow if absolutely required'. A pack whose values fit therefore has its dividers in the same place on every sheet. On paper too narrow for the strip (A4) the cells give up their unused room before anything is cut. The arithmetic is Na__LayoutEditor__TitleBlock__Cells__.js. Widths are measured against Open Sans at FontSizeValueMm, padding included: Client 36 holds 'Mr & Mrs Featherstonehaugh' (33.0); Site Address 70 holds '255 Musters Road, West Bridgford, Nottinghamshire, NG2 7DD' (67.0); Rev, Scale, Date and Drawn By are one 28 mm module - Adam: 'Revision, scale, date, and drawn by can all be the same size' - set by the widest thing any of them says, the site plan's '1:500 & 1:1250 @ ISO A1' (27.9); Status 30 holds the longest entry in Statuses, 'FOR BUILDING CONTROL' (28.6). On A3 landscape that leaves the title 98 mm, enough for PS01's 84 character titles (92.5). A config with no Flex row at all shares the spare room in proportion to WidthMm, which is exactly the old behaviour.",
++        "LayoutEditor__TitleBlock__DrawnByDefault": "Vale Garden Houses",
++        "LayoutEditor__TitleBlock__DocumentIdNote": "The strip used to call this cell Drawing No. and print whatever sat in Sheet__Fields__DrawingNumber. That field now holds the sequential number alone (D01), so the cell reads the composed DocumentId instead and is labelled for what it actually is: an identifier with the job, the phase and the drawing in it, not a number. The identifier's length barely moves - the job code and the phase are fixed, and the drawing number gains one digit past D99 - so the cell is 24 mm: WW88_T04_D100, the widest code the schema can compose, measures 20.4. See the DrawingNumberingSchema NOTES in TrueVision3D.",
++        "LayoutEditor__TitleBlock__RowsNote": "WidthMm IS PAPER MILLIMETRES, the same on every paper size, the way the logo already is. Until 20-Sep-2026 these were relative shares of the strip, so every cell grew and shrank with the paper: on A2 the Client cell was 76 mm for a surname and the Drawing No. 49 mm for eight characters, while on A3 the Drawing Title - the one value that is ever long - had 71 mm and cut an 88 mm title short. Authored in TrueVision3D v2.79.0 to Adam's brief there: 'there are certain fields that are never going to need more size, so they kind of seem needlessly oversized... The one thing that does need the space is the drawing name.' A row with Flex takes what the paper has left over, shared by weight if more than one has it, and its WidthMm is the least it is ever given; the Drawing Title is the one that ships with it. NO VALUE IS CUT OFF WHILE ANOTHER CELL HAS ROOM TO SPARE: a cell whose text will not fit grows, out of the paper's spare room first and then out of the room other cells are not using, which is how Site Address and the title 'grow if absolutely required'. A pack whose values fit therefore has its dividers in the same place on every sheet. On paper too narrow for the strip (A4) the cells give up their unused room before anything is cut. The arithmetic is Na__LayoutEditor__TitleBlock__Cells__.js. THE WIDTHS ARE TRUEVISION'S, so the two apps issue the same strip, and were re-measured here in this app's own face - jsPDF's Helvetica at FontSizeValueMm, padding included - because Helvetica sets wider than TrueVision's Open Sans: Client 36 holds 'Mr & Mrs Featherstonehaugh' (31.2); Site Address 70 holds '255 Musters Road, West Bridgford, Nottinghamshire, NG2 7DD' (64.2); Drawing No. 24 holds a typed 'PS01_T02_D100' (19.5) and the 3047-01 default with room over; Rev, Scale, Date and Drawn By are one 28 mm module, set by the widest thing any of them says - '1:50 & 1:100 @ ISO A2' (25.7), with Drawn By's default 'Vale Garden Houses' at 23.1; Status 30 holds the longest entry in Statuses, 'FOR BUILDING CONTROL' (29.8). A three-scale label (32.6) grows its cell rather than being cut. On A3 landscape that leaves the title 104 mm. A config with no Flex row at all shares the spare room in proportion to WidthMm, which is exactly the old behaviour.",
+@@ -82,2 +81,2 @@
+-            { "Key": "DocumentId",    "Label": "Document ID",   "WidthMm": 24 },
+-            { "Key": "Revision",      "Label": "Rev",           "WidthMm": 28, "ValuePrefix": "Revision" },
++            { "Key": "DrawingNumber", "Label": "Drawing No.",   "WidthMm": 24 },
++            { "Key": "Revision",      "Label": "Rev",           "WidthMm": 28 },
+@@ -90 +89 @@
+-        "LayoutEditor__TitleBlock__RowWidthFactorByPaperNote": "Every row EXCEPT the Flex ones (the Drawing Title) is this much wider on the paper named - Adam, 21-Sep-2026: on A2 and A1 give the site address and each box on the right '20% more space', the drawing title excepted. Paper sizes not listed use the rows as they are. THE FIFTH IS ON WHAT THE CELL PRINTS AT, not on its WidthMm: RB05's address, 'West Beacon Farm, Deans Lane, Woodhouse Eaves, Leicestershire, LE12 8TE', had already grown its 70 mm cell to 84 to fit, and a fifth on the 70 would have been 84 again - no air at all for the one cell Adam pointed at; it is 100.8 now. THE EXTRA IS PAID ONLY OUT OF THE DRAWING TITLE'S SPARE ROOM, never out of its text: the cells take their fifth only while the strip still has room once every cell - the title included - has the wider of its WidthMm and its text; where it cannot afford all of it (A2 portrait, whose strip is A3 landscape's) every cell gets the same smaller share, down to none. On A2 landscape the fields are left 488 mm between the logo and the QR cell: 272 mm of fixed rows become 326.4, and the title keeps 161.6 of its 216. The logo cell and the QR cell are not rows and do not grow - the QR cell's width is measured to set its note in two even lines. The arithmetic is Na__LeTitleCells__Widen.",
++        "LayoutEditor__TitleBlock__RowWidthFactorByPaperNote": "Every row EXCEPT the Flex ones (the Drawing Title) is this much wider on the paper named - Adam, 21-Sep-2026: on A2 and A1 give the site address and each box on the right '20% more space', the drawing title excepted. Paper sizes not listed use the rows as they are. THE FIFTH IS ON WHAT THE CELL PRINTS AT, not on its WidthMm: RB05's site address had already grown its 70 mm cell to 84 to fit, and a fifth on the 70 would have been 84 again - no air at all for the one cell Adam pointed at; it is 100.8 now. THE EXTRA IS PAID ONLY OUT OF THE DRAWING TITLE'S SPARE ROOM, never out of its text: the cells take their fifth only while the strip still has room once every cell - the title included - has the wider of its WidthMm and its text; where it cannot afford all of it (A2 portrait, whose strip is A3 landscape's) every cell gets the same smaller share, down to none. On A2 landscape the fields are left 488 mm between the logo and the QR cell: 272 mm of fixed rows become 326.4, and the title keeps 161.6 of its 216. The logo cell and the QR cell are not rows and do not grow - the QR cell's width is measured to set its note in two even lines. The arithmetic is Na__LeTitleCells__Widen.",
+@@ -111 +110 @@
+-        "LayoutEditor__TitleBlock__QrCellEnabled": true,
++        "LayoutEditor__TitleBlock__QrCellEnabled": false,
+@@ -137,4 +136,4 @@
+-            "A3": "./01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
+-            "A4": "./01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
+-            "A2": "./01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
+-            "A1": "./01__AppAssets__TrueVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png"
++            "A3": "./01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
++            "A4": "./01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
++            "A2": "./01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png",
++            "A1": "./01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png"
+@@ -148,0 +148 @@
++                "DrawingNumber": { "X": 330, "Y": 289, "FontMm": 2.4, "Align": "left" },
+@@ -158,2 +158,2 @@
+-        "LayoutEditor__Scales__Description": "Locked scales for 2D viewports (D27). A viewport quotes one of these; the Viewport Settings panel shows one toggle button per scale, finest first (1:20, 1:50, 1:100, 1:200 - the last added 21-Sep-2026, for a whole building or a street on one sheet). The fallback list in Na__LayoutEditor__ConfigState__SheetSetup__.js mirrors this one: a saved scale that is on neither list is coerced to DefaultScaleDenominator on load, so the two must agree. A site plan viewport quotes one of SitePlanScaleDenominators instead. THE SITE PLAN LIST IS THE ONLY ONE THAT COUNTS: SitePlanExportConfig.SupportedScaleDenominators in the Tags SSOT is documentation and is read by nothing. A denominator of 500 or finer is a BLOCK PLAN, which draws the full fill / pattern / linework composite; coarser than 500 is a LOCATION PLAN, which draws only the proposed fills, no hatch patterns, and greyscales every line that is not a boundary or a proposal. THE SCALE ONLY DECIDES A VIEWPORT THAT HAS NOT BEEN TOLD: Viewport__SitePlan.SitePlan__PlanType overrules it, so a large site CAN be drawn as a block plan at 1:1250 and keep its patterns. The rule itself lives in Na__LayoutEditor__SitePlanComposites__Config__.json, which is what the app reads; the sentence here is the note beside the scales it applies to.",
+-        "LayoutEditor__Scales__AvailableScaleDenominators": [20, 50, 100, 200],
++        "LayoutEditor__Scales__Description": "Locked scales for 2D viewports (D27). A viewport quotes one of these; the three-way toggle on the Viewport Settings panel steps through them.",
++        "LayoutEditor__Scales__AvailableScaleDenominators": [20, 50, 100],
+@@ -281,2 +281,2 @@
+-        "LayoutEditor__Panels__FocusNote": "AccordionSections are the sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited - a room opens Floor Areas, a site plan viewport opens Patterns, and any other viewport folds the whole group, its own section not being in it. Nothing selected leaves the folds as they are. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
+-        "LayoutEditor__Panels__AccordionSections": [ "text", "dimensions", "shapes", "images", "leaders", "floor-areas", "patterns" ],
++        "LayoutEditor__Panels__FocusNote": "AccordionSections are the markup sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
++        "LayoutEditor__Panels__AccordionSections": [ "text", "dimensions", "shapes", "leaders" ],
+@@ -351 +351 @@
+-        "LayoutEditor__PlanDoors__SwingCategoryKeys": ["TrueVision__Linetype__DoorSwings"]
++        "LayoutEditor__PlanDoors__SwingCategoryKeys": ["ValeVision__Linetype__DoorSwings"]
+@@ -367,3 +366,0 @@
+-        "LayoutEditor__Labels__MeasureOffsetAgain": "Type another distance to slide it again.",
+-        "LayoutEditor__Labels__MeasureNoOffsetSide": "Drag the line to one side, then press Enter.",
+-        "LayoutEditor__Labels__MeasureDimOffsetTitle": "Drag the line clear of the drawing, then type how far off it should sit and press Enter. Type another distance to slide it again.",
+@@ -493 +490 @@
+-        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at the Raster block's export level. The vendored UMD build is injected as a classic script on first use. Open Sans is fetched as TTF (the same three cuts the app paints with) and embedded in every document, so Download PDF does not fall back to Helvetica.",
++        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at the Raster block's export level. The vendored UMD build is injected as a classic script on first use.",
+@@ -496,2 +493,2 @@
+-        "LayoutEditor__Pdf__Author": "Noble Architecture Ltd",
+-        "LayoutEditor__Pdf__Creator": "TrueVision3D Layout Editor",
++        "LayoutEditor__Pdf__Author": "Vale Garden Houses Limited",
++        "LayoutEditor__Pdf__Creator": "ValeVision3D Layout Editor",
+@@ -501,3 +498,3 @@
+-        "LayoutEditor__Pdf__FontBasePath": "../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/",
+-        "LayoutEditor__Pdf__FontCdnBase": "https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/",
+-        "LayoutEditor__Pdf__FontsNote": "One TTF per jsPDF style. Weight is the Open Sans cut the app already loads (300 Light, 400 Regular, 600 SemiBold). Style is the jsPDF face name setFont asks for: light, normal, bold. Local FontBasePath is tried first (same origin); FontCdnBase is the fallback, matching Na__CoreUi__Styles__Fonts__.css.",
++        "LayoutEditor__Pdf__FontBasePath": "https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/",
++        "LayoutEditor__Pdf__FontCdnBase": "https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/",
++        "LayoutEditor__Pdf__FontsNote": "One TTF per jsPDF style. Weight is the Open Sans cut the app already loads (300 Light, 400 Regular, 600 SemiBold). Style is the jsPDF face name setFont asks for: light, normal, bold. Local FontBasePath is tried first (same origin); FontCdnBase is the fallback, matching Na__CoreUi__Styles__Fonts__.css. In ValeVision both name the AD04 copies that stylesheet already loads (there is no same-origin copy yet), so each cut is fetched once; move both, with the stylesheet, when a Vale-owned copy is named.",
+@@ -505,3 +502,3 @@
+-            { "Style": "light",  "Weight": 300, "FileName": "CommonFont-01__OpenSans__Light__.ttf" },
+-            { "Style": "normal", "Weight": 400, "FileName": "CommonFont-01__OpenSans__Regular__.ttf" },
+-            { "Style": "bold",   "Weight": 600, "FileName": "CommonFont-01__OpenSans__SemiBold__.ttf" }
++            { "Style": "light",  "Weight": 300, "FileName": "AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf" },
++            { "Style": "normal", "Weight": 400, "FileName": "AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf" },
++            { "Style": "bold",   "Weight": 600, "FileName": "AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf" }
+@@ -511,3 +508,3 @@
+-        "LayoutEditor__Specification__Description": "The Project Specification tab: every drawing note of the project, in groups. A group has a prefix (GN, SN, EE) and a title; a note has a title and its specification text. A note's code is its group's prefix and its place in the group, zero-padded to NumberDigits - GN01, EE02 - so moving a note up or down, moving it to another group or changing its group's prefix renumbers it. Specification bubbles on the sheets link to a note by its id, not its code, so a renumber reaches every bubble on every sheet. The specification is a file of its own (FileName) beside TrueVision__ProjectData__.json, kept locally in the project folder so an agent can edit it on disk, and written to the same R2 key on Sync. LegacyFileName is the previous R2 name, read only when FileName is not there yet. The file is read when the drawing editor opens. Every edit is kept in this browser at once (DraftEnabled, written DraftDebounceMs after the typing pauses); Sync writes the whole file to R2 and to the local copy, and first asks whether to replace a cloud copy that changed since it was read (ConfirmCloudOverwrite). HistorySteps is the tab's own undo depth.",
+-        "LayoutEditor__Specification__FileName": "TrueVision__DrawingNotes__.json",
+-        "LayoutEditor__Specification__LegacyFileName": "TrueVision__ProjectSpecification__.json",
++        "LayoutEditor__Specification__Description": "The Project Specification tab: every drawing note of the project, in groups. A group has a prefix (GN, SN, EE) and a title; a note has a title and its specification text. A note's code is its group's prefix and its place in the group, zero-padded to NumberDigits - GN01, EE02 - so moving a note up or down, moving it to another group or changing its group's prefix renumbers it. Specification bubbles on the sheets link to a note by its id, not its code, so a renumber reaches every bubble on every sheet. The specification is a file of its own (FileName) beside project.json, kept locally in the project folder so an agent can edit it on disk, and written to the same R2 key on Sync. LegacyFileName is the previous R2 name, read only when FileName is not there yet. The file is read when the drawing editor opens. Every edit is kept in this browser at once (DraftEnabled, written DraftDebounceMs after the typing pauses); Sync writes the whole file to R2 and to the local copy, and first asks whether to replace a cloud copy that changed since it was read (ConfirmCloudOverwrite). HistorySteps is the tab's own undo depth.",
++        "LayoutEditor__Specification__FileName": "ValeVision__DrawingNotes__.json",
++        "LayoutEditor__Specification__LegacyFileName": "",
+@@ -515 +512 @@
+-        "LayoutEditor__Specification__RevisionNote": "The specification is a document that gets issued, so it carries a revision and a number of its own, the way each sheet carries a Rev and a Drawing No. Both are typed in the Project Specification bar, both print on the document, and both name the downloaded file through the shared Pdf FilenamePattern. DefaultRevision is what an untouched specification opens at, and what a specification written before these fields existed is read as. DocumentNumberSuffix is appended to the project code when no number has been typed, so PS01 gives PS01_SPEC; type PS01_T02_SPEC over it to sit with the sheets.",
++        "LayoutEditor__Specification__RevisionNote": "The specification is a document that gets issued, so it carries a revision and a number of its own, the way each sheet carries a Rev and a Drawing No. Both are typed in the Project Specification bar, both print on the document, and both name the downloaded file through the shared Pdf FilenamePattern. DefaultRevision is what an untouched specification opens at, and what a specification written before these fields existed is read as. DocumentNumberSuffix is appended to the project code when no number has been typed, so PS01 gives PS01_SPEC.",
+@@ -539 +536 @@
+-        "LayoutEditor__MarginNotes__Description": "The notes margin a sheet can carry down its right-hand side, from the top of the border to the title block. Switched on per sheet with Show notes margin in the Margin Notes panel; drag its left edge to make it wider or narrower. It lists any groups the sheet lists without leaders first (LeaderlessNote), then the specification notes the sheet's bubbles link to, in specification order, then the general notes. Distances and text sizes are paper millimetres except the divider and rule (printed points). TextSizeMm is the body (2 mm); titles are TitleScale times that. PaddingMm is the left and top/foot inset; PaddingRightMm is the clearance before the sheet's right border, a little more so wrapped lines do not clip. A note reads as its code, CodePipe, then its title, with the body wrapped to the full inner width. A faint RuleColour line at RulePt sits between notes, centred in the gap between them: NoteGapMm is the least that gap can be, and decides what fits; when every note fits and the column has room left at the foot, every gap opens by the same amount, up to NoteGapMaxMm. IncludeGeneralNotes and GroupHeadings are what a newly switched-on margin starts with.",
++        "LayoutEditor__MarginNotes__Description": "The notes margin a sheet can carry down its right-hand side, from the top of the border to the title block. Switched on per sheet with the Notes button on the toolbar or in the Margin Notes panel; drag its left edge to make it wider or narrower. It lists the specification notes the sheet's bubbles link to, in specification order, then the general notes. Distances and text sizes are paper millimetres except the divider and rule (printed points). TextSizeMm is the body (2 mm); titles are TitleScale times that. PaddingMm is the left and top/foot inset; PaddingRightMm is the clearance before the sheet's right border, a little more so wrapped lines do not clip. A note reads as its code, CodePipe, then its title, with the body wrapped to the full inner width. A faint RuleColour line at RulePt sits between notes, centred in the gap between them: NoteGapMm is the least that gap can be, and decides what fits; when every note fits and the column has room left at the foot, every gap opens by the same amount, up to NoteGapMaxMm. IncludeGeneralNotes and GroupHeadings are what a newly switched-on margin starts with.",
+@@ -622 +619 @@
+-        "LayoutEditor__Labels__TabLabelFormatNote": "What a sheet is called on its tab, the toolbar and every list that names one: {code} is the short code cut from the Drawing Register's number ('PS01_T02_D03' gives 'D03'), {name} the sheet's short name. The whole drawing number stays on the tab's hover and the title block. With {name} empty this is also the fixed text in front of the Sheet panel's Name box ('D03 -').",
++        "LayoutEditor__Labels__TabLabelFormatNote": "What a sheet is called on its tab, the toolbar and every list that names one: {code} is the short code cut from the sheet's Drawing No. ('PS01_T02_D03' gives 'D03'), {name} the sheet's short name. A sheet with no Drawing No. shows its name alone. With {name} empty this is also the fixed text in front of the Sheet panel's Name box ('D03 -').",
+@@ -632,2 +629,2 @@
+-        "LayoutEditor__Labels__StatusTitle": "What this drawing is issued for. It prints in the last cell of the title block, and can also be chosen on the drawing's row in the Drawing Register. The list is LayoutEditor__TitleBlock__Statuses.",
+-        "LayoutEditor__Labels__SheetNameCodeTitle": "Drawing {number}. The number comes from the Drawing Register and follows it by itself - type only the short name.",
++        "LayoutEditor__Labels__StatusTitle": "What this drawing is issued for. It prints in the last cell of the title block. The list is LayoutEditor__TitleBlock__Statuses.",
++        "LayoutEditor__Labels__SheetNameCodeTitle": "Drawing {number}. Cut from the Drawing No. below - type only the short name here.",
+@@ -673 +670 @@
+-        "LayoutEditor__Labels__SitePlanNoData": "No site plan data for this project. In SketchUp: GLB Builder, Export Site Plan Data, into 30__TrueVision__AppContent/SitePlan__DrawingData.",
++        "LayoutEditor__Labels__SitePlanNoData": "No site plan data for this project. In SketchUp: GLB Builder, Export Site Plan Data, into the project folder's SitePlan__DrawingData.",
+@@ -677 +674,4 @@
+-        "LayoutEditor__Labels__NoSheets": "No sheets yet. New Sheet below makes the first; the tab strip and its Drawings menu appear with it.",
++        "LayoutEditor__Labels__NoSheets": "No sheets yet. New Sheet makes the first one and opens it.",
++        "LayoutEditor__Labels__LayoutModeLabel": "Enable Layout Mode",
++        "LayoutEditor__Labels__LayoutModeHint": "Shows this project's drawing tabs, here and on the live site, once it has a sheet. Saved with the project.",
++        "LayoutEditor__Labels__LayoutModeOffNote": "Off for this project: no drawing tabs, here or on the live site.",
+@@ -679,2 +679,2 @@
+-        "LayoutEditor__Labels__TabsPreviousTitle": "The tab before this one",
+-        "LayoutEditor__Labels__TabsNextTitle": "The tab after this one",
++        "LayoutEditor__Labels__TabsPreviousTitle": "The drawing before this one",
++        "LayoutEditor__Labels__TabsNextTitle": "The drawing after this one",
+@@ -877,2 +877,2 @@
+-        "LayoutEditor__Labels__ToolMoveTitle": "Move tool (M): drag to move whatever is under the pointer. It comes up by itself when Select picks text, a vector, a leader's bubble or a group, and goes back to Select when you click anything else. Viewports and dimensions only move once M is pressed, so a drawing is never shifted by accident; Escape goes back to Select.",
+-        "LayoutEditor__Labels__ToolSelectTitle": "Select (V or space): click to pick, drag from bare paper to box-select. Picking text, a vector, a leader's bubble or a group picks the Move tool up too, so the next drag moves it. Double-click a group, a vector or a dimension to edit inside it, or text to type in it. Press M to move a viewport or a dimension.",
++        "LayoutEditor__Labels__ToolMoveTitle": "Move tool (M): drag to move whatever is under the pointer. With the Select tool a drag moves nothing, so nothing is shifted by accident; Escape puts every tool down.",
++        "LayoutEditor__Labels__ToolSelectTitle": "Select (V or space): click to pick, drag from bare paper to box-select. Double-click a group, a vector or a dimension to edit inside it. Press M to move things; Escape always comes back here.",
+@@ -933 +933 @@
+-        "LayoutEditor__Labels__SpecificationTab": "Specification",
++        "LayoutEditor__Labels__SpecificationTab": "Project Specification",
+@@ -935,0 +936,2 @@
++        "LayoutEditor__Labels__MarginToggle": "Notes",
++        "LayoutEditor__Labels__MarginToggleTitle": "Show the notes margin on this sheet: the specification notes its bubbles link to, with the general notes last. Drag its left edge to resize it.",
+@@ -1023 +1025 @@
+-        "LayoutEditor__Labels__PdfMarginOverflow": "PDF downloaded, but {count} note(s) did not fit and were left out. Widen the notes margin, enlarge a note region or make the text smaller.",
++        "LayoutEditor__Labels__PdfMarginOverflow": "PDF downloaded, but {count} margin note(s) did not fit and were left out. Widen the notes margin or make its text smaller.",
+@@ -1130 +1132 @@
+-        "LayoutEditor__Labels__MeasureIdleTitle": "Pick the Draw (L), Rectangle (R) or Dimension (D) tool to type sizes here, or move something and type how far.",
++        "LayoutEditor__Labels__MeasureIdleTitle": "Pick the Draw (L), Rectangle (R) or Dimension (D) tool to type sizes here, or drag a vertex or a viewport.",
+@@ -1136 +1138 @@
+-        "LayoutEditor__Labels__MeasurePaperTitle": "Typed and shown in paper millimetres. Tick Draw at scale (Vectors) or Measure at scale (Dimensions) to work at the drawing's scale.",
++        "LayoutEditor__Labels__MeasurePaperTitle": "Typed and shown in paper millimetres. Drawings and dimensions default to at-scale so typed sizes follow the drawing.",
+@@ -1148 +1150 @@
+-        "LayoutEditor__Labels__MeasureViewportTitle": "Drag the viewport the way to go, type a length and press Enter - 2500, 2,500 or 2.5m. A number with no unit is millimetres at the viewport's scale. Type another length to move it again.",
++        "LayoutEditor__Labels__MeasureViewportTitle": "Drag the viewport the way to go, type a length and press Enter - 2500, 2,500 or 2.5m. A number with no unit is millimetres at the viewport's scale.",
+@@ -1154,0 +1157,3 @@
++        "LayoutEditor__Labels__MeasureOffsetAgain": "Type another distance to slide it again.",
++        "LayoutEditor__Labels__MeasureNoOffsetSide": "Drag the line to one side, then press Enter.",
++        "LayoutEditor__Labels__MeasureDimOffsetTitle": "Drag the line clear of the drawing, then type how far off it should sit and press Enter. Type another distance to slide it again.",
+@@ -1200,2 +1205,2 @@
+-        "LayoutEditor__DrawingRegister__PdfJsScriptPath": "/na-apps/20__PlanVision__CoreAppCode/01__AppDependencies__VersionLocked/PdfJs__3.11.174/build/pdf.min.js",
+-        "LayoutEditor__DrawingRegister__PdfJsWorkerPath": "/na-apps/20__PlanVision__CoreAppCode/01__AppDependencies__VersionLocked/PdfJs__3.11.174/build/pdf.worker.min.js",
++        "LayoutEditor__DrawingRegister__PdfJsScriptPath": "./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.min.js",
++        "LayoutEditor__DrawingRegister__PdfJsWorkerPath": "./04__Lib__ThirdParty__VersionLocked/07__Vendor__PdfJs__v3.11.174/build/pdf.worker.min.js",
+@@ -1220 +1225 @@
+-        "LayoutEditor__DrawingRegister__ColumnsSchemaNote": "The first three columns are the document code taken apart: drawingNo is the sequential number the register writes and the tabs read, phase is which stage of the job the drawing belongs to, and documentCode is those two behind the project code, composed. Read left to right they build the identifier the title block prints. See TrueVision__NOTES__DrawingNumberingSchema__.md.",
++        "LayoutEditor__DrawingRegister__ColumnsSchemaNote": "The first three columns are the document code taken apart: drawingNo is the sequential number the register writes and the tabs read, phase is which stage of the job the drawing belongs to, and documentCode is those two behind the project code, composed. Read left to right they build the identifier the title block prints. See the DrawingNumberingSchema NOTES in TrueVision3D.",
+@@ -1232,8 +1237,3 @@
+-        "LayoutEditor__DrawingRegister__Phases": [
+-            { "Code": "T01", "Name": "Concept" },
+-            { "Code": "T02", "Name": "Planning" },
+-            { "Code": "T03", "Name": "Building Regs" },
+-            { "Code": "T04", "Name": "Site & Remedial" }
+-        ],
+-        "LayoutEditor__DrawingRegister__DefaultPhaseNote": "What a sheet is read as when its phase has never been set, including every drawing made before the phase existed. Adam chose T01 on 19-Sep-2026: a drawing that has not declared its stage is a concept drawing, and saying so is honest where guessing Planning would quietly mislabel a whole back catalogue.",
+-        "LayoutEditor__DrawingRegister__DefaultPhase": "T01",
++        "LayoutEditor__DrawingRegister__Phases": [],
++        "LayoutEditor__DrawingRegister__DefaultPhaseNote": "What a sheet is read as when its phase has never been set, including every drawing made before the phase existed. Empty until Vale's own stage list is supplied (Phases is empty too), so a sheet declares no phase and its document code reads {project}_{drawing}. Set the two together, and before the first drawing is published: a document code names published folders.",
++        "LayoutEditor__DrawingRegister__DefaultPhase": "",
+@@ -1242 +1242 @@
+-        "LayoutEditor__DrawingRegister__DocumentCodeFormat": "{project}_{phase}_{drawing}",
++        "LayoutEditor__DrawingRegister__DocumentCodeFormat": "{project}_{drawing}",
+@@ -1246 +1246 @@
+-        "LayoutEditor__DrawingRegister__LetterheadLogoAspect": 4.096,
++        "LayoutEditor__DrawingRegister__LetterheadLogoAspect": 4.5,
+@@ -1272 +1272,3 @@
+-        "LayoutEditor__Statement__Description": "The Statement Writer tab: the project's written documents - a pre-application statement, a design and access statement, a heritage statement - each authored in markdown and read as one endless A4 page. A statement is a FOLDER under FolderName in the project's TrueVision content, holding one markdown file and the pictures it uses. The folders are numbered (01__, 02__) so they order themselves, and IndexFileName is the sibling JSON that remembers which markdown file in each folder is the statement, what it is called and when it was last published. Everything else in a statement folder - project notes, reference photography - is left alone: this app owns one file per folder and touches nothing beside it.",
++        "LayoutEditor__Statement__Description": "The Statement Writer tab: the project's written documents - a pre-application statement, a design and access statement, a heritage statement - each authored in markdown and read as one endless A4 page. A statement is a FOLDER under FolderName in the project's folder, holding one markdown file and the pictures it uses. The folders are numbered (01__, 02__) so they order themselves, and IndexFileName is the sibling JSON that remembers which markdown file in each folder is the statement, what it is called and when it was last published. Everything else in a statement folder - project notes, reference photography - is left alone: this app owns one file per folder and touches nothing beside it.",
++        "LayoutEditor__Statement__Enabled": false,
++        "LayoutEditor__Statement__EnabledNote": "ValeVision only: whether the Design Statements tab is built at all. Off until it is decided that Vale projects carry written statements; the Statement Writer's code is present either way, so switching it on is this one value. TrueVision has no such switch and always builds the tab.",
+@@ -1275 +1277 @@
+-        "LayoutEditor__Statement__IndexFileName": "TrueVision__StatementDocs__.json",
++        "LayoutEditor__Statement__IndexFileName": "ValeVision__StatementDocs__.json",
+@@ -1280 +1282 @@
+-        "LayoutEditor__Statement__NamingNote": "A new statement is named from what is typed in the manager. The folder takes the next free two-digit prefix and the typed title with its spaces removed; the markdown file takes the project code, the tranche, an S-number counted across the project's statements, the project name and the same title. Typing \"Design & Access Statement\" into project RB05 therefore gives 02__DesignAccessStatement and RB05_T01_S02__WestFarm__DesignAccessStatement__.md. Both can be renamed afterwards.",
++        "LayoutEditor__Statement__NamingNote": "A new statement is named from what is typed in the manager. The folder takes the next free two-digit prefix and the typed title with its spaces removed; the markdown file takes the project code, the tranche, an S-number counted across the project's statements, the project name and the same title. Typing \"Design & Access Statement\" therefore gives the folder 02__DesignAccessStatement and a markdown file named by FilePattern, ending __DesignAccessStatement__.md. Both can be renamed afterwards.",
+@@ -1289 +1291 @@
+-        "LayoutEditor__Statement__AutoSaveLocalNote": "How long the typing must pause before the markdown is written to the local file through the ProjectVision server. The local copy is a mirror, not the record, so this is frequent and silent; R2 is only written when Publish is pressed.",
++        "LayoutEditor__Statement__AutoSaveLocalNote": "How long the typing must pause before the markdown is written to the local file through the local server. The local copy is a mirror, not the record, so this is frequent and silent; R2 is only written when Publish is pressed.",
+@@ -1298 +1300 @@
+-        "LayoutEditor__Statement__StylesheetUrl": "https://www.noble-architecture.com/na-apps/30__TrueVision__CoreAppCode/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css",
++        "LayoutEditor__Statement__StylesheetUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/08__Style__Stylesheets/Na__LayoutEditor__Styles__Statement__Document__.css",
+--- tv/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
++++ vv/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+@@ -2 +2 @@
+-// TRUEVISION3D - LAYOUT EDITOR - CONFIG STATE - SHEET SETUP
++// VALEVISION3D - LAYOUT EDITOR - CONFIG STATE - SHEET SETUP
+@@ -35,9 +35,18 @@
+-// - Ported from   : the ValeVision3D v2.47.0 split of the same module (same unit, same functions)
+-// - Parity        : verbatim (moved code)
+-// - Divergences   : GetPlanDoorsSetup, GetModelSourceSetup and PdfFontCuts
+-//                   (TrueVision only), the site plan scales, the 1:200 in the
+-//                   scales fallback and the Hide swings fallbacks, the PDF fonts,
+-//                   TrueVision's own defaults (style font, logo aspect, drawn
+-//                   by, PDF author, creator and jsPDF path) and one word in
+-//                   the raster comment.
+-// - Back-port     : n/a (this IS the back-port)
++// - Authored in   : ValeVision3D first (1.0.0, split out of Na__LayoutEditor__ConfigState__.js on
++//                   15-Sep-2026, v2.47.0; ValeVision's last version, 1.3.0 of 20-Sep-2026, stood at
++//                   TrueVision's 1.4.0); since ported back whole from TrueVision3D 1.9.0 (HEAD b2aa9151)
++// - Source version: 1.9.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
++// - Ported on     : 01-Oct-2026 for ValeVision3D {{VVREL:W0-15}}
++// - Parity        : adapted
++// - Divergences   :
++//   - Banner reads ValeVision3D. (No console output in this file.)
++//   - ValeVision's own defaults: the Vale logo cell (34 mm wide, 5.5 mm high, aspect 4.5 for the
++//     2000 x 444 asset, paddings 1.8 and 2.5), Drawn By "Vale Garden Houses", PDF author "Vale
++//     Garden Houses Limited" and creator "ValeVision3D Layout Editor".
++//   - As the shipped config does until each is switched on: the title block rows keep DrawingNumber
++//     ("Drawing No.", no Revision prefix) until the Document ID, the scales stop at 1:100 until 1:200,
++//     and the style font keeps Helvetica first until the PDF embeds Open Sans.
++//   - Door swing linework is ValeVision__Linetype__DoorSwings (this app's linetype keys).
++//   - PDF fonts: the AD04 Open Sans cuts the screen's @font-face already loads, for the base path
++//     and the CDN base alike, until a Vale-owned copy is named.
++// - Back-port     : none.
+@@ -139,2 +148,2 @@
+-                       { Key : 'Title', Label : 'Drawing Title', WidthMm : 60, Flex : 1 }, { Key : 'DocumentId', Label : 'Document ID', WidthMm : 24 },   // <-- The title takes what the paper has left; the id is the whole identifier, PS01_T02_D01
+-                       { Key : 'Revision', Label : 'Rev', WidthMm : 28, ValuePrefix : 'Revision' }, { Key : 'Scale', Label : 'Scale', WidthMm : 28 },   // <-- The four small cells are one module, sized for the widest thing any of them says; Rev prints "Revision A"
++                       { Key : 'Title', Label : 'Drawing Title', WidthMm : 60, Flex : 1 }, { Key : 'DrawingNumber', Label : 'Drawing No.', WidthMm : 24 },   // <-- The title takes what the paper has left
++                       { Key : 'Revision', Label : 'Rev', WidthMm : 28 }, { Key : 'Scale', Label : 'Scale', WidthMm : 28 },   // <-- The four small cells are one module, sized for the widest thing any of them says
+@@ -146 +155 @@
+-        scales     : [ 20, 50, 100, 200 ],
++        scales     : [ 20, 50, 100 ],
+@@ -148 +157 @@
+-        swingCategoryKeys   : [ 'TrueVision__Linetype__DoorSwings' ],          // <-- The SketchUp door swing linework, one whole-building GLB
++        swingCategoryKeys   : [ 'ValeVision__Linetype__DoorSwings' ],          // <-- The SketchUp door swing linework, one whole-building GLB
+@@ -150,3 +159,3 @@
+-            { Style : 'light',  Weight : 300, FileName : 'CommonFont-01__OpenSans__Light__.ttf' },
+-            { Style : 'normal', Weight : 400, FileName : 'CommonFont-01__OpenSans__Regular__.ttf' },
+-            { Style : 'bold',   Weight : 600, FileName : 'CommonFont-01__OpenSans__SemiBold__.ttf' }
++            { Style : 'light',  Weight : 300, FileName : 'AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf' },
++            { Style : 'normal', Weight : 400, FileName : 'AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf' },
++            { Style : 'bold',   Weight : 600, FileName : 'AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf' }
+@@ -186 +195 @@
+-            fontFamily        : Na__LeCfg__Val('Style', 'FontFamily', "'Open Sans', Helvetica, Arial, sans-serif"),
++            fontFamily        : Na__LeCfg__Val('Style', 'FontFamily', "Helvetica, Arial, 'Open Sans', sans-serif"),
+@@ -242 +251 @@
+-            logoCellWidthMm     : Na__LeCfg__Num('TitleBlock', 'LogoCellWidthMm', 40),    // <-- The logo fallbacks mirror the shipped JSON, as the rows do
++            logoCellWidthMm     : Na__LeCfg__Num('TitleBlock', 'LogoCellWidthMm', 34),    // <-- The logo fallbacks mirror the shipped JSON, as the rows do
+@@ -244,4 +253,4 @@
+-            logoMaxHeightMm     : Na__LeCfg__Num('TitleBlock', 'LogoMaxHeightMm', 8),
+-            logoAspect          : Na__LeCfg__Num('TitleBlock', 'LogoAspectWidthOverHeight', 4.096),
+-            logoPaddingVMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingVMm', 1.2),
+-            logoPaddingHMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingHMm', 4),      // <-- Air either side of the mark, so it is not hemmed in by the cell
++            logoMaxHeightMm     : Na__LeCfg__Num('TitleBlock', 'LogoMaxHeightMm', 5.5),
++            logoAspect          : Na__LeCfg__Num('TitleBlock', 'LogoAspectWidthOverHeight', 4.5),
++            logoPaddingVMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingVMm', 1.8),
++            logoPaddingHMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingHMm', 2.5),    // <-- Air either side of the mark, so it is not hemmed in by the cell
+@@ -254 +263 @@
+-            drawnByDefault      : Na__LeCfg__Val('TitleBlock', 'DrawnByDefault', 'Noble Architecture'),
++            drawnByDefault      : Na__LeCfg__Val('TitleBlock', 'DrawnByDefault', 'Vale Garden Houses'),
+@@ -551,2 +560,2 @@
+-            author            : Na__LeCfg__Val('Pdf', 'Author', 'Noble Architecture Ltd'),
+-            creator           : Na__LeCfg__Val('Pdf', 'Creator', 'TrueVision3D Layout Editor'),
++            author            : Na__LeCfg__Val('Pdf', 'Author', 'Vale Garden Houses Limited'),
++            creator           : Na__LeCfg__Val('Pdf', 'Creator', 'ValeVision3D Layout Editor'),
+@@ -555,2 +564,2 @@
+-            fontBasePath      : Na__LeCfg__Val('Pdf', 'FontBasePath', '../01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/'),
+-            fontCdnBase       : Na__LeCfg__Val('Pdf', 'FontCdnBase', 'https://www.noble-architecture.com/na-apps/01__Assets__NaApps__CommonAssets/NaApps__CommonFonts/'),
++            fontBasePath      : Na__LeCfg__Val('Pdf', 'FontBasePath', 'https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/'),
++            fontCdnBase       : Na__LeCfg__Val('Pdf', 'FontCdnBase', 'https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/'),
+--- tv/80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html
++++ vv/80__Testing__PrototypeEnvironment/Na__Test__SpecificationPdf__.html
+@@ -3 +3 @@
+-     TRUEVISION3D - TEST - SPECIFICATION PDF DOWNLOAD
++     VALEVISION3D - TEST - SPECIFICATION PDF DOWNLOAD
+@@ -5 +5 @@
+-     Drives the REAL Na__LeSpecPdf__ against PS01's real specification file, so the
++     Drives the REAL Na__LeSpecPdf__ against a real project's drawing notes, so the
+@@ -9,0 +10,2 @@
++
++     Ported from TrueVision3D's page of the same name, 17-Sep-2026.
+@@ -23 +25 @@
+-<h1>TrueVision3D — specification PDF</h1>
++<h1>ValeVision3D — specification PDF</h1>
+@@ -27,3 +29,2 @@
+-     where Index.html sits, and this page is one folder deeper; loading it here
+-     means Na__LePdf__LoadLibrary finds window.jspdf already there and never
+-     injects a path that cannot resolve from here. -->
++     where index.html sits, and this page is one folder deeper; loading it here
++     means Na__LePdf__LoadLibrary finds window.jspdf already there. -->
+@@ -48,3 +49,3 @@
+-// The sheet model first, for the same reason the title block page does it: the
+-// Layout Editor's record, model and panel modules are a knot of import cycles,
+-// and entering at the wrong one leaves consts in the temporal dead zone.
++// The sheet model first: the Layout Editor's record, model and panel modules are
++// a knot of import cycles, and entering at the wrong one leaves consts in the
++// temporal dead zone.
+@@ -61,4 +62,5 @@
+-        const specState = await import('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__State__.js');
+-        const specDoc   = await import('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__Document__.js');
+-        const specData  = await import('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecData__.js');
+-        const specPdf   = await import('../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js');
++        const SPEC = '../02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/';
++        const specState = await import(SPEC + 'Na__LayoutEditor__SpecData__State__.js');
++        const specDoc   = await import(SPEC + 'Na__LayoutEditor__SpecData__Document__.js');
++        const specData  = await import(SPEC + 'Na__LayoutEditor__SpecData__.js');
++        const specPdf   = await import(SPEC + 'Na__LayoutEditor__SpecPdf__.js');
+@@ -66,4 +68,2 @@
+-        // LOAD PS01'S REAL SPECIFICATION, without the transport: the file is
+-        // fetched here and adopted, so no R2 read and no R2 write can happen.
+-        const raw = await (await fetch('/na-project-portal/26-Projects/PS01__MustersRoad/30__TrueVision__AppContent/TrueVision__DrawingNotes__.json')).json();
+-        specState.Na__LeSpec__SetProjectCode('PS01');
++        const raw = await (await fetch('/WebApps/Whitecardopedia/Projects/2026/3047__Doous/ValeVision__DrawingNotes__.json')).json();
++        specState.Na__LeSpec__SetProjectCode('3047');
+@@ -76 +76 @@
+-        say('document number  : ' + specData.Na__LeSpec__GetDocumentNumber('PS01'));
++        say('document number  : ' + specData.Na__LeSpec__GetDocumentNumber('3047'));
+@@ -80 +79,0 @@
+-        // SET IT TO REVISION B, the thing Adam asked for.
+@@ -87 +85,0 @@
+-        // "Rev C" typed in full, and a number typed over the default.
+@@ -90,2 +88,2 @@
+-        specData.Na__LeSpec__SetDocumentNumber('PS01_T02_SPEC');
+-        say('number typed over              : ' + specData.Na__LeSpec__GetDocumentNumber('PS01'));
++        specData.Na__LeSpec__SetDocumentNumber('3047_T02_SPEC');
++        say('number typed over              : ' + specData.Na__LeSpec__GetDocumentNumber('3047'));
+@@ -94 +92 @@
+-        say('number cleared, follows code   : ' + specData.Na__LeSpec__GetDocumentNumber('PS01'));
++        say('number cleared, follows code   : ' + specData.Na__LeSpec__GetDocumentNumber('3047'));
+@@ -97 +94,0 @@
+-        // BACK TO B, and build the real PDF.
+@@ -105,2 +101,0 @@
+-
+-        // Is the text REAL text? Pull the raw PDF and look for a note's words.
+@@ -109 +103,0 @@
+-        say('  fonts    : ' + (built.doc.getFontList ? Object.keys(built.doc.getFontList()).join(', ') : '?'));
+@@ -111,2 +105 @@
+-        window.__SPEC_RESULT = { filename : built.filename, pages : built.pages, bytes : blob.size };
+-        window.__SPEC_BLOB   = blob;
++        window.__SPEC_BLOB = blob;
+@@ -117 +109,0 @@
+-        window.__SPEC_RESULT = 'ERROR';
+--- tv/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html
++++ vv/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html
+@@ -3 +3 @@
+-     TRUEVISION3D - TEST - TITLE BLOCK CELLS
++     VALEVISION3D - TEST - TITLE BLOCK CELLS
+@@ -6 +6 @@
+-     for sheets carrying PS01's own title block values, on every paper size - so
++     for sheets carrying typical Vale title block values, on every paper size - so
+@@ -11,4 +11,4 @@
+-     jsPDF is loaded the way the app loads it AND the Open Sans cuts are waited
+-     for, so every cell is measured with the face it prints in. The cell widths
+-     in the table under each strip are read back off the primitives (the vertical
+-     rules), not recomputed, so they are what was actually drawn.
++     jsPDF is loaded the way the app loads it, so every cell is measured in the
++     face this app prints in - jsPDF's own Helvetica. The cell widths in the table
++     under each strip are read back off the primitives (the vertical rules), not
++     recomputed, so they are what was actually drawn.
+@@ -17 +17,2 @@
+-     logo among them - resolve exactly as they do from Index.html.
++     logo among them - resolve exactly as they do from index.html. Serve the
++     ValeCodebase ROOT: the logo sits above the app folder.
+@@ -19,2 +20,2 @@
+-     USAGE: serve the repo root and open
+-       /na-apps/30__TrueVision__CoreAppCode/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html
++     USAGE: serve the ValeCodebase root and open
++       /WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html
+@@ -23,0 +25 @@
++     Ported from TrueVision3D's page of the same name, 20-Sep-2026.
+@@ -46 +48 @@
+-<h1>TrueVision3D - title block cells</h1>
++<h1>ValeVision3D - title block cells</h1>
+@@ -50 +52 @@
+-<!-- The app's own import map, as Index.html has it (the base href makes the paths the same). -->
++<!-- The app's own import map, as index.html has it (the base href makes the paths the same). -->
+@@ -62,0 +65 @@
++        "three-edge-projection/worker" : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+@@ -78 +80,0 @@
+-import { Na__LePdfFonts__EnsureLoaded } from './02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js';
+@@ -83 +85 @@
+-const PS01_TITLE = 'Permitted Development Compliance - Existing Conditions & Design Proposal Elevations';
++const LONG_TITLE = 'Permitted Development Compliance - Existing Conditions & Design Proposal Elevations';
+@@ -88 +90 @@
+-function sheet(order, paper, orientation, scales, fields, drawingType) {
++function sheet(order, paper, orientation, scales, fields) {
+@@ -90,7 +92,6 @@
+-        Sheet__Fields__Client      : 'Mr P. Samra',
+-        Sheet__Fields__SiteAddress : '255 Musters Road, West Bridgford, Nottinghamshire, NG2 7DD',
+-        Sheet__Fields__Title       : PS01_TITLE,
+-        Sheet__Fields__DocumentId  : 'PS01_T01_D' + String(order).padStart(2, '0'),
+-        Sheet__Fields__Revision    : 'B',
+-        Sheet__Fields__DrawnBy     : 'A. Noble',
+-        Sheet__Fields__Status      : 'FOR PLANNING'
++        Sheet__Fields__Client        : 'Mordaunt',
++        Sheet__Fields__SiteAddress   : 'The Old Rectory, Church Lane, Melton Mowbray, LE13 1AE',
++        Sheet__Fields__Title         : 'Proposed Orangery - Elevations',
++        Sheet__Fields__DrawingNumber : '57079-' + String(order).padStart(2, '0'),
++        Sheet__Fields__Revision      : 'B',
++        Sheet__Fields__Status        : 'FOR PLANNING'
+@@ -106 +106,0 @@
+-        Sheet__DrawingType : drawingType || undefined,
+@@ -117,8 +117,8 @@
+-    [ 'PS01 D02 as Adam marked it up',        sheet(2, 'A2', 'landscape', [ 50 ]) ],
+-    [ 'The same sheet with a short title',    sheet(3, 'A2', 'landscape', [ 50 ], { Sheet__Fields__Title : 'Proposed Floor Plans' }) ],
+-    [ 'Status never chosen',                  sheet(4, 'A2', 'landscape', [ 50, 100 ], { Sheet__Fields__Status : null }) ],
+-    [ 'Site plan, the widest realistic scale',sheet(5, 'A1', 'landscape', [ 500, 1250 ], { Sheet__Fields__Status : 'FOR BUILDING CONTROL' }, 'siteplan') ],
+-    [ 'A3, where the room is tight',          sheet(6, 'A3', 'landscape', [ 50 ]) ],
+-    [ 'A3 with three scales and a long client', sheet(7, 'A3', 'landscape', [ 20, 50, 100 ], { Sheet__Fields__Client : 'Mr & Mrs Featherstonehaugh', Sheet__Fields__Status : 'FOR CONSTRUCTION' }) ],
+-    [ 'A4 landscape, narrower than the strip', sheet(8, 'A4', 'landscape', [ 50 ]) ],
+-    [ 'A4 portrait, where nothing fits',      sheet(9, 'A4', 'portrait',  [ 50 ]) ]
++    [ 'A typical Vale sheet',                  sheet(2, 'A2', 'landscape', [ 50 ]) ],
++    [ 'The same sheet with a long title',      sheet(3, 'A2', 'landscape', [ 50 ], { Sheet__Fields__Title : LONG_TITLE }) ],
++    [ 'Status never chosen',                   sheet(4, 'A2', 'landscape', [ 50, 100 ], { Sheet__Fields__Status : null }) ],
++    [ 'A1, the longest status',                sheet(5, 'A1', 'landscape', [ 100 ], { Sheet__Fields__Status : 'FOR BUILDING CONTROL' }) ],
++    [ 'A3 with the long title, which the old shares cut', sheet(6, 'A3', 'landscape', [ 50 ], { Sheet__Fields__Title : LONG_TITLE }) ],
++    [ 'A3 with three scales and a long client', sheet(7, 'A3', 'landscape', [ 20, 50, 100 ], { Sheet__Fields__Client : 'Mr & Mrs Featherstonehaugh', Sheet__Fields__Status : 'FOR CONSTRUCTION', Sheet__Fields__Title : LONG_TITLE }) ],
++    [ 'A4 landscape, narrower than the strip', sheet(8, 'A4', 'landscape', [ 50 ], { Sheet__Fields__Title : LONG_TITLE }) ],
++    [ 'A4 portrait, where nothing fits',       sheet(9, 'A4', 'portrait',  [ 50 ], { Sheet__Fields__Title : LONG_TITLE }) ]
+@@ -130 +129,0 @@
+-        const fonts = await Na__LePdfFonts__EnsureLoaded();
+@@ -133 +132 @@
+-        say('Config loaded. jsPDF present: ' + !!(window.jspdf && window.jspdf.jsPDF) + '. Open Sans loaded: ' + fonts + '. Logo loaded: ' + !!logo);
++        say('Config loaded. jsPDF present: ' + !!(window.jspdf && window.jspdf.jsPDF) + ' (text is measured in its Helvetica). Logo loaded: ' + !!logo);
+@@ -192 +191 @@
+-        window.__TEST_RESULT = { fonts : fonts, logo : !!logo, results : results };
++        window.__TEST_RESULT = { logo : !!logo, results : results };

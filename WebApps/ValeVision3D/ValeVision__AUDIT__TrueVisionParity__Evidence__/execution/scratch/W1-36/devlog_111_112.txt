@@ -1,0 +1,176 @@
+﻿====================================================================================================
+LINE 5404
+## TrueVision3D v2.111.0  -  21-Sep-2026
+### Zoom Now, Redraw When It Rests: a Wheel Notch Was Rebuilding Things That Had Nothing to Do With the Zoom
+
+**Overview**
+- From Adam, trying Draft mode on RB05: "it's still trying to redraw and regenerate the vectors on every mouse
+  wheel zoom... There should be a debounce, so it waits a little bit after you stop zooming before it tries to
+  redraw... zoom in and then it regenerates, rather than trying to do too much at once."
+- There was no debounce - every notch did everything, synchronously - and this release adds one for the whole
+  Layout Editor, Draft or not: while a wheel or pinch zoom is under way ONLY the paper's scale changes; 350 ms after
+  the last step (config `LayoutEditor__Navigation__ZoomSettleMs`) the zoom SETTLES, once, and everything that
+  follows a zoom happens then, together, including the one crisp redraw of the sheet.
+
+**What a notch cost - measured in the app before touching anything** (RB05 D02, Draft on, 20 notches)
+- About 6 ms of JavaScript per notch, all synchronous, plus two animation-frame callbacks per notch, one of which
+  (the group boxes' repaint) was queued afresh on every notch, never merged.
+- 3.4 ms of that was the five zoom listeners, and most of it was the toolbar: it re-synced everything on every
+  notch for the one number that changes with the zoom, and asked the model for the active sheet four times -
+  and `Na__LeModel__GetSheets()` normalises EVERY sheet of the set on every call (0.6 ms a call on RB05).
+- With a viewport selected, its selection outline - as big as the viewport - was torn down and rebuilt on every
+  notch, and the browser redrew everything under it with it: the viewport's whole linework, per notch. That is
+  exactly the "regenerate on every wheel zoom" Adam felt; with nothing selected the only change was the scale.
+- Panning had the same fault: a middle- or right-button pan only scrolls, but every pointer move still ran the
+  tool under it - a hit test with Select (1.8 ms a move), a snapped rubber band with Floor Area or Draw (5.2 ms a
+  move, 41 ms at worst) - for a paper point a drag-pan never changes.
+
+**What changed**
+- **One zoom a frame.** Wheel steps are multiplied together and applied once per animation frame about the
+  latest pointer position (`Controls__Pc`); `preventDefault` still runs on every event.
+- **The zoom gesture** (sheet surface, `Na__LeSurface__NoteZoomGesture`, from `Na__LeNav__ZoomAbout`'s new
+  `gesture` argument - wheel and pinch pass it). While it is open the handles are not rebuilt per step, and the
+  paper carries `na-le-paper--zooming` - `will-change: transform` - so each step SCALES the picture already drawn
+  instead of rasterising every line, fill, hatch and picture again. It used to be Draft's alone; it is now every
+  sheet's (`LayoutEditor__Navigation__HoldPaperWhileZooming`, default on).
+- **The settle** (`Na__LeSurface__ZOOM_SETTLED_EVENT`): the hold comes off, the handles are counter-scaled again,
+  and the event goes out - in one task, so the sheet is laid out and rasterised ONCE at its new zoom. Moved onto
+  it: the notes margin grip (it re-planned the whole margin through jsPDF on every frame of a wheel), the
+  Measurements box (a forced layout per notch), the sheet tools' counter-scaled boxes, and Draft mode's hairline
+  width. A single zoom - Fit, 100%, a resize - settles at once, as before.
+- **The toolbar** tracks the zoom with its readout alone (`SyncZoom`); the full sync no longer runs per notch.
+- **The group boxes' repaint** is booked once a frame, however many announcements ask for it.
+- **A pan** no longer drives the tools: the tools' move handler returns while the stage carries
+  `na-le-stage--panning` and no drag is under way; the rubber band picks up again on the next ordinary move.
+- Draft mode lost its private zoom hold and its `Navigation` config block - it re-solves its hairline width on the
+  settle and nothing else.
+
+**Numbers - after, same test in the app**
+
+| | Before | After |
+|---|---|---|
+| JavaScript per wheel event | 5.4-5.9 ms | **0.03-0.05 ms** |
+| Zooms applied, 24 wheel events over 6 frames | 24 | **6** |
+| Selection outline rebuilt per notch (viewport selected) | every notch | **once, at the settle** |
+| DOM changes inside the paper during the gesture | 100 | **7** (the scale, and the hold class once) |
+| Pointer move during a pan, Floor Area tool mid-room | 5.2 ms (41 at worst) | **0.66 ms** (0.8 at worst) |
+
+And the raster, headless Chrome on the live D02 markup (72 zoom steps, three runs each, in AND out): a step with
+the hold is 17-20 ms (50-60 fps) in Draft and normal mode alike, against 76-110 ms (9-13 fps) without it. The one
+crisp redraw at the settle is ~33 ms. The sheet is soft while the wheel turns and sharp a moment after.
+
+**Proved**
+- In the app, RB05 on a no-store server, every write refused by a guard (none attempted): the table above; one
+  settle 381 ms after the last notch (350 configured); the hold on through the gesture and off after; Draft's
+  hairline unchanged mid-gesture and exactly 1 / (zoom x dpr) after (0.164126 px at x4.06); normal mode holds and
+  settles the same way; Fit settles at once and never holds; the toolbar readout follows; a room half drawn with
+  the Floor Area tool survives a pan and the tool stays armed.
+- Both verifiers: every named import resolves (433 files); the module graph shows only its two old false
+  positives.
+
+**Found, and left for its own change**
+- `Na__LeModel__GetSheets()` re-normalises every sheet on every call, and `GetActiveSheet()` goes through it - 0.6
+  ms a call on RB05, more on a bigger set, several calls per pointer move while drawing. Out of the zoom's path now;
+  flagged as a task of its own because the fix belongs to the sheet model.
+
+**Service worker**
+- Token bumped to `2026-09-21-03`: the sheet surface exports two new names that five existing modules now import,
+  and `2026-09-21-02` is deployed (origin/main = HEAD), so a warm cache would hold the old sheet surface.
+
+**Files**
+- `10__Core__SheetSurface/` - `SheetSurface__.js` (1.8.0), `Navigation__.js` (1.2.0), `Controls__Pc__.js` (1.2.0),
+  `Controls__TouchScreen__.js` (1.1.0), `Styles__Main__Paper__.css` (the hold rule)
+- `30__System__SheetTools/` - `SheetTools__.js` (1.32.0), `SheetTools__PointerDrag__.js` (1.8.0), `Measurements__.js` (1.5.1)
+- `50__Feature__Specification/Na__LayoutEditor__MarginGrip__.js` (1.2.0)
+- `40__Ui__Panels/Na__LayoutEditor__Toolbar__.js` (1.14.0)
+- `26__System__DraftMode/` - `DraftMode__.js` (1.1.0), `__Config__.json`, `Styles__DraftMode__.css`
+- `03__Core__Config/` - `AppConfig__.json` (Navigation: ZoomSettleMs, HoldPaperWhileZooming), `ConfigState__EditorSetup__.js` (1.2.0)
+- `62__Feature__AppInstallability/TrueVision__Pwa__ServiceWorker__Logic__.js` (the token)
+- `TrueVision__PLAN__DraftMode__.md` (section 9)
+
+**ValeVision**
+- Not ported. Goes with Draft mode, on Adam's sign-off.
+
+# ---------------------------------------------------------
+====================================================================================================
+LINE 5324
+## TrueVision3D v2.112.0  -  21-Sep-2026
+### Page Down Turns the Drawing, Ctrl+S Saves the Register, and Opening a Drawing Really Leaves Walk
+
+**Overview**
+- The three things v2.110.0 left for Adam, which he answered "fix these": Page Up / Page Down on a drawing tab,
+  the Drawing Register's Ctrl+S, and Walk mode surviving into the Layout Editor (found by the peer session that
+  confirmed the key scopes). A fourth fault turned up in the same exit path and is fixed with it.
+
+**Page Up / Page Down turn the drawings**
+- Until v2.110.0 the 3D Model tab's keys swallowed them under every tab; since then they scrolled the stage.
+  Now, on a drawing tab, Page Down opens the drawing after this one and Page Up the one before, in tab order,
+  exactly as clicking that tab does (undo baseline, panels, fit, tab strip). The first and the last drawing are
+  ends, not a loop - the key is still taken there, so the stage never scrolls - and the documents after the
+  drawings are never reached this way. A held key turns one drawing, because each one renders when it opens.
+  On every tab the pair now means "the previous / next thing this tab shows": scenes on the 3D tab (unchanged),
+  drawings on a drawing, and the page itself on a document.
+- Key map: `Nav__PreviousSheet` (PageUp) and `Nav__NextSheet` (PageDown), shipped on, in the bindings, the
+  catalogue and the built-in fallback (`Na__LayoutEditor__ConfigState__KeyMap__.js` 1.2.0).
+- `Na__LayoutEditor__Controls__Pc__.js` 1.3.0 answers them by dispatching `Na__LePc__STEP_SHEET_EVENT`; the mode
+  controller (1.23.0) answers that with `Na__LeMode__StepSheet`, through Enter. An event, because the mode
+  controller imports the PC controls. The web viewer attaches the same PC controls, so a reader pages too.
+- Not claimed as LayOut's default: its Previous Page / Next Page commands exist, but Trimble's documentation
+  names no keys for them.
+
+**The Drawing Register answers Ctrl+S itself**
+- It reached the editor's save - sheets saved, specification synced - which left the revision notes being typed
+  unsaved. `Na__LayoutEditor__Register__Editor__.js` 1.2.0 registers `Doc__Save` with the documents' keyboard
+  (31__System__DocumentKeys), which hears it first: it does what Save to R2 does (R2, then the project file),
+  because that is what this tab calls saved - its status line reads "not synced to R2" until then, and the
+  sheets' own Ctrl+S goes to R2 as well. The notes are the one thing on that tab not saved the moment it is
+  confirmed. With nothing to save it says so and writes nothing (a save stamps the register's updated time).
+  The page is not rebuilt, so a note being typed keeps its caret. Save to R2's hover text names the key.
+- The Project Specification still has no save of its own: its Ctrl+S goes on to the editor's save, which syncs it.
+
+**Opening a drawing really leaves Walk and Fly**
+- `Na__DrawView__Transitions__SuspendThreeD`'s "safe mode conversion" was `Na__NavToolbar__SetActiveMode('orbit')`,
+  which only repaints the toolbar and announces an event nothing listens for. Opening a drawing tab while walking
+  left Walk running through the editor and after it, under a toolbar that read Orbit - so B did nothing and T
+  switched Walk OFF - and the return to the 3D view flew the orbit camera while the walk camera was in charge.
+- `Na__DrawView__Transitions__.js` 1.1.0: `ReturnToOrbit` is the whole exit (`Na__UiFeature__ToggleWalkMode` /
+  `ToggleFlyMode` with the toolbar as their callback - the calls the Orbit button makes), and SuspendThreeD runs it
+  only when asked (`{ returnToOrbit : true }`). The Layout Editor asks. The snapshot renderer, which suspends
+  around every viewport picture - on the 3D tab too - does not, so a render no longer relights the toolbar under
+  somebody walking.
+- `Na__DrawView__Transitions__Initialize` is still called by nobody: the controls and camera stay null, the
+  controls are never disabled there and `FlyTo` lands at once. Left alone on purpose - wiring it would wake
+  flights in every plan and elevation entry that have not run since the port.
+
+**And the render loop idles again after a walk**
+- Entering Walk asks the render loop for continuous frames (`'walk-mode'`; Fly `'fly-mode'`) and nothing ever
+  released it, so after one walk the 3D view drew every frame for the rest of the session, idle or not.
+  `Na__UiFeature__WalkModeControls.js` / `FlyModeControls.js` 1.0.1 stop it on the way out.
+
+**Also**
+- Service worker token 2026-09-21-04: the PC controls export a new name the mode controller now imports, and
+  -03 is deployed (HEAD and origin/main).
+- Key map notes brought up to date: `Edit__Save` no longer claims to save the sheets "from anywhere", and the
+  keyboard block no longer says every navigation key ships off.
+
+**Tests**
+- NEW `80__Testing__PrototypeEnvironment/Na__Test__SheetPagingWalkExit__.test.mjs`, 17 checks, all passing: the
+  real key map module with the shipped JSON under the real PC controls (Page Down / Up ask for the next /
+  previous drawing and take the key, a held key asks once, a text box or a list keeps it, Ctrl is not the
+  binding, the fallback pages too); the transitions (the editor's suspend leaves Walk and Fly and lights Orbit,
+  a picture's suspend keeps Walk and the toolbar); and a Walk and a Fly round trip leaving no render reason
+  behind. Against HEAD's six modules, 11 fail. `Na__Test__DocumentKeys__.test.mjs` still passes; the export
+  verifier passes (433 files).
+
+**Checked in the app** (RB05 on a no-cache static server; every write refused by a fetch/XHR guard)
+- Walk: idle, the loop asked for 0 frames in 2 s; a trusted T walked (119 frames in 2 s, toolbar Walk); opening
+  D01 left Walk (off, toolbar Orbit, scope sheet); back on the 3D tab the veil lifted and the loop was idle
+  again - 0 frames in 2 s.
+- Paging, trusted keys: Page Down D01 > D02 > D03 and stopped at D03; Page Up back to D01 and stopped there;
+  every press taken; nothing written.
+- Register: Ctrl+S with nothing changed said "Nothing to save" and wrote nothing; with a test note added, its one
+  write attempt carried that note in the register block of the project file (the guard refused it); the note
+  was removed afterwards and its browser draft deleted. The Statements tab's Ctrl+S still wrote the statement.
+- RB05 on disk untouched. NOT tried by Adam; NOT in ValeVision.
+
+# ---------------------------------------------------------

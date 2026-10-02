@@ -1,0 +1,300 @@
+### S12-F01 [transport/critical/build_vv_transport] Sync pipeline purges every subfolder image on R2
+TV: 
+VV: ../Whitecardopedia/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py
+DET: The SketchUp Cloud Sync's Whitecardopedia script builds its keep-set from TOP-LEVEL local images only, then lists every key under VaApps/Projects/{yyyy}/{folder}/ without a delimiter and deletes any png/jpg/jpeg/webp whose basename is not in that set. By code reading this removes PresentationMode/Thumbnails/* and LayoutEditor/Snapshots/* on R2 at each full/images sync today, and would remove sheet images, published tiers and statement pictures af...
+REC: Before any new user content is written to R2: purge only keys with no '/' after the project prefix, paginate the listing, add a stub-S3 test proving subfolder images survive. Adam signs off because the plugin runs it on live projects.
+ADAPT: 
+EVID: WCP/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py:645-680, called :925-926, :958-959; run by Plugins/Na__ValeVisionCloudSync__Modules__/03__Plugin__CoreAppLogic/...ConfigLoader__.rb:66; local 2026/3047__Doous/LayoutEditor/Snapshots holds 18 webp
+VER: 
+DEP: 
+
+### S12-F02 [transport/high/build_vv_transport] Sync uploads the whole local project.json over R2's editor keys
+TV: ../05__ProjectVision__CoreAppCode/CloudflareR2__ModelSync__Main__.py
+VV: ../Whitecardopedia/Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py; ../Whitecardopedia/Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py; ../Whitecardopedia/Tools__DevUtils/AutomationUtil__R2Common__Lib__.py
+DET: na_upload_project_json_to_r2 uploads the local file whole in na_sync_all and na_sync_glb, and the audit/backfill tool does the same with force. A local copy behind R2 (failed Flask mirror, another machine) regresses R2's LayoutEditor__DrawingsData, scenes and section bindings - the class TV closed in v2.39.0 with DEV_OWNED_PROJECT_DATA_KEYS. The pipeline also rewrites IMG-slot thumbnails inside PresentationMode__SavedCameraScenes.
+REC: Read R2 project.json first, keep R2's editor-owned keys (SSOT list, S12-F31), apply the pipeline's thumbnail repoint to R2's scene block, write the merged document to R2 AND locally, report preserved keys.
+ADAPT: 
+EVID: SyncSingleProject...py:715-738, :927, :936, :987, repoint :383-431; AuditAndBackfillR2...py:188-192; TV 05__ProjectVision__CoreAppCode/CloudflareR2__ModelSync__Main__.py:121-130, 541-551
+VER: 
+DEP: S12-F31
+
+### S12-F06 [wiring/high/update_wiring] ProjectLoader identity helpers and localhost repository fallback
+TV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: 12 TV drawing modules plus both transport modules import GetProjectFolderFromUrl/GetYearFromUrl (Assets, Persistence, SitePlan Store, Statement Data/Editor Cards, ProjectQr Link, SheetImages Store, Publish, Publish Transport, Share Links/Manifest, PubDoc Urls). VV's ProjectLoader has neither. VV ResolveAssetUrl falls back to GitHub Pages even on localhost; TV falls back to the repository copy served to the page, which the published reader reads f...
+REC: Add GetProjectFolderFromUrl (?project-folder, else the folder of the master-index entry for ?project) and GetYearFromUrl (?year, else the 4-digit year of that entry, else null - never a default year). Both answer null until InitMasterIndex has settled and when the index has no entry: never the legacy 2026/<code> guess, never project.json's folderId. On localhost, fallback ${origin}/Whitecardopedia/Projects/{folderId}/{rel} in ResolveAssetUrl (TV'...
+ADAPT: 
+EVID: TV ProjectLoader.js:92-104, 223-236; VV ProjectLoader.js:319-351, 464-475, exports 535-547; imports.txt importer list
+VER: The report defaulted the year to '2026'. A guessed year or the legacy fallback sends facade writes to a wrong prefix (S12-V02). S08 and S09 propose the same additions.
+DEP: 
+
+### S12-F07 [transport/high/build_vv_transport] VV worker 1.6.0: project GET, merge-keys, guarded project-files family
+TV: 80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js
+VV: ../Whitecardopedia/CloudflareWorker/src/index.js; ../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectFiles__.js; ../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectMerge__.js; ../Whitecardopedia/CloudflareWorker/src/CloudflareHelper__PathGuards__.js
+DET: VV's worker has save (whole doc), assets (3 roots, base64), drawing-notes, visibility, rename, delete. TV features need a fresh project read, key-level merge, sibling documents beyond the notes, raw uploads, list, copy and delete for sheet images and published documents, and statement files. Proposed: W0 health with version and routes, W1 GET project, W2 merge-keys (editor-owned key families, optional drawingsBase 409, no bump), W3-W8 files read/...
+REC: Add handlers ProjectFiles and ProjectMerge plus a PathGuards helper; route before the generic save route; GET/POST only so CORS is unchanged; prove under wrangler dev with Map-backed R2 tests; Adam deploys with Deploy__Worker.bat.
+ADAPT: 
+EVID: WCP CloudflareWorker/src/index.js:155-225; ProjectAsset__.js:51-52; CloudflareHelper__Cors__.js:72-73; TV CloudflareHandler__R2__.js:297-392 (raw upload, copy)
+VER: Missing context: the shared bucket makes the key prefix the only thing between a VV path bug and TV's content, and one legacy key the VV camera saver removes would be refused by the proposed guard.
+DEP: S12-F31
+
+### S12-F08 [transport/high/build_vv_transport] Flask persistence core: guarded save, fingerprint, backups, files/<name>, health, JSON 404
+TV: ../ProjectVision__LocalServer__Main__.py
+VV: ../Whitecardopedia/server.py; ../Whitecardopedia/Server__ValeVisionShared__Lib__.py
+DET: VV server.py writes project.json and drawing notes in place (not atomic), keeps no backups, has no drawings fingerprint, no generic sibling-file route, no /api/health, and its catch-all answers unknown GETs with 200 index.html so ported 'route missing' checks misread it; get_project_path accepts '..'. TV's ProjectVision server has all of these (v2.146.0).
+REC: Add L1-L6 of report b.6 on a shared helper module (atomic writes with retries, backups under %LOCALAPPDATA% outside the repo, realpath containment, fingerprint, JSON 404); keep /drawing-notes and /api/check-localhost; port Na__Test__ProjectDataSaveGuard__.test.py.
+ADAPT: 
+EVID: WCP/server.py:128-157, 439-484, 790-818, 956-977; TV ../ProjectVision__LocalServer__Main__.py:110-131, 377-459, 637-799
+VER: 
+DEP: 
+
+### S12-F09 [wiring/high/update_wiring] Loading sequence: Initialize, SetLoadedProjectData, editor-owned overlay
+TV: 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
+VV: 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
+DET: TV registers the full project data as the merge base and, on localhost, overlays Na__DevSavedKeys from R2 onto the base file before dispatching scenes, drawings and section bindings. VV fetches project.json from Flask (disk only), registers nothing, and dispatches the drawings block before the scenes. Register, SheetModel__Sheets, SitePlan Store, Register Pdf and the parametric panel read GetLoadedProjectData.
+REC: In VV LoadingSequence: await Na__CfApi__Initialize() after InitMasterIndex (localhost), overlay editor-owned keys from ReadProjectData on localhost (D-S12-04), call SetLoadedProjectData before the drawings dispatch, pass sceneConfig in its detail; keep dispatch order unless S02a/S09 change it.
+ADAPT: 
+EVID: TV LoadingSequence.js:352-361, 728-747, 925, 958-980; VV LoadingSequence.js:672-730; VV ProjectLoader.js:395-404
+VER: 
+DEP: S12-F04; S12-F31
+
+### S12-F12 [data_schema/high/needs_decision] Save guards for VV, plus VV-first R2 judging (D-S12-05)
+TV: 02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__ProjectData__.js; ../ProjectVision__LocalServer__Main__.py
+VV: ../Whitecardopedia/server.py; ../Whitecardopedia/CloudflareWorker/src/index.js
+DET: VV has none of TV v2.146.0's three guards (draft judged, save judged against the disk fingerprint with a 409, copies kept) yet has the same hazards (two windows, agent edits on disk, git checkouts) and VV-specific ones (whole-document dev saves, phase-2 failure). TV writes R2 first and judges only the local file; its own log lists R2 judging as not done. VV owns its save handler, so merge-keys can compare a drawingsBase with R2's SavedIso.
+REC: Port the three layers (AutoSave 1.5.0, ProjectData 1.6.0, Flask fingerprint/base header/409/backups outside the repo); add optional R2 judging through merge-keys drawingsBase; offer it back to TV.
+ADAPT: 
+EVID: TV devlog v2.146.0 L1901-2004 ('R2 is not judged'); TV ProjectData__.js:531-539, 741-747; ../ProjectVision__LocalServer__Main__.py:119-131, 673-704
+VER: 
+DEP: S12-F07; S12-F08; S12-F10
+
+### S12-F13 [transport/medium/needs_decision] Every editor write bumps VV's global build manifest (D-S12-06)
+TV: 
+VV: ../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectEditor__.js; 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: VV's save, asset and drawing-notes handlers rewrite VaApps/Index/Na__BuildVersion__Manifest__.json on every call; the token is global and VV appends it as ?v= to every project.json and GLB URL (its no-service-worker cache-bust). With TV's save cadence (structural auto save, Save Sheets, register, spec sync, sheet-image steps, publishing) every client would re-download every GLB of whatever project it opens after each save.
+REC: New merge-keys and files routes never bump (merge-keys only when asked); keep bumps for SketchUp syncs, rename, visibility, delete; consider a no-bump flag on the legacy whole-doc save used by the facade fallback.
+ADAPT: 
+EVID: WCP ProjectEditor__.js:160-171, 239; ProjectAsset__.js:148; DrawingNotes__.js:135; VV ProjectLoader.js:121-125, 251-254, 407-408
+VER: 
+DEP: S12-F07
+
+### S12-F14 [transport/medium/build_vv_transport] Worker handlers skip folderId validation; an old worker misroutes new POSTs
+TV: 
+VV: ../Whitecardopedia/CloudflareWorker/src/index.js
+DET: No handler validates the URL folderId. Save, assets and drawing-notes accept any decoded string after /projects/, and the rename handler applies its pattern only to the NEW folderId from the body (ProjectRename__.js:225). Because the generic save route captures every POST under /projects/, a client calling a new route on a worker deployed before it lands in the save handler, refused today only because the body lacks projectCode. Validation added ...
+REC: Validate folderId once in index.js with the rename handler's YYYY/Folder pattern for every /projects/ route; publish version and route names on /api/editor/health and feature-detect from the facade.
+ADAPT: 
+EVID: WCP index.js:155-219; ProjectRename__.js:84; ProjectEditor__.js:221-225; TV ApiClient__.js:882-886
+VER: The report said validation would make a worker deployed before the new routes refuse misrouted POSTs, but an old worker has no validation. It also said the rename handler validates the folder id; it validates only the new one. The S08 pattern conflict was missed.
+DEP: 
+
+### S12-F15 [transport/medium/build_vv_transport] Flask answers unknown API GETs with 200 index.html
+TV: 
+VV: ../Whitecardopedia/server.py
+DET: serve_static falls back to index.html for any missing path, so a GET to a route the running server lacks returns 200 HTML. That happens for GETs OUTSIDE /api/projects/: /api/health, and the /api/valevision sheet-images, published, statements and user-config routes. An unknown POST there gets werkzeug's HTML 405. Under /api/projects/, the <path:folder_id> routes capture any suffix: an unknown GET such as .../drawings-fingerprint or .../files/<name...
+REC: Register an /api/<path:rest> catch-all returning 404 JSON for GET and POST, ranked above the static route. It cannot change the /api/projects/ captures, which win as more specific rules. So the VV facade and ported modules must also treat 'JSON 404 Project not found' on a sub-route, HTML, 405 and non-JSON as 'route missing'. Keep the parsing defensive.
+ADAPT: 
+EVID: WCP/server.py:956-977; VV LE/56/Na__LayoutEditor__ScrapbookCustom__Transport__.js port note (HTML 200); TV LocalProjectMirror__.js:289-292
+VER: The finding said ported fingerprint and files GETs would misread HTML. On today's server they get a JSON 404 from get_project instead, which TV's code misreads in a different way. | Follows from the corrected route behaviour.
+DEP: 
+
+### S12-F16 [tooling/medium/needs_decision] Local-server identity probe: add /api/health (D-S12-07)
+TV: 02__Src__AppModules/51__System__LayoutEditor/54__Feature__SheetImages/Na__LayoutEditor__SheetImages__Store__.js
+VV: ../Whitecardopedia/server.py; 02__Src__AppModules/51__System__LayoutEditor/56__Feature__ScrapbookCustom/Na__LayoutEditor__ScrapbookCustom__Transport__.js
+DET: TV modules identify their server with GET /api/health -> service 'na-projectvision-local-dev' (SheetImages Store, ScrapbookCustom Transport, SpellCheck Dictionary, LocalProjectMirror). VV's Flask has only /api/check-localhost, and VV's scrapbook port rewrote the probe function. With /api/health on WCP each ported module keeps its function and changes one constant.
+REC: Add GET /api/health {status:'ok', service:'whitecardopedia-local-dev'} to WCP/server.py, keep /api/check-localhost; ported modules change only their SERVICE constant; optionally realign VV ScrapbookCustom Transport.
+ADAPT: 
+EVID: TV LE/54/SheetImages__Store__.js:61-95; 55/SpellCheck__Dictionary__.js:97; ../ProjectVision__LocalServer__Main__.py:637-645; WCP/server.py:322-328
+VER: 
+DEP: 
+
+### S12-F17 [data_schema/medium/needs_decision] Relative storage layout for new content (D-S12-03)
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js; 02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__.json
+VV: 
+DET: TV files new content under its content folder as 05__Layout__DrawingDocs__Images/<docId>/, 06__Layout__PublishedDocuments/ (archive 00__Archive__Revisions local only) and 10__StatementDocs/; the names live in the ApiClient constants, 53__Data__Layout__PublishedSchema and the Python blueprints. VV's existing assets already use TV's relative names (PresentationMode/Thumbnails, LayoutEditor/Linework|Snapshots). S07a proposed VV-specific sheet-image ...
+REC: Keep TV's relative folder names verbatim under VaApps/Projects/{folderId}/ (the project root replaces 30__TrueVision__AppContent) and Whitecardopedia/Projects/{yyyy}/{folder}/; commit JSON, Adam decides on committing rasters/PDFs.
+ADAPT: 
+EVID: TV ApiClient__.js:532, 766-770, 1001-1007; ../ProjectVision__TrueVisionPublished__Api__.py:82-84; ../ProjectVision__TrueVisionSheetImages__Api__.py:81-83; VV R2AssetUpload__.js:70
+VER: 
+DEP: 
+
+### S12-F18 [wiring/high/build_vv_transport] Repository URLs must be app-root relative in VV
+TV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+DET: TV builds repoUrl as ${window.location.origin}/na-project-portal/... because its site root is the repository root. VV is served at https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/ live and http://127.0.0.1:8000/ValeVision3D/ on Flask, so an origin-relative path 404s on GitHub Pages. The sibling Whitecardopedia/Projects copy resolves correctly from the app folder in both.
+REC: Facade repoUrl = new URL('../Whitecardopedia/Projects/' + folderId + '/' + rel, new URL('../../', import.meta.url)); SheetImageLocation.relative = 'Whitecardopedia/Projects/...'; config Sources__PagesBaseUrl = https://adam-noble-01.github.io/ValeCodebase/WebApps.
+ADAPT: 
+EVID: TV ApiClient__.js:621-623, 795-800; WCP/LOG__ProjectWebLinks.md; WCP/server.py:899-909 (proxy route with real 404); VV Na__AppConfig__Main.json ProjectData__AssetUrls__GhBaseUrl
+VER: 
+DEP: S12-F04
+
+### S12-F31 [data_schema/high/build_vv_transport] One editor-owned key list: VV's Na__DevSavedKeys equivalent
+TV: 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
+VV: 02__Src__AppModules/02__AppData/Na__AppConfig__Main.json
+DET: TV keeps its dev-owned key list in three places (localhost overlay, R2 sync merge, build). VV has none: disk-only localhost load, whole-file sync uploads. Keys VV's editor and dev menus write: PresentationMode__SavedCameraScenes, LayoutEditor__DrawingsData, (LayoutEditor__DrawingRegister), CrossSection__SceneData, CrossSection__Config, Navmode__EnabledModes, Navmode__OrbitMaxDistanceMm, Camera__DefaultPosition, OrbitHelperCube__Position, FogPlane...
+REC: Define ProjectData__EditorOwnedKeys in VVM/02__AppData/Na__AppConfig__Main.json. Use it for the localhost overlay (D-S12-04) and the sync pipeline, and mirror it as prefix families in the worker merge-keys guard. Include the legacy valeVision_Camera__DefaultPosition as removable-only: SaveCameraSettings deletes it, 35/155 files still carry it, and VV LoadingSequence.js:683 still reads it as a fallback. Without it, a saver moved to DeleteProjectKe...
+ADAPT: 
+EVID: TV LoadingSequence.js:352-361; ../05__ProjectVision__CoreAppCode/CloudflareR2__ModelSync__Main__.py:121-130; ProjectVision__BuildScript__.py:83-92; census of 155 VV project.json root keys
+VER: Each of the nine savers was checked against the list; one legacy key is removed outside the proposed families.
+DEP: 
+
+### S12-F33 [data_schema/medium/port_adapted] Absolute URLs in project data vs VV project rename
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/07__Export__Publish/Na__LayoutEditor__Statement__Publish__.js
+VV: ../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js
+DET: VV can rename a project's R2 folder: the worker rename route moves every key and rewrites only valeVision_ModelUrls, valeVision_ModelUrl and basePath. Ported TV data is mostly relative (asset slots, sheet-image folder+file, published paths), but TV's statement index records the published HTML's absolute CDN url, and any stored publicUrl would break after a VV rename.
+REC: Rule for VV ports: store project-relative paths only and derive CDN URLs at read time; either store the statement Doc url relative in VV or extend the rename route and its Flask mirror to rewrite folder segments inside drawing-system sibling files.
+ADAPT: 
+EVID: TV LE/52/.../Na__LayoutEditor__Statement__Publish__.js:302; WCP ProjectRename__.js:132-150, 242-290
+VER: 
+DEP: 
+
+### S12-F34 [data_schema/low/port_adapted] Project display-name source differs
+TV: 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Pdf__.js; 02__Src__AppModules/51__System__LayoutEditor/57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js
+VV: 
+DET: TV's register PDF (Register__Pdf__.js:212-216), parametric title (Panel__ScrapbookParametric__.js:289-297), SpecDocument (:161) and SpecPdf read window.TrueVision__Pwa__ProjectContext, which only TV's 62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js defines. They then fall back to data.Project__Name, which exists in neither app's data (both have projectName; VV also has displayName in 31/155 files and projectNameAlias in 7/155)...
+REC: WP-S12-V18: one VV seam - the facade's Na__CfApi__ProjectDisplayName(), reading the root projectName/displayName/projectNameAlias with an agreed precedence - used by SpecPdf, SpecDocument, Register Pdf, ScrapbookParametric and the title block default (S12-V03). Offer the helper back to TV.
+ADAPT: 
+EVID: TV LE/51/Register__Pdf__.js:212-217; LE/57/Panel__ScrapbookParametric__.js:289-297; root-key census (projectName 155/155 VV, 8/8 TV; Project__Name 0)
+VER: The scope was incomplete: two more TV modules read the global, and VV's already-ported SpecPdf is affected today. | Follows from the wider scope.
+DEP: S12-F04
+
+### S12-F35 [data_schema/low/port_adapted] Browser storage keys and IndexedDB names
+TV: 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/01__Core__Data/Na__LayoutEditor__Statement__Data__.js
+VV: 
+DET: Storage is per origin, and VV and TV never share one, so keys cannot collide. Brand-bearing TV keys: Na__TrueVision__StatementDraft__, StatementDiscarded__ (Statement__Data__.js), StatementView__, StatementLast__ and StatementMono__ (Statement__Page__.js), TrueVision3D__AuthoringUnlocked, and the IndexedDB TrueVision3D__ProjectedLinework. VV precedent renames brand-bearing keys (ValeVision3D__AuthoringUnlocked, ValeVision3D__ProjectedLinework). T...
+REC: Keep brand-neutral keys verbatim (Na__LayoutEditor__Draft__, SpecDraft__, SpecDiscarded__, Na__DrawingRegister__Draft__, na-layouteditor-* prefs); rename brand-bearing ones to Na__ValeVision__*; record both in PORT NOTEs.
+ADAPT: 
+EVID: TV LE/52/.../Statement__Data__.js:158-159; Statement__Page__.js:179; Persistence DB_NAME diff; VV DevGate__.js STORAGE_KEY
+VER: A census of storage keys in both trees found two brand-bearing keys the survey missed, and confirmed the shared osnap key is compatible.
+DEP: 
+
+### S12-F36 [data_schema/low/port_adapted] Sibling and config file names (TrueVision__* -> ValeVision__*)
+TV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+DET: TV sibling/config files carry the TV brand: TrueVision__DrawingNotes__.json (VV already ValeVision__DrawingNotes__.json), TrueVision__StatementDocs__.json, 50__TrueVision__UserConfig/TrueVision__UserSpellings__.json (keys prefixed TrueVision__UserSpellings__). The spec and statement names are config values with code defaults in ConfigState__EditorSetup__.
+REC: Set VV config values (ValeVision__StatementDocs__.json etc.) and VV defaults in EditorSetup; put both names on the facade allow-list, worker F-SIB and Flask files allow-list; settle the spellings key prefix with S06.
+ADAPT: 
+EVID: TV LE/03/Na__LayoutEditor__ConfigState__EditorSetup__.js:136, 177; Na__LayoutEditor__AppConfig__.json:512, 1275; 55/SpellCheck__Dictionary__.js:101, 114
+VER: 
+DEP: 
+
+### S12-F37 [transport/low/update_wiring] Shared service worker would cache CDN png/svg as shell assets
+TV: 
+VV: ../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js
+DET: VV runs under the shared Whitecardopedia service worker in production. Its classifier sends CDN .png and .svg to the SHELL strategy (stale-while-revalidate into an uncapped shell cache) and passes .webp and other JSON through. Published SVG linework and PNG print tiers would pile up in the shell cache. TV added a dedicated capped published cache at v2.155.0.
+REC: With S08: classify CDN files under 05__ and 06__ folders (hashed names cache-first in a capped cache, JSON network-first, PDF not cached); the token bump is Adam's call because it evicts every Vale app cache.
+ADAPT: 
+EVID: WCP 62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js:229, 240-250, 687-697; VV ledger L135-175; TV devlog v2.155.0
+VER: 
+DEP: S12-F28
+
+### S12-F41 [test/high/port_test] Port the persistence and transport tests
+TV: 80__Testing__PrototypeEnvironment/Na__Test__ProjectDataSaveGuard__.test.py; 80__Testing__PrototypeEnvironment/Na__Test__DraftGuard__.test.cjs; 80__Testing__PrototypeEnvironment/Na__Test__DraftRestore__.test.mjs
+VV: 80__Testing__PrototypeEnvironment/Na__Verify__Exports__.mjs
+DET: TV has 31 persistence-related tests; VV has only the two scrapbook API tests. Key ones: ProjectDataSaveGuard (Flask test client, 32 checks), DraftGuard (11, name-stubbed ProjectData and AutoSave), DraftRestore (27), SheetImagesApi, UserSpellingsApi, StatementServer, SpecLockstep, PublishedSchema/Reader. The name-stubbed JS tests port almost unchanged once the facade keeps TV's names.
+REC: Port with the WPs: SaveGuard against WCP/server.py, DraftGuard/DraftRestore with 40->42 paths, API tests against the VV blueprints; add facade, worker (Map-backed R2) and sync-pipeline tests; extend Na__Verify__Exports__ to the facade names.
+ADAPT: 
+EVID: TV 80__Testing__PrototypeEnvironment listing; Na__Test__DraftGuard__.test.cjs:55-66; VV 80__Testing__PrototypeEnvironment listing
+VER: 
+DEP: S12-F04; S12-F08
+
+### S12-F42 [transport/medium/build_vv_transport] Phase-2 mirror failure leaves disk behind R2
+TV: 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Transactions__.js
+VV: 02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+DET: VV saves R2 first, then mirrors the whole document to disk; a mirror failure is only a red toast. The next save re-reads the stale disk copy as its base and writes it whole to R2, and the next SketchUp sync uploads it too, so the earlier save is undone on R2. TV avoids whole-document writes (key merge) and offers Retry Local Sync after an R2-only success.
+REC: Facade merge-keys (no whole-document base on R2) plus the D-S12-04 overlay; on a local failure keep the pending local keys and offer TV's Retry Local Sync pattern rather than a toast only.
+ADAPT: 
+EVID: VV R2SaveProjectJson__.js:208-216; VV 42/ProjectData__.js:389-412; TV LE/51/Register__Transactions__.js:340-380
+VER: 
+DEP: S12-F04; S12-F07
+
+### S12-F45 [transport/medium/needs_decision] Deploy ordering and unverified worker state
+TV: 
+VV: ../Whitecardopedia/CloudflareWorker/Deploy__Worker.bat
+DET: New worker routes need a wrangler deploy only Adam can run (interactive login, account fb32e89...); Flask reloads by itself (debug=True). Whether VV's /drawing-notes route (worker index 1.5.0) is deployed is not recorded in the VV devlog (checkpoint commit 66937440) and cannot be checked without the key; the health route lists no routes today.
+REC: Order: pipeline fix, Flask core, worker under wrangler dev, Adam deploys, then features; the facade feature-detects W0 and falls back, so client work is not blocked. Ask Adam to confirm the deployed version once W0 reports it.
+ADAPT: 
+EVID: WCP/CloudflareWorker/Deploy__Worker.bat; .env.template; WCP/server.py:1007-1011; VV devlog L2610, L4998, L5072
+VER: 
+DEP: S12-F07
+
+### S12-F46 [wiring/medium/update_wiring] VV 41 SceneData registers its block with ProjectData
+TV: 02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js
+VV: 02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js
+DET: TV ProjectData receives the section block through RegisterSectionBlockProvider (TV 41 SceneData registers at init, so ProjectData never imports the engine). VV ProjectData hard-imports Na__SectSceneData__GetProjectBlock from VV 41. Porting TV's ProjectData verbatim therefore needs VV's 41 SceneData to register itself. VV 41 SceneData imports nothing from 42, so there is no cycle, and Na__SectSceneData__Initialize runs at start-up (index.html:2156...
+REC: Add one registration call in VVM/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js initialise; keep VV's own section engine and its {sceneData} event detail (DIV-2).
+ADAPT: 
+EVID: TV ProjectData__.js:259-271, 762-771, 851-853; VV 42/ProjectData__.js:90-95, 409-410
+VER: The finding said the block schema is identical (TD06). It matches only at block level.
+DEP: S12-F10
+
+### S12-F47 [transport/low/build_vv_transport] Raw streaming vs base64 for large files; Cloudflare limits unchecked
+TV: 80__CloudflareIntegration/CloudflareWorker/src/handlers/CloudflareHandler__R2__.js
+VV: ../Whitecardopedia/CloudflareWorker/src/handlers/CloudflareHandler__ProjectAsset__.js
+DET: VV's asset route takes base64 JSON (25 MB decoded cap) and decodes it byte by byte in the worker; TV moved pictures and published files to a streamed raw upload for wire size and worker memory. Published print tiers and PDFs can be large; the account's request-body and CPU limits were not verified.
+REC: Use raw streaming (W5) for anything over a few MB and base64 only for small writes; check the Cloudflare plan limits before the first publish to R2.
+ADAPT: 
+EVID: WCP ProjectAsset__.js:52, 83-88; TV CloudflareHandler__R2__.js:22-33, 297-339; TV Published API MAX_FILE_BYTES 256 MB (:93)
+VER: 
+DEP: S12-F07
+
+### S12-F48 [data_schema/medium/backport_to_tv] TV dev-owned key lists lack CrossSection__SceneData and LayoutEditor__DrawingRegister
+TV: 02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js; ../05__ProjectVision__CoreAppCode/CloudflareR2__ModelSync__Main__.py; ../05__ProjectVision__CoreAppCode/ProjectVision__BuildScript__.py
+VV: 
+DET: TV's overlay (Na__DevSavedKeys), R2 sync (DEV_OWNED_PROJECT_DATA_KEYS) and build (TRUEVISION_DEV_OWNED_KEYS) all lack CrossSection__SceneData (left open in v2.39.0) and LayoutEditor__DrawingRegister, both written by TV's editor to R2 and disk. A TV localhost load takes both from the repository file, and a sync or build can drop or revert them.
+REC: Back-port to TV: add both keys to the three lists, and keep VV's SSOT list (S12-F31) in step.
+ADAPT: 
+EVID: TV LoadingSequence.js:352-361; ../05__ProjectVision__CoreAppCode/CloudflareR2__ModelSync__Main__.py:121-130; ProjectVision__BuildScript__.py:83-92; TV devlog v2.39.0 L12775-12778
+VER: 
+DEP: 
+
+### S12-F49 [wiring/low/backport_to_tv] TV Register Data hard-codes TV file names (back-port a location helper)
+TV: 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Data__.js; 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js
+VV: 
+DET: Register Data's local Load builds the project-data URL from ProjectFileLocation('TrueVision__DrawingNotes__.json').repoUrl plus the literal 'TrueVision__ProjectData__.json' - a transport detail outside the transport layer, and the only TV storage file-name literal in LE code outside the EditorSetup defaults.
+REC: Back-port: add Na__CfApi__ProjectDataLocation() to TV's ApiClient (and VV's facade) and use it in Register Data; until then VV carries a two-literal seam.
+ADAPT: 
+EVID: TV LE/51/Na__LayoutEditor__Register__Data__.js:318-323
+VER: 
+DEP: 
+
+### S12-F50 [data_schema/medium/port_whole_reapply_vv] Port SheetRecords before features that add record keys or enum values
+TV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+DET: VV's sheet normaliser fills and resets values it does not know (title block style, paper size, default layers) and is far behind TV (1.15.0 vs 1.39.0). If a feature that writes new record keys or enum values lands before the normaliser, VV's next load-and-save silently resets or drops them - persistence loss inside VV's own data.
+REC: Sequence: port SheetRecords (S03b) with or before any feature that adds record fields or enum values; add a normalise-save-reload round-trip check per added field.
+ADAPT: 
+EVID: VV LE/07/Na__LayoutEditor__SheetRecords__.js NormaliseSheet (TitleBlockStyle/PaperSize resets); drift 1.39.0 vs 1.15.0 (1229 diff lines)
+VER: 
+DEP: 
+
+### S12-V01 [data_schema/medium/backport_to_tv] CrossSection__SceneData per-scene entries differ between the apps; TD06 is not met
+TV: 02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__SceneData__.js; 02__Src__AppModules/41__System__SectionCutEngine/Na__SectionCut__Serialize__.js; TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md
+VV: 02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js
+DET: The two apps share only the block keys (__Description, __Version, __Scenes). VV's 41 SceneData stores each scene as CrossSection__SceneBinding__{SceneId, UpdatedIso, GizmosVisible, SliceDepthM, FillColor, LineColor, LineWidthPx, Sections[CrossSection__Section__{Name, Mode, NormalXyz, PositionMm, Enabled, GizmoVisible}]} and reads back only that form; all 5 VV project.json files carrying the block use it. TV's 41 SceneData stores the raw Serialize...
+REC: VV: keep its own 41 SceneData writer and reader (DIV-2), and never port TV 41 Na__SectionCut__SceneData__ or Serialize__ into VV. ProjectData only passes the block through, so F46's registration is unaffected. TV back-port (D-S12-V02): CaptureForScene maps the snapshot to VV's prefixed entry keys, and RestoreForScene reads the prefixed form, falling back to camelCase; correct TV plan s3.2.
+ADAPT: 
+EVID: VV 41/Na__CrossSectionView__SceneData.js:229-245 (capture), :406-433 (restore); VV 41/Na__CrossSectionView__SystemLogic.js:1490 (camelCase in-memory snapshot); TV 41/Na__SectionCut__SceneData__.js:220-226; TV 41/Na__SectionCut__Serialize__.js:167-200 (Serialize), Apply reads snapshot.sections; TV pl...
+VER: 
+DEP: 
+
+### S12-V02 [data_schema/high/build_vv_transport] project.json folderId is unreliable: never use it for R2 or disk paths
+TV: 
+VV: 02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js; 02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
+DET: Census of the 155 local WCP/Projects/*/*/project.json files (01-Oct-2026): folderId equals the real year/folder in 91, is missing in 10 (e.g. 2026/44371__Gill) and differs in 54 (e.g. 2025/43822__Napthine stores '43822__Napthine' with no year; 2025/59494__Weeks stores '2025/WK-3007__Weeks', an old name). Report b.4 told the facade to 'prefer GetLoadedProjectData().folderId when set', which would send a third of projects' writes to R2 prefixes the...
+REC: The facade and the ProjectLoader helpers resolve the folder only from the URL token via the master index (LookupIndexEntry), refuse writes when it misses (no '2026/<code>' guess), and never read project.json's folderId. Add a facade test with a stale-folderId fixture. Cleaning the field in the data is Adam's call.
+ADAPT: 
+EVID: parity/verify_s12_r2/folderid_field.py (91 same / 10 missing / 54 differ); VV 03/Na__AppUtils__ProjectLoader.js:335-351; WCP 61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js:37-54; WCP 03__AppData/Na__AppData__ProjectLoader.js:508-519; report b.4 pre-verificat...
+VER: 
+DEP: S12-F04; S12-F06
+
+### S12-V03 [wiring/medium/update_wiring] Printed project name never fills: VV reads a TV-only global, and both apps read the presentation block
+TV: 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js; 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecDocument__.js
+VV: 02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js; 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js
+DET: VV's already-ported SpecPdf__.js:147-148 reads window.TrueVision__Pwa__ProjectContext; so do TV's SpecDocument__.js:161, Register__Pdf__.js:213 and Panel__ScrapbookParametric__.js:290. Only TV's 62__Feature__AppInstallability/TrueVision__Pwa__ProjectContext__.js defines it, and nothing in VV or Whitecardopedia does, so VV's specification PDF never prints a project name today. Separately, the title block's Project default (Na__LeRec__BuildFields: ...
+REC: WP-S12-V18: one VV project-facts seam (the facade's Na__CfApi__ProjectDisplayName(): root projectName 155/155, displayName 31/155, projectNameAlias 7/155, with an agreed precedence), used by SpecPdf, SpecDocument, Register Pdf, ScrapbookParametric and BuildFields. Offer the BuildFields fix and the helper back to TV.
+ADAPT: 
+EVID: VV LE/50/Na__LayoutEditor__SpecPdf__.js:147-148; TV LE/50/Na__LayoutEditor__SpecDocument__.js:161; TV LE/51/Na__LayoutEditor__Register__Pdf__.js:212-216; VV LE/07/Na__LayoutEditor__SheetRecords__.js:768-769; TV same file :1683-1684; VV 21/Na__PresentationMode__ProjectJson__SceneData.js:124, 206-209,...
+VER: 
+DEP: S12-F04; S12-F09
+

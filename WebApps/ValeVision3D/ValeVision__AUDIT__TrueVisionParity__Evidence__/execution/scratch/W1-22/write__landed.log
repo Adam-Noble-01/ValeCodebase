@@ -1,0 +1,10 @@
+WROTE cells       15906 B  crlf=0    sha1 418bd8b8  sha256 8694f40ccd1d  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js
+WROTE classic      6405 B  crlf=0    sha1 cd74931e  sha256 723c56592cd9  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Classic__.js
+WROTE surfaces     4146 B  crlf=0    sha1 a0860e67  sha256 6265a4631096  02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css
+WROTE scale       10814 B  crlf=0    sha1 b49da296  sha256 00d2af536b83  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__DrawingScale__.js
+WROTE layout      11988 B  crlf=0    sha1 24d817e9  sha256 dfb214ae9d15  02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js
+WROTE filename    10004 B  crlf=0    sha1 747eafd7  sha256 b358b3431d66  02__Src__AppModules/51__System__LayoutEditor/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js
+WROTE config     173841 B  crlf=0    sha1 702530bf  sha256 0a8eab33fa4f  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
+WROTE setup       38598 B  crlf=0    sha1 293867e9  sha256 0df665827eb3  02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js
+WROTE test        20109 B  crlf=0    sha1 96bb8209  sha256 88da72e6d4c3  80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs
+WROTE page        13130 B  crlf=202  sha1 ba334f2f  sha256 2dd1b5d9c0a4  80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.html

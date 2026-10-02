@@ -1,0 +1,61 @@
+﻿mode disk-live | title "ValeVision3D - Elevation Geometry Harness" | 49 PASS, 0 FAIL | summary: ALL CHECKS PASSED
+  ## 1. Azimuth to axes - world north is -Z
+  PASS PASS  North normal X   got 0.0000   want 0.0000
+  PASS PASS  North normal Z   got -1.0000   want -1.0000
+  PASS PASS  North right  X   got -1.0000   want -1.0000
+  PASS PASS  North right  Z   got 0.0000   want 0.0000
+  PASS PASS  East normal X   got 1.0000   want 1.0000
+  PASS PASS  East normal Z   got -0.0000   want 0.0000
+  PASS PASS  East right  X   got -0.0000   want 0.0000
+  PASS PASS  East right  Z   got -1.0000   want -1.0000
+  PASS PASS  South normal X   got 0.0000   want 0.0000
+  PASS PASS  South normal Z   got 1.0000   want 1.0000
+  PASS PASS  South right  X   got 1.0000   want 1.0000
+  PASS PASS  South right  Z   got -0.0000   want 0.0000
+  PASS PASS  West normal X   got -1.0000   want -1.0000
+  PASS PASS  West normal Z   got 0.0000   want 0.0000
+  PASS PASS  West right  X   got 0.0000   want 0.0000
+  PASS PASS  West right  Z   got 1.0000   want 1.0000
+  ## 2. Axes are orthonormal at an arbitrary bearing
+  PASS PASS  normal is unit   got 1.0000   want 1.0000
+  PASS PASS  right is unit   got 1.0000   want 1.0000
+  PASS PASS  normal . right   got 0.0000   want 0.0000
+  ## 3. Plane distance responds only to movement along the view axis
+  PASS PASS  at origin   got 0.0000   want 0.0000
+  PASS PASS  moved along X only   got 0.0000   want 0.0000
+  PASS PASS  moved along Z   got 2500.0000   want 2500.0000
+  ## 4. Drawing run is anchored at the world origin, not the plane
+  PASS PASS  run unchanged by plane move   got -3000.0000   want -3000.0000
+  ## 5. Run round-trips back onto the plane
+  PASS PASS  az 0 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 0 lands on the plane   got 3200.0000   want 3200.0000
+  PASS PASS  az 37 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 37 lands on the plane   got 3458.3562   want 3458.3562
+  PASS PASS  az 90 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 90 lands on the plane   got 1500.0000   want 1500.0000
+  PASS PASS  az 180 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 180 lands on the plane   got -3200.0000   want -3200.0000
+  PASS PASS  az 214 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 214 lands on the plane   got -3491.7096   want -3491.7096
+  PASS PASS  az 270 run round-trip   got 4250.0000   want 4250.0000
+  PASS PASS  az 270 lands on the plane   got -1500.0000   want -1500.0000
+  ## 6. Framing measures the span ACROSS the elevation
+  PASS PASS  north span mm   got 14000.0000   want 14000.0000
+  PASS PASS  east span mm   got 12000.0000   want 12000.0000
+  PASS PASS  height mm   got 10000.0000   want 10000.0000
+  PASS PASS  centre height   got 3000.0000   want 3000.0000
+  PASS PASS  45 deg span exceeds both faces   got yes   want yes
+  ## 7. Camera looks along the view axis and pans only in plane
+  PASS PASS  looks along -normal X   got -1.0000   want -1.0000
+  PASS PASS  looks level (Y)   got 0.0000   want 0.0000
+  PASS PASS  looks along -normal Z   got 0.0000   want 0.0000
+  PASS PASS  pan does not move the camera through the plane   got 152.0000   want 152.0000
+  PASS PASS  pan dv positive moved up (dv was negative)   got yes   want yes
+  PASS PASS  pan du positive moved right   got yes   want yes
+  ## 8. Vertical clip plane keeps what lies beyond it
+  PASS PASS  near side removed   got removed   want removed
+  PASS PASS  far side kept   got kept   want kept
+  PASS PASS  on the plane is nil   got 0.0000   want 0.0000
+  ## Result
+  PASS ALL CHECKS PASSED
+requests: 20 (0 to another origin)

@@ -1,0 +1,15 @@
+$ node 80__Testing__PrototypeEnvironment/Na__Test__LoaderStylesheets__.test.mjs
+(exit 0)
+
+ValeVision3D - the Layout Editor loader's stylesheets against TrueVision's CSS index
+  TrueVision: git show b2aa9151 (D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb)
+
+  PASS  TrueVision's CSS index names its Layout Editor stylesheets (14), Surfaces first and WebViewer last
+  PASS  ...and at b2aa9151 it is the sequence recorded in this test
+  PASS  Na__LeLoad__STYLESHEETS is in the loader and every entry is a literal new URL('../<sheet>.css', import.meta.url).href
+  PASS  every listed sheet is on disk (8; a sheet is never registered before its file lands)
+  PASS  the list is TrueVision's Layout Editor sequence for the 8 of 14 sheets this app has, in TrueVision's order
+  PASS  Surfaces is first and WebViewer last
+  PASS  no listed sheet is also imported by the CSS index (one home each; the index keeps only Styles__Boot)
+
+  Every check passed.

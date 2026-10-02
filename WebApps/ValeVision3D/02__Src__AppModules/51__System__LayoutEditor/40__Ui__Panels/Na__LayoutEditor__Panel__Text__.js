@@ -15,8 +15,7 @@
 //   millimetres. The leader toggle adds a leader tip a little below and to
 //   the left of the text, ready to drag.
 // - Rotation is degrees clockwise. A selected item turns about the middle of
-//   its box, as its rotate grip turns it (Na__LayoutEditor__TextTool__). The selected-text note says
-//   Shift+Enter adds a line and Enter finishes.
+//   its box, as its rotate grip turns it (Na__LayoutEditor__TextTool__).
 //
 // INTEGRATION:
 // - Registered into the right column by the mode controller.
@@ -24,10 +23,21 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : ValeVision3D 44__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js (controls purpose)
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.21.0, port Phase 5, after ValeVision3D
+//                   43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js's controls); TrueVision3D
+//                   took it for v2.21.0 (10-Sep-2026); since ported back whole from TrueVision3D 1.4.0
+//                   (HEAD b2aa9151)
+// - Source version: 1.4.0 (TrueVision3D v2.57.0, 17-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 - whole, with TrueVision's log. This
+//                   app's own 1.1.0-1.4.0 (14-Sep-2026 to 17-Sep-2026) had taken TrueVision's box-select
+//                   note, Shift+Enter note, rotation row and several-selected writes, but its Refresh
+//                   never read the first of several selected text items (Many was defined and never
+//                   called): the boxes showed the settings for new text while a change went to all of
+//                   them, and there was no note for a selection holding no text.
+// - Parity        : verbatim (the code is TrueVision 1.4.0's; the banner and this note are the only
+//                   differences)
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
@@ -36,23 +46,18 @@
 // 17-Sep-2026 - Version 1.4.0
 // - Several selected: the panel reads the first text item and writes all of
 //   them. Only the style traits travel, so the words stay where they are.
-// - Ported from TrueVision3D v2.57.0.
 //
-// 15-Sep-2026 - Version 1.3.0
+// 14-Sep-2026 - Version 1.3.0
 // - Rotation row: degrees clockwise, -180 to 180. It turns the selected text
 //   about the middle of its box, or sets the angle new text is placed at. The
 //   selected-text note says the round grip rotates it and Shift steps it.
-// - Ported from TrueVision3D v2.52.0 (Panel__Text 1.3.0).
 //
 // 14-Sep-2026 - Version 1.2.0
 // - The selected-text note says Shift+Enter adds a line and Enter finishes.
-// - Ported from TrueVision3D (Panel Text 1.2.0).
 //
 // 14-Sep-2026 - Version 1.1.0
-// - Box select: with several items selected the note says how many, and that
-//   these are the settings for new text until one text item is selected on its
-//   own.
-// - Ported from TrueVision3D v2.34.0.
+// - With several items selected the note says how many, and that these are the
+//   settings for new text until one text item is selected on its own.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
@@ -112,11 +117,10 @@
 
     // HELPER FUNCTION | Every Selected Text Item, When There Is More Than One
     // ------------------------------------------------------------
-    // Reading is what the panel shows; writing is what it changes. With one
-    // thing selected the two are the same item. With several, the panel reads
-    // the FIRST of them and writes ALL of them - a box showing the setting for
-    // new objects while nine are selected is what sent an edit somewhere
-    // nobody expected.
+    // The panel reads the first of them and writes all of them. Reading the
+    // first is what makes the readout mean something while several are
+    // selected - a size box showing nothing, or showing the setting for new
+    // text, is what made an edit here land somewhere nobody expected.
     // ------------------------------------------------------------
     function Na__LePanelText__Many() {
         const sheet = Na__LeModel__GetActiveSheet();
@@ -156,10 +160,12 @@
     // ------------------------------------------------------------
     function Na__LePanelText__Refresh(body) {
         const selected = Na__LePanelText__Selected();
+        const many     = selected ? null : Na__LePanelText__Many();
+        const reading  = selected || many;                                      // <-- One selected, or the first of several: either way a real item
         const defaults = Na__LeTools__GetTextDefaults();
-        const values = selected
-            ? { sizeMm : selected.item.Annotation__SizeMm, fontWeight : selected.item.Annotation__FontWeight, colour : selected.item.Annotation__Colour, align : selected.item.Annotation__Align, leader : Number.isFinite(selected.item.Annotation__LeaderXMm),
-                rotationDeg : Na__LeMarkup__AnnotationRotationDeg(selected.item) }
+        const values = reading
+            ? { sizeMm : reading.item.Annotation__SizeMm, fontWeight : reading.item.Annotation__FontWeight, colour : reading.item.Annotation__Colour, align : reading.item.Annotation__Align, leader : Number.isFinite(reading.item.Annotation__LeaderXMm),
+                rotationDeg : Na__LeMarkup__AnnotationRotationDeg(reading.item) }
             : defaults;
         const set = (name, value) => { const el = body.querySelector('[data-na-control="' + name + '"]'); if (el && document.activeElement !== el) el.value = String(value); };
         set('text-size', values.sizeMm);
@@ -169,12 +175,14 @@
         set('text-rotation', Math.round(Na__LeText__WrapDeg(values.rotationDeg) * 10) / 10);   // <-- A tenth of a degree is as fine as the box needs to read
         const leader = body.querySelector('[data-na-control="text-leader"]');
         if (leader) leader.checked = values.leader === true;
-        const many = Na__LeModel__GetSelectionItems().length;
+        const picked = Na__LeModel__GetSelectionItems().length;
         body.querySelector('[data-na-block="note"]').textContent = selected
             ? Na__LeCfg__GetLabel('TextSelectedNote', 'Editing the selected text. Shift+Enter adds a line; Enter finishes. Drag the round grip to rotate it; hold Shift for steps.')
-            : (many > 1
-                ? Na__LeCfg__FormatLabel('TextManyNote', '{count} items selected. Click one text item on its own to edit it; these settings apply to new text.', { count : many })
-                : Na__LeCfg__GetLabel('TextDefaultsNote', 'Nothing selected: these settings apply to new text.'));
+            : (many
+                ? Na__LeCfg__FormatLabel('TextManyNote', 'Editing {count} selected text items: a change here goes to all of them.', { count : many.count })
+                : (picked > 1
+                    ? Na__LeCfg__GetLabel('TextNoneOfKindNote', 'Nothing selected is text: these settings apply to new text.')
+                    : Na__LeCfg__GetLabel('TextDefaultsNote', 'Nothing selected: these settings apply to new text.')));
         const edit = body.querySelector('[data-na-block="edit"]');
         if (edit) edit.hidden = !selected;
     }

@@ -1,0 +1,96 @@
+== A. syntax sweep (W2-touched files) ==
+js           checked 185  failures 0
+py           checked   0  failures 0
+json         checked  21  failures 0
+html-inline  checked   4  failures 0
+other        checked  24  failures 0
+line endings: LF 211, CRLF 22, mixed 0 []; BOM 0 []
+
+== B. release placeholders (every dirty file of the programme, the WCP Flask files, execution/prepared) ==
+placeholders: 230 in 203 file(s) (in the PortNotes verifier scope 228, outside it 2)
+  {{VVREL:<wp_id>}}      1
+  {{VVREL:W2-01}}        5
+  {{VVREL:W2-02}}        3
+  {{VVREL:W2-03}}        7
+  {{VVREL:W2-04}}        5
+  {{VVREL:W2-05}}        8
+  {{VVREL:W2-06}}        14
+  {{VVREL:W2-07}}        3
+  {{VVREL:W2-09}}        3
+  {{VVREL:W2-10}}        2
+  {{VVREL:W2-11}}        1
+  {{VVREL:W2-12}}        2
+  {{VVREL:W2-13}}        3
+  {{VVREL:W2-14}}        6
+  {{VVREL:W2-15}}        2
+  {{VVREL:W2-16}}        15
+  {{VVREL:W2-17}}        4
+  {{VVREL:W2-18}}        9
+  {{VVREL:W2-19}}        16
+  {{VVREL:W2-20}}        3
+  {{VVREL:W2-21}}        8
+  {{VVREL:W2-22}}        1
+  {{VVREL:W2-23}}        1
+  {{VVREL:W2-24}}        3
+  {{VVREL:W2-25}}        4
+  {{VVREL:W2-26}}        4
+  {{VVREL:W2-27}}        5
+  {{VVREL:W2-28}}        6
+  {{VVREL:W2-29}}        3
+  {{VVREL:W2-30}}        11
+  {{VVREL:W2-31}}        4
+  {{VVREL:W2-32}}        8
+  {{VVREL:W2-34}}        7
+  {{VVREL:W2-35}}        6
+  {{VVREL:W2-36}}        11
+  {{VVREL:W2-37}}        10
+  {{VVREL:W2-38}}        4
+  {{VVREL:W2-39}}        3
+  {{VVREL:W2-40}}        4
+  {{VVREL:W2-41}}        5
+  {{VVREL:W2-42}}        6
+  {{VVREL:W2-43}}        3
+  {{VVREL:}}             1
+outside the verifier scope:
+  WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:200  - `R5 (S11 B10): coding packages never edit the ledger or the VV devlog; the Parity Scribe pass of each wave allocates VV versions (step size per W0-01: Adam's devlog mem
+  WebApps/ValeVision3D/ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md:216  - `G7: the package returns a Port Record (S11 Appendix C) and never edits VV/ValeVision__PARITY__TrueVisionLedger__.md or VV/ValeVision__DEVLOG__.md; module DEVELOPMENT L
+
+== C. G6 transport rule ==
+files scanned: 644 (+ index.html); hits: 15
+  02__Src__AppModules\25__System__3dObject__InteractionSystem\Na__DoorAnimation__FindDoorGroups.js:42  //   making it robust for both TrueVision__ (flat) and Storey__ (storey) GLBs.
+  02__Src__AppModules\40__System__DrawingViewCore\Na__DrawView__ProjectData__.js:139  //   the repository's TrueVision__ProjectData__.json through the ProjectVision
+  02__Src__AppModules\50__System__ProjectedLinework\Na__ProjectedLinework__ConfigAccess__.js:43  //     (TrueVision__ in TrueVision): a runtime owner key carries the app's token (K2 K3), as in the JSON.
+  02__Src__AppModules\50__System__ProjectedLinework\Na__ProjectedLinework__StageSampler__.js:62  //     (TrueVision__ in TrueVision): a runtime category key carries the app's token (K2 K3).
+  02__Src__AppModules\51__System__LayoutEditor\03__Core__Config\Na__LayoutEditor__ConfigState__.js:140  // - GetSpecificationSetup: FileName is TrueVision__DrawingNotes__.json (the
+  02__Src__AppModules\51__System__LayoutEditor\03__Core__Config\Na__LayoutEditor__ConfigState__SheetSetup__.js:66  //   ['TrueVision__Linetype__DoorSwings']): the SketchUp door swing linework
+  02__Src__AppModules\51__System__LayoutEditor\07__Core__SheetData\Na__LayoutEditor__AutoSave__.js:81  //     (K2 K4), where TrueVision publishes window.TrueVision__Pwa__HasUnsavedWork; the DESCRIPTION
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:84  //   - Manifest names (D-S04a-03): both are read, the shared GLB Builder's own TrueVision__SitePlanData__
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:87  //   - Stems renamed on read (S04a-V04): a layer stem TrueVision__SitePlan__X is read as ValeVision__SitePlan__X
+  02__Src__AppModules\51__System__LayoutEditor\21__System__SitePlanData\Na__SitePlan__Store__.js:92  //     names its content folder, its ProjectVision build and TrueVision__ stems.
+  02__Src__AppModules\51__System__LayoutEditor\25__System__RenderStyles\Na__LayoutEditor__EdgeStyles__.js:58  //     TrueVision__SitePlan__ stems to this app's token as it reads them (W2-14). Dormant with site plans
+  02__Src__AppModules\51__System__LayoutEditor\25__System__RenderStyles\Na__LayoutEditor__EdgeStyles__.js:66  // - Site plan categories (TrueVision__SitePlan__...) take their default style from
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__.js:150  // - Canonical file TrueVision__DrawingNotes__.json, kept locally beside the
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__State__.js:59  //   FileJson and FileIso (what the local TrueVision__DrawingNotes__.json held
+  02__Src__AppModules\51__System__LayoutEditor\50__Feature__Specification\Na__LayoutEditor__SpecData__Transport__.js:98  //   TrueVision__DrawingNotes__.json now, then READ BACK and compared before
+
+== D. ignored by-products and project data since the W1 checkpoint (02-Oct 10:26:28) ==
+ignored entries: 33; ignored files modified after the W1 checkpoint: 0
+files under WCP Projects/ modified after the W1 checkpoint: 6
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\project.json  02-Oct 10:43:07
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\ValeVision__DrawingNotes__.json  02-Oct 10:36:43
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\PresentationMode\Thumbnails\Scene_001.webp  02-Oct 10:37:17
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\PresentationMode\Thumbnails\Scene_002.webp  02-Oct 10:37:18
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\PresentationMode\Thumbnails\Scene_003.webp  02-Oct 10:37:18
+  D:\10_CoreLib__ValeCodebase\WebApps\Whitecardopedia\Projects\2026\64348__Mathison\PresentationMode\Thumbnails\Scene_004.webp  02-Oct 10:37:18
+
+== E. shared Vale infrastructure (live) and WCP Flask files ==
+WebApps/Whitecardopedia/Tools__DevUtils: git status lines 0, git diff HEAD --stat ''; newest file 04-Sep 09:16:01 (99__MigrationLogs\PromoteProjectType__RenameJournal__20260904_091601.json)
+WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability: git status lines 0, git diff HEAD --stat ''; newest file 18-Sep 21:20:04 (Whitecardopedia__Pwa__ServiceWorker__Logic__.js)
+WebApps/Whitecardopedia/CloudflareWorker/src: git status lines 0, git diff HEAD --stat ''; newest file 15-Sep 08:32:55 (index.js)
+  Server__ValeVisionPublished__Api__.py         mtime 01-Oct 22:24:23  before the W1 checkpoint
+  Server__ValeVisionScrapbook__Api__.py         mtime 22-Sep 08:08:57  before the W1 checkpoint
+  Server__ValeVisionShared__Lib__.py            mtime 01-Oct 22:24:23  before the W1 checkpoint
+  Server__ValeVisionSheetImages__Api__.py       mtime 01-Oct 22:24:23  before the W1 checkpoint
+  Server__ValeVisionStatements__Api__.py        mtime 01-Oct 22:24:23  before the W1 checkpoint
+  Server__ValeVisionUserConfig__Api__.py        mtime 01-Oct 22:24:23  before the W1 checkpoint
+  server.py                                     mtime 01-Oct 20:21:20  before the W1 checkpoint

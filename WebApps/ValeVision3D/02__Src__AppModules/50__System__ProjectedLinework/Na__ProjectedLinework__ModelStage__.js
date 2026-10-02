@@ -16,10 +16,13 @@
 //
 //   THE FINGERPRINT   A short stable string for the state of the model as the
 //                     projection sees it: the config build token, the project
-//                     code, and every category group with its triangle count
-//                     and visibility. Stable across reloads of the same GLBs
-//                     (no uuids, no object identity), changed by a different
-//                     model, a re-exported GLB or a category switched off.
+//                     code, the three edge rules (linework first, seams
+//                     occlude, flush joins), and every category group with its
+//                     triangle count and
+//                     visibility. Stable across reloads of the same GLBs (no
+//                     uuids, no object identity), changed by a different
+//                     model, a re-exported GLB, a category switched off or
+//                     any edge rule switched.
 //
 //   THE BOUNDS TREES  three-mesh-bvh trees left on each geometry so the
 //                     intersection pass finds them ready. Built once per
@@ -39,32 +42,39 @@
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : Lantern Designer 02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ModelStage__.mjs
-// - Source version: Lantern Designer rebuild of 07-Aug-2026
-// - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
-// - Parity        : adapted
+// - Authored in   : ValeVision3D first (1.0.0, 09-Sep-2026, v2.20.0, port Phase 4, from the Lantern
+//                   Designer's VghLantern__ProjectedEdges__ModelStage__.mjs of 07-Aug-2026;
+//                   ValeVision's own 1.1.0 (18-Sep-2026) was TrueVision's 1.2.0, the content stamp);
+//                   since ported back whole from TrueVision3D (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.64.1, 18-Sep-2026; read at b2aa9151) - new here is its 1.1.0,
+//                   the edge rules in the fingerprint (TrueVision3D v2.37.0, 14-Sep-2026)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4 (folder 50 to TrueVision HEAD)
+// - Parity        : verbatim
 // - Divergences   :
-//   - No mesh builders: the live model is the stage. Fingerprint and bounds tree priming remain; a clone group serves the vendored backends.
-// - Back-port     : none pending.
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 18-Sep-2026 - Version 1.1.0
+// 18-Sep-2026 - Version 1.2.0
 // - THE FINGERPRINT SEES WHAT THE MODEL CONTAINS, not only how much of it there
-//   is. It was category names, triangle counts and visibility, so something
-//   moved along a wall and re-exported - same names, same counts - kept the old
+//   is. It was category names, triangle counts and visibility, so a hopper moved
+//   along a wall and re-exported - same names, same counts - kept the old
 //   fingerprint, and every cache keyed by it (the results, the collected model,
 //   the browser store, the baked asset, the Layout Editor's base image) handed
-//   back the drawing of it where it used to be. Each category now adds the
-//   content stamps of the GLBs under it (Na__ModelLoader__ContentStamp__), and
-//   Categories carries the stamp so the Layout Editor's own model fingerprint
-//   can use it too. A category with nothing stamped under it fingerprints
-//   exactly as before.
+//   back the drawing of the hopper where it used to be. Each category now adds
+//   the content stamps of the GLBs under it (Na__ModelLoader__ContentStamp__),
+//   and Categories carries the stamp so the Layout Editor's own model
+//   fingerprint can use it too. A category with nothing stamped under it
+//   fingerprints exactly as before.
 // - One-off cost: every fingerprint changes once, so every stored result and
 //   baked asset reads as stale once and is made again.
-// - Ported from TrueVision3D 1.2.0 (v2.64.1). TrueVision's 1.1.0 (the edge
-//   rules in the fingerprint) is a separate item and is NOT part of this port.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Describe folds the three edge rules (linework first, seams occlude, flush
+//   joins) into the fingerprint, so linework rendered or baked under one
+//   setting is never restored under another, whichever way a switch is moved.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -86,11 +96,12 @@
     // ------------------------------------------------------------
     import {
         Na__PlCfg__GetPerformanceSetup,
+        Na__PlCfg__GetProjectionSetup,
         Na__PlCfg__GetModelSetup
     } from './Na__ProjectedLinework__ConfigAccess__.js';
     import { Na__ProjectedLinework__Scheduler__CreateSlicer } from './Na__ProjectedLinework__Scheduler__.js';
     import { Na__PlView__Hash } from './Na__ProjectedLinework__ViewDefinition__.js';
-    import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__DrawData__GetProjectCode } from '../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__ModelStamp__Read } from '../15__ModelLoader/Na__ModelLoader__ContentStamp__.js';
     // ------------------------------------------------------------
 
@@ -140,6 +151,9 @@
         const material = JSON.stringify({
             token   : Na__PlCfg__GetModelSetup().buildToken,
             project : Na__DrawData__GetProjectCode() || null,
+            edges   : Na__PlCfg__GetProjectionSetup().lineworkFirst ? 'linework-first' : 'mesh-creases',
+            seams   : Na__PlCfg__GetProjectionSetup().seamsOcclude ? 'seams-occlude' : 'seams-open',
+            joins   : Na__PlCfg__GetProjectionSetup().hideFlushJoins ? 'flush-joins-hidden' : 'flush-joins-drawn',
             groups  : categories.map((c) => (c.stamp ? [ c.name, c.tris, c.visible ? 1 : 0, c.stamp ] : [ c.name, c.tris, c.visible ? 1 : 0 ]))   // <-- The stamp only where there is one, so an unstamped model keys as it always did
         });
 

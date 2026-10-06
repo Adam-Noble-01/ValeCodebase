@@ -1,0 +1,42 @@
+{
+    "CrossSectionView__Feature__Config": {
+        "CrossSectionView__Feature__Config__Description"        : "Per-project feature gate defaults for the SketchUp-style live cross section tool.",
+        "CrossSectionView__Feature__Config__EnabledByDefault"   : false
+    },
+    "CrossSectionView__Appearance__Config": {
+        "CrossSectionView__Appearance__Config__Description"     : "Default section cut fill and profile line appearance (overridable per project and live from the Advanced panel).",
+        "CrossSectionView__Appearance__Config__FillColor"       : "#f0f0f0",
+        "CrossSectionView__Appearance__Config__LineColor"       : "#323232",
+        "CrossSectionView__Appearance__Config__LineWidthPx"     : 2.0,
+        "CrossSectionView__Appearance__Config__CapOffsetMm"     : 0.6,
+        "CrossSectionView__Appearance__Config__LineOffsetMm"    : 1.4
+    },
+    "CrossSectionView__Gizmo__Config": {
+        "CrossSectionView__Gizmo__Config__Description"          : "Section plane gizmo geometry and colours for the draggable in-scene plane widget.",
+        "CrossSectionView__Gizmo__Config__FillColor"            : "#5a9e6f",
+        "CrossSectionView__Gizmo__Config__FillOpacity"          : 0.05,
+        "CrossSectionView__Gizmo__Config__EdgeColor"            : "#2e7d4f",
+        "CrossSectionView__Gizmo__Config__HandleFillColor"      : "#5a9e6f",
+        "CrossSectionView__Gizmo__Config__HandleFillOpacity"    : 0.14,
+        "CrossSectionView__Gizmo__Config__HandleEdgeColor"      : "#2e7d4f",
+        "CrossSectionView__Gizmo__Config__HandleWidthByMm"      : 6000,
+        "CrossSectionView__Gizmo__Config__HandleHeightByMm"     : 3000,
+        "CrossSectionView__Gizmo__Config__LabelText"            : "Drag To Move Section",
+        "CrossSectionView__Gizmo__Config__LabelColor"           : "#1f5c39",
+        "CrossSectionView__Gizmo__Config__LabelOpacity"         : 0.55,
+        "CrossSectionView__Gizmo__Config__MarginByMm"           : 2000,
+        "CrossSectionView__Gizmo__Config__ArrowLengthByMm"      : 2200,
+        "CrossSectionView__Gizmo__Config__ArrowColor"           : "#2e7d4f"
+    },
+    "CrossSectionView__Update__Config": {
+        "CrossSectionView__Update__Config__Description"         : "Live update tuning: cap recompute throttle while dragging plus geometry weld/filter tolerances.",
+        "CrossSectionView__Update__Config__DragRecomputeMs"     : 90,
+        "CrossSectionView__Update__Config__WeldToleranceMm"     : 0.25,
+        "CrossSectionView__Update__Config__MinLoopAreaM2"       : 0.0004,
+        "CrossSectionView__Update__Config__MaxCrossingSegments" : 250000
+    },
+    "CrossSectionView__Slice__Config": {
+        "CrossSectionView__Slice__Config__Description"          : "Optional section slice depth. null / omitted = infinite SketchUp half-space cut (default).",
+        "CrossSectionView__Slice__Config__DefaultDepthM"        : null
+    }
+}

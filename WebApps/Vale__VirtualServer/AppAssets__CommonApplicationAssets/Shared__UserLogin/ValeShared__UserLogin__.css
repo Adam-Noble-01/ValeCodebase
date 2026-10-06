@@ -1,0 +1,309 @@
+/* =============================================================================
+ * VALE SHARED - USER LOGIN STYLES
+ * =============================================================================
+ *
+ * FILE       : ValeShared__UserLogin__.css
+ * NAMESPACE  : ValeUserLogin
+ * MODULE     : Shared User Login (every Vale app)
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Sign-in gate, new-password card, initials avatar and its menu,
+ *              in the Lantern Designer login style
+ * CREATED    : 06-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Self-contained: its own tokens (prefixed --ValeUserLogin_), so it looks the
+ *   same in every app whatever that app's stylesheet does.
+ * - The avatar floats top-right unless the app gives Init a mountEl; then it
+ *   sits inline (.ValeUserLogin__Mount--Inline) inside the app's own toolbar.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * TOKENS
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        --ValeUserLogin_Scale              : 1;
+        --ValeUserLogin_Brand              : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --ValeUserLogin_BrandDark          : #0f1d27;
+        --ValeUserLogin_Accent             : #2f6f9f;
+        --ValeUserLogin_White              : #ffffff;
+        --ValeUserLogin_Text               : #172b3a;
+        --ValeUserLogin_TextSubtle         : #5a6d7a;
+        --ValeUserLogin_TextSecondary      : #656565;
+        --ValeUserLogin_Border             : #cccccc;
+        --ValeUserLogin_Hover              : #e8e8e8;
+        --ValeUserLogin_Error              : #b42318;
+        --ValeUserLogin_ErrorSoft          : #fde7e5;
+        --ValeUserLogin_Radius             : calc(8px * var(--ValeUserLogin_Scale));
+        --ValeUserLogin_Font               : 'Open Sans', 'Segoe UI', system-ui, sans-serif;
+        --ValeUserLogin_Z                  : 5000;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Gate Overlay and Card
+ * ----------------------------------------------------------------------------- */
+
+    .ValeUserLogin__Overlay {
+        position                           : fixed;
+        inset                              : 0;
+        background                         : rgba(23, 43, 58, 0.55);
+        display                            : none;
+        align-items                        : center;
+        justify-content                    : center;
+        z-index                            : var(--ValeUserLogin_Z);
+        font-family                        : var(--ValeUserLogin_Font);
+        animation                          : ValeUserLogin__FadeIn 200ms ease-out;
+    }
+    .ValeUserLogin__Overlay--visible { display: flex; }
+
+    .ValeUserLogin__Dialog {
+        box-sizing                         : border-box;
+        background                         : var(--ValeUserLogin_White);
+        border-radius                      : var(--ValeUserLogin_Radius);
+        box-shadow                         : 0 18px 44px rgba(23, 43, 58, 0.28);
+        padding                            : calc(32px * var(--ValeUserLogin_Scale));
+        width                              : 90%;
+        max-width                          : calc(400px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_Text);
+        animation                          : ValeUserLogin__PanelIn 240ms ease-out;
+    }
+    .ValeUserLogin__Dialog * { box-sizing: border-box; }
+
+    .ValeUserLogin__Logo {
+        display                            : block;
+        width                              : calc(200px * var(--ValeUserLogin_Scale));
+        max-width                          : 70%;
+        margin                             : 0 auto calc(20px * var(--ValeUserLogin_Scale));
+    }
+    .ValeUserLogin__AppName {
+        text-align                         : center;
+        font-size                          : calc(13px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+        color                              : var(--ValeUserLogin_TextSubtle);
+        margin                             : calc(-10px * var(--ValeUserLogin_Scale)) 0 calc(20px * var(--ValeUserLogin_Scale));
+    }
+    .ValeUserLogin__Title {
+        font-size                          : calc(18px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        margin                             : 0 0 calc(8px * var(--ValeUserLogin_Scale));
+    }
+    .ValeUserLogin__Subtitle {
+        font-size                          : calc(12.5px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_TextSubtle);
+        line-height                        : 1.5;
+        margin                             : 0 0 calc(20px * var(--ValeUserLogin_Scale));
+    }
+    .ValeUserLogin__Label {
+        display                            : block;
+        font-size                          : calc(12px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        margin-bottom                      : 4px;
+    }
+    .ValeUserLogin__Input {
+        width                              : 100%;
+        padding                            : calc(8px * var(--ValeUserLogin_Scale)) calc(14px * var(--ValeUserLogin_Scale));
+        border                             : 1px solid var(--ValeUserLogin_Border);
+        border-radius                      : var(--ValeUserLogin_Radius);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(14px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_Text);
+        margin-bottom                      : calc(14px * var(--ValeUserLogin_Scale));
+        transition                         : border-color 0.15s ease;
+        background                         : var(--ValeUserLogin_White);
+    }
+    .ValeUserLogin__Input:focus { outline: none; border-color: var(--ValeUserLogin_Accent); }
+    .ValeUserLogin__Message {
+        min-height                         : 1.2em;
+        font-size                          : calc(12px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        color                              : var(--ValeUserLogin_Error);
+        margin-bottom                      : calc(8px * var(--ValeUserLogin_Scale));
+    }
+    .ValeUserLogin__Message--info { color: var(--ValeUserLogin_Accent); }
+    .ValeUserLogin__Button {
+        width                              : 100%;
+        padding                            : calc(9px * var(--ValeUserLogin_Scale)) calc(24px * var(--ValeUserLogin_Scale));
+        background                         : var(--ValeUserLogin_Brand);
+        color                              : var(--ValeUserLogin_White);
+        border                             : none;
+        border-radius                      : var(--ValeUserLogin_Radius);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(14px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        cursor                             : pointer;
+        margin-top                         : calc(4px * var(--ValeUserLogin_Scale));
+        transition                         : background 0.15s ease;
+    }
+    .ValeUserLogin__Button:hover { background: var(--ValeUserLogin_BrandDark); }
+    .ValeUserLogin__Button:disabled { opacity: 0.6; cursor: wait; }
+    .ValeUserLogin__ButtonGhost {
+        width                              : 100%;
+        margin-top                         : calc(8px * var(--ValeUserLogin_Scale));
+        padding                            : calc(8px * var(--ValeUserLogin_Scale));
+        background                         : transparent;
+        border                             : 1px solid var(--ValeUserLogin_Border);
+        border-radius                      : var(--ValeUserLogin_Radius);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(13px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_TextSecondary);
+        cursor                             : pointer;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Initials Avatar and Menu
+ * ----------------------------------------------------------------------------- */
+
+    .ValeUserLogin__Mount {
+        position                           : fixed;
+        top                                : calc(10px * var(--ValeUserLogin_Scale));
+        right                              : calc(14px * var(--ValeUserLogin_Scale));
+        z-index                            : calc(var(--ValeUserLogin_Z) - 10);
+        font-family                        : var(--ValeUserLogin_Font);
+    }
+    .ValeUserLogin__Mount--Inline {
+        position                           : relative;
+        top                                : auto;
+        right                              : auto;
+        z-index                            : auto;
+        display                            : inline-flex;
+        align-items                        : center;
+    }
+    .ValeUserLogin__Menu { position: relative; display: flex; align-items: center; }
+
+    .ValeUserLogin__Avatar {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : calc(36px * var(--ValeUserLogin_Scale));
+        height                             : calc(36px * var(--ValeUserLogin_Scale));
+        padding                            : 0;
+        border                             : 2px solid rgba(255, 255, 255, 0.85);
+        border-radius                      : 50%;
+        background                         : var(--ValeUserLogin_Brand);
+        color                              : var(--ValeUserLogin_White);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(13.5px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        letter-spacing                     : 0.03em;
+        line-height                        : 1;
+        cursor                             : pointer;
+        user-select                        : none;
+        box-shadow                         : 0 2px 8px rgba(23, 43, 58, 0.25);
+        transition                         : background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ValeUserLogin__Avatar:hover { background: var(--ValeUserLogin_BrandDark); }
+
+    .ValeUserLogin__SignInPill {
+        padding                            : calc(7px * var(--ValeUserLogin_Scale)) calc(16px * var(--ValeUserLogin_Scale));
+        border                             : 2px solid rgba(255, 255, 255, 0.85);
+        border-radius                      : 999px;
+        background                         : var(--ValeUserLogin_Brand);
+        color                              : var(--ValeUserLogin_White);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(13px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        cursor                             : pointer;
+        box-shadow                         : 0 2px 8px rgba(23, 43, 58, 0.25);
+    }
+    .ValeUserLogin__SignInPill:hover { background: var(--ValeUserLogin_BrandDark); }
+    .ValeUserLogin__Avatar:focus-visible { outline: 2px solid var(--ValeUserLogin_Accent); outline-offset: 2px; }
+    .ValeUserLogin__Menu--open .ValeUserLogin__Avatar {
+        background                         : var(--ValeUserLogin_BrandDark);
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.16);
+    }
+
+    .ValeUserLogin__Panel {
+        position                           : absolute;
+        top                                : calc(100% + 8px);
+        right                              : 0;
+        display                            : none;
+        min-width                          : calc(250px * var(--ValeUserLogin_Scale));
+        padding                            : 8px;
+        background                         : var(--ValeUserLogin_White);
+        border                             : 1px solid var(--ValeUserLogin_Border);
+        border-radius                      : var(--ValeUserLogin_Radius);
+        box-shadow                         : 0 12px 30px rgba(23, 43, 58, 0.22);
+        animation                          : ValeUserLogin__Drop 160ms ease-out;
+        text-align                         : left;
+    }
+    .ValeUserLogin__Menu--open .ValeUserLogin__Panel { display: block; }
+
+    .ValeUserLogin__Identity { display: flex; align-items: center; gap: 8px; padding: 8px; }
+    .ValeUserLogin__IdentityAvatar {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        flex                               : 0 0 auto;
+        width                              : calc(34px * var(--ValeUserLogin_Scale));
+        height                             : calc(34px * var(--ValeUserLogin_Scale));
+        border-radius                      : 50%;
+        background                         : var(--ValeUserLogin_Brand);
+        color                              : var(--ValeUserLogin_White);
+        font-size                          : calc(12px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+    }
+    .ValeUserLogin__IdentityText { display: flex; flex-direction: column; min-width: 0; }
+    .ValeUserLogin__IdentityName {
+        font-size                          : calc(14px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        color                              : var(--ValeUserLogin_Text);
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+    .ValeUserLogin__IdentityRole {
+        font-size                          : calc(11.5px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+    }
+    .ValeUserLogin__Rule { height: 1px; margin: 8px 0; background: var(--ValeUserLogin_Border); }
+    .ValeUserLogin__SectionLabel {
+        padding                            : 4px 8px;
+        font-size                          : calc(11.5px * var(--ValeUserLogin_Scale));
+        font-weight                        : 600;
+        letter-spacing                     : 0.04em;
+        text-transform                     : uppercase;
+        color                              : var(--ValeUserLogin_TextSecondary);
+    }
+    .ValeUserLogin__Item {
+        display                            : block;
+        width                              : 100%;
+        padding                            : calc(9px * var(--ValeUserLogin_Scale)) 8px;
+        background                         : transparent;
+        border                             : none;
+        border-radius                      : calc(var(--ValeUserLogin_Radius) / 2);
+        font-family                        : var(--ValeUserLogin_Font);
+        font-size                          : calc(14px * var(--ValeUserLogin_Scale));
+        color                              : var(--ValeUserLogin_Text);
+        text-align                         : left;
+        white-space                        : nowrap;
+        cursor                             : pointer;
+    }
+    .ValeUserLogin__Item:hover { background: var(--ValeUserLogin_Hover); }
+    .ValeUserLogin__Item--nested { padding-left: 18px; }
+    .ValeUserLogin__Item--danger { color: var(--ValeUserLogin_Error); font-weight: 600; }
+    .ValeUserLogin__Item--danger:hover { background: var(--ValeUserLogin_ErrorSoft); }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * ANIMATION
+ * ----------------------------------------------------------------------------- */
+
+    @keyframes ValeUserLogin__FadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ValeUserLogin__PanelIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes ValeUserLogin__Drop    { from { transform: translateY(-6px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* #endregion ------------------------------------------------------------------- */

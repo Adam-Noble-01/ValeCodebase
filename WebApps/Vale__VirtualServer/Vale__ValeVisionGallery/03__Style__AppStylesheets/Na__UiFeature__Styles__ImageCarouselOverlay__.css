@@ -1,0 +1,107 @@
+/* =============================================================================
+ * VALEVISION GALLERY - IMAGE CAROUSEL VALEVISION OVERLAY STYLES
+ * =============================================================================
+ *
+ * FILE       : imageCarouselOverlay.css
+ * NAMESPACE  : ValeVision Gallery
+ * MODULE     : ImageCarousel ValeVision Overlay
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for ValeVision3D load model button overlay
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Overlay button for launching ValeVision3D from project images
+ * - Positioned on image carousel for seamless 3D model viewing
+ * - Hover effects for visual feedback
+ * - Responsive positioning and sizing
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Image Wrapper for Overlay Positioning
+ * ----------------------------------------------------------------------------- */
+
+    /* IMAGE WRAPPER | Container for Normal Image with Overlay */
+    /* ------------------------------------------------------------ */
+    .image-carousel__image-wrapper {
+        position                           : relative;                   /* <-- Enable absolute positioning for overlay */
+        width                              : 100%;                        /* <-- Full width */
+        height                             : 100%;                        /* <-- Full height */
+        display                            : flex;                        /* <-- Flexbox for centering */
+        align-items                        : center;                      /* <-- Vertical center */
+        justify-content                    : center;                      /* <-- Horizontal center */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ValeVision Overlay Button
+ * ----------------------------------------------------------------------------- */
+
+    /* VALEVISION OVERLAY | Load Model Button */
+    /* ------------------------------------------------------------ */
+    .image-carousel__valevision-overlay {
+        position                           : absolute;                   /* <-- Position over image */
+        top                                : 50%;                        /* <-- Vertical center */
+        left                               : 50%;                        /* <-- Horizontal center */
+        transform                          : translate(-50%, -50%);      /* <-- Center offset */
+        width                              : calc(270px * var(--Vale_UIScale));  /* <-- Button width (1.5x larger) */
+        height                             : auto;                       /* <-- Maintain aspect ratio */
+        cursor                             : pointer;                    /* <-- Pointer cursor on hover */
+        opacity                            : 0.8;                        /* <-- Semi-transparent by default */
+        transition                         : opacity 0.3s ease,           /* <-- Smooth opacity transition */
+                                             transform 0.3s ease;         /* <-- Smooth transform transition */
+        z-index                            : 10;                         /* <-- Above image but below controls */
+        user-select                        : none;                       /* <-- Prevent text selection */
+        -webkit-user-drag                  : none;                       /* <-- Prevent dragging */
+    }
+    
+    .image-carousel__valevision-overlay:hover {
+        opacity                            : 1.0;                        /* <-- Full opacity on hover */
+        transform                          : translate(-50%, -50%) scale(1.05);  /* <-- Maintain center + scale up */
+    }
+    
+    .image-carousel__valevision-overlay:active {
+        transform                          : translate(-50%, -50%) scale(0.98);  /* <-- Maintain center + scale down */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    /* RESPONSIVE | Medium Screens */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 1024px) {
+        .image-carousel__valevision-overlay {
+            width                          : calc(225px * var(--Vale_UIScale));  /* <-- Smaller button (1.5x of 150px) */
+        }
+    }
+    /* ------------------------------------------------------------ */
+    
+    
+    /* RESPONSIVE | Small Screens */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        .image-carousel__valevision-overlay {
+            width                          : calc(180px * var(--Vale_UIScale));  /* <-- Even smaller button (1.5x of 120px) */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Portrait Mobile (≤600px) */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 600px) {
+        .image-carousel__valevision-overlay {
+            width                          : calc(150px * var(--Vale_UIScale));  /* <-- Compact tap target on portrait phones */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

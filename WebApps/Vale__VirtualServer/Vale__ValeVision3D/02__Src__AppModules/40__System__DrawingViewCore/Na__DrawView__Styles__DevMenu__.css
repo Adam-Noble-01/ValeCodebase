@@ -1,0 +1,288 @@
+/* ================================================================= */
+/* REGION  |  ValeVision3D - Drawing View Core Dev Menu Styles      */
+/* ================================================================= */
+/*
+ * FILE    : Na__DrawView__Styles__DevMenu__.css
+ * MODULE  : Drawing View Core - Dev Menu Shared Rows
+ * AUTHOR  : Adam Noble - Noble Architecture
+ * CREATED : 09-Sep-2026
+ *
+ * Styles the scene link row shared by the Floor Plans and Elevations Dev
+ * menu panels: the card status line and its Add to Scenes action.
+ */
+/* ================================================================= */
+/*
+ * PORT NOTE:
+ * - Authored in   : ValeVision3D first (09-Sep-2026, v2.18.0, port Phase 2: TrueVision3D's elevation scene-row
+ *                   rules, relocated to the drawing core; the Folded Drawing Row region, v2.21.14,
+ *                   10-Sep-2026); TrueVision3D took the sheet whole; since ported back whole from
+ *                   TrueVision3D v2.86.0 (HEAD b2aa9151)
+ * - Source version: none of its own - the sheet as TrueVision3D v2.86.0 left it, with its Drawing Panel
+ *                   Shell region (20-Sep-2026; read at b2aa9151)
+ * - Ported on     : 01-Oct-2026 for ValeVision3D v2.71.2
+ * - Parity        : verbatim (the rules are TrueVision's; the banner, one folder number in a comment and
+ *                   this note are the only differences)
+ * - Divergences   :
+ *   - Banner reads ValeVision3D.
+ *   - The Folded Drawing Row note names the accordion's folder as 40__System__DrawingViewCore, where it
+ *     is; TrueVision's text still carries the drawing core's old ValeVision number, 42, a name retired
+ *     here by the renumber.
+ * - Back-port     : none.
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Scene Link Row                                         */
+/* ----------------------------------------------------------------- */
+
+.na-draw-dev__scene-row {
+    display                            : flex;
+    align-items                        : center;
+    justify-content                    : space-between;
+    gap                                : 8px;
+    margin-top                         : 4px;
+    padding-top                        : 7px;
+    border-top                         : 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.na-draw-dev__scene-status {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+    font-family                        : ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+    font-size                          : 11px;
+}
+
+/* Linked is the ordinary state, so it is quiet. */
+.na-draw-dev__scene-status--linked {
+    color                              : #4a4a4a;
+}
+
+/* Missing is not an error, but it does mean nobody can reach the
+   drawing - so it is coloured to be noticed rather than skimmed. */
+.na-draw-dev__scene-status--missing {
+    color                              : #b1560f;
+    font-weight                        : 600;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Folded Drawing Row                                     */
+/* ----------------------------------------------------------------- */
+/*
+ * Every floor plan and elevation row folds down to its name, and only one
+ * is unfolded across both panels at a time - see
+ * 40__System__DrawingViewCore/Na__DrawView__RowAccordion__.js for why.
+ * The card itself is still .na-fp-dev__row, so its border, its active
+ * highlight and its padding are unchanged; these rules only add the
+ * header and hide the body behind it.
+ */
+
+/* A folded card is one line, so it does not need a full card's height. */
+.na-draw-dev__fold:not(.na-draw-dev__fold--open) {
+    padding-top                        : 7px;
+    padding-bottom                     : 7px;
+    margin-bottom                      : 5px;
+}
+
+.na-draw-dev__fold-head {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 7px;
+    width                              : 100%;
+    padding                            : 0;
+    border                             : none;
+    background                         : none;
+    text-align                         : left;
+    font-family                        : inherit;
+    font-size                          : 13px;
+    font-weight                        : 600;
+    color                              : #172b3a;
+    cursor                             : pointer;
+}
+
+.na-draw-dev__fold-head:hover .na-draw-dev__fold-name {
+    text-decoration                    : underline;
+}
+
+.na-draw-dev__fold-head:focus-visible {
+    outline                            : 2px solid #2e7d4f;
+    outline-offset                     : 2px;
+}
+
+/* The same small triangle the menu sections use, laid on its side while
+   the row is folded. */
+.na-draw-dev__fold-arrow {
+    flex                               : 0 0 auto;
+    font-size                          : 10px;
+    line-height                        : 1;
+    color                              : #6b6b6b;
+    transform                          : rotate(-90deg);
+    transition                         : transform 120ms ease;
+}
+
+.na-draw-dev__fold--open .na-draw-dev__fold-arrow {
+    transform                          : rotate(0deg);
+}
+
+/* One line, whatever the drawing is called. */
+.na-draw-dev__fold-name {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+}
+
+/* THE CONTROLS ARE OUT OF REACH UNTIL THE ROW IS OPENED. display:none
+   rather than a height animation, so a folded row cannot be tabbed into
+   or dragged by accident. */
+.na-draw-dev__fold-body {
+    display                            : none;
+}
+
+.na-draw-dev__fold--open .na-draw-dev__fold-body {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 6px;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Drawing Panel Shell (Floor Plans, Elevations, Sections) */
+/* ----------------------------------------------------------------- */
+/*
+ * Added 20-Sep-2026 for the menu rebuild. The three drawing panels are built
+ * from 40__System__DrawingViewCore/Na__DrawView__DevRowShell__.js in the
+ * Presentation Scenes panel's own classes; these rules add only what that
+ * panel does not already have.
+ */
+
+/* THE HEAD | Title on the left, the square + hard against the right edge. */
+.na-draw-dev__panel-head {
+    align-items                        : center;
+    margin-bottom                      : 8px;
+}
+
+.na-draw-dev__panel-title {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    margin                             : 0;
+}
+
+.na-draw-dev__panel-head .na-pm-dev__square-btn:disabled {
+    opacity                            : 0.4;
+    cursor                             : not-allowed;
+}
+
+/* A FOLDED ROW'S HEADER | Swatch, name, then state chips. */
+.na-draw-dev__head-swatch {
+    flex                               : 0 0 auto;
+    width                              : 11px;
+    height                             : 11px;
+    border-radius                      : 2px;
+    border                             : 1px solid rgba(0, 0, 0, 0.25);
+    background                         : #c9ced6;
+}
+
+.na-draw-dev__chips {
+    display                            : inline-flex;
+    flex                               : 0 0 auto;
+    align-items                        : center;
+    gap                                : 4px;
+}
+
+/* The badge class sets no display of its own today; this keeps a hidden
+   chip hidden if it ever does. */
+.na-draw-dev__chips [hidden] {
+    display                            : none;
+}
+
+.na-draw-dev__chip--active {
+    color                              : #2e7d4f;
+    background                         : rgba(46, 125, 79, 0.10);
+    border-color                       : rgba(46, 125, 79, 0.35);
+}
+
+/* The one state that is waiting on its author. */
+.na-draw-dev__chip--dirty {
+    color                              : #9a5b00;
+    background                         : #fff4df;
+    border-color                       : #e6c78a;
+}
+
+/* A small caption over each group of controls inside an open row, so the
+   row reads as three short lists instead of one long one. */
+.na-draw-dev__caption {
+    margin-top                         : 6px;
+    font-size                          : 10.5px;
+    font-weight                        : 600;
+    letter-spacing                     : 0.05em;
+    text-transform                     : uppercase;
+    color                              : #7a828c;
+}
+
+.na-draw-dev__choice {
+    margin-top                         : 0;
+}
+
+/* ROW ACTIONS | Looking on the first line, keeping on the second. A grid,
+   as the scenes panel's row actions are, so four labels of four widths
+   line up whatever the panel's width. */
+.na-draw-dev__actions {
+    display                            : grid;
+    grid-template-columns              : 1fr 1fr;
+    gap                                : 6px;
+    margin-top                         : 12px;
+    padding-top                        : 10px;
+    border-top                         : 1px solid #e8eaed;
+}
+
+.na-draw-dev__actions .na-pm-dev__btn {
+    width                              : 100%;
+    padding-top                        : 6px;
+    padding-bottom                     : 6px;
+}
+
+.na-pm-dev__btn:disabled {
+    opacity                            : 0.45;
+    cursor                             : not-allowed;
+}
+
+/* UPDATE IS GREEN. The one button in a row that writes anything. */
+.na-draw-dev__btn--commit {
+    border-color                       : #2e7d4f;
+    color                              : #ffffff;
+    background                         : #2e7d4f;
+    font-weight                        : 600;
+}
+
+.na-draw-dev__btn--commit:hover:not(:disabled) {
+    background                         : #256842;
+}
+
+.na-draw-dev__btn--commit:disabled {
+    color                              : #2e7d4f;
+    background                         : #eef6f1;
+}
+
+/* DELETE | Below its rule, alone. */
+.na-draw-dev__danger .na-pm-dev__rule {
+    margin                             : 12px 0 8px;
+}
+
+.na-draw-dev__placeholder-list {
+    margin                             : 4px 0 8px;
+    padding-left                       : 18px;
+    font-size                          : 12px;
+    line-height                        : 1.5;
+    color                              : #4a4a4a;
+}
+
+/* endregion ------------------------------------------------------- */

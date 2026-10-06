@@ -1,0 +1,23 @@
+{
+    "id": "/",
+    "name": "Vale Virtual Server",
+    "short_name": "Vale Server",
+    "description": "Live explorer and two-way parity sync for the Vale apps server (app.valegardenhouses.com).",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone"],
+    "background_color": "#172b3a",
+    "theme_color": "#172b3a",
+    "icons": [
+        { "src": "01__AppAssets/VirtualServerManager__Icon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "01__AppAssets/VirtualServerManager__Icon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "01__AppAssets/VirtualServerManager__Icon__Maskable__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "Live server explorer", "url": "/?tab=explorer" },
+        { "name": "Parity matrix", "url": "/?tab=matrix" },
+        { "name": "URL configurator", "url": "/?tab=urls" },
+        { "name": "User accounts", "url": "/?tab=users" }
+    ]
+}

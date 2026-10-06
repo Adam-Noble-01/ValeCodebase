@@ -1,0 +1,369 @@
+/* ================================================================= */
+/* REGION  |  ValeVision3D - Layout Editor Styles (boot)              */
+/* ================================================================= */
+/*
+ * PORT NOTE:
+ * - Ported from : Na__LayoutEditor__Styles__Main__.css (published tab height, tab strip and Dev section rules, moved verbatim)
+ * - Ported on   : 15-Sep-2026 for ValeVision3D v2.45.0
+ * - Parity      : adapted (TrueVision keeps these rules in its Styles__Main, which it loads with the page)
+ * - Moved       : 02-Oct-2026 for ValeVision3D v2.71.2 - the 3D-furniture hiding block, verbatim from Styles__Main, where
+ *                 TrueVision keeps it and loads it with the page: the loader now puts the editor's body class on at the press,
+ *                 before Styles__Main is linked. And the loading screen's boot veil (.na-le-veil--boot).
+ * - Tab strip   : 02-Oct-2026 for ValeVision3D v2.71.2 - the Tab Strip region is TrueVision's Styles__Main "Tab Strip"
+ *                 region (tab strip 2.0.0, TrueVision3D v2.158.0; read at b2aa9151) byte for byte: the Drawings tab's caret and
+ *                 its menu in, the + tab and rename-field rules out.
+ * - Divergences : the hiding block carries one selector of this app's own, the Video Studio timeline (.na-vs-tl, fixed at
+ *                 z-index 1000, which would otherwise float over a drawing tab); the boot veil is this app's, because its
+ *                 editor loads on first use (DR-24 (a)).
+ */
+
+/* THE ONLY LAYOUT EDITOR STYLESHEET THE PAGE LOADS. It holds what can be on
+   screen before the editor exists: the published tab strip height, the 3D
+   furniture's hiding block, the tab strip and its Drawings menu, the Dev
+   section's sheet list and the loading screen. Main, Panels and
+   Specification are linked by Na__LayoutEditor__Loader__.js when the editor
+   loads, so nothing drawn before that may depend on them. */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Published Height                                       */
+/* ----------------------------------------------------------------- */
+
+:root {
+    --Vale_LayoutTabStripHeight        : 0px;                         /* <-- Written by the tab strip when it is shown */
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Shell Hiding                                           */
+/* ----------------------------------------------------------------- */
+
+/* While the editor is on screen the 3D overlays stand aside. The canvas
+   itself stays in the DOM (visibility only) so snapshots can render.
+   The two dropdown menus (Tools & Settings and the localhost Dev Tools
+   container) belong to the 3D Model tab only: they sit above the host at
+   z-index 1001 and would otherwise cover the sheet panels, so a drawing
+   tab hides them outright rather than letting them float over the paper.
+   The breadcrumb trail goes with them: it is fixed to the top left, which
+   on a drawing tab is the sheet panel column, and it navigates away from
+   the model rather than around the drawing, so it has nothing to say while
+   a sheet is open. It returns with the 3D Model tab, folded or unfolded
+   exactly as it was left. */
+body.na-layout-editor--active .na-dropdown-menu,
+body.na-layout-editor--active #naBreadcrumbNav,
+body.na-layout-editor--active #naPresentationCarousel,
+body.na-layout-editor--active #naNavToolbar,
+body.na-layout-editor--active #naNavHelpPanel,
+body.na-layout-editor--active .na-export-overlay,
+body.na-layout-editor--active .na-projected-linework,
+body.na-layout-editor--active .controls-instructions-panel,
+body.na-layout-editor--active .na-vs-tl {                          /* <-- This app only: the Video Studio timeline (fixed, z-index 1000) */
+    display                            : none !important;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Tab Strip                                              */
+/* ----------------------------------------------------------------- */
+
+.na-le-tabs {
+    position                           : fixed;
+    top                                : var(--Vale_HeaderHeight);
+    left                               : 0;
+    right                              : 0;
+    height                             : var(--Vale_LayoutTabStripHeight);
+    display                            : flex;
+    align-items                        : stretch;
+    padding                            : 0 4px;
+    box-sizing                         : border-box;
+    background                         : #f4f6f8;
+    border-bottom                      : 1px solid rgba(23, 43, 58, 0.14);
+    font-family                        : var(--Vale_FontFamily, 'Open Sans', sans-serif);
+    z-index                            : 999;                         /* <-- Under the header (1000) and the menus (1001) */
+    overflow                           : hidden;                      /* <-- The scroller inside does the scrolling; the arrows must not */
+}
+
+.na-le-tabs[hidden] {
+    display                            : none;
+}
+
+/* THE TABS SCROLL, THE ARROWS DO NOT. Seven tabs at their natural width need
+   about 700px; a phone in portrait has 375. So the tabs live in their own
+   scroller and the arrows sit outside it, staying put at the ends of the
+   visible run however far along the tabs have been pushed. On a desktop that
+   fits them all the arrows are hidden and this reads as the old flat row. */
+
+.na-le-tabs__scroller {
+    display                            : flex;
+    align-items                        : stretch;
+    flex                               : 1 1 auto;
+    gap                                : 2px;
+    min-width                          : 0;
+    padding                            : 0 8px;
+    overflow-x                         : auto;
+    overflow-y                         : hidden;
+    scrollbar-width                    : none;                        /* <-- A scrollbar inside a 36px strip is all bar and no tab */
+    -webkit-overflow-scrolling         : touch;
+    overscroll-behavior-x              : contain;                     /* <-- Flicking the tabs never drags the page behind them */
+}
+
+.na-le-tabs__scroller::-webkit-scrollbar {
+    display                            : none;
+}
+
+.na-le-tabs__arrow {
+    flex                               : 0 0 auto;
+    align-self                         : center;
+    width                              : 30px;
+    height                             : 28px;
+    padding                            : 0;
+    background                         : #e9edf0;
+    border                             : 1px solid rgba(23, 43, 58, 0.14);
+    border-radius                      : 6px;
+    color                              : #172b3a;
+    font-family                        : inherit;
+    font-size                          : 1.1rem;
+    line-height                        : 1;
+    cursor                             : pointer;
+    -webkit-tap-highlight-color        : transparent;
+}
+
+.na-le-tabs__arrow[hidden] {
+    display                            : none;
+}
+
+.na-le-tabs__arrow:hover:not(:disabled) {
+    background                         : #ffffff;
+}
+
+.na-le-tabs__arrow:disabled {
+    opacity                            : 0.3;
+    cursor                             : default;
+}
+
+.na-le-tabs__tab {
+    flex                               : 0 0 auto;
+    margin-top                         : 4px;
+    padding                            : 0 14px;
+    border                             : 1px solid rgba(23, 43, 58, 0.14);
+    border-bottom                      : none;
+    border-radius                      : 6px 6px 0 0;
+    background                         : #e9edf0;
+    color                              : #172b3a;
+    font-size                          : 0.8rem;
+    font-weight                        : 400;
+    cursor                             : pointer;
+    white-space                        : nowrap;
+}
+
+.na-le-tabs__tab:hover {
+    background                         : #ffffff;
+}
+
+.na-le-tabs__tab--active {
+    background                         : #ffffff;
+    font-weight                        : 600;
+    box-shadow                         : 0 2px 0 0 #ffffff;           /* <-- Joins the tab to the surface below */
+}
+
+.na-le-tabs__tab--model {
+    margin-right                       : 8px;
+}
+
+.na-le-tabs__tab--menu-open {
+    background                         : #ffffff;                     /* <-- The Drawings tab while its menu hangs under it */
+}
+
+/* THE DRAWINGS TAB IS A MENU, and says so with the small caret the header's
+   own menus wear (Dev Tools, Tools & Settings). It turns while the menu is
+   open, as theirs do. */
+
+.na-le-tabs__caret {
+    display                            : inline-block;
+    margin-left                        : 6px;
+    font-size                          : 0.7rem;
+    line-height                        : 1;
+    color                              : #46596b;
+    transition                         : transform 0.24s ease;
+}
+
+.na-le-tabs__tab--menu-open .na-le-tabs__caret {
+    transform                          : rotate(180deg);
+}
+
+/* THE DRAWINGS MENU. On the body, hung under the Drawings tab, fixed: the
+   strip clips its own overflow so the scroller can scroll, and a menu inside
+   it would be cut off at the strip's lower edge. Dressed as the header's
+   menus are - white, a hairline, a soft shadow, rows that tint on hover - so
+   it reads as one of the app's menus and not a second kind of tab. Above the
+   header (1000) and its menus (1001), which it can overlap on a phone. It is
+   given only the height there is below it, so a long pack scrolls inside
+   the menu rather than off the screen. */
+
+.na-le-tabs__menu {
+    position                           : fixed;
+    z-index                            : 1002;
+    min-width                          : 220px;
+    max-width                          : min(380px, calc(100vw - 16px));
+    padding                            : 6px 0;
+    box-sizing                         : border-box;
+    overflow-y                         : auto;
+    overscroll-behavior                : contain;
+    background                         : rgba(255, 255, 255, 0.98);
+    border                             : 1px solid rgba(0, 0, 0, 0.12);
+    border-top                         : none;
+    border-radius                      : 0 0 6px 6px;
+    box-shadow                         : 0 6px 18px rgba(0, 0, 0, 0.15);
+    font-family                        : var(--Vale_FontFamily, 'Open Sans', sans-serif);
+}
+
+.na-le-tabs__menu[hidden] {
+    display                            : none;
+}
+
+.na-le-tabs__menu-row {
+    display                            : block;
+    width                              : 100%;
+    padding                            : 8px 14px;
+    margin                             : 0;
+    border                             : none;
+    background                         : transparent;
+    color                              : #172b3a;
+    font-family                        : inherit;
+    font-size                          : 0.85rem;
+    font-weight                        : 400;
+    text-align                         : left;
+    white-space                        : nowrap;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    cursor                             : pointer;
+    -webkit-tap-highlight-color        : transparent;
+}
+
+.na-le-tabs__menu-row:hover,
+.na-le-tabs__menu-row:focus-visible {
+    background                         : rgba(23, 43, 58, 0.06);
+    outline                            : none;
+}
+
+.na-le-tabs__menu-row--open {
+    font-weight                        : 600;                         /* <-- The open drawing, as the open tab is bold */
+    background                         : rgba(26, 127, 196, 0.08);
+}
+
+.na-le-tabs__menu-row--add {
+    font-weight                        : 600;                         /* <-- The old + tab, as a row */
+    color                              : #1a7fc4;
+}
+
+.na-le-tabs__menu-divider {
+    height                             : 1px;
+    margin                             : 6px 0;
+    background                         : rgba(23, 43, 58, 0.12);
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Dev Menu Section                                       */
+/* ----------------------------------------------------------------- */
+
+.na-le-dev__sheets {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 4px;
+    margin                             : 6px 0;
+}
+
+.na-le-dev__sheet {
+    flex-wrap                          : wrap;
+}
+
+.na-le-dev__sheet--active .na-le-dev__sheet-name {
+    font-weight                        : 600;
+    color                              : #1a7fc4;
+}
+
+.na-le-dev__sheet-name {
+    flex                               : 1 1 100%;
+    min-width                          : 0;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Loading Screen                                         */
+/* ----------------------------------------------------------------- */
+
+/* WHILE LOADING it wears TrueVision's veil - .na-le-veil, with the app's
+   spinner, the headline and the status line (Na__UiFeature__Styles__
+   LoadingOverlays__.css) - and this modifier, which puts it where the
+   editor host will be: fixed below the tab strip, at the host's z-index,
+   so under the strip (999) and the header (1001), and the bar's hold and
+   fold are watched over it. Opaque and without the veil's blur, because
+   the 3D view is still drawn underneath until the editor hides it. Its top
+   follows the fold as the host's does (AppHeader, "Contextual Fold"): the
+   moment the body class lands it takes its folded place and the bars
+   slide up over it. The host, appended after it, paints above it at the
+   same z-index, and the editor's own first-open veil takes over there, in
+   the same frame, over the same rectangle. */
+
+.na-le-veil.na-le-veil--boot {
+    position                           : fixed;
+    top                                : calc(var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight));
+    left                               : 0;
+    right                              : 0;
+    bottom                             : 0;
+    z-index                            : 600;                         /* <-- The editor host's */
+    background-color                   : #ffffff;                     /* <-- Opaque: no 3D model shows through */
+    backdrop-filter                    : none;
+}
+
+body.na-layout-editor--active .na-le-veil--boot {
+    top                                : var(--Vale_LayoutTabStripHeight);   /* <-- Folded at once, as the host is; the bars slide over it */
+}
+
+/* THE ERROR STATE keeps the start-up screen's own classes (.loading-overlay,
+   .loading-spinner, .loading-overlay--error and .loading-error-*), so it
+   looks and fades exactly as that screen does. Only what the start-up
+   screen has no use for is added here: the reason a load failed, and a
+   second button beside Reload. */
+
+.na-le-loading .loading-error-message {
+    margin-bottom                      : 8px;                         /* <-- The reason sits directly under the headline */
+}
+
+.na-le-loading__detail {
+    max-width                          : 480px;
+    margin                             : 0 0 24px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 13px;
+    line-height                        : 1.5;
+    color                              : #5f6f7a;
+    text-align                         : center;
+    overflow-wrap                      : anywhere;
+}
+
+.na-le-loading__actions {
+    display                            : flex;
+    gap                                : 12px;
+    justify-content                    : center;
+}
+
+.loading-error-retry-btn.na-le-loading__button--secondary {
+    color                              : #172b3a;
+    background-color                   : #ffffff;
+    box-shadow                         : inset 0 0 0 1px #172b3a;     /* <-- A border that does not change the button's size */
+}
+
+.loading-error-retry-btn.na-le-loading__button--secondary:hover {
+    background-color                   : #f4f6f8;
+}
+
+/* endregion ------------------------------------------------------- */

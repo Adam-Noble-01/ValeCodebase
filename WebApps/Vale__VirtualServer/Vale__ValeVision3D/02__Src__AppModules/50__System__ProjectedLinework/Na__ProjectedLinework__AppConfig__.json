@@ -1,0 +1,144 @@
+{
+    "ProjectedLinework__Description": "Projected linework on 2D drawings (port Phase 4). The live model is read out into plain numbers, turned to face the drawing, and clipped for occlusion by the Lantern Designer projection engine, off the main thread where workers are available. The result is exact vector linework in drawing millimetres, painted over the composer render on screen, baked to R2 on localhost so the web build never computes it, and consumed by the Layout Editor viewports. Values here are the built-in defaults; ProjectedLinework__Config in Na__AppConfig__Main.json overrides the exclusion tokens. Distances are millimetres unless the key says otherwise.",
+
+    "ProjectedLinework__Enabled": true,
+
+    "ProjectedLinework__Render__Config": {
+        "ProjectedLinework__Render__Description": "The projection keeps itself up to date while a drawing is on screen. Entering a drawing, a slider commit, a style change or a model group toggle schedules a fresh render; a change arriving mid-render abandons it. Dragging a slider emits a change per frame, so the work starts only when the drawing has been still for RealtimeDebounceMs. Set Realtime false to render only from the Dev menu's Force Render.",
+        "ProjectedLinework__Render__Realtime": true,
+        "ProjectedLinework__Render__RealtimeDebounceMs": 220,
+        "ProjectedLinework__Render__RepaintFromCacheOnRedraw": true,
+        "ProjectedLinework__Render__LogTimings": true
+    },
+
+    "ProjectedLinework__Projection__Config": {
+        "ProjectedLinework__Projection__Description": "What counts as a line, and how finely it is drawn. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge. IncludeIntersectionEdges adds the lines where two solids cut through one another; it is view-invariant and computed once per model state. EdgeLiftWorldUnits nudges every edge a hair towards the viewer so a line lying exactly in its own surface is not judged hidden by it; it is in scene units (metres). IterationTimeMs applies to the legacy backend only. The intersection pass is a mesh-against-mesh BVH search that grows with the square of the overlapping pairs, so it is skipped (and the bounds trees it needs are never built) when the model has more than IntersectionMaxInstances instances or more than IntersectionMaxPairs overlapping pairs, and a single geometry over IntersectionSelfMaxTriangles is not tested against itself. A house-scale SketchUp model normally exceeds these and draws its junctions from the authored linework instead. The next three rules make a drawing match the live 3D view, which draws only the SketchUp linework GLB plus a screen-space outline. HideFlushJoins (on) cuts out of the mesh's own edges every join between two faces of one plane - a wall band sitting flush on the wall below, a pier between two windows, a new wall carrying straight on from an old one - which the 3D view shows as one unbroken surface; outlines such as the ground line, and real creases, keep their lines, and the SketchUp linework is never touched. SeamsOcclude (on) closes a gap in the hidden-line test: where two occluding faces meet exactly along a line, an edge lying behind them on that line was never hidden, although the 3D view's depth buffer hides it; an edge lying on the faces themselves still draws. LineworkFirst (off) is a strict SketchUp mode: a category that ships a linework GLB draws its hard creases, open edges and junction lines from that linework alone and only its silhouettes from the mesh, and is never intersection-tested against another such category. The GLB Builder leaves every hidden, soft and smooth SketchUp edge out of the linework and the mesh GLB carries no edges, so this mode also loses outlines the modeller hid - the ground box's top edge, which is the ground line of every elevation - but it is much faster on a large model. The Dev menu's Run Diff always runs with all three off, because the vendored backends it compares against apply none of them.",
+        "ProjectedLinework__Projection__AngleThresholdDegrees": 50,
+        "ProjectedLinework__Projection__HideFlushJoins": true,
+        "ProjectedLinework__Projection__SeamsOcclude": true,
+        "ProjectedLinework__Projection__LineworkFirst": false,
+        "ProjectedLinework__Projection__IncludeIntersectionEdges": true,
+        "ProjectedLinework__Projection__IntersectionMaxInstances": 400,
+        "ProjectedLinework__Projection__IntersectionMaxPairs": 20000,
+        "ProjectedLinework__Projection__IntersectionSelfMaxTriangles": 60000,
+        "ProjectedLinework__Projection__IterationTimeMs": 30,
+        "ProjectedLinework__Projection__MinimumSegmentLengthMm": 1.0,
+        "ProjectedLinework__Projection__EdgeLiftWorldUnits": 0.000001
+    },
+
+    "ProjectedLinework__Performance__Config": {
+        "ProjectedLinework__Performance__Description": "Who does the work and how it is scheduled. Backend: every render the pipeline KEEPS - the on-screen drawing, every Layout Editor viewport, the browser cache and the R2 bake - runs on the CPU whatever this says, because only the CPU backend tags each line with the model category it came from, and the Layout Editor's per-category edge styles need those tags (13-Sep-2026, v2.27.0; until then 'auto' sent plain elevations to the GPU on a capable machine, and on exactly that machine the edge styles silently did nothing). 'cpu' is the module's own kernel spread across web workers, available everywhere and the reference output. 'webgpu' and 'legacy' remain for the Dev menu's Run Diff, which renders one of them beside the CPU for comparison and keeps neither result; the GPU also cannot apply a drawing cut, and neither can tag a line. The hardware probe asks for a high-performance adapter so a workstation picks its discrete card, and rejects a software fallback adapter, which satisfies every API check while being slower than the CPU backend it would displace. MaxWorkers is a ceiling: the pool takes one fewer than the core count. Below MinimumEdgesForWorkers the kernel runs inline. Above MaxTrianglesForExactLinework the drawing reports why and keeps the composer render alone rather than starting a computation that would take minutes.",
+        "ProjectedLinework__Performance__Backend": "auto",
+        "ProjectedLinework__Performance__MaxWorkers": 8,
+        "ProjectedLinework__Performance__MinimumEdgesForWorkers": 8000,
+        "ProjectedLinework__Performance__ClipBvhMaxLeafSize": 4,
+        "ProjectedLinework__Performance__YieldEveryMs": 64,
+        "ProjectedLinework__Performance__CacheBoundsTrees": true,
+        "ProjectedLinework__Performance__BvhMaxLeafSize": 1,
+        "ProjectedLinework__Performance__MaxCachedResults": 24,
+        "ProjectedLinework__Performance__MaxTrianglesForExactLinework": 2500000
+    },
+
+    "ProjectedLinework__Preview__Config": {
+        "ProjectedLinework__Preview__Description": "The provisional raster picture the Lantern Designer shows while a view computes. Off here because the composer render already is the underlay on screen; the module is kept for the Layout Editor viewports.",
+        "ProjectedLinework__Preview__Enabled": false,
+        "ProjectedLinework__Preview__MaxPixels": 2048,
+        "ProjectedLinework__Preview__FillColour": "#ffffff",
+        "ProjectedLinework__Preview__LineColour": "rgb(60, 60, 60)",
+        "ProjectedLinework__Preview__Opacity": 0.45
+    },
+
+    "ProjectedLinework__Persistence__Config": {
+        "ProjectedLinework__Persistence__Description": "Rendered linework is an R2 asset, never inline in project.json (plan decision D20). On localhost, Save Floor Plans and Save Elevations bake every drawing whose asset is missing or stale before the project save and write the asset reference into the record; the web build loads the asset and only computes when it is missing. A view with more segments than MaxSegmentsPerView is not stored and says so in the console. CacheInBrowser keeps a copy in IndexedDB on the device so a reload does not refetch.",
+        "ProjectedLinework__Persistence__SchemaNote": "Asset schema 2 (12-Sep-2026) stores an owner tag per segment - the model category each line came from - as [ id, count ] runs per class, with the key table in Meta.OwnerKeys. Schema 1 assets are refused and re-rendered once, because they cannot say which category any line belongs to and a drawing restored from one would silently ignore every per-category edge style.",
+        "ProjectedLinework__Persistence__Enabled": true,
+        "ProjectedLinework__Persistence__BakeOnSave": true,
+        "ProjectedLinework__Persistence__MaxSegmentsPerView": 250000,
+        "ProjectedLinework__Persistence__AssetFolder": "LayoutEditor/Linework",
+        "ProjectedLinework__Persistence__CacheInBrowser": true
+    },
+
+    "ProjectedLinework__Appearance__Config": {
+        "ProjectedLinework__Appearance__Description": "One rule per line class, written as SVG presentation attributes so the drawing reads the same on screen, in an exported image and on a sheet. Widths are true drawing millimetres at 1:1 on screen scale (the overlay scales them with the drawing); DashMm is the dash and gap length for the hidden class. The Doous section look (dark grey) is the default for the section outline.",
+        "ProjectedLinework__Appearance__Visible": {
+            "StrokeColour": "#323232",
+            "StrokeWidthMm": 12,
+            "StrokeOpacity": 1
+        },
+        "ProjectedLinework__Appearance__Hidden": {
+            "StrokeColour": "#6a6a6a",
+            "StrokeWidthMm": 8,
+            "StrokeOpacity": 0.9,
+            "DashMm": 120
+        },
+        "ProjectedLinework__Appearance__Authored": {
+            "StrokeColour": "#323232",
+            "StrokeWidthMm": 12,
+            "StrokeOpacity": 1
+        },
+        "ProjectedLinework__Appearance__Section": {
+            "StrokeColour": "#505050",
+            "StrokeWidthMm": 28,
+            "StrokeOpacity": 1
+        }
+    },
+
+    "ProjectedLinework__Exclusions__Config": {
+        "ProjectedLinework__Exclusions__Description": "Model categories left out of the projection unless a drawing record overrides the list. Tokens are matched case-insensitively as substrings of the model group names (the category keys the Toggle Model Elements panel lists). ProjectedLinework__Config__Exclusions__DefaultCategoryTokens in Na__AppConfig__Main.json overrides DefaultCategoryTokens. SkipObjectNames are scene helpers that are never sampled whatever the record says.",
+        "ProjectedLinework__Exclusions__DefaultCategoryTokens": ["Planting", "Trees", "People", "Vehicles", "Furniture", "Decor"],
+        "ProjectedLinework__Exclusions__SkipObjectNames": ["OrbitHelperCube", "Na__GridLine", "Na__FogPlane", "Na__Billboard", "Na__ElevGizmo", "DrawingCut__"]
+    },
+
+    "ProjectedLinework__Annotation__Config": {
+        "ProjectedLinework__Annotation__Description": "Annotation linework is the SketchUp LINETYPE tags - dashed, dotted, centre, door swings, clearances, overhead extents, building joins, demolition. The GlbBuilder gives each tag a linework-only GLB, so each arrives as its own model category whose name carries one of the tokens below. It reaches a drawing through the AUTHORED class like any other SketchUp linework, but two things are done differently, because it is drawing data rather than model geometry: it is not divided at the drawing's cut plane, and it is not occlusion-clipped. A line tagged as an overhead extent is meant to be seen through the roof above it, and a clearance drawn flat on a floor slab must not be clipped away by the slab it sits on. Switch a layer off in the Model Layers panel to take it off a drawing.",
+        "ProjectedLinework__Annotation__Enabled": true,
+        "ProjectedLinework__Annotation__CategoryTokens": ["Linetype__"],
+        "ProjectedLinework__Annotation__CategoryTokensNote": "Matched case-insensitively as substrings of the model group name, the same way the exclusion tokens are. Turning Enabled off drops annotation linework back to being clipped and cut like every other authored edge; it never hides it. On a floor plan, the annotation categories named in ProjectedLinework__Storeys__AnnotationTokens are also kept to the storey the plan is cut through - see the Storeys block."
+    },
+
+    "ProjectedLinework__Storeys__Config": {
+        "ProjectedLinework__Storeys__Description": "A floor plan draws the door swings of ONE storey: the storey its cut plane passes through. The model's storeys are its Storey__<Key>__<Element> category groups - the groups the 3D view's storey toggle shows and hides - and each storey's floor is measured from where its doors stand (the median of their bottoms). A plan belongs to the storey with the highest floor at or below its cut; its band runs from FloorToleranceMm under that floor to FloorToleranceMm under the next floor up, the lowest storey's band running down for ever and the top storey's up for ever. Three things are kept to the band: the doors a Layout Editor plan stands open (every other storey's doors are shut, as on an elevation, in the linework and the base image alike - without this a lower storey's exterior doors swung out past the roofs below an upper plan), the swing traced for each open door (a plan with no view depth keeps everything below its cut, and a swing is added after the occlusion clip, so without this a first floor plan drew every ground floor swing through the slab), and the annotation categories named in AnnotationTokens (the SketchUp linetype GLBs are one file for the whole building, drawn uncut and unclipped, so without this every plan drew every storey's lines). Pick annotation that lies flat on a floor: door swings and clearances. Leave out overhead extents, which are drawn at the height of the thing above, and anything drawn once for every storey. A model with no Storey__ groups, or with doors on only one storey, keeps everything as before. Elevations and sections are never touched. Changing a value here does not re-key drawings already rendered; bump ProjectedLinework__Model__BuildToken with it.",
+        "ProjectedLinework__Storeys__Enabled": true,
+        "ProjectedLinework__Storeys__CategoryPrefix": "Storey__",
+        "ProjectedLinework__Storeys__FloorToleranceMm": 500,
+        "ProjectedLinework__Storeys__AnnotationTokens": ["Linetype__DoorSwings", "Linetype__ClearanceLines"],
+        "ProjectedLinework__Storeys__AnnotationTokensNote": "Matched case-insensitively as substrings of the model group name, like the annotation category tokens. An empty list keeps every annotation line on every plan, as before this rule."
+    },
+
+    "ProjectedLinework__LineworkModifiers__Config": {
+        "ProjectedLinework__LineworkModifiers__Description": "Nested SketchUp tags (the SSOT's 76-79 range) that ride inside a parent category's GLB rather than exporting to one of their own - the GlbBuilder gives a nested tag its own mesh node name ('OwnTagName::MaterialName') without moving the geometry out of the parent's file. A mesh whose own node name BEGINS with one of the TagName values below is drawn under the paired OwnerKey instead of inheriting its parent category's style. Matched as a prefix, not split on '::': the GlbBuilder writes the node name as '<TagName>::<MaterialName>', but three.js puts every node name through PropertyBinding.sanitizeNodeName when it loads, which strips [ ] . : / - so the name that reaches the Stage Sampler is '<TagName><MaterialName>' with the separator gone. so a detail nested inside ANY category group (Walls, Roofs, Floors, Windows, Doors - a cupola's louvres inside a Roofs group works exactly the same as a cill inside a Walls group) can read lighter than what it sits on while staying on exactly the same toggle, storey and GLB as its host. This match is purely by the modifier tag's own name; the parent's tag is never inspected. OwnerKey rows are styled in Na__LayoutEditor__ModelLayers__Config__.json under the 'linework-modifiers' group.",
+        "ProjectedLinework__LineworkModifiers__Tags": [
+            { "TagName": "76__LineworkModifier__FineDetail__Walls",                  "OwnerKey": "ValeVision__LineworkModifier__FineDetail" },
+            { "TagName": "77__LineworkModifier__FineDetail__WindowsAndJoinery",      "OwnerKey": "ValeVision__LineworkModifier__FineDetail" },
+            { "TagName": "78__LineworkModifier__VeryFineDetail__Walls",             "OwnerKey": "ValeVision__LineworkModifier__VeryFineDetail" },
+            { "TagName": "79__LineworkModifier__VeryFineDetail__WindowsAndJoinery", "OwnerKey": "ValeVision__LineworkModifier__VeryFineDetail" }
+        ]
+    },
+
+    "ProjectedLinework__Model__Config": {
+        "ProjectedLinework__Model__Description": "BuildToken is folded into every fingerprint. Bump it whenever the way the model is sampled changes (a new helper skipped, glass treated differently, the cut clipping corrected, the edge rule switched) so every baked asset reads as belonging to an older sampling and is re-rendered rather than restored. Transparent materials draw their own edges but never hide what is behind them, unless the drawing's Glass Transparency Off style is on, in which case they occlude like walls.",
+        "ProjectedLinework__Model__BuildToken": "2026-10-02-tv-parity",
+        "ProjectedLinework__Model__TransparentOccludes": false,
+        "ProjectedLinework__Model__TransparentOpacityBelow": 0.999
+    },
+
+    "ProjectedLinework__Labels__Config": {
+        "ProjectedLinework__Labels__Description": "User-facing wording on the Dev menu section.",
+        "ProjectedLinework__Labels__SectionTitle": "Projected Linework",
+        "ProjectedLinework__Labels__EnabledLabel": "Overlay enabled",
+        "ProjectedLinework__Labels__BackendLabel": "Backend",
+        "ProjectedLinework__Labels__ForceRenderLabel": "Force Render",
+        "ProjectedLinework__Labels__BakeLabel": "Bake All to R2",
+        "ProjectedLinework__Labels__ClearCacheLabel": "Clear Cache",
+        "ProjectedLinework__Labels__DiffLabel": "Run Diff",
+        "ProjectedLinework__Labels__StatusIdle": "No drawing on screen.",
+        "ProjectedLinework__Labels__StatusWorking": "Projecting...",
+        "ProjectedLinework__Labels__StatusReady": "Linework ready.",
+        "ProjectedLinework__Labels__StatusCached": "cached",
+        "ProjectedLinework__Labels__StatusStale": "stale",
+        "ProjectedLinework__Labels__StatusMissing": "missing",
+        "ProjectedLinework__Labels__TooManyTrianglesMessage": "Model too large for exact linework on this device; the drawing shows the render alone.",
+        "ProjectedLinework__Labels__BakedMessage": "Linework baked to the server.",
+        "ProjectedLinework__Labels__BakeFailedMessage": "Linework bake failed - see console."
+    }
+}

@@ -3502,6 +3502,14 @@
           "endTime": "16:45",
           "title": "MaxUpgrade |  Washington",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1791273831733",
+          "date": "2026-10-06",
+          "startTime": "09:00",
+          "endTime": "15:30",
+          "title": "MaxModel |  Updates Washington",
+          "color": "na-shift-color-blue"
         }
       ]
     }

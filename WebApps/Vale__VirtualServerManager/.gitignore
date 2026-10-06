@@ -1,0 +1,6 @@
+# Server data backups and snapshots hold live project and user data: never commit them (the repo is public).
+90__ServerBackups/
+__pycache__/
+*.pyc
+01__AppData/*.tmp
+*.log

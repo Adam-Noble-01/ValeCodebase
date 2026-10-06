@@ -1,0 +1,40 @@
+{
+    "ProjectSpecification__Description": "Project specification notes for the ValeVision drawings. Groups hold notes in order; a note's code is its group's prefix and its place in the group (GN01, FN01), so the order is the truth and Note__Code is written for readers and recomputed on every load. Specification bubbles on the Layout Editor sheets link to notes by Note__Id. General groups are listed on every sheet's notes margin, after the notes that sheet's bubbles link to. LastIdNumber only ever goes up, so no id is used twice.",
+    "ProjectSpecification__Version": 1,
+    "ProjectSpecification__ProjectCode": "57079",
+    "ProjectSpecification__UpdatedIso": null,
+    "ProjectSpecification__NumberDigits": 2,
+    "ProjectSpecification__LastIdNumber": 2,
+    "ProjectSpecification__Groups": [
+        {
+            "Group__Id": "SpecGroup_001",
+            "Group__Prefix": "GN",
+            "Group__Title": "General Notes",
+            "Group__IsGeneral": true,
+            "Group__Notes": [
+                {
+                    "Note__Id": "SpecNote_001",
+                    "Note__Code": "GN01",
+                    "Note__Title": "Example general note",
+                    "Note__Body": "Replace this with a project-wide note. It appears on every sheet that has a notes margin.",
+                    "Note__UpdatedIso": null
+                }
+            ]
+        },
+        {
+            "Group__Id": "SpecGroup_002",
+            "Group__Prefix": "FN",
+            "Group__Title": "Finishes",
+            "Group__IsGeneral": false,
+            "Group__Notes": [
+                {
+                    "Note__Id": "SpecNote_002",
+                    "Note__Code": "FN01",
+                    "Note__Title": "Example finish note",
+                    "Note__Body": "A specification bubble with Leader__SpecNoteId SpecNote_002 shows FN01 and lists this body in that sheet's notes margin.",
+                    "Note__UpdatedIso": null
+                }
+            ]
+        }
+    ]
+}

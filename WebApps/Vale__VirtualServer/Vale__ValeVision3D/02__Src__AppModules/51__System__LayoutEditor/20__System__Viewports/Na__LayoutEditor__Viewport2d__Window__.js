@@ -1,0 +1,188 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - VIEWPORT 2D - WINDOW
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__Viewport2d__Window__.js
+// NAMESPACE  : Na__LeVp2d
+// MODULE     : Layout Editor - Viewport 2D - Window
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : The model window a 2D viewport looks through, and the projection definition it draws
+// CREATED    : 15-Sep-2026
+//
+// DESCRIPTION:
+// - Window: the frame's paper size times the scale denominator, in drawing
+//   millimetres, centred on the viewport's pan, with its local, paper and
+//   from-paper mappings. Everything in the frame is placed from that one
+//   rectangle.
+// - Describe: the source records, the projection definition (the viewport's
+//   own Render Composites toggles, Model Layers exclusion tokens and door
+//   pose folded in), the window and the viewport's Model Source, in one go.
+// - Imports no other Viewport 2D unit, so the Frame, Linework and SitePlan
+//   units and Na__LayoutEditor__Viewport2d__ can all import it without a
+//   cycle.
+//
+// INTEGRATION:
+// - Na__LayoutEditor__Viewport2d__ re-exports Window and Describe and calls
+//   them from CentreOnDrawing, Fill, GetSnapSource, ForceRender and
+//   RenderForExport. The Frame unit reads both for the debounced underlay
+//   render; the Linework unit reads Window to lay out the linework SVG, and
+//   the SitePlan unit to lay out the site plan SVG.
+// - Every other module imports Na__LayoutEditor__Viewport2d__.js, never
+//   this unit.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Authored in   : ValeVision3D first (split out of Na__LayoutEditor__Viewport2d__.js, 15-Sep-2026,
+//                   v2.47.0); TrueVision3D took the split for its v2.55.0; since ported back whole from
+//                   TrueVision3D 1.2.0 (HEAD b2aa9151)
+// - Source version: 1.2.0 (TrueVision3D v2.140.0, 22-Sep-2026; read at b2aa9151)
+// - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, the whole file. This app's copy before it
+//                   was its own 1.0.1 (Describe's Model Source as a fixed live-model answer, now Model Source
+//                   itself). TrueVision 1.1.0 (v2.138.0, turned viewports) and 1.2.0 (v2.140.0, door pose and
+//                   Hide swings) come across under DR-01 (c); neither is recorded as tried by Adam in TrueVision.
+// - Parity        : verbatim (the code is TrueVision 1.2.0's; the banner and this note are the only differences)
+// - Divergences   :
+//   - Banner reads ValeVision3D. (No console output in this file.)
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 21-Sep-2026 - Version 1.2.0 (TrueVision)
+// - Hide swings. A plan's definition carries the pose PoseFor gives it (no
+//   arcs while the viewport hides its swings) and SwingExcludeTokens beside
+//   the Model Layers tokens, so the SketchUp door swing linework goes too.
+//   Both are empty or unchanged on a plan that draws its swings, so every
+//   such definition hashes exactly as before.
+//
+// 21-Sep-2026 - Version 1.1.0 (TrueVision)
+// - A TURNED VIEWPORT (Viewport__RotationDeg). ToPaper and FromPaper carry the
+//   frame's turn about its middle, so the snap index, the door hit test and
+//   Import From Scene find the drawing where it is on the paper. New: ToFrame
+//   (the level frame's paper point, for clipping to the frame), FrameToPaper
+//   (a level-frame point turned onto the paper) and RotationDeg. ToLocal, the
+//   layout of everything inside the frame, is unchanged: the frame element is
+//   turned as a whole, so no picture is rendered again for a turn.
+//
+// 15-Sep-2026 - Version 1.0.0
+// - Split out of Na__LayoutEditor__Viewport2d__.js; the code moved verbatim.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Model, Model Source, Model Layers and Plan Doors
+    // ------------------------------------------------------------
+    import { Na__LeModel__ResolveViewportSource } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeSource__Resolve } from './Na__LayoutEditor__ModelSource__.js';
+    import { Na__LeModelLayers__ExcludeTokens } from '../25__System__RenderStyles/Na__LayoutEditor__ModelLayers__.js';
+    import { Na__LeDoors__PoseFor, Na__LeDoors__ShutPoseFor, Na__LeDoors__SwingExcludeTokens } from './Na__LayoutEditor__PlanDoors__.js';
+    import { Na__LeVpRot__Deg, Na__LeVpRot__TurnVector } from './Na__LayoutEditor__ViewportRotation__.js';   // <-- A leaf: the turn of the frame on the paper
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Projected Linework (definitions)
+    // ------------------------------------------------------------
+    import {
+        Na__PlView__FromPlan,
+        Na__PlView__FromElevation
+    } from '../../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Window and Definition
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Model Window of a Viewport, With Its Paper Mappings
+    // ------------------------------------------------------------
+    // ToLocal     drawing mm -> mm from the frame's top-left corner, in the
+    //             frame's own axes: what everything inside the frame is laid
+    //             out in, turned or not
+    // ToFrame     drawing mm -> the paper point as the frame stands LEVEL
+    // ToPaper     drawing mm -> where it is on the paper, the frame's turn
+    //             (Viewport__RotationDeg, about its middle) included
+    // FromPaper   a paper point -> drawing mm, the turn undone first
+    // FrameToPaper a level-frame paper point -> the paper, turned
+    // A level viewport's ToFrame and ToPaper are the same answer, so every
+    // reader of ToPaper and FromPaper is exactly what it was until a viewport
+    // is turned. RotationDeg rides along for anyone keying a cache on it.
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Window(viewport) {
+        const frame = viewport.Viewport__FrameMm;
+        const D     = viewport.Viewport__ScaleDenominator;
+        const w     = frame.WidthMm  * D;
+        const h     = frame.HeightMm * D;
+        const cx    = viewport.Viewport__PanMm.X;
+        const cy    = viewport.Viewport__PanMm.Y;
+        const ox    = cx - (w / 2);
+        const oy    = cy - (h / 2);
+        const deg   = Na__LeVpRot__Deg(viewport);
+        const midX  = frame.X + (frame.WidthMm / 2);
+        const midY  = frame.Y + (frame.HeightMm / 2);
+        const turn  = (px, py, by) => {
+            if (!by) return { x : px, y : py };
+            const v = Na__LeVpRot__TurnVector(px - midX, py - midY, by);
+            return { x : midX + v.x, y : midY + v.y };
+        };
+        const win = {
+            CentreX : cx, CentreY : cy, WidthMm : w, HeightMm : h, OriginX : ox, OriginY : oy, Denominator : D, Frame : frame, RotationDeg : deg,
+            ToLocal      : (dx, dy) => ({ x : (dx - ox) / D, y : (dy - oy) / D }),
+            ToFrame      : (dx, dy) => ({ x : frame.X + ((dx - ox) / D), y : frame.Y + ((dy - oy) / D) }),
+            ToPaper      : (dx, dy) => turn(frame.X + ((dx - ox) / D), frame.Y + ((dy - oy) / D), deg),
+            FromPaper    : (px, py) => { const p = turn(px, py, -deg); return { x : ox + ((p.x - frame.X) * D), y : oy + ((p.y - frame.Y) * D) }; },
+            FrameToPaper : (px, py) => turn(px, py, deg)
+        };
+        return win;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Source Records, Projection Definition and Window in One Go
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Describe(viewport) {
+        const source = Na__LeModel__ResolveViewportSource(viewport);
+        // The viewport's own Render Composites toggles override the drawing
+        // record's, so a sheet can show the same drawing two ways - and so a
+        // toggle in the panel governs the linework as well as the raster.
+        const override   = viewport.Viewport__Styles || null;
+        // AND THE MODEL LAYERS PANEL GOES IN AS EXCLUSION TOKENS, which is the
+        // whole of how a hidden category leaves the vectors. The tokens are
+        // part of the definition, so they are part of its RecordHash, so two
+        // viewports of one drawing that hide different things key differently
+        // and cache separately without another word being said about it.
+        const exclude    = Na__LeModelLayers__ExcludeTokens(viewport);
+        // A PLAN DRAWS ITS DOORS OPEN, bar the ones this viewport closed, AND AN
+        // ELEVATION OR SECTION DRAWS EVERY DOOR SHUT, whatever the 3D view shows.
+        // The pose is part of the definition, so it keys everything the
+        // definition keys. A plan that hides its swings (a roof plan, unless
+        // told otherwise) traces no arc and leaves the SketchUp door swing
+        // linework out as well; one that draws them adds no token at all.
+        const definition = source.plan
+            ? Na__PlView__FromPlan(source.plan, override, exclude.concat(Na__LeDoors__SwingExcludeTokens(viewport, source.plan)), Na__LeDoors__PoseFor(viewport, source.plan))
+            : (source.elevation ? Na__PlView__FromElevation(source.elevation, override, exclude, Na__LeDoors__ShutPoseFor(viewport)) : null);
+        return { source : source, definition : definition, window : Na__LeVp2d__Window(viewport), modelSource : Na__LeSource__Resolve(viewport) };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Viewport 2D Window Unit
+    // ------------------------------------------------------------
+    export {
+        Na__LeVp2d__Window,
+        Na__LeVp2d__Describe
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

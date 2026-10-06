@@ -1,0 +1,318 @@
+/* =============================================================================
+ * VALEVISION3D - EXPORT RENDER LAYERS STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__ExportRenderLayers__Stylesheet__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Export Render Layers - Dev Panel and Preview Overlay
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Layout rules unique to the render layer pass rows, capability
+ *              notes, status line and the viewport preview overlay
+ * CREATED    : 19-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Everything that can come from the existing dropdown variables, spacing,
+ *   typography and button classes does. Only the genuinely new layout lives
+ *   here: the pass row grid, the group headings, the capability note, the
+ *   status line and the preview overlay canvas.
+ * - Pass rows are a three-column grid that wraps at the Dev menu's narrow
+ *   default width, so the panel stays usable without resizing the menu.
+ * - The preview overlay mirrors the #renderCanvas box exactly - same top,
+ *   left, width and height - so a structural preview is a true pixel overlay
+ *   of the live viewport rather than an approximate one.
+ * - z-index 400 sits above the WebGL canvas, below the image export safe frame
+ *   at 500, and well below the menus at 1001.
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Pass List and Rows
+ * ----------------------------------------------------------------------------- */
+
+    /* GROUP HEADING | Registry group name */
+    /* ------------------------------------------------------------ */
+    .na-erl__group-title {
+        margin                             : 12px 0 4px;
+        font-size                          : 0.72rem;
+        font-weight                        : 700;
+        letter-spacing                     : 0.04em;
+        text-transform                     : uppercase;
+        color                              : rgba(23, 43, 58, 0.65);
+    }
+
+    .na-erl__group-title:first-child {
+        margin-top                         : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BULK ACTIONS | Select All, Select None, Essential Only */
+    /* ------------------------------------------------------------ */
+    .na-erl__bulk-row {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        margin                             : 0 0 10px;
+    }
+
+    .na-erl__bulk-btn {
+        flex                               : 1 1 auto;
+        min-width                          : 72px;
+        padding                            : 5px 8px;
+        border                             : 1px solid rgba(23, 43, 58, 0.25);
+        border-radius                      : 4px;
+        background                         : #ffffff;
+        color                              : #172b3a;
+        font-size                          : 0.70rem;
+        font-weight                        : 600;
+        white-space                        : nowrap;
+        cursor                             : pointer;
+    }
+
+    .na-erl__bulk-btn:hover {
+        background                         : #172b3a;
+        color                              : #ffffff;
+    }
+
+    .na-erl__bulk-btn:active {
+        transform                          : scale(0.97);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ESSENTIAL NOTE | Marks the Qwen working set without a second control */
+    /* ------------------------------------------------------------ */
+    .na-erl__note--essential {
+        color                              : #1e5c3a;
+        font-weight                        : 600;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PASS ROW | Checkbox, label block, preview button */
+    /* ------------------------------------------------------------ */
+    .na-erl__row {
+        display                            : grid;
+        grid-template-columns              : auto 1fr auto;  /* <-- Wraps gracefully at the narrow default menu width */
+        align-items                        : start;
+        gap                                : 8px;
+        padding                            : 6px 4px;
+        border-bottom                      : 1px solid rgba(23, 43, 58, 0.08);
+    }
+
+    .na-erl__row:last-child {
+        border-bottom                      : none;
+    }
+
+    .na-erl__row--previewing {
+        background                         : rgba(23, 43, 58, 0.07);
+        border-radius                      : 4px;
+    }
+
+    .na-erl__row--unavailable,
+    .na-erl__row--needs-selection {
+        opacity                            : 0.62;           /* <-- Still legible; the reason text carries the explanation */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHECKBOX | Nudged to align with the first line of the label */
+    /* ------------------------------------------------------------ */
+    .na-erl__checkbox {
+        margin-top                         : 2px;
+        flex                               : 0 0 auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL BLOCK | Name over capability note over reason */
+    /* ------------------------------------------------------------ */
+    .na-erl__label-block {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 2px;
+        min-width                          : 0;              /* <-- Lets long names wrap instead of forcing the panel wider */
+    }
+
+    .na-erl__label {
+        font-size                          : 0.80rem;
+        font-weight                        : 600;
+        color                              : #172b3a;
+        overflow-wrap                      : anywhere;
+    }
+
+    .na-erl__note {
+        font-size                          : 0.68rem;
+        font-weight                        : 500;
+        color                              : rgba(23, 43, 58, 0.62);
+        overflow-wrap                      : anywhere;
+    }
+
+    .na-erl__reason {
+        font-size                          : 0.66rem;
+        line-height                        : 1.35;
+        color                              : #6e4a20;
+        overflow-wrap                      : anywhere;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PREVIEW BUTTON | Never toggles the export selection */
+    /* ------------------------------------------------------------ */
+    .na-erl__preview-btn {
+        align-self                         : center;
+        min-width                          : 66px;
+        padding                            : 4px 8px;
+        border                             : 1px solid rgba(23, 43, 58, 0.25);
+        border-radius                      : 4px;
+        background                         : #ffffff;
+        color                              : #172b3a;
+        font-size                          : 0.72rem;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+    .na-erl__preview-btn:hover:not(:disabled) {
+        background                         : rgba(23, 43, 58, 0.10);
+    }
+
+    .na-erl__preview-btn--active {
+        background                         : #172b3a;
+        border-color                       : #172b3a;
+        color                              : #ffffff;
+    }
+
+    .na-erl__preview-btn:disabled {
+        opacity                            : 0.45;
+        cursor                             : not-allowed;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion -------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Category Selection and Status
+ * ----------------------------------------------------------------------------- */
+
+    /* CATEGORY ROW | Inpaint mask region selection */
+    /* ------------------------------------------------------------ */
+    .na-erl__category-row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        padding                            : 3px 4px;
+    }
+
+    .na-erl__category-label {
+        font-size                          : 0.74rem;
+        color                              : #172b3a;
+        overflow-wrap                      : anywhere;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HELP TEXT | Panel guidance, including the pose explanation */
+    /* ------------------------------------------------------------ */
+    .na-erl__help-line {
+        margin                             : 0 0 6px;
+        font-size                          : 0.68rem;
+        line-height                        : 1.4;
+        color                              : rgba(23, 43, 58, 0.72);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* STATUS LINE | Progress and error reporting inside the panel */
+    /* ------------------------------------------------------------ */
+    .na-erl__status {
+        min-height                         : 16px;
+        margin                             : 8px 0 0;
+        font-size                          : 0.70rem;
+        line-height                        : 1.4;
+        color                              : rgba(23, 43, 58, 0.75);
+        overflow-wrap                      : anywhere;
+    }
+
+    .na-erl__status--error {
+        color                              : #8c2b2b;
+        font-weight                        : 600;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RETAINED FILES | Manual saves on the download fallback path */
+    /* ------------------------------------------------------------ */
+    .na-erl__retained:empty {
+        display                            : none;
+    }
+
+    .na-erl__retained-btn {
+        display                            : block;
+        width                              : 100%;
+        margin                             : 4px 0 0;
+        padding                            : 4px 8px;
+        border                             : 1px solid rgba(23, 43, 58, 0.25);
+        border-radius                      : 4px;
+        background                         : #ffffff;
+        color                              : #172b3a;
+        font-size                          : 0.66rem;
+        text-align                         : left;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+        cursor                             : pointer;
+    }
+
+    .na-erl__retained-btn:hover {
+        background                         : rgba(23, 43, 58, 0.10);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Keep a long registry scrollable inside the Dev menu */
+    /* ------------------------------------------------------------ */
+    .na-erl__pass-list {
+        max-height                         : 42vh;
+        overflow-y                         : auto;
+        padding-right                      : 2px;
+    }
+
+    .na-erl__categories {
+        max-height                         : 20vh;
+        overflow-y                         : auto;
+        padding-right                      : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion -------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Viewport Preview Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* OVERLAY CANVAS | Exact visual replacement over the WebGL canvas */
+    /* ------------------------------------------------------------ */
+    /* Box matches #renderCanvas exactly so the preview is a true overlay.   */
+    /* pointer-events: none keeps orbit, walk and fly fully alive underneath. */
+    /* ------------------------------------------------------------ */
+    .na-erl-preview-overlay {
+        position                           : absolute;
+        top                                : var(--Vale_HeaderHeight);
+        left                               : 0;
+        width                              : 100vw;
+        height                             : calc(100vh - var(--Vale_HeaderHeight));
+        z-index                            : 400;            /* <-- Above the canvas, below the export safe frame at 500 */
+        pointer-events                     : none;
+        display                            : none;
+        background                         : #000000;
+    }
+
+    .na-erl-preview-overlay--visible {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion -------------------------------------------------------- */

@@ -1,0 +1,59 @@
+{
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A typical hand-drawn to Whitecard conversion job, tiny scheme, but had no site reference photos so had to use mapping data and street-view etc to figure out roof pitches etc which took extra time",
+        "conceptArtist": "Steph",
+        "input": "Early Stage Sketch",
+        "designer": "Dan"
+    },
+    "projectCode": "63086",
+    "projectName": "Matharu",
+    "ProjectType": "Whitecard",
+    "scheduleData": {
+        "dateFulfilled": "01-Apr-2026",
+        "dateReceived": "31-Mar-2026",
+        "timeAllocated": 3,
+        "timeTaken": 3
+    },
+    "valeVision_ModelUrls": [
+        "Matharu__01__OrbitHelperCube__MeshModel__.glb",
+        "Matharu__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Matharu__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Matharu__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Matharu__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Matharu__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Matharu__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -1409,
+            "Camera__DefaultPos__PosY": 2641,
+            "Camera__DefaultPos__PosZ": 8772
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0295,
+            "Camera__DefaultRotation__RotY": -0.3153,
+            "Camera__DefaultRotation__RotZ": -0.0091
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 35.9383
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 5264,
+        "OrbitHelperCube__Position__PosY": 2038,
+        "OrbitHelperCube__Position__PosZ": -11678
+    },
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026__Thumbnail__524p__.webp"
+}

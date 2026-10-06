@@ -1,0 +1,166 @@
+/* ================================================================= */
+/* REGION  |  Share Project Link — Tools Menu Chevron (overlay sync)  */
+/* ================================================================= */
+
+/* Panel unused (form is full-screen overlay); keep submenu layout only */
+/* ----------------------------------------------------------------- */
+#naShareProjectLinkPanel {
+    display                            : none !important;
+}
+
+.na-dropdown-menu__item--share-link .na-dropdown-menu__subarrow {
+    display                            : inline-block;
+    transition                         : transform 0.18s ease;
+    transform                          : rotate(-90deg);
+}
+
+.na-dropdown-menu__item--share-link.is-share-overlay-open .na-dropdown-menu__subarrow {
+    transform                          : rotate(0deg);
+}
+
+/* endregion -------------------------------------------------------- */
+
+
+/* ================================================================= */
+/* REGION  |  Share Project Link — Modal Overlay                     */
+/* ================================================================= */
+
+/* Root mount — above Tools dropdown (1001), below toast (9999)       */
+/* ----------------------------------------------------------------- */
+.na-share-project-overlay {
+    position                           : fixed;
+    inset                              : 0;
+    z-index                            : 2999;
+    display                            : none;
+    align-items                        : center;
+    justify-content                    : center;
+    padding                            : 24px;
+    box-sizing                         : border-box;
+    font-family                        : 'Open Sans', sans-serif;
+}
+
+.na-share-project-overlay.is-visible {
+    display                            : flex;
+}
+
+/* Backdrop */
+/* ----------------------------------------------------------------- */
+.na-share-project-overlay__backdrop {
+    position                           : absolute;
+    inset                              : 0;
+    background                         : rgba(23, 43, 58, 0.45);
+    cursor                             : pointer;
+}
+
+/* Panel */
+/* ----------------------------------------------------------------- */
+.na-share-project-overlay__panel {
+    position                           : relative;
+    z-index                            : 3000;
+    width                              : 100%;
+    max-width                          : 420px;
+    max-height                         : min(90vh, 640px);
+    overflow-y                         : auto;
+    background                         : #ffffff;
+    border                             : 1px solid rgba(0, 0, 0, 0.12);
+    border-radius                      : 8px;
+    box-shadow                         : 0 12px 40px rgba(23, 43, 58, 0.25);
+    padding                            : 22px 24px 20px;
+    color                              : #172b3a;
+}
+
+.na-share-project-overlay__title {
+    margin                             : 0 0 6px;
+    font-size                          : 1.05rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-share-project-overlay__hint {
+    margin                             : 0 0 18px;
+    font-size                          : 0.78rem;
+    font-weight                        : 400;
+    color                              : #656565;
+    line-height                        : 1.45;
+}
+
+.na-share-project-overlay__field {
+    margin-bottom                      : 16px;
+}
+
+.na-share-project-overlay__label {
+    display                            : block;
+    margin-bottom                      : 6px;
+    font-size                          : 0.82rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-share-project-overlay__input,
+.na-share-project-overlay__textarea {
+    width                              : 100%;
+    box-sizing                         : border-box;
+    padding                            : 8px 10px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.85rem;
+    color                              : #1e1e1e;
+    background                         : #fafbfc;
+}
+
+.na-share-project-overlay__textarea {
+    min-height                         : 72px;
+    resize                             : vertical;
+}
+
+.na-share-project-overlay__textarea--notes {
+    min-height                         : 88px;
+}
+
+.na-share-project-overlay__input:focus,
+.na-share-project-overlay__textarea:focus {
+    outline                            : none;
+    border-color                       : #172b3a;
+    box-shadow                         : 0 0 0 2px rgba(23, 43, 58, 0.12);
+}
+
+.na-share-project-overlay__actions {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    gap                                : 10px;
+    margin-top                         : 6px;
+    justify-content                    : flex-end;
+}
+
+.na-share-project-overlay__btn {
+    padding                            : 9px 18px;
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.82rem;
+    font-weight                        : 600;
+    cursor                             : pointer;
+    border                             : 1px solid transparent;
+}
+
+.na-share-project-overlay__btn--primary {
+    background                         : #172b3a;
+    color                              : #ffffff;
+    border-color                       : #172b3a;
+}
+
+.na-share-project-overlay__btn--primary:hover {
+    background                         : #213d52;
+}
+
+.na-share-project-overlay__btn--secondary {
+    background                         : #ffffff;
+    color                              : #172b3a;
+    border-color                       : rgba(23, 43, 58, 0.35);
+}
+
+.na-share-project-overlay__btn--secondary:hover {
+    background                         : #f3f5f7;
+}
+
+/* endregion -------------------------------------------------------- */

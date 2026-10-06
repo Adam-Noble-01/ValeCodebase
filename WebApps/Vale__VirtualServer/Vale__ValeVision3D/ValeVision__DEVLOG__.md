@@ -1,0 +1,10628 @@
+# ValeVision3D Development Log
+
+# ---------------------------------------------------------
+## ValeVision3D v2.72.0 - 06-Oct-2026 - ValeVision 3D Moves to app.valegardenhouses.com: One Server, One Store, and a Vale Sign-In
+### The app now lives in WebApps/Vale__VirtualServer/Vale__ValeVision3D (served at /valevision/); this file moved with it
+
+**Overview**
+- ValeVision 3D runs on Vale's own server (nginx + Flask on the OVH VPS) instead of GitHub Pages, Cloudflare R2 and
+  two Cloudflare Workers. The code is a copy of WebApps/ValeVision3D at c942cac3 (02-Oct-2026), code only: no
+  00__Archive, no 79__/80__Testing, no TrueVision parity AUDIT, no CloudflareWorker, no secrets. The legacy folder is
+  left as it was and is no longer the one to edit.
+- WHAT A VALE USER WILL NOTICE. A project link is /valevision/?project=<library id> (64135__Washington; a bare job
+  number and the old 2026/<folder> still open it). It opens for anyone, clients included; staff press Sign in (top
+  right) and use their Vale email address and password - the same sign-in as the Gallery and Lantern Designer, in
+  Lantern Designer's style. Signed in, a circle with your initials replaces the button; its menu opens the Gallery,
+  copies a link to the project, changes your password and signs you out. Without ?project= the sign-in comes first.
+- WHAT AN APP ADMIN (Adam, Shane) WILL NOTICE. The Dev Tools menu, every save button and the Layout Editor's editing
+  surface appear only for AppAdmin users; the bubble menu adds Open Dev Tools and Client view on / off (the old
+  ?authoring=off preview). Saves go straight to the server: no R2 phase, no "local mirror failed" toasts.
+
+**Where things are now** (the Projects Master Library, Vale__Projects__MasterLibrary/ValeProjects__<yyyy>/<id>/)
+- The record: ProjectData__<id>__.json (was project.json on R2 / GitHub Pages). Model URLs in it are bare file names.
+- Models: ValeVision3D/Content__3dModel__GlbFiles/ - all 741 GLBs of 95 projects moved off R2 (734 copied from
+  C:\01__ValeProjects where byte-identical to R2, 7 large ones downloaded; skill script migrate_vv3d.py).
+- Scene thumbnails: ValeVision3D/Content__AnimationScenes__Thumbnails/. Gallery images: ValeVisionGallery/Content__*.
+- Layout Editor files (snapshots, baked linework, sheet pictures, published documents, statements, drawing notes):
+  ValeVision3D/UserData__UserGeneratedContent__Drawings/ - user data, read and written through the API only.
+- App-wide user data moved inside the app folder: 50__UserData__SpellCheckDictionary/ (was 50__ValeVision__UserConfig)
+  and 51__UserData__LayoutEditorScrapbook/ (was 51__LayoutEditor__UserScrapbookContent).
+
+**The API** (Server__Api/Api__ValeVision3D, wsgi.py; /valevision/api/ on the server, the same on the PC)
+- Projects: GET/POST/PATCH api/projects/<id>, /location, /drawings-fingerprint, /files/<name>, /assets,
+  /userdata/<path>; the drawings save guard (X-ValeVision-Drawings-Base, 409) is kept exactly; every overwrite keeps a
+  revision in <project>/ProjectData__Revisions/. PATCH merges top-level keys on the server, under its lock.
+- The five blueprints of the old local server, moved whole: published, scrapbook (+ GET .../item), sheet-images,
+  statements, user-config spellings. Email: api/email/contacts and api/email/send (Microsoft Graph, replaces the
+  valevision3d-email-worker; sent as the signed-in user; the address book is the users register).
+- Sign-in: the shared ValeShared__Accounts__ blueprint at api/accounts. Reads are open (client links); every write
+  needs AppAdmin (VALEVISION3D_AUTHOR_LEVEL); email needs Employee.
+
+**Front end**
+- Na__AppUtils__ProjectLoader 2.0.0: the server places ?project= (InitProjectLocation); the record, models and assets
+  come from it. Removed: Na__AppUtils__IsRunningOnLocalhost, the master index, the build manifest and its ?v= token,
+  the R2 / GitHub Pages fallback and its toast. New: Na__AppUtils__ApiUrl.
+- Na__AppUtils__DevGate__ 2.0.0: authoring = a signed-in AppAdmin. Na__AppUtils__UserSession__ 1.0.0 (new) starts
+  the shared sign-in (window.ValeUserLogin) before anything asks the gate.
+- Na__AppUtils__SaveProjectJson__ (new) and Na__AppUtils__AssetUpload__ (new) replace R2SaveProjectJson and
+  R2AssetUpload: one write each. The nine Dev menu savers and three asset uploaders call them.
+- 80__CloudflareIntegration keeps TrueVision's CfApi names and path for parity; every body now talks to the API.
+  Na__AppUtils__LocalProjectMirror__ 2.0.0 likewise (its MergeKeys is a server-side PATCH).
+- Na__DrawView__ProjectData__: the drawings save is one guarded write. Register, specification, statements, sheet
+  images, site plan store, scrapbook, spell check, QR link and breadcrumb read and write the one store; the
+  specification's local-file lockstep stands down (HAS_LOCAL_FILE false), the code kept for parity.
+- Own PWA: ValeVision3D__Pwa__Manifest__.webmanifest and ValeVision3D__Pwa__ServiceWorker__.js (scope /valevision/,
+  network-first app files, never caches the API or the library) replace the Gallery's 13-file stack. Purge App
+  Cache clears this app's own service worker and caches.
+- Email (62__Feature__EmailWorkers): the password overlay, its token and the encrypted R2 address book are gone; the
+  Send email item shows only to signed-in staff.
+- Every github.io, cdn.noble-architecture.com and workers.dev address is gone from the app; shared images come from
+  /AppAssets__CommonApplicationAssets/; emails carry https://app.valegardenhouses.com/ addresses.
+- The retired Gallery codename is gone from this folder (354 mentions in 46 files, comments and docs included).
+  Paths under WebApps/ValeVisionGallery/ in older notes mean the Gallery's pre-server folder.
+
+**Still outside this app**
+- The SketchUp -> project sync (the Gallery's Tools__DevUtils) still uploads GLBs to R2 and writes CDN URLs into the
+  legacy project.json. Until it writes into the library (GLBs to Content__3dModel__GlbFiles, bare names into
+  ProjectData), a re-synced model must be copied into the library by hand.
+- MaxEngine's DataLib still loads from raw.githubusercontent.com (Adam-Noble-01/Plugins); fonts from
+  www.noble-architecture.com.
+
+**Tested** on the PC (Server__DeveloperTools/ValeDev__LocalServer__.py on a sandbox copy with generated test
+accounts): client view of 64135__Washington (18 models, 8 scene thumbnails, no Dev Tools, Sign in pill), admin
+sign-in (Dev Tools, TA bubble and menu), merge / whole save / key delete / pipeline-key refusal / drawings 409,
+Employee refused every write (403), 3047__Doous drawings snapshot through userdata, the no-project gate, sign-out.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.5 - 02-Oct-2026 - The Sheet Tools Are TrueVision's, Pictures and Rooms Come to the Sheet, Viewports Turn, and Note Regions Catch What the Margin Cannot
+### Ported from TrueVision3D in part, read at b2aa9151: v2.28.0, v2.32.0, v2.38.0, v2.40.0 to v2.42.0, v2.49.0, v2.55.0, v2.65.0, v2.75.0, v2.78.0, v2.87.0, v2.90.0, v2.94.0, v2.98.0, v2.100.0, v2.104.0, v2.106.0, v2.107.0, v2.111.0, v2.113.0 to v2.123.0, v2.125.0, v2.126.0, v2.128.0 to v2.131.0, v2.134.0, v2.138.0 to v2.144.0, v2.147.0 to v2.155.0, v2.160.0 and v2.164.0, and three changes TrueVision never logged (Adam-confirmed in TV: v2.153.0, v2.117.0 - held here - and v2.155.0's part already in; v2.49.0, v2.104.0, v2.116.0 and v2.150.0 used or tried by him in part; none of the others)
+
+**Overview**
+- Wave 3 of the TrueVision parity programme: the Layout Editor's sheet tools, panels and features. Seventeen packages
+  ran unattended on the plan's defaults - 15 done and 2 partial at their return (W3-18, whose held stylesheet W3-09
+  landed, and W3-05, whose one open check waits for the toolbar, W5-01). W3-04 did not run: it holds the four gesture
+  changes until Adam answers DR-40 items 7-10. Adam has answered none of DR-01 to DR-44, so each ran on its default.
+- WHAT A VALE AUTHOR WILL NOTICE on a drawing tab. Ctrl+X cuts and Ctrl+V lands it in place on another sheet with its
+  layer. Typing a length after a move lands it again. Text, leaders, dimensions, vectors, pictures and viewports
+  placed while a group is open join it. A selected viewport has a round grip that turns it (Shift steps a quarter
+  turn), the turn prints, and the Viewport panel gains Frame, Rotation, Doors and Hide swings; a plan door shuts with
+  a click. Pictures can be dropped on a sheet (Sheet Images), rooms drawn with A (Floor Areas), and overspill note
+  regions added to the notes margin. F6, F7, F8, F9 and K switch the Drawing Grid, grid snap, Ortho, the Drawing Axes
+  and Draft. The Vector Tools panel arrives with circles, arcs, trim, offset and the Booleans (Shift+U, S, T, O). The
+  Dimensions panel gains Measure at scale, Ext. lines, Round up to 5 mm, Line pt and Dashed lines; the Vectors panel
+  Draw at scale and the hatch block; the Layers panel a Ref switch. Resting on a linked bubble names its note. The
+  Parametric Scrapbook offers the Area Schedule and the Cabinet Infill. A sheet PDF is named on its Document ID again.
+- WHAT DOES NOT CHANGE YET: Select still picks and M moves; Ctrl-drag does not copy; a press on a viewport's linework
+  does not carry it; Ctrl+click only adds to the selection (DR-40 items 7-10, held behind VV GUARD lines, W3-04).
+- One version for the wave, the next patch step after v2.71.4 (D85, Adam's patch-bump rule). Every module log line and
+  PORT NOTE the wave wrote now names v2.71.5.
+
+**The SheetTools hub is TrueVision's** (W3-01, W3-03, W3-08)
+- THE STATE UNITS (W3-01): SheetTools__State 1.8.0 and ToolState 1.7.0 whole - the area, note-region and vector tool
+  names, the F6-F9 and Ctrl+X chords, the move retype state. New dimensions and vectors now read the configs'
+  DefaultAtScale (both true) instead of ValeVision's hard-coded true, so nothing measures differently; new dimensions
+  start with Round up off, the sheet's line weight and a solid line.
+- THE HUB IN ONE CHANGE (W3-03): HitResolution 1.11.0, PointerPress 1.10.0, PointerDrag 1.19.0, Keyboard 1.18.0,
+  SheetTools 1.39.0, ContextMenu 1.7.0 and CopyDrag 1.2.0 new, with ViewportHandles 1.5.0 (the rotate grip, OC-02), and
+  MarginGrip's automatic-Move term restored (it reads false while item 7 is held). AxisLock's and ContentEditing's
+  PORT NOTEs name their TrueVision versions; their code was already TrueVision's.
+- THE FOUR HELD GESTURES (DR-40 items 7-10): ValeVision-only constants Na__LeTools__VV_HOLD_AUTO_MOVE and
+  VV_HOLD_VIEWPORT_CARRY (HitResolution) and VV_HOLD_COPY_DRAG and VV_HOLD_MOVE_ANCHOR (PointerPress), each on a line
+  marked `VV GUARD`; deleting the lines gives back TrueVision's code exactly. CopyDrag, the copy arrays (3x, /3) and
+  the move anchor are in but unreachable. Item 8's TrueVision release (v2.117.0) is signed off there; DR-40's default
+  still holds it for Vale.
+- SNAPPING (W3-08): the one-wave shim `Na__LayoutEditor__Snapping__` is deleted - nothing imports it, as TrueVision
+  retired its own; every tool snaps through LE/28__System__ObjectSnap. The hub's Moves snap through it too (v2.129.0).
+
+**The drafting aids and the vector tools switched on** (W3-05, W3-07)
+- THE DRAWING GRID AND THE AXES (W3-05): the mode controller registers the Drawing Grid panel after Sheet and attaches
+  the grid and the axes with the sheet tools (1.18.10). F6 shows the grid, F7 snaps to it, F8 latches Ortho, F9 shows
+  the axes, K switches Draft; the toolbar buttons for them come with W5-01.
+- THE VECTOR TOOLS AND BOOLEANS (W3-07): the Vector Tools panel straight after Vectors and the adapter initialised
+  after the history (1.18.11); ShapeTool 1.10.0 whole (Ortho, Perpendicular from the edge's start, a line started in an
+  open group joins it). T is Text on the sheet and Trim inside an open group, as in TrueVision. The accordion has no
+  vector-tools entry, as TrueVision has none. New shapes still ignore the Vectors panel's Hatch default, in both apps
+  (DR-37 (3)).
+
+**Pictures on the sheet** (W3-02, W3-18, W3-09)
+- SHEET IMAGES (TrueVision v2.116.0, v2.121.0, v2.142.0): the editing set whole - the core, Crop, Menu, Insert,
+  Handles and the Images panel (W3-02) - and the storage and publish units (W3-18), switched on at TrueVision's sites
+  (1.18.12), with the Images section in the accordion and its stylesheet before the Web Viewer's (loader 1.1.8; W3-09).
+- A dropped picture shows at once and nothing is written; Save Sheets cuts it to 300 dpi for its placed size and files
+  it under its drawing's Document ID in the project folder, `05__Layout__DrawingDocs__Images/<document id>/`, archiving
+  what nothing uses. The project folder is the store of record through the local server's routes (W0-18); TrueVision's
+  R2 halves are left as TODO(OVH-MIGRATION) placeholders (the move to the OVH server). A dropped picture does not bring
+  Move up: W3-09 put a VV GUARD over Insert's PickUpMove (item 7).
+
+**Rooms and schedules** (W3-10, W3-17, W3-14)
+- FLOOR AREAS (TrueVision v2.104.0 to v2.150.0): the panel 1.2.1, the schedules table 1.1.0, the label grip and the
+  stylesheet whole, wired at TrueVision's sites (1.18.13) - the panel last in the right column, A draws a room, a room
+  reports at the scale of the drawing under it, a room's label drags by its dashed box, and Floor Areas folds with the
+  group. The toolbar's Floor Area button comes with W5-01.
+- THE AREA SCHEDULE (W3-17) and the parametric scrapbook panel 1.8.0 with its config (W3-14): every element type
+  registered - the Area Schedule's three forms (rooms, groups, the Project Floor Areas across every sheet) and the
+  Cabinet Infill; the Project Portal block (QR off, DR-12 (A)) and the Site Plan Legend (dormant, DR-08 (B)) are
+  registered with their tiles hidden. Every drawing title refits once when the PDF fonts finish loading.
+
+**Viewports turn; the panels are TrueVision's** (W3-06, W3-12, W3-13, W3-15)
+- ROTATABLE VIEWPORTS (TrueVision v2.138.0): ViewportHandles 1.5.0 (W3-03), Viewport3dZoom 1.1.0 and ViewportClipboard
+  1.4.0 (W3-06); Rotate 90 and Reset rotation on the viewport's menu. A level viewport saves exactly as before.
+- THE PANELS: Dimensions 1.7.0 and Vectors 1.9.0 (W3-12); Layers 1.3.0 with the Ref switch and ViewportLink 1.5.1 - a
+  scale bar never binds to a viewport on a reference layer (W3-13); the Viewport panel 1.10.0 with ValeVision's
+  Add Viewport rebuild kept (W3-15). Doors toggle only where a model carries door data (DR-16).
+
+**Note regions and the PDF** (W3-11, W3-16)
+- OVERSPILL NOTE REGIONS (TrueVision v2.143.0, v2.147.0): the region grips and the Regions panel new, and the Margin
+  Notes panel 1.2.0 with its Regions and Leaderless Notes parts; the grips attach beside the margin grip (1.18.14),
+  never for a viewer, and a whole drag is one undo step.
+- THE PDF EXPORTER 1.12.0 whole (W3-16): turned viewports print turned, pictures, regions and the elevation fog print
+  as the screen shows, the toast counts every note that fit nowhere, and the file name is the whole Document ID with
+  the project's document code (`3047_D01__FloorPlans__A3__RevA__02-Oct-2026__.pdf`, OC-13; logged as 1.12.1).
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S (DIV-4, execution policy 13): Sheet Images' Store asks the page's own origin for the
+  Flask sheet-images routes (TrueVision's localhost test removed); Publish keeps the project folder as the store of
+  record; the scrapbook panel reads the project's name through the facade's display-name accessor (K2 K4). No
+  TrueVision client, route or portal key was copied (gate G6: 0 hits).
+- Kept seams, each in its file's PORT NOTE: the VV GUARD lines (DR-40 items 7-10); the Viewport panel's Add Viewport
+  rebuild (1.4.1); the PDF file name's document code and the identity strings; the scrapbook config's phase wording,
+  four-scales note with the site-plan clause, hidden Portal tiles and ValeVision__SitePlan__ stems; Sheet Images'
+  route and service names. The mode controller (1.18.10 to 1.18.14) and the loader (1.1.8) take hunks.
+- Identity: no Noble Architecture content reaches a Vale user. Ported examples use Vale document ids (3047_D01).
+
+**Not ported, and why**
+- The four gesture changes (DR-40 items 7-10): TrueVision's code is in, held behind VV GUARD lines until Adam answers
+  (W3-04 deletes them and ports Na__Test__MoveAnchor__).
+- The toolbar's Draft, Grid, Ortho, Axes, Circle, Arc, Floor Area and Image buttons and its Snap split button (W5-01,
+  Toolbar 1.24.0); the Project Portal's Vale resolver and words (W5-05, DR-43).
+- Anything on R2, a worker, a CDN or a sync: superseded by the move to the OVH server (Sheet Images' R2 halves are
+  placeholders).
+- THE SHARED SERVICE WORKER. This release adds 15 modules (the Sheet Images core, editing set, panel, store and publish
+  units; CopyDrag; the Floor Areas panel, table and label grip; the region grips and Regions panel; the Area Schedule
+  element) and two stylesheets, removes one (the Snapping shim), grows the app graph from 610 to 659 modules, and
+  adds exports to existing modules: State +8, ToolState +3, HitResolution's PicksUpMove family, CarryTarget, DoorAt
+  and the guard constant, PointerPress's SettleAutoMove, PointerDrag's retype, anchor and viewport reruns, Keyboard's
+  CopyKey, SheetTools__ to TrueVision 1.39.0's names and ViewportHandles' rotate grip; it removes HitResolution's
+  SnapShapeTranslation. So a warm client holding a mix of old and new files can fail to link the editor (old hub
+  units with the new state units; an old HitResolution with the new PointerDrag or Insert; the new Dimensions and
+  Vectors panels with pre-programme leaves) or ask for the deleted shim, for that one load. The token is still Adam's
+  call; it was not bumped ('2026-09-18-1'). If the shared worker still fronts ValeVision at deploy, deploy only with
+  the one consolidated token bump of Waves 0 to 3; on the OVH server the question goes away.
+
+**Held, partial and not run**
+- W3-04 HELD (DR-40): not dispatched.
+- W3-05 PARTIAL at its return: Na__Test__OrthoMode__ passed 55 of 55 once W3-07 landed ShapeTool 1.10.0;
+  Na__Test__DrawingAxes__ passes 50 of 51 - its one red check reads the toolbar's Axes words, which W5-01 brings
+  (proven 51 of 51 with TrueVision's toolbar; gate item 4.1). Read it as expected-red until W5-01.
+- W3-18 PARTIAL at its return: its held stylesheet was landed byte for byte by W3-09 with its loader line (the OC-07
+  form); closed.
+- Outside their lists, declared and for ratification (gate item 4.2): W3-09's two VV GUARD lines in Sheet Images'
+  Insert and its landing of W3-18's stylesheet; W3-03's landing of W1-36's held DrawingTabKeys test is OC-12's.
+- The gate's one fix (FIX-1): the AppConfig parity test's AccordionSections allow-list row, stale since W3-10 made the
+  value TrueVision's, removed. No package was prepared-only; nothing was staged for Adam.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: v2.153.0 (a box started over a viewport, confirmed 23-Sep-2026; now whole, PointerPress 1.10.0), v2.117.0
+  (Ctrl-drag copy, signed off - v2.119.0 says so; carried here and held by DR-40's default, item 8) and v2.155.0's
+  confirmed part (the PDF exporter's packing, in since v2.71.2 and kept by 1.12.0).
+- USED OR TRIED BY ADAM IN PART, NO SIGN-OFF LINE: v2.49.0 (site plan viewports; the panel rows and PDF fills here,
+  dormant), v2.104.0 (Floor Areas), v2.116.0 (Sheet Images - he ran it on his own server, not signed off) and v2.150.0
+  (the Booleans: "It works INCREDIBLE!", recorded in v2.151.0, while its own status line still reads not tried).
+- NOT CONFIRMED - TrueVision's own entry says not tried by Adam, awaiting his test, or that the ValeVision port waits
+  for his sign-off: v2.38.0, v2.40.0, v2.41.0, v2.42.0, v2.87.0, v2.94.0, v2.98.0, v2.100.0, v2.107.0, v2.111.0,
+  v2.113.0, v2.118.0, v2.119.0, v2.120.0, v2.121.0, v2.122.0, v2.123.0, v2.125.0, v2.126.0, v2.128.0, v2.129.0,
+  v2.130.0, v2.131.0, v2.134.0, v2.138.0, v2.139.0, v2.140.0, v2.141.0, v2.142.0, v2.143.0, v2.144.0, v2.147.0,
+  v2.151.0, v2.152.0 and v2.164.0.
+- NOT CONFIRMED - no record either way: v2.28.0 and v2.98.0's carry (held), v2.32.0 (Model Source, dormant), v2.65.0
+  (the broken-bubble tooltip, commit 4f6bb9ef), v2.75.0 (Ctrl+X and the file name, commit 32767407), v2.78.0 (Select
+  picks Move up, held), v2.90.0, v2.106.0, v2.114.0, v2.115.0, v2.148.0, v2.149.0 (the move anchor, held), v2.154.0
+  (the entry quotes Adam's request), v2.160.0, and the three changes TrueVision never logged: the PDF file name on the
+  Document ID (commit 32767407, with v2.75.0), the rotation test's 1.0.1 (its Node 22 fix, 22-Sep-2026) and the area
+  schedule test's project-form checks (commit a2e0a836, with v2.148.0).
+- HEADERS ONLY: v2.55.0 (SheetTools__ContentEditing's PORT NOTE names its source version).
+- HELD - in the code, off for Vale until Adam answers DR-40: v2.78.0 (item 7), v2.117.0, v2.119.0 and v2.141.0's copy
+  half (item 8), v2.28.0 and v2.98.0's carry (item 9), v2.149.0 (item 10).
+
+**Verified** (W3-99, fresh runs on the wave's final tree, after the placeholders were resolved and again after these records were written)
+- Na__Verify__ModuleGraph__ PASS: 659 modules from 1 entry point, 0 failures (610 at v2.71.4). Import-map targets 110,
+  the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 558 files (544 at v2.71.4), and the 39 names the lazy loader's facade calls all exported.
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning); raw, its 55 retired folder names
+  are all inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings (661 shipped files, 89 test-folder files, 76 folders against
+  the registry, 20 Layout Editor stylesheets). Na__Verify__PortNotes__ PASS: 746 files, 508 PORT NOTEs, 595 logs; 0
+  fail; 103 warnings (76 on the 01-Oct-2026 baseline, 27 TrueVision logs and unversioned sheets kept verbatim, declared
+  by design); no placeholder pending; `--scribe` PASS.
+- Na__Verify__UiParity__ (report, at the working tree and at the pin): 0 of 7 checks fail - the fold, the strip, the
+  veil, the panels stylesheet, the stylesheet order (13 of TrueVision's 14 Layout Editor sheets, Sheet Images before
+  the Web Viewer) and the motion rules pass; the service-worker token warning stands. With every check blocking it
+  passes.
+- 69 tests, 68 exit 0 and 1 exit 1 (Na__Test__DrawingAxes__, 50 of 51, above). New and passing: AreaSchedule (69),
+  BubbleNoteTooltip (33), CopyDrag (18), CrossSheetClipboard (8), DrawingGrid (54), GroupMoveSnapping (6), HatchLineControls
+  (47), MoveRetype (41), OrthoMode (55), SetMoveLeaderTips (28), SheetImages (97), VectorBooleans (148) and VectorTools
+  (138); DrawingTabKeys (53, OC-12) and ViewportRotation (52, TrueVision's whole suite) now complete; the three
+  scrapbook element tests that were red at v2.71.4 pass (CabinetInfill 74, ProjectQr 73, SiteLegend 56; OC-15). The
+  verifiers' self-tests pass (19, 16, 19 and 4 cases); AppConfigParity passes with --strict.
+- The integrator's gate (14:57-15:05, on the tree before the comment-only placeholder pass) also linked and evaluated
+  376 of 376 programme-touched modules in a real browser with 0 failures and no request for the deleted shim, booted
+  the real editor read-only on 2026/57994__Harris__Scheme-02 (the scene ready, D01 open, Page Down to D02) with no
+  uncaught error and no 4xx or 5xx, and proved every changed file belongs to a package's record.
+- NOT EXERCISED: the app by eye. The items the packages deferred go to the orchestrator's smoke test, on a copy of a
+  project, never saving a live one: Select and M as before, no copy on Ctrl-drag, no carry, no anchor cross; Ctrl+X
+  and Ctrl+V across sheets; a typed length after a move; F6, F7, F8, F9 and K, and the PDF unchanged after K; the
+  Vector Tools panel, T inside a group, Shift+U on three wall rectangles, a hole and Outer Shell; a large PNG dropped
+  on a sheet, Save Sheets filing the 300 dpi cut, crop, grips and the Images panel; a room drawn with A, its label
+  drag, an Area Schedule dropped and following a room; a note region added, dragged and undone; the Dimensions,
+  Vectors, Layers and Viewport panels' new rows; a viewport turned, cropped and printed; the Cabinet Infill's drop and
+  corner grips; the sheet PDF's name on 2026/3047__Doous. No deploy, no token bump, no live sync.
+
+**Known, accepted**
+- PICTURES LIVE ONLY ON THE AUTHORING PC until the OVH server serves the project folder: the live site would show
+  "Picture not found" for a sheet picture. Hold any live deploy of Sheet Images until the VPS is up (W3-09, W3-18).
+- Until W5-01 the toolbar has no Draft, Grid, Ortho, Axes, Circle, Arc, Floor Area or Image button: their keys and
+  panels work. Na__Test__DrawingAxes__ is red on that one check until then.
+- The PDF toast's configured words still speak only of the notes margin, though the count includes regions (the
+  AppConfig's PdfMarginOverflow label; W0-15 follow-up, a later AppConfig owner).
+- RECORDS HYGIENE FOR W6-01 OR THE OVH PASS (comments and labels only; nothing breaks, nothing reaches a Vale user): the
+  eleven LE/28 ObjectSnap PORT NOTEs still say the Snapping shim "stays"; the parametric engine's PORT NOTE still says
+  the panel registers only two elements; Sheet Images' config labels SavePushed and SaveFailed and its Meta and
+  Storage notes still speak of R2; Na__Test__OrthoMode__ passes an unused TONE stub (TrueVision's text);
+  Na__Test__SetMoveLeaderTips__ names "RB05 T01" in a label (TrueVision's text, never shipped); the Scrapbook config's
+  Meta__Author and the Floor Areas stylesheet's AUTHOR line name the practice (never rendered; DR-43).
+- The audit's R3 C.1 lists `vector-tools` among the accordion values to flip; TrueVision has no such entry, so
+  ValeVision correctly has none (W3-07).
+- TrueVision's test design leaves stub modules `Na__Test__<name>__*.mjs` in the OS temp folder; Adam may delete them. The
+  audit's `execution/scratch/` holds TrueVision text and must stay out of any commit.
+
+**Files**
+- NEW in `02__Src__AppModules/51__System__LayoutEditor/`: in 30 SheetTools__CopyDrag; in 50 the region grips and the
+  Regions panel; in 54 the Sheet Images core, Crop, Menu, Insert, Handles, Panel, Store, Publish and stylesheet; in 57
+  the Area Schedule element; in 59 the Floor Areas panel, table, label grip and stylesheet. In
+  `80__Testing__PrototypeEnvironment/`: AreaSchedule, BubbleNoteTooltip, CopyDrag, CrossSheetClipboard, DrawingAxes,
+  DrawingGrid, DrawingTabKeys, GroupMoveSnapping, HatchLineControls, MoveRetype, OrthoMode, SetMoveLeaderTips,
+  SheetImages, VectorBooleans and VectorTools.
+- CHANGED in `51__System__LayoutEditor/`: the loader 1.1.8, the AppConfig, the mode controller 1.18.14, Viewport3dZoom,
+  ViewportClipboard and ViewportHandles, the SheetTools hub (State, ToolState, HitResolution, PointerPress,
+  PointerDrag, Keyboard, SheetTools, ContextMenu, AxisLock, ContentEditing), ShapeTool, the Dimensions, Vectors,
+  Layers and Viewport panels, MarginGrip and the Margin Notes panel, the parametric scrapbook panel and config,
+  ViewportLink and the PDF exporter 1.12.1; the ViewportRotation and AppConfigParity tests; the parity ledger (section
+  3.11 and the rows the wave changed).
+- DELETED: `30__System__SheetTools/Na__LayoutEditor__Snapping__.js` (W3-08; a backup is in the package's scratch).
+- Nothing outside this app was written: no ValeVision Gallery file, no worker, no shared service worker, no staged
+  package.
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W3.md`. Nothing is committed: Adam commits from the wave's path list, staging only those
+  paths.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.4 - 02-Oct-2026 - Every Drawing Gets Its Plane and Its Depth Fog, Plans Draw Their Doors, Object Snap Finds What It Snaps To, and the Specification Keeps Step With Its File
+### Ported from TrueVision3D in part, read at b2aa9151: v2.24.0, v2.25.0, v2.27.0, v2.28.0, v2.30.2, v2.31.0, v2.32.0, v2.36.0, v2.37.0, v2.40.0 to v2.42.0, v2.48.0, v2.48.1, v2.49.0, v2.55.0, v2.57.0, v2.58.2, v2.65.0, v2.75.0, v2.80.0, v2.82.0, v2.84.0, v2.86.0, v2.87.0, v2.89.0 to v2.91.0, v2.93.0, v2.94.0, v2.96.0, v2.98.0, v2.100.0 to v2.102.0, v2.104.0 to v2.109.0, v2.111.0, v2.113.0, v2.114.0, v2.116.0 to v2.120.0, v2.122.0 to v2.124.0, v2.126.0 to v2.132.0, v2.134.0, v2.137.0 to v2.144.0, v2.147.0, v2.149.0 to v2.153.0, v2.155.0, v2.157.0, v2.159.0, v2.160.0, v2.163.0 and v2.164.0, and nine changes TrueVision never logged (Adam-confirmed in TV: v2.27.0, v2.37.0 and v2.153.0; v2.49.0, v2.91.0, v2.104.0, v2.116.0 and v2.150.0 used or tried by him in part; none of the others)
+
+**Overview**
+- Wave 2 of the TrueVision parity programme: the drawing subsystems. All 43 packages ran unattended on the plan's
+  defaults - 42 done and 1 partial (W2-14, whose one open item, the site plan composites test, passes 151 of 151 since
+  W2-16 landed; the gate recommends accepting it as done). Adam has answered none of DR-01 to DR-44, so each ran on its
+  default (D41 to D91 in section 2A of `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`).
+- WHAT A VALE AUTHOR WILL NOTICE. In the 3D tab's Dev Tools the Floor Plans and Elevations menus are TrueVision's 2.x
+  rebuild: no Save buttons, an edit is kept by the green Update (which asks), Revert, a draft per row; a Cross Sections
+  item; and every plan and elevation has a Drawing Plane you can show, drag and snap. An elevation can carry depth fog
+  (off unless switched on). On a sheet, plan viewports draw their doors open with swings and elevations draw them shut;
+  the snap marker's colour says what it found and object snap gains Intersection, Perpendicular, Centre and the paper's
+  own edges; a grip's colour says where its point stands; Ctrl+V lands a copy exactly on its original's place, on this
+  sheet or another (DR-40 item 1); the left column gains the Specification tab; the Properties tab ends with the
+  Patterns library; the Text panel edits several text items at once; the Render Composites Enhance Whitecard weight
+  reads in %. On localhost the specification keeps step with its file `ValeVision__DrawingNotes__.json`.
+- GROUNDWORK THAT CHANGES NOTHING YET: the drafting aids (Draft, Drawing Grid, Ortho, Drawing Axes), the vector tools and
+  Booleans, the move anchor and the viewport carry (DR-40 items 9 and 10, held), the Measurements box's new readings,
+  the note-regions tool and the Leaderless Notes panel, the layer menu and the two hover tooltips, the Cabinet Infill,
+  Project QR and Site Plan Legend elements, and the site plan client (dormant, DR-08 (B)) and design phases (dormant,
+  DR-09 (a)).
+- One version for the wave, the next patch step after v2.71.3 (D85, Adam's patch-bump rule). Every module log line and
+  PORT NOTE the wave wrote now names v2.71.4.
+
+**Drawing planes, the rebuilt Dev menus and the Cross Sections placeholder** (W2-40, W2-01, W2-04, W2-05)
+- DRAWING PLANES (`47__System__DrawingPlanes`, TrueVision v2.82.0 and v2.84.0, whole): the five core leaves and their
+  config byte for byte (W2-40), then the overlay, the grip, the Dev controls and their stylesheet, started from
+  index.html at TrueVision's places (W2-01). A plane spans the building plus its overshoot, from the building and ground
+  tokens; on 90 of the 91 Vale projects with models the tokens already match, and `2026/60834__Clough` (an older
+  single-bucket export) sizes its planes from the whole model until it is re-exported.
+- THE FLOOR PLANS AND ELEVATIONS DEV MENUS 2.x (W2-04, W2-05): TrueVision's editors and row builders whole (2.0.0 and
+  2.1.0) - drafts with Update and Revert, a leave prompt, + in the head, Delete below a rule, auto names that follow the
+  project's north, the plane rows (Show plane, Aim at face, Move to face), the storey row and the elevation's Fog block.
+  ValeVision's own features ride as seams: the section adapter (DIV-2), the Ground Floor quick action ("+ Ground
+  Floor", D11), the Styles and Exclusions rows under each row's Advanced fold (D33), the thumbnail bake on add, seed and
+  Update with Bake Missing Thumbnails, bake-before-save on Update (D20), and an elevation filed into Cross Sections
+  when Update keeps the Section type (D28). Pick Face, Re-pick and the gizmo drag are gone: Drawing Planes does those
+  jobs, as in TrueVision; the elevation data module's two ValeVision-only setters retired with the old editor (D89),
+  and elevations now trim their exclusion tokens as plans do (OC-11).
+- CROSS SECTIONS (`48__System__CrossSectionViews`, TrueVision's 0.1.0 placeholder, DR-26): its Dev Tools item and init,
+  after ValeVision's own Cross Section Tool ids were renamed `naCrossSectionToolDev*`.
+
+**Elevation depth fog: on screen, in exports and on sheets** (W2-02, W2-03, W2-12, W2-15)
+- THE FOG LAYER (`49__System__ElevationDepthFog`, TrueVision v2.94.0): the render layer, the Dev row and its sheet. An
+  elevation with fog on fades its surfaces, edges and profile lines behind the plane into the paper; a section's poche
+  stays solid; the projected linework stays crisp above it. The section caps' depth pre-pass goes through the section
+  adapter (DIV-2), which completes its six calls (Serialize, Apply, the outline width get and set, SetModelRoot and
+  RenderDepthInto; W2-02).
+- ValeVision draws its drawings through the composer (DIV-1), so the fog sits in the render preset's frame and the tiled
+  image exporter's tiles as a position, not as TrueVision's code: a fogged elevation exports fogged, the section overlay
+  once.
+- ON SHEETS (DR-15 sheets (a)): the Viewport2d__DepthFog leaf, the Render Composites "Depth Fog" row (on by default),
+  and TrueVision's renderFrame route in the tiled renderer, opt-in and for the fog image only (W2-12, reversing
+  TrueVision's own note that the route was not worth carrying back); the snapshot renderer borrows the elevation's fog
+  for that image and hands it back (W2-15). The sheet PDF's fog layer waits for W3-16.
+
+**Projected linework at TrueVision's head; plan doors and storeys** (W2-43, W2-06, W2-11, W2-13, W2-16)
+- FOLDER 50 IS TRUEVISION'S (W2-43, W2-06): FlushJoins 1.1.0 and Storeys 1.0.0 new, and every other module of the
+  folder whole at the pin - the 3D-matching rules of v2.37.0 (seams occlude, joins between wall pieces stop drawing),
+  posed doors (DoorPose 1.3.0), one storey per plan, nested linework-modifier owners and the modelling tolerance of
+  v2.159.0. The config's BuildToken is ValeVision's own, `2026-10-02-tv-parity` (DR-31 (4)).
+- RE-BAKE REMINDER (DR-31, Adam's checklist): the new BuildToken makes every baked linework asset - on R2 and in each
+  browser's IndexedDB - read stale once. Until each live project is re-baked on localhost (Dev > Bake All to R2, or an
+  Update in the Floor Plans and Elevations menus), viewers compute linework on their own devices on first open.
+  Existing elevations visibly lose their flush-join lines - intended (DR-31 (1)). After the move to the OVH server the
+  bake writes wherever the live store is then; the token forces the re-bake either way.
+- PLAN DOORS (DR-16 (a) with door module 1.8.0): PlanDoors 1.3.0 (W2-11) and the viewport units (W2-16) draw a plan's
+  doors open with their swings, an elevation's and a section's shut, and a plan guessed or picked as the roof hides its
+  swings; the 3D view's doors never move. Closing a door with a click, the Doors row and Hide swings' control arrive
+  with W3-03 and W3-15. Every Doous plan and elevation linework is re-projected once (their record hashes change).
+- LINEWORK MODIFIERS (DR-31 (3)): the nested 76-79 LineworkModifier rules ride ValeVision's LineworkSettings
+  (SetLineworkBaseOverride's second argument, W2-13) into the base image and the vectors; no Vale GLB carries the tags
+  yet, so nothing changes until a model is exported with them. The Model Layers config gains the linework-modifiers
+  group with ValeVision__ owner keys.
+
+**The viewport units and the snapshot renderer are TrueVision's** (W2-16, W2-15, W2-10, W2-09, W2-17, W2-14)
+- VIEWPORT2D 1.16.0, ITS FRAME, LINEWORK AND WINDOW, VIEWPORT3D 1.8.1, VIEWPORTIDENTITY 1.1.0, EDGESTYLES 1.1.0,
+  MODELLAYERS 1.4.0 AND THE MODEL LAYERS PANEL whole (W2-16), with Model Source (dormant, DR-09 (a): every viewport reads
+  the live model) and the site plan painter (dormant, DR-08 (B)) closing their import cycle in one step. The mode
+  controller registers both at TrueVision's sites. Model Layers shows TrueVision's Fill and Line scale columns.
+- SNAPSHOTRENDERER 1.8.0 takes every TrueVision hunk from 1.6.0 to 1.13.0 under DIV-1 (W2-15): design phases (dormant),
+  door poses and storeys, the fog image, Enhance strength and the modifier rules; the Cross Sections outline width now
+  survives a sheet render; with Context Layer off, a model exported split by tag hides its whole existing building, as
+  TrueVision's does (3047__Doous has no such categories).
+- ENHANCE WHITECARD STRENGTH (W2-09, W2-36): Enhance 1.1.0 and Render Composites 1.3.0 whole; the weight is a percent,
+  100 by default, so no existing sheet or snapshot changes. VIEWPORT TITLES (W2-10): ViewportTitleText 1.1.0 can name
+  a plan's storey (PROPOSED GROUND FLOOR PLAN) once a plan has one. The Layout Editor Dev menu's bake names only the
+  live design phase's drawings - today every drawing (W2-17).
+- SITE PLANS, DORMANT (DR-08 (B), W2-14): the GLB parser, the store over the transport facade (ValeVision__SitePlan__
+  stems, store folders under the project's own folder, TODO(OVH-MIGRATION) on its remote candidates) and the composites
+  panel. A Vale project shows nothing of them: `LayoutEditor__Sheet__SitePlanDrawingsEnabled` is false.
+
+**Object snap, grips, the context menu and the clipboard** (W2-42, W2-19, W2-24, W2-20, W2-21, W2-23, W2-26)
+- OBJECT SNAP (`LE/28__System__ObjectSnap`, TrueVision v2.129.0 on): the leaves (W2-42), then the switch-over (W2-19) -
+  Search, Moves, GridMoves, the controller, the menu and the stylesheet whole. The snap marker is coloured by what it
+  found, not by the tool (DR-40 item 2): orange now means text. End, Midpoint, Intersection, Perpendicular and Centre are
+  on, Nearest off, and the paper's border, title block and margin offer points. `Na__LayoutEditor__Snapping__` is a
+  one-wave shim until W3-08 retires it; the toolbar's Snap stays a plain toggle until W5-01's split button.
+- THE DRAWING TOOLS (W2-26): Dimension 1.12.0 (with v2.152.0's create hunk, logged here as 1.13.0), Rectangle 1.4.0,
+  Text 1.4.0 and Leader 1.2.0 whole: they snap through object snap, a dimension's end can snap Perpendicular from its
+  first point, and new dimensions carry Measure at scale, Round up, Line pt, Dashed and the extension-line settings.
+- GRIPS 1.12.0 (W2-24): a grip says where its point stands - green on the drawing, a ring on a line, blue on nothing,
+  red in hand; the rubber band and box are 2 px at any zoom.
+- THE CONTEXT MENU 1.1.0 (W2-20) with flyouts and hints; the hover tooltip (inert until W3-03).
+- THE CLIPBOARD AND THE SELECTION UNITS (W2-21): ItemClipboard 1.7.0, EditScope 1.4.0, SelectionSet, SelectionBox and
+  Eyedropper whole. Ctrl+V lands exactly on the original, on this sheet or another, on a layer of the same name (DR-40
+  item 1, adopted; ValeVision used to step a copy clear and keep it on the paper); Ctrl+D still steps a duplicate
+  clear; the menu reads Cut, Copy and Duplicate selection; the eyedropper carries round-up, line weight and dash.
+- THE MEASUREMENTS BOX 1.10.0 (W2-23) and its Say echo line; its new readings wait for the SheetTools hub (W3-03).
+
+**The specification keeps step with its file; spell check; the Specification tab** (W2-30, W2-31, W2-33, W2-34, W2-35, W2-32, W2-22)
+- THE LOCKSTEP (TrueVision v2.144.0 and v2.163.0; W2-30, W2-31): the specification's data units whole over the
+  transport facade - on localhost an edit is written to `ValeVision__DrawingNotes__.json` 4 s after typing stops, after
+  a look at the file; if the file changed meanwhile, the question card "Keep the app's copy / Load the file" rises and
+  the bar reads "Out of step with the file". R2 is still written only by Sync or Save Sheets. The bar is TrueVision's
+  1.3.0 with the project's document code (3047 and 3047_SPEC, OC-09); its 1.4.0 Share button waits for W4-08.
+  ValeVision's own notes client, `Na__AppUtils__R2DrawingNotes__`, had no importer left and is retired (W2-33).
+- SPELL CHECK (`55__Feature__SpellCheck`, W2-34) with the Vale dictionary (DR-20): words are checked against
+  `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json` and Add to Dictionary writes through the local server's
+  `/api/valevision/user-config/spellings`; off localhost the dictionary is read-only.
+- THE SPECIFICATION TAB (`LE/58__Feature__ScrapbookSpecification`, W2-35): the left column reads Document Preferences
+  and Specification; a row drags onto a sheet; F2 rewords a note beside the drawing.
+- THE NOTES MARGIN (W2-32): SpecMargin 1.5.0 plans the margin and overspill regions in one pass; a typed heading too wide
+  for the column now wraps (TrueVision's 1.4.0); MarginGrip 1.3.0 without 1.1.0's automatic-Move term (DR-40 item 7,
+  held for W3-03). The Leaderless Notes panel and the region tool (W2-22) land inert for W3-11 and W3-03.
+
+**Panels and the parametric scrapbook** (W2-36, W2-29, W2-37, W2-38, W2-39)
+- PANELS (W2-36): with several text items selected the Text panel shows the first one's size and says "Editing 3
+  selected text items: a change here goes to all of them."; unticking Edges with several vectors takes their edges off
+  and nothing else; a hidden layer's Off reads in the same faint red as Unlock; Floor Areas and Images layers are named.
+- THE PATTERNS PANEL (W2-29, OC-07): the hatch library at the foot of the Properties tab - Construction Materials, then
+  the Site Plan pack; the editor waits for the library with its other configs. Its per-layer site plan rows stay out
+  of sight while site plans are dormant.
+- THE PARAMETRIC SCRAPBOOK ENGINE 1.7.0 AND ITS CORE TYPES (W2-37): the scale bar can stand under the drawing's far
+  corner with its own double arrow, a title's underline ends 5 mm past its words, elements have a base point and
+  corner grips, and a tile drag can hold and snap. The Cabinet Infill, the Project QR element (off, DR-12) and the Site
+  Plan Legend (dormant) land inert (W2-38, W2-39); their config blocks and tiles come with W3-14.
+
+**The render loop and the 2D outline** (W2-07, W2-08)
+- ProgressiveRefine 1.0.3 whole and the render loop's guards (TrueVision v2.58.2): a thrown frame is reported and the
+  loop carries on, a stalled refinement restarts after 2.5 s, a held engine stands the refiner down, and a part-finished
+  run left with nothing scheduled is restarted after 1 s.
+- The main config's 2D outline keys follow TrueVision v2.27.0: Drawing2dEdgeWidth is gone (the drawing views read the
+  drawing config's 1.0, unchanged) and the bake width is the profileLinework weight; ValeVision's 2D outline colour
+  and threshold are kept.
+
+**Inert groundwork** (W2-18, W2-25, W2-27, W2-28, W2-41 and the parts above)
+- THE DRAFTING AIDS (LE/26, 27, 32, 33; W2-18): Draft mode, the Drawing Grid with its panel (TrueVision's defaults,
+  DR-40 item 5), Ortho and Drawing Axes, their configs and stylesheets; nothing switches them on until W3-05.
+- THE VECTOR TOOLS AND BOOLEANS (LE/37; W2-27, W2-28, W2-41): the state, setup, geometry, offset and Boolean leaves,
+  the Circle, Arc, Trim, Join, Offset and Boolean tools, the adapter, the panel and its stylesheet; W3-07 switches them
+  on. New circles, arcs and rectangles ignore the panel's hatch, as in TrueVision (DR-37 (3)).
+- THE MOVE ANCHOR AND THE VIEWPORT CARRY (W2-25; DR-40 items 10 and 9, held): both modules and the carry rules land with
+  nothing importing them.
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S THROUGHOUT (DIV-4): the specification's lockstep and the site plan store reach storage
+  only through the facade at TrueVision's paths; the spell-check dictionary writes through the ValeVision Gallery local
+  server's blueprint (DR-28 (A)). No TrueVision client, route or portal key was copied (gate G6: 0 hits).
+- Kept seams, each in its file's PORT NOTE: the section adapter and the composer route (DIV-1, DIV-2); the Dev menus'
+  ground-floor action, style rows, thumbnail bake, bake-before-save and section filing (D11, D33, D20, D28); folder 50's
+  BuildToken and owner keys; ValeVision__SitePlan__ stems; the document code in the specification bar; MarginGrip's
+  held term; the Vale dictionary path and server name; Model Layers' coarse Existing and Proposed rows; the snapping
+  shim; the Layout Editor's lazy loader, which now binds Model Source as a seventh editor part (DR-24 (a)).
+- Hunk replays where ValeVision keeps its own file: the loading sequence (1.7.3), the elevation mode controller
+  (1.1.3), the render preset (1.4.0), the tiled renderer (1.6.0), the snapshot renderer (1.8.0), the Layout Editor mode
+  controller (1.18.5 to 1.18.9), the Paper sheet, the Shapes and Layers panels, the toolbar (1.9.5), the keyboard and
+  context menu units, the Dev menu (1.4.2) and the loader (1.1.5 to 1.1.7).
+- Identity: no Noble Architecture content reaches a Vale user. TrueVision's project names stay only inside verbatim
+  code comments and test fixtures (DR-43); the Project Portal block's words wait for Adam's Vale wording (W3-14).
+
+**Not ported, and why**
+- The four gesture changes (DR-40 items 7-10) stay held: the move anchor and the viewport carry are not imported, and
+  MarginGrip's automatic-Move term is out until W3-03.
+- The PDF exporter's fog layer, site fills and file name (W3-16, OC-13); the panels' Ref switch, ViewportLink 1.5.x and
+  the Layers panel's Ref half (W3-13); the Dimensions and Shapes panels' new rows (W3-12); the scrapbook panel 1.8.0 and
+  its config blocks (W3-14); the SheetTools hub (W3-03); SpecEditor Bar 1.4.0's Share (W4-08).
+- THE SHARED SERVICE WORKER. This release adds 75 modules (folders 47, 48 and 55, LE/21, LE/28, LE/33 and LE/58 new;
+  more in 49, 50, LE/20, LE/26, LE/27, LE/30, LE/32, LE/36, LE/37, LE/40, LE/50, LE/52 and LE/57), ten configuration
+  files and ten stylesheets, removes one (R2DrawingNotes), grows the app graph from 554 to 610 modules, and adds these
+  exports to existing modules: the section adapter +6, Cross Sections' RenderDepthInto, LineworkSettings'
+  ModifierRuleFor, folder 50's ConfigAccess +2 and StageSampler +1, ViewportTitleText +7, EditScope +5, ItemClipboard
+  +2, Measurements' Say, Grips' RegisterShapeProvider, SpecMargin's PlanAll, the parametric engine and types +10, the
+  viewport units' and the specification units' new names; it removes the snapping unit's SetEnabled and Toggle, two
+  elevation data setters and two tiled-renderer names. So a warm client holding a mix of old and new files can fail to
+  start (the old elevation editor with the new data module; the old Cross Sections logic with the new adapter; a
+  pre-v2.71.2 Invalidation with the new loading sequence), fail to link the editor (an old keyboard, toolbar or context
+  menu with the new snapping shim; an old EditScope with the new clipboard; old viewport units with the new Viewport2d;
+  an old specification barrel with the new lockstep), or draw the grips wrong (the new Paper sheet with the old Grips)
+  for that one load. The token is still Adam's call; it was not bumped ('2026-09-18-1'). W0-08's prepared package is
+  superseded by the move to the OVH server; if the shared worker still fronts ValeVision when this is deployed, deploy
+  only with one consolidated token bump, and W6-02 (or its OVH successor) adds the new folders to the precache.
+
+**Held, partial and not run**
+- W2-14 PARTIAL at its return: everything it lists landed; its open item, Na__Test__SitePlanComposites__, passes 151 of
+  151 since W2-16 landed (gate item 4.2 recommends accepting it as done).
+- Three new tests exit 1 on this tree, by design: Na__Test__ScrapbookCabinetInfill__, Na__Test__ScrapbookProjectQr__
+  (W2-38) and Na__Test__ScrapbookSiteLegend__ (W2-39) read config blocks that W3-14 brings; on staged configs they pass
+  74 of 74, 73 of 73 and 56 of 56 (gate item 4.1).
+- Outside their lists, declared and for ratification (gate item 4.3): the AppConfig parity test's allow-list rows
+  (W2-14 two, W2-36 three) and the loader test's seventh editor part (W2-17).
+- No package of the wave is held or prepared-only, and nothing was staged for Adam.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: v2.27.0 (Edge Styles, signed off 13-Sep-2026; here only the main config's 2D outline keys), v2.37.0 (the
+  flush-join rules, signed off 14-Sep-2026, "That works great"; only the ValeVision port had been parked) and v2.153.0
+  (box select, confirmed 23-Sep-2026; here only SelectionBox's description - the behaviour is W3-03's).
+- USED OR TRIED BY ADAM IN PART, NO SIGN-OFF LINE: v2.49.0 (site plan viewports, recorded by the audit's S11 verifier;
+  dormant here), v2.91.0 (he used the Specification tab before asking for v2.144.0), v2.104.0 (Floor Areas; here only
+  the custom scrapbook's room hunk, a Layers label and the Rectangle tool's area), v2.116.0 (Sheet Images; here only the
+  grips' shape provider and the panels' picture rules) and v2.150.0 (the Boolean tools: "It works INCREDIBLE!",
+  recorded in v2.151.0, while its own status line still reads not tried).
+- NOT CONFIRMED - TrueVision's own entry says not tried by Adam, awaiting his test, or that the ValeVision port waits
+  for his sign-off: v2.36.0, v2.40.0, v2.41.0, v2.42.0, v2.48.1, v2.82.0, v2.84.0, v2.86.0, v2.87.0, v2.89.0, v2.93.0,
+  v2.94.0, v2.96.0, v2.98.0, v2.100.0, v2.101.0, v2.105.0, v2.107.0, v2.108.0, v2.109.0, v2.111.0, v2.113.0, v2.114.0,
+  v2.117.0, v2.118.0, v2.119.0, v2.120.0, v2.122.0, v2.123.0, v2.124.0, v2.126.0, v2.127.0, v2.128.0, v2.129.0,
+  v2.130.0, v2.131.0, v2.132.0, v2.134.0, v2.137.0, v2.138.0, v2.139.0, v2.140.0, v2.141.0, v2.142.0, v2.143.0,
+  v2.144.0, v2.147.0, v2.151.0, v2.152.0, v2.157.0, v2.163.0 and v2.164.0.
+- NOT CONFIRMED - no record either way: v2.24.0 (the section adapter's names), v2.28.0 and v2.31.0 (the viewport snap
+  move's first two versions), v2.30.2, v2.32.0 (design phases, dormant), v2.48.0 (verified by the session on PS01),
+  v2.55.0 (the site plan painter's split), v2.57.0, v2.58.2 (TrueVision's agent verified it on PS01), v2.65.0, v2.75.0,
+  v2.80.0 (the identity config's Phase block; the release was ported in v2.67.0), v2.90.0, v2.102.0, v2.106.0,
+  v2.149.0, v2.159.0 (proved by TrueVision's agent), v2.160.0, v2.155.0's parts here (Phase 0's moved paths in the
+  Patterns panel and the Project QR element; its confirmed part, the PDF exporter fix, came in v2.71.2), and the nine
+  changes TrueVision never logged: the nested LineworkModifier rules and owners (commits 62dade1c and 6076ec10,
+  20-21 Sep-2026); the site plan store's two stores (Store 1.1.0, 20-Sep-2026); Grips 1.12.0, CabinetInfill 1.2.0 and
+  the Specification Scrapbook's panel, config and stylesheet 1.2.0 (commit a2e0a836, 22-Sep-2026); SpecLinks 1.1.0's
+  broken-link resolver (18-Sep-2026); EdgeStyles' line scale on any dashed category, FillHex and the Model Layers
+  panel's two columns (commit 55014c6a, 29-Sep-2026); ItemClipboard 1.3.0 (commit 32767407, with v2.75.0); and the
+  hover tooltip 1.0.0 (commit 4f6bb9ef, with v2.65.0).
+- HELD: v2.78.0's MarginGrip 1.1.0 line (the automatic Move, DR-40 item 7) - its log entry is in, the term is not.
+- HEADERS AND NUMBERS ONLY: v2.25.0 (the tiled renderer's callback route, taken as a design for the fog image) and
+  v2.161.0 (per-scene lighting, ValeVision's own; Viewport3d 1.8.1 and the snapshot renderer carry its version line).
+
+**Verified** (W2-99, fresh runs on the wave's final tree, after the placeholders were resolved and again after these records were written)
+- Na__Verify__ModuleGraph__ PASS: 610 modules from 1 entry point, 0 failures (554 at v2.71.3). Import-map targets 110,
+  the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 544 files (470 at v2.71.3), and the 39 names the lazy loader's facade calls all exported
+  (modelSource is new).
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning); raw, its 55 retired folder names
+  are all inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings (645 shipped files, 74 test-folder files, 76 folders against
+  the registry, 18 Layout Editor stylesheets). Na__Verify__PortNotes__ PASS: 715 files, 480 PORT NOTEs, 566 logs; 0
+  fail; 105 warnings (80 on the 01-Oct-2026 baseline, 25 TrueVision logs and unversioned sheets kept verbatim, declared
+  by design); no placeholder pending; `--scribe` PASS.
+- Na__Verify__UiParity__ (report, at the working tree and at the pin): 0 of 7 checks fail - the fold, the strip, the
+  veil, the panels stylesheet, the stylesheet order (Spell Check after Boot, in order) and the motion rules pass; the
+  service-worker token warning stands (it predates 19 ValeVision releases). With every check blocking it passes.
+- 54 tests, 51 exit 0 and 3 exit 1 (the three scrapbook element tests above). New and passing: DrawingPlanes (47),
+  EnhanceWhitecardStrength (24), FlushJoins (8), HideSwings (47), LayerMenu (76), LeaderlessNotes (51),
+  LineworkModifiers (46), NoteRegions (53), ObjectSnap (89), PaintedOnThePoint (116), SitePlanComposites (151),
+  SitePlanFaces (9, one skip: no site plan data on this PC), SitePlanStore (44), SpecInlineEdit (51), SpecLockstep (63),
+  SpellCheckDictionary (52), StatementLockstep (28) and StoreyBand (54); ViewportTitleText (48), LoaderFacade (118),
+  AppConfigParity, ScrapbookDrawingTitle and ScrapbookScaleBar updated and passing; the other 28 unchanged and passing. The
+  verifiers' self-tests pass (19, 16, 19 and 4 cases); AppConfigParity passes with --strict (71 differences, every one
+  a listed seam).
+- The integrator's gate (12:36-12:46, on the tree before the comment-only placeholder pass) also linked and evaluated
+  349 of 349 programme-touched modules in a real browser with 0 failures, booted the real editor read-only on
+  2026/57994__Harris__Scheme-02 (the scene ready, D01 open, Page Down to D02) with no uncaught error and no 4xx or 5xx,
+  and proved every changed file belongs to a package's record; it made no fix.
+- NOT EXERCISED: the app by eye. Adam's Wave 2 checklist (audit section F.5.4) and the items the packages deferred go to
+  the orchestrator's smoke test, on a copy of a project, never saving a live one: a Drawing Plane switched on from the
+  Floor Plans and Elevations Dev menus on 3047__Doous, its drag and Escape; the elevation depth fog on screen, in an
+  image export and on a sheet viewport; the Cross Sections Dev item; doors open in plan viewports and shut in
+  elevations; the snap markers' colours, the Measurements box, the grips and the context menu; Ctrl+C and Ctrl+V on
+  one sheet and another; the Patterns section and the Specification tab; the lockstep card and the bar's statuses
+  after a hand edit of the notes file; Spell Check in Edge; the Text panel with several items; Enhance Whitecard at
+  40%; the scale bar to the right and the 5 mm underline; and a re-bake of linework (DR-31). No deploy, no token bump,
+  no live sync.
+
+**Known, accepted**
+- RE-BAKE BEFORE THE NEXT PUBLISH (DR-31 (4)): until a live project is re-baked, its viewers compute linework themselves
+  on first open, and its elevations lose their flush-join lines.
+- THE SHEET PDF has no fog layer yet (W3-16) and its file name still lacks the project code until W3-16 (OC-13).
+- `Na__LayoutEditor__SnapshotRenderer__.js:135` still says "TrueVision has no per-scene lighting" (both apps have it
+  since v2.71.0 and TrueVision's v2.161.0): a header line the audit's WP-S04a-12 asks to fix and no later package owns.
+  W6-01's sweep.
+- The specification on localhost now follows its file: set `LayoutEditor__Specification__LockstepEnabled` false to go
+  back to the last save winning. Save Sheets with the question open skips the specification without a toast until
+  W5-01; Reload R2 is off away from localhost.
+- Until W3-05, Draft, Grid, Ortho and Axes have no key or button; until W3-03 the move anchor and the carry are absent
+  and the Measurements box reads only what ValeVision's sheet tools hand it today.
+- `Na__ProjectedLinework__ConfigAccess__.js` keeps TrueVision's mis-titled heading "Get the Model Sampling Setup" above
+  GetAnnotationSetup (verbatim; queued for the TrueVision lane).
+- The specification's config wording and two descriptions still say Save Sheets "takes it to the cloud (R2)"; they
+  follow whatever replaces the cloud sync on the OVH server.
+- The folder-number registry's ValeVision column still reads "-" for the folders this release created (47, 48, 55, and
+  LE/21, 28, 33, 52, 58); its LE/52 note names W4 although W2-30 created the folder. It is not a scribe file: the
+  orchestrator fills it, as it did for v2.71.3's two.
+- RECORDS HYGIENE FOR W6-01 (comments only; nothing breaks): the 49 render layer's PORT NOTE still says nothing
+  calls RenderLayerFrame (the snapshot renderer does since W2-15); RenderComposites' header and its config's
+  Meta__WhyWeightsHere still name the main config's Drawing2dEdgeWidth, which W2-08 removed; the Cross Sections
+  README's file table predates W2-02; FacePick's and GizmoGrip's PORT NOTEs still say TrueVision has neither
+  (both apps hold both, unused); SpecData__Transport's PORT NOTE names the retired R2DrawingNotes as history.
+- `Meta__Author : "Adam Noble - Noble Architecture"` stays in the Spell Check config as in several earlier configs (never
+  rendered; DR-43 hygiene for W6-01).
+- TrueVision's test design leaves stub modules `Na__Test__<name>__*.mjs` in the OS temp folder; Adam may delete them. The
+  audit's `execution/scratch/` holds TrueVision text and must stay out of any commit.
+
+**Files**
+- NEW in `02__Src__AppModules/`: the folders `47__System__DrawingPlanes/` (nine files), `48__System__CrossSectionViews/`
+  and `55__Feature__SpellCheck/` (seven files with a README); in 49 the render layer, Dev row and stylesheet; in 50
+  DoorPose, FlushJoins and Storeys; in 51__System__LayoutEditor the folders `21__System__SitePlanData/`,
+  `28__System__ObjectSnap/` (16 files), `33__System__DrawingAxes/`, `52__Feature__StatementWriter/01__Core__Data/` and
+  `58__Feature__ScrapbookSpecification/`, and new files in 20 (ModelSource, PlanDoors, Viewport2d__DepthFog,
+  Viewport2d__SitePlan), 26, 27, 30 (LayerMenu and the two tooltips), 32, 36 (the Patterns panel and stylesheet), 37
+  (17 files), 40 (the site plan composites panel), 50 (six files) and 57 (four element files). In
+  `80__Testing__PrototypeEnvironment/`: 21 tests, the object snap bundle, the spell-check field page and the site plan
+  composites proof page.
+- CHANGED: `01__AppCore/Na__AppFlow__LoadingSequence.js` 1.7.3; the main config; ProgressiveRefine 1.0.3 and
+  LineworkSettings 1.2.0; the tiled renderer 1.6.0; RenderPreset 1.4.0, SectionAdapter 1.3.0 and ThumbnailBake 1.0.3;
+  the Cross Sections logic and Dev controls; the Floor Plans editor, rows, config and Dev sheet; the Elevations editor,
+  rows, config, Dev sheet, mode controller 1.1.3 and data module; folder 50's twelve modules and its config; in
+  51__System__LayoutEditor the loader 1.1.7, the AppConfig, the mode controller 1.18.9, the Paper sheet, the viewport
+  units and configs, the render styles (Enhance, EdgeStyles, ModelLayers, RenderComposites and SnapshotRenderer 1.8.0
+  with their configs), twelve SheetTools units, the four drawing tools, six panels and the toolbar 1.9.5, twelve
+  specification files, TileDrag, ScrapbookCustom, eight parametric scrapbook files and the Dev menu 1.4.2;
+  index.html; `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`; the ScrapbookDrawingTitle, ScrapbookScaleBar,
+  ViewportTitleText, AppConfigParity and LoaderFacade tests; the parity ledger (section 3.10 and the rows the wave
+  changed); the PLAN (two dated notes).
+- DELETED: `03__AppUtils/Na__AppUtils__R2DrawingNotes__.js` (W2-33; a backup is in the package's scratch).
+- Nothing outside this app was written: no ValeVision Gallery file, no worker, no shared service worker, no staged
+  package.
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W2.md`. Nothing is committed: Adam commits from the wave's path list, staging only those
+  paths.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.3 - 02-Oct-2026 - A Drawing's Number Becomes Its Document ID, Every PDF Carries Open Sans, the Layers List Is the Paint Order, and Page Down Turns the Drawing
+### Ported from TrueVision3D in part, read at b2aa9151: v2.21.0, v2.32.0, v2.36.0, v2.38.0 to v2.42.0, v2.48.0, v2.49.0, v2.54.0, v2.55.0, v2.58.2, v2.61.0, v2.61.1, v2.63.0, v2.69.0 to v2.72.0, v2.74.0, v2.75.0, v2.79.0, v2.81.0, v2.89.0 to v2.91.0, v2.93.0 to v2.95.0, v2.100.0, v2.104.0, v2.106.0, v2.109.0, v2.111.0, v2.112.0, v2.114.0 to v2.116.0, v2.120.0, v2.121.0, v2.123.0 to v2.127.0, v2.130.0, v2.133.0, v2.135.0 to v2.148.0, v2.150.0, v2.152.0, v2.154.0 and v2.155.0, and eight changes TrueVision never logged (Adam-confirmed in TV: none; v2.49.0, v2.104.0, v2.116.0 and v2.150.0 tried by him in part; none of the others)
+
+**Overview**
+- The Wave 1 continuation of the TrueVision parity programme: the twelve Wave 1 packages that could not run in v2.71.2,
+  because a package they depend on was not done when they were due (orchestrator correction OC-10). All twelve ran
+  unattended on the plan's defaults - 11 done, 1 partial (W1-36: everything landed; one TrueVision test held for
+  W3-03). Adam has answered none of DR-01 to DR-44, so each ran on its default (D41 to D91 in section 2A of
+  `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`).
+- WHAT A VALE AUTHOR WILL NOTICE. The title block's number cell is DOCUMENT ID - the project's own code and the drawing
+  number, 3047_D01 - and the Rev cell reads "Revision A"; on A2 and A1 the small cells are a fifth wider. Tabs and the
+  Drawings menu read "D01 - Name". 1:200 joins the scales. Sheet text is drawn, measured and printed in Open Sans, which
+  every PDF now embeds. The Layers list is the paint order, on screen and in the PDF. Page Up and Page Down turn the
+  drawings. Every colour field opens TrueVision's colour palette. Save Sheets says where the sheets went again. A browser
+  draft of unsaved sheets is asked about when the drawings were saved elsewhere since it was written.
+- GROUNDWORK THAT CHANGES NOTHING YET: Floor Areas' core and the sheet model's room groups (inert until W3-10), the
+  title-block QR cell (switched off), and the record keys and model paths of features whose tools come later - turned
+  viewports, hidden door swings, holes, hatches on any vector, pictures, overspill note regions, leaderless notes and
+  site plans (dormant).
+- One version for the continuation, the next patch step after v2.71.2 (D85, Adam's patch-bump rule). Every module log
+  line and PORT NOTE the continuation wrote now names v2.71.3.
+
+**The sheet records and the sheet model are TrueVision's** (W1-19, W1-20, W1-21)
+- SHEETRECORDS 1.39.0 WHOLE: every field TrueVision's sheets carry from v2.32.0 to v2.152.0 now survives a load and a
+  save - frames, doors, swings, rotation, model source, site plans (dormant), hatches, pictures, rooms, curves, holes,
+  dimension extensions, round-up, line weight and style, overspill regions and leaderless notes. An old sheet's layers
+  are restacked once, the Viewports layer to the bottom. A new sheet gets TrueVision's five layers: Text, Dimensions,
+  Vectors, Floor Areas, Viewports.
+- DRAWING NUMBERS FOLLOW TRUEVISION'S v2.71.0: an unnumbered sheet's number is "D01" in the register's series, and its
+  Document ID is {project}_{drawing} from the project's own code (3047_D01; DR-11 - no stage until Vale's are
+  supplied). Typed numbers are untouched. RenumberSheets writes no number while a project has no Drawing Register block
+  (a ValeVision seam), though it still keeps the tab order 1..n, so a delete keeps a dragged order.
+- THE SHEET MODEL'S UNITS, FACADE AND HISTORY ARE TRUEVISION'S: State 1.2.0, Layers 1.4.0, Shapes 1.6.0, Viewports
+  1.4.0, TextAndDimensions 1.2.0, Leaders 1.2.0, Groups 1.3.0, AreaGroups 1.0.0, the facade 1.35.1, Sheets 1.4.0 and
+  History 1.7.0. Deleting a layer moves its vectors to the Vectors layer instead of stranding them; a pasted vector
+  naming a layer the sheet lacks is written onto one it has; hiding a layer takes its items out of the selection; a
+  group keeps its leaders, dimensions and viewports through deletes and reloads.
+- THE LATE START: the model announces a project load that landed before the editor once, and on the first open seeds
+  the title block's client and site address from project.json when the pack has none; the loader's own
+  re-announcement is gone. Sheets are normalised once per announcement, so heavy sheets answer the pointer faster. A
+  notes margin change and a floor area change are each their own undo step (DR-40 item 4).
+- SAVE SHEETS SAYS WHERE THE SHEETS WENT: "Sheets saved to R2 and locally.", red when the local copy fails, and
+  "Sheets saved to R2." where there is no local server.
+
+**The title block: Document ID, "Revision A" and 1:200** (W1-22, W1-26)
+- THE NUMBER CELL IS DOCUMENT ID, as TrueVision's is: 3047_D01 on 3047__Doous, 57994_D01 and 57994_D02 on Harris
+  Scheme-02. The Classic title block's number box and the SheetSetup fallback follow.
+- MODERN 1.5.0 AND THE CELLS 1.2.0: the Rev cell reads "Revision A" (the sheet still stores "A"; on A4 portrait the
+  word gives way before another value is cut), and on A2 and A1 the fixed cells are a fifth wider, paid from the
+  title's spare room. The logo's stand-in text is configuration, "VALE GARDEN HOUSES" (DR-43).
+- THE QR CELL (TitleBlock__QrCell__ 1.0.0) is solved first and SWITCHED OFF (DR-12 (A)): no strip carries a cell and no
+  address is configured.
+- 1:200 JOINS THE SCALES (DR-17): a fourth scale button, a 1:200 viewport keeps its scale on reload, and a sheet mixing
+  1:100 and 1:200 says so in its Scale cell.
+
+**Open Sans in every PDF, and the screen measures what it draws** (W1-25, W1-26)
+- PDFFONTS 1.0.0: the first PDF call of a session fetches the three Open Sans cuts from the AD04 host the stylesheet
+  already uses (DR-21 (a)), and every sheet PDF and the specification PDF embed them - files grow by 16-30 KB. A host
+  that is down leaves Helvetica, with one warning per cut.
+- SHEETCHROME 1.14.0 measures and prints every run in the same Open Sans, so a title-block cell is sized by the width
+  the screen draws. ShapeGeometry 1.9.0, DimensionGeometry 1.6.0 and LeaderGeometry 1.3.0 come whole with it: a frame
+  switched off takes its caption with it (the switch is W3-15's), holed vectors leave their holes bare on screen and on
+  paper, fixed-length extension lines and dashed dimension rules draw, and the broken-link halo waits for the
+  specification to register its resolver (W2-30).
+- SPECPDF 1.0.0 WHOLE (the fonts and the awaited save), and the specification prints the project's own code - Project
+  3047, Document No. 3047_SPEC, a file named 3047_SPEC__ProjectSpecification__... - not the `?project=` token (OC-09).
+- Open Sans Medium (500) joins the fonts stylesheet: toasts and the 500-weight menu items render in Medium.
+
+**The Layers list is the paint order** (W1-28)
+- SheetSurface 1.13.0, MarkupBridge 1.20.0 and Groups 1.4.0 whole, the Paper sheet's two stack regions and the PDF
+  exporter's paint plan: each layer paints in the list's order on screen and in the PDF; a layer dragged under the
+  Viewports layer draws under the drawing; a click finds what is drawn on top; viewport frames are clear, so a
+  vector-only drawing lets a lower layer show through its lines. Existing sheets look as they did.
+- A PDF now prints a viewport's caption and the title block under markup laid over them, as the screen always showed
+  it: 3047__Doous D01's PDF no longer shows the 2D viewport's caption "VIEWPORT 1:50", which a white-filled vector
+  covers (move the vector, or the Vectors layer, if it should print).
+- Ctrl+G groups leaders, dimensions and viewports too, and an open group keeps its drawings at full strength; a
+  dimension measuring at scale off every drawing prints the sheet's scale, as the Measurements box reads it.
+- VECTOR QUALITY MEDIUM (DR-40 item 6): while a sheet is redrawn its 2D drawings are held as a layer of their own, a
+  touch softer, and drawn crisp 1.2 s after the last redraw. No toolbar control until W5-01.
+- LinkNoodle takes TrueVision's 1.2.1 hunk with the stack, so a parametric element tied to the sheet's scale finds the
+  title block's Scale cell (an importer update).
+
+**Paging, the keyboard and the zoom** (W1-36)
+- PAGE UP AND PAGE DOWN TURN THE DRAWINGS in tab order and stop at the ends without scrolling the stage (Controls__Pc
+  1.4.0, the mode controller's StepSheet); on the 3D tab they turn the scenes, as before.
+- A press on the paper takes the keyboard back from a panel control, so M picks Move after a ticked checkbox; coming
+  back to a drawing from the Specification or the 3D view restarts the sheet keyboard and re-reads the key file.
+- A wheel or touchpad zoom is one zoom a frame, and a pinch a zoom step, which the paper holds and settles once
+  (Navigation 1.3.0, TouchScreen 1.1.0); an author zooms in to 6400%, a reader (the web viewer, `?authoring=off`)
+  still stops at 800%.
+- Leaving Fly stops the render loop: after one flight it no longer keeps drawing every frame (TrueVision's Fly
+  controls 1.0.1 release, OC-08).
+
+**Drafts, the colour palette and the panels** (W1-07, W1-37, W1-38)
+- AUTOSAVE 1.5.0 WHOLE: no browser draft is read or written until the project's sheets are in; a draft records the
+  drawings it grew from and is judged before it goes back. Grown from those loaded, it is put back as before; grown
+  from others - saved since in another window or on the file, or written before this release - it is asked about:
+  Apply Draft, Discard Draft or Decide Later, and nothing writes the draft while the question is open. Every
+  pre-upgrade draft is asked about once. The unsaved-work flag stays `window.Na__Pwa__HasUnsavedWork` (W0-08's seam).
+- THE COLOUR PALETTE (`54__Feature__ColourPalette`, TrueVision's door, Manager, Picker, config and stylesheet): one
+  click on a colour field opens "Vale Garden Houses Standard" (DR-20) - Monochrome's ten greys and the Dimensions
+  colours - with Chrome's own mixer on top; a swatch fires input then change and lets go of the focus. The 3D tab's
+  Plan Annotations dimension colour (its toolbar 1.1.0) and every Layout Editor panel colour field open it.
+- PANELHOST 1.6.0 AND THE PANELS STYLESHEET WHOLE: a typable number box beside every opacity slider, hover text on the
+  column tabs, Scale buttons that wrap in a narrow column, and the Linked Pair, Ref and one-red rules ready for their
+  panels (W3-12, W3-13, W3-15). The panels stylesheet now equals TrueVision's, so no UI parity check fails.
+
+**Inert groundwork** (W1-27 and the record halves above)
+- FLOOR AREAS' CORE (LE/59; DR-14 (A) with TrueVision's room-group list): Geometry 1.1.0, FloorAreas 1.2.2, the Area
+  tool 1.0.0, its menu 1.1.1, the label 1.1.0 and the config, taken whole with TrueVision's test (47 checks). Nothing
+  calls them yet; the A key stays inert until the Floor Areas panel lands (W3-10).
+- Record keys and model paths whose tools come later carry no behaviour until then: rotation (W3-06), hide swings
+  (W3-15), holes and the Boolean tools (W3-07), hatches on any vector (W2-29, W3-12), pictures (W3-09), overspill
+  regions and leaderless notes (W2-32, W3-11), the Drawing Register's hooks (W4-18) and site plans (dormant, DR-08 (B)).
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S THROUGHOUT (DIV-4): the Sheets unit reads `Na__CfApi__GetLoadedProjectData` at
+  TrueVision's path for its register-block check; PdfFonts, the palette and Floor Areas read only static files. No
+  TrueVision client, route or portal key was copied (gate G6: 0 hits).
+- Kept seams, each in its file's PORT NOTE: the site plan category prefix and the document code in SheetRecords
+  (DR-08, DR-11); the tab code through the DrawingCode leaf (DR-24); RenumberSheets without a register block; the
+  unsaved-work flag's neutral name (W0-08); the Vale stand-in logo text in configuration (DR-43); the palette's Vale
+  name (DR-20); the Plan Annotations toolbar's ConfigState getter (F.8 C24); the AD04 font host (DR-21); the Fly
+  controls' field-of-view compensation.
+- Hunk replays where ValeVision keeps its own file: the mode controller (1.18.4), PdfExporter (1.2.4), LinkNoodle
+  (1.0.1), the Fly controls (1.1.1), the CSS index's palette region, SpecDocument (1.0.1) and the loader (1.1.4).
+- Identity: no Noble Architecture content reaches a Vale user. TrueVision's comments naming its projects stay only
+  inside verbatim code comments, as Adam may choose to neutralise (DR-43); the palette's NA name and the logo's NOBLE
+  ARCHITECTURE constant were not carried.
+
+**Not ported, and why**
+- The four gesture changes (DR-40 items 7-10) stay held: nothing here touched them.
+- TrueVision's Na__Test__DrawingTabKeys__ (v2.115.0) is prepared and held, not landed: 7 of its 53 checks exercise
+  TrueVision's sheet keyboard 1.10.0 or later, which W3-03 brings; on this tree it scores 46 of 53, and 53 with
+  TrueVision's keyboard laid over it. The gate proposes that W3-03 lands and runs it.
+- The sheet PDF's file name on the Document ID (TrueVision's v2.71.0 entry; the line came with its commit 32767407):
+  no package of the plan takes it before W3-16 (see Known, accepted).
+- The PDF exporter's other TrueVision hunks (site plans, fog, Sheet Images, turned viewports, the regions toast) wait
+  for W3-16; the Floor Areas panel, table, label grip and wiring for W3-10; the Layers panel's Ref switch for W3-13.
+- THE SHARED SERVICE WORKER. This release adds 11 modules (AreaGroups, PdfFonts, TitleBlock__QrCell__, the five Floor
+  Areas modules - three of them linked - and the three palette modules), two configuration files and a stylesheet,
+  links 18 modules that landed inert earlier, and adds these exports to existing modules: the sheet model's facade +32,
+  SheetRecords +11, Layers +7, the Sheets unit +7 (and AnnounceRestore moved to the facade), ShapeGeometry +6,
+  MarkupBridge +5, SheetSurface +4, LeaderGeometry +4, AutoSave +3, State +3, Shapes +3, SheetChrome +2, Controls__Pc
+  +2, PanelHost +2, Viewports +1, Groups +1 and the title block cells +1. So a warm client holding a mix of old and new
+  files can fail to link the editor (a new Modern or ShapeGeometry with an old SheetChrome; the new facade with an old
+  unit; the new mode controller with an old Controls__Pc), announce a load twice (an old loader with the new facade),
+  or link and bury every note under the drawings (an old SheetSurface with the new Paper sheet), for that one load.
+  The token is still Adam's call; it was not bumped ('2026-09-18-1'). Deploy this release only with the Wave 0 rule:
+  the prepared W0-08 package applied plus one shell-token bump, or a full bump.
+
+**Held, partial and not run**
+- W1-36 PARTIAL: everything it lists is landed and green; its one open item is Na__Test__DrawingTabKeys__, held for
+  W3-03 (above).
+- W1-26 wrote three files outside its canonical list - the Layout Editor config (the LogoFallbackText key, the QR
+  note's path), SheetSetup (the key's reader, the style font fallback) and the AppConfig parity test (two rows) - to
+  carry W1-22's Vale brand seam for Modern, as OC-01 moved it; the W1 gate recommends ratifying it as an orchestrator
+  correction (W1-26's revert path is kept).
+- No package of the continuation is held or prepared-only, and nothing was staged for Adam.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: none of what this release carries. v2.155.0's confirmed part, the PDF exporter fix, came in v2.71.2; its
+  parts here (SheetSurface's ShowPublished; the ScaleCell test page at its moved jsPDF path) are its publishing half
+  and Phase 0's moves, not a confirmed test.
+- TRIED BY ADAM IN PART, NO SIGN-OFF LINE: v2.49.0 (site plan viewports, recorded by the audit's S11 verifier; the
+  record and model halves here are dormant); v2.104.0 (Floor Areas: his notes drove v2.106.0, v2.125.0, v2.133.0 and
+  v2.148.0, but TrueVision's floor area plan keeps its ValeVision phase open until he signs Floor Areas off); v2.116.0
+  (Sheet Images, his own run on his server); v2.150.0 (the Boolean tools: "It works INCREDIBLE!", recorded in v2.151.0
+  - the holes taken here are not named).
+- NOT CONFIRMED - TrueVision's own entry says not tried by Adam, held for his test, or that the ValeVision port waits
+  for his sign-off: v2.36.0 (History's margin step), v2.38.0, v2.39.0, v2.40.0, v2.41.0, v2.42.0, v2.81.0, v2.89.0,
+  v2.93.0, v2.94.0, v2.95.0, v2.100.0, v2.109.0, v2.111.0, v2.112.0, v2.114.0, v2.120.0, v2.121.0, v2.123.0, v2.124.0,
+  v2.125.0, v2.126.0, v2.127.0, v2.130.0, v2.133.0, v2.135.0, v2.136.0, v2.137.0, v2.138.0, v2.139.0, v2.140.0,
+  v2.141.0, v2.142.0, v2.143.0, v2.144.0, v2.145.0, v2.146.0, v2.147.0, v2.152.0, v2.154.0 (he asked for it with a
+  screenshot; no record he tried the result) and v2.155.0 (its parts here).
+- NOT CONFIRMED - no record either way: v2.32.0, v2.48.0, v2.54.0 (PdfFonts, in its release commit ffbaee21, which no
+  heading names), v2.58.2, v2.61.0 and v2.61.1 (the ScaleCell test page), v2.63.0 (SpecPdf's font lines), v2.69.0,
+  v2.70.0 (built at Adam's request), v2.71.0 (built to his spec; "NOT verified in the running app"), v2.75.0 (two
+  comments and the register hooks of its batch commit), v2.79.0, v2.90.0, v2.91.0, v2.106.0 (built from his notes),
+  v2.115.0 (it answers his "M keeps getting stuck"), v2.148.0 (built at his request), and the eight changes TrueVision
+  never logged: the Drawing Register's hooks in AutoSave and the sheet model - Suspend, Resume, the register-updated
+  ignore and NotifyRegister (commit b6baf301) and their pair DiscardSavedDraft and FinishRegisterDeletion (32767407);
+  SheetRecords' projected-edge LineTypeScale and FillHex (55014c6a, 29-Sep-2026); the site plan store id (bef15277);
+  the 1.0.1 of the SheetsNormaliseOnce and VectorQuality tests (b1e0220f); Floor Areas' fill opacity 0.3 and
+  PanelHost's slider box (d76d7638); LeaderGeometry 1.2.0's broken-link halo and MarkupBridge 1.13.0's leader options
+  (18-Sep-2026, no heading).
+- HEADERS ONLY, NO BEHAVIOUR (the code was already TrueVision's): the Classic title block (v2.21.0), SheetLayout
+  (v2.36.0), DrawingScale (v2.40.0), the sheet model's DrawOrder (v2.55.0) and Common (v2.74.0), PdfFilename (v2.63.0)
+  and the surfaces stylesheet (v2.72.0).
+
+**Verified** (W1-99, fresh runs on the continuation's final tree, after the placeholders were resolved and again after these records were written)
+- Na__Verify__ModuleGraph__ PASS: 554 modules from 1 entry point, 0 failures (527 at v2.71.2). Import-map targets 110,
+  the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 470 files (459 at v2.71.2), and the 38 names the lazy loader's facade calls all exported.
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning); raw, its 55 retired folder names
+  are all inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings (551 shipped files, 50 test-folder files, 68 folders against
+  the registry, 11 Layout Editor stylesheets). Na__Verify__PortNotes__ PASS: 597 files, 370 PORT NOTEs, 468 logs; 0
+  fail; 123 warnings (112 on the 01-Oct-2026 baseline, 11 TrueVision files with no module version or a repeated log
+  entry, declared by design); no placeholder pending; `--scribe` PASS.
+- Na__Verify__UiParity__ (report, at the working tree and at the pin): 0 of 7 checks fail - the fold, the strip, the
+  veil, the panels stylesheet (now TrueVision's), the stylesheet order (the palette after Boot) and the motion rules
+  pass; the service-worker token warning stands (it predates 18 ValeVision releases). With every check blocking, as
+  the plan asks from this pass, it passes.
+- 33 of 33 tests exit 0: AppConfigParity, AuthoringZoomMax (12), ColourPalette (55), DimensionRoundUp (21),
+  DocumentKeys (75), DraftGuard (11), DraftRestore (27), DrawingDrafts (50), DrawingNotesRoute, ElevationDepthFog (68),
+  FloorAreas (47), FloorPlanStoreyLevel (36), LayerStack (23), LoaderFacade (118), LoaderStylesheets, NorthCompass,
+  PerSceneLighting, ProjectDataSaveGuard, ProjectQr (62), PublishedApi, ScrapbookApi, ScrapbookDrawingTitle,
+  ScrapbookScaleBar, SheetImagesApi, SheetPagingWalkExit (18), SheetsNormaliseOnce (26), StatementServer --check,
+  TitleBlockCells (52), TransportFacade (175), UserSpellingsApi, VectorQuality (33), ViewportRotation (16),
+  ViewportTitleText. The verifiers' self-tests pass (19, 16, 19 and 4 cases); AppConfigParity passes with --strict (66
+  differences, every one a listed seam); the three staged Wave 0 patches still apply to today's files.
+- The integrator's continuation gate (09:17-09:42, on the tree before the comment-only placeholder pass) also linked
+  all 224 modules this programme has touched in a real browser with 0 failures, built the three PDF test pages offline
+  (the specification PDF now 31,668 bytes with Open Sans embedded, 2,291 in Helvetica before), opened a drawing in the
+  real editor read-only with no uncaught error - the Drawings menu reading "D01 - Elevations", DOCUMENT ID 57994_D01,
+  "Revision A", the palette's configuration loaded, Page Down to the next drawing - and proved every changed file
+  belongs to a package's record; its one fix took eight stale rows off the AppConfig parity test's allow-list.
+- NOT EXERCISED: the app by eye. Adam's Wave 1 checklist (audit section F.5.4) and the items the packages deferred go
+  to the orchestrator's smoke test, on a project with Layout Mode on and sheets (2026/57994__Harris__Scheme-02; never
+  Save Sheets on a live project for a check): the title block's Document ID, "Revision A" and the wider A2 cells;
+  Download PDF in Open Sans and its file name; the Layers list as the paint order (drag Text under Viewports and back);
+  a wheel or touchpad zoom that holds and settles, 6400% on localhost and 800% with `?authoring=off`; Page Down and
+  Page Up; a panel colour field and the 3D tab's dimension colour, with Chrome's mixer stacked on the palette; the
+  opacity number boxes and the wrapping Scale buttons; Ctrl+G with a viewport; the margin's undo step; Save Sheets'
+  toast; pressing A does nothing; fly, leave Fly, and the render loop goes idle. The draft question for an old browser
+  draft and the two-window save guard write R2: Adam's only. No deploy, no token bump, no live sync.
+
+**Known, accepted**
+- THE SHEET PDF'S FILE NAME LOST ITS PROJECT CODE: since the drawing number took TrueVision's default, a never-numbered
+  sheet downloads as `D01__<Name>__<Paper>__Rev<x>__<date>__.pdf` (before: `2026_3047__Doous-01__...`). TrueVision
+  names it on the Document ID (here `3047_D01__...`) - its v2.71.0 entry, one line in the PDF exporter that no package
+  takes before W3-16 (the W1 gate's item 4.2, for an orchestrator correction). Nothing is deployed, so no Vale user
+  sees it yet.
+- THE LIVE SITE'S FIRST DRAWING (carried from v2.71.2): in the read-only web viewer the first drawing of a session
+  fills in uncovered until W4-09. Decide before this release is deployed: a one-line seam until W4-09, or hold the
+  live deploy until then. Localhost is unaffected.
+- Until W3-03, W2-21 and W3-06 a press on a grouped viewport's frame selects the viewport alone, and copying a group
+  that holds a dimension or a viewport pastes it without them.
+- From W3-03 (the sheet keyboard dispatches the Area tool) until W3-10 lands its panel, A would arm the Area tool with
+  no panel: keep the binding off in between, or land W3-10 with W3-03. The Area tool also needs RectangleTool 1.3.0 and
+  ShapeTool 1.7.0 (W2-26, W3-07).
+- `Na__LeRec__SheetShortCode` has no importer since W1-21 and the DrawingCode leaf's StoredNumber note is stale; the
+  TitleBlockCells test page measures in Helvetica because it does not wait for the fonts. All three are W6-01's sweep.
+- The specification bar's document code still reads the `?project=` token until W2-31 (OC-09); plans trim their
+  exclusion tokens and elevations store them as typed until W2-05 decides (OC-11).
+- The folder-number registry's ValeVision column still reads "-" for the two folders this release created
+  (`54__Feature__ColourPalette` and LE/`59__Feature__FloorAreas`); the naming lint reads the class column and passes.
+  It is not a scribe file: the orchestrator fills it, as it did for v2.71.2's ten.
+- Config notes still quote TrueVision's illustrative codes with an NA job stage (`TitleBlock/DocumentIdNote`,
+  `Pdf/FilenamePatternNote`); neither is ever rendered (DR-43 hygiene, W6-01).
+- TrueVision's test design leaves stub modules `Na__Test__<name>__*.mjs` in the OS temp folder (238 there now,
+  TrueVision's own runs included); Adam may delete them. The audit's `execution/scratch/` holds TrueVision text and
+  must stay out of any commit.
+
+**Files**
+- NEW in `02__Src__AppModules/`: in 51__System__LayoutEditor
+  `07__Core__SheetData/Na__LayoutEditor__SheetModel__AreaGroups__.js`,
+  `10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__QrCell__.js`,
+  `60__Feature__PdfExport/Na__LayoutEditor__PdfFonts__.js` and the folder `59__Feature__FloorAreas/` (FloorAreas,
+  Geometry, Tool, Menu, Paint and the config); the folder `54__Feature__ColourPalette/` (the door, Manager, Picker,
+  config, stylesheet and README). In
+  `80__Testing__PrototypeEnvironment/`: the AuthoringZoomMax, ColourPalette, DraftGuard (`.cjs`), DraftRestore,
+  FloorAreas, LayerStack, SheetPagingWalkExit, SheetsNormaliseOnce and VectorQuality tests and the page
+  `Na__Test__TitleBlockScaleCell__.html`.
+- CHANGED: in 51__System__LayoutEditor the Loader 1.1.4, the AppConfig, ConfigState__SheetSetup, the mode controller
+  1.18.4, AutoSave 1.5.0, the DrawingCode leaf 1.0.1, DrawingScale, History 1.7.0, SheetLayout, the sheet model's
+  facade 1.35.1 and its units (Common, DrawOrder, Groups 1.3.0, Layers 1.4.0, Leaders 1.2.0, Shapes 1.6.0, Sheets
+  1.4.0, State 1.2.0, TextAndDimensions 1.2.0, Viewports 1.4.0), SheetRecords 1.39.0, Controls__Pc 1.4.0,
+  Controls__TouchScreen 1.1.0, Navigation 1.3.0, SheetChrome 1.14.0, SheetSurface 1.13.0, the Paper and Surfaces
+  stylesheets, the title block's Cells 1.2.0, Classic and Modern 1.5.0, DimensionGeometry 1.6.0, the markup Groups
+  1.4.0, LeaderGeometry 1.3.0, MarkupBridge 1.20.0, ShapeGeometry 1.9.0, PanelHost 1.6.0 and the panels stylesheet,
+  SpecDocument 1.0.1, SpecPdf 1.0.0, LinkNoodle 1.0.1, PdfExporter 1.2.4 and PdfFilename;
+  `43__System__PlanAnnotations/Na__PlanAnnotations__Toolbar__.js` 1.1.0;
+  `10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js` 1.1.1; in `03__Style__AppStylesheets/` the fonts
+  stylesheet (Open Sans Medium) and the CSS index (the palette region); the TitleBlockCells test and page, and the
+  AppConfig parity test 1.0.4 (the gate); the parity ledger (section 3.9 and the rows the continuation changed).
+- Nothing outside this app was written: no ValeVision Gallery file, no worker, no shared service worker, no staged
+  package.
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W1.md` (PART 2). Nothing is committed: Adam commits from the wave's path list, staging
+  only those paths.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.2 - 02-Oct-2026 - The Tab Strip Becomes TrueVision's, a Drawing Opens Under Its Veil, and the 3D Keys Stay on the 3D Tab
+### Ported from TrueVision3D in part, read at b2aa9151: v2.3.6, v2.10.0, v2.20.0, v2.24.0, v2.25.0, v2.32.0, v2.38.1, v2.39.0, v2.42.0, v2.49.0, v2.61.0, v2.69.0, v2.71.0, v2.80.0 to v2.84.0, v2.86.0 to v2.91.0, v2.94.0, v2.95.0, v2.100.0, v2.101.0, v2.103.0, v2.106.0, v2.107.0, v2.110.0, v2.112.0 to v2.116.0, v2.119.0 to v2.121.0, v2.124.0, v2.126.0, v2.130.0, v2.136.0, v2.138.0 to v2.140.0, v2.143.0, v2.145.0 to v2.147.0, v2.150.0, v2.152.0, v2.155.0, v2.156.0, v2.158.0, v2.160.0, v2.164.0 and v2.166.0, and five changes TrueVision never logged (Adam-confirmed in TV: v2.155.0's PDF exporter fix; v2.49.0, v2.116.0 and v2.150.0 in part; none of the others)
+
+**Overview**
+- Wave 1 of the TrueVision parity programme (Adam, 01-Oct-2026: align ValeVision's drawing system and Layout Editor
+  exactly with TrueVision's, while ValeVision keeps its own worker, Flask server and storage). Twenty-six packages ran
+  unattended on the plan's defaults - 24 done, 2 partial - and twelve did not run, because a package they depend on was
+  not done when they were due (see Held, partial and not run). Adam has answered none of DR-01 to DR-44, so each ran on
+  its default (D41 to D91 in section 2A of `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`).
+- WHAT A VALE AUTHOR WILL NOTICE. The drawing tabs are TrueVision's: 3D Model, Drawings (a menu of every drawing) and
+  Specification. The first drawing of a session opens the way TrueVision's does - the 3D furniture goes at the click, the
+  header folds away and a white cover reads "Your Drawings Are Loading". The 3D view's keys stay on the 3D tab. The
+  drawing toolbar loses Notes, Undo, Redo, Fit and 100% (their keys stay). A door answers only a left click. Plans,
+  elevations and their sheet pictures stop showing lines through fascias and parapets. The North panel gains Show
+  Compass. PDFs are larger: every picture is packed for speed.
+- MOSTLY GROUNDWORK. Most of the forty-two new modules land inert - the draft guard and its row shell, the depth fog's
+  pure leaves, the storey level, auto names, the Layout Editor's pure leaves, Project QR switched off, Sheet Images'
+  render half, the hatch module and TrueVision's hatch library - so that the next waves can take TrueVision's hubs whole.
+  Nothing imports them yet; they change nothing on screen, in a saved sheet or in a PDF.
+- One version for the whole wave, the next patch step after v2.71.1 (D85, Adam's patch-bump rule). Every module log
+  line and PORT NOTE the wave wrote now names v2.71.2.
+
+**The drawing tabs: TrueVision's strip, its veil and its header fold** (W1-31 to W1-34)
+- THE STRIP IS TRUEVISION'S TABSTRIP 2.0.0, taken whole: 3D Model, Drawings and Specification, all one size. Drawings
+  opens a white menu of every drawing as "D01 - Name" in drawing order, then "+ New sheet"; picking one shuts the menu,
+  folds the bar and opens the drawing. Down, Up, Home, End and Escape work in the menu; on a narrow screen the end
+  arrows appear and the right arrow from 3D Model opens a drawing without the menu. The Document Register and Design
+  Statements tabs are in the code but shown only when their features land (W4-10, W4-13; DR-38 (a)).
+- REORDERING MOVES TO THE MENU. Until the Document Register lands, drag one drawing's row onto another in the Drawings
+  menu (localhost, editable); rename a drawing in the Sheet panel. The old tab-per-sheet strip, its + tab and its
+  double-click rename are gone, as in TrueVision.
+- THE SPECIFICATION OPENS OVER THE FIRST SHEET (TrueVision's EnterUnder), so pressing it from the 3D view folds the bar
+  with no drawing veil.
+- THE FIRST DRAWING OPENS UNDER TRUEVISION'S VEIL. LoadingVeil 1.1.0 is taken whole: at a cold first press the Tools &
+  Settings menu, the navigation toolbar, the help panel and the carousel vanish at the click, the header holds a second
+  and glides up with the strip welded to it, and a white cover below the strip reads "Your Drawings Are Loading" with
+  "Fetching the Drawing Tools" and "Reading the Drawing Settings" (ValeVision's two pre-load lines in TrueVision's Title
+  Case). The cover hands over to the in-host veil - "Drawing the Views - n of m" - with no blink. Once the editor has
+  loaded (after the Specification or a Dev action, say), a session's first drawing gets the veil only if it is still
+  drawing after half a second, and later drawings get none. The fold and veil rules now equal TrueVision's (UiParity
+  checks 1 to 3 pass).
+- THE LOADER STAYS (DR-24 (a)), and now answers TrueVision's names before the editor has loaded - the register and
+  statement view names, Ready, the feature map, the site-plan rule, and OpenRegister and OpenStatements, which refuse
+  until their features land. Its header records the registration pattern the later packages follow.
+
+**Keys stay with their tab** (W1-29, W1-30, W1-32)
+- KeyScope 1.1.0 comes across whole and ValeVision's own 3D hotkey handler takes TrueVision's scope guard (DR-33): R, B,
+  T, Y, V and 1-9 no longer move the hidden 3D camera, start Walk or toggle the carousel while a drawing or the
+  Specification is open, and a letter typed into a field is a letter.
+- On the 3D tab D, O, Delete and Escape are no longer swallowed (Escape reaches the page again), and the console stops
+  printing "No callback".
+- The documents' keyboard (31__System__DocumentKeys and `Na__Hotkeys__DocumentTabs__.json`) is wired by the mode
+  controller; the Drawing Register and the Statements register their keys with it when they land.
+- PAGE UP AND PAGE DOWN on a drawing tab now do nothing (they no longer reach the 3D camera); turning the drawing comes
+  with W1-36, which did not run in this wave.
+
+**The toolbar slims down, as TrueVision's did** (W1-35; DR-40 item 3, adopted on its default)
+- Notes, Undo, Redo, Fit and 100% leave the drawing toolbar, with the separators that fenced them. Ctrl+Z, Ctrl+Y and
+  Ctrl+Shift+Z still undo and redo; right-click on bare paper still offers Zoom to fit, Undo and Redo; Show notes margin
+  in the Margin Notes section switches the margin. F and 1 for fit and 100% ship switched off, as in TrueVision.
+
+**Drawings data, saves and the document code** (W1-05, W1-06, W1-08, W1-10, W1-12)
+- PROJECTDATA 1.6.0 WHOLE, OVER VALEVISION'S FACADE. Drawings save through the facade and the local mirror with
+  TrueVision's guard: the save learns the drawings' base, stamps `LayoutEditor__DrawingsData__SavedIso`, and is refused
+  before anything is written when another window saved since. R2 judging stays off behind its flag (DR-30). The north
+  data module 1.0.0 is taken whole; the section scene data registers its own block.
+- THE DOCUMENT CODE (DR-11): `Na__DrawData__GetDocumentCode()` answers the numeric project code of the loaded
+  project.json, never the `?project=` token. ProjectRecord now reads the client name and site address at the project's
+  root (its read of the presentation block was a dormant bug).
+- FLOOR PLANS GET TRUEVISION'S STOREY LEVEL (its row is mounted with W2-04); EVERY ELEVATION CARRIES ITS DEPTH FOG
+  BLOCK, switched off, written on first read and on create; elevation auto names and the identity statement's wording
+  land inert until the Elevations Dev menu 2.1.0 (W2-05).
+- THE DRAFT CORE (DraftMaths, DrawingUsage, DevRowShell, DraftGuard) lands inert for TrueVision's 2.x Dev menus;
+  RowAccordion and RenameDrawing come back whole (authored here first); the Dev menu dialogs gain their details list,
+  footnote, commit button and third answer.
+
+**3D and render fixes that reach every drawing** (W1-01, W1-02, W1-03, W1-04, W1-11, W1-23, W1-24)
+- BASE IMAGES STOP SHOWING LINES THROUGH FACES. Through an orthographic camera the line depth bias was 75 mm; it is now
+  a distance, `RenderConfig__Linework__OrthoDepthBiasMm` (2 mm). Plans, elevations and sheet pictures lose the lines
+  behind fascias, parapet copings and 30 mm reveals on their next render; PDFs exported earlier keep them.
+- DOORS: the door module is TrueVision's 1.9.0. A stationary right or middle click on a door no longer toggles it (the
+  right button is the orbit pan); touch taps and pen presses still do.
+- OPENING A DRAWING REALLY LEAVES WALK AND FLY (Transitions 1.1.0, asked for by the plan, elevation and Layout Editor
+  controllers); a scene save that restamps sheet viewports no longer drops you out of Walk.
+- SHOW COMPASS: North's compass is an interactive overlay (the new registry), kept per browser, drawn only in the live
+  3D frame - never in renders, thumbnails or exports.
+- The supersampler's present pass clamps its colour (TrueVision v2.103.0).
+- PDFs: every viewport picture is packed FAST, the Sub predictor - TrueVision's fix for Chrome's viewer painting black
+  blocks over large pictures. Same pixels, larger files. The exporter also takes TrueVision's strict and
+  pictureCompression options, waits for the save before saying "PDF downloaded" and exports LoadLibrary; nothing passes
+  the options yet.
+- The render calls take TrueVision's argument positions (W1-23), so TrueVision's callers can come across; nothing renders
+  differently.
+
+**Inert groundwork for the next waves** (W1-09, W1-13 to W1-18)
+- 49 ELEVATION DEPTH FOG at TrueVision's number: its config, state, maths, record data and shader, and its test.
+- LAYOUT EDITOR LEAVES: ShapeRings, DimensionRounding, PaintOrder, MeasureParse 1.1.0, the note-regions and
+  leaderless-notes records, the register's numbering, ScaleManager 1.2.1 whole, SitePlanComposites (dormant, DR-08 (B)),
+  ViewportRotation, the vector curves, the Draft mode, drawing grid and ortho state leaves, and VectorQuality.
+- PROJECT QR (LE/53), SWITCHED OFF three times over (DR-12 (A)): Enabled false, no address, and a code that waits for a
+  permanent master-index key no project has yet; the Symbol fails closed.
+- SHEET IMAGES' RENDER HALF (LE/54) with ValeVision's Pages base and TrueVision's bronze frame (DR-13 (a)).
+- THE HATCH MODULE 1.5.0 AND TRUEVISION'S HATCH LIBRARY at the app root (`52__LayoutEditor__HatchPatternLibrary/`): the
+  Construction Materials pack, Brickwork first, and the Site Plan pack (DR-19).
+- GradientTool and LineStyleTool 1.1.0, whose new arguments wait for their callers (W1-26, W3-12).
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S THROUGHOUT (DIV-4): ProjectData, ProjectRecord and the Sheet Images source reach storage
+  through the facade at TrueVision's paths; no TrueVision client, route or portal key was copied (gate G6).
+- THE LOADER AND LAYOUT MODE STAY (DR-24 (a), DR-25 (a)): the tab strip reads the editor only through the loader, and
+  shows while the project's Layout Mode switch is on and it has a sheet.
+- Kept seams, each in its file's PORT NOTE: the Video Studio preview never shows an overlay and the door module keeps
+  its Video Studio clock (DR-32); the design-phase library is never initialised (DR-09 (a)); site plans stay dormant
+  (DR-08 (B)); ValeVision's own 3D handler, where a binding with no callback is skipped before it can swallow the key
+  (DR-33); `Elevation__SeededFrom` kept on read and save, no longer written (DR-32); the floor plans' trimmed exclusion
+  tokens; the immediate first-open seam (Q-COVER); the ValeVision-only document code.
+- Hunk replays where ValeVision keeps its own file: the loading sequence, MultiModel, Invalidation, ModelToggle, the 3D
+  handler, the Layout Editor mode controller and toolbar, the viewport units, SnapshotRenderer (DIV-1) and the PDF
+  exporter.
+- Identity: no Noble Architecture content reaches a Vale user. TrueVision's own examples naming its projects stay only
+  inside verbatim code comments (the fog shader, the auto-name modules, the hatch and sheet-image notes), as Adam may
+  choose to neutralise (DR-43).
+
+**Not ported, and why**
+- The four gesture changes (DR-40 items 7-10) stay held: MeasureParse's Array lands with no caller, and W3-03 writes the
+  guards.
+- TrueVision's design-phase start-up (DR-09 (a)), its section engine's scene data (DR-41), its ProjectRecord's Project
+  Admin and PlanVision reads (no such systems here), and its 3D hotkey Manager (DR-33).
+- The Patterns panel's stylesheet: held back by W1-17, because nothing links it until the panel lands (W2-29).
+- THE SHARED SERVICE WORKER. This release adds 42 modules - most of them imported by nothing yet - and these new exports
+  on existing modules: ProjectData +8, the door module +11, the floor plan data module +7 and its ConfigState +1, the
+  elevation data module +5, MeasureParse +4, ModelToggle +3, RowAccordion +3, RenameDrawing +2, CompassGizmo +2,
+  Invalidation's IsPaused, Transitions' ReturnToOrbit, the loader +7, the mode controller +4, LoadingVeil's FirstOpen,
+  LoadingScreen's IsShown, TabStrip's CloseMenu and PdfExporter's LoadLibrary; and it changes the argument positions of
+  the two render calls. So a warm client holding a mix of old and new files can fail to start (the compass, the drawings
+  data), fail to link the editor (the mode controller, the tab strip), or link and draw a zoomed 3D viewport whole, for
+  that one load. The token is still Adam's call; it was not bumped ('2026-09-18-1'). Deploy this release only with the
+  Wave 0 rule: the prepared W0-08 package applied plus one shell-token bump, or a full bump.
+
+**Held, partial and not run**
+- W1-17 PARTIAL: the hatch module and library landed; its stylesheet waits for an orchestrator correction (move it to
+  W2-29 with the panel that links it).
+- W1-06 PARTIAL at its return, now complete: its one open item, the ported Na__Test__DrawingDrafts__, passes 50/50 since
+  W1-10 landed AutoNameText.
+- NOT RUN: W1-07 (AutoSave 1.5.0), W1-19 to W1-22 (the sheet records, the sheet model, Document ID, the title blocks and
+  1:200), W1-25 (embedded Open Sans), W1-26 (the chrome and markup geometry), W1-27 (Floor Areas core), W1-28 (paint
+  order), W1-36 (navigation and paging), W1-37 (the colour palette) and W1-38 (PanelHost and the panel stylesheet). They
+  can run in a Wave 1 continuation; until then the interim states under Known, accepted stand.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: v2.155.0's PDF exporter fix, the FAST picture packing ("CONFIRMED by Adam in Chrome 23-Sep-2026"; W1-24).
+  The same release's Phase 0 moves, which put the QR folder at its path here (W1-15), were the option Adam chose, not a
+  confirmed test.
+- TRIED BY ADAM IN PART, NO SIGN-OFF LINE: v2.116.0 (Sheet Images: his own run on his server, the render half here, W1-16);
+  v2.150.0 (he tried its Boolean tools - "It works INCREDIBLE!", recorded in v2.151.0; the gradient's PDF clip and the
+  shape rings taken here are not named); v2.49.0 (the audit's S11 verifier records him confirming site plan viewports;
+  only ScaleManager's site plan list comes here, inert).
+- NOT CONFIRMED - TrueVision's own entry says not tried by Adam, or that the ValeVision port waits for his sign-off:
+  v2.38.1, v2.39.0, v2.42.0, v2.86.0, v2.87.0, v2.94.0, v2.95.0, v2.100.0, v2.101.0, v2.107.0, v2.110.0, v2.112.0,
+  v2.113.0, v2.114.0, v2.119.0, v2.120.0, v2.121.0, v2.124.0, v2.126.0, v2.130.0, v2.136.0, v2.138.0, v2.139.0,
+  v2.140.0, v2.143.0, v2.145.0, v2.146.0, v2.147.0, v2.152.0, v2.156.0, v2.158.0 and v2.164.0.
+- NOT CONFIRMED IN THEIR OWN ENTRIES, though DR-01's register lists releases up to v2.85.0 among those Adam confirmed:
+  v2.81.0 and v2.82.0 ("Not yet signed off by Adam"), v2.83.0 ("Not yet confirmed by Adam"; ported to ValeVision v2.70.0
+  in part the same day) and v2.84.0 ("NOT yet confirmed by Adam").
+- NOT CONFIRMED - no record either way: v2.3.6, v2.10.0, v2.24.0, v2.25.0, v2.32.0, v2.69.0 and v2.71.0 (the register's
+  numbering leaf, live in TrueVision since 19-Sep), v2.88.0 (its address test, as a Vale variant), v2.89.0, v2.90.0,
+  v2.91.0, v2.103.0, v2.106.0, v2.115.0, v2.160.0, v2.166.0, and the five unlogged changes: Save's registerKeys (TV commit
+  32767407), the exporter's options, strict mode and awaited save (b6baf301, the Drawing Register's first commit),
+  PdfExporter 1.4.0's LoadLibrary split (14-Sep-2026), Toolbar 1.17.0 (d76d7638) and the Gravel hatch with the Site Plan
+  pack index 1.2.0 (55014c6a, 29-Sep-2026).
+- ALREADY IN VALEVISION, TAKEN WHOLE AGAIN: v2.61.0 (ScaleManager's sheet label, here since ValeVision v2.54.0) and
+  v2.80.0 (the north data module, here since v2.67.0). v2.20.0's elevation geometry harness, a test page, is within the
+  releases DR-01's register counts as confirmed.
+- NAMES, POSITIONS OR CITATIONS ONLY: v2.18.0, v2.48.0, v2.50.0, v2.64.0 and v2.129.0; v2.111.0's toolbar zoom sync is
+  superseded (nothing to take); v2.56.0 is recorded as ValeVision's own present(target, scale), which TrueVision took.
+
+**Verified** (W1-99, fresh runs on the wave's final tree, after the placeholders were resolved and again after these records were written)
+- Na__Verify__ModuleGraph__ PASS: 527 modules from 1 entry point, 0 failures (518 at v2.71.1). Import-map targets 110,
+  the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 459 files (417 at v2.71.1), and the 37 names the lazy loader's facade calls all exported.
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning); raw, its 55 retired folder names
+  are all inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings (537 shipped files, 40 test-folder files, 66 folders against
+  the registry, 11 Layout Editor stylesheets). Na__Verify__PortNotes__ PASS: 573 files, 348 PORT NOTEs, 448 logs; 0
+  fail; 128 warnings (123 on the 01-Oct-2026 baseline, 5 TrueVision files with no module version, by design); no
+  placeholder pending; `--scribe` PASS.
+- Na__Verify__UiParity__ (report, at the working tree and at the pin): the fold, the strip, the veil, the stylesheet
+  order and the motion rules pass; the panels check fails until W1-38 (TrueVision 678 entries, here 584); the
+  service-worker token warning stands (it predates 17 ValeVision releases). With every check blocking, as the plan asks
+  from this pass, the panels check is the one red: it closes with W1-38.
+- 24 of 24 tests exit 0: AppConfigParity, DimensionRoundUp (21), DocumentKeys (75), DrawingDrafts (50, Doous on disk),
+  DrawingNotesRoute, ElevationDepthFog (68), FloorPlanStoreyLevel (36), LoaderFacade (117), LoaderStylesheets,
+  NorthCompass, PerSceneLighting, ProjectDataSaveGuard, ProjectQr (62), PublishedApi, ScrapbookApi,
+  ScrapbookDrawingTitle, ScrapbookScaleBar, SheetImagesApi, StatementServer --check, TitleBlockCells, TransportFacade
+  (175), UserSpellingsApi, ViewportRotation (16), ViewportTitleText. The verifiers' self-tests pass (19, 16, 18 and 4
+  cases); AppConfigParity passes with --strict; the three staged Wave 0 patches still apply to today's files.
+- The integrator's gate (02:13-02:45, on the tree before the comment-only placeholder pass) also linked all 86 modules
+  the wave touched in a real browser with 0 failures, booted the app read-only with no uncaught error, ran the two new
+  test pages (Na__Test__ProjectRecordAddress__ 15/15, Na__Test__ElevationGeometry__ all checks) and proved every changed
+  file belongs to a package's record; its one fix took seven stale rows off the AppConfig parity test's allow-list.
+- NOT EXERCISED: the app by eye. Adam's Wave 1 checklist (audit section F.5.4) is deferred to the orchestrator's smoke
+  test: the cold first press and the hand-over to the veil; the strip and the Drawings menu (they need a project with
+  Layout Mode on and sheets - 3047__Doous has neither); the 3D keys on a drawing tab; the slimmed toolbar; a door click;
+  the fascia lines gone from an elevation; Show Compass; a PDF of "Elevations Test". Saves are Adam's (they write R2 and
+  the repository copy). No deploy, no token bump, no live sync.
+
+**Known, accepted**
+- SAVE SHEETS SHOWS NO SUCCESS TOAST until W1-21 lands TrueVision's sheet-model save report; the save lands and errors
+  still show.
+- Page Up and Page Down on a drawing tab do nothing until W1-36.
+- ScaleManager's description names 1:200 while the scale list is still 1:20, 1:50 and 1:100 (W1-22 adds it, DR-17).
+- The Properties tab's hover text needs PanelHost 1.5.0 or later (W1-38).
+- THE LIVE SITE'S FIRST DRAWING: in the read-only web viewer the first drawing of a session fills in uncovered until the
+  published viewer lands (W4-09), because the first-open veil is skipped in the viewer, as in TrueVision. Decide before
+  this release is deployed: a one-line seam until W4-09, or hold the live deploy until then. Localhost is unaffected.
+- After one flight the render loop keeps drawing every frame: TrueVision's Fly controls 1.0.1 release it, ValeVision's
+  never have, and no package owns that file yet. The specification's document number still uses the `?project=` token
+  (SpecPdf, SpecDocument and the specification bar have no owner for the one-line change). Plans trim their exclusion
+  tokens and elevations store them as typed until W2-05 decides.
+- The vendor README's upgrade line (`04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__VersionLock__README__.md`,
+  Wave 0's W0-16) still carries its release placeholder: it should read v2.71.1, and that folder is outside this pass.
+- The JSON provenance lines of the Sheet Images config, the hatch library index and the QR config name their package
+  (JSON cannot carry a placeholder); the release is v2.71.2.
+- Runs of the drafts test while AutoNameText was missing left 19 `na-drafts-*` folders in the OS temp folder; Adam may
+  delete them. The audit's `execution/scratch/` holds TrueVision text and must stay out of any commit.
+
+**Files**
+- NEW in `02__Src__AppModules/`: `05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js`;
+  `26__System__ToggleModelElements/Na__ModelGroup__PhaseLibrary__.js`;
+  `25__System__3dObject__InteractionSystem/Na__DoorAnimation__FindDoorGroups.js`; `03__AppUtils/Na__AppUtils__KeyScope__.js`;
+  in 40 DraftMaths, DrawingUsage, DevRowShell and DraftGuard; in 42 StoreyLevel and DevMenu__StoreyRow; in 45 AutoName
+  and AutoNameText; the folder `49__System__ElevationDepthFog/` (AppConfig, ConfigState, Maths, RecordData, Shader); in
+  51__System__LayoutEditor the SheetRecords NoteRegions and LeaderlessNotes leaves, ShapeRings, DimensionRounding,
+  PaintOrder, ViewportRotation, VectorQuality, SitePlanComposites and its config, and the new folders 26, 27, 31, 32, 36,
+  37, 51, 53 and 54 (the Draft mode, drawing grid and ortho state leaves, DocumentKeys and its key map, HatchPatterns,
+  the vector curves, Register__Numbering, the six Project QR files, the eight Sheet Images files).
+- NEW at the app root: `52__LayoutEditor__HatchPatternLibrary/` (22 JSON files). In `80__Testing__PrototypeEnvironment/`:
+  the DimensionRoundUp, DocumentKeys, DrawingDrafts, ElevationDepthFog, FloorPlanStoreyLevel, LoaderFacade, ProjectQr
+  and ViewportRotation tests, `Na__Test__ProjectQr__Decode__.py`, and the pages `Na__Test__ElevationGeometry__.html` and
+  `Na__Test__ProjectRecordAddress__.html`.
+- CHANGED: LoadingSequence 1.7.2; Invalidation 1.1.1; ModelToggle 1.2.3; the door module 1.9.0 and its README;
+  MultiModel 1.3.1; Supersampler 1.1.1; `Na__AppConfig__Main.json`; the 3D hotkey handler 1.0.2; the Dev menu modal
+  1.2.0; ProjectData 1.6.0; RenameDrawing 1.1.0; RowAccordion; the DrawView Dev sheet; Transitions 1.1.0; the section
+  scene data 1.2.0; the floor plan ConfigState 1.1.0, data module 1.1.0, config, Dev sheet and mode controller 1.2.3; the
+  elevation data module 1.1.0, config, Dev sheet and mode controller 1.1.2; North's CompassGizmo 1.1.0, editor 1.1.0,
+  config and data module 1.0.0; in 51__System__LayoutEditor the Loader 1.1.3, LoadingScreen 1.0.2, Styles__Boot, the
+  AppConfig, LoadingVeil 1.1.0, the mode controller 1.18.3, TabStrip 2.0.0, ProjectRecord 1.0.1, ScaleManager 1.2.1,
+  MeasureParse 1.1.0, Styles__Main, Viewport2d 1.8.1 with its Frame 1.1.1, Linework 1.1.1 and Window 1.0.1,
+  Viewport3d 1.6.2, SnapshotRenderer 1.7.1, GradientTool 1.1.0, LineStyleTool 1.1.0, the toolbar 1.9.4,
+  Styles__Specification, Panel__Scrapbook 1.2.1, PdfExporter 1.2.2 and the Dev menu 1.4.1; in `03__Style__AppStylesheets/`
+  the CSS index (one import moved), SceneCarousel (the modal region) and LoadingOverlays (TrueVision's veil region); the
+  AppConfig parity test 1.0.2 (the gate); the PLAN (three dated notes beside D22) and the parity ledger (section 3.8 and
+  the rows the wave changed).
+- Nothing outside this app was written: no ValeVision Gallery file, no worker, no shared service worker, no staged package.
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W1.md`. Nothing is committed: Adam commits from the wave's path list, staging only those
+  paths.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.1 - 01-Oct-2026 - The Drawing Folders Take TrueVision's Numbers, and TrueVision's Code Finds ValeVision's Own Storage
+### Ported from TrueVision3D in part, read at b2aa9151: v2.7.1, v2.8.0, v2.18.0, v2.21.0, v2.24.0, v2.30.2, v2.32.1, v2.54.0, v2.67.0, v2.95.0, v2.115.0, v2.116.0, v2.144.0, v2.146.0 and v2.155.0, the configuration of 36 more, and (staged for Adam, not live) v2.75.0 and TrueVision commit 089a02df (Adam-confirmed in TV: v2.7.1; v2.116.0 and v2.155.0 in part; none of the others)
+
+**Overview**
+- Wave 0 of the TrueVision parity programme. Adam, 01-Oct-2026: align ValeVision's drawing system and Layout Editor
+  exactly with TrueVision's, while ValeVision keeps its own worker, its own Flask server and its own storage. The plan
+  is `ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md` at this root; this release is its first wave, nineteen
+  packages run unattended on the plan's defaults. Adam has answered none of DR-01 to DR-44 yet, so each ran on its K1
+  default, recorded as D41 to D91 in section 2A of `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`.
+- FOUNDATIONS, NOT FEATURES. Nothing a Vale user sees is meant to change: the drawings open, render, save and print as
+  before. What changed is underneath - where the drawing folders sit and what they and the key files are called, how a
+  module ported from TrueVision reaches ValeVision's storage, what the local server refuses, and the whole of the
+  Layout Editor's configuration.
+- One version for the whole wave, a patch step from v2.71.0 (D85, Adam's patch-bump rule). Every module log line and
+  PORT NOTE the wave wrote in this app's code now names v2.71.1 (seven elsewhere wait: see Known, accepted).
+
+**The drawing folders take TrueVision's numbers** (W0-02, DR-02)
+- ONE SCRIPTED MOVE, RUN FIRST AND ALONE. 42 DrawingViewCore -> 40, 43 FloorPlanViews -> 42, 44 PlanAnnotations -> 43,
+  45 PlanDimensions -> 44, 46 ElevationViews -> 45, 47 NorthDirection -> 46, and the legacy 40 2dElevationsView -> 91
+  (it retires with W6-03). Four files followed: 2dProfileLines into 05__RenderPipeline, SnapshotHistory under
+  TrueVision's file name, DistanceCulling at TrueVision's path, and the drawing Composer Preset as
+  `40__System__DrawingViewCore/Na__DrawView__RenderPreset__.js`, TrueVision's eight export names over ValeVision's own
+  EffectComposer body (DIV-1). 81 renames and 94 rewritten files (imports, CSS imports, config paths, comments); 70
+  drawing files now pair with TrueVision's by identical path. The parity ledger's section 2.2 has the map.
+- 41 CrossSectionView keeps its name and gains a README saying why (DIV-2); 50 and 51 were shared already.
+- RenderFrame takes an optional camera. Nothing passes one yet, so every frame renders as before.
+
+**Key files under TrueVision's names, and TrueVision's drawing keys** (W0-03, W0-15; DR-33)
+- `02__AppData/Na__Hotkeys__3dModelTab__.json` (was Na__ValeVision__HotkeysDictionary__.json; ValeVision's content
+  kept) and `LE/03__Core__Config/Na__Hotkeys__DrawingTabs__.json` (was Na__LayoutEditor__KeyMappings__.json).
+- KEYMAP 1.11.0 AND TRUEVISION'S KEY FILE LANDED TOGETHER, so T stays Text. With the key file blocked, M now arms
+  Move, space arms Select and Ctrl+S saves, where the old built-in fallback left M dead. The keys TrueVision's later
+  tools use resolve but do nothing here: ValeVision's keyboard ignores actions it does not have yet.
+
+**The transport: TrueVision's names over ValeVision's storage** (W0-11 to W0-14; DR-27 (A), DIV-4)
+- THE FACADE AT TRUEVISION'S PATHS. `80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js`
+  (TrueVision's 33 names) and `03__AppUtils/Na__AppUtils__LocalProjectMirror__.js` (its 8) now exist here with
+  TrueVision's names, parameters and result shapes and ValeVision's bodies: the valevision-gallery-editor-api worker,
+  keys under VaApps/Projects/<folderId>/, the Flask server. A TrueVision module that imports them links unchanged. A
+  worker route is called only when the worker's /health lists it, so today's deployed worker (1.5.0) goes on working.
+  Nothing throws, and no key the pipelines own is ever written.
+- THE PROJECT FOLDER COMES FROM THE MASTER INDEX. ProjectLoader gains TrueVision's GetProjectFolderFromUrl and
+  GetYearFromUrl with ValeVision's meaning: the index entry ?project= names, a four-digit year, and null rather than a
+  guess. On localhost an asset's fallback is now the Flask copy of the project, not GitHub Pages.
+- ON LOCALHOST THE LOAD READS R2'S EDITOR-OWNED KEYS. The loading sequence starts the facade after the master index
+  and, on localhost only, overlays each editor-owned key R2 holds onto the local project.json before anything reads it
+  (TrueVision v2.7.1's rule), so a session never edits a disk copy of the sheets that has fallen behind R2. It is
+  bounded by the fetch timeout, never fatal, and skipped when the two copies name different projects. The sequence
+  also registers the document it runs as the merge base, adds sceneConfig to the drawings event and announces
+  na-app-scene-ready once the canvas shows.
+- The specification PDF now prints the project's name (it never has in ValeVision), through the facade's display-name
+  accessor in place of TrueVision's PWA global (proved in Node; the printed page is on the smoke test).
+- ASSETS. Assets 1.0.1 and Persistence 1.2.1 are taken whole from TrueVision (snapshots and linework read from the
+  URL's project folder) with ValeVision's localhost upload and bake gates. R2AssetUpload keeps its two-phase body but
+  takes TrueVision's contract: a refused or failed upload resolves r2Success false and is never counted as stored, and
+  off localhost it skips silently, with no toast. Presentation Scenes > Update All Thumbnails no longer fails every
+  scene: the thumbnail renderer takes TrueVision's CaptureAndUpload(sceneId[, width]) call shape, which the batch walk
+  uses (proved against stubs; the press itself is on the smoke test).
+
+**The local server will not lose a save** (W0-09, W0-18, W0-19; `WebApps/ValeVisionGallery/server.py` and four new blueprints)
+- A GUARDED PROJECT SAVE (TrueVision v2.146.0). A POST to /api/projects/<folderId> carrying an
+  X-ValeVision-Drawings-Base header is refused with a 409, nothing written, when the drawings on disk have changed
+  since the window loaded them; a save without the header is judged by nobody, exactly as before. Every overwritten
+  project file is first copied to `%LOCALAPPDATA%\ValeGardenHouses\ValeVision\ProjectDataBackups` (the last 30, never
+  inside the repository), and every write is atomic. New: GET drawings-fingerprint, backups and files/<name>; an
+  unknown /api/ path answers a JSON 404 instead of the index page; a folder id that would leave Projects/ is refused
+  on every project route.
+- NEW BLUEPRINTS, IDLE UNTIL THEIR FEATURES ARRIVE: sheet images (/api/valevision/sheet-images), the spelling
+  dictionary (/api/valevision/user-config/spellings, over
+  `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json`, re-seeded with Vale's words), published documents
+  (/api/valevision/published) and statements (/api/valevision/statements, whose delete quarantines rather than
+  unlinks). TrueVision's rules over ValeVision's folders, tightened where TrueVision's let a path escape.
+- The repository's `.gitignore` keeps the rasters, PDFs and archives of project content out of git (DR-29: JSON only),
+  and `.gitattributes` checks statements out with LF line endings.
+
+**The Layout Editor's configuration is TrueVision's** (W0-15, W0-16)
+- ONE ADDITIVE PASS. Every TrueVision key, block, note and label is now in `Na__LayoutEditor__AppConfig__.json`, in
+  TrueVision's formatting. 79 values stay ValeVision's on purpose - brand 17, decisions 12, identity 11, NA paths 3,
+  TrueVision defects 3, ValeVision-only 8, and 25 withheld for the packages that bring their features - each listed
+  with its owner in `Na__Test__AppConfigParity__.test.mjs`. The ConfigState units are TrueVision's: the barrel 1.29.0,
+  KeyMap 1.11.0, SheetSetup 1.9.0, ToolSetup 1.5.0, EditorSetup 1.6.0.
+- THE STATEMENT WRITER'S SWITCH, OFF: `LayoutEditor__Statement__Enabled = false` (ValeVision-only, DR-10). No job
+  stages in the Drawing Register (DR-11), no QR cell (DR-12).
+- VENDORS AT TRUEVISION'S PATHS. jsPDF 4.1.0 and html2canvas 1.4.1 in `04__Lib__ThirdParty__VersionLocked/` 05 and 06,
+  byte-identical to TrueVision's; PDF.js 3.11.174 as ValeVision's vendor 07. Download PDF loads the same jsPDF bytes
+  from vendor 05, and the Classic title block takes Vale's own scan from
+  `01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/`. 35__System__PageLayoutSystem is untouched; Image Export
+  still uses it.
+
+**Start-up order, gates and records** (W0-01, W0-04, W0-05, W0-06, W0-17)
+- index.html now runs the authoring gate, the drawings-data and section-bindings listeners and the drawing view config
+  before the loading sequence starts, as TrueVision does, which closes a latent race between a dispatch and its
+  listener.
+- NEW GATES in 80__Testing__PrototypeEnvironment: Na__Verify__ParityNaming__ (identity and Noble Architecture
+  markers), Na__Verify__PortNotes__ (Source version lines, log order, release placeholders), Na__Verify__UiParity__
+  (the drawing chrome against TrueVision's) and Na__Test__LoaderStylesheets__. ModuleGraph 1.1.0 no longer reads prose
+  inside a string as an import; Exports 1.1.0 checks every name the lazy loader's facade calls.
+- The decision record (D41 to D91), the port-order map, and the parity ledger, restructured and now carrying this
+  wave's rows (its section 8 is the transport). The folder-number registry
+  (`ValeVision__NOTES__FolderNumberRegistry__.md`) and `ValeVision__PLAN__TrueVisionRealign__DrawingSystems__.md` are
+  new at this root.
+
+**Adapted for ValeVision**
+- THE TRANSPORT IS VALEVISION'S THROUGHOUT (DIV-4): no TrueVision client, route, portal key or app-content folder was
+  copied. TrueVision's folder names sit directly inside ValeVision's project folder (05__Layout__DrawingDocs__Images,
+  06__Layout__PublishedDocuments, 10__StatementDocs), and the sibling files are ValeVision__DrawingNotes__.json and
+  ValeVision__StatementDocs__.json.
+- One list of editor-owned keys, `ProjectData__EditorOwnedKeys` in the main config (13 keys, W0-07), read by the load
+  overlay now and by the sync fix and worker 1.6.0 once Adam applies them; TrueVision keeps three hand-synchronised
+  lists.
+- The unsaved-work flag AutoSave publishes is `window.Na__Pwa__HasUnsavedWork`, a neutral name (K2 K4); nothing reads
+  it until the prepared registrar is deployed.
+- Identity: no Noble Architecture content reaches a Vale user. The dictionary's practice group lists Vale's software,
+  not TrueVision's; TrueVision's NA scan, letterhead paths and job stages were never copied.
+
+**Prepared for Adam, not live** (staged under `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/prepared/`, each with a patch that applies cleanly and its own tests)
+- THE SYNC STOPS DELETING EDITOR CONTENT (W0-07, DR-06). Until Adam applies it, a ValeVision Gallery Cloud Sync of a
+  project deletes its Layout Editor snapshots and Views-bar thumbnails on R2 (20 objects on 2026/3047__Doous) and can
+  put a stale project.json over R2's sheets. The fix lists top-level keys only and keeps R2's copy of every
+  editor-owned key. Dry-run on 2026/3047__Doous only; nothing was synced.
+- WORKER 1.6.0 (W0-10, DR-28): the project and merge-keys routes and six families of guarded file routes, every
+  folderId checked. NOT DEPLOYED: the live worker answers /health with { ok, worker }, the 1.5.0 shape. It also closes
+  a live 1.5.0 hazard - a keyed POST to .../projects/2026/delete would delete every 2026 project on R2. Adam runs
+  wrangler dev, then deploys.
+- THE SHARED SERVICE-WORKER PACKAGE (W0-08, DR-07): the registrar holds its reload while sheets are unsaved and never
+  reloads on a first install; models and thumbnails get a token of their own; the lazily linked Layout Editor
+  stylesheets are precached; the stale DistanceCulling precache path is corrected; and sheet pictures and published
+  documents get caches of their own.
+
+**Not ported, and why**
+- TrueVision's transport bodies, its na-truevision-api client, /r2/* routes and portal keys (DIV-4, gate G6).
+- TrueVision's DevGate gate in Assets and Persistence: uploads and bakes stay a localhost activity (D24, DR-31 (2)).
+- TrueVision's model groups and design-phase start-up (DR-09: W1-01 lands the library uninitialised), its 3D-tab
+  extras (DR-44), its project-code addressing on the local server (folder ids instead) and its own write format for
+  project.json (ValeVision keeps its bytes).
+- The four gesture changes (DR-40 items 7-10): their configuration rows landed and nothing reads them; W3-03 writes
+  the guards and W3-04 waits for Adam.
+- THE SHARED SERVICE WORKER. This release adds two modules (the facade) and new exports on existing modules -
+  ProjectLoader +2, the ConfigState barrel +9, KeyMap +4, SheetSetup +3, EditorSetup +2, and RenderPreset's eight
+  names renamed with its file - and moves 81 files to new URLs. So a warm client holding a mix of old and new files
+  cannot link the editor, and with the facade now in the start-up graph cannot start, for that one load. The token is
+  still Adam's call; it was not bumped ('2026-09-18-1'). Deploy this release only with the prepared W0-08 package
+  applied plus one shell-token bump, or with a full bump.
+
+**TrueVision releases in this release, and what Adam has confirmed in TrueVision** (DR-01 (c): ported in dependency order, every unconfirmed release named)
+- CONFIRMED: v2.7.1 (the localhost overlay, W0-13 - "Confirmed working end to end").
+- CONFIRMED IN PART: v2.116.0 (Adam's own run stored and pushed a picture in TrueVision; the ValeVision port waits on
+  his sign-off, and the worker's images bucket was not part of it) and v2.155.0 (his confirmation covers the PDF
+  exporter fix, not Phase 0's vendor moves, the archive route's revision change or the R2 push).
+- NOT CONFIRMED - TrueVision's devlog says not tried by Adam, or not yet confirmed: v2.95.0 (the statement routes),
+  v2.146.0 (the save guard: "NOT tried in the app"), v2.144.0, and the configuration of v2.77.0, v2.107.0, v2.109.0,
+  v2.111.0, v2.112.0, v2.113.0, v2.114.0, v2.117.0, v2.118.0, v2.119.0, v2.122.0, v2.123.0, v2.127.0, v2.130.0,
+  v2.131.0, v2.135.0, v2.136.0, v2.138.0, v2.139.0, v2.140.0, v2.141.0, v2.142.0, v2.143.0, v2.147.0, v2.151.0,
+  v2.157.0, v2.158.0 and v2.163.0.
+- NOT CONFIRMED - no record either way: v2.8.0, v2.18.0, v2.21.0, v2.24.0, v2.30.2, v2.32.1, v2.54.0 (its commit's
+  unlogged Assets 1.0.1 and Persistence 1.2.1), v2.67.0, v2.115.0 and the configuration of v2.71.0, v2.78.0, v2.79.0,
+  v2.81.0, v2.94.0, v2.104.0, v2.106.0 and v2.149.0; staged only: v2.75.0 and TrueVision commit 089a02df (29-Sep-2026,
+  after v2.172.0: registrar 1.3.0 and worker logic 1.9.54, with no devlog entry of their own).
+- NAMES ONLY, NO BEHAVIOUR: the RenderPreset interface (TrueVision v2.21.0, file 1.1.0 at v2.94.0), the facade's
+  interface history (v2.36.0, v2.39.0, v2.74.0, v2.88.0) and SectionClipping__State's NAMESPACE and MODULE lines
+  (v2.12.0).
+
+**Verified** (W0-99, fresh runs on the wave's final tree, after the placeholders were resolved)
+- Na__Verify__ModuleGraph__ PASS: 518 modules from 1 entry point, 0 failures (517 before the wave; the new one is the
+  facade). Import-map targets 110, the one documented vendor known issue unchanged.
+- Na__Verify__Exports__ PASS: 417 files (415 before; the two facade modules), and the 34 names the lazy loader's
+  facade calls all exported.
+- The path gate PASS through the records-exempt wrapper (0 fail, 1 baseline warning). Run raw it reports 55 retired
+  folder names, every one inside the audit report, which names them by design.
+- Na__Verify__ParityNaming__ PASS, 0 fail and 0 warnings. Na__Verify__PortNotes__ PASS: 515 files, 291 PORT NOTEs, 397
+  logs; 0 fail, 151 warnings all on the 01-Oct-2026 baseline, no placeholder pending; `--scribe` PASS.
+  Na__Verify__UiParity__ (report): the fold, stylesheet order and motion rules pass; the tab strip, veil and panels
+  fail as expected until W1-34, W1-33 and W1-38; the service-worker token warning stands.
+- 16 of 16 tests exit 0: AppConfigParity, DrawingNotesRoute, LoaderStylesheets, NorthCompass, PerSceneLighting,
+  ProjectDataSaveGuard, PublishedApi, ScrapbookApi, ScrapbookDrawingTitle, ScrapbookScaleBar, SheetImagesApi,
+  StatementServer --check, TitleBlockCells, TransportFacade (175 checks), UserSpellingsApi, ViewportTitleText. The
+  Python tests drive Flask test clients over temporary folders; nothing outside the scratch folders changed while they
+  ran.
+- The staged packages' own tests, on their staged copies: sync 72/72, service-worker logic 54/54 and registrar 30/30,
+  worker ProjectFiles 263/263 and MergeKeys 95/95.
+- The integrator's gate (21:12-21:38) also ran Na__Test__SpecificationPdf__ and Na__Test__TitleBlockCells__ headless
+  (both complete), proved every changed file belongs to a package's record, and made two small fixes: the web viewer
+  stylesheet's TrueVision banner, and a stale allow-list entry in the AppConfig parity test.
+- NOT EXERCISED: the app in a browser. Adam's Wave 0 checklist (audit section F.5.4) is deferred to the orchestrator's
+  smoke test: the app loads; a floor plan, an elevation and a section open from the carousel; a sheet renders, Save
+  Sheets works and the PDF downloads; Update All Thumbnails; a drawings save reaches the local server and the
+  specification PDF names the project; ValeVision Gallery's Project Editor still saves; then the W0-07 dry run and the
+  W0-08 package to review. No live sync, no wrangler dev, no deploy, no token bump.
+
+**Known, accepted**
+- Seven release placeholders sit outside this pass's remit and still read as placeholders: the PORT NOTEs of the five
+  new ValeVision Gallery Flask modules (W0-09, W0-18, W0-19) and the vendor README's upgrade line (W0-16). Each should
+  read v2.71.1; the scribe's tool for them waits on the orchestrator.
+- Na__Test__TransportFacade__ asked for its package's placeholder by name, so the scribe's own pass failed it; its
+  check now accepts the release the placeholder becomes (1.0.1, W0-99). Two scratch harnesses that later packages may
+  adopt ask the same (W0-08's AutoSave flag test, W0-14's asset contract test).
+- A stray test file, `WebApps/ValeVisionGallery/Projects/ValeVision__DrawingNotes__.json` (24 bytes), was written by
+  W0-09's check of the old, unguarded server.py; Adam to delete it. Five new .pyc files in
+  `WebApps/ValeVisionGallery/__pycache__` come back on every reload of the debug server.
+- Assets and Persistence now find the project folder only through the master index, so a session whose index fetch
+  failed recomputes rather than reading stored snapshots and linework.
+- Update All Thumbnails now really uploads, through the deployed /assets route, and each thumbnail bumps the build
+  manifest (every Vale client re-fetches its models once per thumbnail). Prefer a copy project, and apply W0-07 first.
+- Na__Test__SpecificationPdf__.html completes only when the repository root is served, not on the Flask server.
+
+**Files**
+- MOVED (W0-02): the seven drawing folders (now 40, 42 to 46 and 91) and four files - the map is in the parity ledger,
+  section 2.2.
+- NEW: `02__Src__AppModules/80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js`,
+  `03__AppUtils/Na__AppUtils__LocalProjectMirror__.js`; the vendors
+  `04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js`,
+  `06__Vendor__Html2Canvas__v1.4.1/html2canvas.umd.js`, `07__Vendor__PdfJs__v3.11.174/build/pdf.min.js` and
+  `pdf.worker.min.js`; `01__AppAssets__ValeVision/06__AppAssets__TitleBlocks/TitleBlock__ClassicScan__A3__.png`;
+  `50__ValeVision__UserConfig/ValeVision__UserSpellings__.json`;
+  `41__System__CrossSectionView/README__CrossSectionView__.md`; in 80__Testing__PrototypeEnvironment the
+  AppConfigParity, DrawingNotesRoute, LoaderStylesheets, ProjectDataSaveGuard, PublishedApi, SheetImagesApi,
+  TransportFacade and UserSpellingsApi tests, Na__Test__StatementServer__.py, the three new verifiers and
+  Na__Verify__ParityBaseline__.json; at this root the folder-number registry and the realign plan.
+- CHANGED: index.html; LoadingSequence 1.7.1; Na__AppConfig__Main.json; ProjectLoader 1.4.1, R2AssetUpload 1.0.2,
+  HotkeyHandler 1.0.1; DistanceCulling 1.0.1 and SectionClipping__State's header; NavigationHelpPanel 1.4.1;
+  Thumbnail__Renderer 1.1.1, SceneEditor 1.4.1, SceneReorder 1.0.1, SceneRowBuilders 1.3.1; RenderPreset 1.3.1;
+  PlanDimensions__Styles__.css; Persistence 1.2.1; in 51__System__LayoutEditor the AppConfig, ConfigState 1.29.0,
+  KeyMap 1.11.0, SheetSetup 1.9.0, ToolSetup 1.5.0, EditorSetup 1.6.0, Readers' PORT NOTE, Assets 1.0.1, AutoSave
+  1.3.1, History 1.4.2, Toolbar 1.9.3, SpecPdf 1.0.2 and the web viewer stylesheet's banner; the vendor index and
+  README; ModuleGraph 1.1.0, Exports 1.1.0, Na__Test__NorthCompass__ (a folder path) and the two jsPDF test pages; the
+  PLAN (section 2A and dated notes) and the parity ledger.
+- VALEVISION GALLERY (live): server.py, and new Server__ValeVisionShared__Lib__.py,
+  Server__ValeVisionSheetImages__Api__.py, Server__ValeVisionUserConfig__Api__.py,
+  Server__ValeVisionPublished__Api__.py, Server__ValeVisionStatements__Api__.py. Repository root: .gitignore,
+  .gitattributes. Staged, not live: the sync tools (W0-07), the shared service worker (W0-08), worker 1.6.0 (W0-10).
+- Every path, package by package: the Port Records in
+  `ValeVision__AUDIT__TrueVisionParity__Evidence__/execution/port_records/` and the gate report
+  `.../execution/gate_reports/W0.md`. Nothing is committed: Adam commits from the wave's path list, staging only those
+  paths.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## Records note - 01-Oct-2026 (not a release)
+
+**Why this note.** The TrueVision parity audit of 01-Oct-2026 (`ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md`
+at this root; its slice S11, section B7) found three places where this log's own record is incomplete or wrong. Shipped
+entries are not renumbered or rewritten, so this note records them instead. The parity ledger
+(`ValeVision__PARITY__TrueVisionLedger__.md`, restructured today) carries the same facts in its Release Watermark.
+
+- **The Project Specification port has no entry.** TrueVision3D v2.36.0 (14-Sep-2026: the Project Specification and
+  margin notes - SpecData, SpecLinks, SpecEditor, SpecMargin 1.0.0, MarginGrip, Panel__MarginNotes, R2DrawingNotes) came
+  into this tree in checkpoint commit `66937440`, with no release number and no entry here; the v2.44.0 entry's notes
+  say so ("has no entry of its own"). It stays unnumbered. The ledger's Release Watermark row for TrueVision v2.36.0
+  points at the commit.
+- **Two entries are numbered v2.54.0**, both 17-Sep-2026: "The Title Block Says What Paper It Is, and Names Every Scale"
+  and, below it, "The Progressive Renderer Stall, and the Scale Cell's Paper Size". Both shipped under that number and
+  neither is renumbered; read the second as the second entry of v2.54.0.
+- **v2.58.0 said "ValeVision has no service worker, so there is nothing to bump."** That was wrong, and so were the
+  ledger rows that repeated it. In production ValeVision runs under ValeVision Gallery's shared service worker
+  (`WebApps/ValeVisionGallery/02__Src__AppModules/62__Feature__AppInstallability/`, registered from this app's
+  `index.html`), whose one token, `PWA_SW_VERSION_TOKEN` (`'2026-09-18-1'` on 01-Oct-2026), names the shell, thumbnails,
+  data and models caches together. The token's own log shows its last ValeVision bump at v2.48.1; v2.61.0, v2.62.0 and
+  v2.65.0 to v2.71.0 added cross-module exports without one. Bumping it is Adam's call at deploy (decision D47 in
+  `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`); the shared service-worker package prepared on 01-Oct-2026
+  is staged for him and not deployed.
+
+Releases of the parity programme continue from v2.71.1 in patch steps, one per wave, each written by that wave's
+Parity Scribe (D85).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.71.0 - 28-Sep-2026 - A Scene Can Turn the Sun, and Every Scene It Does Not Touch Keeps the Default
+
+**Overview**
+- Adam, with 06 | Entrance Door ringed and TOO DARK written under it: the front that shot looks at
+  faces away from the sun, so it only ever gets the fill light. He asked for a way to turn the light
+  through 360 degrees, and to adjust the ambient light, per scene, previewed live before it is saved,
+  in a new subsection of the scene's Advanced settings. Every scene nobody touches keeps the default.
+- DEV TOOLS > PRESENTATION MODE SCENES > a scene > ADVANCED > LIGHTING. Rotation (0 to 360, 0 being
+  today's sun), Height (the sun's angle above the horizon), Sun (its strength), Ambient (the fill
+  light) and Sun Casts Shadows. Each slider has a number box beside it for an exact value, because
+  across a panel this narrow a slider moves the sun two or three degrees a pixel; a double-click on
+  a slider puts that one setting back to the default.
+- EVERY MOVE LIGHTS THE VIEWPORT AT ONCE. That is the preview. SAVE LIGHTING keeps it, and is only
+  live while there is something to save; USE DEFAULT puts every control back. The status line says
+  which of three states the row is in: the default, the scene's own saved lighting, or changes not
+  saved yet (amber). Update Scene and Save All To Project carry it too, as they carry every other
+  in-row setting.
+- Adam's choices through prompts: all four extra controls including shadows; the light eases over
+  a carousel flight rather than cutting; a Save Lighting button of its own; 3D sheet viewports in
+  their scene's lighting, plans and elevations always in the default.
+
+**What is stored** (`project.json`, on the scene record in `PresentationMode__SavedCameraScenes`)
+- `PresentationMode__Scene__Lighting`, holding ONLY the settings that differ from the default:
+  `Scene__Lighting__RotationDeg`, `__HeightDeg`, `__DirectionalIntensity`, `__AmbientIntensity`,
+  `__ShadowsEnabled`, plus a `Scene__Lighting__Description` saying so. Whole degrees, strengths to
+  two places, shadows as a flag.
+- A SCENE STORES ONLY WHAT IT CHANGES, so everything it leaves alone keeps following the default when
+  the default is changed. Turn the sun on one scene and change the default ambient next month, and
+  that scene gets the new ambient. No block at all is the default lighting: a scene put back to the
+  default loses its key rather than carrying a copy of the default.
+- Saved through the scene editor's existing R2-first path (GET-merge, Na__AppUtils__R2SaveProjectJson,
+  Flask mirror). No new top-level block: the lighting rides inside the scene it belongs to, like
+  PresentationMode__Scene__NavigationMode and ModelLayerVisibility.
+
+**The default moved into the app config, unchanged**
+- `Na__Scene__DefaultSceneLighting` hardcoded the sun at (50, 100, 40). `Scene__Default__LightingConfig`
+  now holds it as `DirectionalPosXMm / YMm / ZMm` = 50000, 100000, 40000, with `ShadowsEnabled` and a
+  description. Only its direction shades anything; its distance is kept for every direction a scene
+  turns it to, because that is what keeps the shadow camera clear of the model.
+- New `Scene__PerSceneLighting` block: `Enabled` (false ignores every stored override and hides the
+  controls, deleting nothing), `BlendDuringFlight`, and the slider ranges (height 10 to 90, sun to
+  3.0, ambient to 6.0; always widened to include the default).
+- An app config older than these keys (cached on a deployed origin for a visit) falls back to the
+  old values, so the model is lit exactly as before. Proved by the test below.
+
+**How it behaves** (`06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js`, new)
+- The new module owns both lights from the moment they are built. The setup hands them over; the
+  scene transition, the Dev menu, the batch walk, the Layout Editor and the drawing thumbnail bake
+  call in. It never imports the Presentation Mode system.
+- ROTATION IS CLOCKWISE SEEN FROM ABOVE, the sense the north bearing is measured in: plan with +X to
+  the right and -Z up the page, 90 degrees turns (50, _, 40) to (-40, _, 50).
+- FLIGHTS EASE THE LIGHT with the camera's own eased t, the rotation the short way round (350 to 10
+  passes through 0). An interrupted flight carries on from wherever the light is. The instant apply
+  (page load, the batch walks, a Layout Editor 3D viewport) sets it at once, before the
+  scene-activated announcement so its listeners see the new light.
+- SHADOWS SWITCH BY STRENGTH, NEVER BY castShadow. Turning castShadow over changes every lit
+  material's shader defines, so every one recompiles: a stall per flight between two scenes that
+  disagree. `LightShadow.intensity` is a plain uniform in r184, and fades with the flight.
+- ANYTHING WITHOUT A BLOCK RESOLVES TO THE DEFAULT, including the synthetic approach pose a drawing
+  flight uses. So a drawing is always lit by the default in the viewer, and one scene's light never
+  leaks into the next.
+
+**Everything else that poses the camera, and now the light**
+- Update Scene and Add Scene From Camera capture the live lighting (the thumbnail is rendered in it
+  a moment later, so the card and the scene agree); the overwrite confirmation says so.
+- Update All Thumbnails and Download All Images walk each scene in its own lighting, and the restore
+  point puts back the light that was on screen before the walk (BatchOps 1.1.0).
+- Layout Editor: a 3D viewport renders in its scene's lighting and the viewer's light goes back
+  afterwards (SnapshotRenderer 1.7.0). A 2D underlay renders in the DEFAULT and puts the viewer's
+  back: without that it would be shaded by whichever scene the viewer last stood in, and two renders
+  of one drawing could differ. The 3D picture's fingerprint gains the scene's lighting, only when it
+  has some, so relighting a scene re-renders its pictures and every unlit scene keeps its keys
+  (Viewport3d 1.6.1).
+- The drawing thumbnail bake remembers the light with the 3D camera and puts both back (1.0.1).
+
+**Known, accepted**
+- Save Lighting does not re-render the scene's thumbnail; Update Scene and Update All Thumbnails do.
+  The carousel card shows the old light until one of them runs.
+- The row's Preview button flies to the scene AS SAVED, so an unsaved light is replaced by the saved
+  one on arrival. The working copy keeps the edit and the status line still says it is not saved; a
+  touch on any control shows it again. Previewing a row's light while the viewport shows a different
+  scene lights that other view, the same way the FOV slider always has.
+- While a floor plan or elevation is on screen the controls edit the working copy but hold the
+  preview back, and the status line says why.
+- Reset View and the Video Studio leave the lighting as it is, as they already leave the model layers.
+- Shadows reach as far as they always have: three's default shadow camera, a 10 m square around the
+  line from the sun to the origin. Turning the sun changes where they fall, not how far they reach.
+- THE SHARED SERVICE WORKER. This release adds two modules and NO new export on any existing module,
+  so a warm client holding a mix of old and new files cannot fail to link: an old setup module leaves
+  the lights unregistered and every scene lit by the default until the next visit. The token is
+  still Adam's call; it was not bumped.
+
+**Tested**
+- `Na__Test__PerSceneLighting__.test.mjs`, new, 40 checks in Node against the module as shipped and
+  the app config as shipped: the default sun lands at exactly (50, 100, 40); rotation 90 and 180 go
+  clockwise in plan; overhead keeps the distance; a render is asked for only on a change; the stored
+  block is minimal and rounds as specified (360 and 359.6 are the default); partial blocks keep exact
+  defaults; clamping; shadows by strength with castShadow untouched; the short-way blend; capture
+  removes the key at the default; the picture token; Enabled false resolves to the default and
+  leaves records alone; an old config lights the model as before.
+- `Na__Verify__Exports__.mjs` PASS (415 files), `Na__Verify__ModuleGraph__.mjs` PASS (517 modules),
+  ESLint no-undef clean over the eleven changed and new modules.
+- NOT BROWSER-TESTED HERE, at Adam's standing request. To try: open 06 | Entrance Door, Dev Tools >
+  Presentation Mode Scenes > Advanced > Lighting, drag Rotation and watch the facade; Save Lighting;
+  fly to another scene and back (the light should ease both ways); Use Default + Save; Update All
+  Thumbnails; a sheet with that scene's 3D viewport and an elevation on it.
+
+**Files**
+- New: `02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js`,
+  `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js`,
+  `80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs`.
+- Changed: `02__AppData/Na__AppConfig__Main.json` (the two lighting blocks),
+  `06/Na__Scene__DefaultSceneLighting.js` (hands the lights over), `01/Na__AppFlow__LoadingSequence.js`
+  (passes the new block), `21/...Camera__SceneTransition.js` 1.5.0, `21/...DevMenu__SceneRowBuilders__.js`
+  1.3.0, `21/...DevMenu__SceneEditor.js` 1.4.0, `21/...DevMenu__BatchOps__.js` 1.1.0,
+  `42/Na__DrawView__ThumbnailBake__.js` 1.0.1, `51/20/Na__LayoutEditor__Viewport3d__.js` 1.6.1,
+  `51/25/Na__LayoutEditor__SnapshotRenderer__.js` 1.7.0,
+  `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css` (one region),
+  `ValeVision__README__.md` (a Per-Scene Lighting section).
+
+**Ported to TrueVision** the same day as TrueVision3D v2.161.0, at Adam's request: the two new modules
+verbatim, the scene transition, editor, batch walk and Layout Editor edits adapted to TrueVision's own shape (its row
+builder sits inside its scene editor; its drawings bypass the composer but not the lights). The test became 1.0.1
+here: it reads the default strengths from the app config, so the same file runs in both apps.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.70.0 - 20-Sep-2026 - The Top Bar Knows When It Is Not Wanted, and Neither Crossing Is a Cold Drop
+### Ported from TrueVision3D v2.83.0, authored there the same day
+
+**Overview**
+- Adam, in TrueVision, with the whole top bar ringed on a floor plan screenshot and ANIMATE IT
+  written across it: the branding bar earns its 60px in the 3D view and nowhere else, and on a
+  drawing tab 60px of logo is 60px of drawing. It folds up and out on a drawing tab and comes back
+  down on 3D Model. Ported here unchanged in behaviour.
+- Two loading veils came with it, covering the two crossings between the model and the drawings.
+
+**The fold** (`03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css`)
+- The header slides `top: 0` to `calc(-1 * var(--Vale_HeaderHeight))`, shadow to zero; the tab strip
+  slides `var(--Vale_HeaderHeight)` to 0; the two are welded and move as one object.
+- 1000ms glide after a 1000ms hold, and THE HOLD IS ONE-WAY. A transition takes its timing from the
+  state it moves TO, so the delay sits only on the folded rule: pressing a drawing tab the bar can
+  take its time leaving, pressing 3D Model the branding comes straight back.
+- The editor host takes the 60px AT ONCE and does not animate - Na__LeMode__Enter fits the paper on
+  the next animation frame, so a host still growing then would fit every sheet to a short stage.
+- `top`, never `transform`: a transformed ancestor becomes the containing block for its
+  position: fixed descendants, and the Dev Tools flyout list is a fixed descendant of this header.
+  Na__UiFeature__Styles__DevToolsMenu__.css already states that constraint outright.
+- NO prefers-reduced-motion BRANCH, on purpose. TrueVision shipped one and it switched the whole
+  feature off on the studio PC, where Windows animation effects are off (MinAnimate = 0) and
+  Chromium reports that as reduced motion. The fold ran at 0.01ms - two end states, no travel.
+
+**The veils** (`51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js`, new)
+- COMING OUT is this module's own: "Loading Your 3D Model", shown AT ONCE, because the flicker of
+  stale 2D viewport frames it hides happens the instant the render loop restarts. It requests the
+  first scene in the carousel through the same `GoToSceneAtIndex(1)` a number key uses - so the
+  scene's group, visibility state and navigation mode are applied the ordinary way - and lifts when
+  the presentation camera reports it has stopped transitioning. Not a duration, the camera itself.
+- GOING IN IS DELIBERATELY NOT A SECOND OVERLAY. ValeVision already has `Na__LeLoadScreen`, because
+  the editor is lazily loaded here and something must cover the import. What it lacked was the
+  right moment to go: it hid two frames after the sheet opened, which is long before the sheet is
+  drawn, so the reader was handed a blank page that filled in underneath them. It now waits for the
+  pictures to actually be on the paper and says how far along it is: "Drawing the Views  -  1 of 2".
+- DRAWN MEANS COUNTED, against a number known up front. The expected count comes from the MODEL
+  (`Na__LeMode__WaitForFirstDrawing`), the achieved count is the `.na-le-frame` elements carrying a
+  decoded `<img>`. TrueVision's first version watched only the render queue and was wrong: the
+  queue is not filled until about 800ms after the tab is pressed, so "the queue is empty" is also
+  true before any work exists, and it called itself finished at 600ms. Nought of two cannot be.
+- The loader reaches the wait through the editor facade rather than importing it, which would load
+  eagerly the very bundle `01__Core__Loader` exists to defer. An editor without the call is simply
+  not waited for.
+- `Na__LayoutEditor__SnapshotRenderer__` now counts its queue in and out and announces the depth
+  (`Na__LeSnap__QUEUE_EVENT`, `Na__LeSnap__GetOutstanding`). Rendering behaviour is unchanged.
+
+**Divergences from TrueVision**
+- TrueVision builds its own going-in veil; here that job stays with `Na__LeLoadScreen` and only the
+  WAIT is ported. Two overlays over one crossing would be a duplication, not a port.
+- No text-metrics job: ValeVision has no `Na__LayoutEditor__PdfFonts__` module to preload.
+- TrueVision's canvas is positioned below the header alone and was considered for the fold and left
+  out; ValeVision's is already below both the header and the tab strip, and is hidden while a sheet
+  is open, so it has nothing to contribute either. Untouched in both.
+
+**Known, accepted**
+- The tab strip's `top` is now transitioned, so it also eases the 12px when a viewport crosses the
+  600px breakpoint and `--Vale_HeaderHeight` changes between 60 and 48. It used to snap. CSS cannot
+  tell that apart from a fold.
+- Leaving the editor now always returns the camera to the first presentation scene. Adam asked for
+  that outright; it is not a side effect.
+- THE SHARED SERVICE WORKER. This release adds a module and two exports, and ValeVision sits under
+  ValeVision Gallery's shared worker whose cache token is Adam's call, not this app's. A warm client
+  whose cached copy of `Na__LayoutEditor__SnapshotRenderer__.js` lacks the two new exports will
+  break the editor until a second visit. The token needs bumping with this release.
+
+**Verified**
+- `Na__Verify__Exports__.mjs` PASS, 411 files. The fold tokens and `transform: none` confirmed live
+  in the browser on app.localhost.
+- THE VEILS ARE NOT BROWSER-VERIFIED HERE. A project with sheets would not load on a local static
+  server, so the tab strip never appeared and neither veil could be exercised. They are verified in
+  TrueVision - traced end to end, both directions - and ported with the class names, body class,
+  header height, carousel API and frame markup all confirmed identical between the two apps. Worth
+  a look on a real ValeVision project before this is trusted.
+
+**Files**
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css` - the fold, one region.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css` - the veil.
+- `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js` - new.
+- `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` - wiring.
+- `51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js` - waits for the drawing.
+- `51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js` - queue depth.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.69.0 - 20-Sep-2026 - A Selection Saved as a File, and a Route on the Local Server to Write It
+### Ported from TrueVision3D v2.76.0 (the Custom Scrapbook), with the server side written for this app's own server
+
+**Overview**
+- Third and last part of one port: v2.67.0 is north and what a viewport is a drawing of, v2.68.0 the
+  Scrapbook tab and the elements that keep answering, this is the library of your own making.
+- Select anything on a sheet - vectors, text, leaders, dimensions, groups nested to any depth - give
+  it a name, press Save Selection. It becomes ONE JSON FILE in a category folder, and a tile on the
+  Scrapbook tab that drags onto any sheet of any project, double-clicks into the middle of the view,
+  and right-clicks to delete. A dropped item is ordinary sheet records: it moves, copies, prints and
+  undoes like anything drawn by hand, in one undo step.
+- MADE PORTABLE ON THE WAY OUT. What only means something where it came from is left behind: layer
+  ids (it lands on the target sheet's own text, dimension and vector layers), a dimension's viewport,
+  a bubble's specification link, a parametric element's tie. A dimension that read its drawing's
+  scale is told so outright, as a copy is. Viewports are refused: a viewport carries a scene and a
+  snapshot, and both are its project's.
+- A SCALE BAR INSIDE AN ITEM STAYS A SCALE BAR. Its parametric block rides on the group record, and
+  after the drop it ties itself to the drawing it landed beside.
+
+**Where the files are** (`51__LayoutEditor__UserScrapbookContent/`, new, beside `index.html`)
+- Five category folders, TrueVision's: General, Dimensions, Annotations, 2D Entourage, General Notes.
+  `UserScrapbook__Index__.json` at the root lists every item and is rewritten from what is actually
+  in the folders, so a file added or taken away by hand is picked up. The live site has no directory
+  listing: the index is what makes the library readable there.
+- EACH FOLDER HOLDS A `.gitkeep`. The save route never creates a category - a typo in a request must
+  not grow the tree - and git does not track an empty folder, so without it a fresh clone would have
+  a library nothing could be saved into. The index only lists files named as items, so it never
+  sees them. (TrueVision's five folders are empty and untracked today: the same gap, on Adam's list.)
+- AN ITEM FILE IS THE SAME DOCUMENT IN BOTH APPS, key for key. One copied by hand from TrueVision's
+  library folder into this one drops here as it does there.
+
+**The server side** (`WebApps/ValeVisionGallery/Server__ValeVisionScrapbook__Api__.py`, new; `server.py`, two lines)
+- A browser cannot write a file, so the app saves through three routes on the local development
+  server: `GET /api/valevision/scrapbook` (the index, rebuilt first), `POST .../items`
+  `{ category, name, item }`, `POST .../items/delete` `{ file }`. A Flask blueprint in a file of
+  its own, registered by `server.py` straight after the app is made.
+- EVERY RULE IS TRUEVISION'S. It saves only into category folders that already exist and match
+  `NN__ScrapbookItems__Name`; it names every file itself from a sanitised name, so nothing in a
+  request is ever used as a path; the identity keys are the server's and cannot be forged; a delete
+  never unlinks - the file moves to `00__Deleted__Quarantine`, where the index does not look; the
+  index is only rewritten when its items changed, so reading the library never dirties the repo.
+- THIS SERVER IS NOT TRUEVISION'S, and the transport says how it differs. It has no `/api/health`:
+  it is known by `/api/check-localhost` answering `{ isLocalhost : true }`. It answers an UNKNOWN
+  GET WITH A PAGE OF HTML AND 200 (its catch-all serves `index.html`), so an answer only counts when
+  it parses as the JSON expected - TrueVision's code already read answers that way, so nothing had
+  to change but the probe. An unknown POST answers 405. Both proved against `server.py` itself,
+  imported and driven through Flask's test client, never run.
+- `server.py` RUNS FLASK IN DEBUG MODE, so a running server restarts itself when the file is saved
+  and has the routes at once. One started another way needs restarting by hand; the section says
+  "Restart it, then save" when it finds the server without them. It was not running during this port.
+
+**The clipboard learned to land a dimension** (`ItemClipboard__` 1.2.0, `SheetModel__TextAndDimensions__` 1.1.0)
+- The library has a Dimensions category, and this app's clipboard set had no dimension leaf and its
+  sheet model no `InsertDimension`: a saved dimension would have been dropped on the floor, silently.
+  `InsertDimension` is TrueVision's, byte for byte; `InsertLeaves` has TrueVision's dimension leaf -
+  moved with the set, put on a dimension layer of the sheet it lands on, keeping its viewport only
+  when the set came from this same sheet.
+- COPY IS UNCHANGED. A dimension is still not a copyable kind here, so Ctrl+C never holds one.
+  TrueVision's wider clipboard (dimensions and viewports in a set, cut, exact cross-sheet paste) is
+  a separate piece of work and is not part of this port.
+
+**Tested**
+- `Na__Test__ScrapbookApi__.test.py`, ported: 25 checks through Flask's test client against a
+  temporary folder - saves, the server's own file names and identity keys, a second save inside one
+  second, every refusal (unknown category, traversal, no name, no entries, a viewport entry), a
+  hand-added file listed and junk ignored, a read that changes nothing not rewriting the index,
+  quarantine, and the real folder never the target.
+- THE FIRST RUN DIRTIED THE REPOSITORY, and not where expected. The test puts the bundled Flask on
+  the path, as `server.py` does - and this repository TRACKS that Flask's `__pycache__` files. Python
+  found them stale and rewrote 108 of them. Restored from HEAD, file by file, nothing else touched;
+  the test and the test server now set `sys.dont_write_bytecode` before their first import and say
+  why. Re-run: working tree exactly as found.
+- In the app, through `Na__Test__ScrapbookServer__.py` (ported and adapted: the REAL blueprint on a
+  temporary folder, plus read-only copies of the two reads the app makes of its local server - on
+  `127.0.0.1` the app asks its server for `project.json`, not the CDN). On a scratch copy of 3047's
+  sheet: a Drawing Title saved to General (the file carries its parametric block and no tie); dropped
+  back as a live element tied to the nearest drawing, one undo step, redo whole; two dimensions and
+  a vector saved to Dimensions and dropped - 7 dimensions to 9, no viewport, measure-at-scale said
+  outright, this sheet's dimension layer, the same lengths, all three selected; deleted through the
+  house confirm dialog and found in the quarantine folder. The real content folder held its five
+  `.gitkeep` files throughout.
+- Nothing of the project was written. The test server has no route that writes one and no worker
+  config, the page's fetch was guarded besides, and the one write the guard did refuse was the app's
+  own drawing-notes mirror. The real sheet was byte-identical before and after, twice.
+
+**Files**
+- New: `51__System__LayoutEditor/56__Feature__ScrapbookCustom/` (the library, verbatim but for one
+  string; the transport, adapted; the section; the config; the stylesheet),
+  `51__LayoutEditor__UserScrapbookContent/` (five folders), `80__Testing__PrototypeEnvironment/`
+  `Na__Test__ScrapbookApi__.test.py` and `Na__Test__ScrapbookServer__.py`,
+  `WebApps/ValeVisionGallery/Server__ValeVisionScrapbook__Api__.py`.
+- Changed: `WebApps/ValeVisionGallery/server.py` (registers the blueprint; three lines in its route
+  list), `ItemClipboard__` 1.2.0, `SheetModel__TextAndDimensions__` 1.1.0, `SheetModel__` 1.18.0,
+  `ModeController__` 1.18.0 (registers the section).
+
+**Not yet confirmed by Adam.** The service worker note under v2.67.0 covers all three releases.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.68.0 - 20-Sep-2026 - The Right Column Gets a Scrapbook Tab, and What You Drag Out of It Keeps Answering
+### Ported from TrueVision3D v2.76.0 (the parametric scale bar), v2.77.0 (the tab and the linking noodle), v2.80.0 (the Drawing Title) and v2.85.0 (the noodle's plug)
+
+**Overview**
+- THE RIGHT COLUMN HAS TWO TABS. Properties is everything it was; Scrapbook holds the libraries.
+  Sections name the tab they live on, the choice is remembered per browser, and a section on the
+  tab that is not showing is neither built nor refreshed.
+- A PARAMETRIC ELEMENT IS A GROUP THAT KNOWS WHAT IT IS. It carries `Group__Parametric` - a type, its
+  parameters, and what it is tied to - and its members are rebuilt from those whenever one changes.
+  It is still ordinary records: it moves, copies, prints, and Ctrl+Shift+G explodes it into plain
+  vectors and text. Two types arrive: the SCALE BAR and the DRAWING TITLE (the title, its underline,
+  and optionally the bar beneath). A tile is a PRESET of a type, so three tiles are two types.
+- TIED TO A DRAWING, IT FOLLOWS IT. Dropped, an element ties itself to the nearest scaled drawing.
+  Change that drawing's scale and the bar redraws INSIDE THE SAME ANNOUNCEMENT, so it is one undo
+  step and redo brings both back - the sheet model's new `RegisterBeforeAnnounce` is what makes that
+  possible. The title is written from what the drawing is: NORTH ELEVATION, from the project's
+  north (v2.67.0); a name somebody typed on the viewport, if there is one; and until north is set,
+  `{{DIRECTION}} ELEVATION` - the word stays in braces, it is not guessed.
+- THE NOODLE. A selected element shows its tie as a curve from its socket to the drawing, which
+  lights up. Drag from the SOCKET onto another drawing to re-tie, onto the title block's Scale cell
+  for the sheet's scale, onto bare paper to untie (it keeps what it says). Or take hold of THE PLUG,
+  the dot at the far end, and carry that instead - "like dragging a rope or a cable". One drag, two
+  places to begin it; Escape puts it back; one undo step either way.
+- Grips: stretch a bar by its end (it grows by whole divisions), and a lookup grip opens its scales.
+  The Properties tab's Parametric Element section has the rest, and says in a sentence why a title
+  reads as it does.
+
+**What the existing modules had to learn** (all ported from TrueVision, anchored, nothing else moved)
+- `SheetModel__State__` 1.1.0: `RegisterBeforeAnnounce`, run inside Touch ahead of the change event,
+  so derived records are in step before the history takes its snapshot. `SheetModel__Groups__` 1.1.0:
+  `DeleteItems(sheet, items, silent)`. `SheetModel__Viewports__` 1.1.0: the viewport namer (v2.67.0).
+- `15__Core__Markup/Groups__` 1.2.0: `RegisterLabeller` and `NameFor`, so the tag on a selected group
+  reads "Drawing Title" or "Scale Bar". `30__System__SheetTools/Grips__` 1.8.0:
+  `RegisterGroupProvider`, how a group's own grips and its noodle get onto the handles layer.
+- `ItemClipboard__` 1.2.0: `InsertSet`, the door every scrapbook drop goes through - PasteSet keeps
+  this app's own signature and hands its set to it - and A PASTED GROUP KEEPS THE REST OF ITS RECORD.
+  It was rebuilt from its members alone, so a copy of a parametric element would have been a plain
+  group that no longer answered to anything.
+- `PanelHost__` 1.4.0: the tabs. `Styles__Panels__.css`: TrueVision's Scrapbook and Column Tabs
+  regions, byte for byte.
+
+**Divergences from TrueVision**
+- THE STANDARD SCRAPBOOK ARRIVES EMPTY, and so its section stays hidden. TrueVision ships two items -
+  a mapping data credentials block and a north point - both site plan furniture and both Noble
+  Architecture's own. Neither belongs in this app. The module, the section and the config are in
+  place because every other library draws its tiles, previews and bounds through them; a house item
+  is added by writing it into the config, exactly as TrueVision's are written.
+- ONE DRAWING TYPE. This app has no site plan sheets, so the libraries filter by the one type every
+  sheet is, where TrueVision asks the sheet model.
+- NO PHASE TO READ. TrueVision writes EXISTING or PROPOSED from the model group a viewport draws.
+  This app loads one model per project, so Automatic writes nothing - the box says
+  "Automatic (none in this app)" - and Existing or Proposed is chosen per title where it is wanted.
+
+**What did not come across, and why**
+- TRUEVISION MOVED ON THE SAME MORNING, twice, in work Adam has not yet signed off there: a floor
+  plan's storey as a sixth fact ("PROPOSED GROUND FLOOR PLAN", its v2.87.0) and an elevation record's
+  typed name reaching the title ("COACH HOUSE EAST ELEVATION", its v2.86.0). This app holds the
+  modules as they were before both: TitleText 1.0.0, Identity 1.0.0, DrawingTitle 1.0.0,
+  ViewportLink 1.2.0, Panel 1.2.0. Each TrueVision header says which version is here. TrueVision
+  first, then the port, once he has tried them.
+- The noodle's tooltip names an unnamed drawing "Viewport 1", not "North Elevation". That is
+  TrueVision's wording too; worth changing there first.
+
+**Found by this port's own test, fixed in both apps**
+- The plug's dot stayed at the far end of a noodle that was no longer there for the length of a
+  drag. The live noodle took the finished tie away, but the plug is a grip element, not part of the
+  noodle's drawing. Now hidden while either end is carried - hidden, not removed, because it may be
+  the element the press began on. TrueVision's 1.2.0 had not shipped, so it is the same version there.
+
+**Tested**
+- Node, against this app's own modules: scale bar 35 checks, drawing title 39. Every module marked
+  verbatim proved byte-identical to TrueVision's from its first code region down (eight files; four
+  of them against TrueVision's HEAD, because its working copies have since moved on).
+- In the app on a scratch copy of 3047's sheet, every write refused: both tabs, three parametric
+  tiles, the Standard section hidden; a title dropped by double press ties to the elevation and
+  reads NORTH ELEVATION; north turned and it reads EAST ELEVATION, cleared and it reads
+  {{DIRECTION}} ELEVATION, the unnamed viewport being called North Elevation, East Elevation and
+  then by its record's name in step; one undo step for a drop, redo whole; the drawing's scale
+  changed 1:50 to 1:100 and both elements followed, ONE undo took all three back and ONE redo
+  brought all three forward; the plug carried to a second drawing (retitled from its typed name,
+  1:100, one undo step each way), dropped on a 3D picture (untied - a picture has no scale, the same
+  rule as TrueVision), Escape mid-drag (nothing changed, still selected); the socket still doing all
+  it did; the plug visible on a press that has not moved, hidden while carried, back after Escape.
+- Real sheet byte-identical before and after, twice. No write reached the network.
+
+**Files**
+- New: `51__System__LayoutEditor/55__Feature__Scrapbook/` (4), `57__Feature__ScrapbookParametric/`
+  (9), `80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs` and
+  `Na__Test__ScrapbookDrawingTitle__.test.mjs`.
+- Changed: `SheetModel__` 1.18.0 and its `State__`, `Groups__` and `Viewports__` units (1.1.0 each),
+  `15__Core__Markup/Groups__` 1.2.0, `Grips__` 1.8.0, `ItemClipboard__` 1.2.0, `PanelHost__` 1.4.0,
+  `Styles__Panels__.css`, `ModeController__` 1.18.0.
+
+**Not yet confirmed by Adam.** The service worker note under v2.67.0 covers all three releases.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.67.0 - 20-Sep-2026 - North Is a Bearing, Not the Model's Green Axis, and an Elevation Is Named From It
+### Ported from TrueVision3D v2.80.0 (north direction and viewport identity), with its compass as TrueVision v2.84.0 left it
+
+**Overview**
+- THE APP HAS ALWAYS CALLED THE MODEL'S -Z AXIS NORTH. An elevation's stored bearing is measured
+  from it and the Elevations menu's presets are named by it, so on a model that was not drawn with
+  north up the page every name is wrong and is put right by hand, drawing by drawing. One number
+  fixes all of them: the project's north, as a bearing clockwise from that axis.
+- DEV TOOLS > NORTH DIRECTION. Draw Compass: one click where it sits, a second towards north; the
+  compass follows the pointer between them, Shift snaps, Escape cancels, and it works in a plan view.
+  Or type the bearing - a model drawn north-up is 0 in one keystroke. WHAT THE ELEVATIONS WILL BE
+  CALLED is the proof: every elevation with its stored bearing and the word north now gives it, live
+  while the compass is aimed, so one pointed the wrong way round shows at once as "South" against
+  the wall everybody knows faces north.
+- SET IS NOT SAVED. Setting north changes the project in memory and every open sheet follows; Save
+  North keeps it through the drawings block's own save, as `LayoutEditor__DrawingsData__North`
+  (bearing, where the compass stands, when). ABSENT MEANS NOT SET - never zero, which is an answer.
+- WHAT A VIEWPORT IS A DRAWING OF is now asked in one place (`Na__LeViewId__Describe`): kind, which
+  way an elevation faces, a name somebody typed, the record's name. A pure sentence writer turns
+  that into a title (`Na__LeViewText__Compose`), and UNNAMED ELEVATION VIEWPORTS ARE NAMED FROM IT -
+  "North Elevation" in the panels, the menus, the toasts and the frame caption - once north is set.
+  A typed name always wins; a paste's "... copy" is not a typed name; and nothing is written to a
+  record, so a name can never go stale. The parametric Drawing Title (v2.68.0) reads the same facts.
+- Compass words: the four cardinals, and the four between them only within 15 degrees of the
+  diagonal (configurable), because 30 degrees off north is still the north elevation to everybody.
+
+**Divergences from TrueVision**
+- NO SHOW COMPASS. TrueVision can leave the compass standing with the panel shut because its
+  interactive-overlay registry hides authoring aids from every render. This app has no such
+  registry, so THE COMPASS IS IN THE SCENE ONLY WHILE ITS PANEL IS OPEN, the panel shuts itself when
+  a sheet opens, and the compass steps out for as long as any sheet picture is queued or rendering.
+- NO PHASE AND NO SITE PLAN BRANCH in the identity module: one model per project, no site plan
+  viewports. `PhaseOf` is kept as a function that answers "unknown", so the day this app has phases
+  there is one place that learns of them.
+- `Na__NorthData__Save(showToast)` follows this app's `Na__DrawData__Save`.
+
+**Found by this port's own test, and it would have printed**
+- THE COMPASS WAS RENDERED INTO A SHEET'S 3D VIEWPORT. The panel was meant to shut itself when a
+  sheet opened; the listener first asked whether its panel was open - and the mode controller
+  collapses every dev panel by class BEFORE it announces a sheet, so the answer was always no, and
+  the compass was left in the scene for the snapshot renderer to draw. It no longer asks. The
+  announcement is made in the same turn the sheet is set and a render is queued behind a promise, so
+  taking the compass out there is always ahead of the first render.
+- And the other door: a scene saved from the 3D tab restamps every viewport that shows it, with no
+  sheet opening at all. The compass now also leaves the scene whenever the snapshot renderer
+  announces work (`na-layouteditor-snapshot-queue`, which the renderer has announced since v2.70.0,
+  written the same morning) and returns after. Heard by name - the editor loads lazily here and
+  must not be imported for one string - so where the event is absent nothing is lost but this.
+
+**What did not come across, and why**
+- `Na__InteractiveOverlays` and the Show Compass toggle (TrueVision v2.84.0): the registry belongs to
+  TrueVision's Drawing Planes system, which is not in this tree. When it is ported, take the gizmo
+  and the editor from TrueVision whole.
+- TrueVision's rebuilt Elevations menu (its v2.86.0, not yet signed off) names its presets from
+  north. Here the Elevations menu still names them by the model's axes, as TrueVision's did at the
+  version this was ported from. The NAMES ON SHEETS are right regardless: they are derived.
+
+**The shared service worker - Adam's call, and it matters for all three releases**
+- v2.67.0 to v2.69.0 add 21 modules and NEW EXPORTS ON EXISTING ONES: `RegisterBeforeAnnounce`,
+  `RegisterViewportNamer`, `InsertDimension`, `RegisterLabeller`, `RegisterGroupProvider`,
+  `InsertSet`, `RegisterTab` among them. This app sits under ValeVision Gallery's shared worker
+  (`PWA_SW_VERSION_TOKEN`, `2026-09-18-1`), which serves shell JS stale-while-revalidate away from
+  localhost. A warm client holding the old `SheetModel__` beside the new `ModeController__` will fail
+  to link the editor until its next visit. The token evicts every Vale app's caches, models
+  included, so bumping it is not a port's decision. Raised with Adam; NOT changed.
+
+**Tested**
+- Node, against this app's own modules: compass maths 23 checks (one north bearing gives back all
+  of a real project's hand-typed elevation names), title text 27.
+- In the app on `127.0.0.1` (project 3047's local copy, every write refused): the section in the
+  Dev menu; a typed bearing of 90 and the list reads "faces North"; the two-click compass through
+  the canvas's own pointer events - the first click stands it, the second aims it, the list follows,
+  Escape mid-draw changes nothing; Save North fails honestly on a server with no worker config and
+  the status line keeps saying "Not saved yet"; the compass in the scene with the panel open, gone
+  with it shut, and gone the moment a sheet opens with the panel still open.
+- `Na__Verify__Exports__.mjs` PASS (411 files) and `Na__Verify__ModuleGraph__.mjs` PASS (515 modules).
+
+**Files**
+- New: `02__Src__AppModules/47__System__NorthDirection/` (8: compass maths, config and its state,
+  the project data, the gizmo, the pick tool, the Dev menu editor, its stylesheet),
+  `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js`
+  (verbatim), `...ViewportIdentity__.js` and its config (adapted),
+  `80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs` and
+  `Na__Test__ViewportTitleText__.test.mjs`.
+- Changed: `index.html` (the Dev menu item, three imports, three init lines),
+  `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` (one import),
+  `SheetModel__Viewports__` 1.1.0 and `SheetModel__` 1.18.0 (the namer), `ModeController__` 1.18.0
+  (`Na__LeViewId__Initialize`).
+
+**Not yet confirmed by Adam.** North is not saved for any project.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.66.1 - 20-Sep-2026 - Tighter Margins on the Specification Page
+### Authored in TrueVision3D v2.78.1; one of its three changes applies here
+
+**Overview**
+- Adam, on the rendered specification: "the margins could do with being a bit tighter again
+  because they're quite wide". ValeVision's page carried the identical `13mm 18mm 10mm`.
+- Now `12mm 14mm 9mm`. Measured against the real stylesheet in a browser, not estimated: the
+  A4 page is 210mm, side padding 14mm, and the text block goes **174mm to 182mm**.
+
+**Two of TrueVision v2.78.1's three changes do NOT apply here, and neither is a gap**
+- **The jsPDF alignment bug.** TrueVision's register letterhead ran 17.5pt off the end of its own
+  margin because `align: 'right'` ignores `setCharSpace` - jsPDF measures the string untracked.
+  Checked before assuming: **`setCharSpace` does not appear anywhere in ValeVision**, so the bug
+  cannot occur. The `align: 'center'` hits here are markup geometry for dimension and leader
+  text, not jsPDF text calls, and are unrelated. Nothing to fix; worth knowing the trap exists
+  if tracking is ever added.
+- **The brown palette.** TrueVision's drawing register measured 25 warm colours out of 26 - a
+  whole warm chrome palette carried in with the register, which is TrueVision-only. Audited the
+  whole of ValeVision's Layout Editor stylesheets the same way: 36 warm values, and every one is
+  semantic - warning ambers (`#d97706`, `#d99a1e`, `#8a5a00`, `#fff6e3`, `#f0d9a8`) and error
+  reds (`#e01b24`, `#dc2626`, `#c0392b`, `#cc3333`, `#9b3b3b`). No warm chrome, because the
+  register never came here. Nothing to recolour.
+- The register's own margin change (18mm to 14mm) has no counterpart either, for the same reason.
+
+**Corrected in both apps**
+- The comment first written beside this padding claimed 14mm "gives the text block 14mm more
+  line". Measuring it showed 8mm (174 to 182). Both copies now state the measured figures.
+
+**Tested**
+- ValeVision's REAL stylesheets loaded into an isolated static page and the computed values read
+  back: page 210mm, sides 14mm, top 12mm, bottom 9mm, text block 182mm. The v2.60.0 surfaces work
+  still holds in the same measurement - ground `rgb(216, 220, 223)` and the drawing sheet's
+  `rgba(0, 0, 0, 0.22) 0px 6px 26px` on the page.
+- NOT verified in the running app: the page needs Doous on the authoring route, and a token-level
+  change whose values were read directly did not warrant it.
+
+**Files**
+- `02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.66.0 - 20-Sep-2026 - A Title Block Cell Is a Width in Millimetres, and a Drawing Says What It Is Issued For
+### Ported from TrueVision3D v2.79.0, re-measured in this app's own face
+
+**Overview**
+- Adam signed off TrueVision's re-proportioned title block and its new Status field ("Good, update
+  ValeVision to suit"). His brief there, of a strip that is the same code as this one: "there are
+  certain fields that are never going to need more size, so they kind of seem needlessly
+  oversized... The one thing that does need the space is the drawing name."
+- The strip's rows were RELATIVE SHARES of the width beside the logo, so every cell grew and shrank
+  with the paper. On A2 that made Client 76 mm for a surname and Drawing No. 49 mm for eight
+  characters; on A3 it left the Drawing Title 71 mm, which cuts an 88 mm title short.
+- A row's `WidthMm` is now paper millimetres, the same on every paper size, as the logo already
+  was: Client 36, Site Address 70, Drawing No. 24, then Rev, Scale, Date and Drawn By as one 28 mm
+  module, then the new Status at 30. The Drawing Title carries `Flex` and takes what the paper has
+  left: 278 mm on A2, 104 on A3.
+- NO VALUE IS CUT OFF WHILE ANOTHER CELL HAS ROOM TO SPARE. A cell whose text overruns grows out of
+  the paper's spare room first, then out of room other cells are not using. A pack whose values
+  fit keeps its dividers in the same place on every sheet. The arithmetic is a new module with no
+  imports, `Na__LayoutEditor__TitleBlock__Cells__`, byte for byte TrueVision's.
+
+**Status**
+- The last cell on the right: what the drawing is issued for. A box in the Sheet panel - the one
+  title block field that is picked rather than typed - offering "Not set" and twelve statuses in
+  the order a job moves through them, PRELIMINARY to SUPERSEDED, from
+  `LayoutEditor__TitleBlock__Statuses`. It writes `Sheet__Fields__Status` like Date or Drawn By:
+  one undo step, kept by the draft. Held per sheet.
+- Nothing prints until one is chosen (`StatusDefault` ships empty): a wrong status on an issued
+  drawing is worse than none. A status that has since left the config stays on its sheet.
+
+**Re-measured, not copied**
+- TrueVision chose its widths against Open Sans. This app prints in jsPDF's Helvetica by a recorded
+  decision, and Helvetica sets WIDER - so every width was measured again here before it was kept.
+  They all still hold: FOR BUILDING CONTROL needs 29.8 of the 30 mm Status cell (28.6 in Open Sans),
+  "1:50 & 1:100 @ ISO A2" 25.7 of the 28 mm module, Drawn By's default "Vale Garden Houses" 23.1.
+  The two apps therefore issue the same strip, which is what the config's own description asks for.
+
+**What did not come across, and why**
+- THE LOGO CELL. TrueVision widened its cell 34 to 40 mm because its mark is 31 mm wide and was
+  1.4 mm from the rules either side. The Vale mark is 24.75 mm wide in the same 34 mm cell and has
+  had 4.6 mm either side all along. Nothing to fix.
+- THE LOGO'S STAND-IN TEXT. TrueVision's read VALE GARDEN HOUSES, left behind by its port. Here
+  that is the office.
+- THE DRAWING REGISTER'S STATUS COLUMN and the history's register-saved field list: this app has no
+  register. `Na__LeCfg__StatusToStore` came across anyway, so anything that later writes a status
+  stores it the way the box does.
+- THE QR CELL TrueVision's strip gained the same evening is another session's work and is not
+  part of this port. None of its lines were replayed.
+
+**Fixed on the way, in both apps**
+- The QR cell's session found that on a strip too narrow even for its cells' text, the solver
+  scaled EVERY cell - so the date and the drawing number lost their ends along with the title. The
+  Flex cells are now cut first, down to the width of their own label, and the lot is scaled only if
+  that is not enough: a title cut short still says what the drawing is, where a date or a scale cut
+  short says something false. TrueVision has it as Cells 1.1.0; this app never shipped the older
+  behaviour. On A4 portrait the other values now lose a tenth of their cell where they lost over a
+  quarter.
+
+**Shared files, landed beside another session's port**
+- The Common title block fields (v2.65.0) were being ported into `SheetRecords__`, `Panel__Sheet__`
+  and `AppConfig__.json` the same morning. Footprints were exchanged by message, every shared edit
+  was a small anchored one, and both sets of hunks are on disk: Status goes through BuildFields'
+  ordinary stored-or-default path, below the pack's two fields, and the Status box sits in the
+  panel's rows loop between the Common switch and the project record's offer.
+
+**Files**
+- New: `10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js`,
+  `80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs` and `.html`.
+- `TitleBlock__Modern__` 1.2.0, `ConfigState__SheetSetup__` 1.3.0, `ConfigState__` 1.17.0,
+  `SheetRecords__` 1.14.0, `Panel__Sheet__` 1.4.0, `AppConfig__.json` (TitleBlock Rows, RowsNote,
+  Statuses, StatusDefault, two labels).
+
+**Checked**
+- `Na__Test__TitleBlockCells__.test.mjs`: 37 checks of the solver against a Vale sheet's measured
+  values, A1 to A4 portrait. `Na__Verify__Exports__` passes over 389 files.
+- `Na__Test__TitleBlockCells__.html` builds eight sheets through the REAL chrome builder and reads
+  the widths back off the drawn rules: nothing cut on A1, A2 or A3 - including the 88 mm title the
+  old shares cut on A3 - and only the title on A4 landscape.
+- In the app, real modules, on a scratch A3 sheet with every write refused (the guard logged none):
+  the strip drew 34 / 36 / 70 / 104 / 24 / 28 / 28 / 28 / 28 / 30; the box picked, undid, redid,
+  printed FOR BUILDING CONTROL whole without moving a cell, and "Not set" left no key behind. The
+  Common switch sat beside it and both worked.
+- NOT checked: a real PDF download. The PDF is painted from the same primitive list as the screen
+  and no painter was touched.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.65.0 - 20-Sep-2026 - One Client, One Site, One Place to Type Them
+### Ported from TrueVision3D v2.74.0, adapted where ValeVision has no admin system behind it
+
+**Overview**
+- Adam, on the TrueVision side: "it's very rare that you, on a project like this, use a different
+  client or address. In fact, I've never really actually done it in my career... otherwise, every
+  time you edit a different drawing or create a new drawing, it then means you have to laboriously
+  refetch and retype all this." Then, of this tree: "update ValeVision to suit."
+- The two lines every title block prints were stored per sheet. Type them on drawing one, type
+  them again on drawing two, and a pack ends up disagreeing with itself over a trailing space.
+
+**The pack owns the two fields, and each sheet carries a switch**
+- `LayoutEditor__DrawingsData__CommonClient` and `...__CommonSiteAddress` hold them ONCE, beside
+  `ClientDimensionsEnabled`, because they are the same kind of thing: a fact about the project,
+  not about any one sheet. Neither key joins `BuildSkeleton` or `Normalise` - absent is a state,
+  not a fault, and an empty value removes the key rather than storing `""`.
+- The Sheet panel gains one row above Client, reading **Common**, ticked. On, the Client and Site
+  Address boxes show the pack's values and typing into either retypes the whole pack. Off, this
+  one sheet keeps its own.
+- One switch covers both fields. A sheet that needs its own address almost always needs its own
+  client with it, and a row of half-linked fields is harder to read than it is useful. Turning it
+  off writes BOTH current values onto the sheet, so the override opens with the right address in
+  it and a word gets edited rather than a postcode retyped.
+- `Sheet__CommonFields` is written only when `false`. Absent reads as on, so every sheet ever
+  drawn joins the pack by default and only a deliberate opt-out is recorded.
+- `BuildFields` resolves the two keys from the pack when a sheet is on Common, ahead of anything
+  stored on the sheet. Everything downstream reads `Na__LeModel__GetFields`, so the one change
+  covers the screen and the PDF alike. The Status field that landed in this same file today is
+  untouched by it: `Na__LeCommon__KEYS` is those two names and nothing else.
+
+**Where the two facts come from, and where ValeVision differs**
+- TrueVision reads them out of the Noble Architecture Project Admin system - a quotation for the
+  site address, a project config for the client - over HTTP from the website, because that admin
+  system exists and owns those facts.
+- **ValeVision has no Project Admin system at all.** No quotation, no client record; a project.json
+  carries `projectCode`, `projectName`, `displayName` and paths, and nothing else. So
+  `Na__LayoutEditor__ProjectRecord__` here reads the active config instead - no fetch, no timeout,
+  no cache - looking for `clientDrawingName` and `siteAddress`.
+- Neither key is in any project.json today, so the record answers empty and a pack seeds from its
+  own sheets. Add the two keys to a project.json and the seed starts using them; nothing else has
+  to change. `clientDrawingName` takes `{ salutation, initial, surname }` composing to
+  "Mr J. Doous", or a plain string for a company or a joint surname.
+
+**Migration adopts the sheets, never the record**
+- A pack that has never had common values takes them from its own sheets: the value most of the
+  pack already agrees on, trimmed, wins; sheets that match lose their copies and stay on Common; a
+  sheet that genuinely differs is switched off Common and keeps exactly what it was printing.
+- It does NOT take them from the record. An issued drawing must not quietly change its printed
+  address because a project file spells a county differently. The record is *offered* instead -
+  one line under the fields with a **Use it** button, shown only when there is a real difference
+  and only on a sheet that is on Common, because a loose sheet would not show the change it makes.
+- Only a project with nothing typed anywhere seeds straight from the record. The seed marks the
+  model dirty and rides out with the next save; it never writes by itself.
+
+**Undo had to be taught where the two values live**
+- Carried over from the TrueVision fix, and it matters as much here. `Na__LeHist__OnChanged`
+  snapshots `JSON.stringify(sheet)`, and these two values are on the drawings block, not on a
+  sheet - so retyping the client on a sheet that is on Common changed not one byte of what the
+  history watches. It read that as "an announce that changed nothing", recorded no step, and left
+  Ctrl+Z to reach past it to an older, unrelated one.
+- A step now carries `common` beside `json`, the changed-nothing test reads both halves, and
+  `Apply` puts the pack's values back before the announcement. ValeVision's `Apply` already took
+  the step object rather than its json, so that half was free.
+
+**Checked**
+- 38 assertions against these modules and a real Vale project (3047 Doous), including the one that
+  matters: what each title block prints is unchanged by the migration apart from an invisible
+  trailing space. Two of them pin `Na__LeCommon__KEYS` to exactly Client and Site Address, so a
+  future field cannot be swept into the pack by accident.
+- In the app on 3047 with Layout Mode on: Common ticked, type the client and address once and the
+  title block prints them; untick, give the sheet its own address, Ctrl+Z puts the override back;
+  tick again and it rejoins. **Add a second sheet and it arrives already filled in** - which is
+  the whole point. Retype the pack there and the first sheet follows. No write was attempted at
+  any point and 3047's project.json on disk is byte-for-byte what it was.
+- Client's placeholder reads empty on this project rather than falling back to the project name.
+  That is not new: `common.Client || project` is identical to the old `project` whenever the pack
+  value is empty, so the fallback was already resolving to nothing here.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.64.0 - 20-Sep-2026 - Every Ctrl+Z Was Writing the Whole Project to R2
+### Authored in TrueVision3D v2.30.1 and ported today, closing the parity ledger's oldest open row
+
+**Overview**
+- Adam: "Port this to ValeVision too, so it functions the same." This is the row that had been
+  sitting in the parity ledger's *pending return trip* since 14-Sep, waiting for exactly that.
+- Undo and redo in this tree wrote the entire project to R2 a second and a half after every press,
+  whatever they undid - including the undo of a vector delete that had never written anything itself.
+
+**What was actually wrong**
+- `Na__LeHist__Apply` put a snapshot back through `Na__LeModel__UpdateSheet(sheet, {})`, which
+  announces `'sheet-updated'`. That reason is in `Na__LeAuto__STRUCTURAL`, because for a real edit
+  it means a rename, a paper size or a title block change - all of which should save.
+- A restore is not that edit. For drawing purposes a restore IS a sheet update (any part of the
+  sheet may have changed, and every listener must redraw), but for SAVING it is one step reversed,
+  and it should be judged by the reason that step was first announced with.
+- So the fault was not in the auto save's list. It was that an undo had no way of saying what it
+  was undoing.
+
+**The fix, in three places**
+- A step is now `{ json, reason }` rather than a bare JSON string - it carries the reason its change
+  was announced with. (The same-day SheetModel__Common work merged onto this, making it
+  `{ json, common, reason }`; the two ports are independent and met cleanly.)
+- `Na__LeModel__AnnounceRestore(sheet, restore)` normalises, marks dirty and announces
+  `'sheet-updated'` with `restore : { direction, stepReason }` riding on the detail. Undo passes the
+  reason of the step it is REVERSING; redo passes the reason of the step it is REPLAYING. The
+  `restore` field needed `Na__LeModel__Dispatch` and `Touch` to take a fourth argument.
+- `Na__LeAuto__CallsForSave(detail)` reads `restore.stepReason` when there is one and
+  `detail.reason` when there is not, then tests that against the structural list. A restore with no
+  step reason never saves.
+- `Na__LeHist__OnChanged` ignores any announcement carrying a restore, so the history can never
+  record its own. Belt and braces - `Restoring` already covered the synchronous path.
+
+**A dead line that came back to life**
+- `Na__LayoutEditor__SpecLinks__.js` already read `detail.restore` - copied from TrueVision during
+  the specification port, where the field exists. Here it never did, so the test was always falsy
+  and **spec-link propagation on undo has silently never run in this tree**. It works now, for free,
+  and matches TrueVision.
+
+**Not ported, and why**
+- The `'register-updated'` rewrite of kept steps needs a Drawing Register this tree does not have.
+  Not missing - not reachable.
+- TrueVision's `'margin'` step reason is NOT here, and this tree DOES announce `'margin'`
+  (`SheetModel__Sheets__` line ~350). So a notes-margin change is still not undoable in ValeVision.
+  That is TrueVision's History v1.4.0, a separate feature, and it is left alone deliberately rather
+  than swept in - but it is a real gap and it is now written down.
+
+**Tested** - real modules on project 3047, every non-GET refused, `/r2/read` let through
+- Through the real event wiring, six cases: a structural edit with no restore SAVED; undo of a
+  vector edit, redo of a vector edit, undo of a text move, and a restore with no stepReason all did
+  NOT save; undo of a rename STILL saved, exactly as the rename did.
+- End to end with the real API and the real history: creating a text annotation recorded a step and
+  wrote nothing; `Na__LeHist__Undo()` took the sheet from 1 annotation to 0 and wrote nothing;
+  `Na__LeHist__Redo()` took it back to 1 and wrote nothing. `CanRedo()` was still true after the
+  undo, which is the proof that the restore was not recorded as a fresh step.
+- Real rename -> saved; undo of it -> reverted to "Elevations Test" AND saved.
+- Afterwards: probe annotation deleted, sheet name intact, dirty cleared, draft key removed, layout
+  mode toggled back off. Zero write attempts in the entire session.
+- **A false negative worth recording.** The first run showed undo "saving" on alternate cases. The
+  toast observer was re-reading the SAME toast text when the element merely HID after the array had
+  been cleared - an attribute mutation on a still-populated node. Emptying `textContent` before each
+  case fixes it. In this harness a toast that looks like it fired twice probably fired once.
+
+**Files**
+- `07__Core__SheetData/Na__LayoutEditor__History__.js` (v1.4.0), `...__AutoSave__.js` (v1.3.0),
+  `...__SheetModel__State__.js` (restore on Dispatch and Touch),
+  `...__SheetModel__Sheets__.js` (`Na__LeModel__AnnounceRestore`), `...__SheetModel__.js` (re-export).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.63.0 - 19-Sep-2026 - One Scene Open at a Time, and the Carousel Decides Which
+### Authored in TrueVision3D v2.68.0 and ported the same day
+
+**Overview**
+- Adam, of TrueVision: "I keep accidentally editing and breaking the wrong scenes." Then, of this
+  app: "align it, but ValeVision does have some extra things. Just align as many of these as are
+  relevant and fix the same bugs if they exist."
+- Most of it ported. Two of the bugs turned out not to exist here, one of them because this app had
+  already done the right thing, and the extras all survived.
+
+**One scene open at a time, and the carousel picks which**
+- Every scene row folds to a header strip. Opening one closes the rest - a single focused id, not a
+  set, because two open rows is already two sets of Update Scene and Delete on screen.
+- `SetActiveScene` now announces `na-pm-scene-selected`, and the Dev menu answers by folding down to
+  that scene: its group opens, every other group closes, the row opens and scrolls into view. Pick a
+  card, press a chevron, hit a number key - the row in front of you is the view in front of you.
+- DELIBERATELY NOT `na-pm-scene-activated`, which this app already has and means something narrower:
+  the camera transition module fires it when a scene's POSE IS APPLIED, and the cross-section
+  bindings and the export preview restore themselves on it. Reusing that name would have fired both
+  of those twice per card click. Selection and application are two different moments.
+- The fold is a PURE DOM PASS. It never rebuilds the panel, because it fires twice on a card click
+  (on the press, and again when the flight lands) and a rebuild there would throw away a half-typed
+  name and re-fetch every thumbnail for the privilege.
+
+**Layout-editor-only scenes**
+- New per-scene flag, `PresentationMode__Scene__LayoutEditorOnly`, off by default and absent when
+  off. The scene stays in this menu, stays in the Layout Editor's viewport picker and stays
+  reachable through Preview; it leaves the viewer carousel.
+- ONE FILTER, in `GetSortedScenes`, is what hides them. That accessor is the viewer's entire scene
+  set, so the strip, the chevrons, the number hotkeys and the group counts all narrowed together and
+  the carousel module needed no flag check at all. `GetDefaultScene` filters too, so a hidden scene
+  is never the opening view, and `HasValidSavedScenes` filters, so a project whose every scene is
+  hidden gets no carousel rather than an empty one.
+
+**What else came across**
+- A thumbnail per open row, beside Name and Group. For a layout-editor-only scene it is the only
+  picture of that scene anywhere in the app.
+- Move Speed lost its slider and became a value box on the FOV line. Two sliders for two settings,
+  one of which is set once a project, was most of the height of every row.
+- An Advanced fold holding Position, Nav Mode, Easing and the new flag.
+- Update Scene confirms before it overwrites. Clear All Scenes requires the word CLEAR typed in
+  capitals, sits below a rule on its own, and commits nothing until that word matches.
+- The buttons became a two-column grid with a square + at the top of the panel beside Scene Groups,
+  doing the same job as Add Scene From Camera three screens below it.
+- Update All Thumbnails and Download All Images, which walk every scene in turn behind a progress
+  dialog with the app's own spinner, the scene's name, and a count.
+
+**Update Camera, Regen Thumb and Save Scene are now one button**
+- Three presses for one gesture - "I have reframed this view" - and every ordering of those presses
+  saved a slightly different subset. They are one Update Scene, as in TrueVision, and Preview took
+  the space they left.
+- IT NOW CAPTURES THE MODEL LAYERS TOO. This app has applied a scene's
+  `PresentationMode__Scene__ModelLayerVisibility` on arrival since v1.1.0, but nothing in this panel
+  ever WROTE it: the block could only be authored by hand or through the Video Studio, so a view
+  framed with the existing building switched off came back showing whatever the viewer happened to
+  have on. `Na__ModelToggle__CaptureVisibilityMap` was already exported and unused from here.
+
+**Two of TrueVision's bugs do not exist here, and one is because this app was already right**
+- TrueVision's batch walked each scene through an instant camera apply that also ENTERED the
+  scene's walk or fly mode: a pointer-lock request per interior scene, and a controller that keeps
+  stepping the camera under gravity after the pose is set, so the captured frame was never quite the
+  saved one. It needed a `skipNavigationMode` option to fix. **This app never had the fault**: its
+  instant apply places the camera, the orbit target and the model layers and stops, and enters a
+  navigation mode only on ARRIVAL of an animated flight. Nothing to port, and the TrueVision fix was
+  copying the behaviour here.
+- TrueVision's new modal had its Confirm and Cancel handlers built outside the `new Promise` they
+  called `close()` from. `close` is a property of `window`, so every press silently called
+  `window.close()`, the dialog stayed up and the caller waited at its `await` for as long as anyone
+  was willing to watch. The ported module carries the fixed version - built inside the executor,
+  closer named `Na__PmDevModal__SettleDialog` - and a note that nothing in it may be called `close`,
+  `open`, `name`, `status`, `focus`, `top` or `length` again.
+
+**What deliberately did NOT come across**
+- The per-scene layer-timing checkbox. TrueVision offers "switch layers before the camera move";
+  this app applies model layers instantly at the start of a flight ON PURPOSE, because an instant
+  cut reads better than a mid-flight pop-out. The control would have controlled nothing.
+- The shared `Na__AppUtils__ConfirmDialog` is untouched. It is a real modal here with its own markup
+  and is used across the Layout Editor and the drawing panels; it simply cannot ask for a typed word
+  or report progress, so the Dev menu got its own self-building one.
+
+**Extras preserved**
+- The Cross Section capture toggle and its per-scene binding, which now ride along inside the single
+  Update Scene rather than the old Save Scene.
+- `PresentationMode__Scene__IsDrawingApproach`, the `ModelLayerVisibility` key name, the Flask save
+  transport, `ImageExport__Config__*`, and the export panel's elevation overrides - the batch export
+  drives this app's own `RenderToCanvas`, which returns a canvas and encodes through the encoder that
+  throws rather than writing an empty PNG, instead of TrueVision's data URL.
+
+**Verified**
+- `Na__Verify__Exports__` and `Na__Verify__ModuleGraph__` both pass (386 files, 490 modules, only
+  the known vendored three-edge-projection issue).
+- Driven in the running app against 57079 Mordaunt's thirteen scenes: fold, single-open, refold,
+  cross-group focus and focus-follows-card; the layout-only flag removing a card from the strip and
+  putting it back, with the row keeping its place and a LAYOUT chip; both modals, including every
+  rejected spelling of CLEAR with the scene list untouched behind it; and the batch confirmation
+  reading the right count. Every write blocked at `fetch` throughout - nothing was saved.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.62.0 - 19-Sep-2026 - Closing Asks First Now, and Ctrl+S Blurs Before It Saves
+### Authored in TrueVision3D v2.67.0 and v2.73.0, ported the same day
+
+**Overview**
+- Adam closed the TrueVision PWA mid-layout and lost a session's work. Two things came out of it,
+  and both are here: a guard on closing with unsaved work, and Ctrl+S.
+- Content edits - viewports, text, dimensions, vectors - deliberately do not auto save, because a
+  drag session that wrote the project between moves would be unusable. The cost is an editor that
+  can hold an afternoon behind the Save Sheets button, and nothing asked before the window went.
+
+**The close guard**
+- A `beforeunload` handler in the auto save raises the browser's own leave-site question while
+  sheets are unsaved or the specification is unsynced. Nothing unsaved, no question: closing a
+  clean editor is still instant. Editable sessions only.
+- **The draft is flushed as the question goes up, not on the `pagehide` after it.** That is the half
+  that rescues work: `pagehide` is a promise rather than a guarantee, it is skipped on an abnormal
+  close, and by the time it would fire the decision is already made. Proven here - the draft key was
+  absent when the close began inside the 600 ms debounce, and the sheet was on disk the instant the
+  handler ran.
+- The wording is the browser's; every current one replaced the custom message years ago.
+  `returnValue` is still set for the browsers that read it.
+- `LayoutEditor__AutoSave__CloseGuardEnabled` turns it off.
+
+**Ctrl+S, and why it is not with the other Edit chords**
+- Ctrl+Z and Ctrl+C are answered by the sheet's own keyboard, which is attached only while a drawing
+  tab is up - on the specification it has stood down. Saving must work on both, so `Edit__Save` is
+  answered once by the mode controller, on `document` in the capture phase, for as long as the
+  editor is open. Capture also means the key is taken before the browser is told, which is the
+  point: Ctrl+S would otherwise offer to save the page as a file over a drawing.
+- **The blur is the trick.** Panel fields report on `'change'`, which fires on blur or Enter and not
+  on every keystroke. Clicking the Save button blurs whatever had focus, so the value being typed
+  committed on the way to the button; a keyboard shortcut blurs nothing. Without help, Ctrl+S
+  pressed mid-type would have saved the OLD value and left the new one in the box. So the handler
+  commits the paper's text tool, then blurs the focused field if it is inside the editor host.
+- Proven here: the active sheet's name read `Elevations Test` before the key and `VV CTRL-S PROBE`
+  immediately after, with the typed value never having fired a change of its own.
+
+**Divergences from TrueVision, both deliberate**
+- TrueVision also publishes `window.TrueVision__Pwa__HasUnsavedWork` so its PWA service worker
+  registrar holds an automatic update reload back while work is unsaved. ValeVision has no service
+  worker and nothing that reloads the page by itself, so there is no reader and the flag is not
+  published. `Na__LeAuto__HasUnsavedWork` is exported anyway, so a registrar arriving later needs no
+  change in the auto save.
+- TrueVision's editor initialises at app start; ValeVision lazy-loads the whole editor on first use
+  through `01__Core__Loader`. So both listeners register when the editor is first opened rather than
+  at boot. That is correct rather than a shortfall - before the editor is opened there is nothing to
+  guard and nothing to save - but it is worth knowing when testing: `Na__LeMode__Ready()` resolves
+  to `false` and every config value reads as its built-in default until `Na__LeLoad__Require()` has
+  run, which makes an untriggered editor look exactly like a broken one.
+
+**Still behind TrueVision in this file**
+- The auto save is at TrueVision's v1.1.0. Its v1.2.0 - judging an undo or redo by the step it
+  reverses, rather than writing the whole project to R2 on every Ctrl+Z - has not been ported. Not
+  related to this work, but it is the next thing `Na__LayoutEditor__AutoSave__.js` wants.
+
+**Tested**
+- Real modules on project 3047 with every non-GET refused. Close guard: clean not prevented, dirty
+  prevented, draft flushed on the way up, `CloseGuardEnabled` proven in both directions. Ctrl+S from
+  the stage: taken, and the save ran end to end (it reports "Project not found: 3047" - that test
+  project is not writable locally, which is the project, not the path). Bare S untouched;
+  Ctrl+Shift+S no match, so `ModifierMatch: Exact` holds.
+- Afterwards: sheet name restored, dirty cleared, draft key removed, layout mode toggled back off,
+  and zero write attempts in the whole session.
+
+**Files**
+- `07__Core__SheetData/Na__LayoutEditor__AutoSave__.js` (v1.2.0 - close guard region,
+  `Na__LeAuto__HasUnsavedWork`, `beforeunload`), `03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js`
+  and `...AppConfig__.json` (`CloseGuardEnabled`), `03__Core__Config/Na__LayoutEditor__KeyMappings__.json`
+  (`Edit__Save`), `05__Core__ModeController/Na__LayoutEditor__ModeController__.js` (`Na__LeMode__OnSaveKey`),
+  `40__Ui__Panels/Na__LayoutEditor__Toolbar__.js` (`Na__LeToolbar__Save` exported).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.61.0 - 19-Sep-2026 - The Number Was Typed Into the Name, and the Name Had No Way of Knowing
+### Authored in TrueVision3D v2.70.0 and ported the same day
+
+**Overview**
+- Adam, of TrueVision: "these strings applied to the tabs are gigantic and really cumbersome, and
+  I keep having to update numbers in multiple places." Then, of this app: "Make all of the same
+  changes to align ValeVision the same."
+- A sheet tab read whatever was in `Sheet__Name`, so the only way to see a drawing's number on one
+  was to type it into the name - and then to retype it whenever the drawing was renumbered. Two of
+  the four sheets in the live projects are still called "Drawing 1" and "Drawing 2", from the old
+  `Drawing {index}` default, which is the same fact from the other end: the name was carrying a
+  number that nothing kept true.
+- A tab now reads `D03 - Elevations`: the short code cut from the sheet's own drawing number, then
+  a short name that holds words and nothing else. The whole number moves to the tab's hover.
+
+**Where ValeVision's code comes from, and why that is not TrueVision's answer**
+- TrueVision has a Drawing Register that owns numbering; its tabs read what the register wrote.
+  THERE IS NO REGISTER HERE, and inventing one was not the job. The code is cut from the sheet's
+  own `Drawing No.` title block field instead - the field a person types - so the feature works
+  the moment a number is typed and lies dormant, showing the name alone, until one is.
+- That is the whole of the divergence, and it is a small one: both apps read a drawing number,
+  cut its last letter-led code, and compose `{code} - {name}`. What differs is who writes the
+  number.
+- CONSEQUENTLY THE SHEET PANEL KEEPS EVERY TITLE BLOCK ROW, `Drawing No.` included. TrueVision
+  hides that row because its register owns the number and a second place to type it would be a
+  second source of truth. Here the row IS the source of truth, so hiding it would leave no way to
+  give a drawing a number at all.
+
+**The rules, in one leaf with no imports**
+- `07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js` (`Na__LeCode__`) is new and holds three
+  pure string functions: the stored number, the short code cut from it, and the composed label.
+- IT HAS NO IMPORTS AT ALL, and that is the point. This app loads the Layout Editor lazily: the tab
+  strip and the Dev menu draw sheet names through `Na__LayoutEditor__Loader__` BEFORE the editor
+  bundle exists. Had the rules sat in the sheet records unit, as they do in TrueVision, the loader
+  would have had to pull the editor's config, layout and project-data modules into the first paint
+  to read a tab label - undoing the lazy load - or keep a second copy of the regex that could drift.
+- `Na__LayoutEditor__SheetRecords__` imports the leaf and re-exports all of it under the
+  `Na__LeRec__` names TrueVision uses, so a future port in either direction lands on the same call.
+- A TAB MUST NOT RENAME ITSELF WHEN THE BUNDLE ARRIVES. `Na__LeLoad__GetTabLabel` composes from the
+  leaf before the editor loads and `Na__LeModel__GetTabLabel` composes from the same leaf and the
+  same configured format after it, and `SheetViews` now carries each record's `Sheet__Fields` so the
+  pre-load side can read the number at all. Checked in the running app on the same three records:
+  the two answers are identical, character for character.
+
+**The name holds words**
+- `StripSheetCode` takes a code typed in front of a name back off, and `NormaliseSheet` runs it, so
+  `Sheet__Name` is the short name for every reader at once with no migration step.
+- ONLY A CODE OF THE SHEET'S OWN SERIES COMES OFF: the letters of its own short code, its digits,
+  then a dash, a colon, a middle dot or a bar. So "D24 - Site Plan" on a sheet numbered D10 loses
+  its stale D24, while "L2 - Second Floor" on a D series keeps every word, and "3D Images",
+  "1:50 Details" and "D1.5 Details" are never touched. No period is a separator, because D1.5 is a
+  real thing to call a drawing.
+- `CleanSheetName` runs the same strip BEFORE a rename is kept, so a code typed out of habit is
+  saved as the words alone rather than saved whole and stripped on the next read.
+
+**The rename trap TrueVision hit, which this app did not have but now cannot grow**
+- In TrueVision a rename wrote the new name over `Sheet__Fields__Title`, so shortening a tab would
+  have destroyed a typed title block title. ValeVision's `UpdateSheet` never did that, so there was
+  nothing to fix - but the two apps' renames now go through one function, `ApplySheetName`, with
+  the rule written down: a stored title that DIFFERS from the name is somebody's typing and
+  survives; one that MATCHES was only following the name and still does; one never stored follows
+  by itself through the default. All three checked in the running app.
+
+**No short code invented from a default**
+- A sheet with no drawing number falls back, for the TITLE BLOCK only, to the project code and its
+  place in the order - `3047-01`. That is not a drawing code, and a tab reading `01 - Elevations`
+  would be worse than the name alone, so the short code is cut from the STORED number only and such
+  a sheet shows its name by itself.
+- This is not hypothetical. A project code ending in letters would compose `Doous-01`, which reads
+  as a letter-led code: without this rule every tab of a never-numbered pack would have read
+  `Doous-01 - Elevations`. Verified in the app: `3047-01` gives no code, a typed `VV_T01_D07` gives
+  `D07`.
+
+**Also**
+- A new sheet is called "New Drawing", not "Drawing {index}" - in the config, in the config state
+  fallback and in the loader's own pre-load copy of that default. `D11 - Drawing 5` is two numbers
+  on one tab that need not agree, which is the fault this release exists to remove. `{index}` still
+  answers, so a configured format that uses it keeps working.
+- The tab rename field holds the short name alone, with the code standing in front of it as fixed
+  text inside a tab-shaped frame. The Sheet panel's Name row does the same, and its code is read on
+  every refresh - so typing a `Drawing No.` below changes the Name row, the tab, the toolbar and
+  the hover together, which is exactly what was checked.
+- The toolbar, the Dev menu sheet list and delete prompt, and the specification's go-to chips all
+  name a sheet through the tab label, so a drawing is called the same thing wherever it is met.
+
+**Not ported, deliberately**
+- TrueVision v2.71.0 splits a drawing number into project, phase and drawing code and composes a
+  Document ID from the three. It is built on the Drawing Register's phases and numbering series,
+  neither of which exists here, so porting it would mean inventing a register first. Its
+  `Sheet__Fields__DrawingNumber` still holds the drawing code, which is what this release reads, so
+  the two apps' tabs already agree on what a tab shows.
+- TrueVision v2.72.0's register styling has no register here to style. Its shared surface tokens
+  came over separately as v2.60.0.
+
+**Verification**
+- Named exports (386 files) and the module graph both pass, and all twelve changed modules parse as
+  ES modules. The config JSON parses.
+- The 37-case table that proved the rules in TrueVision was re-run against THIS app's leaf, lifted
+  out of the real file rather than a copy: all 37 pass identically.
+- In the running app on 127.0.0.1:8666, no-cache, with every non-GET fetch, XHR and beacon refused:
+  nothing attempted a write at any point, including the sheet deletes at the end. Three scratch
+  sheets covered a legacy name with its code typed in, a clean name with a number, and a sheet with
+  no number; the tabs read `D01 - Floor Plans`, `D03 - 3D Images` and `Elevations`, with the whole
+  number on the hover of the first two and none on the third. Typing `VV_T01_D07` into Drawing No.
+  moved that tab to `D07 - Elevations` and took the chip, the toolbar and the hover with it.
+- Cleaned up afterwards: every scratch sheet deleted, localStorage back to empty.
+- ONE THING THE PANE CANNOT SHOW: with the browser pane hidden the document never has focus, so
+  `input.blur()` fires no event and the rename field does not close on its own. Dispatching the
+  blur by hand ran the commit path and the tab came back correctly. That mechanism is unchanged by
+  this release.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.60.0 - 19-Sep-2026 - Two Greys and Two Shadows for One Pack of Documents
+### Authored in TrueVision3D v2.72.0 and applied to both copies the same day
+
+**Overview**
+- Adam: "there must be so many different styles and copying lots of code... this is like three
+  completely different developers built it. The drawing editor UI is kind of the gold standard
+  that needs to be the same everywhere else because it's like three different user interfaces."
+- ValeVision carried the identical divergence, line for line, because both apps inherited it from
+  the same port. Each editor declared its own ground and its own paper shadow, by hand, in its own
+  file: the drawing editor `#d8dcdf` with `0 6px 26px rgba(0, 0, 0, 0.22)`, the specification
+  `#eef1f4` on a `#d7dde3` desk with `0 1px 3px .16, 0 8px 24px .1`.
+- Two greys and two shadows for one pack of documents, so moving between tabs read as moving
+  between applications.
+
+**One place that says what a surface is**
+- `10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css` is new and holds every ground,
+  paper, shadow, edge and chrome token the Layout Editor has. Its header says outright: never
+  write a ground colour or a paper shadow into a feature stylesheet again, add a token here and
+  use it from both places.
+- `--Na_Le_Stage` is `#d8dcdf`, the drawing editor's, exactly as Adam specified. The editor's own
+  `--Vale_LayoutGreyStage` is now an alias of it, so every existing use keeps working and there is
+  still only one value.
+- `--Na_Le_PaperShadow` is the drawing sheet's `0 6px 26px rgba(0, 0, 0, 0.22)` - the deeper of the
+  two, and the one that actually reads as a sheet lying on a desk.
+- The specification's page and its reader desk both resolve to the one stage; its pages wear the
+  one paper shadow.
+
+**Divergence from TrueVision: where the sheet is loaded**
+- TrueVision imports it from `Na__CoreUi__Styles__Index__.css`, which loads its editor styles with
+  the page. ValeVision links its editor stylesheets from `Na__LeLoad__STYLESHEETS` in
+  `Na__LayoutEditor__Loader__.js`, so it is first in that array instead. Same cascade position -
+  before `Styles__Main__` - by a different mechanism. The token file's header records this.
+
+**Tested**
+- ValeVision's REAL stylesheets were loaded into an isolated static page in a browser and the
+  computed values read back, rather than eyeballed: the specification's page and its reader desk
+  both `rgb(216, 220, 223)` = `#d8dcdf`, and the specification's page shadow
+  `rgba(0, 0, 0, 0.22) 0px 6px 26px 0px`, identical to `.na-le-paper`'s. Both assertions
+  (`allGroundsMatch`, `allPapersMatch`) true.
+- Audited afterwards: no editor ground and no paper shadow is hard-coded anywhere in ValeVision's
+  Layout Editor stylesheets. One `#eef1f4` survives on purpose and is neither - the segmented
+  control pill on the specification's white bar.
+- `Na__LayoutEditor__Loader__.js` syntax-checked clean as `.mjs`.
+- NOT verified in the running app: the tabs against the new ground. That needs Doous on the
+  authoring route, which was out of scope for a token change whose values were read directly.
+
+**Three changes from TrueVision v2.69.0-v2.72.0 that did NOT port, and why**
+- **Open Sans embedding in PDFs.** TrueVision v2.69.0 fixed `Na__LeRegPdf__BuildDocument` asking
+  `Na__LePdfFonts__Install` to embed cuts it had never asked to be fetched. ValeVision has no
+  `Na__LayoutEditor__PdfFonts__` module at all, so there is no such call to fix: its PDFs are set
+  in Helvetica by a recorded decision, not by a silent failure. The parity ledger already carries
+  this at its `SpecPdf` row. Porting it is a new feature - the module, a `Pdf` config block, the
+  TTF cuts and the wiring into PdfExporter and SpecPdf - not an alignment.
+- **The Drawing Register.** ValeVision has no `51__Feature__DrawingRegister`. The register PDF's
+  letterhead, its three code columns and its Edit-table column widths all live in a feature that
+  does not exist here.
+- **The Document ID schema** (per-sheet phase, composed `PS01_T02_D01`, the title block's
+  `Drawing No.` becoming `Document ID`). It depends on the register: the phase default and the
+  numbering series that `Na__LeRec__DrawingNumber` falls back to are both read from
+  `GetDrawingRegisterSetup`. ValeVision's drawing number is still built inline at
+  `Na__LayoutEditor__SheetRecords__.js` as `code + '-' + index` ("PS01-04"), which is a place in
+  the order, not a document code. Relabelling its title block to "Document ID" without the schema
+  behind it would print that same string under a name that promises more than it holds.
+
+**Files**
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css` (new).
+- `02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js`.
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css`.
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css`.
+- `02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.59.1 - 19-Sep-2026 - The Floor Was Shading Itself
+### Authored in TrueVision3D v2.68.1 and applied to both copies the same day
+
+**Overview**
+- Adam, in TrueVision: "a random smudged black element" on the ground in front of the house, and
+  the whole forecourt grained mid-move. Same SSAO module here under MaxEngine, same fault, same fix.
+- A flat surface has ZERO true occlusion, so anything on open ground is false; the band is what the
+  grain averages to once the burst settles.
+
+**What it was**
+- At a grazing view one screen pixel spans a long stretch of ground. A hemisphere sample above the
+  floor projects to a pixel whose read-back surface point can be metres along the floor from the
+  pixel being shaded, and slightly nearer the camera than the sample, which the depth test alone
+  calls occluded. Measured on a clean plane at 12 degrees: 0.02 / 0.05 / 0.15 / 0.28 mean
+  occlusion near to far, where the truth is zero. It surfaced when the radius doubled and the cull
+  distance rose from 8m to 50m, which shaded mid-ground that had always been culled before.
+- Ruled out with measurements: the depth source, coplanar ground surfaces, the reconstructed
+  normal (0.23 degrees from true; a real normal buffer bought nothing) and the bias.
+
+**The fix: an occluder has to rise out of the surface**
+- The read-back point is also measured against the tangent plane of the shaded pixel and only its
+  elevation counts, faded from one bias to four. Floor points contribute nothing; wall points count
+  as before. After: 12 degrees 0 / 0 / 0 / 0.013, 25 degrees all zero; a real corner keeps its
+  contact (0.112 before and after). Ten lines in the fragment shader, verbatim from TrueVision, no
+  new uniforms, no MaxEngine wiring.
+
+**Also in this release**
+- `RadiusMm` 50 to 100 (`Intensity` stays 1.2: the radius alone measured x1.95 darker, both
+  together x3.44). `finalAo` clamped 0..1 so a strong intensity saturates instead of smearing a
+  negative through the blur. `CullDistanceMm` 8000 to 50000, with a `CullDistanceNote` recording
+  why: it measures camera distance, so below the orbit range the whole image loses its shading at
+  once as the camera pulls back.
+
+**Found, not changed**
+- `uResolution` is CSS pixels while the fragment grid is CSS x pixel ratio, so the AO blur is wider
+  than the config implies on a scaled display. Same in TrueVision; left for Adam to decide.
+
+**Tested**
+- The measurements above were taken against TrueVision's copy of the module; the shader hunk here is
+  byte-identical and the surrounding code was already at parity from v2.59.0.
+- Doous (3047, a MaxEngine project) loaded on a static server from this checkout: the console
+  reported `Configured engine for this model: MaxEngine`, the shader the server handed the page
+  carried the gate and the clamp, and a grazing view across the forecourt showed clean ground with
+  the contact shadows under the orangery intact. Adam confirmed the same view in TrueVision.
+- The Export Render Layers occlusion (`71__System__ExportRenderLayers`, a separate horizon-based
+  shader) was read and left alone: it already scores an occluder by its elevation above the
+  surface normal, so it never had this defect.
+
+**Files**
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js`.
+- `02__AppData/Na__AppConfig__Main.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.59.0 - 19-Sep-2026 - The Settle Was Buying Sixteen Copies of the Same Noise
+### Authored in TrueVision3D v2.66.0 and applied to both copies the same day
+
+**Overview**
+- Adam, having confirmed the TrueVision viewport: "it seems to look much better", and then the note
+  that decides the scope here - "it's the Max engine that uses SAO in ValeVision3D".
+- It does, and it uses the SAME custom SSAO module, not three.js's stock `SAOPass`, so this is a
+  genuine parity port rather than a re-implementation. PureEngine constructs no AO at all and is
+  untouched: every new call site is guarded, so the Pure path runs exactly the frame it ran before.
+
+**The drop-out was a broken measurement, not a slow device**
+- The AO performance monitor timed 120 sampled frames end to end with wall clock and divided. That
+  is only a frame rate if frames arrive back to back, and in this app they never do: the render
+  loop is invalidation based, so it draws while something moves and then STOPS, and the render loop
+  deliberately withholds refinement chunks from the monitor because one chunk is several frames of
+  work in one. Both the idle and the bursts landed in the elapsed time while contributing no
+  counted frames.
+- Simulated against a machine holding a genuine locked 60fps: 1s drags with 5s of looking measured
+  16.5fps, 2s drags with 10s of looking measured 9.8fps, short nudges with 4s of looking measured
+  8.1fps - all below the 24fps threshold, so AO was switched off with a toast blaming the hardware.
+  It was never about the device; it was about how long its user spent LOOKING at the scene.
+- The monitor now averages the DURATION of ordinary frames that arrive back to back, rejecting any
+  delta that measures a gap rather than a frame. A real 18fps still reads 18fps and still disables
+  AO, which is the case the monitor exists for.
+
+**The burst ran sixteen SSAO passes and got one pass's worth of AO**
+- The refinement burst runs the whole effect chain per sample, SSAO included, and nothing stood the
+  AO passes down. The kernel rotation is hashed from `vUv` - the fullscreen quad's UV, which the
+  jitter does not move, because the jitter moves the scene under the fragment grid and not the
+  grid - so every one of the sixteen passes handed a given fragment the identical rotation, and
+  sixteen copies of one noise pattern average to that same pattern.
+- `uAoNoiseOffset` advances by the golden ratio per supersample, so the burst averages sixteen
+  INDEPENDENT estimates. Same sixteen renders, same cost. Measured here against a 256-rotation
+  ground truth on an RTX 3080: settle error 1.178 to 0.172, **85.4% closer to the truth**
+  (TrueVision measured 87.5% on the same probe).
+- `uAoActiveSamples` lets an ordinary moving frame walk fewer kernel samples - `SamplesWhileMoving`,
+  4 against a ceiling of 8 - with an early `break` inside a loop whose bound stays constant so the
+  unroll is unaffected.
+
+**The trap that would have made it pop**
+- The cosine weighting was baked into the kernel vectors, so a reduced budget would have inherited
+  a PREFIX of it - every sample bunched against the surface, a hard contact line with no falloff,
+  popping into the real effect at every settle. The kernel now holds unit directions and the
+  weighting is applied in the shader against the ACTIVE count. Bit-identical at the full count, so
+  nothing hand-tuned moves unless something asks for a reduction. Brightness change measured at the
+  settle here: 0.503 luma out of 224.
+
+**Borrowed for a draw, never held across one**
+- The still exporter, the video exporter and the Layout Editor all borrow this composer between
+  frames and render through it without saying anything about quality. Full quality is the resting
+  state; the reduced budget is set immediately before an ordinary frame and restored in a `finally`
+  immediately after - the discipline the refiner already uses for FXAA and `renderToScreen`.
+
+**Divergence from TrueVision**
+- TrueVision has one engine and calls the quality hooks directly. ValeVision has two, so the render
+  loop guards each call the way it already guards `monitorAoFrame`, and the MaxEngine setup exports
+  the hooks as MaxEngine extras. `onSample` is passed as `... || null` and the refiner's own
+  `typeof` guard covers the rest.
+- `onSample` was added to `Na__RenderEffect__ProgressiveRefine__.js` as an OPTIONAL context field
+  specifically so the two copies of that module stay adoptable verbatim - the refiner was ported
+  from here to TrueVision and is meant to stay one file in two places.
+
+**Tested**
+- The real AO module driven through a real composer on an RTX 3080 (ANGLE / D3D11): both new
+  uniforms confirmed live rather than optimised away, and the quality API present on the returned
+  state. Same probe as TrueVision, same result shape.
+- NOT tested: a real project in the running app, and PureEngine beyond reading the guards.
+
+**Files**
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js`, `...__Shader.js`.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js`,
+  `Na__RenderEffect__ProgressiveRefine__.js`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`.
+- `02__AppData/Na__AppConfig__Main.json` (`SamplesWhileMoving` 4, `SettleDebounceMs` 150 to 90).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.58.1 - 18-Sep-2026 - The Drawing Keeps the Finger
+### Authored in TrueVision3D v2.65.2 and applied to both copies the same day
+
+**Overview**
+- Adam, reading a drawing on an iPad: "zoom and pan on ipad feel weird and kind of sticky feeling",
+  and then the cause of half of it: "it tries to change to next tab as i try to pan on the main
+  canvas not just the top bar".
+- Three separate faults, and the first one is the one that was really being felt.
+
+**A fitted sheet had no panning to spend, so every drag was a page turn**
+- The page turn was built out of travel the surface could not use: pan to the edge of the paper,
+  and the drag that carries past it turns the page. On a sheet FITTED to the screen there is no
+  panning to do at all, so every sideways pixel was spare and the document changed 70px into any
+  horizontal drag. Every document arrives fitted, so this was most drags.
+- A page turn is now the surface's to ask for, and the drawing surface does not: one finger pans
+  it, full stop. The specification's pages still ask for one, because nothing there uses the
+  sideways direction. Changing document is the tab strip's job and the dock's.
+
+**Applied once per painted frame, not once per touch move**
+- A pan and a pinch both end in a scroll position and a zoom, and working either out means
+  measuring the stage and the paper immediately after writing new sizes to them. A tablet reports
+  touch far faster than it paints, so that was forcing several full layouts per painted frame and
+  the drawing lagged behind the finger. Moves are now gathered as they arrive and applied in one
+  `requestAnimationFrame`.
+- The pan also read `scrollLeft` back after writing it, purely to find out how much landed - a
+  forced layout in the middle of a live gesture, for a number that can be worked out. The clamp is
+  strictly inside the stage's own scroll range, so the position asked for is the position given.
+  It measures the stage and the paper once for both axes instead of once per axis.
+
+**Safari was zooming the page as well as the sheet**
+- iOS pinches the visual viewport whatever the element underneath declares, and `touch-action:
+  none` does not stop it. A reader pinching a drawing was zooming the sheet AND stretching the
+  browser around it at the same time, which is most of what "weird" was. WebKit fires its own
+  `gesturestart` / `gesturechange` / `gestureend` for that zoom and they can be refused.
+- Bound only where this module does the pinching itself, so the specification's pages - which hand
+  over no `onPinch` - can still be pinched to read finer print.
+
+**One more, found while testing**
+- A flick that begins and ends inside a single painted frame had everything it asked for still
+  sitting in the pending gesture when the finger lifted, and the gesture-end flush ran after the
+  drag state had been cleared - so the page turn was thrown away with it. The flush now runs first.
+
+**Tested in the browser (375x812, synthetic touch)**
+- A long horizontal flick across a fitted drawing: document unchanged, both directions.
+- Zoomed in: one finger still pans (scrollLeft 472 to 567) and two fingers still zoom (paper 567px
+  to 1247px), with the document unchanged throughout.
+- A flick across the specification's pages still turns to the previous document.
+- NOT tested: an actual iPad. The gestures were driven as synthetic pointer events, so the fixes
+  for what a real device does differently - the frame pacing and the WebKit page pinch - are
+  reasoned rather than observed.
+
+**Files**
+- `51__System__LayoutEditor/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js`
+  1.1.0, `...__Drawings__.js` 1.1.0, `...__WebViewer__.js` (Attach takes no swipe handler).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.58.0 - 18-Sep-2026 - The Public Web Is a Viewer, Not a Disabled Editor
+### Ported from TrueVision3D v2.65.0 and v2.65.1, authored there the same day
+
+**Overview**
+- Adam, on TrueVision: "The public web version of the layout editor should not show, it should
+  instead be a view only mode... dont show the main editor side panels, most people will be
+  viewing on a phone in portrait so they are useless." Then, on the first cut: "use regular tabs
+  but add an additional side scroll on portrait and a next arrow at the end of the visible list",
+  and "ensure no objects outside the bounds of the paper render... I sometimes leave objects to
+  match properties to outside the drawing."
+- The read-only web build was already read-only. What it was not was USABLE: read-only meant the
+  whole editor with its buttons greyed - 550px of panel columns and a toolbar of drawing tools -
+  which on a 375px phone leaves the drawing a sliver and every control on screen is one the reader
+  has to work out is not for them. ValeVision's copy had exactly the same problem.
+
+**Where the line is**
+- The gate is the one that already exists: `Na__DevGate__IsAuthoringEnabled()`. Localhost in a
+  browser and localhost installed as a PWA both author; the live site either way is the viewer.
+  The display mode is never asked, because it was never the question.
+
+**Four new modules under `51__System__LayoutEditor/80__Feature__WebViewer/`**
+- `...__TouchControls__.js` (`Na__LeVwTouch`): a gesture recogniser that knows nothing about
+  sheets or specifications. Drag to pan, pinch to zoom, double tap to fit, swipe sideways for the
+  next document. The EDITOR'S touch module reserves the second finger for navigation so the first
+  can drag sheet items; a viewer edits nothing, so the first finger is free.
+- `...__Drawings__.js` (`Na__LeVwDraw`): the read-only drawing surface. It attaches the PC
+  navigation controls and the recogniser and NOTHING ELSE - no sheet tools, no margin grip, no
+  context menu, no measurements box.
+- `...__Spec__.js` (`Na__LeVwSpec`): the specification as the A4 pages it prints as. The Read view
+  is SET on every show rather than defaulted, so a stored Edit view from a once-unlocked device
+  cannot bring the authoring surface back.
+- `...__WebViewer__.js` (`Na__LeVw`): the dock at the bottom of the screen - which document of how
+  many, an arrow each side, and the controls for however the showing document is being looked at.
+- Plus `Na__LayoutEditor__Styles__WebViewer__.css`, linked LAST in the loader's stylesheet list
+  (TrueVision imports it last in the CSS index; ValeVision links the editor's sheets lazily).
+
+**Not disabled: not built**
+- `Na__LeMode__Build` gives a viewer a different shell - `<shell><centre><stage>`, no columns, no
+  toolbar row - and `AttachSheetInput` returns early. Every read-only leak this codebase has had
+  came from attaching the editing tools and then disabling each thing they can do; one new tool,
+  one forgotten guard, and a web reader can drag a viewport. A tool that was never attached cannot
+  leak. Verified: 0 panel columns, 0 panels, 0 toolbars, 0 measurement boxes.
+
+**The tab strip keeps its tabs, and learns to scroll**
+- The same strip the editor has - every sheet, then the specification - with no plus, rename or
+  drag for a viewer, which it never had. The tabs now sit in `.na-le-tabs__scroller` with an arrow
+  OUTSIDE it at each end, so the arrows stay put at the ends of the visible run however far the
+  tabs are pushed along. Shown only when they do not all fit: seven tabs need about 700px and a
+  phone in portrait has 375.
+- An arrow opens the tab before or after the open one by CLICKING it, which in ValeVision is also
+  what loads the editor on the first press - so the lazy loader is untouched and there is still
+  exactly one way into each document. The plus is skipped: it makes a sheet rather than opening
+  one.
+
+**The page is where the drawing ends**
+- `.na-le-host--viewer .na-le-paper { overflow: hidden }`. The editor sets overflow visible on the
+  paper and on each of its layers on purpose - an author parks an item off the page, or leaves a
+  swatch out on the grey to match properties from. A reader is being shown an issued drawing, and
+  on a phone that working material arrives as unexplained marks floating beside the page. Clipping
+  the paper clips every layer inside it, because an ancestor that hides its overflow clips its
+  descendants whatever they set.
+
+**`Na__AppUtils__DevGate__` 1.1.0 - the tri-state lock**
+- The stored flag is now unlocked, LOCKED, or nothing said, and an explicit lock closes authoring
+  on localhost too. Before this, `Lock()` and `?authoring=off` cleared the key and localhost
+  carried on authoring, so the read-only web build could not be seen without deploying it.
+  `?authoring=off` is now how this viewer is developed, here and in TrueVision.
+
+**What did NOT need porting, and why it is worth recording**
+- TrueVision's v2.65.1 also had to teach the nav toolbar, the controls help panel and the Tools &
+  Settings dropdown to clear the tab strip. **ValeVision already had that on every one of them** -
+  it was TrueVision's port that dropped `var(--Vale_LayoutTabStripHeight, 0px)` from those rules.
+  That fix was a back-port of ValeVision's own correct behaviour, and nothing changes here.
+- TrueVision bumped its service worker cache token so installed copies pick the new shell up.
+  ValeVision has no service worker, so there is nothing to bump.
+
+**Deliberate divergences from the TrueVision original**
+- `Na__LeVw__Documents()` is the sheets in model order, then the specification. TrueVision splits
+  site plan sheets out and files them after the plus; ValeVision has no drawing type on a sheet,
+  so there is one run of sheets and nothing to split.
+- The tab strip reaches the editor through `Na__LayoutEditor__Loader__` rather than the mode
+  controller, exactly as it did before. The scroller, the arrows and the reveal are indifferent to
+  which, because they read the tabs back off the strip and click them.
+
+**Tested in the browser (57994__Harris__Scheme-02, localhost, 375x812 and desktop)**
+- `?authoring=off`: the gate persists `false`, the host is `na-le-host--viewer`, the dock reads
+  `< 1 / 3 Fit - + PDF >`, the tabs are `3D Model | Elevations | Drawing 2 | Project
+  Specification` with both arrows shown, 0 columns and 0 toolbars, and the paper clips.
+- Stepping with the arrows moves one document at a time, swaps the dock to the page keys on the
+  specification, stops at the ends, and never leaves the open tab clipped at either edge.
+- `?authoring=on`: the editor is untouched - the plus tab is back, two panel columns, the whole
+  toolbar through to Raster, no dock, and the paper's overflow is visible again.
+- NOT tested: a real finger on a real phone (TrueVision's gestures were driven as synthetic
+  pointer events and the code is verbatim), and the drawings rendered with their models - the
+  test project's GLBs are CDN-hosted and 404 against a local static server, so the viewport
+  pictures were empty. The chrome, the clipping and the navigation are all independent of that.
+
+**A note on verifying this locally**
+- ValeVision asks a local Flask server for `/api/projects/<code>`, so no project opens against a
+  plain static server and the layout editor cannot be reached at all. A small no-cache dev server
+  that also answers that one endpoint from `WebApps/ValeVisionGallery/Projects` is in the session
+  scratchpad and wired up as `vv-nocache` in `.claude/launch.json`. It sends `no-store` and no
+  `Last-Modified` (a browser otherwise serves the previous save of an edited module and a CSS
+  change becomes a coin toss) and speaks HTTP/1.1, because a module graph this size asks for 100+
+  files at once and on HTTP/1.0 a few come back as ERR_CONNECTION_REFUSED - which looks exactly
+  like a broken import.
+
+**Files**
+- `51__System__LayoutEditor/80__Feature__WebViewer/` (new): `Na__LayoutEditor__WebViewer__.js`
+  1.1.0, `...__Drawings__.js` 1.0.0, `...__Spec__.js` 1.0.0, `...__TouchControls__.js` 1.0.0,
+  `Na__LayoutEditor__Styles__WebViewer__.css`.
+- `05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.17.0, `...__TabStrip__.js` 1.4.0.
+- `01__Core__Loader/Na__LayoutEditor__Loader__.js` (viewer stylesheet registered last),
+  `...__Styles__Boot__.css` (the scroller and the arrows).
+- `03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js` (GetWebViewerSetup),
+  `...__ConfigState__.js`, `Na__LayoutEditor__AppConfig__.json` (LayoutEditor__WebViewer__Config
+  and the viewer labels).
+- `03__AppUtils/Na__AppUtils__DevGate__.js` 1.1.0, `02__AppData/Na__AppConfig__Main.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.57.0 - 18-Sep-2026 - Drawing Tabs Stay Rendered, and a Moved Thing Is a New Model
+### Ported from TrueVision3D v2.64.0 and v2.64.1, authored there the same day
+
+**Overview**
+- Adam, on TrueVision: "flipping between tabs in the layout editor forces a redraw of all
+  viewports which seems crazy, once they are rendered once they should be cached and only
+  regenerate if changes are made to their parameters... the renderer should ALWAYS run at export
+  time at max quality." Then, with a hopper drawn twice on an elevation - base image where the
+  model has it, linework where it used to be: "ANY NEW MODEL UPDATES or any other changes must
+  force re render... none of the re render buttons or methods are working."
+- Three faults, all of them in ValeVision's copy as well. They came across as one change.
+
+**1. The viewport cache (TrueVision v2.64.0)**
+- `Na__LeSurface__SetSheet` released every frame whenever the sheet changed: base images, painted
+  linework SVG, 3D snapshots and the keys they were rendered under. Fill has always compared keys
+  before rendering; it was handed nothing to compare with on every tab change.
+- Each sheet now owns its frames container. Leaving a sheet PARKS it - container lifted off the
+  paper whole, viewport states handed over by `Na__LeVp2d__Park` / `Na__LeVp3d__Park` - and
+  showing it again puts both back before `RefreshFrames` runs. Every key matches, nothing renders.
+  Leaving the editor parks too.
+- The states move out of the viewport modules' maps because those maps are keyed by viewport id
+  and every sheet numbers its viewports from one. `Release` names the frame body for the same
+  reason, and `Na__LeVp3d__LiveState` fixes the same collision in `Bake`, `RenderForExport` and
+  `RestampForScene`, which could paint one sheet's picture into the same-numbered frame of the
+  sheet on screen.
+- A render still queued for a sheet that has been left is skipped (`stillWanted` on Render2d and
+  Render3d); one already under way lands in the parked frame.
+- `LayoutEditor__ViewportCache__MaxParkedSheets` (24; 0 is off).
+
+**2. The PDF always renders**
+- 2D underlays already rendered fresh at the export level. 3D reused the on-screen or stored
+  picture when it was wide enough under the same fingerprint - and ValeVision's copy did not even
+  check the sample count, so a working-level picture on a dense screen could print. Whenever the
+  renderer is present every 3D viewport is now rendered afresh at ExportLevel; a failed render
+  prints nothing rather than the screen's picture. The web build still places the stored picture.
+
+**3. The model fingerprint looks at the model (TrueVision v2.64.1)**
+- The fingerprint every cache is keyed by was category names, triangle counts and visibility.
+  Move something and re-export: same names, same counts, same keys, and the browser store hands
+  back the old projection as a perfect match.
+- `15__ModelLoader/Na__ModelLoader__ContentStamp__.js` (new) hashes each GLB's scene the moment it
+  is parsed - node placements, every geometry attribute and index, material names and colours -
+  onto the mesh or linework root's userData. `Na__PlStage__Describe` folds the stamps into the
+  fingerprint and the Layout Editor's 3D snapshot fingerprint takes them too
+  (`Na__LeSnap__ModelHash`). Taken once, at load, before the material pass and the fat line
+  upgrade, so nothing the app does to the scene afterwards can re-key a drawing.
+- ValeVision loads categories in parallel. A stamp belongs to one file, so the order they land in
+  does not matter.
+
+**4. Force Render repaints**
+- `EnsureLinework(force)` cleared `PathCache` under the bare linework key while `BandPaths` files
+  under `key@hidden@styleToken`. Nothing was ever cleared: the projection ran again and
+  PaintLinework painted the old strings. `Na__LeVp2d__ForgetPaths` clears every entry built from
+  the result, and a forced run calls the new `Na__PlPipe__ForgetCollections` once at its start.
+
+**Divergences from TrueVision's copy**
+- No design phase lines anywhere: `Render2d` takes `stillWanted` as its ninth argument here (its
+  tenth there), and there is one model fingerprint rather than one per phase.
+- TrueVision's ModelStage 1.1.0 (the three edge rules in the fingerprint) is a separate pending
+  item and did NOT come with this; ValeVision's fingerprint gains the stamp only.
+- ValeVision's 3D export never had `SampledEnough`, so there was nothing to remove.
+
+**One-off cost, and one thing to do**
+- Every fingerprint changes once: the first visit to each sheet re-projects and re-renders it, and
+  every baked asset reads as stale once. **Re-bake and Save Sheets on each live project before
+  deploying**, or the web build finds no baked asset under the new keys until you do.
+
+**Tested in the browser (57994 Harris Scheme-02, localhost)**
+- All three categories stamped; no module errors on load.
+- Elevations rendered its two viewports once. Elevations / Drawing 2 / 3D Model and back: 11-13 ms
+  per tab change, the same image elements back on the paper, ZERO new renders afterwards.
+- PathCache poisoned with dummy strings, then Force Render on Viewport_001: the frame came back
+  with its real 695,574 characters of path data.
+- No project data was written.
+- NOT tested here: a 3D viewport through the cache (Harris has none; the code is TrueVision's,
+  where six were tested), a PDF export end to end, the Dev bake across sheets, and a real
+  re-export changing the stamp.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.56.1 - 18-Sep-2026 - A Line Tagged Dashed in SketchUp Arrives Dashed on the Sheet
+### Ported from TrueVision3D v2.63.1 and v2.63.2, authored there the same day
+
+**Overview**
+- Adam draws a line in SketchUp, tags it `02__Linetype__DashedLines`, and means something by it:
+  this is dashed. The same for centre lines, dotted lines, door swings, clearances, overhead
+  extents, building joins and work coming out.
+- Every one of those tags was excluded from the GLB export, so the meaning stopped at the SketchUp
+  file. GLB Builder 2.7.3 now writes one linework-only GLB per LINETYPE tag. This side names them,
+  draws them in their own style, and keeps them out of the 3D render.
+- Ported in one go after Adam tested both halves in TrueVision: v2.63.1 landed the feature and
+  v2.63.2 made it projection-only when a drawing showed the same line twice.
+
+**What arrives**
+- Eight new model categories, each a linework GLB with no mesh beside it, discovered by the
+  existing filename contract with **no parse change**: this tree's `Na__ModelUrl__ParseRegex`
+  already accepts a `TrueVision__` namespace and normalises it to `ValeVision__`, so
+  `PS01__TrueVision__Linetype__DashedLines__LineworkModel__.glb` becomes
+  `ValeVision__Linetype__DashedLines` on its own.
+      Dashed Lines - Centre Lines - Dotted Lines - Door Swings - Clearance Lines
+      Overhead Objects - Building Joins - Elements For Removal
+- A category with no lines behind it never appears, so a project that has tagged nothing gains
+  nothing. This is opt-in from the SketchUp end.
+
+**Mapped, not guessed** - `Na__LayoutEditor__ModelLayers__Config__.json` (1.1.1)
+- A new **Annotation Linework** group, one row per linetype tag, naming its label, colour, weight
+  factor and line type from the EdgeStyles vocabulary this tree already carries: dashed, centre,
+  dotted, dashed-fine, phantom, solid.
+- The rows are TrueVision's, key for key apart from the namespace, and their line types mirror
+  `Glb__LineworkLineType` in the Tags SSOT. Change one, change the other.
+- They appear in the Model Layers panel like any other category, so a viewport can switch off the
+  clearances and keep the door swings.
+
+**Drawn as authored, not as geometry** - `Na__ProjectedLinework__CpuBackend__.js` (1.2.1)
+- Annotation linework reaches a drawing through the AUTHORED class, like all SketchUp linework.
+  Two things are now done differently for it, and only for it:
+  - **It is not divided at the drawing's cut plane.** A line tagged as an overhead extent is drawn
+    at the height of the thing it describes, above a plan's cut. Cutting it away would delete the
+    only reason it was drawn.
+  - **It is not occlusion-clipped.** A clearance zone drawn flat on a floor slab is coplanar with
+    the slab, and the clip would take it for a hidden line and remove it.
+- `Na__PlCpu__SplitAnnotation` divides the authored buffer once, by owner id, testing the owner KEY
+  TABLE rather than the edges. Without an owner table there is nothing to divide by and the whole
+  buffer takes the old path, which is what every earlier version did.
+- `ProjectedLinework__Annotation__Config` holds the tokens (`Linetype__`) and an Enabled flag;
+  turning it off drops annotation back to being cut and clipped, and never hides it. `BuildToken`
+  moves to `2026-09-18-linetype-annotation`, so every cached drawing re-projects.
+
+**Projection only: the 3D render stops drawing them** - `Na__ModelLoader__MultiModel.js` (1.2.3)
+- `material.visible = false` on every fat line of a projection-only category, and the distinction
+  from object visibility is the whole point: THREE skips an object whose material is invisible, so
+  no 3D render draws it - the viewer, the image export, the Layout Editor's raster underlay - while
+  the OBJECTS stay visible for the projected linework pipeline, which walks the scene graph and
+  skips anything whose `.visible` is false.
+- Which categories: `RenderConfig__Linework__ProjectionOnlyCategoryTokens` in the app config.
+- The eight Linetype categories therefore get **no toggle button**: a 3D toggle that looks inert
+  while quietly taking lines off every drawing is worse than none. They stay registered, so the
+  Model Layers panel still lists and controls them.
+
+**Fixed while porting, in both trees**
+- Walk mode took every fat line as a collision mesh (`LineSegments2` extends `Mesh`, so `isMesh`
+  is true). Harmless while linework sat on the faces it came from; an invisible annotation line in
+  mid air is not. `Linetype__` joins the collision-exempt keywords here and in TrueVision.
+
+**Not tested in the browser.** Node syntax checks pass on all six modules changed and the three
+JSON configs parse. The eight category keys were cross-checked end to end - SSOT stem, URL parse,
+Model Layers rows, load order, toggle names - and the Annotation rows are identical to TrueVision's
+apart from the namespace. This wants a real export from GLB Builder 2.7.3 and a look at a plan.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.56.0 - 17-Sep-2026 - The Specification Is a Document: Revision, Number and Download
+### Ported from TrueVision3D v2.63.0, authored there the same day
+
+**Overview**
+- Adam, on TrueVision: "there's no way to version this. I need this to be a revision B, so I
+  need a way of being able to assign revisions to the specification and also keep the same kind
+  of naming when it downloads. Add an actual download button rather than just a print button."
+
+**What came across**
+- `ProjectSpecification__Revision` and `ProjectSpecification__DocumentNumber` on the
+  specification document, typed into two fields on the Project Specification bar, in both views.
+- They take the ordinary edit route (CanEdit, then Changed), so they undo, draft and announce -
+  and they are counted by `ContentJson`, so changing the revision marks the document unsynced
+  and lights Sync. Left out of that hash the revision would never reach the cloud copy.
+- The number defaults to the project code plus `DocumentNumberSuffix` (3047 gives `3047_SPEC`);
+  clearing the field goes back to following the code. `Rev B` typed in full stores `B`.
+- Shown on the reading page's title block and in the running head of every page.
+- `Na__LayoutEditor__SpecPdf__`: a Download button that builds a real PDF of A4 pages, set from
+  the same chrome primitives the sheets are drawn with and wrapped by the sheet margin's own
+  `Na__LeMargin__Wrap`. Allowed in a read-only session - it reads a document, not changes one.
+
+**Divergence from TrueVision**
+- ValeVision3D has no `Na__LayoutEditor__PdfFonts__`, so the pages are set in the face its own
+  measurer uses (Helvetica) rather than in an embedded Open Sans. Measurement and painting agree
+  either way, which is what the layout depends on. If the Open Sans embedding is ever ported,
+  this module needs no change beyond installing the cuts into its document.
+
+**Proved**
+- Against project 3047 (Doous)'s real drawing notes, with the transport bypassed so no R2 read
+  and no R2 write: fresh revision A; `SetRevision("B")` gives
+  `3047_SPEC__ProjectSpecification__A4__RevB__17-Sep-2026__.pdf` with `IsDirty` true;
+  `"Rev C"` stored as `C`; a typed number giving `3047_T02_SPEC__...`; cleared, back to `3047_SPEC`.
+- The built document: 1 page, 2,293 bytes, `%PDF-1.3`. Its content stream inflates to 21 text
+  runs and ZERO image operators - the words in the file are words, not a picture of them.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.55.0 - 17-Sep-2026 - A Downloaded Sheet Is Named After the Drawing
+### Ported from TrueVision3D v2.62.0, authored there the same day
+
+**Overview**
+- Sheets downloaded as `Na__<project>__<sheet name>__A2.pdf` - the app's name first, the
+  drawing's number nowhere, and no revision or date, so two issues of the same sheet landed in
+  a folder as the same file name. They now read:
+      3047_T02_D01__FloorPlans__A2__RevB__17-Sep-2026__.pdf
+
+**How**
+- New `Na__LayoutEditor__PdfFilename__`, a leaf that fills the configured `Pdf FilenamePattern`
+  from `{drawingCode} {drawingName} {paperSize} {revision} {date}`. Every token but the date is
+  read through `Na__LeModel__GetFields`, so the file name and the drawing inside it cannot
+  disagree about the number, the revision or the paper.
+- `{drawingName}` comes from the sheet's tab name: the leading sheet number comes off (it is
+  already in the code) and the words run together in PascalCase, each keeping its first
+  character with the rest lower-cased - which is what makes `3D Images` read `3dImages`.
+- `{projectCode}` and `{sheetName}` still answer, so a pattern configured before these tokens
+  existed keeps working rather than emitting its braces into the file name.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.54.1 - 17-Sep-2026 - Viewport Captions Stop Eating Their Own Scale
+### Ported from TrueVision3D v2.61.1, authored there the same day
+
+**Overview**
+- Adam, on a TrueVision site plan: `LOCATION PLAN   1:12...`, with a clear centimetre of white
+  paper after the ellipsis. Not a layout problem - the box was the right size and the text was
+  truncated inside it.
+
+**The bug**
+- `BuildFrame` measured the caption, sized the box as `textMm + pad * 2`, then asked `FitText`
+  whether the caption fitted `boxW - (pad * 2)`. In binary floating point
+  `(textMm + 3.8) - 3.8` does not always give `textMm` back - it can land femtometres under -
+  and `FitText`'s `<=` failed by that hair and chopped characters off the end.
+- So whether a caption clipped had nothing to do with its length or the frame width. Sweeping
+  the 420 captions this app can build for a plan, elevation, section or detail at every scale,
+  **22 clipped** under ValeVision's own measurer, and every one of them lost the SCALE, because
+  the scale is at the end of the string. `1:...` is worse than nothing: it still reads as a number.
+- The fix stops rebuilding the width: the box was sized FOR this text, so `FitText` is handed
+  `textMm` itself, making the test `textMm <= textMm`, which is exact. 22 -> 0.
+
+**And a frame genuinely too narrow now sets smaller rather than truncating**
+- The caption is an inset label and cannot grow past its frame, so `Na__LeChrome__FitCaptionFont`
+  sets the type down to `Style FrameLabelMinFontMm` (1.6 mm) instead. The size solves in one
+  step, then is verified by measurement rather than trusted.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.54.0 - 17-Sep-2026 - The Title Block Says What Paper It Is, and Names Every Scale
+### Ported from TrueVision3D v2.61.0, authored there the same day
+
+**Overview**
+- Adam: "there should be an awareness in the title block of the current page size, and this
+  should say the scale at the page size" - `1:50 {{& other scales}} @ISO A2`.
+- The cell said `1:50` and nothing about the paper, and where the viewports on a sheet disagreed
+  it said `As shown`, which names none of them.
+
+**Why the paper belongs in that cell**
+- A scale is a statement about paper. `1:50` on A2 and `1:50` on A4 are different drawings, and
+  the number alone is only true of the sheet it was plotted on. The cell now reads
+  `1:50 @ ISO A2`, with the paper taken from the sheet's RESOLVED size, so a sheet with no size
+  set names the default paper it will actually print on.
+- A mix lists itself, finest first - `1:50 & 1:100 @ ISO A2` - so a reader is told which scales
+  to look for. `As shown` is kept only past `Scales SheetLabelMaxScales` (3), where the list
+  would be longer than the cell. A 3D-only sheet still reads `NTS @ ISO A3`.
+
+**The cell was measured, not guessed**
+- The Scale share of the strip went 20 -> 30, taken off Site Address, Drawing Title and Client.
+  Measured with this app's own jsPDF and its measuring face: at 20 the longest label overran A4;
+  at 30 the longest label the app can produce fits A4 through A1, and no other cell was pushed
+  to where a realistic value truncates.
+
+**Divergence from TrueVision**
+- TrueVision's site plan scale list (1:500, 1:1250) has never been ported here, so this port
+  keeps ValeVision's single scale list and its `Coerce`-only behaviour. `SheetLabel` is shaped to
+  that: no `IsListed`, and an off-list denominator still coerces the way it always did.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.54.0 - 17-Sep-2026 - The Progressive Renderer Stall, and the Scale Cell's Paper Size
+### Ported from TrueVision3D v2.58.2 and v2.61.0
+
+**The progressive renderer was rebuilding its buffer on every chunk**
+- TrueVision's v2.58.2 said outright that "ValeVision carries exactly this bug", and it did:
+  `Na__Refine__EnsureBuffer` compared the composer's raw buffer size against the
+  supersampler's rounded one.
+- `EffectComposer` sizes its buffers as `cssSize x pixelRatio` and stores the product
+  unrounded, so on a display at 125% or 150% scaling - the normal case on a good monitor -
+  the buffer comes out at something like 2498.75 x 1406.25. The supersampler rounds what it
+  is given and reports the rounded size, so the two never matched: on EVERY chunk the
+  accumulation buffer was torn down, the running total discarded with it, and the chunk drawn
+  again from zero. It landed on the first chunk size every frame, for ever - the "stuck at 6
+  out of 16" Adam hit in TrueVision, at a full chunk of GPU work per frame.
+- `EnsureBuffer` now floors the buffer size before comparing and before creating. Floor, not
+  round: WebGL takes texture sizes as integers and truncates, so the floor is the buffer that
+  actually exists on the GPU, which makes the equality test exact AND the accumulation target
+  the same pixel size as the frame it accumulates.
+- It never reproduced in a harness because a harness runs at an integer buffer size.
+
+**The title block's Scale cell names the paper, and lists a mix**
+- `1:50` on A2 and `1:50` on A4 are different drawings, so the cell reads `1:50 @ ISO A2`.
+  Where the viewports disagree it lists them finest first - `1:50 & 1:100 @ ISO A2` - instead
+  of the old `As shown`, which named none of them; past `SheetLabelMaxScales` (3) the list is
+  longer than the cell and the mixed label is quoted after all.
+- The paper comes from the sheet's RESOLVED size (`Na__LeLayout__PaperSizeMm`), not the raw
+  field, so a sheet with no size set names the paper it will actually print on.
+- The Scale cell's share of the title block strip went 20 -> 30, taken off Site Address,
+  Drawing Title and Client, matching TrueVision exactly.
+
+**PORT NOTE - one deliberate divergence**
+- TrueVision's `Na__LeScale__IsListed` consults its site plan scale list as well as the main
+  one. ValeVision has no site plan scales, so its copy asks the one list. Everything else in
+  `Na__LeScale__SheetLabel` and `Na__LeScale__PaperSuffix` is verbatim.
+
+**Files**
+- `05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js` - `EnsureBuffer` floors the
+  buffer size.
+- `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js` -
+  `IsListed` (adapted), `PaperSuffix`, `SheetLabel(denominators, paperLabel)`.
+- `51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__SheetRecords__.js` - resolves
+  the paper and passes its Label.
+- `51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__SheetSetup__.js`
+  and `Na__LayoutEditor__AppConfig__.json` - the six `SheetLabel*` settings and the row widths.
+- `51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__KeyMappings__.json` - the space
+  bar's `Tool__SelectToggle` binding, re-applied after a regeneration dropped it.
+
+**Verified** - every ValeVision module parses, every named import resolves, both config files
+are valid JSON, and the space bar resolves to `Tool__SelectToggle` again.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.53.0 - 17-Sep-2026 - Dimensions You Can Grab, Constrain, Type Into and Slide
+### Ported from TrueVision3D v2.60.0, authored there the same day
+
+**Overview**
+- Adam, on the vertex work that landed in v2.58.0: "add the same behaviour to dragging a
+  dimension end so you can constrain it" - then, on trying it: "clicking here to try and
+  move the dimension points just doesn't work."
+- He was right twice over. The grips were drawn and `DimensionGrabFor` answered `'end'`
+  correctly for a press on one - but `Na__LeTools__Resolve` never got that far.
+
+**Why a dimension's points could not be grabbed**
+- `Resolve` asks the markup hit test what is under the pointer, and for a dimension that
+  means its LINE and its VALUE. The measured points are at the far end of the extension
+  lines - on PS01's D01, some 45 mm of paper away, because putting the line clear of what
+  it measures is the entire purpose of an offset. So a press on a measured point found
+  nothing at all, and with a container open, finding nothing means "the press landed
+  outside, step back out". Clicking a grip closed the dimension instead of taking hold.
+- `Na__LeTools__OpenDimensionGripAt` now looks for the open dimension's grips first, the
+  way the rotate grip above it already did: both stand off the object they belong to, and
+  neither can be found by asking what lies under the pointer. Only while that dimension is
+  open, and never for `'whole'`, so a press on the line itself still resolves as before.
+
+**A measured point constrains like a vertex**
+- The arrow keys hold a dimension end to an axis, Shift holds it to the nearer one, and a
+  snap supplies the coordinate ALONG the held axis rather than cancelling it. The band
+  takes the locked axis's colour. Nothing new was invented: `Na__LayoutEditor__AxisLock__`
+  has done this for the placing tools since v2.21.0 and now reaches three more drags.
+- The same rule fixed Shift for a run of vertices. It was not that several points broke the
+  constraint - it was that the snapped point used to win outright, and a run of vertices is
+  dragged across far more geometry than one, so something was nearly always snapping and
+  the axis was nearly always lost. `Na__LeAxis__Hold` is what that rule is called.
+
+**Typing what the dimension should READ**
+- Adam chose this over "how far the end moves", and the geometry rewards it: a horizontal
+  dimension measures the x between its points and a vertical one the y, so a typed value
+  sets that coordinate alone and leaves the other where the drag put it. Locking X on a
+  horizontal dimension therefore holds the very coordinate the value sets, instead of
+  fighting it. An aligned dimension runs its end along the line between the two points.
+- Type 2500, see it should have been 2000, type that: every value is measured from the
+  fixed end rather than from the last answer, and the run lasts until the tool changes.
+  The measured points and the line stay exactly where they are.
+
+**The line has a grip at each end now, and slides**
+- Adam: "users will expect points here on the dimensions as well... this stretches the
+  dimension line and the dimension text and slides it to a new position."
+- All three grips on the line - both ends and the middle - change the OFFSET, carrying the
+  line and the value across while the two measured points stay put. Reaching for the end of
+  a dimension line to push it clear of something is the natural gesture, and the middle grip
+  alone is often buried under the value.
+- The Measurements box reads `Offset` while one is dragged and a typed distance sets it, at
+  the scale the dimension reads at, keeping whichever side the drag chose. It retypes like
+  everything else.
+
+**Selection points you can actually see**
+- Adam: "when you zoom in, the red vertices that show the selection are too small... they
+  just disappear." They did, and the arithmetic says so exactly.
+- Everything in the handles layer sits inside the paper's `scale(zoom)`, so one screen pixel
+  is `1 / zoom`. The edge width read `Math.max(1, 1 / zoom)`, which put the floor in the
+  WRONG UNITS: zoomed in, the clamp pinned the edge at one PAPER pixel, which is `zoom`
+  pixels on screen. At 4x a 9 px grip carried a 4 px border on each side and a picked vertex
+  was a white ring with no red left in it; at 8x the measured red width was **minus seven
+  pixels**. The clamp only ever bit while zoomed in, which is exactly where grips are needed.
+- `Na__LeGrips__EdgePx` replaces it, and the same mistake is fixed in the stem, the rubber
+  box, the insert diamond, the viewport handles and the selection box. A picked grip is now
+  drawn larger than a plain one as well (`GripSizePickedPx`, 13 against 9), since it marks
+  the points the next drag will carry.
+- Proved at five zooms: a picked grip is a constant 13 px box with a 1 px edge and 11 px of
+  red, from 0.5x to 8x.
+
+**Less white while a container is open**
+- `EditScope FadeOpacity` 0.25 -> 0.45. Adam: "make the fade of everything else less
+  extreme... it goes a bit too white currently."
+
+**Fixed on the way past**
+- `GetDimEndRetype` returned an OFFSET record to the span path, so the second value typed
+  after sliding a line moved the dimension's end instead. Caught by a retype landing 1.8 mm
+  off; it now ignores a record that is not a moved end.
+- The dimension branch of `ApplyDrag` never called `Na__LeMeasure__Refresh`, so the box
+  stayed asleep through a dimension drag however well the rest of it worked.
+
+**Files**
+- `Na__LayoutEditor__SheetTools__HitResolution__.js` - `OpenDimensionGripAt`, and `Resolve`
+  asks it before the markup hit test.
+- `Na__LayoutEditor__SheetTools__PointerDrag__.js` - the constraint on both dimension
+  drags, `DimEndAtSpan`, `TypeDimensionSpan`, `TypeDimensionOffset`, their readings and
+  retype records, `RerunDimEndDrag`.
+- `Na__LayoutEditor__Grips__.js` - `EdgePx`, larger picked grips, a grip at each end of the
+  dimension line and the grab to match.
+- `Na__LayoutEditor__Measurements__.js` - `Length` for a dimension end, `Offset` for a line
+  being slid, both retypable.
+- `Na__LayoutEditor__SheetTools__State__.js`, `__ToolState__.js`, `__Keyboard__.js`,
+  `__.js` - the shared retype records, the keys and the wiring.
+- `Na__LayoutEditor__ViewportHandles__.js`, `Na__LayoutEditor__SelectionBox__.js` - the same
+  edge-width mistake.
+- `Na__LayoutEditor__AppConfig__.json` - `GripSizePickedPx`, `FadeOpacity`, the new labels.
+
+**Verified** on PS01 D01 through the real pointer and key path, with every R2 write
+blocked and nothing attempted: the grab, both axis locks, typed spans of 2500 / 1200 / 3000
+landing exactly and the line staying put, typed offsets of 1500 / 800 / 2200 / 1250 with the
+measured points never moving, Shift holding a two-vertex run to one axis, and the grip
+arithmetic at five zooms. Every record restored to its original coordinates afterwards.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.52.0 - 17-Sep-2026 - Container Editing, the Move Tool, and Editable Dimensions
+
+### Changed
+- **Ported from TrueVision3D v2.59.0**, authored there the same day out of Adam's two
+  complaints: editing a vector was dangerous, because the vertex dots sat on every
+  selected vector and a drag meant for a point moved the drawing behind it; and
+  dimensions could not be edited at all, only deleted and redrawn.
+- **New unit `51/30__System__SheetTools/Na__LayoutEditor__EditScope__.js`** - the
+  context stack SketchUp has: a group, a vector or a dimension open for editing, and
+  the points picked inside it. Double-click or Enter steps in, a click outside steps
+  out, Escape closes everything.
+- **While a container is open the rest of the sheet fades to 25 percent and stops
+  answering presses**, and the contents of the container are redrawn at full strength
+  in a new focus layer above the faded ones (`na-le-paper__focus`,
+  `Na__LeMarkup__BuildItemPrimitives`).
+- **Grips are a container's insides.** A vector's vertex dots and a dimension's four
+  grips are drawn, and draggable, only while that object is open - and inside it they
+  read at twice the tolerance, which is what makes a dimension's measured points
+  grabbable rather than a game of pixels. A picked grip draws solid red.
+- **A box drawn inside a vector takes its vertices**, not sheet items, and dragging one
+  picked point carries them all.
+- **The Move tool (M)** is now the only thing that translates a whole object. Select
+  picks; grips, crop handles and viewport content editing are unchanged.
+- **Escape is one key with one meaning: stop, and go back to Select.** It abandons what
+  is half done, closes every container, drops the selection and arms Select.
+- **Select is the resting state and there is no other.** A tool-less state was built
+  first and taken out the same day: with nothing armed a press did nothing, so the
+  browser took the click and offered its own copy and search menus over the paper.
+- **The space bar picks Select, beside V** (from TrueVision3D v2.58.0, where it was a
+  toggle; it now only arms). Both keys are always taken from the browser, which would
+  otherwise scroll the sheet out from under the cursor, and every press the select path
+  handles is taken from it too.
+- The right-click menu belongs to the open container: a vector's points, a dimension's
+  value, and the way out. Where the cut, extend, trim and join tools will sit.
+
+### Fixed with it
+- **Inside a container the arrow keys move nothing.** They are the axis lock in there;
+  with no drag in flight they used to fall through to the nudge and walk the whole open
+  vector or dimension, which also made the lock read as broken.
+- **A typed length carries every picked point.** It took only the grabbed index, so a
+  value typed over a boxed run of corners moved one and wrote the rest back to where
+  they started. The retype record now keeps the original run of points, so a correction
+  measures from where they began rather than stacking on the value before it.
+- **A press near a corner grabs it rather than drawing a box.** Resolve asked the markup
+  hit test first, which answers for the line only, so a press a couple of pixels off the
+  line but dead on a corner found nothing, read as "outside", and started a selection box
+  where the hand was trying to grab. `ScopeGrabAt` answers first, measured against the
+  grips at `EditScope GrabRadiusPx` (14) - a fixed reach on screen at any zoom.
+- **The top level keeps its move constraints.** A whole-object move - one item by its
+  body, or a whole multi-item selection - locks to X or Y on the arrow keys and takes a
+  typed distance in the Measurements box, the same pair a viewport frame already had.
+
+### Divergence from TrueVision
+- ValeVision's dimensions have no fixed-length extension lines, so the extracted
+  `Na__LeMarkup__PushDimension` keeps ValeVision's own option shape (no `extension`).
+  Everything else is verbatim.
+
+### Files
+- New: `51/30__System__SheetTools/Na__LayoutEditor__EditScope__.js`
+- `51/30__System__SheetTools/`: `SheetTools__State__` 1.1.0, `SheetTools__ToolState__`
+  1.1.0, `Grips__` 1.7.0, `SheetTools__HitResolution__` 1.1.0, `SelectionBox__` 1.4.0,
+  `SheetTools__PointerPress__` 1.1.0, `SheetTools__PointerDrag__` 1.1.0,
+  `SheetTools__Keyboard__` 1.1.0, `SheetTools__ContextMenu__` 1.1.0, `SheetTools__` 1.25.0
+- `51/10__Core__SheetSurface/`: `SheetSurface__` 1.5.0, `Styles__Main__Paper__.css`
+- `51/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js` 1.10.0
+- `51/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js` 1.8.0
+- `51/03__Core__Config/`: `AppConfig__.json` (EditScope block, wording),
+  `KeyMappings__.json` (space picks Select, M is Move), `ConfigState__ToolSetup__`,
+  `ConfigState__`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.51.0 - 17-Sep-2026 - Match Properties to a Whole Selection, and One Markup Panel Open at a Time
+
+### Changed
+- **Ported from TrueVision3D v2.57.0**, which came out of Adam reporting that
+  leaders could not be match-propertied. The eyedropper turned out to be doing
+  its job; what was wrong was that Text, Leaders, Dimensions and Vectors all
+  sat open at once, each with its own size box, colour picker and weight. Four
+  "Text mm"-shaped fields in one column, and only one of them belonging to the
+  selected item - the other three quietly setting the defaults for new objects.
+- **One markup panel at a time.** Selecting anything on the sheet opens that
+  kind's section and folds the other three; picking a style with the eyedropper
+  does the same, so what is on show is always what is being matched. A mixed
+  selection opens nothing, because there is no single answer to what would be
+  edited; groups are opened up first, so windowing a grouped block of notes
+  still lands on the right panel. Several can still be opened by hand to compare
+  one kind's text size against another's, and the next selection tidies them
+  away.
+- **Paste properties to N selected**, on the context menu of a multi-selection
+  and of a group. The count is what will actually change: the items are expanded
+  past any group, then the source itself, the other kinds and the locked drop
+  out, and the item does not appear when the answer is none. A group whose
+  members are all one kind hands out a style as well as taking one.
+- **The panels write the whole selection.** Select nine dimensions, change the
+  text size, and all nine change - one undo step - where before the panel showed
+  the settings for new objects and wrote nothing. It goes through the
+  eyedropper's trait table, so a panel field travels by exactly the declaration
+  the eyedropper copies by, and content cannot travel with style: a text item's
+  words, a dimension's override and a leader's specification link stay where
+  they are, and a leader's type is palette-only so a note never becomes a bubble.
+- `LayoutEditor__Panels__CollapseOthersOnOpen`, declared in the first panel host
+  and never wired to anything in either tree, now folds the others when one
+  section is opened by hand.
+
+### Divergences from the TrueVision change
+- This tree's eyedropper has no `absent` trait flag and no extension-line or
+  `Viewport__ShowFrame` traits, so its dimension style is seven keys where
+  TrueVision's is ten. Nothing in this port depends on those, and the module
+  numbering stays one behind (1.7.0 here is TrueVision's 1.8.0).
+- The Vectors panel has no Draw at Scale row and the Dimensions panel no
+  extension-line pair, so those two edits were dropped.
+
+### Files
+- `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js` 1.7.0
+  - `ApplyMany`, `PaintMany`, `PaintableIn`, `StyleKeys`, `StyleOnly`.
+- `51__System__LayoutEditor/30__System__SheetTools/Na__LayoutEditor__SheetTools__ContextMenu__.js` 1.1.0
+- `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__PanelHost__.js` 1.3.0
+  - `SetFolded`, `FocusSection`, `SelectedOfKind`, `ApplyToSelection`.
+- `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.16.0
+  - `SectionForKind`, `FocusPanelFor`, `FocusPanelForSelection`.
+- `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Text__.js` 1.4.0
+- `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Dimensions__.js` 1.4.0
+- `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js` 1.8.0
+- `51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Panel__Leaders__.js` 1.2.0
+- `51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js`
+  - `accordion` and `focusOnSelect` on the panel setup.
+- `51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json`
+  - `AccordionSections`, `FocusSectionOnSelect` and the note describing both.
+
+### Testing
+- Every file syntax-checked, and the app booted with the new API present and the
+  panel setup reading `accordion` and `focusOnSelect` correctly.
+- **The behaviour itself has not been exercised in this tree.** It was proved end
+  to end in TrueVision on PS01's D01 sheet - the accordion on selection, four
+  bubbles pasted in one click with one undo, three leaders restyled from the
+  panel, and the single-selection and defaults paths unchanged. Adam is testing
+  this side.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.50.1 - 16-Sep-2026 - Carousel Holds Opaque Longer on First Reveal
+
+### Changed
+- **The carousel's first reveal after the loading screen now holds fully
+  opaque for 4 seconds** (`InitialRevealHoldMs`) instead of the usual 2.6s
+  wake hold used for ordinary interactions. A user arriving straight off the
+  loading screen gets a clear, unmissable look at the carousel before it
+  settles into its 50% idle translucency. Every other wake (clicks, taps,
+  scrolling, the scene camera flight) still uses the shorter 2.6s hold.
+- Ported identically to TrueVision3D.
+
+### Files
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+  - `FlashCarouselWake` and `ToggleSceneCarousel` take an optional hold
+    override; the `na-presentation-mode-scenes-loaded` handler passes the
+    new 4000ms constant.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.50.0 - 16-Sep-2026 - Views Button Retired, Carousel Always Shows With Idle Fade
+
+### Changed
+- **Removed the Views button from the navigation toolbar.** It only toggled
+  the saved-scene carousel and shared the Reset View icon (no icon of its own
+  existed). Every project writer already set
+  `PresentationMode__SavedCameraScenes__ShowCarouselByDefault: true`
+  regardless, so the button was never actually needed to reveal the carousel
+  for real project data - it was one more thing that could go stale.
+- **The carousel now always shows itself whenever the loaded project has
+  valid saved scenes**, ignoring that flag entirely (matching TrueVision3D,
+  which has never had a toggle). It still hides when scenes are cleared, and
+  Video Studio can still hide/restore it while its timeline owns the bottom
+  of the screen.
+- **Ported TrueVision3D's carousel idle-fade and wake-flash verbatim.** The
+  carousel now rests at 50% opacity like the toolbar and Tools & Settings
+  menu, waking on hover, keyboard focus, or a JS flash (`na-pm-carousel--wake`)
+  that covers taps, swipes and the scene camera flight before fading back out.
+  Previously the carousel had no idle-fade at all and stayed permanently
+  opaque.
+- **Tightened the mobile-swap `max-aspect-ratio` breakpoint from ~1.03:1 to
+  19/20 (0.95:1)** in both the toolbar and Tools & Settings dropdown CSS
+  (v2.49.1's fix). Removing the Views button narrows the centred pill enough
+  that the toolbar/dropdown collision now only shows up on genuinely
+  portrait-leaning windows, not merely square ones. Mirrored the same value
+  into TrueVision3D so both apps share one threshold.
+
+### Removed
+- Dead references to `naNavToolbarViewsBtn`: the Video Studio timeline's
+  disable/restore-title code and the `body.na-video-studio-timeline-active
+  #naNavToolbarViewsBtn` CSS rule (`Na__VideoStudio__Timeline__Controls.js`,
+  `Na__VideoStudio__Timeline__Stylesheet__.css`).
+- The orphaned `na-presentation-carousel-toggle` / `na-presentation-views-btn-state`
+  custom events (no producer/consumer once the button was gone).
+
+### Files
+- `index.html` - Views button markup and its wiring block removed.
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+  - always-show logic, wake-flash (`FlashCarouselWake`), interaction listeners.
+- `02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js`
+  and its stylesheet - dead Views-button code removed.
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`
+  - idle-fade region added for `.na-pm-carousel`.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css`,
+  `Na__UiFeature__Styles__DropdownAndToast__.css` - breakpoint tightened.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.49.1 - 16-Sep-2026 - Mobile Nav Swap: Also Trigger on Near-Square/Portrait Windows
+
+### Fixed
+- **The v2.49.0 swap only fired under 768px wide, but the toolbar/dropdown
+  collision also shows up on windows well over that width once they get short
+  or square** - e.g. a resized desktop browser or the SketchUp webview at
+  ~1345x1309 (~1.03:1). The centred nav pill (especially with the Views button
+  showing) can reach far enough across at that width to run into the
+  top-right Tools & Settings dropdown, which max-width alone never catches.
+
+### Changed
+- **The mobile menu swap in both `Na__UiFeature__Styles__NavigationToolbar__.css`
+  and `Na__UiFeature__Styles__DropdownAndToast__.css` now triggers on
+  `(max-width: 768px), (max-aspect-ratio: 103/100)`** - an OR of the original
+  width rule and a new aspect-ratio rule (~1.03:1, rounded from the 1345x1309
+  reference case). Either condition alone is enough to swap the toolbar for
+  the Tools & Settings menu, so a window that is wide but short/square gets
+  the same treatment as a narrow phone.
+- **Ported the identical breakpoint change to TrueVision3D**, since it shares
+  the exact same swap mechanism and was ported from there originally.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.49.0 - 16-Sep-2026 - Mobile Nav: Toolbar and Tools Menu Swap Instead of Overlap
+
+### Fixed
+- **The bottom navigation pill and the top-right Tools & Settings dropdown had
+  no coordination on a narrow phone screen.** The dropdown carried no mobile
+  treatment at all, so on portrait viewports the two menus were simply two
+  independent floating widgets competing for a screen too narrow for both.
+
+### Changed
+- **Ported TrueVision3D's mobile menu swap verbatim (v2.9.0, 29-Aug-2026).** At
+  <=768px the standalone Tools & Settings trigger is hidden and the bottom nav
+  toolbar gains a vertical divider + hamburger button instead. Pressing it adds
+  `body.na-mobile-tools-open`, which hides the toolbar and drops the Tools &
+  Settings menu into the same top-right area; folding the menu back up (by any
+  path - its own summary, the boot teaser, or a menu item closing it) restores
+  the toolbar via a single `toggle` listener on `#naToolsMenu`. Because only one
+  of the two is ever visible, the old overlap cannot occur.
+- **The boot "teaser" auto-open of the Tools menu is skipped while the menu is
+  swapped out behind the hamburger** (checks `getComputedStyle(...).display`),
+  matching TrueVision's guard.
+
+### Files
+- `index.html` - hamburger + divider markup on `#naNavToolbar`; teaser guard.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js`
+  - swap wiring (`Na__NavToolbar__HandleMenuClick`, toggle listener).
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css`
+  - divider/hamburger styling, `<=768px` reveal + toolbar hide.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+  - `<=768px` hide/swap-in rule for the dropdown (Dev Tools menu excluded).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.48.1 - 16-Sep-2026 - Progressive Renderer: Zoom and Scene Changes Refine Too
+
+### Fixed
+- **Zooming left the viewport stuck on "Waiting" and never sharpened.** The wheel
+  moves the camera and asks for a single frame. The settle test needed to see two
+  still frames in a row before it would start, so on that one frame it saw the
+  camera had moved, stood down, and the render loop stopped with nothing
+  scheduled to bring a second frame. The viewport sat unrefined until something
+  else happened to ask for a redraw.
+- **Changing animation scenes did the same thing**, for the same reason: a scene
+  transition ends by asking for "one final clean frame", and one frame was never
+  enough for a test that needed two.
+- **Panning worked throughout only by accident.** It fires three trailing settle
+  frames after the mouse is released, which happened to hand the old test the
+  second look it needed. Nothing else in the app does that.
+
+### Changed
+- **The settle test now remembers when the camera last MOVED, rather than how
+  long it has been still.** A timestamp can be compared after a gap of any
+  length, so the frame that wakes at the end of the debounce compares the camera
+  against a snapshot taken before the silence, finds it unmoved, and refines on
+  that same frame. Zoom, scene changes, a jump to a saved view, a lens change and
+  anything else that redraws once now all settle into a refinement.
+- **The refiner asks for the frame it needs**, since the loop would otherwise
+  stop. It answers no whenever the frame was never its to refine: a 2D sheet
+  owning the viewport, the engine held by another system, the tab in the
+  background. Without that guard a resting app would be woken every debounce for
+  ever, which would be a considerably worse bug than the one being fixed.
+- **A couple of milliseconds of slack on the debounce comparison.** The wake is a
+  timer for the remaining debounce and the frame arrives at the next animation
+  frame after it; both round and jitter, so a wake armed for 149ms could produce
+  a frame measuring 149ms elapsed and miss a 150ms threshold by a hair, costing a
+  whole extra wake-up to gain one millisecond.
+
+### Notes
+- Nothing about the sample count, the chunk sizing, the milestones or the cost
+  while moving has changed. This is the trigger only.
+- Walk and Fly were never affected: they hold the loop open, so their frames kept
+  arriving and the old test always got its second look.
+
+### Files
+- `05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js` 1.0.1: the
+  timestamp test, the blocked state and `suspend()`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`: the three stand-down points (2D
+  sheet, engine pause, tab hidden) call `suspend()` rather than `reset()`.
+- `ValeVisionGallery__Pwa__ServiceWorker__Logic__.js` 1.0.10: token bumped
+  (2026-09-16-2).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.48.0 - 16-Sep-2026 - Progressive Renderer: the Viewport Sharpens Itself to 16x Once the Camera Stops
+
+### Added
+- **Progressive refinement of the live 3D viewport, on both engines.** While the
+  camera moves, nothing changes: the render loop draws exactly the frame it drew
+  before, FXAA included, at exactly the same frame rate. Once the camera has held
+  still for 150ms the loop keeps going instead of idling and redraws the same
+  frame with sub-pixel jitter, averaging the results, until the viewport holds a
+  full 16-sample supersampled image. The same maths the video exporter has used
+  since v2.21.19, spent in the time the viewport was previously doing nothing.
+- **What it fixes.** A glazing bar thinner than a pixel is a coin toss between
+  full black and full white, so it draws as a dashed line rather than a thin one,
+  and the dentils under a cornice read as speckle. That is not stair-stepping, it
+  is the pixel having no way to say "a third covered". Sixteen samples give it
+  one. The lower the screen resolution the worse the breakup, so a colleague on a
+  1080p screen gains far more from this than a 4K machine does.
+- **Visual Effects section** in Tools and Settings, under App Settings, folded by
+  default: Progressive Renderer, Profile Lines and Ambient Occlusion (SSAO) as
+  indicator rows, plus a frame rate readout and a refinement readout showing how
+  far the settled picture has got. The rows read the passes themselves rather
+  than remembering what was last clicked, so the Dev Tools profile-lines toggle
+  and the SSAO performance monitor cannot leave a badge lying. A pass the active
+  engine does not have reads as a dimmed N/A row (SSAO under PureEngine).
+
+### Changed
+- **`Na__RenderEffect__Supersampler__.js` 1.1.0: `present()` takes an optional
+  scale.** Samples accumulate at 1/N, so a part-finished total needs multiplying
+  by N/k to show correctly rather than appearing as a dim frame filling up. The
+  argument defaults to 1, so the video and image exporters are byte-for-byte
+  unchanged. This one needs porting to TrueVision's copy of the file.
+- **`Na__RenderPipeline__MaxEngine__Setup.js` 1.0.2** exposes `aoPassRef` so a
+  readout can show whether SSAO is actually on. The performance monitor disables
+  it without telling anyone.
+- **The render loop's per-frame work is now two named functions** rather than one
+  inline block: the effect chain (AO uniforms, depth pre-pass, profile normals,
+  composer) and the section overlay. A refinement sample runs the first through a
+  nudged projection and the second through the settled one.
+
+### Notes
+- **Samples are spread over frames, in chunks, and every frame presents.** Sixteen
+  renders inside one frame would block the main thread for a third of a second on
+  a laptop with SSAO at 4K and swallow the first click after the camera stops.
+  The chunk is sized from the measured frame time against a 100ms budget and
+  always stops on a milestone (8, then 16), so a fast machine does 8 and then 8
+  as two visible steps and a slow one takes smaller steps and still lands exactly
+  on eight and sixteen.
+- **Why every frame must draw.** `preserveDrawingBuffer` is off on the live
+  renderer, so a frame that runs and draws nothing composites an empty buffer and
+  the viewport flashes. A chunk therefore always ends with a present, and a
+  converged frame in walk or fly (where the loop is held open to poll the
+  keyboard) re-presents the finished average rather than skipping: one full
+  screen quad in place of the whole effect chain, so standing still in walk mode
+  is now cheaper than it was, not dearer.
+- **Stillness is measured, not announced.** The obvious hook would be "the loop
+  wants to stop", but walk and fly never stop, so standing still in walk mode
+  would never refine. The camera's position, orientation and projection are
+  compared frame to frame instead, which covers orbit, pan, zoom, walk, fly, a
+  lens change, the vertical correction shear and a jump to a saved view. Geometry
+  moving while the camera is still (a door swinging, the video timeline playing)
+  is invisible to that test and is passed in separately.
+- **The composer is borrowed one frame at a time.** Supersampling needs the
+  composer to stop drawing to the canvas and FXAA to stand aside. Both are set at
+  the top of a chunk and put back at the bottom of the same frame, never held
+  across frames, so a still export, a video export or a Layout Editor snapshot
+  starting between frames always finds the pipeline in its ordinary state.
+- **Shadow maps are drawn by the first sample and frozen for the rest of a
+  burst.** The jitter moves the view camera; the lights and the geometry are not
+  moving at all.
+- **Memory.** One half-float RGBA buffer at the composer's size: about 66MB at
+  3840x2160, about 17MB at 1920x1080. Allocated the first time the camera sits
+  still, rebuilt automatically when the size stops matching (a window resize, a
+  live engine switch), and handed straight back if the feature is switched off.
+- **Scope.** The 3D viewport only. The 2D drawing views run through their own
+  composer preset and are excluded, as is the legacy 2D elevation camera. Image
+  and video export are untouched: they supersample in one synchronous block and
+  always did.
+- **TrueVision takes this next**, once tested here.
+
+### Files
+- `05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js` 1.0.0 (new): the
+  accumulator, the stillness test, the debounce and the chunk planner.
+- `05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js` 1.0.0 (new): the
+  settings section and its readouts.
+- `05__RenderPipeline/Na__RenderEffect__Supersampler__.js` 1.1.0: `present` scale.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js` 1.0.2: `aoPassRef`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`: the render loop branch, the two
+  extracted per-frame functions, the settle wake-up and the reset hooks.
+- `70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js` 1.2.0: the two
+  profile-lines rows follow each other on `na-profile-lines-changed`.
+- `02__AppData/Na__AppConfig__Main.json`: `RenderEffect__ProgressiveRefine`.
+- `index.html`: the config read, the Visual Effects markup and the init call.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`: the
+  unavailable row state and the readout rows.
+- `ValeVisionGallery__Pwa__ServiceWorker__Logic__.js` 1.0.9: token bumped
+  (2026-09-16-1) for the two new modules and the changed shell files.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.47.1 - 15-Sep-2026 - Console Tidy-Ups: Shadow Map Type and Sharpen Readbacks
+
+### Fixed
+- **"PCFSoftShadowMap has been deprecated" on every load.** index.html asked the
+  renderer for `PCFSoftShadowMap`, which three r184 deprecates: it drew
+  `PCFShadowMap` in its place and said so in the console. It now asks for
+  `PCFShadowMap`, so the shadows are exactly what they were.
+- **Fewer "Multiple readback operations using getImageData" hints.** The High
+  Pass Sharpen effect reads its source and blurred buffers back on every strip.
+  Both buffers are now created with `willReadFrequently`, so each read is a copy
+  in memory rather than a readback from the graphics card. TrueVision's sharpen
+  already created its blur canvas that way.
+
+### Notes
+- **One hint can remain per 3D viewport picture** with Enhance Whitecard on. The
+  tiled renderer draws the picture, checks one pixel of its canvas and hands it
+  on; Levels and Sharpen then read that canvas again. It stays GPU-backed on
+  purpose: the tiler composites every tile into it, image exports use the same
+  path, and flagging it would slow every render to silence a hint.
+- For those two buffers the blur now runs on the processor rather than the
+  graphics card. A strip is at most about 4 MP and the radius is small; a pixel
+  may round one level differently from before, which a sharpened picture hides.
+- TrueVision takes the shadow map line in v2.55.0; its readbacks need nothing.
+
+### Files
+- `index.html` (the shadow map type).
+- `30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js` (the two buffers).
+- `ValeVisionGallery__Pwa__ServiceWorker__Logic__.js` 1.0.8: the note only; the token bumped for v2.47.0 covers this.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.47.0 - 15-Sep-2026 - Layout Editor Sorted Into Numbered Subfolders
+
+### Changed
+- **Folder 51 is sorted into numbered subfolders.** `51__System__LayoutEditor`
+  had grown to 126 files in one folder. Each file now sits in a subfolder
+  numbered the way `02__Src__AppModules` is: what the editor cannot start
+  without comes first, then its systems, then the panels, the features and
+  the Dev tools, with gaps left between the numbers for later.
+
+| Folder | Holds |
+|---|---|
+| `01__Core__Loader` | Loader, LoadingScreen, Styles__Boot |
+| `03__Core__Config` | ConfigState and its units, the AppConfig and KeyMappings JSON |
+| `05__Core__ModeController` | ModeController, TabStrip |
+| `07__Core__SheetData` | SheetModel and its units, SheetRecords, SheetLayout, ScaleManager, DrawingScale, History, AutoSave, Assets |
+| `10__Core__SheetSurface` | SheetSurface, SheetChrome, TitleBlock__Classic, TitleBlock__Modern, Navigation, Controls__Pc, Controls__TouchScreen, Styles__Main |
+| `15__Core__Markup` | MarkupBridge, DimensionGeometry, LeaderGeometry, ShapeGeometry, Groups, MeasureParse |
+| `20__System__Viewports` | Viewport2d and its units, Viewport3d, Viewport3dZoom, ViewportHandles, ViewportClipboard, ForceRender, RasterQuality |
+| `25__System__RenderStyles` | SnapshotRenderer, Enhance, EdgeStyles, RenderComposites, ModelLayers, and their config JSON |
+| `30__System__SheetTools` | SheetTools and its units, SelectionBox, SelectionSet, Grips, Snapping, AxisLock, ContextMenu, ItemClipboard, Eyedropper, Measurements |
+| `35__System__DrawingTools` | TextTool, DimensionTool, LeaderTool, ShapeTool, RectangleTool, GradientTool, LineStyleTool, and their config JSON |
+| `40__Ui__Panels` | PanelHost, Toolbar, the nine Panel__ modules, Styles__Panels |
+| `50__Feature__Specification` | SpecData and SpecEditor and their units, SpecDocument, SpecLinks, SpecMargin, MarginGrip, Panel__MarginNotes, Styles__Specification |
+| `55__Feature__Scrapbook` | TrueVision only (Scrapbook); not created here |
+| `60__Feature__PdfExport` | PdfExporter |
+| `70__DevTools__DevMenu` | DevMenu__Controls |
+
+- **Nothing is renamed.** Every file keeps its name, namespace and exports;
+  only its folder changed, and every relative path that reaches it changed
+  with it: 464 inside the folder (imports, dynamic imports, `@delegate` notes
+  and the loader's stylesheet addresses) and three files outside it
+  (index.html, the CSS index and `Na__DrawView__RenameDrawing__`). Each config
+  JSON sits beside the module that fetches it, so those addresses read the
+  same.
+- **Eight files over 1000 lines are split into units** (over 1000 in either
+  app; TrueVision gets the same splits, so a port still copies file for
+  file). The original keeps its name and every export and re-exports its
+  units, so no caller changed. A unit that writes shared state does it
+  through accessor functions in its State unit, because an imported binding
+  cannot be assigned. Nothing in the folder is over 1000 lines now; the
+  longest is Eyedropper at 924.
+
+| Original, lines before (ValeVision / TrueVision) | Now | Units, lines |
+|---|---|---|
+| `SheetTools` 1.24.0 (2005 / 2138) | 529 | State 153, ToolState 347, HitResolution 320, ContentEditing 129, PointerPress 388, PointerDrag 554, Keyboard 375, ContextMenu 289 |
+| `SheetModel` 1.16.0 (1580 / 1801) | 555 | State 184, Sheets 284, Layers 196, DrawOrder 153, Viewports 296, TextAndDimensions 268, Shapes 191, Leaders 168, Groups 228 |
+| `SpecData` 1.2.0 (1271 / 1318) | 283 | State 285, Document 395, Editing 393, Draft 194, Transport 461 |
+| `SpecEditor` 1.2.0 (1231 / 1230) | 321 | State 170, Builders 183, Bar 253, Notes 253, Render 256, NoteDrag 210, Actions 358 |
+| `ConfigState` 1.15.0 (1222 / 1348) | 367 | Readers 143, KeyMap 416, SheetSetup 331, ToolSetup 302, EditorSetup 192 |
+| `Styles__Specification.css` (1024 / 1023) | 424 | Notes 352, Read 270 |
+| `Styles__Main.css` (943 / 1116) | 362 | Paper 593 |
+| `Viewport2d` 1.7.0 (835 / 1141) | 399 | Window 135, Frame 265, Linework 376 |
+
+### Fixed
+- **A selected leader got no selection box.** Every other selected item gets
+  a dashed box round it, but the leader's line in MarkupBridge still expected
+  a single selected item and wrote to a variable that no longer exists, so
+  the box was never drawn (its grips still showed). It had been that way
+  since box select arrived (MarkupBridge 1.5.0, 14-Sep-2026) and was found by
+  the lint run over the whole folder for this change. The line now matches
+  TrueVision's.
+
+### Notes
+- **Start-up is unchanged:** 346 JS modules (7,663 KB), of which the Layout
+  Editor's are still only the loader and its loading screen (2 files,
+  49 KB), and 28 stylesheets, of which Styles__Boot is the editor's only one.
+- **Service worker token** bumped to 2026-09-15-2 (logic 1.0.8). Module URLs
+  changed, and a deployed origin could otherwise answer index.html, the CSS
+  index or RenameDrawing from its old cache. The bump also covers v2.45.1 and
+  v2.46.0, which did not make one.
+- **Git:** plain file moves; nothing was staged. git status shows the 83
+  files git tracked in the folder as deleted and all 126 in the subfolders as
+  untracked, so `git add` the folder before committing (`git commit -a` alone
+  would record only the deletions).
+- **TrueVision is next** (Task 04): the same folders and the same splits in
+  its folder 51, still flat at 90 files. Its extra files already have a
+  place: ModelSource, PlanDoors and ViewportSnapMove in `20__`, Scrapbook and
+  its panel in `55__`, PdfFonts in `60__`.
+- **Verified statically:** ESLint (no-undef, no-import-assign,
+  no-unused-vars) over all 112 modules reports what it did before the move,
+  less the leader fix (three old unused-variable warnings remain); the
+  module graph walk (477 modules) and the named-export check (375 files)
+  pass; every `new URL` target, CSS index import and dynamic import
+  resolves; the static import cycles are the same two groups as before the
+  splits; each split was checked unit by unit for code moved verbatim and
+  every export kept. Not run in a browser: Adam tests.
+
+### Files
+- 126 files moved into 14 subfolders of `51__System__LayoutEditor`, among
+  them 40 new units: `ConfigState__*` (5), `SheetModel__*` (9),
+  `SheetTools__*` (8), `SpecData__*` (5), `SpecEditor__*` (7),
+  `Viewport2d__*` (3), `Styles__Main__Paper__.css`,
+  `Styles__Specification__Notes__.css` and `Styles__Specification__Read__.css`.
+- `Na__LayoutEditor__MarkupBridge__.js` 1.9.1.
+- Paths only: `index.html`, `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`,
+  `42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js`.
+- `ValeVisionGallery/02__Src__AppModules/62__Feature__AppInstallability/ValeVisionGallery__Pwa__ServiceWorker__Logic__.js` 1.0.8.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.46.0 - 15-Sep-2026 - Plan and Elevation Thumbnails Bake Themselves
+
+### Fixed
+- **Seeded and added drawings showed broken carousel pictures.** A plan or
+  elevation card is created with the conventional thumbnail path
+  (PresentationMode/Thumbnails/<scene id>.webp), but nothing rendered that
+  picture unless someone previewed the drawing and pressed Save Thumbnail.
+  Seed N / E / S / W on Harris Scheme-02 left Scene_005 to Scene_008 pointing
+  at four files that were never written, so the carousel showed four broken
+  images.
+
+### Added
+- **New drawings bake their own thumbnails.** Seed N / E / S / W, Pick Face,
+  + Add Elevation, Seed From Model Storeys, + Add Ground Floor Plan, + Add
+  Floor Plan, and creating a card for a row that has none, all queue the new
+  cards for a bake. For each drawing the bake opens it as Preview does,
+  records its framing (the thumbnail is the framing), captures the viewport
+  and uploads it R2-first with the local mirror. A seed's drawings share one
+  run: the first flies in, the rest flip in a frame.
+- **Bake Missing Thumbnails**, in the Floor Plans and Elevations sections,
+  bakes every card whose picture does not load, and leaves a thumbnail framed
+  by hand with Save Thumbnail alone.
+- **During a run** the full-screen overlay reads "Baking thumbnail 2 of 4" with
+  the drawing's name, then how many baked and whether the save worked.
+  Afterwards the view goes back where it was: the drawing that was
+  previewing, or the 3D camera and its orbit target exactly. Save Elevations
+  or Save Floor Plans runs once, and the carousel reloads every card.
+
+### Notes
+- New shared module `Na__DrawView__ThumbnailBake__` (folder 42). It knows
+  neither mode controller: each editor hands it an adapter (open, showing,
+  active, leave, record framing).
+- The carousel still shows a broken image when a picture is missing, by
+  choice: it makes a missing picture obvious while authoring.
+- A single + Add bakes straight away too, so a drawing re-aimed afterwards
+  keeps its first picture until Save Thumbnail replaces it.
+- If a drawing of the other kind was previewing when a run starts, the run
+  ends in 3D at that drawing's approach pose rather than back on it.
+- After Pick Face the bake hides the plane gizmo; moving the plane or
+  re-picking shows it again.
+- **Verified statically:** ESLint no-undef and no-unused-vars are clean on the
+  three modules, both label configs parse, and the module graph walk and the
+  named-export check pass (338 files). Not run in a browser: Adam tests.
+
+### Files
+- New: `42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js` 1.0.0.
+- `Na__Elevation__DevMenu__Editor__.js` 1.2.0,
+  `Na__FloorPlan__DevMenu__Editor__.js` 1.2.0, and `BakeThumbnailsLabel` in
+  `Na__Elevation__AppConfig__.json` and `Na__FloorPlan__AppConfig__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.45.1 - 15-Sep-2026 - Fix: New Plans and Elevations Missing From Add Viewport
+
+### Fixed
+- **Plans, elevations and scenes added after a sheet was first opened never
+  appeared in the Viewport panel's Scene list** (the one above Add Viewport).
+  The list was filled when the sheet's panels were built and only refilled
+  while it held a single option, so once a project's first scenes were in it
+  the list stayed as it was until the page reloaded. On Harris Scheme-02 it
+  kept the four Exterior 3D Views and never showed the four elevations
+  (Scene_005 to Scene_008, Elevations group), although their records and
+  scene cards were saved. The list is now rebuilt on every panel refresh,
+  keeping the scene already chosen, and left alone while it has focus.
+- **The Viewport panel follows scene changes while a sheet is open.** A scene
+  broadcast (a card added, renamed, regrouped or removed) refreshes it.
+
+### Notes
+- Not caused by v2.45.0: the one-time fill dates from the panel's first
+  version (v2.21.0). TrueVision's panel has the same line; recorded in the
+  parity ledger as a pending back-port.
+- Plans and elevations filed in a scene group that is switched off still
+  appear, at the end of the list without a group name, as before.
+
+### Files
+- `Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.1,
+  `Na__LayoutEditor__ModeController__.js` 1.15.1.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.45.0 - 15-Sep-2026 - Layout Editor Loads on First Use, Behind a Loading Screen
+
+### Changed
+- **The Layout Editor is off the start-up path.** index.html imported the mode
+  controller, the tab strip and the Dev section, and through them the whole
+  editor, for every project, drawings or not. Start-up now imports only the
+  new loader and its loading screen:
+  - JS modules at start-up: 417 files (9.5 MB) before, 345 files (7.6 MB) now.
+    The Layout Editor's share: 73 files (1.9 MB) before, 2 files (48 KB) now.
+  - Stylesheets at start-up: 30 (442 KB) before, 28 (345 KB) now. The Layout
+    Editor's share: 104 KB before, 7 KB now.
+- **When it loads.** The tab strip module arrives only when the project's
+  Layout Mode switch is on AND the project has a sheet. The editor itself (its
+  modules, its three stylesheets and its configs) arrives the first time
+  something needs it: a sheet tab, the + tab, a tab rename or drag, or a Dev
+  section action. The Dev section module arrives the first time its toggle is
+  clicked.
+- **One availability rule, everywhere.** Tabs show only while Layout Mode is
+  on and the project has at least one sheet, on localhost and on the live
+  site. The live site used to show tabs whenever a project had sheets; it now
+  needs the switch as well. Localhost used to show the strip (3D Model and +)
+  with no sheets; a project's first sheet now comes from New Sheet in Dev
+  Tools > Layout Editor.
+- **Dev Tools > Layout Editor looks and works as before.** The switch and Save
+  Sheets never load the editor; Open, New Sheet, Duplicate, Delete and Bake
+  load it first. Delete asks before it loads, so a cancelled delete loads
+  nothing. The Layout Mode wording follows the new rule.
+
+### Added
+- **Loading screen.** The ValeVision start-up screen again, full screen: the
+  same white overlay, Vale blue spinner and fade, built from the start-up
+  screen's own classes. It reads "Loading Layout Editor..." with a status line
+  (Fetching the drawing tools, then Reading the drawing settings) and hides
+  once the sheet has painted. If a file fails to load it shows the reason with
+  Reload Page and Back to 3D Model.
+
+### Notes
+- **The drawing system is unchanged**, only how it loads. The tab strip and
+  the Dev section reach the editor through the loader (`Na__LeLoad__*`), which
+  answers from the raw drawings block until the editor has loaded and calls
+  the real modules after.
+- **A late start is caught up.** Once the editor has initialised, the loader
+  announces the sheet model's project load once more, so an unsaved browser
+  draft is still put back (its toast now appears when the editor first opens,
+  not when the page loads), history takes its baseline and bubble codes
+  propagate.
+- **Drawing renames.** `Na__DrawView__RenameDrawing__` imported Viewport3d
+  directly, and that one import put the whole editor into start-up. The
+  re-stamp now goes through the loader: renaming a scene that a sheet viewport
+  holds a baked snapshot of loads the editor quietly (no screen) before
+  anything is written; any other rename loads nothing.
+- **Stylesheets** are linked at the end of the head when the editor loads.
+  Every selector in them is the editor's own, so the new position changes no
+  other rule. `Styles__Main` gave the tab strip, the Dev section and the
+  published tab height to the new `Styles__Boot` (Main is now 943 lines).
+- **Before the editor loads**, the tab and Dev wording uses the code
+  fallbacks, which match the config. `LayoutEditor__Enabled` can only be read
+  once the config loads; if it is ever false, the first click says so and the
+  tabs go.
+- **Verified statically:** the module graph walk and the named-export check
+  pass (337 files); all 35 calls the loader, tab strip and Dev section make on
+  loaded modules name real exports; ESLint no-undef and no-unused-vars are
+  clean on the six changed modules; the start-up graph was measured before
+  and after. Not run in a browser: Adam tests.
+- **Also seen:** `Na__LayoutEditor__AppConfig__.json` was reformatted (aligned
+  colons) by another writer at 09:21 while this change was being made. This
+  change only rewords three labels in it.
+
+### Files
+- New: `Na__LayoutEditor__Loader__.js` 1.0.0, `Na__LayoutEditor__LoadingScreen__.js`
+  1.0.0, `Na__LayoutEditor__Styles__Boot__.css`.
+- `Na__LayoutEditor__TabStrip__.js` 1.3.0, `Na__LayoutEditor__DevMenu__Controls__.js`
+  1.3.0, `Na__LayoutEditor__ModeController__.js` 1.15.0,
+  `Na__LayoutEditor__Styles__Main__.css`, `Na__LayoutEditor__AppConfig__.json`
+  (three labels), `Na__DrawView__RenameDrawing__.js` 1.1.0, `index.html`,
+  `Na__CoreUi__Styles__Index__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.44.1 - 15-Sep-2026 - Fix: "does not provide an export named Na__ModelToggle__GetCategoryKeys" on Load
+
+### Fixed
+- **The page could die on load with a SyntaxError from the Layout Editor's
+  Model Layers module**, then load normally after a refresh or two. The code
+  was never wrong: `Na__UiFeature__ModelToggle__Controls.js` has exported
+  `Na__ModelToggle__GetCategoryKeys` since 12-Sep. The shared PWA service
+  worker served shell JS stale-while-revalidate, so the page got the cached
+  copy of the Model Toggle module (from before that export existed) while
+  `Na__LayoutEditor__ModelLayers__.js`, which the cache had never seen, came
+  fresh from disk. A module graph that mixes versions fails to link. Each load
+  refreshed the cache in the background, which is why a reload cleared it and
+  why it looked like a timing error.
+- **Localhost is now network-first for shell JS and CSS.** Every module is
+  revalidated against the local server (`cache: 'no-cache'`, a 304 when
+  unchanged), so a load can never mix old and new files, and a module edited
+  in place is live on the next reload with no cache purge. The cached copy is
+  still served when the server is down.
+- **Service worker token bumped** to `2026-09-15-1`. It had not moved since
+  11-Sep while Layout Editor modules changed, so deployed origins, which keep
+  stale-while-revalidate, could hit the same fault once per changed module.
+
+### Notes
+- ValeVision3D does register this service worker: index.html loads
+  `ValeVisionGallery__Pwa__ServiceWorker__Registrar__.js`.
+- The first load after pulling installs the new worker, which reloads the page
+  once by itself (the registrar's controllerchange bridge).
+
+### Files
+- `ValeVisionGallery/02__Src__AppModules/62__Feature__AppInstallability/ValeVisionGallery__Pwa__ServiceWorker__Logic__.js` 1.0.7.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.44.0 - 15-Sep-2026 - Layout Editor: Margin Notes Spread Out When the Column Has Room
+
+### Added
+- **Stretching gaps between margin notes.** The gap between two notes has a
+  least (NoteGapMm, 2.5 mm) and a most (NoteGapMaxMm, 5 mm). What fits is
+  decided at the least. When every note fits and the column has room left at
+  the foot, every gap opens by the same amount up to the most, with the rule
+  centred in it. A column whose notes did not all fit keeps the least.
+- **The margin reads as TrueVision's does.** A note's code, a pipe and its
+  title share one line, and the body runs the full width (the code column is
+  gone). A faint rule sits between notes, 6 mm clear of the right border, and
+  body text is 2 mm. A margin stored at the old 2.2 mm (or about 9 pt) moves
+  to 2 mm.
+
+### Fixed
+- **The Layout Editor could not load.** The Project Specification port copied
+  SpecMargin, which imports Na__LeLayout__MarginRect, but SheetLayout never
+  had it, so the editor's module graph could not link. SheetLayout 1.2.0 adds
+  MarginRect, returns the margin from Solve as Margin, and stops the drawing
+  area a block gap short of it, so a new viewport lands clear of the notes.
+
+### Notes
+- **Ported from TrueVision3D v2.54.0** (SpecMargin 1.3.0, with 1.1.0 and 1.2.0
+  under it; SheetLayout 1.2.0) at Adam's request, after he signed the
+  TrueVision change off.
+- **Already on disk when this port began.** SpecMargin 1.3.0, ConfigState
+  1.12.0's margin fields, SheetRecords 1.11.0's size migration and the
+  MarginNotes config keys landed between 23:02 and 23:04 on 14-Sep, from a
+  writer that left no entry in this log. They match TrueVision code for code,
+  so this entry records them. SheetLayout is the only file this port changed.
+- The Project Specification and Margin Notes port underneath (SpecData,
+  SpecLinks, SpecEditor, SpecMargin 1.0.0, MarginGrip, Panel__MarginNotes,
+  R2DrawingNotes; in checkpoint commit 66937440) has no entry of its own.
+- **Verified here, in the running app** (margin.localhost, Doous 3047, every
+  non-GET refused and none attempted), on Sheet_001 with the margin switched
+  on and general notes added in memory:
+  - 6 notes, 180 mm to spare: gaps open to 5 mm; the last note 12.5 mm lower.
+  - 19 notes, one not fitting: gaps held at 2.5 mm.
+  - 18 notes, 6.39 mm to spare: gaps open to 2.88 mm and the last note ends
+    on the foot padding.
+  - Each time, every rule is centred in its gap to 0 mm, the text and left
+    edges are those laid out at the least gap, and the rules on screen sit at
+    the planned positions (17 of 17).
+  - Titles read "GN01 | Test note 1" at 2.2 mm bold over 2 mm body text, and
+    the drawing area stops 3 mm short of the margin.
+- **Verified statically:** SheetLayout, SpecMargin and GetMarginNotesSetup
+  are code-identical to TrueVision; so are the MarginNotes config block and
+  NormaliseMarginNotes. Every named import across 333 modules and index.html
+  resolves.
+
+### Files
+- `Na__LayoutEditor__SheetLayout__.js` 1.2.0.
+- Recorded here, changed before this port: `Na__LayoutEditor__SpecMargin__.js`
+  1.3.0, `Na__LayoutEditor__ConfigState__.js` 1.12.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.11.0, `Na__LayoutEditor__AppConfig__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.43.0 - 15-Sep-2026 - Project Specification: Read - the Notes as A4 Pages, to Print or Read Aloud
+
+### Added
+- **Edit and Read.** The Project Specification tab has two tabs inside it,
+  beside its title. Edit is the page of fields it always was. Read renders the
+  specification as an A4 document: the preview of the PDF it prints as.
+- **The pages.** A4 portrait at full size on a grey desk. Along every page's
+  head, the Vale Garden Houses logo and "Project Specification · 3047 Doous";
+  along its foot, the company and "Page 1 of 3". The first page opens with the
+  title, the project's name, its code, the date and what it holds. The groups
+  follow, each over a rule, with each note's code in a hanging column.
+- **Real pages, nothing cut off.** Blocks are measured where they land. A
+  group's heading stays with its first note, and a note's heading with its
+  first paragraph. A note that does not fit moves to the next page whole,
+  unless it is taller than a third of a page: then it breaks where it starts,
+  between words, never leaving one line alone on either side.
+- **Print.** Print in the bar, or Ctrl+P while the tab is showing, prints
+  exactly these pages, one to a sheet of A4 with no margins added. Nothing else
+  in the app reaches the paper. Save as PDF in the print dialog makes the PDF.
+- **Read aloud.** The pages are real headings and paragraphs, so Edge's Read
+  aloud (right-click, or Ctrl+Shift+U) reads the specification. The running
+  head, company and page number print but are not read out, and the sheet
+  beneath the tab is hidden while it is up.
+- **The bar, and what is remembered.** Read shows the sync state, Sync, the
+  page count and Print; the editing tools belong to Edit, and Ctrl+Z does
+  nothing in Read. The view is remembered in this browser, each view keeps its
+  scroll, Open in specification on a bubble opens Edit, and a read-only session
+  starts in Read. The pages shrink to fit a window narrower than A4.
+
+### Notes
+- **Ported from TrueVision3D v2.51.0** (commit 66d69d0: SpecEditor 1.1.0 and
+  the new SpecDocument 1.0.0) at Adam's request the next morning. The code is
+  TrueVision's line for line.
+- **Adapted:** the project's name comes from the folder id (2026/3047__Doous
+  reads Doous), where TrueVision reads its PWA project context; the DrawView
+  path is 42__. The logo and the company come from this app's own config.
+- **Left out:** service worker token (n/a).
+- **Verified here:** the module graph walk (437 modules, 0 failures) and the
+  named-export check (333 files) pass. In the app on Doous
+  (specread.localhost:8571, every write refused), Read renders A4 pages with the
+  Vale logo, "3047 Doous" and Vale Garden Houses Limited. Nine notes laid in for
+  the test gave 3 pages, every code and word matching the data, with a
+  6,500-character note breaking across a page. The print hooks, the hidden
+  sheet, the right-click menu and Ctrl+Z behave as in TrueVision. The test notes
+  were removed and never synced. The real module in headless Chrome, with the
+  real stylesheet, printed 4 A4 pages (and a 7-page stress document) with no app
+  UI and no blank page.
+- **Not exercised:** Edge's speech itself, and the print dialog.
+
+### Files
+- New `Na__LayoutEditor__SpecDocument__.js` 1.0.0,
+  `Na__LayoutEditor__SpecEditor__.js` 1.1.0,
+  `Na__LayoutEditor__Styles__Specification__.css`,
+  `Na__LayoutEditor__AppConfig__.json` (17 labels).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.42.0 - 15-Sep-2026 - Layout Editor: Zoom Inside a 3D Viewport
+
+### Added
+- **The wheel.** Double-click a 3D viewport (or Edit viewport content on its
+  right-click menu) and scroll over it: the picture zooms about the cursor, and
+  Shift+scroll zooms in fine steps. Dragging still slides the picture. Enter
+  finishes (so do Esc and a click elsewhere), and the picture keeps the zoom it
+  was left at. The note over the frame reads the zoom as it changes. A run of
+  notches is one undo step; a key or a click straight after scrolling commits
+  it first. Off the frame the wheel still zooms the sheet.
+- **Zoom % box** on 3D viewports, under Window mm: any percentage to a decimal
+  place, zoomed about the middle of the frame; Reset gives 100 percent, centred.
+  Limits 25 to 1000 percent. Greyed out while the viewport or its layer is
+  locked.
+- **Zoomed out, the frame fills with scene.** A frame that is not the whole
+  picture renders as a window onto the scene camera's picture at the frame's
+  own resolution: sharp when zoomed in, and the scene carries on past the
+  camera's framing when zoomed out or slid. The camera never moves, and the
+  vertical perspective correction still applies.
+- **Copy and paste** carry the zoom with everything else, so a framed view can
+  be pasted and pointed at another scene.
+- **Enter** now finishes a 2D viewport's content editing too, and **Recentre
+  content** centres a 3D picture at its zoom.
+- **Existing sheets.** A 3D viewport whose picture fills its frame renders and
+  keys exactly as before. One whose picture had been slid or cropped renders
+  its frame as a window - its white strips fill with scene - under a new key,
+  once.
+
+### Notes
+- **Ported from TrueVision3D v2.50.0** at Adam's request, after he signed it
+  off. The new `Na__LayoutEditor__Viewport3dZoom__.js` is verbatim.
+- **Adapted:** ValeVision has no model groups, so Viewport3d and Render3d carry
+  no design phase lines. ValeVision's own tiled renderer takes the view window
+  with its vertical correction shear still applied per tile, offsets the Silly
+  Lines phase into the window, applies the window in 3D only (a 2D ortho
+  export frames its own), and keeps its line width compensation on the output
+  height, so paper lineweights stay the same at any zoom.
+- Left out: the TrueVision service worker token (n/a here).
+- **Verified here:** every touched module parses as an ES module; AppConfig
+  and KeyMappings JSON parse; module graph 437 modules, 0 failures; named
+  exports pass (333 files). In the running app on Doous (3047), with every
+  write refused and none attempted, on a temporary 3D viewport that was then
+  deleted:
+  - Five wheel notches gave exactly e^0.8 (222.6 percent) with the point under
+    the cursor fixed. Nothing was announced during the run and one change
+    after it; the note and the Zoom % box read 222.6; Enter ended the editing
+    with the zoom kept; the sheet's own zoom did not move.
+  - The sharp render landed as a frame-sized window (3240 x 2160).
+  - Through this tree's tiled renderer, a window render matched the same crop
+    of a whole render: mean difference 0.003 (centred), 0.004 (off centre)
+    and 0.003 (a wider view reaching past the picture, whose extra strip
+    carries scene), against 7.7 to 9.1 for a crop shifted 5 percent. A window
+    on both axes matched to 1.2 against 24.6; that residual is this
+    renderer's line widths following the output height, not placement.
+  - An untouched viewport keeps its old key. Doous's own 3D viewport re-keys,
+    but its stored snapshot was already stale by the old formula.
+
+### Files
+- `Na__LayoutEditor__Viewport3dZoom__.js` 1.0.0 (new),
+  `Na__LayoutEditor__Viewport3d__.js` 1.5.0,
+  `Na__LayoutEditor__SnapshotRenderer__.js` 1.5.0,
+  `Na__LayoutEditor__PdfExporter__.js` 1.2.0,
+  `Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.0,
+  `Na__LayoutEditor__SheetTools__.js` 1.22.0,
+  `Na__LayoutEditor__Controls__Pc__.js` 1.1.0,
+  `Na__LayoutEditor__ViewportHandles__.js` 1.4.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.12.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.14.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.13.0,
+  `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__KeyMappings__.json`.
+- `30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js` 1.4.0.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.41.0 - 15-Sep-2026 - Layout Editor: Rotate Text With a Round Grip
+
+### Added
+- **Rotate grip.** A selected text item shows a round grip on a short stem off the top of its outline. Over it, the
+  pointer becomes a curved arrow. Drag it and the text turns about the middle of its box, so it spins in place.
+  - **Shift** holds the angle to 15 degree steps.
+  - Without Shift, a drag settles on a right angle once within 2 degrees of one.
+- **Text panel Rotation row**, in degrees clockwise. It turns the selected text about its middle, or, with nothing
+  selected, sets the angle new text is placed at.
+- **Reset rotation** on the right-click menu of turned text.
+- **Everything follows the turn:** every line of multi-line text, the leader (it meets the turned box), the dashed
+  selection outline, the inline editor, hit testing (the turned box itself, not the square round it), box select,
+  copy, paste, undo, and the PDF.
+- **Record key** `Annotation__RotationDeg`: degrees clockwise about the anchor, wrapped into (-180, 180] and written
+  only while the text is turned. Level text, and every record from before, draws and saves exactly as it did. It is
+  the same shape TrueVision writes.
+
+### Fixed
+- **Turned text in the PDF.** jsPDF shifts a centred or right-aligned run along the page, then turns it about that
+  shifted start. A turned centred run printed half its width from where the screen draws it, and so did the value of
+  a vertical or aligned dimension. Such a run is now placed by its own left end. Level text is unchanged.
+
+### Notes
+- **Ported from TrueVision3D v2.52.0** at Adam's request, after he signed it off. The TrueVision hunks replayed as
+  they were. Only the module log heads, one Grips region comment and one SheetTools header bullet took ValeVision's
+  own anchors.
+- Left out: service worker token (n/a).
+- **Verified here:**
+  - In the app at localhost:8567 on a scratch sheet, every write refused (none was attempted), and the sheet deleted
+    afterwards.
+  - The grip drew where its geometry puts it (within 0.01 px), with the rotate cursor over it.
+  - Drags landed on 90 (from 90.86 degrees, the middle unmoved), on 135 with Shift (105 part way through), and on
+    101.7 free.
+  - At 135, a point inside the square extent but off the turned box hit nothing; a point along the text hit it.
+  - At 45, a crossing box in the empty corner of the square extent took nothing; one across the text took it.
+  - The panel turned the text to 45 about its middle. Reset rotation was on the menu and removed the key. Undo and
+    redo stepped 45, level, 45. The inline editor opened turned 45 degrees.
+  - New text with the panel at 90 put the top of its first line on the press. Two lines at -90 stepped 4.8 mm along
+    the turned block, and the leader ended 0.6 mm off the turned box.
+  - The PDF text operator put the turned run's anchor on the SVG's (0 mm).
+  - All nine touched modules parse, the module graph passes, named exports pass (333 files, after e4's MarginRect
+    fix), and the AppConfig JSON parses.
+
+### Files
+- `Na__LayoutEditor__MarkupBridge__.js` 1.9.0, `Na__LayoutEditor__Grips__.js` 1.7.0, `Na__LayoutEditor__TextTool__.js`
+  1.3.0, `Na__LayoutEditor__Panel__Text__.js` 1.3.0, `Na__LayoutEditor__SelectionBox__.js` 1.3.0.
+- `Na__LayoutEditor__SheetTools__.js` 1.23.0, `Na__LayoutEditor__SheetModel__.js` 1.15.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.14.0, `Na__LayoutEditor__SheetChrome__.js` 1.5.0.
+- `Na__LayoutEditor__AppConfig__.json`; `Na__LayoutEditor__Styles__Main__.css` (`.na-le-grip--rotate`,
+  `.na-le-grip--stem`).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.40.0 - 14-Sep-2026 - Layout Editor: Dashed Edges on Vectors
+
+### Added
+- **Dashed edges.** A toggle on the Vectors panel (right column), off by
+  default. Ticking it opens a block for dashed / dotted / dash-dot (centre)
+  / hidden, with a scale slider and paper-millimetre section lengths. Draw
+  (L) and Rectangle (R) place the pattern; a two-point line can take a
+  centre line. Hidden while Edges are off.
+- **Shape__LineStyle** on the shape record: null is a solid edge (every
+  shape from before this toggle). Otherwise kind, scale, dash, gap and mark
+  in paper millimetres. The screen (SVG stroke-dasharray) and the PDF
+  (jsPDF dash pattern) paint the same array.
+- Eyedropper B and Shift+B copy the style with the other vector traits.
+
+### Notes
+- **Ported from TrueVision3D** (LineStyleTool 1.0.0 and the same wiring) at
+  Adam's request the same day, to keep the drawing editors in tandem.
+- Left out: TrueVision's Draw-at-scale Vectors panel row (this tree has no
+  such control). Config JSON is identical, so either app reads the other's
+  line styles.
+- **Verified here, statically:** LineStyleTool config and AppConfig JSON
+  parse. Not exercised in the running app in this session.
+
+### Files
+- New: `Na__LayoutEditor__LineStyleTool__.js`,
+  `Na__LayoutEditor__LineStyleTool__Config__.json`.
+- `Na__LayoutEditor__Panel__Shapes__.js` 1.6.0,
+  `Na__LayoutEditor__SheetChrome__.js` 1.4.0,
+  `Na__LayoutEditor__ShapeGeometry__.js` 1.5.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.10.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.13.0,
+  `Na__LayoutEditor__SheetTools__.js` 1.21.0,
+  `Na__LayoutEditor__ShapeTool__.js` 1.6.0,
+  `Na__LayoutEditor__RectangleTool__.js` 1.2.0,
+  `Na__LayoutEditor__Eyedropper__.js` 1.6.0,
+  `Na__LayoutEditor__ModeController__.js` 1.14.0,
+  `Na__LayoutEditor__AppConfig__.json`,
+  `Na__LayoutEditor__Styles__Panels__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.39.0 - 14-Sep-2026 - Layout Editor: Type a Length While Dragging a Viewport
+
+### Added
+- **Typed viewport move.** While a viewport's frame is being dragged (the
+  move cursor, not a crop handle and not a pan of the drawing inside), the
+  Measurements box wakes and reads the drag's length. Type a value and press
+  Enter: the frame moves that far along the inferred direction. A minus sign
+  runs the other way. The landing is exact - no snap - and the drag finishes
+  so the still-down pointer cannot pull the frame back to the cursor. One
+  undo step.
+- The length is a real size at the viewport's scale, or the sheet's scale for
+  a 3D viewport, so 1000 or 1m at 1:50 is 20 mm on the paper.
+
+### Notes
+- **Ported from TrueVision3D v2.47.0** (SheetTools 1.24.0, Measurements 1.2.0)
+  at Adam's request the same day.
+- Left out: TrueVision's ViewportSnapMove carry (this tree has no viewport
+  carry yet); service worker token (n/a).
+- **Verified here, statically:** AppConfig and KeyMappings JSON parse. Not
+  exercised in the running app in this session.
+
+### Files
+- `Na__LayoutEditor__SheetTools__.js` 1.19.0, `Na__LayoutEditor__Measurements__.js`
+  1.2.0, `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__KeyMappings__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.38.0 - 14-Sep-2026 - Layout Editor: Group / Ungroup and Multi-Item Copy
+
+### Added
+- **Group and ungroup.** Ctrl+G groups selected vectors and text (and nested
+  groups); Ctrl+Shift+G ungroups one level. Mixed selections group. A click
+  on a member selects the outermost group. A selected group shows a blue
+  bounding box with a "Group" overlay. Groups move, nudge, delete, copy and
+  paste as one.
+- **Multi-item copy/paste.** Ctrl+C / Ctrl+V / Ctrl+D and the right-click
+  menu copy text, groups, and a multi-selection of vectors or text. Nested
+  group members remap to fresh ids. One paste is one undo step.
+
+### Notes
+- **Ported from TrueVision3D** (Groups 1.0.0, ItemClipboard 1.0.0, SheetModel
+  1.18.0, SheetRecords 1.13.0, SheetTools 1.23.0) at Adam's request the same
+  day, after grouping was signed off in TrueVision.
+- Left out: TrueVision's undo-restore / AnnounceRestore change (still pending
+  sign-off on the parity ledger). SelectionExists here now also keeps a
+  selected vector and a selected group through an undo that leaves them on
+  the sheet.
+- **Verified here, statically:** AppConfig and KeyMappings JSON parse. Not
+  exercised in the running app in this session.
+
+### Files
+- `Na__LayoutEditor__Groups__.js` 1.0.0 (new), `Na__LayoutEditor__ItemClipboard__.js`
+  1.0.0 (new), `Na__LayoutEditor__SheetRecords__.js` 1.9.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.11.0, `Na__LayoutEditor__History__.js`
+  1.3.0, `Na__LayoutEditor__Grips__.js` 1.6.0, `Na__LayoutEditor__SheetTools__.js`
+  1.18.0, `Na__LayoutEditor__ModeController__.js` 1.12.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.10.0, `Na__LayoutEditor__KeyMappings__.json`,
+  `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__Styles__Main__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.37.0 - 14-Sep-2026 - Dimension Text Leader: Drag the Value Off the Line
+
+### Added
+- **Drag a dimension value off the line.** With the Select tool, click the
+  figure (not the line) and drag it. A circular arc runs from the justified
+  side of the value back to the centre of the dimension line, bulging away
+  from the line so the hook bends outwards. A paper-white patch sits behind
+  the moved text. Drag it close to home and it snaps; the arc goes. Right-click
+  **Reset text position** while the value is offset.
+- **Handing.** Dragged to the right of the centre (along the way the value
+  reads) the text is left-justified and the arc meets its left, at the middle
+  of the row; dragged to the left, right-justified, the arc on the right.
+  Straight above or below reads as to the right.
+
+### Notes
+- **Ported from TrueVision3D** (DimensionGeometry 1.3.0 to 1.5.1, MarkupBridge
+  1.10.0, Grips 1.4.0, SheetTools 1.19.0, DimensionTool BeginTextEdit, SelectionBox
+  1.2.0, SheetModel 1.17.0, SheetRecords 1.12.0, ConfigState text-leader keys)
+  at Adam's request the same day, after the outward-hook shape was signed off.
+- Left out: TrueVision's fixed-length extension lines (panel rows and record
+  keys). A record without TextDXMm / TextDYMm draws exactly as it did.
+- **Verified here, statically:** AppConfig JSON parses. Not exercised in the
+  running app in this session.
+
+### Files
+- `Na__LayoutEditor__DimensionGeometry__.js` 1.2.0, `Na__LayoutEditor__MarkupBridge__.js`
+  1.7.0, `Na__LayoutEditor__Grips__.js` 1.5.0, `Na__LayoutEditor__SheetTools__.js`
+  1.17.0, `Na__LayoutEditor__DimensionTool__.js` 1.5.0, `Na__LayoutEditor__SelectionBox__.js`
+  1.2.0, `Na__LayoutEditor__SheetModel__.js` 1.10.0, `Na__LayoutEditor__SheetRecords__.js`
+  1.8.0, `Na__LayoutEditor__ConfigState__.js` 1.9.0, `Na__LayoutEditor__AppConfig__.json`
+  (TextLeaderMinMm, TextLeaderGapMm, MenuResetDimText).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.36.0 - 14-Sep-2026 - Eyedropper: Match Unlocked Viewports, Skip Locked Ones
+
+### Added
+- **Unlocked viewports match properties.** The eyedropper (B) copies render
+  composites, caption and scale from one unlocked viewport onto another. Scene,
+  drawing, frame geometry, pan, name, layer and lock stay on that viewport.
+- **Locked viewports are invisible to the dropper.** A viewport lock (its own
+  flag or its layer) is not a source and not a target. Hit-testing skips the
+  locked frame, so the pointer reaches markup and other unlocked viewports
+  through it instead of the dropper sticking to the viewport over everything
+  else. Copy / Paste properties on the right-click menu only appear when the
+  viewport is unlocked.
+
+### Notes
+- **Ported from TrueVision3D** (eyedropper 1.6.0, SheetTools 1.22.0) at Adam's
+  request the same day. ValeVision does not store `Viewport__ShowFrame` yet
+  (TrueVision's Frame toggle, plan item W), so that trait stays there.
+- Viewports do not load the palette: new viewports are added from the panel,
+  not drawn with a tool.
+- **Verified here, statically:** AppConfig JSON parses. `EXCLUDED_KINDS` is
+  gone; locked-viewport skip is in Resolve. Not exercised in the running app
+  in this session.
+
+### Files
+- `Na__LayoutEditor__Eyedropper__.js` 1.5.0, `Na__LayoutEditor__SheetTools__.js`
+  1.16.0, `Na__LayoutEditor__AppConfig__.json` (description, ViewportNote,
+  labels).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.35.0 - 14-Sep-2026 - Layout Editor Clipboard, Whole-Shape Snap, Measurements Box
+
+### Added
+- **Vector and viewport clipboard (Ctrl+C / Ctrl+V / Ctrl+D).** Copy, paste and duplicate
+  a selected viewport or vector from the keyboard or the right-click menu. A paste is a
+  new item with a fresh id; a viewport also gets a copy name. ValeVision had no viewport
+  clipboard yet, so that slice came with the vector clipboard.
+- **Draw-vertex undo.** While a polyline is being placed, Ctrl+Z / Ctrl+Y take the last
+  point off and put it back instead of stepping the sheet.
+- **Whole-shape snap.** A dragged vector offers the grab point and every vertex; the
+  nearest snap moves the whole shape. Vertex grips already snapped.
+- **Shift-click insert vertex.** Hold Shift over an edge of the selected vector and click
+  to insert a vertex there (diamond marker); the same press can drag it.
+- **Measurements box (VCB)** at the bottom right of the sheet. Typed lengths for Draw,
+  Rectangle and Dimension, and a typed length while a vertex is being dragged
+  (`GetVertexDrag` / `TypeVertexLength`). DrawingScale reads `atScale: true` on the
+  shape and dimension defaults.
+
+### Notes
+- **Ported from TrueVision3D v2.44.0 (clipboard + draw-vertex undo), v2.45.0 (whole-shape
+  snap + Shift-click insert) and v2.46.0 (VCB including vertex-drag typed length),**
+  which itself sits on v2.40. Left out: PlanDoors, ViewportSnapMove, ModelSource, SpecEd,
+  measure-at-scale / extension-line **panel rows**, and the service worker token (no PWA
+  worker here). `atScale` is hardcoded true so DrawingScale works without those panel
+  rows. DimensionTool `BeginTextEdit` is still ValeVision's. CreateDimension does not
+  store `Dimension__AtScale` or extension-line fields.
+- **MarkupBridge is not wired to DrawingScale.** Dimension values painted on the sheet
+  still use ValeVision's existing length path; the Measurements box is the at-scale
+  reader/writer.
+- **KeyMappings Copy/Paste/Duplicate labels still say "viewport"** as in TrueVision;
+  AppConfig menu labels cover vectors as well.
+
+### Files
+- **New:** `Na__LayoutEditor__ViewportClipboard__.js`, `Na__LayoutEditor__Measurements__.js`,
+  `Na__LayoutEditor__MeasureParse__.js`, `Na__LayoutEditor__DrawingScale__.js`.
+- **Layout Editor modules:** SheetModel, ConfigState, ShapeGeometry, Grips, ShapeTool,
+  RectangleTool, DimensionTool, SheetTools, ModeController, Panel__ViewportSettings.
+- **Config and styles:** AppConfig clipboard/measurements/labels; KeyMappings Copy/Paste/
+  Duplicate and MeasurementsBox; Styles VCB and insert-grip.
+
+- **Verified here, statically:** named-export and module-graph harnesses should be
+  run on the Layout Editor folder after this port (62 files with the four new
+  modules). AppConfig and KeyMappings JSON must parse. Not exercised in the
+  running app in this session.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.34.0 - 14-Sep-2026 - Dimension End Size: Resize Ticks, Arrows and Dots
+
+### Added
+- **Size mm under Ends in the Dimensions panel.** How large the ticks, arrows or dots
+  at each end of a dimension are, in paper millimetres. With a dimension selected it
+  edits that one; with nothing selected it sets what the Dimension tool places next.
+- **The record is `Dimension__TickLengthMm`.** Stored only as a number above zero,
+  clamped between 0.5 and 12. A record from before it has no key and draws at the
+  config `TickLengthMm` (1.5 mm), so every existing dimension is unchanged until
+  Size mm is used. New dimensions take the panel setting. The eyedropper and Shift+B
+  copy it.
+
+### Notes
+- **Ported from TrueVision3D v2.43.0** at Adam's request in the same breath as the
+  TrueVision change. The Size mm field, the record key, the draw path, the
+  eyedropper, the selection box, the defaults and the config - without TrueVision's
+  Measure at scale or extension-line rows, which this tree has not taken yet.
+- **Same data point.** Either app now writes `Dimension__TickLengthMm` in the same
+  shape, so a later reader can take it from either.
+- **Verified here, statically:** `Na__Verify__Exports__` passes on the Layout Editor
+  folder (58 files). `Na__Verify__ModuleGraph__` passes (421 reachable modules, the
+  one known vendor issue unchanged). AppConfig JSON parses. Not exercised in the
+  running app in this session.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.33.0 - 14-Sep-2026 - Box Select: a Window to the Right, a Crossing to the Left
+
+### Added
+- **Box select in the Layout Editor, as AutoCAD and SketchUp draw it.** A drag with the
+  Select tool that starts on bare paper draws a selection box.
+  - Dragged to the RIGHT it is a WINDOW: transparent blue with a solid edge. It takes only
+    what lies wholly inside it.
+  - Dragged to the LEFT it is a CROSSING: transparent green with a dashed edge. It takes
+    anything it touches as well.
+  - Only the horizontal direction decides. While the box is dragged, everything it would
+    take is outlined in its colour.
+- **What a box takes.**
+  - A viewport by its frame edge. A crossing drawn inside a viewport does not pick the
+    viewport up, so the markup laid over a drawing boxes on its own.
+  - A vector by its edges, the closing edge of a fill included. A box inside a filled
+    shape does not take it.
+  - Text by its text box or its leader; a dimension by its extension lines, dimension
+    line, terminators or value; a leader by its line, its endpoint, or its bubble or note.
+  - Hidden layers, locked layers and locked viewports are never taken.
+- **Where a box can start:** bare paper or the grey stage, a locked viewport, or anywhere
+  with Alt held. A press on anything that can move still moves it.
+- **Modifiers, as SketchUp holds them:** Ctrl adds, Shift toggles, Ctrl+Shift removes, for
+  a box and a click alike. They live in the key map's new SelectionBindings block.
+- **Working with several.**
+  - Drag any one of them and they all move, as one undo step.
+  - A click on one that does not move narrows the selection to it.
+  - The arrow keys nudge them all. Delete removes them all, asking once if a viewport is
+    among them, and the right-click menu offers Delete N selected items. Each is one undo
+    step.
+  - A locked item can be selected, but every move, nudge and delete leaves it out.
+  - A leader tip follows a moving viewport, not its text: notes moved on their own keep
+    pointing where they point.
+  - The Text, Dimensions and Vectors panels say how many are selected, and show the
+    settings for new objects until one item is selected on its own.
+
+### The Record
+- **Nothing new is saved.** The selection is session state; the sheet records are the
+  same in both apps.
+- `Na__LeModel__GetSelection` keeps its meaning: `{ kind, id }` for exactly one item, null
+  for none or several. New: `GetSelectionItems`, `SetSelectionItems`, `IsSelected` and
+  `DeleteItems` (a batch delete, one undo step).
+
+### Files
+- **New:** `51__System__LayoutEditor/Na__LayoutEditor__SelectionBox__.js` and
+  `Na__LayoutEditor__SelectionSet__.js`, both 1.0.0.
+- **Layout Editor modules:** `SheetModel__` 1.7.0, `SheetTools__` 1.11.0,
+  `SheetSurface__` 1.4.0, `ViewportHandles__` 1.3.0, `MarkupBridge__` 1.5.0, `History__`
+  1.2.0, `ConfigState__` 1.6.0, `Panel__Text__` 1.1.0, `Panel__Dimensions__` 1.1.0,
+  `Panel__Shapes__` 1.5.0.
+- **Config and styles:**
+  - `AppConfig__.json`: BoxStartPx, BoxBorderPx, BoxPreview and BoxPreviewPadMm in the
+    Selection block, and six labels.
+  - `KeyMappings__.json`: the SelectionBindings block and three Select actions.
+  - `Styles__Main__.css`: the box and preview colours.
+
+### Notes
+- **Ported from TrueVision3D v2.34.0** the day Adam signed it off, on top of Leaders
+  (v2.32.0), which was built beside it in the same files.
+  - The two new modules are verbatim below the header, leader rows included.
+  - Box Select's own 79 hunks were replayed across 13 shared files. Nothing was written
+    until every anchor was unique.
+  - 10 were development-log heads, rewritten to this tree's module versions.
+  - 6 were re-anchored where this tree lacks TrueVision's viewport snap-move and viewport
+    clipboard, or words its History header differently.
+- **Not ported: CarryTarget's guard.** This tree has no viewport carry yet.
+- **Still open: a restore drops selected vectors.** History's selection test has no shape
+  row here (see v2.32.0), so an undo or redo also takes every vector out of a
+  multi-selection. It returns with the pending undo-writes return trip.
+- **No service worker token:** this tree has no PWA worker.
+- **Verified here:**
+  - all 12 edited and new modules parse as ES modules, and both JSON files parse;
+  - `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged;
+  - `Na__Verify__Exports__` passes on 317 files;
+  - the TrueVision box select harness, run against this tree's real modules, passes 86 of
+    87. The one failure is the shape row above: a redo that removes a selected text item
+    drops the selected vector with it.
+- **Not exercised in the running app:** testing was kept light at Adam's request.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.32.0 - 14-Sep-2026 - Leaders & Annotation Bubbles: a Note or a Specification Code on a Sweeping Leader
+
+### Added
+- **Leaders, a new kind of sheet object.** A leader runs from a point on the drawing to
+  its head. The head is a multi-line Note, or a Specification bubble: a code centred in a
+  circle (EE02, DV01), the key drawing-specific notes will later be pulled in by.
+  - The Leader tool is E, beside Text on the toolbar.
+  - The Leaders panel sits under Text in the right column.
+- **Placing one.** Click the point, then where the head goes; or press on the point and
+  drag to the head. The leader is drawn live, exactly as it will land.
+  - The text field opens at once: one line for a bubble's code, several for a note.
+    Ctrl+Enter or a click away finishes a note.
+  - A new bubble offers the code after the newest bubble on the sheet, so EE07 is
+    followed by EE08.
+  - Nothing reaches the undo history until the head lands.
+- **Never a straight rule.** The line leaves the endpoint level and runs a short stub.
+  It sweeps through an S with level tangents, then runs a second stub into the head.
+  - The side of the point the head sits on sets the handing. A note placed to the right
+    is left-justified; to the left, right-justified.
+  - A bubble takes its leader on the side that faces the point.
+  - A code too wide for the bubble grows the bubble.
+- **The Leaders panel** edits the selected leader, or sets up the next one:
+  - type;
+  - text size, weight and colour;
+  - dashed or solid line, with its weight and colour;
+  - bubble diameter and edge weight;
+  - fill on or off, with its colour and a Fill opacity slider;
+  - Transparent lines, off by default, with a Line opacity slider;
+  - an Endpoint fold: filled or a ring, its ring weight, and its size.
+  - A slider drag is one undo step.
+- **Editing.** With the Select tool:
+  - the square tip grip re-points the leader, snapping;
+  - the head or the round anchor grip moves the head alone;
+  - the curve moves the whole leader;
+  - the arrows nudge it and Delete removes it;
+  - double-click or the right-click menu reopens the text, and emptying the text deletes
+    the leader.
+  - The eyedropper matches leaders. Their type travels only to the palette (Shift+B),
+    never in a paint.
+- **Vector transparency.** The Vectors panel gains Fill opacity, and Transparent edges
+  (off by default) with Edge opacity. New shapes and rectangles take both from the panel,
+  and the eyedropper carries them.
+
+### The Record
+- **`Sheet__Leaders`** is on every sheet, and each leader sits on the text layer. Fields:
+  - identity and place: `Leader__Id`, `LayerId`, `Type` ('text' | 'bubble'), `TipXMm`,
+    `TipYMm`, `AnchorXMm`, `AnchorYMm`;
+  - text: `Text`, `TextSizeMm`, `FontWeight`, `TextColour`;
+  - line: `LineColour`, `LinePt`, `LineStyle` ('solid' | 'dashed'), `LineOpacity`;
+  - endpoint: `EndpointFilled`, `EndpointPt`, `EndpointSizeMm`;
+  - bubble and fill: `BubbleSizeMm`, `BubbleEdgePt`, `FillColour` (null for no fill),
+    `FillOpacity`.
+  - The names and defaults are TrueVision's, so either app reads the other's leaders.
+- **`Shape__FillOpacity` and `Shape__StrokeOpacity`**, 0 to 1. Every existing shape reads
+  1 and draws as it did.
+- **Leader changes announce as 'leader' and 'leaders'.** They are content edits: the
+  browser draft keeps them, and they never trigger the structural auto save.
+
+### Files
+- **New:** `51__System__LayoutEditor/Na__LayoutEditor__LeaderGeometry__.js`,
+  `Na__LayoutEditor__LeaderTool__.js` and `Na__LayoutEditor__Panel__Leaders__.js`, all
+  1.0.0.
+- **Layout Editor modules:** `SheetModel__` 1.6.0, `SheetRecords__` 1.6.0,
+  `SheetChrome__` 1.3.0, `MarkupBridge__` 1.4.0, `Grips__` 1.3.0, `TextTool__` 1.1.0,
+  `SheetTools__` 1.10.0, `Eyedropper__` 1.3.0, `History__` 1.1.0, `ModeController__`
+  1.10.0, `Toolbar__` 1.9.0, `PanelHost__` 1.2.0, `ConfigState__` 1.5.0,
+  `ShapeGeometry__` 1.3.0, `Panel__Shapes__` 1.4.0, `ShapeTool__` 1.3.2,
+  `RectangleTool__` 1.0.2.
+- **Config and styles:**
+  - `AppConfig__.json`: the Leader block, the Shapes opacity keys and the labels.
+  - `KeyMappings__.json`: `Tool__Leader` on E.
+  - `Styles__Main__.css`: the multi-line field and the anchor grip.
+  - `Styles__Panels__.css`: the sub-fold.
+
+### Notes
+- **Ported from TrueVision3D v2.35.0** the day Adam signed it off.
+  - The source was a snapshot of the signed-off files, not TrueVision's working copies.
+    Those already carried unsigned Project Specification hunks.
+  - Box Select, built beside it in TrueVision (v2.34.0), crosses next as its own port.
+- **How the hunks crossed.** They are the authoring session's own edits, replayed in
+  order: 123 across 21 files.
+  - 112 matched verbatim.
+  - 8 were development-log heads, rewritten to this tree's module versions.
+  - 3 were re-anchored to context this tree words differently: the History selection
+    test, the SheetTools header, and the last label in the config.
+  - The three new modules are verbatim below the header.
+- **Not ported: the shape row of the History selection test.** An undo here still drops
+  a selected vector, as before. That row belongs to the pending undo-writes return trip
+  in the parity ledger.
+- **No service worker token:** this tree has no PWA worker.
+- **Verified here:**
+  - all 20 edited and new modules pass `node --check`, and both JSON files parse;
+  - `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged;
+  - `Na__Verify__Exports__` passes on 315 files;
+  - the TrueVision leader harness, run against this tree's real modules, passes 83 of 83,
+    old-style primitives painting byte-identically to this repo's HEAD among them.
+- **Not exercised in the running app:** testing was kept light at Adam's request.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.31.1 - 13-Sep-2026 - A Refused Snapshot Upload Is Never Counted as Baked
+
+### Fixed
+- **The Dev bake no longer counts a refused 3D snapshot upload as baked.**
+  `Na__LeVp3d__Bake` used to decide by reading the viewport record after the render:
+  if the record named this view, the bake had worked. A record that already named the
+  same view passed that test whether or not the new picture reached R2 - a forced bake,
+  or a stored picture too narrow for export (every record written before
+  `Asset__PixelWidth` existed reads as too narrow). It now counts the render's own
+  upload.
+- **The record is stamped only when the upload says R2 took the file.**
+  `Na__LeVp3d__RenderNow` requires `r2Success === true` before it writes
+  `Viewport__SnapshotAsset`, and returns whether it did.
+
+### Notes
+- **Ported from TrueVision3D v2.32.1** the day it was fixed, at Adam's request, as
+  `Na__LayoutEditor__Viewport3d__` 1.4.1. The RenderNow and Bake hunks are TrueVision's
+  1.5.1 line for line; the module still lacks TrueVision's Model Source (1.5.0), which
+  has no model groups to act on here.
+- **TrueVision had the worse half.** Its upload utility returns a result with
+  `r2Success : false` where this tree's throws, and a result object is truthy, so a
+  refused upload there wrote a path R2 had never received onto the record - the web
+  build then asked R2 for a missing file and drew an empty frame, and the Dev bake
+  called the viewport up to date. Here `Na__AppUtils__R2AssetUpload` throws and
+  `Na__LeAssets__Upload` returns null, so no refusal ever stamped a record; the new
+  check keeps the two modules identical and holds if the transport ever changes.
+- Verified here: the module parses, the module graph resolves and the named imports of
+  312 files resolve. A Node harness runs the real module of each app against stubbed
+  imports through 10 cases - an upload refused as a result object, refused as null, and
+  accepted, through Bake, Force Render and the PDF render. Before the port this copy
+  failed 5, one of them with its own null refusal (a forced bake over a same-key record
+  read as baked); after it, all 10 pass.
+- In the running app on Doous (`vvstamp.localhost:8441`), every write refused by a guard
+  and none attempted, and the running `Bake` proven to be the ported one by its source:
+  Sheet_001's 3D viewport rendered (3240 px), and Force Render, a forced bake and an
+  unforced bake each left its record untouched, both bakes `failed`. A `*.localhost` host
+  cannot upload in this app, so the upload branch itself rests on the harness. The stored
+  snapshot's fingerprint (`1od0ttx`) no longer matches the view's key (`5ski8l`), so the
+  old code would also have said `failed` here: the same-key miscount is shown by the
+  harness alone.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.31.0 - 13-Sep-2026 - Drawing Layers: Drag the Grip, Lock and Unlock
+
+### Changed
+- **A grip replaces the Up and Down buttons.** Each row in the Layout Editor's
+  Drawing Layers panel now ends in a six-square grip. Press it, drag the layer up
+  or down and let go.
+  - The row follows the pointer, and the rows it passes slide aside to show where
+    it will land. Nothing reaches the model until release, so a drag is one
+    reorder and one undo step.
+  - A row takes a place once its leading edge passes the middle of the row there,
+    so the first and last places can both be reached.
+  - Escape, or a cancelled pointer, drops the drag and leaves the order alone.
+  - A panel refresh that arrives mid-drag waits for the drop rather than pulling
+    the rows out from under the pointer.
+  - With the grip focused, the up and down arrow keys move the layer one row, so
+    the order can still be changed without a mouse. Those arrows do not reach the
+    sheet.
+  - Only the grip drags. The whole row is no longer an HTML drag source, so a
+    double-click rename or the type select cannot start a drag by accident.
+- **The lock button reads Lock, or Unlock while the layer is locked** (it read Open
+  and Locked). A locked layer's button carries a faint red tint, and both words
+  share one width so the layer names do not shift.
+
+### Notes
+- **Ported from TrueVision3D** (`Na__LayoutEditor__Panel__Layers__` 1.1.0), authored
+  there first and signed off by Adam on 13-Sep-2026. No record field changed: the
+  order is still `Layer__Order` and the lock `Layer__Locked`, so both apps write the
+  same data.
+- **How it came across.** A script confirmed that this tree's Layers module body and
+  the Layer Rows region of `Na__LayoutEditor__Styles__Panels__.css` were still
+  byte-identical to TrueVision's committed originals before replacing them, then
+  checked them again after writing.
+  - The Layers module is TrueVision's line for line below the header.
+  - Nothing outside the Layer Rows region of the stylesheet moved.
+  - Each file kept its own line endings (the module LF, the stylesheet CRLF).
+- **Verified here, statically:** the module parses; `Na__Verify__ModuleGraph` passes
+  with its one known vendor issue unchanged; `Na__Verify__Exports` passes on 312 files.
+- **Verified in the running app** on a scratch sheet at `127.0.0.1:8441`, with every
+  network write refused (none was attempted). Nine checks passed:
+  - A 2 px press is not a drag.
+  - Lock turns to Unlock and back, with the same tint and the same 48 px width as
+    TrueVision.
+  - A drag down one row, a drag to the very bottom and a drag to the very top.
+  - Escape and a cancelled pointer both leave the order alone.
+  - The arrow keys move one row and keep focus on the moved layer.
+  - A refresh mid-drag is held until the drop, which still lands.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.30.0 - 13-Sep-2026 - Edge Styles: Structure Black, Doors Grey, Furniture Faint
+
+### Added
+- **Each model category draws its own linework.** In a 2D Layout Editor viewport
+  every projected line now knows which category of the model it came from. That
+  lets structure stay black at full weight while the proposal's doors step back
+  to dark grey and furniture and planting sit at mid and light grey. The drawing
+  gets that depth cue without anyone setting it up.
+- **An Advanced fold in Model Layers** shows each category's edge colour, line
+  type and weight inline in its row, between the name and the checkbox. There is a
+  reset per row and one for the whole viewport.
+  - A change restyles that category in the selected viewport only, and repaints
+    without re-projecting.
+  - Folded, the panel is exactly the panel it was.
+  - It appears on 2D viewports only.
+- **Defaults per category**, in `Na__LayoutEditor__ModelLayers__Config__.json` 1.1.0,
+  the same as TrueVision's:
+  - Walls, floors, roofs and the building itself: black, 1.0.
+  - Windows and doors: dark grey, 0.80.
+  - Staircases: soft black, 0.90. Fixtures: dark grey, 0.75.
+  - Furniture: mid grey, 0.50. Decor: light grey, 0.50.
+  - Landscape: mid grey, 0.60.
+  - Site boundaries: soft black, dashed, 0.75.
+  - Planting and people: 0.50.
+  - A category no config names draws black, solid, at full weight: plainly
+    unstyled rather than invisible.
+- **A weight is a factor, never a width.** 1.0 is the sheet's master viewport
+  lineweight, so raising the master thickens the whole drawing and keeps the
+  hierarchy. The Projected Linework and Hidden Lines composite weights (v2.28.0)
+  multiply on top.
+- **Line types in paper millimetres** (`Na__LayoutEditor__EdgeStyles__Config__.json`):
+  solid, dashed, dashed fine, centre (steelwork and setting out), centre fine,
+  phantom and dotted. A dash measures the same on paper at 1:50 and at 1:200.
+- **Colours are the SketchUp SSOT edge greys**, stored by alias: black, soft
+  black, dark grey, medium dark grey, mid grey and light grey. Each alias carries
+  its SSOT material key.
+- **The record is `Viewport__ProjectedEdges`.** It holds only the categories
+  someone restyled, each written out in full with its label, plus the time of the
+  last change.
+  - An entry that returns to its default is pruned, and the record is null when
+    nothing is left.
+  - The shape is TrueVision's, so either app reads the other's sheets.
+- **The PDF prints the same bands** the sheet paints.
+
+### Changed
+- **Every linework render that is kept runs on the CPU backend.** That covers the
+  drawing on screen, every Layout Editor viewport, the browser cache and the R2
+  bake, because only the CPU backend tags each line with its category.
+  - `auto` used to send plain elevations to the GPU on a capable machine, where
+    the edge styles would have done nothing. That was TrueVision's first failed
+    test of this feature.
+  - The GPU and legacy backends remain for the Dev menu's Run Diff, which keeps
+    nothing, and the menu now says so.
+  - A large elevation computes more slowly on a machine that used to hand it to
+    the GPU.
+- **Linework asset schema 2** stores the category tags as `[ id, count ]` runs per
+  class.
+  - Schema 1 assets and browser copies are refused and rendered again once, because
+    a drawing restored from one could not be styled.
+  - Until a project is saved again on localhost, which re-bakes its drawings, the
+    web build computes that linework in the browser instead of loading the old
+    asset.
+- **The Layout Editor also waits for the edge style config and the drawing view
+  config** before it builds. Neither fetch rejects.
+- **The side panel drags to 680 px** (was 520), to make room for the inline controls.
+
+### Notes
+- **Ported from TrueVision3D v2.27.0** (Edge Styles), which Adam signed off on
+  13-Sep-2026. The Render Composites half of that version came across separately
+  as v2.28.0. Nothing was copied wholesale.
+  - **Projection files (folder 50).** They matched TrueVision's pre-feature code
+    apart from ValeVision's own comments and gates.
+    - A replayer applied TrueVision's committed diff hunk by hunk: 64 hunks across
+      10 files, with every anchor required to match exactly once.
+    - The two it could not place went in by hand and were then confirmed present:
+      the Owners import, because ValeVision's import block differs, and
+      WorkerPool's JoinOwners.
+    - Every body was then compared with TrueVision's committed code. What differs
+      is ValeVision's localhost authoring gate, its comments and the Dev menu's
+      formatting.
+  - **New modules.** `Na__ProjectedLinework__Owners__`, `Na__LayoutEditor__EdgeStyles__`
+    and its config are verbatim below their headers. ModelLayers (6 hunks) and
+    Panel__ModelLayers (11) were replayed the same way.
+  - **Shared files.** SheetRecords, SheetModel, Viewport2d, PdfExporter and
+    ModeController already carried today's Render Composites weights, ortho
+    dimensions and gradient fills.
+    - They took 22 anchored patch steps, each new block cut from TrueVision's
+      committed code between marker lines.
+    - PdfExporter and Panel__ModelLayers now match TrueVision line for line below
+      the header.
+- **The model layer config carries two sets of rows.** ValeVision names a category
+  after the GLB it came from.
+  - A project exported with the building split by tag, such as Doous (3047), loads
+    `ValeVision__MainBuildingModel__ProposedWalls`, `...Roofs`, `...Windows` and the
+    rest. Those are TrueVision's keys under the ValeVision prefix, and they carry
+    TrueVision's rows and styles.
+  - An older export arrives coarse: the existing building as one category, the
+    proposal as one plus its doors. Those rows stay too, styled as structure, so
+    there the windows draw at the building's weight until the project is exported
+    again with the split.
+  - A row whose category a project did not load never shows.
+  - Found in the app: the config inherited from the Model Layers port listed only
+    the coarse rows, so Doous's walls, roofs and windows fell under "Other" and its
+    windows drew black at full weight.
+- **Verified here, statically:**
+  - The 19 changed modules parse.
+  - 980 named imports across the 76 modules in folders 50 and 51 resolve.
+  - `Na__Verify__Exports` passes on 312 files, with every `Na__` name declared or
+    imported.
+  - `Na__Verify__ModuleGraph` passes, with its one known vendor issue unchanged.
+  - The owner-tag harness passes 9 of 9 against this copy of the clip kernel and
+    owners module.
+- **Verified in the running app**, read-only, on Doous (3047) at a fresh
+  `edges.localhost:8441` origin with every network write refused (none was attempted):
+  - Elevation_002's viewport rendered in 14.9 s with every segment tagged by its model
+    category: 10,073 visible, 300,384 hidden and 10,254 authored, none unknown.
+  - The bands matched the width maths exactly, on a 0.3 pt master at 1:50. Walls,
+    roofs and floors drew black at 0.1058 mm; windows and doors dark grey at 0.80;
+    site boundaries soft black at 0.75, dashed 2.5/1.5; landscape mid grey at 0.60.
+    Hidden lines in solid categories kept the class dash. The SVG painted exactly
+    those bands.
+  - In the Model Layers Advanced fold, Walls set to mid grey wrote one
+    `Viewport__ProjectedEdges` entry and split the visible black band into 4,278
+    walls and 4,332 roofs and floors. Centre at 0.5 then drew a 0.0529 mm line
+    dashed 8/2/2/2. The projected result stayed the same object throughout: the
+    drawing repainted and was never re-projected. The row's reset pruned the
+    record back to null and the original 11 paths.
+  - Not exercised here: the PDF export (PdfExporter is TrueVision's line for line,
+    and its bands were checked against the screen there) and the GPU route, which
+    the verification pane has no adapter for.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.29.0 - 13-Sep-2026 - Ortho Dimensions: Hold Shift for Horizontal or Vertical
+
+### Added
+- **Shift makes a dimension ortho.** Hold Shift while the dimension's line follows
+  the cursor (after the second click) and it runs horizontal or vertical, whatever
+  its two points are: drag the line above or below them for a horizontal dimension,
+  which measures the x distance, or beside them for a vertical one, which measures
+  the y. Let go of Shift and it is aligned again; pressing or releasing Shift redraws
+  at once. Two points at different heights - the eaves of one wall and the foot of
+  the next - no longer need a sloping dimension.
+- **The CAD box rule picks the direction.** Above or below the box the two points
+  span gives horizontal, to either side vertical, off a corner whichever side is
+  further out; inside the box the choice holds. Two level points can only take a
+  horizontal dimension, two plumb ones only a vertical.
+- **Each point runs its own extension line** to the dimension line, and a vertical
+  value reads up the sheet. Inference still lines an ortho line up with any parallel
+  dimension nearby.
+- **Snap markers are coloured by the tool that is snapping**: blue for vertices (the
+  Draw and Rectangle tools and vertex grips), orange for dimensions (the tool, its
+  grips and its line inference). Purple is the viewport tone - defined and styled,
+  ready for the viewport snap move, which has not come across yet.
+
+### Changed
+- **Shift no longer bends the span** to the nearer axis while the end point is
+  picked. The end lands on the point that was picked; the arrow keys still lock the
+  span to an axis.
+- **An ortho line stays where it was put** while a grip re-picks either point, even
+  when the end is dragged past the start.
+
+### Notes
+- **Ported from TrueVision3D v2.31.0** the day Adam signed it off there ("works
+  great"). `Na__LayoutEditor__DimensionGeometry__` 1.1.0 and
+  `Na__LayoutEditor__DimensionTool__` 1.2.0 are verbatim below their headers. The
+  edits to Snapping (1.2.0), SheetRecords and SheetModel (1.4.0), MarkupBridge
+  (1.3.0), SheetTools (1.9.0), Toolbar (1.8.0), the main stylesheet and the app
+  config were replayed by a script that required every anchor to match exactly once
+  before it wrote anything - all 32 did. The purple carry styling stays behind with
+  the viewport snap move it belongs to.
+- **New record field, shared with TrueVision**: `Dimension__Orientation` -
+  `'aligned'`, `'horizontal'` or `'vertical'`. Every existing record normalises to
+  aligned and draws exactly as before, so either app reads the other's dimensions.
+- Verified here: the 8 changed modules parse, 812 named imports resolve and every
+  `Na__` name is declared or imported; the 30-check geometry harness passes against
+  this copy, with the aligned skeleton bit-identical to the old module across 80,000
+  cases. In the running app, on a scratch A3 sheet with every write blocked (none was
+  attempted): 23 checks with pointer and key events - the Shift placement, live Shift
+  release and press, the 40 / 45 / 60.208 values, inference onto the first line, both
+  grips with the line held, two undos, the blue and orange markers and the purple
+  tone, and an aligned placement with no Shift. A 24th check, a scan of
+  `document.styleSheets` for the tone rules, came back empty while the markers'
+  computed colours were the new tones - the scan missed where the sheet is attached,
+  not the rules.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.28.0 - 13-Sep-2026 - Render Composites Weights: How Thick Each Layer Draws
+
+### Added
+- **An Advanced fold in Render Composites.** Open it and every composite that
+  draws a line gets a weight beside its checkbox, for the selected viewport only:
+  Projected Linework and Hidden Lines as multipliers (x) of the sheet's viewport
+  lineweight; Profile Linework Effect, Section Outline and Base Image in render
+  pixels (px). Folded, the panel is the panel it was.
+- **Base Image has a thickness.** Its weight is how thick the model's own
+  SketchUp edges draw inside the rendered picture, on 2D and 3D viewports alike.
+  The default, 0.80, is the width those edges already use everywhere.
+- **Section Outline is a weight-only row** - a drawing either has a cut or it has
+  not - and it keeps an empty checkbox slot, so its box lines up with the rest.
+- **A changed weight turns its row blue and shows a reset arrow**, which clears
+  it again. Only weights someone set are stored, in `Viewport__CompositeWeights`,
+  so a project nobody has curated saves exactly as it did.
+- **The panel is built from `Na__LayoutEditor__RenderComposites__Config__.json`**
+  rather than a list in its source, so a new composite is a config edit.
+- **The PDF prints what the sheet shows.** Its stroke rules now take the viewport,
+  so the Projected Linework and Hidden Lines factors reach the paper.
+
+### Notes
+- **Ported from TrueVision3D** - its v2.27.0 Render Composites weights, plus the
+  Base Image weight and the Section Outline row alignment added on 13-Sep - after
+  Adam signed them off there. This tree had no Advanced fold, no weights and no
+  Section Outline row, so the whole feature came across. The composites module,
+  the Styles panel below its header and the Advanced Fold stylesheet region are
+  verbatim; the config's layers are verbatim, with two notes reworded for this app.
+- **What consumes the pixel weights differs (DIV-1).** The profile width goes in
+  through a new `edgeWidthPx` on the composer preset, the section outline through
+  the Cross Sections tool (and back out after the live tool is released), and the
+  model's edges through a new base-width override in `Na__LineworkSettings`. The
+  session linework factors and the export line-width compensation still multiply
+  all three, so a viewport nobody has touched renders exactly as it did.
+- **3D snapshots keep their keys.** A weight joins the fingerprint only once it is
+  set, and only one a scene render can show - the Base Image weight.
+- Verified here: the 12 changed modules parse, the named-export harness passes
+  (310 files) and the module graph resolves. In the running app, on Doous (3047)
+  with every write blocked: the weight boxes and checkboxes measure into one
+  column, exactly as in TrueVision; Base Image 3 px drew the edges at 3 times the
+  export compensation and took the underlay from 3.66% to 6.25% dark pixels, every
+  edge material back to 0.8 afterwards; Profile 4 px took it on to 9.18%; Section
+  Outline 5 px was set for the render and the live width came back to 2; Projected
+  Linework x2 doubled the vector stroke without re-rendering the raster; a 3D render
+  at Base Image 3 px drew the edges at 3 and put them back; an untouched 3D
+  fingerprint matches the old algorithm. Not exercised: Hidden Lines on a drawing
+  with hidden linework (Doous has none), and a PDF export.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.27.0 - 13-Sep-2026 - The Palette: Shift+B Sets What You Draw Next
+
+### Added
+- **Shift+B loads the palette.** B still paints one object's style onto others.
+  Shift+B instead makes the clicked object's style the setting that new objects
+  of its kind are created with - the same Text, Dimensions and Vectors settings
+  the panels show when nothing is selected. The selection clears so the panel
+  visibly changes to match, the item pulses, and the drawing tool for that kind
+  takes over: Text, Dimension, or whichever of Draw and Rectangle drew last.
+  Setting the palette and drawing with it is Shift+B and one click.
+- **Shift+B with something already selected loads it at once.** Also on
+  Shift+click of the Eyedropper button, and as Use for new dimensions / text /
+  vectors on the right-click menu. `PaletteSwitchesTool` turns the hand-over off.
+- **A scrapbook is the point.** Keep one of each house style beside the paper,
+  where it shows on screen and never prints, and a dimension type or a line
+  type stops being a panel's worth of fields set again by hand.
+
+### Fixed
+- **The eyedropper could not read a locked layer**, although its own header said
+  a locked item was a valid source: the hit test skipped locked layers, so a
+  click on one found nothing. `HitTest` takes `includeLocked` and only the
+  eyedropper passes it. A locked scrapbook now hands out its style, and a locked
+  target is refused with a reason instead of being missed. Every other tool is
+  unchanged.
+
+### Notes
+- **The same traits as B.** The palette reads the eyedropper's trait table. The
+  one translation - a record's null fill or gradient becomes an off switch beside
+  the last value in the settings - is declared on those two traits, and a
+  gradient is copied rather than shared.
+- **Ported from TrueVision3D v2.30.0 the same day, after Adam signed it off**, by
+  replaying the edits. Every anchor matched this tree, which already carried the
+  eyedropper, the rectangle tool and gradient fills.
+- Verified here: 51 modules parse, every named import resolves, no undeclared
+  names in the six changed files, and the palette harness passes 53 checks and
+  the eyedropper harness 52 against this copy. In the running app, read-only: the
+  modules load, the live key map sends Shift+B to the palette and B to the
+  eyedropper, and the live config supplies the wording and both settings.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.26.0 - 13-Sep-2026 - Gradient Fills
+
+### Added
+- **A Gradient toggle in the Vectors panel**, last in the list after Fill and
+  Closed. Switch it on and the shape is filled with a linear gradient: a start
+  colour and an end colour, either of which can be Alpha, a Blend slider and a
+  Direction from 0 to 360 degrees with a preview swatch beside it. Alpha to
+  white is the default.
+- **What it is for:** draw a closed polygon on a vector layer over a drawing,
+  switch its edges off and run alpha to white, and the drawing fades out into
+  the page. Colour to colour works the same way.
+- **Direction** reads like a protractor and like Adobe's gradient tools: 0 left
+  to right, 90 bottom to top, 180 right to left, 270 top to bottom. **Blend** is
+  where the two ends meet half and half - Illustrator's midpoint - so 50% is an
+  even fade. Only one end can be alpha at a time.
+- **The gradient is fitted to the shape.** The start and end colours land on
+  the outline's furthest points back and forward along the direction, so the
+  fade spans the whole polygon at any angle.
+- **A gradient is the fill.** It replaces a solid fill, and it counts as the
+  fill for the either-or rule: edges off with a gradient on leaves the fade
+  alone instead of bringing a grey solid fill back.
+- **The PDF carries it.** A PDF shading cannot hold transparency, so the
+  gradient prints as a PNG strip with an alpha soft mask, rotated to the
+  direction and clipped to the vector outline. Screen and paper are painted
+  from one colour function.
+- **One drag is one undo step.** Blend and Direction redraw the shape silently
+  while they move and announce once on release.
+- The eyedropper carries a vector's gradient with its other traits; a missing
+  gradient clears the target's, the way a missing fill does.
+
+### Fixed
+- **A rectangle ignored the gradient default.** The Rectangle tool built its
+  shape from the Vectors panel defaults but never passed the gradient, so a
+  rectangle drawn with Gradient switched on came out with no fill at all. Found
+  while porting, and fixed in both apps.
+
+### Notes
+- **Ported from TrueVision3D v2.29.0** (commit `50d46de`, signed off by Adam the
+  same morning) by replaying the edits against this tree, not by copying files.
+  Every hunk's anchor was found exactly once here, and every body hunk's new code
+  was found exactly once in that commit - so what landed is the code that was
+  tested, not a transcription of it. 35 hunks across 12 files, line endings kept,
+  plus the config JSON copied verbatim.
+- `Na__LayoutEditor__GradientTool__.js` and its `__Config__.json` are verbatim
+  apart from the module header and the console prefix, and below its header the
+  Vectors panel is now TrueVision's line for line. The record key
+  `Shape__Gradient` and its six `Gradient__` fields are shared, so either app
+  reads the other's gradients.
+- **One adaptation:** the mode controller waits on the editor config and the
+  gradient config together. TrueVision's also waits on its edge style and render
+  composite configs, which ValeVision has no modules for.
+- **Not carried:** TrueVision's working copies already layer an unsigned palette
+  mode (Shift+B) and an undo-restore announcement on top of the gradient. Neither
+  is signed off, so neither is here.
+- The eyedropper's gradient trait line was already in this tree - it arrived
+  inside v2.24.0's copy of the module, ahead of the feature - and is live now.
+- Verified: every edited module parses, and the module graph walk and the named
+  export check (309 files) pass. In the app on a scratch A3 sheet with every
+  write blocked: the row order, the defaults toggle, a press-drag-release
+  rectangle taking the gradient, direction, edges off, no history step mid-drag
+  and one on release, alpha on one end only, and the SVG. A test PDF through this
+  tree's jsPDF path, rendered back with pdf.js, matched the screen SVG within 2
+  levels in 255 at eleven sampled points, with the soft masks, the outline clips
+  and the rotated strip present.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.25.0 - 13-Sep-2026 - The Rectangle Tool
+
+### Added
+- **A rectangle tool on the R key**, beside Draw on the toolbar. Two corners
+  instead of four sides: click one corner and then the opposite one, or press
+  on one corner and drag to the other. Shift keeps it square. Both corners snap
+  to the linework and to the sheet's own vectors, exactly as Draw's points do.
+- **What it draws is an ordinary vector.** The moment the second corner lands
+  the rectangle is a closed four-point shape, written through the same
+  `CreateShape` call the Draw tool uses with the same Vectors panel defaults.
+  From then on it is a polygon: the Select tool drags its corners one at a time,
+  the Vectors panel restyles it, the eyedropper matches it and the PDF prints
+  it. There is no rectangle flag on the record, so TrueVision and ValeVision
+  write exactly the same data.
+- **Nothing is written until the second corner lands.** The preview is a dashed
+  rubber box on the handles layer, solid while Shift holds it square. An
+  abandoned rectangle leaves nothing to delete or undo, the browser draft never
+  catches a half-drawn one, and the preview can never snap to its own corners.
+  One call is one undo step, and the new rectangle is selected as it lands.
+- Escape, Space, a right click, a second finger or another tool abandons a
+  half-drawn rectangle; the arrow keys are swallowed while one is being drawn
+  rather than nudging whatever was selected before it. A second corner with no
+  width or no height is ignored, so a double click cannot leave a sliver.
+
+### Notes
+- Ported from TrueVision3D v2.27.0, where it was authored, tested and signed off
+  the same day. `Na__LayoutEditor__RectangleTool__.js` is verbatim apart from its
+  header; the wiring was replayed edit by edit - sheet tools (tool slot, press,
+  move, release, cancel, arrows, the R case), the toolbar button, `ShowBox` /
+  `HideBox` in the grips, the rubber box stylesheet rule, the key map and its
+  fallback, and three labels.
+- It landed on top of v2.24.0's eyedropper port, which had just brought these
+  same files level with TrueVision, so every anchor matched.
+- Verified: the logic harness (41 checks) against this copy of the module, and 20
+  checks in the app with real pointer and key events on a scratch A3 sheet - both
+  drawing modes, the Shift square, Escape and right click, arrows mid-draw, one
+  undo step per rectangle, and a single corner dragged with the Select tool. Every
+  write was blocked for the run and nothing was saved.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.24.0 - 13-Sep-2026 - The Eyedropper, and Vectors That Redraw and Snap
+
+### Added
+- **The eyedropper, on the B key.** Click the object that already looks right,
+  then click every object that should match it. The picked style stays on the
+  dropper, so the second, third and fourth target each cost one click. With
+  something already selected, B arms it loaded from that selection. Alt+click
+  picks a new source, Escape empties the dropper and then puts the tool down,
+  and Copy / Paste properties on the right-click menu drive the same dropper.
+  Violet marks what is held, green what would take it, red what cannot.
+- **Style travels; content, geometry and the layer do not.** Text carries size,
+  weight, colour and alignment. A dimension carries text size, colour,
+  terminator, precision and unit suffix - not its offset, which is where its
+  line sits, so copying it would move the target rather than restyle it (a
+  config switch copies it for anyone who wants that). A vector carries edge
+  colour, weight, edges on or off and fill, where a missing fill is a real value
+  that clears the target's. Kinds do not mix: a refusal that says why is worth
+  more than a silent partial paste.
+- **Vectors snap to vectors.** Every vertex and edge midpoint of the sheet's own
+  vectors, and both measured points of every dimension, are snap candidates
+  beside the viewport linework. A polygon closes exactly on its first point, a
+  rectangle's last corner can borrow the first corner's coordinate on bare
+  paper, and whatever is being dragged never snaps to itself. Hidden layers
+  offer nothing; locked ones still do. `SheetObjects` in the snapping config.
+
+### Fixed
+- **Vectors never redrew.** The mode controller turned text and dimension
+  changes into a markup redraw and had no line for shapes, so a restyled or
+  deleted vector kept its old picture until some unrelated edit repainted the
+  sheet. It read as a slow editor, not a missing route - and it made the
+  eyedropper look broken on vectors at its first test in TrueVision, which had
+  the same gap.
+- **Every edit waited on the disk.** The browser draft - every sheet in the
+  project, stringified - was written to localStorage inside each change, which
+  is a synchronous disk write on the main thread. It now waits 600 ms for the
+  editing to pause and is flushed when the tab is hidden or closed. A write
+  still queued when another project loads is dropped rather than written over
+  that project's own draft.
+- **A drag rebuilt the sheet hundreds of times a second.** Surface refreshes are
+  booked onto the next animation frame and merged, so a pointer that reports
+  faster than the screen draws costs one rebuild a frame. The drawing tabs
+  rebuild only when a tab would look different, and a text, dimension or vector
+  change refreshes only its own panel.
+
+### Notes
+- **Ported from TrueVision3D v2.26.0 and v2.26.1 by replaying the edits, not by
+  copying files.** TrueVision's working tree carries other unfinished work in
+  the same modules - a rectangle tool, clipboard chords, viewport snap-move -
+  and copying its files would have brought those imports across broken. Every
+  anchor matched here, because in each touched file this code is identical to
+  TrueVision's last commit.
+- **One deliberate divergence.** The tab strip's change signature carries
+  `Na__LeMode__IsAvailable`, the Layout Mode gate, where TrueVision's carries the
+  config enable flag, so switching Layout Mode always rebuilds the strip.
+- **Undo is unchanged:** one step per announced change, so painting five vectors
+  is still five undos.
+- Verified on this tree: all 49 Layout Editor modules parse, every named import
+  resolves, the eyedropper harness passes 52 checks and the snapping harness 29,
+  including 0.09 ms per pointer move against 4,000 vertices.
+- Viewports are deliberately not matched yet. The hook, and what it will need,
+  is written up in the eyedropper module's header.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.23.0 - 12-Sep-2026 - Supersampling Comes Back From the Still Exporter
+
+### Added
+- **The still image exporter is supersampled.** Each tile is now rendered 16
+  times with sub-pixel camera jitter and the results averaged, so a pixel
+  records how much of it a line actually covers instead of answering yes or no.
+  This is the same treatment the video exporter got yesterday, and the same
+  argument applies: a two-degree eaves line answers "row 100" for thirty pixels
+  and then jumps, and the shallower the line the longer the step. Buildings are
+  made of shallow lines.
+- **Exporting bigger was never going to fix it.** More resolution gives a
+  staircase smaller steps, not fewer. And FXAA cannot reach it either - it
+  searches about twenty pixels along an edge for where the step ends, gives up,
+  and smears what it could not solve. That is why exports came back blurry AND
+  still aliased. FXAA now stands aside entirely while supersampling, which is
+  why the result is sharper and smoother at the same time.
+- **The Layout Editor viewport pictures are supersampled too**, both the 2D
+  underlay and the 3D snapshot, at a count that follows the working quality
+  level: Low 1 sample for fast drafting, Medium 4, High 16. High is also the
+  level the PDF and the Dev bakes always use, so anything that reaches paper
+  gets all sixteen. Every number is config, per level.
+- **The supersampler moved into the render pipeline.** It was the video
+  studio's; three systems need it now, and a jitter table that exists twice is
+  one that will eventually disagree with itself.
+  `31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js` is a
+  re-export of `05__RenderPipeline/Na__RenderEffect__Supersampler__.js`, aliased
+  rather than wrapped, so the frame renderer's import is untouched and the two
+  names are provably the same function.
+
+### Notes
+- **The cost is linear and paid per tile, not per image.** The accumulation
+  buffer is one tile, so a 6144 x 4096 export gains about one 2112 px square
+  half-float buffer - a few tens of megabytes - whatever the output size. That
+  matters: this exporter exists because a full-resolution render demanded
+  gigabytes and killed the tab. Time is the price instead. A 25 megapixel
+  export across six tiles at 16 samples is 96 composer renders and lands in
+  about eight seconds.
+- **Shadow maps are drawn once per tile and reused by the remaining samples.**
+  The lights and geometry are frozen and only the view camera is nudged, so
+  every later shadow pass would redraw identical maps at full cost.
+- **The vertical correction shear is applied per tile and never inside the
+  sample loop.** `ApplyFrame` starts by rebuilding the projection from the
+  camera, which would wipe the jitter. The base projection is captured after
+  the shear has settled, so the jitter shifts the corrected sub-frustum rather
+  than replacing it.
+- **Fog and SSAO are re-synced per sample, not per tile.** Both rebuild world
+  positions from the inverse projection. Syncing once and jittering underneath
+  would land the fog in sixteen slightly different places and then average them.
+- **Export Render Layers is deliberately left alone.** Those are structural
+  conditioning maps - depth, normals, edges - and averaging a normal or a depth
+  across an edge produces a value that describes no surface at all. Beauty
+  wants coverage; a conditioning map wants the truth at the sample point.
+- Ported back from TrueVision3D, which generalised the video studio's
+  supersampler for the still exporter and the sheet viewport bakes.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.22.1 - 12-Sep-2026 - The Dev Menu Moves Into the Top Bar
+
+### Changed
+- **The Dev Tools menu is no longer parked over the model.** It used to sit
+  fixed at the top-left of the viewport, permanently, whether or not anyone had
+  opened it - which is exactly where the building is. The trigger is now a small
+  pill in the top bar beside the Vale Garden Houses logo, and only the flyout
+  drops down the left edge once it is pressed. The canvas is clear until you ask
+  for the menu. Ported from TrueVision3D, where this was done first.
+- **The flyout clears the drawing tab strip.** Its top is header height plus the
+  published `--Vale_LayoutTabStripHeight`, so it lands below the tabs when a
+  drawing tab is open and below the header when none is.
+- **The drag-resize corner sizes the panel, not the container.** The container is
+  a flex item in the header now; widening it would stretch the top bar and leave
+  the flyout the width it was. The handle also moved INSIDE the list, because it
+  is `position: absolute` and the container no longer establishes a positioned
+  containing block for it.
+
+### Fixed
+- **The Render Composites panel registered into the right-hand column.** It was
+  moved to the left in TrueVision on 12-Sep-2026, under Drawing Layers, and the
+  move never came back across - so the file's own header said left and the code
+  said right. Three panels say what a viewport's picture is made of and they
+  belong together.
+- **Video Studio's dev-menu height clamp pointed at the wrong element.** It
+  clamped `.na-dropdown-menu__details`, which since the move is the pill button
+  in the header; it now clamps the flyout list, which is the thing that could
+  run over the timeline strip.
+
+### Removed
+- **The legacy `--dev-localhost` positioning block** in
+  `Na__UiFeature__Styles__DropdownAndToast__.css`, plus the Scene Inspector's
+  `min-width: 290px` on the details element - the first fought the header mount,
+  the second re-inflated the header pill. Both live in the new
+  `Na__UiFeature__Styles__DevToolsMenu__.css` in the form the new layout needs.
+
+### Notes
+- Verified in the browser at 1600x950: trigger 108x27 at x=233 in the top bar,
+  flyout fixed at x=20 / y=70 (header 60px + 10px), drag grows 300 -> 420 CSS px
+  and clamps at the 640px ceiling, container never given an inline width.
+- **Divergence from TrueVision**: the trigger's details element also resets
+  `max-height` and `overflow`, because ValeVision's base dropdown sheet clamps
+  and scrolls the details and TrueVision's does not.
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------
+## ValeVision3D v2.22.0 - 12-Sep-2026 - The Return Trip: Fixes and Hardware From TrueVision
+
+### Fixed
+- **Glass Transparency Off did nothing to real glazing.** The detector asked
+  only whether a material was `transparent` or had `opacity` below 1. Glazing
+  exported through KHR_materials_transmission is neither: it arrives as a
+  MeshPhysicalMaterial with `transparent: false` and `opacity: 1`, see-through
+  because light passes THROUGH it rather than because the slot is blended. So
+  the toggle declared that glass opaque already, skipped it, and reported
+  success - the sliding doors kept showing the room behind them. `transmission`
+  above zero now counts. The substitute was always a flat opaque white, so the
+  glass goes white the moment it is actually caught.
+- **A viewport's Render Composites toggles did not reach its linework.** The
+  projection took its flags from the drawing record alone, so switching Hidden
+  Lines or Glass Transparency Off on a sheet viewport changed the raster picture
+  and not the vectors drawn over it. `FromPlan` and `FromElevation` take a styles
+  override and the viewport passes its own. A toggle that half works is harder to
+  trust than one that does nothing, because the half that works suggests the rest
+  should be believed.
+
+### Changed
+- **Context Layer is now the toggle that turns the backing render off**, and it
+  sits last in Render Composites because it is the layer furthest back -
+  everything else draws over it. Switching it off leaves the projected linework
+  alone on the paper, which is the vector drawing a technical sheet wants. Its
+  key is still `baseImage`, so nothing already saved changes meaning.
+- **The old Context Layer toggle is gone from the panel.** It hid the existing
+  building and the landscape, which on a renovation is most of the drawing -
+  switching it off emptied the sheet. Two controls both claiming to be the
+  context, one of which blanked the drawing, was worse than one that does the
+  obvious thing. The mechanism stays in the record layer under its own key.
+
+### Added
+- **The projection picks its backend from the hardware.** `auto` is the new
+  default and chooses the fastest backend that is CORRECT for each view, which is
+  not the same as the fastest backend. The GPU has no cut handling at all - hand
+  it a floor plan and it projects the whole building, roof included, instead of
+  the storey below the cut. Every plan carries a cut by definition, and so does a
+  section-mode elevation; a plain elevation does not, and that is where the card
+  is both correct and worth having.
+- **A real hardware probe**, because `navigator.gpu` existing is not a capability
+  test - it is true in every current Chromium, including where the adapter
+  request then fails or returns a software rasteriser. The probe awaits
+  `requestAdapter` once, caches it, and REJECTS A FALLBACK ADAPTER: software
+  WebGPU passes every API check and is slower than the CPU backend it would
+  displace, so accepting it would choose the slow path while reporting the fast
+  one. `powerPreference: high-performance` is asked for but is currently ignored
+  on Windows (crbug 369219127).
+- **The Dev menu says which backend each drawing will use** - per drawing,
+  because auto is one answer per view rather than one per session - and the Diff
+  harness holds the CPU against the card where there is one, printing which is
+  faster.
+- **`Na__AppUtils__DevGate__`**: authoring gated on a persisted flag or
+  `?authoring=on` rather than on the hostname alone. Routed NARROWLY: ValeVision's
+  hostname test also picks the local Flask server over GitHub Pages and writes the
+  Flask mirror beside the R2 write, and those data-path uses keep the raw test.
+  Unlocking authoring must not send the loader hunting for a server that is not
+  there.
+- **Two verification harnesses**, `Na__Verify__ModuleGraph__` and
+  `Na__Verify__Exports__`. One proves every FILE a page loads resolves, the other
+  that every imported NAME exists and that no `Na__` identifier is used without
+  being imported or declared. Different faults, same symptom - a blank page - and
+  between them they caught several during the work that produced this entry.
+  405 modules and 302 files pass.
+
+### Notes
+- These came back from TrueVision, where they were written during the drawing
+  re-alignment. Three TrueVision fixes were deliberately NOT ported, each checked
+  rather than assumed: the 2D viewport camera (ValeVision passes the main camera
+  there and is right to, because its composer swaps the RenderPass camera), the
+  dual style-key read (ValeVision is internally consistent on one spelling), and
+  the MaterialPreset initialisation (ValeVision has always called it). The parity
+  ledger records the reasoning.
+- **NOT verified here**: the glass fix has not been seen against a ValeVision
+  project with real glazing - the logic is identical to the one proven in
+  TrueVision, but that is an argument, not a test.
+
+# =========================================================
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.21 - 11-Sep-2026 - Video Studio: 16x anti-aliasing by default
+
+### Changed
+- **MP4 exports anti-alias at 16x by default** (was 8x). In side by side
+  exports 16x was clearly the best: the smoothest shallow lines and the
+  least shimmer in motion. It takes about twice as long as 8x, and the
+  export confirmation still states the multiple.
+
+### Notes
+- Paths with a sample count already saved keep it; only an absent key reads
+  as the new default. Of the local projects, only 57079 Mordaunt has one
+  saved, and it is already 16x.
+- 4x and 8x stay on the switch for quicker drafts, and unticking Enabled
+  still gives the single FXAA pass.
+
+### Files
+- `31__System__VideoStudio/Na__VideoStudio__ProjectJson__VideoData.js`
+  1.4.1: `Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES` is 16.
+- Shared PWA service worker token bumped to `2026-09-11-5`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.20 - 11-Sep-2026 - Layout Editor: tabs only where a project uses them
+
+### Added
+- **Enable Layout Mode switch at the top of the Layout Editor Dev section**
+  (localhost), off by default. While it is off the project shows no drawing
+  tabs on localhost, even if it has sheets, and the section holds only the
+  switch: the sheet list, New Sheet, Save Sheets, Bake and Export appear
+  once it is on. Switched on, the tab strip appears (3D Model, a tab per
+  sheet, and +).
+
+- **Saved per project the moment it changes.** The switch is
+  `LayoutEditor__DrawingsData__LayoutModeEnabled` in the drawings block,
+  written through the usual drawings save (R2 first, then the Flask
+  mirror), so each project opens the way it was left. An absent key reads
+  as off.
+
+### Changed
+- **Live site: no tab strip for a project without sheets.** The web build
+  shows the strip only when the project's data file has at least one sheet,
+  even if Main.json makes the web build editable. Projects with sheets are
+  unchanged there (3D Model plus a read-only tab per sheet). The live site
+  never reads the switch.
+- A sheet can no longer be opened while the editor is not offered, so the
+  3D view is never left with no tabs to get back to it. Switching Layout
+  Mode off with a sheet open leaves it first, and loading a project that
+  has it off hands the 3D view back.
+
+### Notes
+- Existing projects, Doous included, open on localhost without tabs until
+  Enable Layout Mode is ticked for them once.
+- Ticking the switch saves the project, so drawing or scene edits still
+  held in memory are saved with it, as with any other drawings save.
+
+### Files
+- `42__System__DrawingViewCore/Na__DrawView__ProjectData__.js` 1.1.0: the
+  `LayoutModeEnabled` key (skeleton, normalise, getter and setter).
+- `51__System__LayoutEditor/`: `ModeController__.js` 1.6.0 (`IsAvailable`,
+  `IsLayoutModeOn`, `SetLayoutMode`; Enter and project loads obey it),
+  `TabStrip__.js` 1.1.0 (visibility from `IsAvailable`),
+  `DevMenu__Controls__.js` 1.2.0 (the switch), `AppConfig__.json` (three
+  labels).
+- Plan doc: the drawings block schema carries the key and the open item on
+  tabs for projects without sheets is settled.
+- Shared PWA service worker token bumped to `2026-09-11-4`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.19 - 11-Sep-2026 - Video Studio: anti-aliased MP4 exports
+
+### Added
+- **Anti-Aliasing section in each video's panel**, between Model Layers and
+  Export: an **Enabled** tick and, while it is on, a **4x | 8x | 16x**
+  Samples switch, 8x by default. Saved per path in the export block
+  (`VideoStudio__Export__AntiAliasEnabled`,
+  `VideoStudio__Export__AntiAliasSamples`).
+
+- **Each exported frame is rendered that many times with the camera shifted
+  by a fraction of a pixel, and the results are averaged.** FXAA, the only
+  anti-aliasing the pipeline had, searches along an edge for about 20px, so a
+  long shallow line (eaves, ridges, glazing bars a degree or two off
+  horizontal) kept hard steps in a 4K frame, and in a video those steps crawl
+  along the line as the camera moves. Averaged samples record how much of
+  each pixel a line really covers, so the steps become smooth gradients and
+  stay put in motion.
+
+- **The whole effect chain is anti-aliased, not just the scene.** The shift
+  goes into the camera's projection, so the fat linework, the profile lines,
+  fog and SSAO all see it. FXAA is switched off for the export while it
+  supersamples, since it would only soften the samples. The sample positions
+  are the standard hardware MSAA patterns, all inside the pixel, so lines
+  stay as crisp as multisampling draws them.
+
+### Changed
+- An export takes roughly the sample count times as long (8x: about eight
+  times). The confirmation dialog says so and the progress overlay names the
+  sample count; its time estimate is measured, so it already allows for it.
+- Shadow maps are drawn once per exported frame rather than once per sample.
+
+### Notes
+- On by default, including paths saved before this build (an absent key
+  reads as on at 8x). Untick it for quick draft exports: off renders a single
+  FXAA pass, exactly as before.
+- Exports only. The viewport, the preview and still image exports are
+  unchanged.
+- Cross-section caps and outlines are still drawn once over the finished
+  frame, and take the canvas's own multisampling.
+
+### Files
+- `31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js` (new)
+  1.0.0: sample patterns, projection jitter, half-float accumulation and the
+  copy to the canvas.
+- `31__System__VideoStudio/`: `Export__FrameRenderer.js` 1.1.0 (per-sample
+  loop, FXAA bypass, shadow map reuse), `Export__VideoEncoder.js` 1.3.0,
+  `ProjectJson__VideoData.js` 1.4.0, `DevMenu__Controls.js` 1.3.0,
+  `Stylesheet__.css` 1.3.0 (segmented switch).
+- `05__RenderPipeline/`: PureEngine and MaxEngine `Setup.js` 1.0.1 expose
+  `fxaaPassRef`, now part of the pipeline state contract in
+  `.cursor/rules/07-RenderEngine-Architecture-.mdc`.
+- Shared PWA service worker token bumped to `2026-09-11-3`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.18 - 11-Sep-2026 - Video Studio: door animation per keyframe
+
+### Added
+- **Advanced Object Animation in the keyframe right-click menu**, a fold
+  under Advanced Camera Settings holding a **Door Animation** tick, saved on
+  the keyframe (`VideoStudio__Keyframe__DoorAnimation`).
+
+- **A tick covers that keyframe and the travel on to the next one**, the
+  same way Travel Time belongs to the keyframe it leaves from. Ticked, doors
+  open as the camera passes them. Unticked, they are held shut however close
+  the camera comes, and a door left open swings shut as the clip arrives at
+  an unticked keyframe. To walk through a door, tick the keyframe before it;
+  the next unticked keyframe shuts it behind you.
+
+- **Off until ticked.** Moving through an interior no longer flaps every
+  door on the way. Existing videos stop opening doors until keyframes are
+  ticked. The video's Animations switch in the panel is still the master:
+  off, Video Studio leaves the doors alone altogether, in the clip and while
+  editing, and the ticks do nothing (the menu says so).
+
+- **Editing matches the video.** Landing on an unticked keyframe (Go To, a
+  tile double click, a live menu edit) swings nearby doors shut and stops
+  Walk and Fly proximity opening them until the camera moves about a metre
+  across the floor. A ticked keyframe leaves Walk and Fly to open them as
+  normal. Closing the panel or opening another path hands the doors back.
+
+- **Every run starts with the doors shut.** An export, and a preview played
+  from the top, snap every door closed before the first frame, so a clip
+  never opens on a door that editing left swinging.
+
+### Changed
+- Waypoints inserted on the path (Ctrl+click) inherit the Door Animation
+  tick of the waypoint before them, so splitting a door traversal does not
+  shut the door halfway through it.
+- Ticking or unticking is one Ctrl+Z step, like the other menu fields.
+- The Animations section in the panel explains that doors now only open on
+  ticked keyframes.
+
+### Notes
+- Scrubbing the timeline does not animate doors (it never did); Play and
+  export do.
+- Timeline stills show the doors as they are at render time, not per
+  keyframe.
+
+### Files
+- `25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`
+  1.3.0: hold-closed state (`SetHoldClosed`, `HoldClosedAt`) and
+  `CloseAllDoors`. While held, every door reads as out of range, so open
+  doors close through the ordinary path and none open.
+- `25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+  1.7.1: `SnapAllClosed`.
+- `31__System__VideoStudio/`: `Playback__SceneAnimations.js` 1.1.0 (per-frame
+  doors, start reset, landing hold), `Camera__PathSampler.js` 1.2.0 (sampled
+  state carries `keyIndex`), `ProjectJson__VideoData.js` 1.3.0,
+  `Edit__UndoHistory.js` 1.1.0, `Playback__PreviewController.js` 1.3.0,
+  `Export__VideoEncoder.js` 1.2.0, `Timeline__ContextMenu.js` 1.2.0,
+  `Timeline__Stylesheet__.css` 1.3.0, `Viewport__KeyframeDragger.js` 1.0.2,
+  `DevMenu__Controls.js` 1.2.2.
+- Shared PWA service worker token bumped to `2026-09-11-2`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.17 - 11-Sep-2026 - Scenes and video keyframes keep their Orbit, Fly or Walk mode
+
+### Fixed
+- **Video keyframes land in the mode they were framed in.** Every keyframe
+  already recorded the mode it was captured in, but nothing read it back:
+  Go To, a tile double click and every live preview from the keyframe menu
+  forced the camera into Orbit. Picking up a Fly shot to adjust it and
+  pressing Update therefore quietly turned it into an Orbit shot. The camera
+  now lands in the keyframe's own mode, exactly on the shot, lens included.
+
+- **Presentation scenes remember their mode.** Update Camera and Add Scene
+  From Camera store the mode the camera is in
+  (`PresentationMode__Scene__NavigationMode`, the TrueVision key: `walk` or
+  `fly`, absent means Orbit). Picking the scene in the Views bar flies there
+  and switches into that mode on arrival. Scenes without one land in Orbit,
+  so nobody is left in Walk just because the previous scene was walked.
+
+- **Scene flights work when started in Walk or Fly.** A flight started in
+  Walk went nowhere, because Walk rebuilds the camera from its capsule every
+  frame, and one started in Fly arrived facing the wrong way. Walk and Fly
+  now let go in place first, so the flight starts from exactly what is on
+  screen.
+
+- **Fly scenes frame correctly.** A scene captured in Fly stored Orbit's
+  leftover target, a point the camera was never looking at, so showing the
+  scene swung the view round to face it. Captures in Walk or Fly now store a
+  target along the camera's own axis, and Walk and Fly scenes are framed
+  along their own look direction in the flight, the page load snap and the
+  Layout Editor 3D snapshots.
+
+- **Scrubbing the timeline in Walk or Fly.** Seek never released the
+  camera, so the mode fought every scrubbed frame. It now lets go in place,
+  as Play does.
+
+- **Timeline stills and MP4 exports leave a Walk or Fly view alone.** Both
+  put the camera back after borrowing it and then resynced the orbit
+  controls, which re-aims the view at orbit's leftover target and can pull
+  it inside orbit's distance limits. They now resync only in Orbit. This was
+  rarely hit before, because Go To always forced Orbit.
+
+### Added
+- **Orbit | Fly | Walk switch in the timeline keyframe menu** (right click a
+  tile), at the top of Camera Settings. It shows the keyframe's mode and
+  changes it, and the viewport follows straight away, as Height and Tilt do.
+  Ctrl+Z undoes it. Modes switched off for the model show disabled.
+
+- **The same switch on every Presentation Scenes row** (Nav Mode, under
+  Group). It edits the row like FOV and Easing do, so Save Scene keeps it.
+  Floor plan and elevation cards do not get one.
+
+- **Stop puts back the mode as well as the view.** Play still hands the
+  camera to the timeline in Orbit, but Stop now returns you to the mode you
+  pressed Play from, at the same spot.
+
+### Changed
+- Entering Walk or Fly for a saved shot keeps the saved pose and lens. The
+  toolbar's entry nudges (FOV compensation, Walk's 1 m step and 30 degree
+  pitch clamp) and the modes' own 50 degree lens are for walking in from an
+  Orbit view, not for a chosen shot. A Walk shot still settles at eye height
+  above the floor under it, which is what walking there means.
+
+- Waypoints inserted on the path (Ctrl+click) take the mode of the waypoint
+  before them, instead of an "Inserted" marker that always landed in Orbit.
+
+- Capture Keyframe, Update and the keyframe menu read the live mode from the
+  Walk and Fly systems themselves rather than from the toolbar highlight.
+
+### Notes
+- Page load still opens in Orbit when the default scene is a Fly or Walk
+  scene (decided 11-Sep-2026); the mode switches the first time a scene is
+  picked from the Views bar.
+- Scenes updated in Fly before this build carry no mode and read as Orbit.
+  Set their switch to Fly and press Save Scene, or Update Camera again while
+  flying; either also fixes their framing. Video keyframes need nothing:
+  their recorded mode is used as it is.
+- Space (play and pause) still only works in Orbit, because Fly uses Space
+  to rise. After jumping to a Fly keyframe, use the Play button.
+- Height edits on a Walk keyframe show in playback, not in the live view,
+  because Walk keeps the camera at eye height.
+
+### Files
+- `10__NavigationAndCameras/Na__NavigationModes__Switcher.js` (new, port of
+  the TrueVision module, adapted): mode names and availability, the mode
+  that actually owns the camera, pose-preserving `ReleaseToOrbit` and
+  `EnterModeAtPose`, and the look-ahead target.
+- `Na__Navmode__WalkMode__SystemLogic.js` 1.1.0 and
+  `Na__Navmode__FlyMode__SystemLogic.js` 1.1.0: `SyncFromCamera`.
+- `21__System__PresentationMode/`: `Camera__SceneTransition.js` 1.4.0,
+  `DevMenu__SceneEditor.js` 1.3.2, `DevMenu__SceneRowBuilders__.js` 1.1.0,
+  `UI__SceneCarousel.js` (port note only); switch styles in
+  `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`.
+- `31__System__VideoStudio/`: `Playback__PreviewController.js` 1.2.0,
+  `Timeline__ContextMenu.js` 1.1.0, `Timeline__Stylesheet__.css` 1.2.0,
+  `DevMenu__Controls.js` 1.2.1, `Viewport__KeyframeDragger.js` 1.0.1,
+  `ProjectJson__VideoData.js` 1.2.1, `Timeline__Thumbnails.js` 1.0.1,
+  `Export__FrameRenderer.js` 1.0.1.
+- Parity ledger (new section "Per-Scene Navigation Modes") and a note in
+  plan section 7.2. Shared PWA service worker token bumped to `2026-09-11-1`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.16 - 11-Sep-2026 - Camera-follow billboards really face the camera
+
+### Fixed
+- **Billboards face the camera, not a fixed angle off it.** People,
+  pets, silhouettes and 2D trees turned as the camera moved but kept
+  whatever angle they had to the camera when the model loaded, so a
+  figure could stay edge-on no matter where you stood. The turn was
+  measured from the camera's direction at load, which only works if every
+  billboard happened to be exported already facing the launch camera. In
+  practice SketchUp exports them facing wherever they were placed (the
+  Mordaunt silhouettes all came out at yaw -179 deg, the Gordon bushes at
+  38 deg), so each one carried its own fixed error.
+
+- **The turn is now measured from the billboard's own front.** The front
+  is local +Z: the face drawn towards SketchUp's -green axis, which is the
+  side you see in SketchUp's Front view and the side SketchUp's own
+  "Always face camera" turns to you. Every exported billboard checked
+  (4 Mordaunt silhouettes, 34 Gordon bushes) has its faces on that axis.
+  Replaying the edited module against their real exported matrices from
+  five camera positions, including one looking down, gave 0 deg off the
+  camera for every one, where the old maths was 145-161 deg off
+  throughout.
+
+- **Nothing to re-export.** The fix reads the billboards' existing GLB
+  transforms, so current projects are corrected on reload. 2D trees are
+  fixed along with the entourage, so they will sit slightly differently
+  from before.
+
+### Files
+- `25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js` 1.0.1 - front yaw captured per billboard at scan; the per-frame yaw is camera yaw minus front yaw. The launch-camera reference (`CaptureInitialReferenceYaw`) is gone; `Na__CameraFollow__Initialize` still accepts the camera, so callers are unchanged.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.15 - 11-Sep-2026 - Entourage silhouettes switch on and off on their own
+
+### Added
+- **Entourage silhouettes are their own model layer.** The fill-only grey
+  camera-follow silhouettes now sit on their own SketchUp tag
+  (`61__Scene__Entourage__Silhouette`, Na__DataLib Tags SSOT v2.2.2) and
+  export to their own GLB, so the Tools toggle list shows
+  **Scene Entourage Silhouettes** as a separate button from
+  **Scene Entourage 2D** (the detailed linework entourage, tag 60).
+
+- **Scenes and videos can show one without the other.** Presentation Mode
+  scene visibility (captured per SketchUp scene by Cloud Sync) and Video
+  Studio layer overrides are both keyed by category, so they pick up the
+  new layer with no new logic: hide tag 61 in a SketchUp scene and that
+  scene hides the silhouettes here.
+
+- **Silhouettes are context in the Layout Editor.** Context Layer off takes
+  them out of a viewport's picture along with the rest of the context.
+
+### Changed
+- Scene Context is tags 62-70 now that 61 is carved out (comments only).
+
+### Files
+- `26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js` 1.2.1 - display name for `ValeVision__SceneEntourageSilhouette`.
+- `51__System__LayoutEditor/Na__LayoutEditor__SnapshotRenderer__.js` 1.3.1 - joins `Na__LeSnap__CONTEXT_CATEGORIES`.
+- `15__ModelLoader/Na__ModelLoader__MultiModel.js` - load-order comment only; the category loads unordered after the priority list, like Scene Entourage 2D.
+- Upstream (SketchUp Plugins repo): Tags SSOT v2.2.2, Components SSOT v1.4.5, TrueVision GLB Builder 2.6.1. The exporter reads the Tags SSOT from GitHub, so the SSOT must be pushed before a sync produces the new GLB.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.14 - 10-Sep-2026 - Dev menu: drawing rows fold, one open at a time
+
+### Changed
+- **Every floor plan and elevation row folds down to its name.** Click the
+  name to open that drawing's controls; click it again to fold it. A
+  panel with six drawings in it is now six lines rather than six screens
+  of near-identical sliders.
+
+- **Only one drawing is open at a time, across both panels.** Opening a
+  floor plan folds whichever elevation was open, and the other way
+  round, because only one drawing can be previewed at a time and the
+  open row is meant to be that drawing. This is the point of the change
+  rather than a side effect of it: a row you have scrolled to and the
+  drawing on screen are different things, and once they drift apart a
+  slider drag edits the wrong drawing silently. The viewport does not
+  move, because the drawing being edited is not the one being shown, so
+  nothing tells you until the sheet comes out wrong.
+
+- **The open row follows what you are working on.** Opening the panel
+  unfolds whichever drawing is previewed, and nothing at all if none is.
+  Pressing Preview on a row opens it. Creating a drawing, including one
+  made by picking a wall, opens the new one. Seeding a whole set at once
+  folds everything, since no one of four is the one you meant. Deleting
+  the open drawing folds the panel.
+
+- **Opening a row does not preview it.** Unfolding shows the controls
+  and nothing else, so glancing at a drawing's settings never triggers a
+  rebuild of the view.
+
+### Files
+- `02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js` (new) holds the single open slot and wraps a built row card behind its header.
+- `Na__DrawView__Styles__DevMenu__.css` gains the header, arrow and folded body rules.
+- `Na__FloorPlan__DevMenu__Editor__.js` and `Na__Elevation__DevMenu__Editor__.js` wrap their rows and move the open slot on create, preview, seed and delete. The row builders are unchanged.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.13 - 10-Sep-2026 - Layout Editor: a vector can be a fill, and the arrow keys lock the axis
+
+### Added
+- **Edges, a Vectors panel toggle.** Switching it off leaves the shape as
+  its fill alone, which gives a drawing the three states it wants: an
+  outline, a filled outline, or a solid (a mask, a block of tone, a
+  hatched area yet to come). Edges and fill are either-or at the least:
+  switching one off switches the other on, in the panel and in the
+  record's normaliser, so no shape can be made invisible. Everything else
+  about a shape is unchanged, which is the point: a fill-only shape still
+  selects, still drags, and still takes its vertices by the grips.
+- **The arrow keys lock the drawing axis**, as in SketchUp LayOut. Left or
+  right holds the next edge across the page, up or down holds it down the
+  page, and the same key again releases it. The lock belongs to the
+  segment being drawn: the moment its point lands, the next segment starts
+  free. The rubber band turns red for X and green for Y while it holds.
+  It works on the Draw tool and on the span of the Dimension tool, and the
+  arrows go back to nudging the selection whenever no tool is placing.
+- **A lock and a snap work together.** The lock takes the locked
+  coordinate from the point it started at and the free one from whatever
+  the cursor snapped to, so locking an axis and then hovering a vertex
+  somewhere else on the drawing lines the new edge up with that vertex.
+  That pairing is the reason the lock is worth having.
+- `Na__LayoutEditor__AxisLock__.js`, which holds the lock and the axis
+  maths Shift used to carry, so the Draw and Dimension tools constrain
+  through one place.
+
+### Changed
+- **A fill no longer needs the shape to be closed.** The fill treats the
+  run of points as if the last joined the first, which is what SVG and
+  PDF both do anyway, so Closed now only decides whether the closing edge
+  is drawn. An open shape that already had Fill ticked showed nothing
+  before; it shows its fill now.
+- `Shape__Stroked` on the shape record, defaulting on, so drawings made
+  before this release open exactly as they were.
+
+### Notes
+- **Service worker token** 2026-09-10-7.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: Render Composites (Base Image, Context Layer)
+
+### Added
+- **Base Image**, a viewport style, on by default. Off, the rendered
+  picture behind the viewport is not shown, not rendered and not
+  exported. On a 2D viewport that leaves the projected linework alone on
+  the paper, which is the vector drawing a technical sheet wants, and the
+  costly render never runs. On a 3D viewport it leaves an empty frame.
+  Switching it back on shows the picture the frame already had, with no
+  new render.
+
+- **Context Layer**, last in the list, on by default. Off, the existing
+  building, the site boundaries, the landscape, the vegetation and the
+  entourage are taken out of that viewport's render, leaving the design
+  proposal on its own. The visibility is put back the moment the picture
+  is made, so the 3D model is untouched.
+- **The Styles section is now called Render Composites**, since that is
+  what the toggles decide: which layers and effects go into the picture a
+  viewport shows.
+
+### Note on Whitecard
+- The Whitecard style swaps every opaque material to flat white, but only
+  under MaxEngine. This project, and the shipped default, run PureEngine,
+  which already renders that look, so the toggle does nothing here. It is
+  left in place for MaxEngine projects.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.11 - 10-Sep-2026 - Layout Editor: 3D snapshots really do follow the raster level
+
+### Fixed
+- **A 3D viewport stayed low resolution whatever the raster level.** The
+  stored snapshot is keyed by what the picture shows (scene, styles,
+  model) and said nothing about how big it was rendered, so a picture
+  baked at the old six pixels per millimetre (1080 x 720 for a 180 mm
+  viewport) matched the key forever and was loaded back on every visit in
+  place of a fresh render. The record now carries Asset__PixelWidth: a
+  stored picture is used only when it was rendered at least as wide as
+  the working level asks for, and a record written before that key
+  existed counts as too small. Every render uploads with its width, so
+  the file and the record always agree, and the PDF reuses a stored
+  picture only when it is wide enough.
+
+### Changed
+- **The levels are print resolutions now**, because the old ones were
+  soft once the page was zoomed in: Low 6 pixels per millimetre (152
+  dpi), Medium 12 (305 dpi, print quality at paper size) and High 20 (508
+  dpi), with longest-side caps of 3072, 5120 and 8192. The PDF still
+  exports at High.
+- **The raster level is in the Viewport panel too**, above the viewport
+  settings where it was looked for, marked as global and paired with the
+  toolbar control.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.10 - 10-Sep-2026 - Layout Editor: the modern title block set like a Lantern drawing
+
+### Changed
+- **The title block strip is 10 mm, not 16 mm.** No arrangement of a
+  label and a value fills 16 mm of band, so the strip read as an empty
+  box with writing in its corners. 10 mm is the height a Lantern
+  Designer drawing prints.
+- **One pair of baselines across the strip.** The label hangs from the
+  top of the band and the value is optically centred in what is left
+  below it, on Lantern's paddings (2.4 mm top, 0.8 mm bottom, 1.4 mm
+  sides, label 1.5 mm from the top). The value used to be pinned to the
+  foot of the band, about 10 mm below its own label.
+- **Labels 1.6 mm over values 2.2 mm**, down from 1.7 over 2.4, with
+  0.05 mm of letter spacing on the uppercase labels.
+- **The Vale logo prints at its own size.** 33 mm wide, capped at 5.5 mm
+  high, in a 34 mm cell, rather than being blown up to fill a 40 mm one.
+- **The logo is no longer squashed.** Its aspect was hardcoded at 4.2:1
+  against an asset that is 4.5:1, so the mark printed 7 percent too tall
+  on every sheet and every PDF. It is a config value now
+  (TitleBlock.LogoAspectWidthOverHeight); re-measure it if the file is
+  ever replaced.
+- **Sheet margin 5 mm, not 10 mm**, and the drawing area stops 3 mm short
+  of the title block (Sheet.BlockGapMm) instead of running into it.
+  Placed viewports keep their own positions; only where a new one lands
+  changes.
+- **Viewport captions** are bold uppercase with 0.16 mm of letter
+  spacing, from the style config rather than a hardcoded weight, so the
+  sheet reads as one piece of typesetting.
+
+### Added
+- **Letter spacing on a chrome text primitive** (TrackingMm), in paper
+  millimetres because a PDF content stream sets character spacing in the
+  page unit. The SVG painter writes letter-spacing, the PDF painter
+  jsPDF's charSpace, and the measurer counts it, so a tracked caption
+  truncates at the same character on screen as on paper.
+- Style config keys FrameLabelWeight / FrameLabelTrackingMm /
+  FrameLabelUppercase and TitleLabelWeight / TitleLabelTrackingMm /
+  TitleLabelUppercase / TitleValueWeight.
+
+### Removed
+- TitleBlock config keys LogoPaddingMm, LabelOffsetTopMm and
+  ValueOffsetBottomMm, replaced by LogoPaddingVMm / LogoPaddingHMm,
+  FieldLabelOffsetTopMm and FieldPaddingTopMm / FieldPaddingBottomMm.
+
+### Notes
+- Two Lantern touches were deliberately left out: the scale value does
+  not carry the paper size ("1:50 @ A3") and the date has no small
+  raised ordinal suffix.
+- **Service worker token** 2026-09-10-6.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.9 - 10-Sep-2026 - Layout Editor raster quality: Low, Medium, High
+
+### Added
+- **Raster select on the sheet toolbar.** One global working resolution
+  for the viewport pictures (the 2D underlay and the 3D snapshot),
+  remembered per browser, starting at Medium: Low 4, Medium 8, High 12
+  pixels per paper millimetre with longest-side caps of 2048, 4096 and
+  6144, scaled by the screen density up to 2x. Changing it re-renders the
+  frames (Na__LayoutEditor__RasterQuality__, the Raster config block).
+- **The PDF always exports at High**, whatever the working level, and so
+  do the Dev bakes. Only export-level renders are uploaded, so a stored
+  snapshot asset is always the export picture; an asset loaded from
+  storage is treated as size unknown and the PDF renders afresh.
+
+### Changed
+- The Viewport keys SnapshotPixelsPerMm, UnderlayPixelsPerMm and
+  MaxSnapshotPixels and the Pdf key RasterPixelsPerMm are gone; the Raster
+  block replaces them.
+- **Service worker token** 2026-09-10-5 (stylesheet changed).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.8 - 10-Sep-2026 - Layout Editor: dimensions you can edit, lineweights in points, Enhance Whitecard, a Draw tool
+
+### Added
+- **Three-click dimensions.** Start, end, then a third click for where
+  the line sits, as in CAD. The dimension appears after the second click
+  and its line follows the cursor; a parallel dimension nearby pulls it
+  onto its own line (an open circle marks the inference), so a run of
+  dimensions lines up. The same inference works when the round grip of an
+  existing dimension is dragged (Na__LayoutEditor__DimensionTool__).
+- **Dimension grips and inline values.** A selected dimension shows a
+  square grip at each measured point (they re-pick and snap) and a round
+  grip on the line. Double-click a dimension, or use the menu, to type an
+  override; typing the measured value back clears it. The value text now
+  counts as part of the dimension for selection (Na__LayoutEditor__Grips__).
+- **Draw tool (L).** Lines, polylines and polygons: click points (snapping
+  to the linework, Shift for an axis), click the first point to close a
+  polygon, Enter, a double-click or a right click to finish, Esc to
+  abandon. Shapes select, move, nudge, delete, drag by the vertex, and
+  open or close from the menu. A Vectors panel sets edge colour, edge
+  weight in points (0.20 by default), fill and closure, for the selection
+  or for new shapes. New sheets get a Vectors layer; older sheets get one
+  the first time a shape lands. Shapes print as vectors in the PDF
+  (Na__LayoutEditor__ShapeTool__, __ShapeGeometry__, __Panel__Shapes__).
+- **Lineweights in points.** The Sheet panel carries the sheet's viewport
+  line weight (0.30 pt by default, the visible projected linework; the
+  hidden, authored and section classes keep their ratios) and its
+  dimension line weight (0.35 pt), on screen and in the PDF.
+- **Enhance Whitecard.** A viewport style, on by default for new
+  viewports, that runs the image export's levels and high-pass sharpen on
+  the viewport's render so the shaded whitecard faces print white
+  (Na__LayoutEditor__Enhance__, parameters in the Layout Editor config).
+- **Space** clears the selection and abandons any placement.
+
+### Changed
+- **Selection order** is dimensions first, then text, then shapes, then
+  viewports, for a click and for the right-click menu alike; dimension
+  lines take a wider tolerance.
+- **Sheet tools split.** Text placement and inline editing moved to
+  Na__LayoutEditor__TextTool__; dimension placement to the dimension
+  tool; the sheet tools keep selection, dragging, keys and the menu.
+- **Service worker token** 2026-09-10-4 (shell HTML and stylesheet changed).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.7 - 10-Sep-2026 - Layout Editor: undo, locks, context menu, roaming page, sheets that survive a reload
+
+### Fixed
+- **Blank sheet after a reload.** The editor shell is a CSS grid and its
+  centre column had no minimum height, so the stage grew to the height of
+  its own scroll content instead of scrolling. Once the page had more room
+  around it the paper sat thousands of pixels below the visible area. The
+  grid row is now pinned to the host and every column has min-height 0;
+  the room maths also measures the visible stage, never grown content.
+- **"Drawings save failed: Failed to fetch".** That toast meant nothing was
+  listening on the local server: the service worker keeps serving the app
+  from its cache, so the page looks alive while Flask is down. The toast
+  now says the local server is not running and names start_server.bat.
+
+### Added
+- **Undo and redo.** Ctrl+Z, Ctrl+Y (and Ctrl+Shift+Z), toolbar buttons and
+  the context menu step through the last fifty announced changes on the
+  active sheet (Na__LayoutEditor__History__). A drag is one step however
+  long it lasts. A save no longer wipes the history or the selection: the
+  model announces 'saved' instead of 'loaded' for it.
+- **Locked viewports.** Right-click, Lock viewport (or the Viewport panel
+  checkbox). A locked viewport cannot be entered, moved, resized, nudged
+  or deleted; the outline turns grey and carries a Locked tag.
+- **Context menu.** A right click that did not pan opens a menu in the
+  house style for what is under the cursor: edit or finish editing the
+  content, recentre the content, lock or unlock, delete; edit or delete
+  text; delete a dimension; on empty paper, zoom to fit and snapping;
+  undo and redo everywhere (Na__LayoutEditor__ContextMenu__).
+- **Sheets that survive a reload.** Every announced change is written to a
+  browser draft under the project code; a project load that differs from
+  the draft puts the draft back, marks the sheets unsaved and says so. A
+  sheet created, renamed, reordered or deleted (or its paper or title
+  block changed) saves the project of its own accord a moment later, on
+  localhost; content edits still wait for Save Sheets, so a drag session
+  never writes the project mid-move (Na__LayoutEditor__AutoSave__).
+
+### Changed
+- **Drag moves, double-click enters.** Dragging anywhere on a viewport
+  moves it, selected or not. Double-click enters the content: the outline
+  goes amber with a note, and a drag then repositions the drawing inside
+  the frame (2D pans the window, 3D slides the picture). Esc, a click
+  elsewhere, or the menu finishes it.
+- **Corners crop.** Every handle crops or extends the frame in the axes it
+  names; a corner does both, on 2D and 3D viewports alike. Shift on a 3D
+  corner scales the picture proportionally as before (plan D29 and D30
+  revised).
+- **Snap markers** are larger (18 px, heavier line) with a wider catch
+  radius.
+- **Room to roam.** The paper sits a full stage in from every edge of an
+  explicitly sized room, so it can be pushed clear of the window in any
+  direction the way a LayOut page can; Fit centres it in that room.
+- **Service worker token** 2026-09-10-3 (shell HTML and stylesheet changed).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.6 - 10-Sep-2026 - Drawings project only when asked
+
+### Changed
+- **Record default.** A new floor plan, elevation or section starts with
+  Projected Linework off. The scene overlay already stayed idle for a
+  record with the toggle off; now nothing else computes for it either.
+- **Baking only what asks.** Save Floor Plans, Save Elevations and the two
+  Bake actions used to project every drawing in the project, which is
+  where a save could disappear for minutes on a house. Bake All and Bake
+  Before Save now skip any drawing whose record toggle is off unless a
+  caller names it (the Layout Editor names the drawings behind its
+  viewports that have Projected Linework on) or forces. The Dev counts
+  report how many were left off.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.5 - 10-Sep-2026 - Renaming a drawing
+
+### Fixed
+- **Renaming a drawing broke its sheet viewports.** The 3D snapshot
+  fingerprint in `Na__LayoutEditor__Viewport3d__.js` included
+  `PresentationMode__Scene__Name`. A name has no effect on the picture, but
+  it was part of the key that guards it, so a pure rename made every stored
+  snapshot read as stale: the web build refused the R2 asset and drew an
+  empty frame, the PDF export lost the image, and localhost quietly
+  re-rendered and uploaded under a new path, orphaning a perfectly good
+  object. `Na__LeVp3d__RestampForScene` now re-stamps the reference across
+  every sheet with the fingerprint the renamed scene produces and leaves
+  `Asset__Path` alone, so the picture that was already correct stays in use.
+- **Renaming a drawing was never saved.** The name field wrote
+  `Elevation__Name` / `FloorPlan__Name` in memory, pushed the name to the
+  scene card, and stopped. Nothing persisted it. The Presentation Scenes
+  editor auto-saves on add, delete and Save All, and its save writes the
+  presentation block but not `LayoutEditor__DrawingsData` - so renaming a
+  drawing and then touching the Scenes editor persisted the new name on the
+  card and reverted the record on reload. The two then disagreed for good,
+  and every later rename synced from a record that was already wrong.
+- **A section drawing lost its cut when renamed.** `CrossSection__SceneData
+  __Scenes` is a map keyed by scene NAME. A rename left the entry filed
+  under a name nothing asks for, so the drawing opened with no section and
+  the stale entry sat unreachable. The entry now moves with the rename, and
+  `Na__SectSceneData__FindEntryKey` matches on scene id before scene name,
+  which also finds bindings orphaned by renames made before this existed.
+- **Renaming a drawing's card in the Scenes editor did not reach the
+  drawing.** That name input wrote `PresentationMode__Scene__Name` directly
+  with no write-back, the desync from the other direction, and it auto-saved.
+  A drawing card now commits through the rename path; an ordinary 3D card
+  keeps the live in-place edit it always had.
+
+### Added
+- **`42/Na__DrawView__RenameDrawing__.js`.** One rename path for every
+  surface that offers one. It writes the record and the scene card, re-keys
+  the section binding, re-stamps the sheet viewports, saves the whole
+  document once through `Na__DrawData__Save`, and confirms what it touched:
+  `Renamed to "West Elevation", saved to R2 with its scene card, 2 sheet
+  viewports and its section binding.` A rename is atomic - if the save
+  fails, every in-memory change is put back and the drawing keeps its old
+  name - and one at a time, because two in flight would race the project
+  document. The name fields now ASK for a name rather than setting it and
+  hoping the rest catches up, and are held until the save answers.
+- **`Na__DrawData__Save` carries `CrossSection__SceneData`.** A section
+  drawing's cut is drawing data, and the block has to ride with the same
+  save or a rename lands everywhere except the cut. `GetProjectBlock`
+  returns null until something loads or captures one, so an untouched
+  project never gains the key.
+
+### Removed
+- **`Na__FpLink__SyncSceneName` and `Na__ElevLink__SyncSceneName`.** Pushing
+  the name to the card is a quarter of a rename with none of the save. A
+  helper that does the easy quarter is how the record and the card came to
+  drift apart, so both are gone rather than left for someone to call.
+
+### Testing notes
+- Rename an elevation from the Elevations panel: the toast should name the
+  scene card, the viewport count and the section binding, and project.json
+  should show the new name in `Elevation__Name`, in the scene, and as the
+  `CrossSection__SceneData__Scenes` key, in one save.
+- A sheet with a 3D viewport on that scene should keep its picture, and
+  `Viewport__SnapshotAsset.Asset__Path` should be unchanged with a new
+  `Asset__Fingerprint`. The published build should still paint that frame.
+- Rename the same drawing's card from the Presentation Scenes editor and
+  check `Elevation__Name` follows it.
+- Duplicate names still share one section binding entry, as they always
+  have; a rename into an existing name leaves both entries where they are
+  and reports it in the console, and the id-first lookup keeps each scene on
+  its own cut.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.4 - 10-Sep-2026 - Raster viewports by default, help panel
+
+### Changed
+- **New viewport defaults.** A new viewport starts as a raster viewport:
+  Projected Linework off, Profile Linework Effect off, Glass Transparency
+  Off on, Whitecard on, Hidden Lines off, from the new
+  `LayoutEditor__Viewport__DefaultStyles` block. Nothing projects while a
+  sheet is being laid out; switching Projected Linework on for a viewport
+  is what asks for the vector linework, the way a raster viewport becomes
+  a vector one in SketchUp LayOut. A viewport with the toggle off keeps no
+  linework, offers no snap points and shows no progress badge. Stored
+  viewports keep the flags they were saved with.
+
+### Added
+- **Help panel.** A Drawing Markup subsection under Keyboard Shortcuts
+  lists the contextual keys for drawings and sheets (the last open item
+  from the plan's integration list).
+
+### Plan audit
+- Every file and feature in the plan's Phase 2 to 5 tables, the
+  cross-cutting list and Appendix C is present, with two notes: the
+  projection fingerprint is read from the live model root on every use,
+  so no separate invalidation hook was needed on a model group switch;
+  and per-size Classic title block scans (A4, A2, A1) still fall back to
+  the A3 scan, as the plan allowed.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.3 - 10-Sep-2026 - Linework projection budget and object snaps
+
+### Fixed
+- **Minutes to project an elevation.** The Lantern Designer runs the same
+  engine on lantern-scale models with a few hundred instances; a house
+  scale SketchUp export has thousands, and the mesh-against-mesh
+  intersection pass (BVH pairs, square in the overlapping pair count) was
+  where the time went, with the bounds trees it needs built first. The
+  pass now has a budget: skipped when the model has more than
+  `IntersectionMaxInstances` (400) instances or more than
+  `IntersectionMaxPairs` (20000) overlapping pairs, no self-test on a
+  geometry over `IntersectionSelfMaxTriangles` (60000), the bounds trees
+  only built when the pass will run, and the report says what was
+  skipped. Junction lines on a large model come from the authored
+  SketchUp linework instead. All three limits live in
+  `ProjectedLinework__Projection__Config`.
+- **Recomputing after a reload.** A finished render is now written to the
+  browser store (IndexedDB) as well as held in memory, for the scene
+  overlay and for sheet viewports alike, so the next load of the drawing
+  paints from the store. Bake All to R2 remains the way to give the web
+  build a drawing without any computation.
+- **Nothing to look at while it computes.** A sheet viewport shows a
+  progress badge with the current phase and elapsed seconds while its
+  linework is projected, and the console logs the timing report (collect,
+  intersections, triangles, edges, segments, phases) when it lands.
+
+### Added
+- **Object snaps on the linework.** `Na__LayoutEditor__Snapping__.js`:
+  dimension placement and endpoint drags snap to the endpoints and
+  midpoints of the projected linework inside 2D viewports, AutoCAD
+  style, with a square marker for an endpoint and a triangle for a
+  midpoint. Points are indexed per viewport in a paper millimetre grid
+  hash from the painted segments and rebuilt automatically when the
+  linework, pan, crop or scale changes. A snap beats the Shift axis
+  constraint. Toolbar Snap button and F3 toggle it (remembered per
+  browser); `LayoutEditor__Snapping__Config` holds the radius, the point
+  kinds and the marker size.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.2 - 10-Sep-2026 - Engine pause on drawing tabs
+
+### Fixed
+- **GPU load with a sheet open, and a slow 3D view afterwards.** The 3D
+  render loop kept running behind the hidden canvas while a drawing tab
+  was open, and the sheet viewports could re-key themselves. The render
+  loop bus gains `Na__RenderLoop__Pause` and `Na__RenderLoop__Resume`
+  (reasons stack): the loading sequence's loop paints nothing while any
+  hold is in place, remembers that a frame was asked for, and paints once
+  on resume with a fresh timestamp so walk, fly and door physics see no
+  giant delta. The Layout Editor holds the loop for the whole time a sheet
+  is open and suspends 3D navigation and distance culling the way a
+  drawing does; leaving resumes both and paints one frame. Snapshot and
+  underlay renders go through the tiled renderer directly, so the hold
+  never blocks them.
+- **Viewport render triggers.** A 2D underlay or 3D snapshot is rendered
+  only when its key changes (scene, drawing, pan, frame or crop, scale,
+  style toggles), never during a drag, and 320 ms (2D) or 400 ms (3D)
+  after the last change. The model fingerprint behind those keys is now
+  computed once per editor session instead of walking every mesh on
+  every refresh, and the 3D key ignores layer visibility so applying a
+  scene's layer map for a snapshot cannot re-key the picture. Projection
+  pipeline events refresh the frames only when a render has finished.
+- **Profile lines pass.** A 2D underlay render left the profile lines
+  pass forced on (the composer preset's exit does that for the drawing
+  modes); the pass state is now restored after the render.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.1 - 10-Sep-2026 - clipper2-js vendored (app failed to load)
+
+### Fixed
+- **Module graph.** The app stopped at `Failed to resolve module specifier
+  "clipper2-js"`. The Phase 0 vendoring left folder 03 out on the reading
+  that no ValeVision3D module needs it, but three-edge-projection's
+  SilhouetteGenerator imports clipper2-js at module load and the Phase 4
+  projection modules import three-edge-projection, so the bare specifier
+  broke every module on the page. `03__Vendor__Clipper2Js__v0.9.0` is now a
+  byte-identical copy of the Lantern Designer's vendor folder (22 files,
+  checksums matched) under `04__Lib__ThirdParty__VersionLocked/`, the
+  import map in `index.html` and the JSON index map `clipper2-js` to
+  `fesm2020/clipper2-js.mjs`, and the README, plan and ledger notes are
+  corrected. The vendor set is now the full coordinated four (01 to 04).
+- **Service workers** bumped to `2026-09-10-2` so cached shells refetch the
+  import map.
+- **2D viewport fill.** `ReferenceError: win is not defined` on adding a
+  viewport: the local-name rename in `Na__LayoutEditor__Viewport2d__.js`
+  missed an aligned declaration, so the fill read a variable it never
+  declared and the frame stayed empty. Declared. The same pass dropped two
+  unused imports in the PDF exporter and one in the sheet model.
+
+### Verification
+- A static walk of the browser module graph from `index.html` (relative
+  imports and import map keys, including the vendor internals) resolves
+  every specifier to a file on disk; this walk joins the port's verify
+  scripts so a bare specifier cannot pass again.
+- A scope-aware lint (ESLint no-undef, no-redeclare, no-dupe-keys,
+  no-unreachable) over folders 42 to 46, 50 and 51 reports no undefined
+  identifier; `node --check` alone cannot see that class of fault.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.0 - 10-Sep-2026 - Layout Editor (Port Phase 5)
+
+### Overview
+Drawing sheets. A tab strip under the header lists the 3D model and one
+tab per sheet; a sheet is paper on screen (A4 to A1, landscape or portrait)
+with a title block in the Modern vector style or the Classic scanned style,
+free viewports onto any saved scene, and the sheet's own text and
+dimensions. A 2D viewport is a window onto a plan, elevation or section at
+1:20, 1:50 or 1:100: the composer render of the drawing sits underneath, the
+projected linework of Phase 4 lies over it as true vector SVG, and the
+drawing's own markup is shown at scale. A 3D viewport is a snapshot of the
+scene rendered through the live pipeline with the viewport's style
+toggles. Download PDF writes the sheet at true paper size with vector
+linework, dimensions, text and chrome (D22 to D35). Authoring is
+localhost-only; the web build reads, pans, zooms and downloads.
+
+### Added
+- **51__System__LayoutEditor**, thirty-three files, all new (patterns from
+  the Lantern Designer's DrawingEditorMode and the Page Layout System):
+  config and config state; scale manager (D27) and paper layout solver;
+  sheet model and sheet records (sheets, layers, viewports, annotations,
+  dimensions in `LayoutEditor__DrawingsData__Sheets`, ids, defaults, title
+  block fields from the project); sheet chrome (one primitive list drawn to
+  SVG and to jsPDF, text measured through jsPDF metrics) with the Modern
+  and Classic title blocks (D26); sheet surface (paper at
+  ScreenPixelsPerMm, CSS-transform zoom, frames, chrome, markup and
+  selection layers); navigation (wheel zoom about the cursor, middle or
+  right drag, pinch, fit); viewport handles (2D edges crop or extend while
+  the drawing stays put and the inside pans, corners inert, D29; 3D corners
+  scale proportionally, edges crop, inside moves the picture, D30); the 2D
+  viewport (window maths, underlay cache with a slide-while-dragging
+  picture, linework from cache, baked asset or on-device render, paper
+  stroke widths from the new `LayoutEditor__Linework__Config`); the 3D
+  viewport (fingerprinted snapshot, uploaded to
+  `LayoutEditor/Snapshots/` on localhost and referenced on the record,
+  D36); snapshot renderer (offscreen 2D through the section adapter and
+  presets on a private ortho camera, offscreen 3D from the scene pose with
+  visibility, sections and camera restored); assets; markup bridge (scene
+  markup at scale, Import From Scene, sheet markup with leaders and
+  measured sheet dimensions, hit testing, D34); dimension geometry; sheet
+  tools (select, move, resize, text placement with an inline editor,
+  two-click dimensions, keyboard); panel host (foldable sections, height
+  and width grips, delegated controls, D32) with the Sheet, Layers (D31),
+  Viewport, Text, Dimensions and Styles (D33 plus Hidden Lines) panels;
+  toolbar; PDF exporter (D35); tab strip (D22 to D24); mode controller;
+  Dev menu section (sheets, New, Duplicate, Delete, Save, Bake Snapshots
+  and Linework, Export PDF, Leave); two stylesheets.
+- **Shell.** index.html gains the Layout Editor Dev item, imports and
+  initialisation; the CSS index imports the two sheets; every rule anchored
+  to the header height now adds `--Vale_LayoutTabStripHeight`, which the
+  tab strip publishes, so the canvas, breadcrumb, carousel, menus and help
+  panel shift down together while sheets exist.
+
+### Changed
+- **ValeVision Gallery service worker** token bumped to `2026-09-10-1` for the
+  shell edits.
+
+### Notes
+- Scene markup in a viewport is drawn statically; editing it is done in
+  the drawing (Edit In Drawing), which keeps one editor per record. Sheet
+  mode holds the sheet's own layers; Import From Scene copies across.
+- A sheet dimension attached to a 2D viewport reports paper length times
+  the scale denominator, so it measures the model.
+- Hand-over test list: plan document section 11.6. Purge the localhost
+  service worker and caches before testing.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.20.0 - 09-Sep-2026 - Projected Linework on Drawings (Port Phase 4)
+
+### Overview
+Exact vector linework over every plan, elevation and section. The live model
+is read out into plain numbers, cut at the drawing's plane, turned to face
+the drawing and clipped for occlusion by the Lantern Designer's projection
+engine, off the main thread where workers are available. The result is
+painted in an SVG layer over the composer render, registered to the drawing
+camera with one transform per frame, drawn into exported images, baked to R2
+on localhost so the web build never computes it, and kept in the browser so
+a reload does not refetch. Ported from the Lantern Designer's
+27__System__ProjectedEdges2d with the kernel set verbatim.
+
+### Added
+- **50__System__ProjectedLinework**, twenty-three files. Verbatim (headers
+  restyled, identifiers renamed): the clip kernel, the flat BVH, the clip
+  worker and worker pool (both now carry hidden line segments back), the
+  scheduler, the Diff harness, the raster preview and the WebGPU backend.
+  Adapted: the soup builder (signed permutation fast path or a 3x3 rotation
+  for free bearings, D40), the edge extractor (instances rather than
+  meshes, a viewer vector for the silhouette test, edges split at the cut),
+  the stage sampler (samples the live model root, honours visibility and
+  helper flags, expands InstancedMesh, applies the exclusion tokens D19,
+  treats transparent material as non-occluding unless Glass Transparency
+  Off is set, clips triangles at the cut and the view depth, collects the
+  section outline), the model stage (fingerprint and bounds tree priming),
+  the projector (three backends behind one entry point), the CPU backend
+  (four line classes), the pipeline (one drawing at a time, realtime
+  debounce, cache, asset before compute, triangle ceiling), persistence
+  (R2 asset per drawing with a reference in the record, IndexedDB copy,
+  bake before save D20), the SVG overlay and config access. New: the view
+  definition (record to basis, cut and fingerprint), authored edges from
+  the SketchUp linework GLBs (D18), the export compositor and the Dev menu
+  section (enabled, backend, Force Render, Bake All, Clear Cache, Diff,
+  timings, per-drawing asset status).
+- **Line classes.** visible, hidden (dashed: what the occluders cover plus
+  everything between the viewer and the cut, only with the record's Hidden
+  Lines toggle, D21), authored, and section (the outline of cut material,
+  Doous dark grey). Widths are true drawing millimetres and scale with the
+  drawing.
+- **Config.** `Na__ProjectedLinework__AppConfig__.json` with render,
+  projection, performance, preview, persistence, appearance, exclusions,
+  model and label blocks; the Main.json exclusion tokens override.
+
+### Changed
+- **Section adapter.** FIX: a vertical drawing plane kept the viewer's side
+  of the model, so a section showed the near facade instead of the cut. The
+  tool's normal now points away from the viewer and live distance updates
+  carry the same sign. `GetPlaneDefinition` added.
+- **Composer preset** offers image export overrides for drawings (ortho
+  camera, 2D profile pre-pass, frustum widened to the export aspect keeping
+  the visible height); **index.html** chains them after the legacy
+  Elevation View's.
+- **Image export** draws the projected linework over the finished image
+  when a drawing is on screen.
+- **Floor plan and elevation controllers** announce a style change; the
+  **editors** bake linework assets before the drawings save; **Toggle
+  Model Elements** announces a visibility change; the **loading sequence**
+  registers the overlay every frame in the drawing branch. **index.html**
+  gains the Projected Linework dev section, imports and initialisation;
+  the **CSS index** imports the sheet.
+
+### Before testing
+- Purge the shared service worker on localhost (token 2026-09-09-4).
+- Workers load `Na__ProjectedLinework__ClipWorker__.js` by relative URL;
+  Flask serves it as a module like any other file. If the pool cannot
+  start the kernel runs inline on the main thread and says so.
+- The hand-over test list is section 10.4 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check and every import
+  resolves to an export. The kernel files are diff-able against the Lantern
+  Designer originals apart from the header block and the identifier rename.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.19.0 - 09-Sep-2026 - Elevations and Sections (Port Phase 3)
+
+### Overview
+Elevations and sections as drawing pages. An elevation is the building seen
+head-on through an orthographic camera from a chosen compass bearing; a section
+is the same drawing with a vertical cut applied through the existing Cross
+Sections tool. Both are authored from a new Elevations panel in the Dev menu,
+filed into the Elevations or Cross Sections scene group by drawing type (D28),
+and carry the same annotations, dimensions and style toggles as the floor
+plans. Ported from TrueVision's elevation folder onto the Phase 2 seams, with
+face picking and a draggable plane gizmo added as the plan decided (D16). Every
+plan cut and section drawing now uses the Doous section look, dark grey poche
+and profile, in place of the tool's light default.
+
+### Added
+- **46__System__ElevationViews.** Config, ortho camera, framing and plane
+  gizmo ported verbatim (the config gains the section group, face pick and
+  grip setups; the gizmo an additive face mesh export). The data module
+  reads the drawings block and carries styles, exclusions, the linework slot
+  and where a record was seeded from. Scene link files a section into Cross
+  Sections and an elevation into Elevations, and moves the card when the
+  type changes. The mode controller and Dev panel are adapted to the
+  section adapter, presets and shared transitions. New: **Pick Face** (a new
+  elevation aimed at a clicked wall) and **Re-pick** (an existing row) using
+  the legacy elevation tool's raycast rules, and the **gizmo grip**, a drag
+  along the plane's normal with a throttled recut in section mode and an
+  exact recut on release; the sliders remain the precise path and show
+  where a drag landed. Seed N / E / S / W and Save Thumbnail as in
+  TrueVision; the row also carries the shared style toggles and the
+  exclusion field.
+- **Na__DrawView__ConfigState__.js** (42). One reader for the drawing
+  config: main config over system JSON over built-in fallbacks. Carries the
+  section appearance the adapter applies, the Doous dark grey fill and line
+  at 2 px (`DrawingView__Config__Section*` in Na__AppConfig__Main.json
+  overrides it).
+- **Na__DrawView__StyleRows__.js** (42). The four style toggles and the
+  exclusion field, built once for plans and elevations from record
+  accessors.
+
+### Changed
+- **Section adapter.** Applies the drawing colours while the live tool is
+  parked (the tool's own colours come back with its sections); new
+  SuspendLiveTool holds the tool parked with or without a plane, so a plain
+  elevation shows the building whole with the author's sections out of the
+  way and a flip between a section and a plain elevation does not rebuild
+  them in between; new Release hands the tool back. Plane name prefix read
+  from config.
+- **Composer and material presets** read through the config state instead
+  of fetching or receiving config themselves.
+- **Floor plan row builders** use the shared style rows; the **floor plan
+  mode controller** holds the tool on entry and releases it on exit,
+  matching the elevation controller.
+- **index.html** gains the Elevations dev section, the config state
+  bootstrap and the elevation initialisation block (gizmo, face pick, grip,
+  mode controller, Dev panel). **Loading sequence** hands resize to the
+  elevation controller. **CSS index** imports the elevation sheet.
+  **Na__DrawView__AppConfig__.json** and **Na__AppConfig__Main.json** carry
+  the section colour keys.
+
+### Before testing
+- Purge the shared service worker on localhost (token 2026-09-09-3).
+- The Phase 2 worker deploy and Flask restart still apply if not yet done
+  (Save Thumbnail uses the asset route).
+- The hand-over test list is section 9.3 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check, every import
+  resolves to an export, and the verbatim ports are line-for-line against
+  TrueVision.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.18.0 - 09-Sep-2026 - Drawing Substrate, Floor Plans, Annotations, Dimensions, Client Measuring (Port Phase 2)
+
+### Overview
+The first 2D drawings. A floor plan is a section cut at a chosen height seen
+through a top-down orthographic camera, authored from a new Floor Plans panel in
+the Dev menu, filed into the Floor Plans scene group as a carousel card, and
+carried into the drawing with its own annotations and dimensions. Ported from
+TrueVision v2.19.0 across four new module folders, with the drawing render and
+cut engine seams re-plumbed onto ValeVision's own composer and Cross Sections
+tool as the plan decided (D07, D12).
+
+### Added
+- **42__System__DrawingViewCore.** The seam every 2D drawing shares.
+  Ported: the active view broker (ActiveView), the shared pan and zoom
+  (Navigation), the markup mount order (MarkupMount), the focus arbiter
+  (MarkupFocus, relocated here from the TrueVision floor plan folder) and the
+  scene link row. New: the section adapter driving the existing Cross
+  Sections tool as the cut engine, the composer preset (RenderPass camera
+  swap, fog and AO off, paper background, ortho-aware profile pre-pass at a
+  fixed width), the reversible material preset (Glass Transparency Off,
+  Whitecard under MaxEngine), the drawings project data owner and the shared
+  transitions (suspend 3D, fly, register with the carousel).
+- **43__System__FloorPlanViews.** Config, ortho camera, framing and scene
+  link ported verbatim; the data module reads the drawings block and carries
+  the four style toggles, the exclusion list and the linework asset slot; the
+  mode controller and Dev panel adapted to the seams. Add Ground Floor Plan
+  is the one-click start; Seed From Model Storeys degrades to its message.
+- **44__System__PlanAnnotations** and **45__System__PlanDimensions.** Ported
+  near-verbatim, twenty-one files. The dimension data module is split into a
+  record layer and a config layer, and the dimension editor's rubber-band
+  preview moved to its own module, so every file stays inside the line
+  budget. Client measuring (red, ephemeral, behind the disclaimer) ships with
+  them, gated by the Let clients measure toggle on the Floor Plans panel.
+- **Na__AppUtils__R2AssetUpload__.js** and **Na__AppUtils__SnapshotHistory__.js.**
+  The binary asset twin of the R2 save utility (worker first, Flask mirror),
+  and the ported undo snapshot stack.
+- **Worker asset route.** `POST /api/editor/projects/{folderId}/assets` in
+  `CloudflareHandler__ProjectAsset__.js`, path-guarded to thumbnails, baked
+  linework and snapshots; bumps the build manifest like a project save. Flask
+  mirror at `/api/projects/<folder_id>/assets`.
+- **Data.** New top-level project.json block `LayoutEditor__DrawingsData`
+  (floor plans, elevations, sheets, the client measuring grant). Scene links
+  stay on the scene inside the presentation block.
+
+### Changed
+- **Cross Sections tool.** Three additive exports (GetSectionById,
+  SetSectionPositionMm, ReapplyClipping) and the scene data listener skips
+  the synthetic approach scene a drawing flies to, so the drawing cut is not
+  cleared mid-flight.
+- **Scene transition** forwards isDrawingApproach on na-pm-scene-activated.
+- **Thumbnail renderer** takes a frame renderer from the composer preset so a
+  captured card is the drawing as shown; the 3D path now draws the section
+  overlay into the frame; CaptureAndUpload writes through the asset route.
+- **Loading sequence** dispatches na-layouteditor-drawingsdata-loaded, runs a
+  2D drawing branch ahead of the 3D per-frame work, and hands resize to the
+  floor plan controller. **index.html** gains the Floor Plans dev section and
+  the drawing initialisation block. **Na__AppConfig__Main.json** gains the
+  Drawing2d profile keys, DrawingView__Config, ProjectedLinework__Config and
+  LayoutEditor__Config. The hotkey dictionary documents the contextual markup
+  keys in the advanced fold. The navigation pill hides while a drawing is up.
+  Add Scene From Camera refuses while a drawing owns the viewport and
+  drawing scenes lose their Update Camera button.
+
+### Before testing
+- Deploy the worker (`CloudflareWorker/Deploy__Worker.bat`) for the asset
+  route and restart Flask for the mirror endpoint; without them Save
+  Thumbnail fails with a red toast and everything else still works.
+- Purge the shared service worker on localhost (token 2026-09-09-2).
+- The hand-over test list is section 8.8 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check, every import
+  resolves to an export, and the ports are line-for-line against TrueVision.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.17.0 - 09-Sep-2026 - Presentation Mode Scene Groups (Port Phase 1)
+
+### Overview
+Saved scenes can now be split into named groups (Exterior 3D Views, Interior
+3D Views, Dollhouse View, Floor Plans, Elevations, Cross Sections, or whatever
+a job needs). The carousel shows one group at a time and a small pill above its
+top-left corner names the group, counts its views and opens the list. Ported
+from TrueVision v2.11.0 with the router hook from v2.18.0, so the floor plan
+and elevation systems that follow in the next phases can take over a scene
+card the moment they register. Naming stays Na__ throughout: ported files keep
+their TrueVision names so the two trees diff cleanly (plan decision D04 as
+corrected on 09-Sep-2026).
+
+### Added
+- **Na__PresentationMode__SceneGroups__Data__.js v1.0.0.** Pure data layer:
+  reads and validates the groups array, resolves every scene to exactly one
+  enabled group (fallback to the first enabled group, so nothing can vanish),
+  sorts into (Group Order, Scene Order) playback order, renumbers Scene Order
+  1..N inside each group, and steps across group boundaries. Verbatim port.
+- **Na__PresentationMode__SceneGroups__AppConfig__.json.** Behaviour flags,
+  labels, Dev menu wording and the default group set. Six groups, only the
+  first enabled: the five TrueVision defaults plus Cross Sections.
+- **Na__PresentationMode__UI__SceneGroupSelector__.js v1.0.0.** The pill and
+  its upward-opening list. Mounts inside #naPresentationCarousel so it shows
+  and hides with the strip; choosing a group re-aims the strip without moving
+  the camera. Verbatim port.
+- **Na__PresentationMode__DevMenu__GroupEditor__.js v1.0.0.** Collapsible
+  Scene Groups section at the top of the Presentation Scenes panel: enable,
+  rename, count, reorder, delete, Add Group. Seeds the default set in memory
+  only; never saves for itself, it raises na-presentation-groups-changed and
+  the scene editor writes. Prompts use the ValeVision confirm dialog.
+- **Na__PresentationMode__DevMenu__SceneRowBuilders__.js v1.0.0.** The scene
+  row moved out of the editor: drag handle, position title, move arrows, Name,
+  Group dropdown (enabled groups only), FOV, Move Speed, Easing, Position and
+  the four action buttons.
+- **Na__PresentationMode__DevMenu__SceneReorder__.js v1.0.0.** Per-group
+  array moves (slice bounds, clamped move, drop index) and the native drag and
+  drop wiring, taking the scenes array and config as arguments.
+- **Na__PresentationMode__DevMenu__ScenePersistence__.js v1.0.0.** The
+  editor's two writes moved out unchanged: the GET-merge plus R2-first
+  project.json save and the Flask thumbnail upload.
+- **Na__PresentationMode__Styles__SceneGroupSelector__.css.** Pill, list,
+  empty-group message, Dev group section, group headings and the row controls
+  the port brought across (drag handle, reorder buttons, drop indicators).
+
+### Changed
+- **Na__PresentationMode__ProjectJson__SceneData.js v1.2.0.** GetSortedScenes
+  and GetDefaultScene use the group-aware playback order; an ungrouped project
+  sorts exactly as before. New GetActiveProjectCode and BroadcastScenesChanged.
+- **Na__PresentationMode__UI__SceneCarousel.js v1.2.0.** Shows the active
+  group only, keeps the bar standing when it rebuilds, shows a message for an
+  empty group, steps across groups with the chevrons (three documented cases,
+  including entering a group at its edge after a dropdown re-aim), and routes
+  every navigation through one path that first offers the scene to any
+  registered router (Na__PresentationMode__UI__AddSceneNavigationRouter).
+- **Na__PresentationMode__DevMenu__SceneEditor.js v1.3.0.** Rows clustered
+  under fold-down group headings (folded by default, open state remembered
+  across rebuilds), reordering confined to a scene's own group by arrows, drag
+  handle or Position field, the Group dropdown as the only way between
+  groups, new scenes filed into the group the carousel shows, and one
+  mutation tail (renumber, commit, save, rebuild) for every row action.
+- **index.html.** Imports the selector and initialises it directly after the
+  carousel. **Na__CoreUi__Styles__Index__.css** imports the new sheet after
+  the carousel sheet.
+
+### Where the data lives
+- Groups nest inside PresentationMode__SavedCameraScenes under __Groups, with
+  a per-scene PresentationMode__Scene__GroupId (plan decision D08). The
+  ValeVision Gallery sync only patches its own keys inside that block, so groups
+  survive a SketchUp re-sync, and the existing Save All path already writes
+  the whole block. A project whose scenes were auto-built from SketchUp camera
+  data gets its explicit scenes block materialised on the first group save.
+- Scene Order restarts at 1 inside each group. A project with no __Groups
+  array reads as ungrouped: no bar, flat order, byte-identical behaviour.
+
+### Note
+- Not run in a browser. Every new module passes a syntax check and the port is
+  line-for-line against TrueVision, but the pill, the dropdown, the reorder
+  paths and the save round trip have not been exercised on a live project.
+  Purge the shared service worker on localhost before testing.
+- ValeVision__PARITY__TrueVisionLedger__.md created in the ValeVision root and
+  seeded with the Phase 0 and Phase 1 module pairs.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.16.0 - 09-Sep-2026 - Three r184 Version-Locked Library Set (Port Phase 0)
+
+### Overview
+First step of the TrueVision drawing systems port and the Layout Editor, planned in
+ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md (decisions D01 to D40). The
+projected linework engine that the plans, elevations and sheets will draw with was
+built in the Lantern Designer against three r184 with three-mesh-bvh and
+three-edge-projection as one locked set, so ValeVision moves to that same set
+first. Every later phase is then built and tested on the final libraries rather
+than on a build that would have to change under it.
+
+### Added
+- **04__Lib__ThirdParty__VersionLocked/.** Byte-identical copies of the Lantern
+  Designer vendor folders 01 (three 0.184.0, full build and addons tree), 02
+  (three-mesh-bvh 0.9.9) and 04 (three-edge-projection 0.0.10 at f794481), plus
+  Vale__Dependencies__ImportMap__Index__.json as the path SSOT and a README. The
+  folder numbering is kept so the two apps read as one set; 03 (clipper2-js) is
+  not needed here and is not copied. jsPDF stays where it was.
+- **ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md.** The plan for the whole
+  port: scope, decisions, source maps, naming discipline, the project.json data
+  model, six phases with hand-over test lists, the risk register and the file
+  map that seeds the parity ledger.
+
+### Changed
+- **index.html.** The import map now targets the version-locked set and carries
+  the same keys as the Lantern Designer (three, three/addons/, three/webgpu,
+  three/tsl, three-mesh-bvh and three-edge-projection, with their worker and
+  webgpu variants), so the projected linework modules port without edits.
+- **Shared PWA service worker** (ValeVisionGallery__Pwa__ServiceWorker__Logic__.js
+  v1.0.4 and the live_sw.js copy). Shell precache paths repointed to the new
+  folder, three.core.js added because the r184 module build imports it, and
+  PWA_SW_VERSION_TOKEN bumped to 2026-09-09-1 so warm caches do not serve the
+  old module graph beside the new import map.
+
+### What was checked against the r184 sources
+- Logarithmic depth is unchanged in behaviour: the fragment chunk still writes
+  gl_FragDepth = log2(1 + w) / log2(far + 1), so the fog and SSAO inversion
+  pow(far + 1, depth) - 1 still holds and the fat-line depth bias patch still
+  finds #include <logdepthbuf_fragment> in LineMaterial. The chunks moved from
+  three.core.js into three.module.js and the internal define was renamed to
+  USE_LOGARITHMIC_DEPTH_BUFFER, which no ValeVision shader references.
+- WebGLMultipleRenderTargets no longer exists; ValeVision never used it. The
+  synchronous readRenderTargetPixels the Export Render Layers passes rely on
+  still exists.
+- OrbitControls now extends the Controls base class and connects itself to the
+  element passed to its constructor; enabled, target, update, dispose and
+  listenToKeyEvents are unchanged, so the orbit, walk and fly hand-offs need no
+  edit.
+- FXAAShader keeps the resolution uniform as one over the pixel size, so both
+  engine setups are untouched, but the filter itself was rewritten upstream
+  after r160 and edge softness may read slightly differently.
+- EffectComposer, RenderPass, ShaderPass, Pass and FullScreenQuad, MaskPass,
+  CopyShader, GLTFLoader, RGBELoader, BufferGeometryUtils and the fat-line
+  modules are all present at the same addon paths.
+
+### Note
+- 04__Lib__ThirdParty__Three is retained, unused, until the Phase 0 checklist in
+  the plan (section 6.3) has been run on a live project. Delete it after that.
+- On localhost purge the shared service worker before testing; the token bump
+  evicts warm caches on the live site by itself.
+- Nothing here has been run in a browser. The checks above were made against the
+  vendored sources, not against a rendered frame.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.15.0 - 02-Sep-2026 - Video Studio: Keyframe Timeline Replaces the Transport Slider
+
+### Overview
+Composing a walkthrough meant reading an unlabelled range slider and a scrolling
+column of near-identical keyframe rows. Neither told you what any shot actually
+looked like or when it happened. The Video Studio panel's Play / Stop / scrubber
+row is gone, and in its place is a timeline across the bottom of the screen
+showing every keyframe as the shot it is, at the moment it happens, with a ruler
+under it. Right-clicking a shot opens a context menu that edits it in place.
+
+Only one thing is ever at the bottom of the screen: opening a video path hides
+the Presentation Mode scene carousel and closing it puts the carousel back
+exactly as it was. Two strips both calling themselves scenes was the confusion
+this replaces.
+
+### Added
+- **Na__VideoStudio__Timeline__Controls.js v1.0.0.** The strip itself: transport,
+  keyframe tiles, ruler, playhead and scrubbing. Tiles are positioned by
+  percentage of the total duration inside an inset lane, so the shot at time zero
+  and the shot at the end both sit inside the strip rather than half off it. A
+  stem drops from each tile to its tick, which keeps the ruler truthful where two
+  shots sit close enough for their tiles to overlap. Single click selects a
+  waypoint and lights its viewport marker; double click flies the camera to it,
+  the same call `Go To` makes; right click opens the context menu.
+- **Na__VideoStudio__Timeline__Thumbnails.js v1.0.0.** Renders and caches the
+  still for each waypoint by placing the camera there and rendering one frame
+  through the live pipeline. Every render in a burst happens inside one
+  synchronous task and the live view is redrawn before the task ends, so the
+  browser only ever composites the correct frame and the whole thing is invisible
+  on screen. Cached against a signature of the waypoint's camera block, lens and
+  the path's model layer state, so a dragged waypoint costs one frame rather than
+  a rebuild. Bursts are capped at eight frames and suspended while an MP4 export
+  owns the renderer.
+- **Na__VideoStudio__Timeline__ContextMenu.js v1.0.0.** Right-click editor for one
+  keyframe: Travel Time, Hold Time, Match Current Camera, Camera Lens, and a
+  collapsed Advanced Camera Settings section holding Camera Height in millimetres
+  and Camera Tilt in degrees from the horizon. Every field commits through the
+  data layer and records an undo entry, so Ctrl+Z steps back through menu edits
+  as it does through a waypoint drag. A Delete Keyframe action sits at the foot
+  behind a destructive confirmation.
+- **Na__VideoStudio__Timeline__Stylesheet__.css v1.1.0.** Strip and context menu,
+  scoped to `.na-vs-tl__*` and `.na-vs-menu__*`.
+
+### Changed
+- **Na__VideoStudio__Camera__PathSampler.js v1.1.0.** New
+  `GetKeyframeTimes(timeline)` reports the clock time the camera reaches each
+  waypoint. It lives here because a leg's easing ramp stretches the travel either
+  side of its cruise, so the authored travel times alone put every mid-leg
+  waypoint in the wrong place on a ruler. A new `InvertLegWarp` bisects the ramp
+  to answer the question exactly, twenty-four halvings resolving a sixty-second
+  leg to far finer than one pixel.
+- **Na__VideoStudio__ProjectJson__VideoData.js v1.2.0.** `SetActiveKeyframeId`
+  now dispatches `na-video-studio-keyframe-selected`. Selection reaches this
+  module from the panel's Go To, a click on a viewport marker, a drag, an
+  insertion and the timeline's tiles; announcing it from the single place that
+  records it is what lets a viewport click highlight a tile and a tile click
+  highlight a marker with neither module knowing the other exists.
+- **Na__VideoStudio__DevMenu__Controls.js v1.2.0.** The in-panel transport is
+  removed. `SyncTransportButtons` forwards to the timeline so the spacebar hotkey
+  and the strip cannot disagree. A new `SyncTimeline` decides from the panel's own
+  state whether the strip is up, called from `RenderPanel` and the fold toggle, so
+  no individual call site can leave it behind after a delete or a fold. The panel
+  also registers the thumbnail render context and hands the context menu the one
+  refresh routine that knows what a keyframe edit has to update.
+- **Na__VideoStudio__Stylesheet__.css v1.2.0.** Preview Transport block deleted.
+- **index.html.** Timeline container added beside the carousel, and
+  `Na__VideoStudio__Timeline__Initialize` runs before the Dev menu that drives it.
+
+### Note
+Deleting a waypoint from the context menu is recorded as a structural undo entry
+before the removal, exactly as the Delete hotkey already was, so Ctrl+Z puts it
+back in its place in the running order. The confirm dialog says so and states the
+real limit alongside it: the history is cleared when the Video Studio panel closes
+or another path is opened, so it is a safety net for the editing session and not
+beyond it.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.7 - 21-Aug-2026 - Walk and Fly Enabled by Default
+
+### Overview
+Walk and Fly were opt-in: a model only got them once someone ticked the boxes
+in the dev menu Navigation Modes panel and saved the block into project.json.
+Every new job therefore shipped orbit-only until it was remembered. That is now
+inverted — all three modes are on for every model, and a job opts a mode out by
+unticking it and saving, which writes an explicit false.
+
+### Changed
+- **Na__NavigationModes__State.js v1.1.0.** Walk and Fly module flags default to
+  true. New `ResolveModeFlag` helper gives the opt-out reading: only a literal
+  `false` (or legacy `"false"`) disables a mode, so an absent key, an absent
+  block and a project.json written before the key existed all resolve to
+  enabled. `SetEnabledModes` no longer early-returns on a missing block, and a
+  new `GetEnabledModes` reads the resolved pair back in project.json shape.
+- **Na__AppFlow__LoadingSequence.js.** The `Navmode__EnabledModes` guard is gone:
+  the setter runs and `na-navigation-modes-loaded` fires on every project load.
+  The event now carries the *resolved* flags from `GetEnabledModes` rather than
+  the raw block, so listeners always receive real booleans. Without this, a
+  project.json with no nav block never fired the event and the Walk/Fly UI stayed
+  hidden regardless of the new defaults.
+- **Toolbar, help panel and dev menu.** All three listeners switched from
+  `Boolean(key)` to `key !== false` to match the opt-out semantics. The help
+  panel now takes `walkEnabled` / `flyEnabled` at init and reveals its Walk/Fly
+  instruction sections immediately, which also covers a session opened with no
+  `?project=` code. The dev menu checkboxes are ticked in markup and seeded from
+  the state getters instead of hardcoded false.
+- **Na__AppConfig__Main.json.** Global `Navmode__EnabledModes` defaults flipped
+  to true with the description rewritten to state the opt-out rule.
+
+### Note
+Orbit is unchanged: it is always available and is never stored in the block.
+Existing project.json files that explicitly hold `false` keep their setting, so
+any model deliberately locked to orbit stays that way.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.6 - 21-Aug-2026 - MAT000E__ Glazing: SketchUp Opacity Reaches PureEngine
+
+### Overview
+A balcony balustrade painted `MAT000E__Glass__Balcony` at 30% opacity in
+SketchUp arrived in ValeVision as a solid white panel, blocking the elevation
+behind it. Three separate places were flattening it, and all three are fixed so
+the SketchUp Materials tray Opacity slider is now the single control for exempt
+glazing — no new SSOT entry, no MAT###__ index required.
+
+The `E` in `MAT000E__` was already an exemption from *material stripping* and
+from *whitecard replacement*; it now also carries opacity. Indexed `MAT###__`
+materials are untouched — their alpha still comes from the materials library,
+and they still whitecard opaque under PureEngine as before.
+
+### Fixed
+- **Exporter wrote alpha 1.0 regardless.** `Na__MaterialEngine__EnsureMaterialRegistered`
+  in the GLB Builder built `baseColorFactor` with a hardcoded `1.0` alpha and only
+  ever set `alphaMode` from a materials-library `Opacity` key, which exempt
+  materials by definition do not have. Non-indexed materials now read
+  `Sketchup::Material#alpha` and write it as `baseColorFactor[3]` plus
+  `alphaMode: "BLEND"` and `doubleSided: true`. See GLB Builder MaterialHandling
+  v3.1.1.
+- **The model loader threw the material away.** `Na__ModelLoader__LoadSingleMesh`
+  routed every untextured non-indexed material to the shared opaque whitecard, so
+  an untextured glazing material lost its name and its alpha before any materials
+  pass could see it. Transparent `MAT000E__` materials are now preserved (clone +
+  `transparent` + `depthWrite: false`), textured or not.
+- **The PureEngine lift would have made glass glow.** `ApplyExemptTextureBrightness`
+  wires the diffuse map into `emissiveMap` to pull fake-detail textures up to
+  whitecard luminance. Transparent exempt slots are glazing rather than fake
+  detail, so they are now skipped.
+
+### Also
+- Exempt glazing meshes opt out of `castShadow`. Shadow maps ignore opacity, so
+  glass would otherwise drop a solid silhouette onto the geometry behind it.
+- MaxEngine needed no change: its swap pass only touches indexed names, so exempt
+  glazing carries through both engines and survives engine switching.
+- Catalogued as a reusable material: `MAT105__GenericGlass__WhitecardTranslucent`
+  in the DataLib SSOT (`Na__DataLib__CoreIndex__Materials__.json` v1.4.1), whose
+  `SketchUpName` is `MAT000E__Glass__WhitecardTranslucent`. The library key/name
+  split means every plugin reading the DataLib can discover and create it, while
+  the SketchUp-side name keeps the `MAT000E__` prefix that all of the above
+  plumbing already keys off — so no further viewer or exporter code was needed.
+  The entry is a reference recipe, not a render-time override: exempt materials
+  take their colour and opacity from the SketchUp material itself.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.5 - 21-Aug-2026 - Fix: Views Bar Thumbnails Survive an Image Re-Sync
+
+### Overview
+Cloud Sync exports a fresh date-stamped image edition on every run and purges
+the one before it, but the PresentationMode__Scene__ThumbnailUrl baked into
+project.json was never re-pointed, so every Views bar thumbnail 404'd after an
+image re-sync on both the R2 primary and the GH Pages fallback. Found on
+2026/3047__Doous, whose six scenes still named 13-Aug-2026 files after the
+21-Aug-2026 sync. ResolveThumbnailUrlPair in
+Na__PresentationMode__ProjectJson__SceneData.js now checks the stored filename
+against the live project.json "images" array and re-derives the current name
+from the matching IMG## slot when it has gone stale, warning to console with
+the substitution. A valid stored name, an absolute URL, an unregistered image
+list and a slot no longer exported all pass through untouched, and IMG01__
+never resolves to IMG01_ART20__. Na__AppFlow__LoadingSequence.js registers the
+live array through the new SetActiveImageList. The auto-built scene path was
+never affected because it already derives filenames at load; this gives the
+explicit-scene path the same guarantee. Sync-side counterpart in
+ValeVision Gallery v0.6.17.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.4 - 19-Aug-2026 - Export Render Layers: Approximations Removed
+
+### Overview
+Five passes deleted, and the code they justified deleted with them. Every one
+was an engine-generated approximation of something a learned detector produces,
+and every one was worse than a map ValeVision can derive exactly. Keeping them
+meant maintaining a shader family, a config surface and a segment-chaining
+algorithm to produce output nobody should choose.
+
+### Removed
+- **MLSD Lines.** The geometric filter over the CAD linework worked in the sense
+  that it selected segments, but it exported a blank frame in the last two
+  batches and was never root-caused. The condition it was meant to supply
+  (long straight architectural lines) is already carried better by Line Art and
+  by the inverted Canny, both of which come from the same linework without a
+  filtering step that can silently select nothing.
+- **Exact Linework Buffer.** Its purpose was diagnosing which edges the SketchUp
+  export delivered. Line Art answers that question directly and is a deliverable
+  as well, so a second raw view of the same data earned nothing.
+- **HED-compatible Map.** It was labelled an approximation from the first
+  commit because it was one: smooth structural gradients plus a luminance term,
+  shaped to suit an HED input rather than produced by a learned HED network.
+- **Scribble Map.** Deliberately coarse by design, and for an orangery that
+  meant deliberately discarding the glazing bars that make the building read.
+- **Soft Edge Map.** The antialiased sibling of a Canny that is now derived from
+  exact linework instead, which leaves nothing for a softened version of a
+  guess to add.
+
+### Cleaned up
+- Deleted `Na__ExportRenderLayers__Pass__MlsdLines__.js` outright, including the
+  collinear chain-merging algorithm and its endpoint quantisation.
+- `Na__ExportRenderLayers__Pass__LineArt__.js` lost its last pass and is now
+  `Na__ExportRenderLayers__ExportLineMaterial__.js`, holding only the shared
+  fat-line material and the beauty-exporter width-compensation convention that
+  Gray Control still needs. That convention is easy to get wrong, so it keeps
+  its own file rather than being inlined.
+- The full screen shader lost four derivation modes (Soft Edge, HED, Scribble
+  and the Profile Edge overlay the old Line Art composite used), the six
+  uniforms that fed only those branches, and their entries in the manifest's
+  threshold record. The remaining modes are renumbered compactly. Every
+  declared uniform is now read by something; the edge section is one branch.
+- Ten AppConfig keys removed. The config had grown tuning knobs for detectors
+  that no longer exist.
+
+### Result
+- 16 passes, 6 essential: Beauty, Clay, Depth, Normal, Canny and Line Art.
+- Every remaining structural pass is derived exactly rather than inferred, with
+  the single deliberate exception of True Canny, which is kept off by default
+  for comparison against the inverted linework.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.3 - 19-Aug-2026 - Canny From Linework, and Two Real Bugs
+
+### Changed
+- **Canny Edges is now the Line Art render inverted**, not a derived edge
+  detection. ValeVision already knows exactly where every edge is, so running a
+  detector over a raster to rediscover them can only lose accuracy. The inverted
+  linework is sharper, complete and correctly hidden-line removed. Inversion is
+  a single composited fillRect using the difference operator against white, so
+  it costs nothing at 6144x4096 and never touches a pixel array.
+- **The derived detector survives as True Canny**, off by default, so the two
+  can be compared and a workflow that genuinely wants detector output has one.
+
+### Fixed
+- **The sRGB output target was a regression and is reverted.** Making the target
+  sRGB was meant to round-trip authored ID colours, but Three then gamma-encoded
+  the raw bytes this system's own shader writes. Measured on a real export: the
+  Normal map's sky should be 128,128,255 and the shader wrote linear 0.789, but
+  the file contained byte 230 rather than 201 - an exact sRGB encode of the
+  intended value. Every data pass was lifted the same way. The target is back to
+  NoColorSpace, and the authored-colour problem is fixed at its actual source
+  instead: the ID mask materials now set their hex in the working colour space,
+  so Three skips the conversion and the byte written is the byte the manifest
+  promises.
+
+### Found, and now controllable
+- **A mesh is covering the sky in the Doous model.** Every structural pass reads
+  the sky as geometry: the Silhouette mask comes out solid white, the Normal
+  buffer never shows its background, and Depth only looks right by coincidence
+  because the far clamp is also black. It is invisible in a Beauty render
+  because it is white. `ExportRenderLayers__Config__ExcludeNameTokens` now
+  excludes matching objects from the structural set by name, defaulting to
+  Sky, Backdrop, Dome and Horizon, and the classifier logs what it dropped.
+
+### Still open
+- **Four passes exported pure white and byte-identical**: Linework Buffer,
+  MLSD Lines, Shadow Mask and Silhouette Mask. Silhouette is explained by the
+  sky mesh above. The other three are not yet root-caused; MLSD reports 45,469
+  segments kept from 252,875, so its geometry filter is working and the failure
+  is downstream of it. MLSD is the one remaining broken essential.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.2 - 19-Aug-2026 - Export Render Layers: Line Art on the Real Renderer
+
+### Changed
+- **Line Art now renders through ValeVision's own profile-line pipeline**
+  rather than a hand-rolled edge composite. Structural surfaces go flat white
+  and unlit, ambient occlusion is switched off for the duration, and what is
+  left on the page is the profile-line pass plus the exact CAD linework. That
+  renderer has been tuned against real Vale models for years; the composite was
+  never going to beat it. Line Art is now a COMPOSED pass alongside Beauty and
+  Clay, so it also inherits vertical correction and the beauty tile path for
+  free.
+- **Whitecard Render is renamed Clay Render** throughout: row label, filename
+  suffix `__ClayRender__`, config keys, and the preset itself. It is now in the
+  essential set and ticked by default.
+- **Pose Map is removed from the registry.** It was registered as a permanently
+  unavailable row to document the capability gap, which turned out to be noise
+  in a panel people actually use. The base-model note in the help text carries
+  the useful part of that information instead.
+
+### Fixed
+- **Line weights in the structural line passes were roughly three times too
+  thin.** LineMaterial resolves its pixel width against its own resolution
+  uniform, and the export was setting that uniform to the tile framebuffer
+  size, so a line came out one tile-pixel wide instead of scaling with the
+  image. The beauty exporter solves it the other way round: it leaves every
+  material's load-time resolution alone and multiplies the width by
+  outputHeight / tileFramebufferHeight. MLSD, the Linework Buffer and Gray
+  Control now follow exactly that convention, so a line carries the same weight
+  in a structural map as it does in Beauty.
+- **Pixel registration can no longer diverge silently.** The tile interior and
+  gutter are configurable for the render layers but hard-coded for Beauty, so
+  overriding them would quietly stop the two aligning. The planner now exports
+  its defaults and the tiled pass renderer warns when the config differs.
+- The capability note read "unavailable, unavailable" on an unavailable row.
+
+### Notes
+- **Clay Render and Gray Control are both clay, and they are not the same
+  thing.** Clay is the flat neutral edit reference with exact linework, composed
+  through the live engine. Gray Control is the lit mid-grey control image the
+  Fun Union adapter names. Keeping both is deliberate.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.1 - 19-Aug-2026 - Export Render Layers: First Export Review
+
+### Overview
+Findings from the first real export set (Doous orangery, MaxEngine, 5461x4096)
+plus the two selection controls that set was missing. Two of the three fixes are
+correctness bugs found by reading the exported manifest against the exported
+pixels, not by looking at the images.
+
+### Added
+- **Select All, Select None and Essential Only** above the pass list. All three
+  are registry-driven. A bulk action never ticks a layer that is unavailable in
+  the current scene or still waiting on a category selection, so it cannot queue
+  something the export would then reject.
+- **`isEssential` on every registry entry**, and the rows carry an "essential"
+  note so the Qwen working set is readable without pressing anything. The set is
+  Beauty, Depth, Normal, Canny, Line Art and MLSD: the composed edit image plus
+  the structural conditions the cited adapter model cards actually list.
+
+### Fixed
+- **ID mask colours did not match their own manifest dictionary.** Three converts
+  every authored material colour from sRGB into its linear working space on
+  assignment, and the export target was `NoColorSpace`, so nothing converted it
+  back. `#ef52a7` was landing in the PNG as `(220, 22, 99)` and `#294bb3` as
+  `(6, 18, 115)`. Selecting a category by its documented colour was impossible.
+  The output target is now sRGB encoded, so Three's own colorspace chunk undoes
+  the conversion and the byte written is the byte authored. Passes that write raw
+  data through the system's own shader are unaffected, because a ShaderMaterial
+  never includes that chunk; their colour uniforms are now set explicitly without
+  conversion, which also fixes the `#8080ff` normal background that was landing
+  as `(55, 55, 255)`.
+- **The depth map was too flat to condition anything.** The range came from
+  bounding boxes, and the landscape plane's box straddles the camera, so the near
+  end collapsed onto the camera near plane and the far end reached the site
+  boundary: 0.1 m to 99.9 m, leaving the whole orangery inside bytes 102 to 191.
+  The range is now MEASURED. The G-buffer renders once at 256px, the normalised
+  depth of every covered pixel is histogrammed, and robust percentiles give the
+  range the image actually occupies. Percentiles rather than min and max, because
+  one blade of grass at the camera should not spend half the range.
+
+### Verified against the model cards (19-Aug-2026)
+Every essential output was checked against its adapter's own documentation
+rather than against memory. All six are accepted, and the check turned up a
+base-model split that had been glossed over:
+
+| Pass | Route | Required base |
+|---|---|---|
+| Beauty | Qwen-Image-Edit-2511, multi-image reference | Qwen-Image-Edit-2511 |
+| Depth | Fun Union / InstantX / DiffSynth patch / DiffSynth Union LoRA | either |
+| Canny | Fun Union / InstantX / DiffSynth patch / DiffSynth Union LoRA | either |
+| Normal | DiffSynth In-Context Control Union LoRA only | Qwen-Image |
+| Line Art | DiffSynth In-Context Control Union LoRA only | Qwen-Image |
+| MLSD | Fun ControlNet Union only | Qwen-Image-2512 |
+
+- **MLSD and Normal cannot share one graph.** MLSD exists only on the Fun
+  Union, which needs Qwen-Image-2512; Normal and Line Art exist only on the
+  DiffSynth In-Context Control Union, which needs Qwen-Image. Depth and Canny
+  are the only conditions every family carries, which is what makes them the
+  safest first test whichever base is loaded. The registry now records the
+  required base model per adapter family and the manifest publishes it.
+- **Two attributions were overstated and are corrected.** Line Art no longer
+  claims Qwen-Image-Edit-2511 as an adapter family, because that card documents
+  no ControlNet compatibility at all: a structural map handed to the edit model
+  is a reference image, not a constraint. The single `DiffSynth` family is split
+  into the Blockwise ControlNet (canny, depth, inpaint, loaded in ComfyUI as a
+  model patch) and the In-Context Control Union LoRA (canny, depth, pose,
+  lineart, softedge, normal, openpose), because ComfyUI treats them as two
+  different artefacts loaded in two different ways.
+- The Fun Union's own card lists Canny, HED, Depth, Pose, MLSD, Scribble and
+  Gray plus inpainting, and does NOT list Normal or Line Art. The registry never
+  claimed it did.
+
+### Notes
+- **The depth percentiles are the contrast lever, and they are a real trade.**
+  Default 2% to 98%. Tighter gives the building more of the range and clips the
+  nearest ground to white and the horizon to black, which is normal for a depth
+  map. Wider keeps the whole site gradient. A view with a ground plane running to
+  the horizon will always spend range on that ground; hiding the landscape
+  category before exporting Depth is the other lever.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.0 - 19-Aug-2026 - Export Render Layers
+
+### Overview
+A new localhost-only developer system that turns a framed ValeVision view into a
+folder of pixel-aligned structural maps for Qwen image workflows, plus a
+manifest that says honestly what each image is. The point is spatial fidelity:
+ValeVision already owns the geometry, so a depth map derived from it beats
+running a depth estimator over a whitecard render, and exact SketchUp linework
+beats inferring edges from a raster.
+
+Every pass renders at the same camera, crop, dimensions and pixel registration
+as the ordinary Beauty export, because both now consume one shared tile planner.
+
+### Added
+- **Export Render Layers panel** in the Dev Tools menu
+  (`02__Src__AppModules/71__System__ExportRenderLayers/`). Every row is generated
+  from the pass registry: an export checkbox, the pass name, a capability note
+  derived from registry data, and its own Preview button. Adding a registry entry
+  adds a row, a filename and a manifest record with no other edit anywhere.
+- **Twenty registered passes** across five groups. Beauty and Whitecard as edit
+  images; Depth, Normal, Canny, Soft Edge, HED-compatible and Scribble as
+  structural conditions; Line Art, MLSD and the raw Linework Buffer as line
+  conditions; Gray, Inpaint, Silhouette and the Category, Object and Material ID
+  masks; Ambient Occlusion, Albedo and Shadow as supporting buffers.
+- **Structural G-buffer** (`Na__ExportRenderLayers__GBufferPass__.js`): one
+  RGBA16F target carrying view-space normals in rgb and globally normalised
+  linear view depth in alpha. Coverage rides on the normal's length rather than
+  a sentinel alpha, which leaves the whole alpha range for depth. It uses Three's
+  logarithmic depth chunks so occlusion matches the live renderer, but the
+  exported depth is computed from view space, never read back from the
+  logarithmic hardware sample.
+- **One global depth range per export** (`Na__ExportRenderLayers__DepthRange__.js`),
+  derived from the visible structural bounds rather than the camera's broad near
+  and far planes. Per-tile normalisation would reset contrast at every tile
+  boundary; a facade spanning four tiles now has one continuous gradient.
+- **MLSD collinear chain merging** (`Na__ExportRenderLayers__Pass__MlsdLines__.js`).
+  Dropping every segment shorter than N pixels destroys exactly the lines that
+  matter, because SketchUp exports one glazing bar as a run of short collinear
+  segments. Segments are chained through shared endpoints within an angle
+  tolerance, the length test applies to the whole chain, and the survivors are
+  baked into a private scene so the live scene graph is never touched.
+- **Viewport preview overlay**: a canvas above the WebGL canvas with pointer
+  events disabled. The live composer is never put into a debug mode, so
+  switching from a Normal preview back to MaxEngine beauty cannot leave ambient
+  occlusion or profile lines in a debug configuration. Previews clear themselves
+  when the camera moves, an engine switch begins, a scene changes or an export
+  starts, so a stale structural snapshot can never read as a live view.
+- **Manifest** written last, after every selected image has landed, so a manifest
+  on disk means the set beside it is complete. It records the engine, camera
+  matrices, the depth range in metres and millimetres, visible categories, edge
+  tuning, and per pass the polarity, colour space, background, Qwen adapter
+  families and approximation status. HED-compatible and MLSD say plainly that
+  they are engine-generated approximations rather than learned detectors.
+- **Folder writing** through the File System Access API, with a paced download
+  fallback that retains completed Blobs so anything the browser refused can
+  still be saved by hand from the panel.
+- **`ExportRenderLayers__Config`** in `Na__AppConfig__Main.json`. Thresholds,
+  weights, tile sizes, background colours, default selection and the enable flag
+  all live there. Aspect ratios and resolutions are reused from
+  `ImageExport__Config` rather than duplicated, so a structural map always drops
+  beside a normal export without resizing.
+
+### Changed
+- **Tile mathematics extracted** from `Na__ImageExport__StaticExport__TiledRenderer.js`
+  into `Na__ImageExport__StaticExport__TilePlan__.js`. The beauty exporter's
+  behaviour and public exports are unchanged; it simply consumes the planner now.
+  This is what makes Beauty and Depth align to the pixel rather than nearly.
+- **PWA_SW_VERSION_TOKEN** bumped to 2026-08-19-1.
+
+### Notes on scope
+- **Pose is registered as permanently unavailable, not omitted.** Qwen adapters
+  accept pose maps, but ValeVision architecture has no semantic human skeleton,
+  and a blank pose image is not a useful condition. The row states this.
+- **Shadow Mask is off by default and checks availability at runtime**, reporting
+  in the row when the renderer has shadows disabled or the scene has no visible
+  shadow-casting light, rather than exporting a uniformly white image.
+- **Engine neutral by design.** The structural passes never read MaxEngine's
+  ambient occlusion or depth pre-pass targets. Those are optional on-screen
+  capabilities, and the live AO pre-pass excludes layer-one geometry, which would
+  silently drop visible content from an image claiming to describe the scene.
+  Depth, Normal, IDs, Silhouette, Line Art and MLSD are therefore equivalent
+  under PureEngine and MaxEngine; only Beauty differs, as it should.
+- **Isolation is by camera layer, not by hiding objects.** The classifier tags
+  the loaded model onto two spare layers and leaves layer 0 enabled, so the live
+  viewport is unaffected even mid-export and the default cube, orbit helper,
+  grid, ground plane, fog planes and section gizmos are excluded by construction
+  rather than by a blocklist.
+- **Pass-major memory use.** One layer is rendered, encoded, written and its
+  full-size canvas released before the next starts. Ten selected layers allocate
+  the same GPU memory as one.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.13.1 - 14-Aug-2026 - Video Studio Editing Pass
+
+### Overview
+Everything in this entry came out of actually using v2.13.0 to build a
+walkthrough. The system worked; editing it did not. Waypoints could only be
+placed by re-flying to the spot, nothing could be undone, and the mouse fought
+you the whole time. This pass makes the path editable in the viewport, gives it
+a history, and fixes two genuine bugs found along the way.
+
+### Added
+- **Waypoint editing in the viewport** (`Na__VideoStudio__Viewport__KeyframeDragger.js`):
+  drag a numbered marker to move it. Shift drags vertically, Ctrl locks to a
+  single world axis chosen from the first real travel, Ctrl+Shift turns the shot
+  about world up. Escape cancels. Picking is screen-space rather than by
+  raycast, because the markers are non-attenuated sprites whose raycast hit area
+  would otherwise shrink with distance; a waypoint 70m away is exactly as
+  grabbable as one 3m away.
+- **Guide lines during a constrained drag**, coloured to SketchUp's convention
+  rather than the Three.js one: blue vertical, red and green for the two ground
+  axes, so the axis in play is readable at a glance by anyone who reads SketchUp
+  axes all day. A Ctrl+Shift turn has no axis to show, so it draws a purple ray
+  along the shot's own view direction instead; purple sits outside the axis set
+  deliberately, being a direction rather than an axis.
+- **Undo and redo** (`Na__VideoStudio__Edit__UndoHistory.js`): Ctrl+Z and Ctrl+Y,
+  fifty steps. Two entry shapes. A drag stores that one keyframe's camera block,
+  so undoing a move reverts the move and nothing else; a deletion or an
+  insertion stores the whole keyframes array, because putting a waypoint back
+  means restoring its place in the running order too. An array snapshot is
+  deliberately NOT used for drags: it would quietly revert any lens or travel
+  value typed after the drag. Purged when the panel closes, the active video
+  changes, or preview starts. Ctrl+Z inside a text field stays the browser's own
+  text undo.
+- **Click a waypoint and press Delete** to remove it, recorded so Ctrl+Z puts it
+  back. Backspace works too.
+- **Ctrl+click the path to insert a waypoint there.** Position comes from the
+  point on the curve itself so the trajectory does not shift; aim and lens are
+  interpolated from the two waypoints it falls between. The leg's travel time
+  splits at the same fraction, so total clip duration and the pacing either side
+  are both unchanged. Appears in the list as "Inserted Frame 1", 2, 3.
+- **Update button** per keyframe row: overwrite that shot with the current camera
+  view, including its lens. Pairs with Go To for in-camera tuning.
+- **Per-shot lens** as an editable field, 14 to 200mm. Writes through to the
+  keyframe's stored FOV, which is what the sampler interpolates, so two
+  keyframes with different lenses give a dolly zoom.
+- **Aspect ratio**: 3:2 (default), 4:3, 16:9, 1:1, against height standards of
+  720p to 4320p. Height and aspect are the source of truth and the width is
+  derived, so the pair cannot drift. Because a Three.js camera's fov is the
+  VERTICAL field of view and it is left untouched, every ratio renders the same
+  vertical extent and simply shows more or less to the sides. Nothing is
+  stretched to fit.
+- **Safe frame and rule of thirds**, both on by default, reusing the Image Export
+  viewport overlay rather than drawing a second one.
+- **Advanced Animation Settings**: door swing time in seconds (default 1.2s
+  against the 0.6s the app authors) and a detection distance that defaults to
+  the same threshold Walk and Fly use.
+- **Spacebar plays and pauses** the preview, in Orbit only. Fly binds Space to
+  Ascend, and flying with the panel open to stamp waypoints is the core
+  workflow, so stealing it there would break the main use of the tool.
+
+### Changed
+- **Drag look is now the app-wide default for Walk and Fly**, not just a Video
+  Studio mode (`Na__Navmode__*Mode__DesktopControls.js`). Pointer lock made the
+  cursor vanish and turned the camera on every scrap of mouse movement, which
+  fights any panel sharing the screen: reaching for the Image Export controls
+  dragged the view on the way there and the shot was gone before the pointer
+  arrived. Marked as a temporary rollout with the original line commented
+  directly above the live one; reverting is a one-line swap in each file. Ported
+  to TrueVision, which shares this navigation system.
+- **Video export renders behind the Image Export spinner** in a new opaque mode,
+  with the canvas hidden for the duration and each step reported under the
+  spinner (frame N of M, encoded size, a measured estimate of time remaining).
+  The overlay controller moved to `Na__AppUtils__LoadingOverlay__.js` so both
+  exporters share one implementation.
+- Default travel time raised from 3s to 5s. Arrow keys on the Travel fields step
+  whole seconds and snap to the grid, while typing still accepts tenths.
+- Travel, Hold and Lens moved onto one row, halving the height of a keyframe
+  entry. Panel capped at 340px so a wide drag of the Dev Tools shell no longer
+  makes it enormous.
+
+### Fixed
+- **The Camera Focal Length readout was lying.** It was written in exactly two
+  places, at init and when its own slider moved, while nine other modules also
+  write camera.fov (Reset View, Walk and Fly entry and exit, saved camera
+  configs, Presentation Mode transitions, Video Studio preview and Go To). The
+  moment any of them ran, the panel reported a focal length the camera no longer
+  had. It now re-reads the live camera on a na-camera-fov-changed event, which
+  every one of those paths dispatches. The label shows the true focal length
+  even when it falls outside the slider's 24 to 75mm range; showing the clamped
+  number would be the very lie this exists to stop.
+- **Keyframe capture recorded the wrong lens in Walk and Fly.** It read the
+  pre-mode FOV those modes stash on entry, on the reasoning that their wide
+  navigation lens was a travelling convenience rather than a chosen shot. Wrong
+  in practice: the viewport genuinely renders at the mode's lens, so the
+  composition being judged is that lens. Capture now reads the live camera.
+- **Doors never opened in a video.** Proximity triggers are owned by the Walk and
+  Fly controllers and their enabled flag starts false, so a clip rendered from
+  Orbit left every door shut. A reference-counted session
+  (`Na__VideoStudio__Playback__SceneAnimations.js`) switches them on for the
+  length of a preview or export and guarantees they go off again.
+- **The safe frame and thirds toggles read on with nothing drawn.** The overlay
+  was pushed from two of the ten paths that rebuild the panel, so unfolding the
+  menu or loading a saved video left the viewport disagreeing with its own
+  checkboxes. Applying the overlay is now a consequence of rendering the panel
+  rather than something each call site has to remember.
+- The path overlay ballooned over the viewport during preview, because playback
+  flies the camera THROUGH the waypoints. Suppression is now reason-based, so
+  export and preview can both hide it without either switching it back on early.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.13.0 - 14-Aug-2026 - Video Studio
+
+### Overview
+New localhost-only Video Studio in the Dev Tools menu, sitting directly after
+Visual Settings. Fly or walk the model, stamp waypoints as you go, and render
+the interpolated camera path out as an MP4. Waypoints can be dragged in the
+viewport, re-aimed, and given their own lens. Doors open as the camera passes
+through them. Everything is stored per project under a new VideoStudio__Config
+block and saved through the existing R2-first two-phase save.
+
+Nothing here touches the WebGL render pipeline. Encoding runs on the platform's
+H.264 hardware encoder through WebCodecs, which is the GPU path for video in a
+browser, so the exported frames carry profile lines, SSAO, fog planes and the
+cross section overlay exactly as the viewport shows them.
+
+### Added
+- **Video Studio system** (`31__System__VideoStudio`, 10 modules): data layer
+  owning the VideoStudio__Config JSON block, camera path sampler, viewport path
+  overlay, waypoint dragger, real-time preview player, deterministic frame
+  renderer, self-contained MP4 muxer, WebCodecs encoder, scene animation
+  session, and the Dev menu panel. Stylesheet @imported into
+  Na__CoreUi__Styles__Index__.css.
+- **Camera path authoring**: Create New Video Path, then Capture Keyframe (K or
+  Shift+K) records the live camera wherever you are, in Orbit, Walk or Fly.
+  Per-keyframe travel time, hold time and lens; per-video travel speed, easing,
+  closed loop and animation settings.
+- **Viewport path overlay**: fat extruded Line2 through the same centripetal
+  CatmullRom curve the exporter samples, with a start-to-end colour gradient,
+  direction cones along the route, and a numbered camera frustum marker per
+  waypoint showing where each shot aims. Toggled from the panel.
+- **Waypoint dragging**: grab a numbered marker to slide it across the
+  horizontal plane it sits on. Shift moves it vertically, Ctrl locks it to a
+  single world axis with a coloured guide line, Ctrl+Shift turns it about world
+  up to re-aim the shot. Escape cancels. Picking is screen-space rather than by
+  raycast, because the markers are non-attenuated sprites whose raycast hit area
+  would otherwise shrink with distance.
+- **Preview playback**: Play flies the live camera along the path at wall-clock
+  speed with a scrub bar. Spacebar toggles play and pause (Orbit only; Fly binds
+  Space to Ascend). Preview takes ownership of the camera the same way Walk and
+  Fly do, via a new branch in the render loop.
+- **MP4 export**: deterministic frame-by-frame render at the export resolution
+  through the live effect chain, hardware H.264 via WebCodecs, wrapped by a
+  dependency-free ISO-BMFF muxer written for the purpose. Downloads as
+  ValeVision3D__{VideoName}__{DD-Mmm-YYYY}__.mp4. Progress, cancel, and a clear
+  failure message when a machine cannot encode the requested format.
+- **Aspect ratio and resolution**: 3:2 (default), 4:3, 16:9 and 1:1, against
+  height standards of 720p through 4320p. Height and aspect are the source of
+  truth and the width is derived from them, so the pair can never drift in the
+  saved file. Because a Three.js camera's fov is the vertical field of view and
+  it is left untouched, every ratio renders the same vertical extent and simply
+  shows more or less to the sides. Nothing is stretched to fit.
+- **Safe frame and rule of thirds**, both on by default, reusing the Image
+  Export viewport overlay rather than drawing a second one. The overlay follows
+  the video's aspect and updates as it changes.
+- **Advanced Animation Settings**: collapsible sub-section holding the two door
+  controls. **Door time** is the seconds a single-leaf door takes to swing,
+  defaulting to 1.2s against the 0.6s the app authors for clicking one open by
+  hand; double and bifold doors scale proportionally. **Detection** is how close
+  the camera comes before a door starts opening, defaulting to whatever
+  DoorProximityThresholdMm the app config gives Walk and Fly, so a project that
+  never touches it follows the app.
+- **Door animation speed scale** (`Na__DoorAnimation__SetSpeedScale`): scales
+  the animation clock rather than any individual duration, so every door slows
+  together and a bifold keeps its three-to-one relationship with a single leaf.
+  A requested swing time converts to a scale against
+  `Na__DoorAnimation__GetBaseDurationMs`, the live config value, rather than the
+  shipped 600ms, so changing the config carries through. Video Studio sets both
+  the scale and the detection threshold for the length of a preview or export
+  and restores both afterwards; interactive Walk and Fly are unaffected.
+
+### Changed
+- `Na__AppFlow__LoadingSequence.js`: render loop gained a Video Studio preview
+  branch ahead of the Walk and Fly branches, so the timeline owns the camera
+  while a preview runs and OrbitControls never overwrites the sampled
+  orientation with its own lookAt.
+- **Loading overlay extracted to `Na__AppUtils__LoadingOverlay__.js`**. It was a
+  private sub-function inside the image export controls; image export and Video
+  Studio now share one implementation. A video export runs behind it in a new
+  opaque mode, because the export resizes the live renderer and paints hundreds
+  of frames through a canvas whose CSS box is still viewport-sized, and the
+  default 92% white let that flicker through. The canvas is hidden outright for
+  the duration as well, and each step is reported under the spinner: preparing,
+  starting the encoder, frame N of M with encoded size and a measured estimate
+  of the time left, draining the encoder, writing the container.
+- Video Studio panel caps its own width. The Dev Tools shell is drag-resizable
+  to 640px inside a transform: scale(1.2), so a wide drag was making the panel
+  enormous on screen; it now stays a tidy column however wide the shell is
+  dragged, with the internal control metrics tightened to suit.
+- `Na__UiFeature__ImageExport__ViewportOverlays.js`: new
+  Na__UiFeature__SetViewportOverlayThirds so the safe frame can be shown with
+  the grid as a separate toggle. The modifier is cleared on every overlay
+  update, so a caller that hides the grid cannot leave it hidden for the next
+  one. Still export behaviour is unchanged.
+- Proximity doors are owned by the Walk and Fly controllers and their enabled
+  flag starts false, so a video rendered from Orbit left every door shut. A
+  reference-counted animation session now switches them on for the length of a
+  preview or export, reusing the same DoorProximityThresholdMm those modes use,
+  and guarantees they go off again afterwards.
+
+### Notes
+- MP4 export needs WebCodecs, so Chrome or Edge. Authoring and preview work
+  everywhere; the Export button disables itself with an explanation elsewhere.
+- Lens conversion reads cameraLens.sensorHeightMM from Na__AppConfig__Main.json
+  rather than carrying its own copy, so the focal lengths shown in Video Studio
+  and in the Tools menu lens slider can never disagree for one camera. Note that
+  Walk and Fly force camera.fov to their own HorizontalFovDeg, so a keyframe
+  captured while flying records that lens rather than the Orbit one; the
+  per-keyframe lens control is how you correct it after the fact.
+- Above 4K the composer's render targets get large and not every machine has an
+  H.264 encoder that goes beyond 4K. The export confirmation says so.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.9 - 30-Jul-2026 - Alt+Shift+F Fog + Forcefield Toggle
+
+### Overview
+Alt+Shift+F now toggles the Fog Plane visual fog and the camera forcefield
+barrier together as one master switch. Turning fog off also disables the
+camera constraint; turning it on re-enables the barrier only when plane(s)
+are active. The Dev Tools “Enable Fog” checkbox shares the same coupled
+behaviour. Hotkey registered in Na__ValeVision__HotkeysDictionary__.json
+and wired through the global HotkeyHandler (help panel lists it automatically).
+ValeVision Gallery PWA_SW_VERSION_TOKEN bumped to 2026-07-30-1 so shell cache
+picks up the SystemLogic coupling change.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.8 - 28-Jul-2026 - Nav Toolbar Idle Fade
+
+### Overview
+The bottom navigation toolbar (Orbit / Walk / Fly / Reset View / Help) now
+idles at 50% opacity and wakes with the exact same pure-CSS hover/focus
+response as the Tools & Settings menu — instant reaction both in and out,
+0.3s fade, no JS timer lag. Idle menus also shed their drop shadows:
+box-shadow fades in and out with the opacity as one 0.3s animation across
+the toolbar, Tools & Settings, and breadcrumb. The only scripted piece is
+a 1s wake flash in Na__UiFeature__NavigationToolbar__Controls.js for
+hotkey-driven mode changes (which CSS hover cannot see) so the moved
+highlight still registers; boot stays faded with no opaque flash.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.7 - 28-Jul-2026 - Menu Style and Small-Screen Usability Pass
+
+### Overview
+Single consolidated styling pass over the floating menus: breadcrumb trail
+spacing opened up (14px around separators) with a horizontal scroll clamp on
+narrow screens; Tools & Settings dropdown and controls help panel now clamp
+to the viewport and scroll instead of cutting off on small screens; closed
+menus (Tools & Settings, breadcrumb) idle at 50% opacity to reduce visual
+distraction, restoring to fully opaque on hover, focus, or while open. The
+localhost dev Tools menu moved below the breadcrumb row so the two no
+longer overlap top-left. Dropdown cards restyled to match the breadcrumb
+card (12px radius, soft border, 0 4px 16px shadow); the scroll clamp moved
+from the menu container onto the card itself so the drop shadow is never
+clipped by the scrolling container.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.6 - 28-Jul-2026 - ValeVision Gallery Breadcrumb Menu + Alt+Backspace Back
+
+### Overview
+New top-left breadcrumb menu linking back to ValeVision Gallery, plus an
+Alt+Backspace shortcut for browser-style back navigation (the orbit arrow
+key capture in v2.12.5 swallowed Alt+Left, which was the old route back;
+Ctrl cannot be used as a movement modifier because browsers reserve
+Ctrl+W and it would close the app while nudging forward with W).
+
+### Added
+- **Breadcrumb navigation menu** (`64__Feature__BreadcrumbNav`): collapsed
+  chevron card fixed top-left, below the header. Clicking unfolds
+  "Project Gallery / <Name> - <Code> / Model View"; the trail stays open
+  until toggled again. Gallery crumb links to the ValeVision Gallery gallery,
+  the project crumb deep-links to that project's page (app.html?id=<code>).
+  Localhost routes via the Flask root, production via the sibling
+  ../ValeVisionGallery/ path. Shown only when the app booted with ?project=;
+  labels seed from the URL param instantly and refine from the memoised
+  project.json fetch. Markup in index.html, styles @imported into
+  Na__CoreUi__Styles__Index__.css.
+- **Alt+Backspace back navigation** (hotkey dictionary +
+  `ValeVision__App__NavigateBack` callback): window.history.back(),
+  replacing the lost Alt+Left route back to ValeVisionGallery. Auto-listed
+  in the help panel's Keyboard Shortcuts section via the dictionary.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.5 - 28-Jul-2026 - Orbit Keyboard Nudges + Device-Aware Help Panel
+
+### Overview
+Orbit mode WASD / arrow key movement now works without holding the left
+mouse button. The invalidation-based render loop only ticked during pointer
+interaction, so held keys did nothing until a drag was in progress (the
+accidental "hold left click to enable the keys" behaviour). Held movement
+keys now register an 'orbit-keys' active-render reason so the loop keeps
+ticking on its own. New Shift / Alt modifiers refine the movement, and the
+navigation help panel instructions are now split per input device.
+
+### Added
+- **Movement modifiers** (`Na__DefaultNavmode__MouseControls.js`): Alt
+  scales steps to 20% for extra-fine nudges; Shift dollies the rig (camera
+  and orbit target translate together so the framing direction holds
+  instead of re-aiming at the orbit pivot).
+- **Help panel device sub-dropdowns** (index.html,
+  `Na__UiFeature__NavigationHelpPanel__Controls.js`, navigation toolbar
+  CSS): Orbit / Walk / Fly sections split into "PC Controls (Mouse &
+  Keyboard)" and "Touchscreen Controls (iPad & Tablet)" collapsibles; the
+  one matching `Na__Device__UseTouchControls` unfolds on load. Touch users
+  now get real walk / fly gesture rows (1-finger move, 2-finger look,
+  pinch) instead of keyboard-only text.
+
+### Fixed
+- **`Na__DefaultNavmode__MouseControls.js`** - WASD / arrows / Q-E request
+  the 'orbit-keys' active-render reason on keydown and release it when the
+  last key lifts, so keyboard movement no longer depends on a mouse drag
+  keeping the render loop awake. Keys are ignored while typing in inputs;
+  arrows preventDefault (also blocks Alt+arrow browser history); window
+  blur releases all held keys so the loop can never stay pinned.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.4 - 16-Jul-2026 - PureEngine MAT000E__ Texture Brightness Match
+
+### Overview
+`MAT000E__` exempt textures (e.g. `MAT000E__CorbelLeafFake`) embedded in
+Whitecard GLBs were loading correctly but read dark grey under PureEngine —
+same scene lights as whitecard, but grey albedo + `emissiveIntensity: 0`.
+PureEngine now lifts those slots toward whitecard luminance via a config-
+driven emissive pass (MaxEngine unchanged).
+
+### Added
+- **`Na__MaterialsSystem__ApplyExemptTextureBrightness`** — clones `MAT000E__`
+  materials, white base colour, map→emissiveMap, intensity from AppConfig.
+- **`Na__MaterialsSystem__IsExemptName`** — `/^MAT000E__/` helper.
+- AppConfig `models.baseMesh.material.exemptTextureEmissiveIntensity` (0.4)
+  and `exemptTextureEmissiveColor` (white). Set intensity to `0` to disable.
+
+### Changed
+- PureEngine materials path runs brightness match after whitecard-indexed pass.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.3 - 15-Jul-2026 - Capture Styles On Save Scene / Save All
+
+### Overview
+Per-scene cross section style capture was wired correctly, but Save Scene /
+Save All did not call capture — only Update Camera / Add Scene did. Saving
+after changing Advanced Section Style therefore re-wrote the stale
+`CrossSection__SceneData` block to R2 with no FillColor/LineColor fields,
+so web loads kept the project default light-grey fill.
+
+### Fixed
+- **`Na__PresentationMode__DevMenu__SceneEditor.js`** — when the Capture
+  Cross Sections toggle is ON, Save Scene captures that row's scene and
+  Save All captures the active carousel scene (geometry + style) before
+  the R2-first save.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.2 - 15-Jul-2026 - Per-Scene Cross Section Style Capture
+
+### Overview
+Localhost Presentation Mode scene setup can now capture section fill colour,
+line colour, and line width alongside geometry. Styles persist into
+`CrossSection__SceneData` via the existing R2-first save, and restore on
+web (and localhost) when that animation scene activates — so a red cut set
+on localhost plays back red for anyone opening the project online.
+
+### Changed
+- **`Na__CrossSectionView__SystemLogic.js`** — `SerializeSections` includes
+  `fillColor` / `lineColor` / `lineWidthPx`; `ApplySerializedSections`
+  applies them when present (omitted = leave current appearance).
+- **`Na__CrossSectionView__SceneData.js`** — capture writes
+  `CrossSection__SceneBinding__FillColor` / `LineColor` / `LineWidthPx`;
+  restore maps them into the applied snapshot. Older bindings without
+  these fields remain backward-compatible.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.1 - 15-Jul-2026 - Fix: Unbound Scenes Now Clear Cross Sections
+
+### Overview
+Fixed a bug in the per-scene cross section restore added in v2.11.0/v2.12.0:
+cycling the Presentation Mode carousel to a scene with no SketchUp or
+ValeVision section binding left the PREVIOUS scene's cut active instead of
+clearing it. Restore priority is unchanged (SketchUp-native section wins,
+then the ValeVision per-scene binding); only the "neither" case changed —
+it now clears every live section instead of leaving them untouched.
+
+### Fixed
+- **`Na__CrossSectionView__SceneData.js`** — `Na__SectSceneData__RestoreForScene`
+  now calls a new `Na__SectSceneData__ClearSections()` helper (applies an
+  empty snapshot) whenever a scene has neither a SketchUp map entry nor a
+  `CrossSection__SceneData` binding, instead of returning early and leaving
+  the live sections untouched.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.0 - 15-Jul-2026 - SketchUp-Native Section Planes Auto-Port Per Scene
+
+### Overview
+SketchUp section planes now port automatically into ValeVision. The cloud
+sync plugin (v0.4.0) captures each IMG## scene's active section plane(s)
+into the existing `ValeVison3D__SketchUpCameraData` block (`section_planes`
+per scene, Z-up mm). On load, ValeVision converts them (standard
+`Three = (x, z, -y)` axis swap; position-along-normal is rotation-invariant;
+SketchUp keeps the normal side — same as three.js clipping, so no sign
+flip), builds a read-only scene-name → snapshot map, and AUTO-ENABLES the
+cross section feature when any exist. When a scene activates, priority is:
+SketchUp-native section (wins) → ValeVision per-scene binding → untouched.
+Ported cuts get the full treatment: boolean cap fills, clean outer profile
+lines, live dragging, and image-export rendering. The map is never
+persisted by ValeVision — the plugin re-captures on every sync, and the
+ValeVision-owned `CrossSection__SceneData` block stays untouched.
+
+### Changed
+- **`Na__CrossSectionView__SceneData.js`** — SketchUp map builder (axis swap,
+  PLAN/UPRIGHT mode derivation, plugin plane → snapshot), priority restore,
+  feature auto-enable on import.
+- **`Na__AppFlow__LoadingSequence.js`** — dispatches
+  `na-crosssection-sketchup-sections-loaded` when project.json carries
+  `ValeVison3D__SketchUpCameraData`.
+
+### Notes
+- SketchUp sections have no slice depth → ported cuts are infinite
+  (SketchUp-style) half-space cuts.
+- Nested (group/component) section planes are skipped by the plugin in v1.
+- Scenes whose "Active Section Planes" property is unticked in SketchUp emit
+  nothing — ValeVision bindings still apply for those scenes.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.11.0 - 15-Jul-2026 - Per-Scene Cross Section Bindings + Image Export Support
+
+### Overview
+Two additions to the cross section tool. (1) Section states can now be saved
+against individual Presentation Mode animation scenes and are restored live
+when a scene is applied (carousel click, prev/next, boot default). The data
+lives in a NEW separate top-level project.json object (`CrossSection__SceneData`)
+keyed by scene NAME — SketchUp scene names are stable across cloud re-syncs,
+and the SketchUp cloud sync plugin never writes this key, so a full re-sync
+of scenes leaves saved sections intact. (2) Cross sections (cap fills +
+profile outlines) now render in tiled image exports; gizmo plane widgets are
+always excluded from exports.
+
+### Per-Scene Bindings (Task 1)
+- **`Na__CrossSectionView__SceneData.js` (new, `41__System__CrossSectionView`)**
+  — owns the `CrossSection__SceneData` block; capture toggle state; restore
+  listener. Restore rule: scenes WITH a saved entry apply it exactly (an
+  entry captured with zero sections clears every cut); scenes WITHOUT an
+  entry leave the live sections untouched. Restore is gated on the feature
+  being enabled for the project. Falls back to scene-id lookup for entries
+  captured before a scene was renamed.
+- **Scene editor toggle** — "Capture Cross Sections On Scene Update" in the
+  Presentation Mode Scenes dev panel (localhost), default OFF every session.
+  While ON, "Update Camera" and "+ Add Scene From Camera" capture the live
+  section state (positions mm, normals, slice depth, enabled/gizmo flags,
+  global gizmo visibility) against that scene; the editor's existing R2-first
+  save persists the block. Save never writes the key when nothing was
+  loaded/captured, and preserves other scenes' entries verbatim.
+- **`na-pm-scene-activated` event** — dispatched by
+  `Na__PresentationMode__Camera__SceneTransition.js` from both the instant
+  snap and the animated transition (at the same point model-layer visibility
+  applies; instant cut). SceneData listens; no cross-module import needed.
+- **SystemLogic** — new `Na__CrossSection__SerializeSections()` /
+  `Na__CrossSection__ApplySerializedSections()` (exact-swap rebuild via the
+  face-hit creation path; restores names, per-section enabled + gizmo flags,
+  global slice depth and gizmo visibility).
+- **Loading sequence** — dispatches `na-crosssection-scenedata-loaded` when
+  project.json contains the block.
+- SketchUp plugin capture of native section planes deliberately postponed;
+  nothing in the plugin was touched.
+
+### Image Export Support (Task 2)
+- **TiledRenderer** — after each tile's `composer.render()`, the section
+  overlay (registered via `Na__RenderEffect__SectionClipping__State`) draws
+  caps + outlines onto the tile with the tile's sub-frustum camera, so
+  exports match the viewport in both engines and in 2D elevation exports.
+- **Export mode** — `Na__CrossSection__SetExportMode(active, lineScale)`
+  (registered as a handler in the same 05 state module, so ImageExport only
+  imports from 05__RenderPipeline): gizmo widgets ALWAYS hidden in exports;
+  outline fat-line widths get the standard linework compensation
+  (outputH / tile framebuffer height) and restore on completion.
+
+### Files Changed
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js` (new)
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.3 - 14-Jul-2026 - Cross Section Per-Section On/Off Toggle
+
+### Overview
+Added an eye-icon toggle to each row in the Active Sections list, letting a
+section's cutting effect be switched off independently of its gizmo
+visibility (Show/Hide) — the plane stays in place, just stops clipping the
+model, and can be switched back on at any time.
+
+### Added
+- `Na__CrossSectionView__SystemLogic.js` — `section.enabled` state;
+  `Na__CrossSection__SetSectionEnabled()`; `Na__Sect__SyncActivePlanes()` and
+  `Na__Sect__RebuildSectionClipArrays()` now skip disabled sections' planes
+  entirely (model + other sections' caps); `Na__Sect__RecomputeSectionCaps()`
+  no-ops while a section is off so drag/flip cannot silently re-reveal its cap.
+- `Na__UiFeature__CrossSectionView__Controls.js` — 👁 / 🚫 row button, dims
+  the whole row while a section is off.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.2 - 14-Jul-2026 - Cross Section Overlay Composite Fix
+
+### Overview
+Fixed two Cross Section regressions: the keep-side was being derived from the
+camera position (cut direction changed while orbiting) and the post-composer
+overlay pass was re-rendering the whole main scene, which wiped the clipped
+model out of the colour buffer so only the cap fill/gizmo were visible.
+
+### Fixed
+- `Na__CrossSectionView__SystemLogic.js` — `Na__Sect__ProcessFaceSelection`
+  reverted to derive the keep side from the clicked face's own normal only
+  (Upright: XZ-projected face normal, negated so exterior clicks cut inward;
+  Plan: fixed `(0,-1,0)`). Orbiting the camera no longer changes the cut.
+- Caps / outlines / gizmos now live in a dedicated `Na__Sect__OverlayScene`
+  (a separate `THREE.Scene`, never added to the main model scene) instead of
+  being tagged onto camera render layer 2. `Na__Sect__RenderOverlay` renders
+  that scene directly onto the already-composited colour buffer (`autoClear`
+  off, `clearDepth()` only) with no `camera.layers` mutation — the clipped
+  model from the composer pass now stays visible underneath the section fill.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.1 - 14-Jul-2026 - Cross Section Face-Click + Slice Depth
+
+### Overview
+Cross Section UX update: placement now matches Elevation View (click a face),
+with an Upright/Plan mode toggle replacing the Plan/X/Z spawn buttons. Optional
+slice depth (metres) adds a second parallel clip plane for SketchUp-style
+section depth; blank/0 keeps the default infinite half-space cut.
+
+### Changed
+- `Na__CrossSectionView__SystemLogic.js` — face-pick placement, slice back-plane,
+  Upright/Plan modes; drag/flip keep depth locked.
+- `Na__UiFeature__CrossSectionView__Controls.js` + `index.html` — new panel UI.
+- `Na__UiFeature__Styles__DropdownAndToast__.css` — crosshair while selecting.
+- `Na__CrossSectionView__Config.json` — `CrossSectionView__Slice__Config`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.0 - 14-Jul-2026 - SketchUp-Style Live Cross Section Tool
+
+### Overview
+New per-project Cross Section system (`41__System__CrossSectionView`) delivering
+SketchUp-style live section cuts with two key visual upgrades over SketchUp:
+cut-through areas are filled with REAL triangulated cap geometry (boolean-style
+solid "islands", default RGB 240,240,240) and the profile is drawn ONLY around
+the outer loops of each island with fat lines (default RGB 50,50,50) — all
+interior clutter lines are removed. Multiple simultaneous draggable section
+planes are supported and compose like SketchUp (each cap is clipped by every
+other active plane). The feature is gated per project: a Dev Tools section
+enables/disables it live and saves `CrossSection__Config` to project.json via
+the R2-first two-phase save; when enabled a "Cross Sections" dropdown appears
+in the Tools menu directly after Elevation View.
+
+### Technique
+- Cutting: per-material THREE clipping planes (`renderer.localClippingEnabled`)
+  on every model material (meshes + linework fat lines), with `clipShadows` so
+  shadows follow the cut. Zero per-frame cost; drag updates mutate the shared
+  plane array in place.
+- Cap fills + profiles: CPU mesh/plane contour extraction (signed distances
+  evaluated in each mesh's local space; only crossing triangles transformed),
+  ORIENTED segments so coincident contact faces between touching solids cancel
+  (this is what removes interior lines), endpoint weld + loop chaining, even-odd
+  nesting classification (holes preserved), earcut triangulation via
+  THREE.ShapeUtils, LineSegments2 fat-line outlines. Live drag recomputes on a
+  90 ms throttle plus a final exact pass on release. Measured ~7 ms per full
+  recompute on the default model.
+- Engine safety: profile-lines normal/colour override passes read the plane
+  list from a new shared state module (`Na__RenderEffect__SectionClipping__State`)
+  in BOTH PureEngine and MaxEngine plus the 2D elevation pass; materials are
+  re-applied after `na-render-engine-changed` material swaps.
+
+### Added
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__Config.json`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__CapGeometry.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__PlaneGizmo.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js`
+- Tools menu "Cross Sections" section (insert Plan/X/Z planes, per-section
+  Flip / Hide / Delete rows, Show Section Planes toggle, Advanced style panel:
+  fill colour, profile line colour + thickness, reset).
+- Dev Tools "Cross Section Tool" section (enable live + save to project.json).
+
+### Changed
+- `Na__RenderEffect__ProfileLines__.js` + `Na__RenderEffect__2dProfileLines__.js`
+  — override materials now carry the active section clipping planes.
+- `Na__AppFlow__LoadingSequence.js` — dispatches `na-crosssection-config-loaded`
+  when project.json contains `CrossSection__Config`.
+- `index.html` — menu markup, module imports, init wiring.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.14 - 10-Jul-2026 - SketchUp Scene Framing vs OrbitHelperCube Pivot Split
+
+### Overview
+The v2.9.10 single/zero-scene orbit fix (and its follow-ups) resolved the orbit
+PIVOT for lone-scene projects, but multi-scene SketchUp carousels then framed the
+wrong thing on initialisation and on scene clicks: instead of showing each shot
+exactly as it was set up in SketchUp, the camera pointed AT the OrbitHelperCube.
+Confirmed on the Bia project (`2026/63853__Bia`), a 6-shot animation carousel — the
+first card in particular loaded aimed at the cube, and cycling through a couple of
+scenes was needed before the view "settled". Other cards only looked correct by
+coincidence, where that shot's look-at point happened to sit near the cube.
+
+Root cause: `OrbitControls.update()` runs `camera.lookAt(controls.target)` on EVERY
+frame — `controls.target` is not merely the orbit pivot, it is also the point the
+camera is forced to look at. The earlier fixes left `controls.target` on the cube at
+rest, so `update()` re-aimed the camera at the cube each frame and discarded the
+SketchUp look direction. A single OrbitControls target cannot be both the resting
+look-at point and a different orbit pivot, so the two concepts had to be split in
+time rather than collapsed onto one value.
+
+### Fixed
+- The resting view now ALWAYS frames the scene's own `camera.target` (the exact
+  SketchUp shot). The OrbitHelperCube is applied as the orbit PIVOT only, and only
+  on the first rotation after a scene is framed — "the cube kicks in" exactly as
+  intended: SketchUp framing at rest, cube-centred orbit once you start to rotate.
+- Applies uniformly at boot, on carousel card clicks, and on prev/next navigation.
+  Previously only the boot path had been (partially, incorrectly) handled, so
+  clicking the first card reproduced the bug.
+
+### Added
+- **`Na__Navmode__OrbitPivot__InteractionSwap.js` (new, `10__NavigationAndCameras`)**
+  — holds the resolved cube / saved orbit pivot and, on the first genuine rotation
+  after a scene is framed, swaps `controls.target` from the scene's look-at point to
+  the cube. Gated on a real `'change'` during an active `'start'`→`'end'` gesture, so
+  a bare click never re-frames the view. Public API: `Init`, `SetPivot`, `Arm`,
+  `Disarm`, `HasPivot`.
+- **`Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget(config)`** (new
+  export, `Na__PresentationMode__ProjectJson__SceneData.js`) — true only for
+  deliberately human-authored scene configs (Source ≠ `SketchUpCameraData`); those
+  keep their placed orbit target as the pivot and do NOT arm the cube swap.
+
+### Changed
+- **`Na__AppFlow__LoadingSequence.js`** — boot now registers the pivot swap
+  (`Init` + `SetPivot` with the resolved cube/saved target), frames the launch scene
+  to its own `camera.target` unconditionally, then `Arm`s the swap for
+  SketchUp-derived scenes (`Disarm`s for explicit authored scenes).
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — card click / prev / next /
+  default-scene apply now frame the scene to its own target and re-arm the swap on
+  transition completion.
+- **`Na__PresentationMode__Camera__SceneTransition.js`** — `AnimateToScene` always
+  animates to the scene's own orbit target again (a short-lived `applyOrbitTarget`
+  flag that suppressed it — and thus mis-framed the shot — was reverted).
+- **`Na__SketchUp__AnimationScene__DataBridge__.js`** — `ShouldUseSceneOrbitTarget`
+  now returns true only for explicit authored scenes (dropped the ">=2 SketchUp
+  scenes" heuristic); it gates whether the launch scene's own target stays the pivot
+  or the cube swap arms.
+
+### Files Changed
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js` (new)
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js`
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.13 - 10-Jul-2026 - Glass Darkening Compounding Fix + Unified Dark Mirror Glass
+
+### Overview
+Max Mode door glass and window glass were rendering with visibly different
+tones despite sharing the byte-identical `MAT101__Glass__ClearDefault`
+material out of the GLB exporter (confirmed by direct comparison of the
+exported Doors/Windows GLBs — geometry and material JSON were exonerated).
+Root cause: `Na__MaterialsSystem__ApplyGlassEnvironmentOverrides` darkened
+glass with `material.color.multiplyScalar(brightnessMultiplier)` once per
+**mesh node** rather than once per **material instance**. The Windows GLB
+merges all glazing into a single mesh (darkened once, as intended), but the
+Doors GLB exports one mesh per door leaf, all sharing one cached material
+instance from `Na__MaterialsSystem__ApplyMaterials` — so the same instance
+was darkened 6 times in a row (0.25^6 ≈ ×0.00024), collapsing door glass to
+near-black and making it read as almost fully clear/undimmed next to the
+correctly-darkened (×0.25) window glass.
+
+### Fixed
+- **`Na__MaterialsSystem__MaterialSwap.js`** — `Na__MaterialsSystem__ApplyGlassEnvironmentOverrides`
+  and the sibling `Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides` now
+  track already-processed materials in a `Set` and skip repeat hits, so a
+  shared material instance is only darkened once no matter how many mesh
+  nodes reference it. The mirror function had the identical latent bug,
+  previously inert only because `MirrorBrightnessBoost` is `1.0`.
+
+### Changed
+- **`Na__AppConfig__Main.json`** — with the compounding bug fixed, the old
+  single-multiply `GlassBrightnessMultiplier: 0.25` read as too flat/matte
+  compared to the near-black, reflection-dominated look the (buggy) 6x
+  compounding had been producing on doors — which was the preferred look.
+  Rather than keep that as an accidental side-effect, `GlassBrightnessMultiplier`
+  is now explicitly set to `0.000244140625` (`0.25^6`) so every glass mesh
+  gets that same near-black diffuse tone uniformly: with almost no diffuse
+  colour left, the glossy env-map reflection (`RoughnessOverride: 0.03`,
+  `GlassEnvMapIntensity: 1.0`) dominates, giving the "dark mirror glass"
+  appearance across doors and windows alike.
+
+### Files Changed
+- `02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.12 - 10-Jul-2026 - Multi-Panel Doors and Independent Exterior Double Leaves
+
+### Overview
+Backported the current TrueVision multi-panel door runtime into ValeVision
+without replacing ValeVision's loader, namespaces, bootstrap, category discovery,
+or Walk/Fly proximity thresholds. Added the config-gated independent
+ExteriorDoubleDoor behavior after restoring full legacy product parity.
+
+### Added
+- `ROT_ONLY`, `ROT_MVE`, `MVE_ONLY`, and `FIXED` MOD classification and
+  all-panel descriptors.
+- Deterministic rotating-MOD to ROT-sibling pairing, signed degree/MVE parsing,
+  mirrored-instance sign correction, config-gated interior sign inversion, and
+  bifold-specific duration scaling.
+- Explicit `ExteriorDoubleDoor` independent coupling, MOD-level hit resolution,
+  per-leaf state/timing/easing/reversal, and coupled-pair Walk/Fly proximity
+  when neither leaf is FIXED. Orbit clicks remain independent.
+- `Na__DoorAnimation__RebindModelGroups` for the prototype Refresh Models flow.
+- Production and sandbox config keys for multi-panel, bifold, interior sign,
+  independent-panel enablement, and ADR token allow-list.
+- ValeVision-specific documentation and a legacy/bifold/sliding/exterior-double
+  test matrix.
+
+### Compatibility
+- Interior Double Doors, bifolds, sliding doors, and unknown ADRs remain
+  whole-door lockstep. Two `ROT_ONLY` panels never imply independence.
+- ValeVision production Walk/Fly door thresholds remain 6500 mm.
+- Existing token-based model-category discovery and app loading sequence are
+  unchanged.
+
+### Files Changed
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json`
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__README__.md`
+- `ValeVision__README__.md`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.11 - 09-Jul-2026 - WYSIWYG Line Widths in Exports (Resolution Compensation)
+
+### Overview
+Exports now render line weights that match the live viewport exactly. The distance-based dynamic profile width was already applied per export tile (same camera distance = same computed width), but all line widths are expressed in PIXELS — and an export pixel is 2.5-4x smaller relative to the image than a viewport pixel, so 4K/8K exports came out relatively thinner. Worse, profile lines and fat linework thinned by DIFFERENT ratios (profile widths resolve against the true tile resolution; LineMaterial widths resolve against each material's load-time resolution uniform), shifting the weight balance between the two line systems and making exports feel inconsistent with the realtime view.
+
+### Changed
+- **`Na__RenderEffect__LineworkSettings__State.js`** — new export compensation scales (`Na__LineworkSettings__SetExportScales(profileScale, lineworkScale)` + `GetProfileExportScale`), both defaulting to 1.0 outside exports. Linework width application refactored into a single shared applier so the user slider factor and the export scale always compose off the stashed base width and never compound.
+- **`Na__RenderEffect__ProfileLines__.js`** — per-frame `u_edgeWidth` now multiplies the profile export scale on top of the user factor; live viewport is untouched (scale is 1.0 there). The dynamic near/far distance lerp behaves identically at any export size.
+- **`Na__ImageExport__StaticExport__TiledRenderer.js`** — computes both scales at export start (profile: `outputH / physical viewport height`; linework: `outputH / tile framebuffer height` — the LineMaterial load-time resolution uniform is identical in live and tile renders, so it cancels exactly, even after window resizes). Applies them for the duration of the export and resets in the existing `finally`. Elevation (2D ortho) exports snapshot-scale `u_edgeWidth` directly since the 2D profile renderer never recomputes it. Silly Lines amplitude + wavelength px are scaled by the same factor so waves keep their relative size at 8K.
+- The Advanced Linework Settings sliders act on top of the compensation as deliberate overrides: 1.00x now means "exactly what the viewport shows" at every export resolution.
+
+### Files Changed
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js`
+
+### Cross-reference
+- **ValeVision Gallery** — shared PWA SW cache token bumped to `2026-07-09-1`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.10 - 09-Jul-2026 - Single/Zero-Scene Orbit Pivot Fix
+
+### Overview
+Projects synced with only one `IMG##` SketchUp scene (no Presentation Mode carousel) were orbiting around that scene's `camera.target` look-at point instead of the `OrbitHelperCube` — the cube GLB loaded and its bounding-box centre resolved correctly, but the boot-camera apply then silently overwrote `controls.target` with the single scene's SketchUp target. Confirmed on the Ingle project (`2026/63918__Ingle`): the cube is present in `valeVision_ModelUrls` and the Scene Inspector, but its resolved centre was discarded the moment the single-scene boot camera applied.
+
+### Fixed
+- **`Na__AppFlow__LoadingSequence.js`** — boot camera apply now only lets the launch scene's `camera.target` own `controls.target` when Presentation Mode is actually carousel-eligible (two or more SketchUp scenes, or explicit `PresentationMode__SavedCameraScenes`). Single (or zero) -scene SketchUp projects keep whichever orbit target was already resolved (saved `OrbitHelperCube__Position`, else the `OrbitHelperCube` GLB centre, else the existing fallback) — camera position/rotation/FOV still snap to the scene exactly as before.
+
+### Added
+- **`Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(projectData)`** (new export, `Na__SketchUp__AnimationScene__DataBridge__.js`) — mirrors the `ConvertBlock` carousel gate (`>=2` scenes) plus the explicit-scenes check, so the "is this scene target trustworthy as an orbit pivot" rule lives in one place.
+- **`Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene, options)`** — new optional `options.applyOrbitTarget` flag (default `true`, every existing caller unaffected). When `false`, camera position/rotation/FOV still snap but `controls.target` is left untouched; `controls.update()` still runs to resync internal state against the new camera position.
+
+### Cross-reference
+- No ValeVision Cloud Sync or ValeVision Gallery Python pipeline changes — Cloud Sync still only ever exports `camera.target` inside per-scene data, never a root `OrbitHelperCube__Position`. This fix keeps orbit authority entirely inside ValeVision3D's load sequence, where the cube's GLB centre is already resolved.
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.9 - 08-Jul-2026 - Tiled Static Export Renderer (4K Fixed, 8K Added) + Advanced Linework Settings
+
+### Overview
+Complete rebuild of the custom-resolution image export path. The old implementation resized the LIVE renderer + composer to the full export resolution — at 4K (30MP) the PureEngine 4x-MSAA HalfFloat ping-pong buffers demanded 3GB+ of GPU framebuffer memory, losing the WebGL context and silently delivering a blank PNG (worse on iPad). Exports now render as a grid of viewport-sized tiles through the SAME live composer (identical quality, realtime engine untouched), so GPU memory stays flat at any output size. 8K added to the resolution slider; default remains 4K. New "Advanced Linework Settings" dropdown (Linework Thickness / Profile Line Thickness / Silly Lines) gives session-scoped runtime control over line weights in both the viewport and exports.
+
+### Added
+- **`Na__ImageExport__StaticExport__TiledRenderer.js` (new)** — dedicated static export renderer. Tiles via `camera.setViewOffset` sub-frusta with a 32px gutter cropped on composite (no FXAA/profile-line/SSAO seams); vertical perspective correction re-applied per tile (shear maths are exact on sub-projections); MaxEngine depth pre-pass + SSAO uniforms refreshed per tile; per-platform 2D canvas limits enforced up front (iOS ~16.7MP area cap) with proportional clamping + a 1px paint probe so oversized canvases fail loudly instead of encoding an empty PNG; WebGL context loss detected between tiles and surfaced as a real error; every mutated renderer/composer/camera state restored in `finally`.
+- **`Na__ImageExport__AsyncYield__.js` (new)** — hidden-tab-safe yield helpers. rAF-based yields deadlock exports if the tab is backgrounded mid-render; these race double-rAF (paint when visible) against a MessageChannel macrotask (not timer-throttled when hidden), so long 8K exports survive the user switching tabs/apps.
+- **`Na__RenderEffect__LineworkSettings__State.js` (new)** — session-scoped runtime state (no persistence by design; every session boots at 1.00x / Straight). Linework factor multiplies `LineMaterial.linewidth` on fat lines inside `userData.Na__ModelType === 'linework'` roots (grid lines excluded; base widths stashed on `material.userData` so factors never compound). Profile factor is read per-frame by the profile lines effect. Silly Lines amplitude pushes sine-wave uniforms to the profile lines pass; re-applied automatically on `na-render-engine-changed`.
+- **`Na__UiFeature__LineworkSettings__Controls.js` (new)** — wires the "Advanced Linework Settings" `<details>` dropdown (closed by default) under the export Resolution slider: Linework Thickness + Profile Line Thickness (0.50x / 0.75x / 1.00x / 1.25x / 1.50x / 2.00x / 3.00x snap stops, default 1.00x) and Silly Lines (Straight → Absurd named stops mapping to 0-9px sine amplitude).
+- **8K resolution stop** — `ImageExport__Config__Resolutions` now `[1024, 2048, 4096, 8192]`; default index unchanged (4K). 8K/16:9 = 12288x8192 verified at ~30s / 24 tiles on desktop.
+
+### Fixed
+- **4K exports crashing / delivering empty PNGs** — root causes: GPU memory cliff (above), plus a composer pixel-ratio bug — `EffectComposer` captures its own `_pixelRatio` at construction and the old export only reset the renderer's ratio, silently inflating every export render target by dpr² (2.25x extra at 150% Windows scaling). The tiled renderer forces `composer.setPixelRatio(1)` during export and restores after.
+- **Fog plane banding in exports** — the planar fog pass reconstructs world positions from `uInverseProjectionMatrix` / `uCameraWorldMatrix`, synced per-frame by the live loop only. The old export changed the camera aspect (and the new one changes the sub-frustum per tile) without refreshing them, so fog planes landed in a different place per frame/tile — the white gradient bands over geometry. The tiled renderer now calls `Na__FogPlane__UpdateFogPassPerFrame` with the active camera for every tile.
+- **Silent failure modes** — export flows are now async try/catch/finally: failures show a red "Export Failed" status (new `--error` overlay class) and always unlock the button; a null `toBlob` result is an error instead of "Download Ready!" with no file; post-clamp sizes are reported in the success message.
+- **Enhance Whitecard memory spikes** — Levels and High Pass Sharpen previously allocated full-frame ImageData (3 canvases + 3 buffers ≈ 1GB+ transient at 8K, killing iPad tabs). Both now process in ~4MP horizontal strips (sharpen uses a padded strip + carry canvas so the Gaussian always reads original pixels — output pixel-identical); Levels collapsed to a 256-entry LUT; `ctx.filter` support is feature-detected. Pipeline mutates the capture canvas in place instead of cloning it (was a 100-480MB copy).
+- **Layout View at high resolutions** — the drawing-layout tab is pre-opened synchronously inside the click gesture (multi-second tiled renders would otherwise trip the popup blocker) and receives the image as a Blob instead of a 40-90MB base64 `toDataURL` string; `Na__PageLayoutSystem__SystemLogic__Main__.js` accepts `blob` (object URL, revoked after decode) with `dataUrl` fallback.
+
+### Changed
+- **`Na__UiFeature__ImageExport__Controls.js`** — custom exports delegate to the tiled renderer; viewport-native capture unchanged. Live overlay progress ("Rendering Your Image... (part 3 of 24)", "Enhancing Image... (Sharpen)", "Encoding Image...").
+- **`Na__RenderEffect__ProfileLines__.js`** — dynamic edge width multiplied by the runtime profile factor (static fallback width added for the no-orbit-target case); shader gains `u_sillyAmplitudePx` / `u_sillyWavelengthPx` / `u_sillyPxOffset` uniforms — edge sampling UV perturbed by a pixel-space sine (scene colour sampled unperturbed, only edges wobble); wave phase runs in full-image px space and the tiled renderer sets the per-tile offset so waves cross tile boundaries seamlessly.
+- **`index.html`** — Advanced Linework Settings markup in the Export Image panel; linework settings state + controls initialisation.
+
+### Cross-reference
+- **ValeVision Gallery** — shared PWA SW cache token bumped to `2026-07-08-2` so installed apps evict the stale export modules.
+
+### Files Changed
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__AsyncYield__.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__LineworkSettings__Controls.js` (new)
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Levels.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `index.html`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.8 - 02-Jul-2026 - Generate & Download Email Type Chooser
+
+### Overview
+"Generate & download email" now asks which email type to produce — **Link email (legacy)** or **App notification email** — via a small inline chooser card that appears inside the existing overlay (no new permanent buttons). Purpose: a zero-send test path for the new notification email; the download is the exact HTML the "Send app notification" button would email.
+
+### Changes
+- **`Na__Feature__EmailWorkers__FormOverlay__.js`** — new hidden `generateChooser` block (label + Link email / App notification / Cancel compact buttons) between the notes field and the actions row; `showGenerateChooser()` / `hideGenerateChooser()` exposed on the form API; `hide()` always resets the chooser so it never re-opens stale.
+- **`Na__Feature__EmailWorkers__UiInteractionLogic__.js`** — Generate button now toggles the chooser (second press dismisses). Legacy generation logic extracted unchanged into `generateAndDownloadLinkEmail`; new `generateAndDownloadNotificationEmail` mirrors it using the 63-module payload builder (same greeting-names validation, same `DownloadHtmlFile` helper, filename `ValeVision3D_AppNotification_<id>_<date>.html`). Distinct toasts per type.
+- **`Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`** — `__generate-chooser` region (navy-left-border card, `is-visible` toggle) + `__btn--compact` modifier.
+
+### Files Changed
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.7 - 02-Jul-2026 - App Notification Email System + Install Guide Page
+
+### Overview
+Second-generation email pipeline that works *with* the platform limitations on PWA link-capture instead of against them. Direct share links can never reliably open the installed app (impossible on iOS/iPadOS; opt-in per machine on Windows), so the new **"Send app notification"** email deliberately contains **no project link** — it tells recipients the project has been added to the **ValeVision 3D App** (project code + name) and steers them to open the installed app. The legacy link-share email is kept fully intact as a separate option in the same overlay.
+
+### Added
+- **`63__Feature__AppNotificationEmail/` (new module folder)** — self-contained second emailer, no imports from the legacy 61 generator so either system can be retired independently:
+  - `Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html` — landscape card (640px, logo column left / content right, stacks on phones), new `FeatureLogo__ValeVision3d__EmailLogo__NoCTA__NoBorder__1.1.0__.png` GH-Pages logo, footer link "Need Help Installing The ValeVision App?" → install guide page. Same dark-mode safety overrides as the legacy template (`vv3dn-` class prefix).
+  - `Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js` — token replacement (`__RECIPIENT_NAMES_HTML__`, `__PROJECT_META_HTML__`, `__SPECIAL_NOTES_BLOCK__`, `__INSTALL_GUIDE_URL__`), subject `ValeVision3D App | New Project Added | <Name> - <Code>`, install-guide URL **hardcoded to the production GitHub Pages URL** (same rule as the template logo: URLs inside emails must never be derived from `window.location`, otherwise localhost send sessions would mail out dead localhost links).
+  - `Na__Feature__AppNotificationEmail__PayloadBuilder__.js` — mirrors the legacy payload shape (`{ to, subject, htmlBody }`) so the existing Cloudflare Worker `/api/email/send` endpoint handles both systems with **zero server-side changes**. Reuses only `Na__Feature__ShareProjectLink__GetShareContext` for the `?project=` context.
+- **`install-guide.html` (new page, ValeVision3D root)** — beginner-friendly graphical install guide in the Vale Design Suite style. Asks "Which device do you need help with?" first (Windows 11 / iPhone & iPad / Android), then reveals only that device's numbered steps with inline SVG illustrations (address-bar install icon, Safari share sheet, Chrome menu). Loads the shared PWA head stack (manifest + SW registrar) so the page itself is installable; a one-click "Install ValeVision 3D Now" button appears automatically on Chromium via `beforeinstallprompt`. iOS section carries the honest warning that email links can never auto-open the app on Apple devices — always launch from the home-screen icon. Carries the standard ValeVision3D app header (links the shared `Na__UiFeature__Styles__AppHeader__.css` SSOT + VGH horizontal logo, "ValeVision 3D" title right) with the navy guide-title hero banner beneath, offset via `--Vale_HeaderHeight` so the ≤600px responsive header scaling cascades automatically. **Every asset, script, stylesheet and link on the page uses the absolute production GH Pages URL** (no relative paths) — this page is opened from email links in arbitrary contexts, so it must render correctly regardless of how it is reached.
+
+### Changed
+- **`Na__Feature__EmailWorkers__FormOverlay__.js`** — new `btnSendNotification` ("Send app notification", primary style) between Generate & download and Send email; actions row already flex-wraps.
+- **`Na__Feature__EmailWorkers__UiInteractionLogic__.js`** — wires the new button: same auth flow (`EnsureAuthorized`), same API client, new payload builder. Legacy Send email handler untouched by design.
+
+### Cross-reference
+- **ValeVision Gallery v0.6.10** — PWA manifest gains `"handle_links": "preferred"` (Edge auto-routes in-scope links into the installed app at install time) and an explicit `"id": "/"` (identity pin, resolves identically to the previous relative id so existing installs are NOT orphaned). SW cache token bumped to `2026-07-02-1`.
+
+### Files Changed
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html` (new)
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js` (new)
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js` (new)
+- `install-guide.html` (new)
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.6 - 01-Jul-2026 - Per-Scene Tag-Driven Model Toggles
+
+### Overview
+The four "Model Parts List" toggles (Existing Building, Design Proposal, Site Boundaries, Landscape) now switch automatically per tour scene, driven by SketchUp tag on/off state captured by the ValeVision Cloud Sync plugin — e.g. Site Boundaries can be hidden for a shot framed inside a hedge, then restored on the next scene.
+
+### Added
+- **`Na__ModelToggle__ApplySceneLayerVisibility(layerVisibilityMap)`** (new export, `Na__UiFeature__ModelToggle__Controls.js`) — applies a per-category visibility map to the existing toggle state/buttons; unmentioned or unloaded categories are left untouched.
+- **`PresentationMode__Scene__ModelLayerVisibility`** — new field on converted SketchUp scenes (`Na__SketchUp__ConvertSceneData__ConvertScene`), sourced from the plugin's new `model_layer_visibility` per-scene field inside `ValeVison3D__SketchUpCameraData`. Also usable on hand-authored explicit `PresentationMode__SavedCameraScenes` scenes.
+
+### Changed
+- **`Na__PresentationMode__Camera__ApplySceneCameraState`** and **`Na__PresentationMode__Camera__AnimateToScene`** (`Na__PresentationMode__Camera__SceneTransition.js`) both now call `Na__ModelToggle__ApplySceneLayerVisibility` with the active scene's layer map — this is the single choke-point for boot camera, carousel card clicks, and prev/next, so no other UI code needed touching. Applied instantly (not animated) at transition start.
+- **`Na__AppFlow__LoadingSequence.js`** — re-applies the launch scene's layer visibility immediately after `InitializeModelToggleControls`, since the toggle state map does not exist yet at the earlier boot-time `ApplySceneCameraState` call.
+
+### Cross-reference
+- **ValeVision Cloud Sync v0.3.0** — captures `model_layer_visibility` per scene via the new `Na__TagVisibilityCapture` module, keyed off the shared `Na__DataLib__CoreIndex__Tags__.json` SSOT so category keys match `Na__ModelToggle__StateMap` 1:1. No ValeVisionGallery/Python pipeline changes were required — it rides inside the existing `ValeVison3D__SketchUpCameraData` merge.
+
+### Files Changed
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__ConvertSceneData__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.5 - 26-Jun-2026 - Pipeline Fix: valeVision_ModelUrls Now Always Populated
+
+### Overview
+ValeVision3D itself is unchanged. This entry documents the upstream pipeline fix (ValeVision Gallery v0.6.7) that resolves the root cause of 3D models failing to load for projects synced before today.
+
+### Root Cause
+`valeVision_ModelUrls` in `project.json` was only written once — during the very first ValeVision Gallery project scaffold. Every subsequent sync uploaded GLBs to R2 and set `hasGlb_R2: true` in the master index (making the badge visible) but never refreshed the model URL array. ValeVision3D had no URLs to hand to the GLB loader, so the viewer opened to an empty scene.
+
+A second bug meant the master index was fetched once per browser session with no cache-busting, so `hasGlb_R2` changes made by a mid-session sync were invisible until a hard refresh — masking the problem further.
+
+### What Changed (upstream — ValeVision Gallery v0.6.7)
+- **`AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` (v1.2.0)** — after every GLB upload (`na_sync_all`, `na_sync_glb`), the model URL array is now rebuilt from the local GLB sync folder and patched into both the local and R2 `project.json`, exactly mirroring the camera-data merge pattern.
+- **`Na__AppData__ProjectLoader.js` (v0.2.5)** — master index fetch is now cache-busted (`?t=<timestamp>` + `cache: 'no-store'`), so `hasGlb_R2` changes appear in the same session without a hard refresh.
+
+### Action for Existing Projects
+Any project that has GLBs on R2 but was last synced before this fix (i.e. `valeVision_ModelUrls` is absent from `project.json`) will start loading correctly after a single re-sync from the ValeVision Cloud Sync plugin (any action — all, glb, or cameras).
+
+### Cross-reference
+- **ValeVision Gallery v0.6.7** — full fix details and file changes.
+- **ValeVision Cloud Sync v0.2.2** — auto-init of `00__ProjectData/` for old projects (prerequisite for camera capture on legacy models).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.4 - 26-Jun-2026 - Purge App Cache Button (Tools & Settings → App Settings)
+
+### Overview
+Added a **Purge App Cache** button to the Tools & Settings menu, nested inside a new **App Settings** submenu section at the bottom. Uses the same brutal full-reset logic as ValeVision Gallery (shared PWA registrar) — clears all Cache Storage, unregisters the service worker, wipes localStorage/sessionStorage/IndexedDB — while preserving the user's email auth token. No more hunting through DevTools to manually clear stale assets.
+
+### Changes
+- **App Settings submenu** — `index.html`: new `<li>` at the bottom of `#naToolsMenu` using the standard `na-dropdown-menu__button--has-submenu` pattern with `Icon__ToolsMenu__MainMenuIcon__540p__.png`. Expand/collapse follows the existing `is-open` CSS class convention. Contains a dark-red "Purge App Cache" action button (`#naPurgeAppCacheAction`).
+- **Wiring module** — `Na__UiFeature__PurgeAppCache__Button.js` (new, `70__System__DevTools/`): `Na__UiFeature__InitializePurgeAppCacheButton()` wires both the App Settings toggle and the Purge action. Click → `confirm()` guard → `window.ValeVisionGallery__Pwa__ServiceWorker__Registrar.purgeAppCache()`. Imported and initialised in `index.html` alongside `Na__Feature__FullScreenMode__Initialize`.
+- **Styles** — `Na__UiFeature__Styles__DropdownAndToast__.css`: `.na-dropdown-menu__action--danger` modifier (muted dark red background).
+
+### Cross-reference
+- **ValeVision Gallery v0.6.5** — shared `PurgeAppCacheAndReload()` function lives in the PWA Registrar (SSOT); `PWA_PRESERVE_LOCALSTORAGE_KEYS` preserves both WCP and VV3D auth tokens.
+
+### Files Changed
+- `index.html`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js` (new)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.3 - 26-Jun-2026 - R2-First Dev Menu Saves + Fog Dev UI Sync Fix
+
+### Overview
+All localhost Dev menu functions that write to `project.json` now use the same **R2-first, Flask-mirror-second** contract as the ValeVision Gallery Project Editor. Saves go live on R2 immediately (no GitHub push required for nav modes, fog, camera, orbit max distance, render engine, grid lines, or presentation mode scene data). Toast feedback confirms R2 success (green) or failure (red). Fog Effect Dev menu falloff distance no longer sticks at 1 m when `project.json` holds a different saved value.
+
+### Changes
+
+**R2-first two-phase save (shared utility)**
+- `Na__AppUtils__R2SaveProjectJson__.js` (v1.1.0) — resolves full `folderId` via master index, lazy-fetches Worker config from Flask `GET /api/editor-config`, Phase 1 POST to `valevision-gallery-editor-api`, Phase 2 POST to Flask `/api/projects/{projectCode}`. Phase 1 failure throws; Phase 2 failure is non-fatal with red toast.
+- Replaced prior GET-merge-POST-to-Flask-only pattern in:
+  - `Na__UiFeature__NavigationModes__DevControls.js`
+  - `Na__FogPlaneSystem__SaveSettings.js`
+  - `Na__UiFeature__SaveCameraSettings.js`
+  - `Na__UiFeature__OrbitMaxDistance__DevControls.js`
+  - `Na__UiFeature__RenderEngine__DevControls.js`
+  - `Na__GridLineSystem__UiElement.js`
+  - `Na__PresentationMode__DevMenu__SceneEditor.js`
+
+**Save feedback toasts**
+- Green toast `"Saved to R2 ✓"` after successful Phase 1 write.
+- Red toast on R2 failure (surfaced by each caller's existing `showToast(..., true)` catch path).
+- Red toast on Phase 2 local mirror failure (previously showed as neutral/green).
+
+**Fog Effect Dev menu — falloff slider sync (v1.1.0)**
+- **Root cause:** `Na__UiFeature__InitializeFogPlaneControls()` runs in `index.html` immediately after `StartLoadingSequence()` (fire-and-forget). `Na__FogPlaneSystem__Initialize()` loads `FogPlane__Config` from `project.json` asynchronously *after* model load; UI `ApplyDefaults` read `GetFalloffMm()` while it was still the hardcoded 1000 mm (1 m) default.
+- **Fix:** `Na__FogPlaneSystem__SystemLogic.js` dispatches `na-fogplane-settings-loaded` when saved settings are applied. `Na__FogPlaneSystem__UiControls.js` listens and calls `Na__FogUi__SyncControlsFromSystem()` to refresh slider position, "N m" label, and Enable Fog checkbox from authoritative system state.
+
+### Cross-reference
+- **ValeVision Gallery v0.7.0** — Editor API Worker, Flask `/api/editor-config`, CORS fix for `127.0.0.1:8000`, Project Editor toasts.
+- **Agent rule** — `WebApps/.cursor/rules/15-R2First-LocalhostSave--DevTools-SSOT-.mdc`.
+
+### Files Changed
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js` (new)
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.2 - 26-Jun-2026 - Match SketchUp Scene-First Default Camera Position (Scene 1 First Camera Position)
+
+### Overview
+ValeVision3D now sets the boot camera from SketchUp scene data rather than the manually-saved `Camera__DefaultPosition` block. When a project's `project.json` contains `ValeVison3D__SketchUpCameraData.scenes` or explicit `PresentationMode__SavedCameraScenes`, the first scene in the list becomes the authoritative launch camera — position, rotation, FOV, and orbit target are all taken from the SketchUp export, with no manual dev-tool override required.
+
+### Changes
+
+**SketchUp-first boot camera**
+- `Na__SketchUp__AnimationScene__DataBridge__` v1.1.0 — new `Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene(projectData)` export. Returns `{ scene, source }` for the first applicable scene (explicit PresentationMode default → SketchUp `scenes[0]`), or `null` when no scene data exists. Supports single-scene projects: the `ConvertBlock` ≥2 carousel gate is unchanged; `ConvertScene(block.scenes[0])` is called directly for 1-scene projects so the launch camera is always set from SketchUp.
+
+**Deferred carousel camera apply**
+- Both `na-presentation-mode-scenes-loaded` dispatch sites now include `skipCameraApply: true`. The carousel listener's existing guard (`detail.skipCameraApply === true`) means the UI registers scene state (card list, active-scene highlight) without jumping the camera prematurely.
+- Camera apply moved to a single authoritative point in `Na__AppFlow__LoadingSequence` after the orbit cube resolves.
+
+**Loading sequence camera block**
+- `Na__AppFlow__LoadingSequence` — `Na__Saved__ProjectData` hoisted alongside the existing `Na__Saved__ProjectCameraConfig`. Post-orbit-cube camera block replaced with a scene-first branch:
+  - If `ResolveDefaultLaunchScene` returns a scene → `ApplySceneCameraState` snap + `CaptureStartState(…, null)` (Reset View restores snapshot only; no `Camera__DefaultPosition` re-apply).
+  - Else → existing `Camera__DefaultPosition` / `ApplyCameraConfig` path unchanged.
+
+**Contract change — SaveCameraSettings**
+- `Na__UiFeature__SaveCameraSettings` still writes `Camera__DefaultPosition` to Flask for backward-compatible fallback. On projects with SketchUp scene data, that key is superseded on load. To change the launch camera, update the SketchUp scene and re-sync rather than using the Save Camera dev tool.
+
+### Verification
+- **Warwick** (`2026/63770__Warwick`, 4 SketchUp scenes): launch camera matches `IMG01__3dView__ViewOption-01__MainView__`; carousel shows 4 scenes; Reset View returns to IMG01.
+- **Single-scene project**: correct launch camera; no carousel.
+- **No SketchUp scenes project**: `Camera__DefaultPosition` path unchanged.
+- ElevationView, ImageExport, Walk/Fly modes unaffected (confirmed clean audit).
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.1 - 25-Jun-2026 - Orbit Helper Cube Visibility Regression Fix
+
+### Overview
+Patch release fixing a regression introduced in v2.9.0: the shared build-version cache-bust token (`?v=<buildVersion>`) appended to GLB URLs caused the Orbit Helper Cube to render as a visible grey mesh instead of being filtered out for orbit-centre calculation only.
+
+### Root Cause
+`Na__ModelLoader__SeparateOrbitCubeUrl` identifies orbit-cube URLs with a `$`-anchored regex (`OrbitHelperCube__MeshModel__\.glb$`). After v2.9.0, model URLs arrive as `...__OrbitHelperCube__MeshModel__.glb?v=1782400744`, so the regex no longer matches, the cube is not separated from `filteredUrls`, and it loads and renders like any other MeshModel GLB.
+
+### Changes
+- **Filename parsing (MultiModel v1.2.1)** — strip any `?query` suffix before filename-based matching so cache-bust tokens cannot defeat `$`-anchored patterns.
+- **`Na__ModelLoader__SeparateOrbitCubeUrl`** — `url.split('/').pop().split('?')[0]` before the OrbitHelperCube regex test (restores hide-from-scene / use-for-orbit-centre behaviour).
+- **`Na__ModelLoader__ParseModelUrl`** — same query-strip applied defensively so category/storey/legacy classification stays robust to cache-bust or signed-URL query strings.
+- **Cache-bust preserved** — the full URL (including `?v=`) is still passed to the GLTF loader; only filename interpretation strips the query.
+
+### Verification
+- Load a project with an orbit cube (e.g. `63592__Bressard-Kayode`): grey helper cube should not render; console should still log `OrbitHelperCube loaded. Center: ...`; orbit controls should centre correctly.
+- Normal MeshModel/LineworkModel GLBs should still request with `?v=` on the network URL.
+
+### Files Changed
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.9.0 - 25-Jun-2026 - Build-Version Cache-Bust (Real-Time R2 Assets)
+
+### Overview
+ValeVision3D now consumes the shared R2 build-version manifest (written by the ValeVision Gallery sync pipeline, see ValeVision Gallery v0.6.0). As it has no Service Worker, freshness is achieved with a cache-bust token rather than cache eviction: the manifest `buildVersion` is appended as `?v=<buildVersion>` to `project.json` and GLB model URLs. A sync makes re-synced camera data and models visible immediately, while assets stay edge/browser-cacheable between builds so large GLB downloads remain cheap.
+
+### Changes
+- **Build manifest (ProjectLoader v1.4.0)** — `Na__AppUtils__InitBuildManifest` fetches the shared manifest (cache-busted, memoised, non-throwing) and stores the `buildVersion` token.
+- **Cache-bust token** — `Na__AppUtils__WithBuildToken` appends `?v=<buildVersion>`; applied to `project.json` URLs in `FetchProjectJson` and to all GLB URL formats in `ExtractModelUrls`.
+- **Loading sequence** — `InitBuildManifest()` kicked off early alongside `InitMasterIndex()`.
+- **Config SSOT** — `ProjectData__AssetUrls__BuildManifestUrl` added to `Na__AppConfig__Main.json`.
+
+### Files Changed
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.8.0 - 25-Jun-2026 - SketchUp Camera Auto-Animation + R2 Master Index
+
+### Overview
+ValeVision3D now auto-builds Presentation Mode scenes from SketchUp-exported camera data (`ValeVison3D__SketchUpCameraData`), shows the scene carousel by default when two or more cameras exist, and uses human-readable card titles from the SketchUp scene description. All project assets resolve via the shared R2 master index (eliminating the 404 flood and the code-only folderId race that previously halted loading). See ValeVision Gallery v0.5.0 for index generation/sync tooling and ValeVision Cloud Sync v0.2.0 for the SketchUp export pipeline.
+
+### Changes
+- **NEW `69__System__SketchUpToValeVision__Utilities/`** — three modules:
+  - `Na__SketchUp__LoadSceneData__.js` — reads camera block; matches IMG## images/thumbnails from `project.json.images`.
+  - `Na__SketchUp__ConvertSceneData__.js` — Z-up mm → Y-up PresentationMode schema; axis swap; vertical FOV; orbit target; `ShowCarouselByDefault: true`; >=2 scene gate; description-as-card-title.
+  - `Na__SketchUp__AnimationScene__DataBridge__.js` — auto-build when no explicit PresentationMode block; dispatches `na-presentation-mode-scenes-loaded`.
+- **R2-first assets (ProjectLoader v1.2.0)** — `FetchProjectJson` and `ResolveAssetUrl` try CDN then GH Pages; fallback toast.
+- **Master index (ProjectLoader v1.3.0)** — `Na__AppUtils__InitMasterIndex`; resolves real `year/folderId` from numeric project code; honours `assetHome`.
+- **Race fix (ProjectLoader v1.3.1)** — `FetchProjectJson` awaits index before building URLs; prevents memoised wrong `2026/63592` 404 that halted load and suppressed Presentation Mode.
+- **Loading sequence (v1.5.0)** — early `InitMasterIndex`; SketchUp bridge after project.json load when no manual PresentationMode scenes.
+- **Config SSOT** — `ProjectData__AssetUrls__IndexUrl` + fallback in `Na__AppConfig__Main.json`.
+- **Reference doc** — `Research__RubySceneData__RIPDOWN__.md` (SketchUp Page/Camera API fields).
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__LoadSceneData__.js` (new)
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__ConvertSceneData__.js` (new)
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js` (new)
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `Research__RubySceneData__RIPDOWN__.md` (new)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.7.2 - 16-Jun-2026 - Carousel UI Cleanup: Remove Play Button and Pagination Dots
+
+### Overview
+Removed the play/pause slideshow button and pagination dot indicators from the Presentation Mode scene carousel. The slideshow auto-advance feature and all related state management were removed entirely; the dots were deemed redundant as thumbnails make the scene count self-evident.
+
+### Changes
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — removed `DWELL_MS` constant; removed `IsPlaying` and `PlayTimer` state; removed `BuildDots`, `SlideshowAdvance`, `StartPlayback`, `StopPlayback`, `UpdatePlayButton`, `HandlePlayPauseClick` functions; removed `CancelCurrentTransition` import (now unused); removed dot-update logic from `SetActiveScene`; removed `StopPlayback` call-sites from `HandleCardClick`, `HandlePrevClick`, `HandleNextClick`, and `ToggleSceneCarousel`; removed auto-play startup block from `na-presentation-mode-scenes-loaded` handler; removed `StartPlayback`/`StopPlayback` from module exports.
+- **`Na__PresentationMode__Styles__SceneCarousel__.css`** — removed Pagination Dots region (`.na-pm-carousel__dots`, `.na-pm-carousel__dot`, `.na-pm-carousel__dot--active`) and Play/Pause Button region (`.na-pm-carousel__play`, hover, `--playing` states).
+
+### Files Changed
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.7.1 - 11-Jun-2026 - Presentation Mode Saved Camera Scenes
+
+### Overview
+Full Presentation Mode system for per-project saved camera scenes. Each project stores its own scene data inside its `project.json` under `PresentationMode__SavedCameraScenes`. Projects without this section are completely unaffected.
+
+### Changes
+- **New module folder:** `02__Src__AppModules/21__System__PresentationMode/`
+- **`Na__PresentationMode__ProjectJson__SceneData.js`** — reads, validates, sorts and exposes saved scenes; thumbnail URL resolution; active scene id state.
+- **`Na__PresentationMode__Camera__SceneTransition.js`** — captures/builds/applies/animates camera between scenes using quaternion slerp + position/target/FOV lerp with `easeInOutCubic`, `easeInOutQuad`, `linear` easing; uses `RequestActiveRender` during transitions.
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — bottom carousel (thumbnail cards, prev/next, pagination dots, play/pause); adaptive layout (adds `na-presentation-mode-active` to `<body>` → top toolbar); listens for `na-presentation-mode-scenes-loaded`.
+- **`Na__PresentationMode__DevMenu__SceneEditor.js`** — localhost-only scene editor (add/update/rename/delete/reorder, FOV slider with live lens-mm readout, transition time slider, easing dropdown, WebP thumbnail regeneration, Save to Flask, Export JSON, Clear All).
+- **`Na__PresentationMode__Thumbnail__Renderer.js`** — renders current WebGL framebuffer to a 480px WebP blob via offscreen 2D canvas downscale.
+- **`Na__PresentationMode__DevTools__CameraPathVisualizer.js`** — CatmullRomCurve3 spline tube through scene camera positions + per-scene camera frustum markers + orbit target sphere markers; toggled from dev menu.
+- **`Na__AppFlow__LoadingSequence.js`** (v1.4.0) — detects `PresentationMode__SavedCameraScenes` and dispatches `na-presentation-mode-scenes-loaded` with `sceneConfig` + `projectCode`.
+- **`index.html`** — Views button added (hidden until scenes load), `#naPresentationCarousel` container, `#naPmDevEditorItem` dev section, all Presentation Mode init calls in Engine Entry Points.
+- **`Na__PresentationMode__Styles__SceneCarousel__.css`** (new) — carousel layout, card styles, adaptive top-toolbar positioning, inactive-fade for toolbar and Tools menu.
+- **`Na__UiFeature__Styles__DropdownAndToast__.css`** — collapsed Tools/Dev menu inactive opacity fade (0.78 → 1 on hover/focus/open).
+- **`Na__CoreUi__Styles__Index__.css`** — added `@import` for the new carousel stylesheet.
+- **`ValeVisionGallery/server.py`** — new `POST /api/projects/<folder_id>/presentation-thumbnail/<scene_id>` endpoint to save WebP thumbnails into `PresentationMode/Thumbnails/`.
+
+### Files Changed
+- `02__Src__AppModules/21__System__PresentationMode/` (new folder, 6 new modules)
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `index.html`
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css` (new)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`
+- `../ValeVisionGallery/server.py`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.7.0 - 11-Jun-2026 - MaxModel Load Speed + Model/HDRI/DataLib Caching Strategy
+
+### Overview
+MaxModel projects hung longer on load than whitecard models despite simpler geometry. The hang was a fixed MaxEngine overhead, not the GLB: 24.5 MB 4K HDRI fetch (uncached, awaited inside the materials swap), DataLib SSOT fetches from GitHub raw (uncached, cross-origin), and PMREM pre-filtering. Model GLBs from the R2 CDN were never service-worker cached at all (cross-origin → ignored), so offline sessions had no models.
+
+### Changes
+- **HDRI swapped to optimised 1024p version** (`HdriSkydome__...__OptimisedVersion__1024p__.hdr`, 1.46 MB vs 24.5 MB). `Scene__Environment__HdriUrl` updated; reflections-only use (glass/mirror env maps) is visually identical. RGBE decode + PMREM generation also drop sharply with the smaller source.
+- **Caching strategy (implemented in the shared ValeVision Gallery SW — see ValeVision Gallery DEVLOG v0.4.0)**:
+  - Model GLBs: network-first with 4 s slow-network grace fallback to cache + background refresh; offline fallback; 36-entry LRU.
+  - HDRI: cache-first (immutable) + precached at SW install.
+  - DataLib SSOT JSONs: network-first with offline fallback.
+  - R2 CDN + GitHub raw origins now SW-managed (CORS-enabled allowlist).
+
+### Files Changed
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `../ValeVisionGallery/02__Src__AppModules/62__Feature__AppInstallability/ValeVisionGallery__Pwa__ServiceWorker__Logic__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.6.1 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)
+
+### Overview
+v2.6.0's local Three.js vendoring (fix M3) shipped an incomplete dependency graph — four transitive imports inside the vendored addons were never copied across, so every `three/addons/` import chain 404'd and the entire ES module graph failed to evaluate. **No model could load on any fresh client** (first observed on iPad).
+
+### Root Cause
+Vendored addons import relative files that were missing from `04__Lib__ThirdParty__Three/examples/jsm/`:
+- `RenderPass.js` / `ShaderPass.js` → `postprocessing/Pass.js` (MISSING)
+- `EffectComposer.js` → `postprocessing/MaskPass.js` + `shaders/CopyShader.js` (MISSING)
+- `GLTFLoader.js` → `utils/BufferGeometryUtils.js` (MISSING)
+
+### Fix
+- Vendored the four missing files from `three@0.160.0` (exact match for the vendored core's `REVISION '160'`). Verified no further unresolved relative imports remain anywhere under `04__Lib__ThirdParty__Three/`.
+- ValeVision Gallery SW: version token bumped to `2026-06-11-2` (cache purge on all clients) and the vendored Three.js files added to the shell precache list (v2.6.0 claimed this but the entries were absent).
+
+### New Files
+- `04__Lib__ThirdParty__Three/examples/jsm/postprocessing/Pass.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/postprocessing/MaskPass.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/shaders/CopyShader.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/utils/BufferGeometryUtils.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.6.0 - 11-Jun-2026 - PWA Stability Fix
+
+### Overview
+Comprehensive PWA stability pass addressing first-load hangs on iOS (especially from ValeVision Gallery gallery → viewer handoff), progressive degradation after repeated loads, and service-worker version coherence.
+
+### Critical Fixes
+- **C1 — Unbounded load pipeline**: All `fetch` and `GLTFLoader.loadAsync` calls now go through `Na__AppUtils__ResilientLoad__` helpers (timeout + exponential-backoff retry). The loading overlay now transitions to an error state with a Retry button on any failure path — the overlay can no longer hang in a silent spinner state indefinitely.
+- **C2 — GPU/memory leaks**: `Na__AppCore__GpuLifecycle__.js` wires `webglcontextlost`/`webglcontextrestored` handlers immediately after renderer creation, and registers a `pagehide` listener that disposes scene geometry, materials, textures, composer render targets, and the WebGLRenderer before the iOS WebContent process boots the next page.
+- **C3 — Top-level config await**: The `await Na__AppConfig__LoadConfig()` call in `index.html` is now guarded by a `Promise.race` with a 10 s timeout and a visible error UI (error message + Retry button) rather than hanging silently.
+- **C4 — SW version skew**: HTML responses now use network-first (not stale-while-revalidate) so deploys cannot pair stale HTML with freshly-revalidated modules. `controllerchange` bridge implemented in the SW Registrar (idle-only, single-session guard).
+
+### Moderate Fixes
+- **M1 — project.json timeout**: `Na__AppUtils__FetchProjectJson` uses `Na__ResilientLoad__FetchWithTimeout` (configurable via `LoadResilience__Config`). Promise-memoised per project code so duplicate calls (loading sequence + fog system) share one in-flight request.
+- **M2 — Silent project fallback**: When `?project=` is present and `project.json` fails after retries, `Na__UiFeature__ShowLoadError` is shown instead of silently loading the legacy Clough default model.
+- **M3 — Three.js CDN eliminated**: three@0.160.0 vendored locally under `04__Lib__ThirdParty__Three/`. Import map updated to local paths. All Three.js module files now ride the SW shell cache; no esm.sh cold-start cost on navigation.
+- **M4 — ValeVision Gallery memory**: React production builds + pinned Babel @7.29.7 in `app.html` (removes React dev overhead from shared iOS process memory budget).
+- **M5 — Sequential GLB loads**: `Na__ModelLoader__LoadAllModels` now runs categories via a concurrency-capped pool (default 3 simultaneous, configurable). Mesh+linework within each category remain sequential.
+- **M6 — No stall recovery**: `Na__AppCore__LoadWatchdog__.js` provides a total-budget timer (default 120 s) and a `visibilitychange` stall detector (default 30 s silence threshold) — iOS recovery hook so backgrounded mid-load sessions surface a Retry overlay rather than a frozen spinner.
+
+### Low Fixes
+- **L1 — SW controllerchange bridge**: Implemented (was documented but missing). Reloads exactly once per session, only when no load is in flight.
+- **L2 — Duplicate project.json fetch**: Fixed via promise memoisation in `Na__AppUtils__ProjectLoader.js`.
+- **L3 — Thumbnail LRU trim**: Now runs only after a successful cache `put` rather than on every thumbnail request.
+- **L4 — Legacy manifest**: `Na__AppInstallability__Manifest.webmanifest` deleted (was unreferenced; could cause stale PWA identity for legacy installs).
+- **L5 — Import map guard**: Inline script in `index.html` surfaces a readable unsupported-browser message when `HTMLScriptElement.supports('importmap')` returns false.
+- **L6 — SW precache gap**: Expanded precache to include all `02__Src__AppModules/` entry-point JS files, both stylesheets, and `Na__AppConfig__Main.json` so the viewer boots from cache on poor connections.
+
+### New Files
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ResilientLoad__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppCore__LoadWatchdog__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js`
+- `04__Lib__ThirdParty__Three/three.module.js` (+ all required jsm addons)
+
+### Modified Files
+- `index.html` — config await guard, import map local paths, GPU lifecycle wiring, import-map guard, `resilienceConfig` in loading sequence context
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — `LoadResilience__Config` block added
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — watchdog, resilient helpers, error overlay, project failure surfacing
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js` — resilient fetch, memoization
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — resilient GLTF loads, concurrency-capped pool
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css` — error state styles
+
+# ---------------------------------------------------------
+## ValeVision3D v2.5.0 - 10-Jun-2026
+### Floating Navigation Toolbar + Project-JSON Reset View + Navigation Help Panel
+
+**Overview**
+Navigation is the primary way users interact with the model, so the user-facing navigation controls have moved out of the right-hand Tools & Settings menu (where "Navigation Mode" was buried in a submenu) into a new always-visible floating pill toolbar fixed to the bottom centre of the viewer: Orbit | Walk | Fly | Reset View | Help. The Tools menu stays focused on technical/configuration tools (camera, export, grid, layers, elevation, render engine, sharing, fullscreen).
+
+**New — Floating Navigation Toolbar (`Na__UiFeature__NavigationToolbar__Controls.js`)**
+- White rounded pill with subtle shadow, bottom-centre, using the prepared `UiIcons__MenuIcons__NavigationMenu` PNG icons with text labels (icons-only below 560px width).
+- Active mode highlighted with a soft pale blue background. `Na__NavToolbar__SetActiveMode` is the single UI entry point for mode highlighting — toolbar buttons, Alt+Shift+W/F hotkeys, and the walk/fly toggle wrappers all route through it, so the highlight stays correct no matter where the mode change originates. Dispatches `na-navigation-mode-changed` for future consumers.
+- Same gating as before: Orbit always visible; Walk/Fly buttons revealed by `na-navigation-modes-loaded` (project.json `Navmode__EnabledModes`) and by the Dev menu save callback. Mutual exclusivity preserved via the existing 'silent-off' / 'return-to-orbit' toggle hints.
+- The old Tools-menu "Navigation Mode" section and its module (`Na__UiFeature__NavigationModes__Controls.js`) are RETIRED — markup removed from index.html, module deleted. Underlying navigation mode logic (SystemLogic, ModeTransition, hotkeys, state) is untouched.
+
+**New — Reset View from Project JSON (`Na__Camera__ProjectStartState.js`)**
+- The loading sequence now captures the canonical start state immediately after applying the project.json camera config + resolved orbit target: raw `Camera__DefaultPosition` block (authoritative) plus an applied snapshot of position/rotation/FOV/orbit target (fallback when no project.json — e.g. app-config boot camera).
+- Reset View exits Walk/Fly first (return-to-orbit), restores the snapshot, re-applies the raw project config via `Na__UiFeature__ApplyCameraConfig` (legacy `Camera__DefaultTarget` stripped — orbit target is owned by `OrbitHelperCube__Position`), then `controls.update()` + render invalidation. No hard-coded reset location anywhere.
+
+**New — Navigation Help Panel (`Na__UiFeature__NavigationHelpPanel__Controls.js`)**
+- Modal help card triggered by the toolbar Help button: Orbit (rotate/pan/zoom), Walk (WASD, mouse look, sprint, Esc), Fly (WASD + Q/E, boost, Esc), Reset View, fullscreen pointer, Escape behaviour.
+- Walk/Fly instruction sections show only when those modes are enabled for the current model.
+- Closes via the X button, clicking the backdrop, or pressing Escape.
+
+**Files Changed**
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js`
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js`
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__Camera__ProjectStartState.js`
+- NEW `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css` (+ registered in `Na__CoreUi__Styles__Index__.css`)
+- `index.html` — toolbar + help panel markup, old Navigation Mode menu removed, hotkey/toggle wrappers rewired to `Na__NavToolbar__SetActiveMode`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — canonical start state capture after saved camera re-apply
+- DELETED `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js` (superseded by the toolbar)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.3 - 10-Jun-2026
+### Negative Door Swing Angles + PureEngine Whitecard Enforcement
+
+**Overview**
+Two follow-up fixes from Bagot MaxModel testing: doors named with negative degrees opened the wrong way, and PureEngine was showing glass opacity/face colours (a regression introduced by the v2.4.1 indexed-material preservation).
+
+**Fix 1 — Negative Door Rotation Degrees (`3dObjectIInteraction__Animation__ClickToOpenDoors__.js`)**
+- The MOD name degree parser did NOT support negative values (neither does TrueVision's original — this was a faithful port of the same gap). Worse, for `MOD001__ROT__-110-Deg__DoorPanel` the regex `/(\d+)-Deg/i` silently matched `110` (skipping the minus), so the door opened +110° — the wrong direction — with no warning.
+- FIX: regex now `/(-?\d+)-Deg/i` and the validity guard accepts any non-zero signed integer. The pivot rotation already applies the angle directly via `setFromAxisAngle`, so a negative value naturally reverses the swing. Duration scaling already used `Math.abs` and needed no change. Walk/fly proximity opening inherits the fix (shared registry + ToggleDoor).
+- Convention: `110-Deg` = standard swing, `-110-Deg` = reversed swing. Header docs updated.
+- NOTE: TrueVision has the same bug — flag for a future TrueVision patch.
+
+**Fix 2 — PureEngine Showing Opacity / Face Colours (regression from v2.4.1)**
+- v2.4.1 made the loader preserve indexed MAT###__ materials (required for MaxEngine's swap). Side effect: under PureEngine the preserved glass material (exporter-enriched, transparent) rendered with opacity, and the legacy local-library swap — previously a silent no-op because load destroyed the names — suddenly started matching MAT101 and applying PBR glass.
+- FIX: New `Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials(group, baseMeshMaterialConfig)` — replaces every indexed-named material with the shared whitecard material (same params the loader uses), capturing originals first. The engine materials flow is now strictly:
+  - PureEngine : restore loaded originals → whitecard ALL indexed materials (classic appearance, zero face colours/opacity)
+  - MaxEngine  : restore loaded originals (indexed names back after any Pure whitecarding) → DataLib SSOT swap → glass/mirror env overrides
+- The dead PureEngine local-library swap path was removed from the loading sequence (`Na__PureEngine__ApplyLocalLibraryMaterials` + the `Na__MaterialsSystem__LoadLibrary` import) — it had never matched anything before v2.4.1 because load-time whitecarding destroyed the names, so removal restores exact pre-v2.4.1 PureEngine visuals. Engine switching cycles Pure→Max→Pure verified consistent via the capture/restore contract.
+
+**Files Changed**
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — signed degree regex + guard + docs
+- `02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js` — new `ApplyWhitecardToIndexedMaterials` export
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — engine materials flow rework (restore-first in Max branch, whitecard pass in Pure branch, legacy local-library path removed)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.2 - 10-Jun-2026
+### Glass Realism Upgrade + Red Failure Toast Diagnostics
+
+**Overview**
+Two MaxEngine refinements following the first successful Bagot MaxModel render. The glass looked pale and cartoonish compared to TrueVision's dark reflective glass — root cause was config values, not the materials pipeline. Separately, data-file load failures (DataLib, HDR, materials library, GLBs, project.json) were only logged to console; they now surface as red toast notifications for instant diagnosis.
+
+**Glass Realism — Root Cause Was Config Drift, Not Materials Code**
+Both apps use the SAME DataLib glass entry (`MAT101__Glass__ClearDefault`: pale blue rgb(230,240,255), Opacity 0.2). TrueVision's darker, more realistic look comes from its `Scene__Environment` config:
+- `GlassBrightnessMultiplier: 0.25` — darkens the glass colour to 25% at override time (the "more black" look)
+- `GlassEnvMapIntensity: 1.0` — full HDR reflection strength
+ValeVision's config (written during the v2.4.0 port) had `1.0` brightness (no darkening) and `0.8` intensity — hence the washed-out cartoon glass.
+
+**Changes**
+- `Na__AppConfig__Main.json` — `Scene__Environment` updated to TrueVision parity: `GlassBrightnessMultiplier: 0.25`, `GlassEnvMapIntensity: 1.0`, `MirrorEnvMapIntensity: 1.0`, `MirrorBrightnessBoost: 1.0`, plus `MirrorRoughnessOverride: 0.14` (TrueVision value, previously missing). NEW realism knobs beyond TrueVision: `GlassRoughnessOverride: 0.03` (sharper reflections than the DataLib 0.05) and `GlassOpacityOverride: null` (set a number to raise glass presence; null = DataLib value).
+- `Na__MaterialsSystem__MaterialSwap.js` — `ApplyGlassEnvironmentOverrides` extended with `roughnessOverride` + `opacityOverride` options; console log now reports all applied values. Safe across engine switches: each MaxEngine activation builds fresh materials from the DataLib config, so the darkening multiplier never compounds.
+- `Na__AppFlow__LoadingSequence.js` — passes the new glass/mirror override options from config.
+
+**Red Failure Toasts — The Missing Event Bridge**
+Sub-systems were already dispatching `na-show-toast` CustomEvents (DataLib loader, AO performance monitor) but NOTHING in ValeVision listened — failures were silently dropped. TrueVision has this bridge in its Index.html; ValeVision never received it during earlier ports.
+- `index.html` — added the `na-show-toast` window listener bridging events to `Na__UiFeature__ShowToast` (red styling via existing `na-toast--error` class).
+- NEW red-toast dispatch points:
+  - `Na__Scene__DefaultSceneLighting.js` — HDR env URL missing or HDR load failure ("glass/mirror reflections disabled")
+  - `Na__MaterialsSystem__LibraryLoader.js` — local materials library HTTP failure or fetch exception
+  - `Na__AppFlow__LoadingSequence.js` — empty DataLib materials index (MaxEngine), project.json load failure, top-level model load error
+  - `Na__ModelLoader__MultiModel.js` — per-GLB mesh/linework load failures (all four catch paths, named per category)
+  - DataLib JSON fetch failures (already dispatched by `AppCore__DataLib__Loader.js`) now actually display via the new bridge
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.1 - 10-Jun-2026
+### MaxModel Loading Fixes — Storey GLB Parsing, Indexed Material Preservation, Token-Based Door Collection
+
+**Overview**
+First MaxModel project (62609__Bagot) exposed three loading-path bugs that broke storey-based GLB sets exported by the TrueVision GLB Builder. Confirmed via DevTools network capture (only 5 of 13 GLBs requested), runtime scene report (storey files collapsed into `ValeVision__LegacyModel`), and the GLB export log (which proved `MAT101__Glass__ClearDefault` was correctly exported but never rendered). All three fixes are TrueVision-parity ports and are fully backwards compatible — existing whitecard/blockout projects behave identically.
+
+**Bug 1 — Storey GLBs collapsed into one legacy bucket (5 of 13 files loaded)**
+- `Na__ModelLoader__ParseModelUrl` had no storey branch. Filenames like `Bagot__Storey__GroundFloor__ProposedDoors__MeshModel__.glb` failed the primary `(ValeVision|NaModel|TrueVision)__` regex and fell into the legacy fallback, which assigns ALL matches to the single key `ValeVision__LegacyModel`. Each storey file overwrote the previous — only the last mesh+linework pair (ProposedWindows) survived classification.
+- FIX: Added `Na__ModelUrl__StoreyParseRegex` (`/(?:.*?__)?Storey__([A-Za-z]+)__([A-Za-z]+)__(MeshModel|LineworkModel)__\.glb/i`) and a storey branch in `ParseModelUrl` — checked AFTER the primary regex, BEFORE the legacy fallback — producing distinct keys like `Storey__GroundFloor__ProposedWindows`. Storey categories load via the existing unordered second pass (same as TrueVision). The legacy fallback remains for genuinely old projects.
+
+**Bug 2 — Glass never transparent (indexed materials whitecard-replaced at load)**
+- `Na__ModelLoader__LoadSingleMesh` unconditionally replaced every untextured material with the shared whitecard material — destroying the `MAT101__Glass__ClearDefault` name before the MaxEngine DataLib swap could ever match it. The glass mesh was in the scene but rendered as opaque whitecard.
+- FIX: New `Na__ModelLoader__PrepareMeshMaterial` resolver — materials matching `/^MAT\d{3}__/` are PRESERVED (cloned + DoubleSide + polygon offset only), exactly mirroring TrueVision's `CloneAndPrepareMaterial`. Non-indexed materials keep the exact previous treatment (textured → emissive prep, untextured → whitecard). Multi-material arrays now handled. Old whitecard GLBs contain zero indexed materials (export logs show "0 materials exported"), so PureEngine projects are unaffected.
+- Diagnostic: logs `preserved N indexed material(s) for swap pass` per GLB when indexed materials are found.
+
+**Bug 3 — Door animations dead (category key matching could never succeed)**
+- LoadingSequence door init checked `categoryKey.includes('ProposedDoors') && categoryKey.includes('MeshModel')` — but Map category keys NEVER contain `MeshModel`/`LineworkModel` (those live on child root names via `userData.Na__ModelType`). This was silently broken for v4 flat projects too, not just storey sets.
+- FIX: Ported TrueVision's token-based pattern: `Na__ResolveDoorCategoryNameTokens` (config-driven, defaults `['ProposedDoors', 'ExistingDoors']`) + `Na__CollectDoorModelGroups` which matches tokens against category keys (`Storey__GroundFloor__ProposedDoors` ✓) and pulls mesh/linework roots from group children via `userData.Na__ModelType`. Collected ARRAYS are passed to `Na__DoorAnimation__Initialize` (already array-capable since its original port) so multiple door categories — e.g. one per storey — all register.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — storey regex + parse branch; `Na__ModelLoader__PrepareMeshMaterial` with indexed preservation + array handling; header devlog
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — token-based door collection (v1.2.1)
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `3dObject__Interaction__DoorAnimation__CategoryNameTokens: ["ProposedDoors", "ExistingDoors"]`
+
+**Expected Results (Bagot MaxModel)**
+- All 13 GLBs request and render: walls, roofs, doors, existing walls, windows, landscape
+- MaxEngine glass: `MAT101__Glass__ClearDefault` survives load → DataLib swap applies Opacity 0.2 / Transparent / DoubleSide / HDR env reflections
+- Door click + walk/fly proximity animations work (ADR/MOD hierarchy preserved by exporter's DoorHandler)
+- Model toggle menu lists each storey element category automatically
+
+**Deliberately Out of Scope**
+- TrueVision's Storey View / Storey Isolate UI controls (per-floor visibility UX — optional follow-up)
+- `Na__ModelLoader__ConsolidateInstances` performance port
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.0 - 10-Jun-2026
+### Dual Render Engine — PureEngine (Default) + MaxEngine (TrueVision PBR/SSAO Port)
+
+**Overview**
+ValeVision now has two render engines, selectable per model. **PureEngine** is the original super-simplified whitecard pipeline — unchanged, always the default; every existing project behaves identically. **MaxEngine** is the full TrueVision-equivalent pipeline (SSAO + AO blur, DataLib-driven PBR materials hot-swap, glass/mirror env overrides) for the rare projects that want full PBR. A new Dev-menu "Render Engine" section selects + saves the engine to `project.json` (standard GET-merge-POST). When MaxEngine is saved for a model, a "Render Engine" section appears in the user-facing Tools & Settings menu allowing live switching between both engines; PureEngine-only models show no trace of the feature. Door click + proximity animations work identically under both engines.
+
+**Engine Architecture (Critical — see new .cursor rule)**
+- `05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js` — the original `Na__RenderPipeline__PostProcessing__Setup.js` relocated verbatim (function renamed `Na__RenderPipeline__PureEngine__SetupComposer`). Zero behavioural change.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js` — ported from TrueVision: RenderPass → ProfileLines → Fog → SSAO → AO Blur → FXAA, separate depth pre-pass RT (no composer-RT DepthTexture = no WebGL feedback loop), AO layer-1 exclusion, `camera.layers.enable(1)`. Exposes ValeVision's full pipeline-state contract (insertFogPass, depthTexture, profileNormal/ColorTarget, profileLinesPassRef) PLUS Max extras (renderDepthPrePass, setDepthPrePassSize, updateAoUniforms, setAoSize, monitorAoFrame, toggleAo) — so ImageExport / ElevationView / GridLines / 2D profile lines keep working under both engines.
+- No cross-imports between engine folders. Shared infra (ProfileLines, RenderLoop Invalidation, RenderEngine state, user controls) lives in the parent `05__RenderPipeline/` folder.
+- New rule file `.cursor/rules/07-RenderEngine-Architecture-.mdc` (alwaysApply) documents the separation so future agents cannot couple the engines.
+
+**SSOT Materials — No Duplicate Data Files**
+- New `01__AppCore/AppCore__DataLib__Loader.js` (ported from TrueVision) fetches the four `Na__DataLib__CoreIndex__*.json` files from the SAME GitHub raw URLs TrueVision uses (`Adam-Noble-01/Plugins/.../Na__Common__DataLib__CoreSuEntityStandards/`). MaxEngine material properties therefore come from the single source of truth — no locally-maintained copy was created.
+- `Na__MaterialsSystem__LibraryLoader.js` — `BuildLookup` now resolves either root key (`Na__AppConfig__MaterialsLibrary` local / `Na__DataLib__CoreIndex__Materials` SSOT) + `forceRebuild` param for engine switches. PureEngine continues to use the unchanged local library path.
+- `Na__MaterialsSystem__MaterialSwap.js` — upgraded to TrueVision parity: multi-material array handling, AoExclude layer-1 assignment (material flag + DataLib name tokens), mirror/glass environment override functions. NEW: original materials captured in `userData.na_originalMaterial` on first swap + `Na__MaterialsSystem__RestoreOriginalMaterials()` so switching back to PureEngine restores the exact pre-swap appearance (and clears AO layer tags). TrueVision's hardcoded MAT140 mirror debug counters were deliberately not ported.
+
+**Loading Sequence (`Na__AppFlow__LoadingSequence.js` v1.2.0)**
+- Engine-aware composer builder `Na__RenderEngine__BuildPipeline()`: PureEngine built at startup (always); rebuilt as MaxEngine after `project.json` read when configured; live runtime switching via `na-render-engine-switch` event (re-entrancy guarded, old composer/RTs disposed best-effort, fog pass re-inserted + tDepth rebound).
+- Engine-aware materials: MaxEngine → `Na__DataLib__LoadAll()` → DataLib lookup → swap + glass/mirror env overrides + distance culling registration. PureEngine → restore originals → re-run unchanged local-library swap. DataLib fetch failure falls back gracefully (keeps current materials, toast shown).
+- RenderFrame additions (no-ops under PureEngine): `updateAoUniforms`, `monitorAoFrame` (3 s startup-delay gated), `renderDepthPrePass`, `Na__DistanceCulling__Update`.
+- Resize additions: `setDepthPrePassSize` / `setAoSize` (optional calls).
+- **Door animations verified under MaxEngine**: startup order unchanged (materials swap → door registry scan), and the door system holds Object3D refs + transforms — never material refs — so swap/restore in either direction cannot break click-to-open or walk/fly proximity opening.
+
+**New Files**
+- `05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js` (relocated original; old file deleted)
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js`
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js` (config-gated, off by default)
+- `05__RenderPipeline/Na__RenderEngine__State.js` — configured vs active engine accessors
+- `05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js` — user-facing Tools section (dynamic visibility)
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js` + `__Shader.js` — custom log-depth SSAO (Three's SSAOPass cannot work with logarithmicDepthBuffer)
+- `01__AppCore/AppCore__DataLib__Loader.js` — SSOT DataLib fetch
+- `70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js` — dev radios + Save (live preview on radio change)
+- `.cursor/rules/07-RenderEngine-Architecture-.mdc`
+
+**Files Modified**
+- `Na__AppFlow__LoadingSequence.js` — engine wiring (see above)
+- `Na__MaterialsSystem__MaterialSwap.js` / `Na__MaterialsSystem__LibraryLoader.js` — TrueVision parity + restore support
+- `Na__Scene__DefaultSceneLighting.js` — added `Na__Scene__ApplyEnvironmentMap` (HDR + PMREM, MaxEngine only)
+- `Na__AppConfig__Main.json` — `RenderEngine__Config` default, `RenderEffect__AmbientOcclusion`, `Scene__Environment` (disabled until an HDR asset is added), `RenderEffect__DistanceCulling` (disabled)
+- `index.html` — Tools + Dev menu HTML sections, config extraction, init calls, event listeners
+- `TestEnv__PrototypeTestingSandbox__Main__.js` — import path updated to PureEngine setup
+
+**project.json Schema Addition (per model, optional)**
+```json
+"RenderEngine__Config": { "RenderEngine__Active": "MaxEngine" }
+```
+Key absent or `"PureEngine"` → default behaviour, no visible change.
+
+**Known Limits / Honest Notes**
+- `Scene__Environment` is enabled and points at `./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr` — a byte-identical copy of TrueVision's HDRI (MD5 verified), relocated into the proper app-assets tree mirroring TrueVision's `05__AppAssets__SkyDomes` convention. It is loaded lazily, only when MaxEngine activates, so PureEngine sessions never fetch the 4k HDR.
+- AO `setSize` receives CSS pixels while the depth pre-pass RT is pixel-ratio scaled — ported as-is from TrueVision for visual parity (subtle SSAO sampling offset at DPR > 1).
+- SSAO kernel is unseeded `Math.random()` (per TrueVision) — AO noise pattern varies per page load.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.7 - 09-Jun-2026
+### Navigation Modes — Walk and Fly Mode Port from TrueVision3D
+
+**Overview**
+Full port of Walk and Fly navigation modes from TrueVision3D into ValeVision3D. Both modes are gated by a per-model enable flag stored in `project.json` so legacy models are unaffected — Orbit remains the only mode unless a developer explicitly enables others. A new Dev-menu section lets the developer toggle Walk/Fly availability per model and save it to `project.json`. A new dynamic Tools menu section (hidden unless more than one mode is available) lets users switch between the enabled modes at runtime with a tri-state status indicator showing which mode is currently active. Doors open by proximity in both Walk and Fly modes, reusing ValeVision's existing door-proximity system unchanged.
+
+**Files Added**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js` — Free-fly camera: smoothed velocity, yaw/pitch from Euler, no gravity or collision. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js` — WASD/QE/Space keyboard + pointer-lock mouse look for fly mode. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js` — Single-finger move, two-finger look, pinch vertical for fly mode on touch devices. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js` — Fly mode orchestration layer: init, toggle, door proximity wiring, render loop requests. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js` — Alt+Shift+F hotkey and button wiring for fly mode. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__ModeTransition.js` — Smooth camera handoff between Orbit↔Walk and Orbit↔Fly; preserves orbit distance/elevation on return. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js` — Shared state accessor: stores Walk/Fly enabled flags read from project.json; drives hotkey gating and Tools menu visibility.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js` — User-facing Tools menu section: dynamically revealed when >1 mode is enabled; tri-state status badges; mutual exclusivity enforcement.
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js` — Localhost-only dev section: Walk/Fly checkboxes + Save button (GET-merge-POST to `/api/projects/{code}`).
+
+**Files Modified**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — Added `Na__WalkMode__GetSavedOrbitState`, `Na__WalkMode__ClampEntryPitch`, `Na__WalkMode__NudgeCapsuleForward` (required by ModeTransition); updated `Na__WalkMode__Deactivate` to accept `overrideCameraPosition` parameter.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js` — Routed activate/deactivate through `Na__Navmode__ModeTransition` for spatial continuity; stores camera ref for transition.
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — Added Fly Mode imports; reads `Navmode__EnabledModes` from project.json and sets state accessor; dispatches `na-navigation-modes-loaded` event; added Fly branch to `RenderFrame` with door-proximity update using fly camera position.
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — Added `Navmode__Settings.Navmode__FlyMode` block (all fly defaults), `Global__Hotkeys__ToggleFlyMode: Alt+Shift+F`, and `Navmode__EnabledModes` global default block (`Walk: false, Fly: false`).
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — Added `.na-navmode__btn`, `.na-navmode__btn--active`, `.na-navmode__status` tri-state button styles.
+- `index.html` — Added Navigation Modes Tools menu HTML section (hidden by default); added Navigation Modes Dev menu HTML section; added Fly system imports; added FlyMode init; gated Walk/Fly hotkeys on per-model enable flags; added both new UI module init calls in Engine Entry Points.
+
+**Architecture**
+- Orbit is always on. Walk and Fly default to disabled in both AppConfig and project.json.
+- `project.json` now supports an optional `Navmode__EnabledModes` key: `{ Navmode__EnabledModes__Walk: bool, Navmode__EnabledModes__Fly: bool }`.
+- The loading sequence reads this key and broadcasts `na-navigation-modes-loaded` so the Tools menu and dev checkboxes update asynchronously without polling.
+- The dev save writes the key back via the standard Flask GET-merge-POST to `/api/projects/{code}`; published to CDN via the normal git/GH Pages deployment flow.
+- Door proximity is unchanged — fly mode reuses `3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` as-is; the render loop calls `Na__DoorProximity__Update(Na__FlyMode__GetCameraPosition())` while fly is active.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.6 - 24-May-2026
+### Profile Lines — Architectural Alignment with TrueVision (Mesh/Linework Discrimination Tags)
+
+**Overview**
+- Forward-looking, low-risk architectural port from TrueVision. ValeVision was already running fast and already had the basic `LineSegments2` filter in `collectMeshObjects`, but it was missing the explicit `userData.Na__ModelType` discrimination tags that TrueVision now uses. This port adds those tags + a defensive parent-chain guard so any future render effect (or collision/raycast/picking system) can cleanly filter "operate only on mesh roots" or "operate only on linework roots" without relying on `obj.isMesh` heuristics — which is unsafe because `LineSegments2` sets `isMesh = true` internally.
+- No behaviour change in the current effect output. This is purely an architectural alignment so the two cousin codebases share the same discrimination contract.
+
+**Why This Was Worth Doing Even Though ValeVision Is Already Fast**
+- ValeVision currently uses `obj.isMesh && !obj.isLine2 && !obj.isLineSegments2` as the only filter in `collectMeshObjects`. That works for the current `LineSegments2` shape, but the moment any future loader produces a `Mesh` node nested inside a linework GLB tree (e.g. a hidden bounding mesh for frustum culling, or a debug placeholder), it would silently slip into the profile-colour material-swap pass and corrupt the linework's `LineMaterial`. The new third-line `Na__IsInsideLineworkGroup` guard prevents that class of bug from ever appearing.
+- TrueVision now uses the same three-stage filter. Aligning ValeVision now means any future visual effect ported between the two apps will Just Work.
+
+**Model Loader — Tagged Mesh and Linework Roots**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — both the priority-order loop AND the unordered-fallback loop now set:
+    - `meshRoot.userData.Na__ModelType = 'mesh';` immediately after `Na__ModelLoader__LoadSingleMesh(...)` returns.
+    - `lineworkRoot.userData.Na__ModelType = 'linework';` immediately after `Na__ModelLoader__LoadSingleLinework(...)` returns.
+- These tags propagate to every descendant via the parent chain — they are read by walking `current.parent` upwards, so individual mesh nodes do NOT need to be tagged individually. One tag per GLB root is enough.
+- Existing `Na__ProfileLineColorDominant` / `Na__ProfileLineColorByName` / `Na__ProfileLineColor` userData was left untouched — those are separate concerns (per-mesh dominant colour for the profile prepass) and continue to work as before.
+
+**Profile Lines — Defensive Parent-Chain Guard**
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — added new helper `Na__IsInsideLineworkGroup(object)` that walks the ancestor chain testing for `userData.Na__ModelType === 'linework'`.
+- `collectMeshObjects` now filters in three stages, each a defensive backstop for the next:
+    1. `obj.isMesh` must be true (only real meshes considered).
+    2. `obj.isLine2 / obj.isLineSegments2` must be false (fat-line shells set `isMesh = true` internally and must NEVER have their `LineMaterial` swapped).
+    3. Ancestor chain must not be a linework GLB root (defensive: ignores any stray Mesh nodes nested inside a linework tree).
+- The behaviour for the current scene graph is identical to before (the existing fat-line filter already caught everything that mattered). The architectural value is in stage 3 being there as a safety net for future scene graphs.
+
+**Diagnostic Console Log (One-Shot Per Cache Rebuild)**
+- `rebuildSceneCache` now logs `[ProfileLines] Scene cache rebuilt: N meshes (swap), M lines (hide)` after each rebuild. Fires once per scene-dirty event (typically once at startup, again on a model reload). Makes it trivial to confirm the mesh-vs-linework split is clean if you ever suspect something is being processed twice. Matches the same diagnostic added to TrueVision in its v2.2.5 port.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — added 4 `userData.Na__ModelType` tag assignments (2 in priority-order loop, 2 in unordered-fallback loop).
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — added `Na__IsInsideLineworkGroup` helper; expanded `collectMeshObjects` from a one-line `if` into a three-stage filter using the new helper; added one-shot diagnostic console log to `rebuildSceneCache`.
+
+**Verification**
+- No linter errors in either file.
+- No behaviour change expected for current scenes; the existing `LineSegments2` filter already handled the only real-world case. New guard is a safety net.
+
+**Known Future Opportunity (Not Done In This Pass)**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` `Na__WalkMode__SetCollisionMeshes` uses the same bare `if (!child.isMesh) return;` pattern (line ~280) and currently pushes every `LineSegments2` fat-line shell into the collision raycast set. ValeVision's collision counts are smaller than TrueVision's so this hasn't manifested as a felt slowdown, but it is the same architectural issue. Could be cleaned up in a future pass using the now-available `userData.Na__ModelType === 'linework'` tag.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.5 - 21-May-2026
+### Site Boundaries Toggle — Conditional Layer Support
+
+**Overview**
+- Added `Site Boundaries` as a first-class toggleable model layer, driven by the new `08__Site__Boundaries` SketchUp tag. When a project has boundary GLBs uploaded, a "Site Boundaries" toggle button appears automatically in the Model Parts List panel between "Doors" and "Landscape". Projects without boundary geometry are unaffected.
+
+**Model Loader — Load Order**
+- `"ValeVision__SiteBoundaries"` inserted into `Na__ModelCategories__LoadOrder` in `Na__ModelLoader__MultiModel.js` between `ProposedDoors` (tag 25) and `LandscapeEnvironment` (tags 07, 09), matching the tag-08 numeric position in the SSOT.
+- The loader's URL parse regex already accepted `ValeVision__SiteBoundaries` filenames; no regex changes required.
+
+**Toggle UI — Display Name**
+- `"ValeVision__SiteBoundaries": "Site Boundaries"` added to `Na__ModelToggle__DisplayNames` in `Na__UiFeature__ModelToggle__Controls.js` at the correct position between ProposedDoors and Landscape.
+- Button only appears when `TrueVision__SiteBoundaries__*` GLBs are present in the project's `valeVision_ModelUrls` array.
+
+**Cloudflare Bucket Builder — Automatic project.json Sync**
+- `AutomationUtil__BuildCloudflareBucket__ValeVisionGalleryProjects__Main__.py` extended with a new `REGION | Project JSON Sync` containing four functions: `find_gallery_project_json`, `build_all_cdn_urls_for_project`, `refresh_project_json_model_urls`, `refresh_all_project_json_urls`.
+- New **STEP 8** added to `main()` — runs after every execution (including when all R2 files are already up to date) to refresh `valeVision_ModelUrls` in every ValeVision Gallery `project.json` from the current local GLB sync folder. Eliminates the previous requirement to manually run `AutomationUtil__FetchLocalProjects` after each new GLB export.
+- `--dry-run-only` flag still suppresses all writes including STEP 8.
+- Added `import json` to the script's imports.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — added `ValeVision__SiteBoundaries` to load order
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js` — added display name
+- `ValeVisionGallery/Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__ValeVisionGalleryProjects__Main__.py` — STEP 8 JSON sync
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.4 - 29-Apr-2026
+### Dev Tools — Confirm Modals + Camera Configurations Grouping
+
+**Overview**
+- Added a shared in-app confirmation dialog that gates the four destructive Dev Tools writes to `project.json` so a stray click can no longer overwrite saved camera positions, fog settings, grid offsets, or orbit-max overrides.
+- Reorganised the Dev Tools dropdown so "Save Camera Settings" and "Project Max Zoom Radius" no longer float as bare items at the top — both now live inside a single "Camera Configurations" submenu with proper section titles.
+
+**Shared Confirm Dialog**
+- New module `02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js` exposing `Na__AppUtils__ConfirmDialog__Show({ title, message, confirmLabel, cancelLabel, isDestructive })` which returns a `Promise<boolean>`.
+- Cancel / backdrop click / Escape resolve `false`; Confirm / Enter resolve `true`. Auto-cancels any prior open dialog so re-entry cannot leak listeners or promises. Falls back to `window.confirm()` if the modal markup is missing.
+- Single `<div id="naConfirmDialog">` element added to `index.html` next to the toast notification, with backdrop, title, message, Cancel and Confirm buttons. Uses `aria-modal="true"` and `aria-hidden` toggling for accessibility.
+- New CSS region appended to `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` covering `.na-confirm-dialog`, `.na-confirm-dialog__backdrop`, `.na-confirm-dialog__panel`, `.na-confirm-dialog__title|message|actions`, plus a destructive warm-red accent (`#b3382c`) via `.na-confirm-dialog__confirm--destructive`. No new stylesheet file — buttons reuse existing `na-dropdown-menu__action*` classes for visual consistency.
+
+**Confirm-Gated Save Actions (project.json writes only)**
+- Save Camera Settings — title "Overwrite Saved Camera?", message includes the project code.
+- Save to Project (orbit max distance) — title "Save Orbit Max Override?", message includes the mm value and project code.
+- Save Fog Settings — title "Overwrite Saved Fog Settings?".
+- Save Grid Position — title "Overwrite Saved Grid Position?", message includes the project code.
+- Apply Live, Clear from Project, Remove Plane A/B, and Place Fog Plane A/B were intentionally NOT gated (non-persistent or trivially redoable).
+
+**Camera Configurations Submenu**
+- Replaced the two floating items `naSaveCameraSettingsItem` and `naOrbitMaxDistanceItem` with one new submenu `Camera Configurations` (`naCameraConfigItem` / `naCameraConfigToggle` / `naCameraConfigPanel`).
+- Inside the panel: a "Saved Camera + Orbit Target" heading with the Save Camera Settings action button, divider, then a "Project Max Zoom Radius" heading with the Effective display, Override input, and the Apply Live / Save to Project / Clear from Project buttons (flattened inline — no nested submenu).
+- All inner control IDs preserved (`naSaveCameraSettingsButton`, `naOrbitMaxDistanceCurrent`, `naOrbitMaxDistanceInput`, `naOrbitMaxDistanceApply`, `naOrbitMaxDistanceSave`, `naOrbitMaxDistanceClear`) so existing JS bindings continue to work.
+- `Na__UiFeature__SaveCameraSettings.js` now owns the wrapper visibility and the new submenu open/close toggle; lookup retargeted from `naSaveCameraSettingsItem` to `naCameraConfigItem`.
+- `Na__UiFeature__OrbitMaxDistance__DevControls.js` had its now-redundant wrapper-reveal and submenu-toggle wiring trimmed (the parent submenu owns those concerns); only the inline orbit-max controls remain.
+
+**Files Added**
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js`
+
+**Files Changed**
+- `index.html` — added `#naConfirmDialog` markup; replaced floating Save Camera + Project Max Zoom Radius items with a single `Camera Configurations` submenu containing both
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — appended `Confirm Dialog (Shared Destructive-Action Modal)` region with backdrop, panel, typography, and destructive-button styles
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — confirm-gated save; retargeted wrapper id to `naCameraConfigItem`; wired submenu toggle
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js` — confirm-gated save; removed redundant wrapper/submenu-toggle wiring
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js` — confirm-gated `Save Fog Settings` click handler
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js` — confirm-gated `Save Position` write inside `Na__GridUi__SavePositionToProject`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.3 - 29-Apr-2026
+### Orbit Max Zoom Distance — iPad +50% Bonus + Per-Project Override
+
+**Overview**
+- iPad / touch devices were noticeably more restricted than PC when zooming out from the helper cube. Added a config-driven multiplier so touch devices get +50% extra orbit-out distance by default while PC behaviour stays unchanged.
+- Added a per-project override (`Navmode__OrbitMaxDistanceMm` in `project.json`) that replaces the per-device default for both PC and iPad equally — useful on the ~10% of projects with unusually large or small site footprints. iPad bonus does NOT stack on top of the project override.
+- New "Project Max Zoom Radius" controls inside Dev Tools allow viewing the live effective cap, applying a value live for testing, saving it to `project.json` via the Flask API, or clearing it back to the per-device default.
+
+**Default Config**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `Navmode__IpadControls__OrbitMaxDistanceMultiplier: 1.5` inside the existing `Navmode__IpadControls` block. iPad effective max becomes `50 m * 1.5 = 75 m` out of the box; PC stays at 60 m.
+
+**Navigation Modules — Multiplier + Runtime-Mutable Cap**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — multiplies `config.maxDistanceMm` by `config.maxDistanceMultiplier` (defaults to 1.0 when missing, so existing callers like ValeVision Gallery / TestEnv are unaffected). Bundle now exposes `setMaxDistanceMm(mm)` for runtime mutation.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — wheel-zoom clamp now reads `controls.maxDistance` live (instead of the closure-captured value) so post-init mutations affect both wheel and orbit equally. Same `setMaxDistanceMm(mm)` setter exposed.
+
+**Per-Project Override Read in App Flow**
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — alongside the existing `Camera__DefaultPosition` and `OrbitHelperCube__Position` reads, captures `projectData.Navmode__OrbitMaxDistanceMm` and applies it to `Na__Controls__Orbit.maxDistance` post-fetch and pre-render-loop. iPad multiplier is intentionally NOT re-applied on top.
+
+**index.html Wiring**
+- Added `maxDistanceMultiplier` to the iPad branch of `Na__Navmode__ConfigPayload` so the iPad nav module receives the bonus from JSON.
+- Initial Dev Tools dropdown markup added a top-level "Project Max Zoom Radius" submenu (subsequently flattened into the `Camera Configurations` submenu in v2.3.4).
+- New init call `Na__UiFeature__InitializeOrbitMaxDistanceDevControls(...)` registered alongside `Na__UiFeature__InitializeSaveCameraButton(...)`.
+
+**Dev Tools — New Module**
+- New module `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`. Mirrors the `Na__UiFeature__SaveCameraSettings.js` Flask round-trip pattern.
+  - **Apply Live** — sets `controls.maxDistance` instantly via the nav-bundle setter, no persistence.
+  - **Save to Project** — writes `Navmode__OrbitMaxDistanceMm` into `project.json`.
+  - **Clear from Project** — deletes the key and restores the per-device default (PC: 60 m; iPad: 50 m × 1.5 = 75 m) by recomputing from the in-memory `Na__Navmode__ActiveConfig`.
+- Live "Effective Max" display refreshed on every `OrbitControls 'change'` event, so panning/zooming reflects the cap immediately.
+- All controls are localhost-gated via `Na__AppUtils__IsRunningOnLocalhost()` — production users never see them.
+
+**Files Added**
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`
+
+**Files Changed**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `Navmode__IpadControls__OrbitMaxDistanceMultiplier: 1.5`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — applied multiplier to effective max distance; exposed `setMaxDistanceMm`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — wheel-zoom reads live `controls.maxDistance`; exposed `setMaxDistanceMm`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — applied `Navmode__OrbitMaxDistanceMm` from `project.json` post-fetch
+- `index.html` — wired `maxDistanceMultiplier` into iPad payload; added initial `Project Max Zoom Radius` Dev Tools markup; imported and called the new dev-controls initializer
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.2 - 09-Apr-2026
+### Email Workers — R2 CDN Contacts, BCC Admin Copy, Deployment Tooling
+
+**Overview**
+- Moved encrypted address book from Cloudflare Worker bundle to Cloudflare R2 CDN, enabling contact list updates without Worker redeployment.
+- Frontend now fetches and decrypts the address book client-side using Web Crypto API (AES-256-GCM).
+- Python encryption tool updated to upload directly to R2 via boto3 and auto-patch the decryption key into both `.dev.vars` and the frontend config JSON.
+- Every outbound email is now BCC'd to the first contact in the encrypted address book (admin record-keeping). The BCC address is resolved at send time by the Worker fetching and decrypting the R2 address book — no email addresses are hardcoded or visible in committed code.
+- Worker simplified to send-only (`/send` + `/verify-auth` + `/health`); contacts route removed.
+- Added one-click deployment and local dev batch scripts.
+
+**R2 CDN Contacts (replaces Worker /contacts route)**
+- Encrypted address book uploaded to `cdn.noble-architecture.com/VaApps/ValeVision3D/data/Na__Email__AddressBook__Encrypted__.json`.
+- New `Na__Feature__EmailWorkers__AddressBook__Decryptor__.js` — fetches encrypted JSON from CDN, decrypts with AES-256-GCM using key from config, returns normalised contact list.
+- Config JSON now includes `ContactsCdnUrl` and `ContactsDecryptKeyB64` fields.
+- Python encryption tool (`Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN`) now: encrypts → writes local copy → uploads to R2 → patches `.dev.vars` → patches config JSON. Single-command workflow.
+
+**BCC Admin Copy**
+- Worker reads `CONTACTS_CDN_URL` and `EMAIL_ADDRESSBOOK_KEY_B64` at send time, decrypts the address book, and uses the first entry's email as `bccRecipients` in the Microsoft Graph payload.
+- BCC always fires, even when the admin is in the To list (enables self-test sends).
+- If decryption fails, BCC is silently skipped — send still proceeds.
+
+**Deployment Tooling**
+- `CloudflareWorker/Deploy__Worker.bat` — loads API token from shared env file, deploys Worker, sets all Wrangler secrets.
+- `CloudflareWorker/Dev__Worker.bat` — starts local dev server on port 8787 with `.dev.vars` secrets.
+- Worker deployed to `https://valevision3d-email-worker.adam-fb3.workers.dev`.
+- New `CLOUDFLARE_WORKERS_API_TOKEN` added to `Token__CloudflareAPI.env` (separate from R2 token, with Workers Scripts/KV/R2/Routes/D1 permissions).
+
+**Security Fixes**
+- Scrubbed leaked credentials from `.env.template` (all values replaced with `{{REDACTED}}`).
+- Encryption tool no longer patches `.env.template` (only `.dev.vars` and config JSON).
+- Removed hardcoded `BCC_ADMIN_EMAIL` from `wrangler.jsonc` — BCC address now derived from encrypted address book at runtime.
+- Added `.wrangler/` to `.gitignore` to prevent build artifact commits.
+- Force-pushed to erase intermediate commits containing leaked values from git history.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Decryptor__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Deploy__Worker.bat`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Dev__Worker.bat`
+
+**Files Changed**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN` — added boto3 R2 upload, config JSON patching, removed `.env.template` patching
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__Config.json` — added CDN URL, decrypt key, verify-auth endpoint; changed API base URL to deployed Worker
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js` — contacts load via client-side decryptor instead of Worker API
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/src/index.js` — removed /contacts route and bundled JSON import; added BCC from R2 decrypt; simplified to send-only
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/wrangler.jsonc` — added account_id, CONTACTS_CDN_URL; removed BCC_ADMIN_EMAIL, ALLOWED_ORIGIN (moved to secret)
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.env.template` — all values replaced with `{{REDACTED}}`
+- `.gitignore` — added `.wrangler/`, `.dev.vars`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.1 - 09-Apr-2026
+### Email Auth Overlay — Password-Gated Email Send Authorization
+
+**Overview**
+- Added a password authentication gate to the email send flow, preventing unauthorized use of the email system from publicly shared project links.
+- When "Send email" is clicked, a password overlay appears requesting a shared internal password before the email is dispatched.
+- Password is verified server-side by the Cloudflare Worker using timing-safe comparison against a Wrangler secret, returning an HMAC-SHA256 signed token valid for 30 days.
+- The signed token is stored in `localStorage` and automatically included with subsequent send requests, so the password only needs to be entered once per month.
+
+**New Frontend Modules**
+- `Na__Feature__EmailWorkers__AuthOverlay__.js` — vanilla JS modal DOM builder with password input, show/hide toggle (eye icon), error display with shake animation, Submit/Cancel buttons, Enter/Escape keyboard support, and loading state during verification.
+- `Na__Feature__EmailWorkers__AuthManager__.js` — `localStorage` token persistence (`valevision3d_email_auth_token` + `valevision3d_email_auth_expiry`) with `hasValidAuthToken()`, `saveAuthToken()`, `clearAuthToken()`, and `ensureAuthorized()` orchestrator that creates the overlay, calls the verify endpoint, and resolves with the token on success.
+
+**Cloudflare Worker Changes (`src/index.js`)**
+- New `POST /api/email/verify-auth` route — rate-limited to 5 password attempts per hour per IP (separate bucket from send), compares submitted password to `EMAIL_AUTH_PASSWORD` Wrangler secret using `crypto.subtle.timingSafeEqual`, returns an HMAC-SHA256 signed token with 30-day expiry on success.
+- HMAC token utilities — `Na__EmailApi__CreateHmacToken` creates `base64url(payload).base64url(signature)` tokens, `Na__EmailApi__VerifyHmacToken` verifies signature and expiry.
+- `POST /api/email/send` now requires `Authorization: Bearer <token>` header — validates the HMAC token signature and expiry before processing.
+- CORS `Access-Control-Allow-Headers` updated to include `Authorization`.
+- `ALLOWED_ORIGIN` moved from `wrangler.jsonc` `vars` to a Wrangler secret, eliminating `.dev.vars` override conflicts during local development.
+
+**New Wrangler Secrets**
+- `EMAIL_AUTH_PASSWORD` — the shared password for email send authorization.
+- `EMAIL_AUTH_TOKEN_SECRET` — random 32+ character HMAC-SHA256 signing key for auth tokens.
+- `ALLOWED_ORIGIN` — moved from plaintext vars to encrypted secret.
+
+**Deployment Tooling**
+- `CloudflareWorker/Deploy__Worker.bat` — one-click deploy script that loads the Cloudflare API token from `Token__CloudflareAPI.env`, deploys the Worker, and sets all Wrangler secrets.
+- `CloudflareWorker/Dev__Worker.bat` — one-click local dev server launcher (`wrangler dev` on port 8787).
+
+**Files Modified**
+- `Na__Feature__EmailWorkers__ApiClient__.js` — added `verifyAuth(password)` method and `Authorization: Bearer` header on `sendEmail()`.
+- `Na__Feature__EmailWorkers__UiInteractionLogic__.js` — `btnSend` handler now calls `ensureAuthorized()` before building payload; aborts silently on cancel.
+- `Na__Feature__EmailWorkers__Config.json` — added `EmailWorkers__Config__VerifyAuthEndpoint: "/verify-auth"`.
+- `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` — added auth overlay CSS region (z-index 3200, fade/slide-up animations, error shake animation).
+- `CloudflareWorker/wrangler.jsonc` — removed `ALLOWED_ORIGIN` from vars, documented new secrets in comments.
+- `CloudflareWorker/.dev.vars` — added `ALLOWED_ORIGIN`, `EMAIL_AUTH_PASSWORD`, and `EMAIL_AUTH_TOKEN_SECRET` for local dev.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthManager__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Deploy__Worker.bat`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Dev__Worker.bat`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.0 - 09-Apr-2026
+### Email Workers — Internal Send-Email System via Microsoft Graph
+
+**Overview**
+- New "Send project email" feature in the Tools menu allowing users to send the ValeVision3D project share email directly to colleagues from within the app, without leaving the browser or using an external mail client.
+- Uses a Cloudflare Worker backend that authenticates via Cloudflare Access JWT, decrypts an AES-256-GCM-encrypted internal address book, and sends HTML email through Microsoft Graph (client-credentials OAuth2 flow).
+- Autocomplete recipient input with chip-based selection (Outlook-style) driven by the encrypted address book.
+- Per-IP rate limiting (10 emails per hour, configurable).
+
+**New Module: `62__Feature__EmailWorkers`**
+- `Na__Feature__EmailWorkers__Config.json` — API routing config with localhost override for local dev.
+- `Na__Feature__EmailWorkers__ApiClient__.js` — fetch wrapper with AbortController timeout, config-driven endpoint resolution, contacts and send methods.
+- `Na__Feature__EmailWorkers__FormOverlay__.js` — programmatic modal DOM builder with recipients chip container, greeting names input, notes textarea, Cancel / Generate & download / Send email buttons.
+- `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` — modal overlay CSS with chip, suggestion dropdown, and button styles matching the Vale Design Suite palette.
+- `Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js` — chip-input controller with address-book filtering, freeform email entry, keyboard shortcuts (Enter, comma, semicolon), and click-to-remove chips.
+- `Na__Feature__EmailWorkers__PayloadBuilder__.js` — assembles send payload by combining selected recipients with the existing Share Project Link email template (reuses `BuildEmailHtml` from `61__Feature__ShareProjectLink`).
+- `Na__Feature__EmailWorkers__UiInteractionLogic__.js` — wires Tools menu button, overlay show/hide with chevron sync, non-blocking background contacts load, generate-download flow, and send-email flow with loading state and toast feedback.
+
+**Cloudflare Worker: `62__Feature__EmailWorkers/CloudflareWorker`**
+- `src/index.js` — Worker entry with CORS preflight, Cloudflare Access JWT verification (auto-bypassed in dev when team domain is unconfigured), AES-GCM address book decryption, Microsoft Graph `sendMail` via client-credentials token, per-IP sliding-window rate limiter, and health endpoint.
+- `wrangler.jsonc` — Worker config with non-secret env vars (tenant ID, client ID, sender user, allowed origin, rate limit).
+- `package.json` — dependencies: `jose` for JWT verification, `wrangler` for dev/deploy.
+- `assets/Na__Email__AddressBook__Encrypted__.json` — AES-256-GCM encrypted address book (committed to git, safe to be public).
+- `.env.template` — reference file listing all required env vars with placeholder values.
+- `.dev.vars` — local dev secrets loaded automatically by `wrangler dev` (gitignored).
+
+**Address Book Encryption Tooling**
+- `Na__Email__AddressBook__Source__.json.--HIDDEN` — plaintext contact list (14 contacts, gitignored via `*.--HIDDEN` pattern).
+- `Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN` — Python script using `cryptography` library for AES-256-GCM encryption. Generates a random 256-bit key, encrypts the contacts, writes the encrypted JSON to the Worker assets folder, and auto-patches the key into `.dev.vars` and `.env.template`. Single-command workflow for adding new contacts.
+
+**Tools Menu Integration**
+- New "Send project email" menu item added between "Share project link" and "Enter Full Screen" in the Tools & Settings dropdown.
+- Reuses the Share Link icon asset.
+
+**`.gitignore` Updates**
+- Added `*.--HIDDEN` pattern to hide plaintext address book source and encryption tooling from git.
+- Added `.dev.vars` pattern to hide wrangler local dev secrets.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__Config.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__ApiClient__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__PayloadBuilder__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__Source__.json.--HIDDEN`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/src/index.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/wrangler.jsonc`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/package.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/assets/Na__Email__AddressBook__Encrypted__.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.env.template`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.dev.vars`
+
+**Files Changed**
+- `index.html` — added Send Email menu item HTML, module import, and initialisation call
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` — added CSS import for email overlay stylesheet
+- `.gitignore` — added `*.--HIDDEN` and `.dev.vars` patterns
+
+# ---------------------------------------------------------
+## ValeVision3D v2.2.0 - 07-Apr-2026
+### Fog Plane System — Planar Fog with Camera Force Field
+
+**Overview**
+- Complete replacement of the old orbit-anchored radial fog system (which never rendered correctly) with a new planar fog system that lets users place up to two configurable fog planes to mask off sections of a building model.
+- Each fog plane acts as both a visual fog boundary and a camera force field, preventing navigation into the fogged zone.
+
+**New System: `29__System__FogPlaneSystem`**
+- `Na__FogPlaneSystem__Config.json` — default fall-off distance, slider step values (250mm–20000mm), plane visual style (blue semi-transparent), camera constraint padding, fog colour.
+- `Na__FogPlaneSystem__FogShaderEffect.js` — custom post-processing `ShaderPass` with GLSL fragment shader that reconstructs world position from the logarithmic depth buffer and computes signed distance from up to two world-space planes. Fall-off uses `smoothstep` between the plane surface and the configured distance. Background pixels are projected to `cameraFar` so linework and profile-line edges at geometry silhouettes are fogged correctly.
+- `Na__FogPlaneSystem__PlaneCreation.js` — click-to-place system modelled on the Elevation View tool. Raycasts against model meshes, snaps the face normal to the nearest cardinal axis (X or Z), builds a blue semi-transparent `PlaneGeometry` group with a draggable inner handle. Drag moves the plane along its normal via screen-Y delta.
+- `Na__FogPlaneSystem__CameraConstraint.js` — per-frame camera position clamping with configurable padding. Pushes camera and orbit target back to the plane surface if they cross to the fog side. Active even when planes are visually hidden.
+- `Na__FogPlaneSystem__SaveSettings.js` — per-project save/load using the same GET-merge-POST pattern as the camera and grid save systems. Data stored under `FogPlane__Config` in `project.json`.
+- `Na__FogPlaneSystem__SystemLogic.js` — main orchestrator: async config load, sub-module initialisation, fog pass creation, saved-state restoration, per-frame update dispatch, clipping-plane helpers.
+- `Na__FogPlaneSystem__UiControls.js` — Dev Tools panel wiring: fog enable toggle (off by default), plane visibility toggle, discrete-step fall-off slider, Place Plane A/B buttons, Remove buttons, Save button.
+
+**Dev Tools UI**
+- New "Fog Effect" dropdown added to the Dev Tools menu with: Enable Fog toggle, Show Planes toggle, Fall-off Distance slider (250mm, 500mm, 1m, 2m, 2.5m, 5m, 10m, 20m), Place Fog Plane A/B buttons, Remove Plane buttons (appear after placement), Save Fog Settings button.
+
+**Render Pipeline Changes**
+- Fog `ShaderPass` is late-inserted into the `EffectComposer` chain (after Profile Lines, before FXAA) via a new `insertFogPass` method on the pipeline state object. This handles the async system initialisation that completes after the composer is already built.
+- Fog shader correctly covers profile-line Sobel edges and linework at geometry silhouettes by projecting background-depth pixels (depth = 1.0) to `cameraFar` distance instead of skipping them. The normal prepass hides `LineSegments2` so the depth buffer has no linework data; the far-distance projection ensures those pixels still go through the fog calculation.
+
+**Old System Removed**
+- Deleted `Na__Scene__DefaultFogEffect.js` (orbit-anchored radial fog shader that never worked).
+- Removed `Scene__Default__FogConfig` from `Na__AppConfig__Main.json`.
+- Stripped all old fog imports, calls, state caching, and elevation-mode fog toggling from `index.html` and `Na__AppFlow__LoadingSequence.js`.
+- Scene background set directly to white (`0xffffff`) instead of via the old fog helper.
+
+**Files Added**
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__Config.json`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__PlaneCreation.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__CameraConstraint.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js`
+
+**Files Deleted**
+- `02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js`
+
+**Files Changed**
+- `index.html` — removed old fog imports/config/setup; added white background; added fog UI HTML to Dev Tools; added fog UI import and init call; added `showToast` passthrough to loading sequence context
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — removed old fog imports/state/per-frame update/elevation fog toggle; added fog system import and async init after model load; added fog pass pipeline insertion; added fog per-frame update in render loop
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — removed `Scene__Default__FogConfig` block
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — added `insertFogPass` method for late fog pass insertion into the composer chain; exposed in return object
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.5 - 07-Apr-2026
+### Scene Inspector — Copy Tree to Clipboard
+
+**Overview**
+- Added a Copy Tree button to the Scene Inspector toolbar that serialises the last scanned node tree to plain text and writes it to the clipboard in two report formats.
+
+**Feature Details**
+- Copy Tree button added to the Scene Inspector toolbar row alongside Hide All, Restore All, and Isolate Pair.
+- Button provides inline visual feedback: label changes briefly to `Copied!`, `Failed`, or `No scan yet` before restoring.
+- Output contains two sections separated by dividers:
+  1. **Concise Report** — type and node name only, indented with 4 spaces per level offset by 1 (Scene's direct children start flush; indentation begins at depth 2).
+  2. **Full Report With States & Statistics** — pipe-separated fields: `Type Name  |  N triangles  |  Visible = True/False`. Triangle count segment only shown for Mesh nodes.
+- Last scanned tree is cached in module state (`Na__SceneInspector__LastScannedTree`) after each Rescan so the copy operation does not require re-traversal.
+
+**Files Changed**
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js` — new `REGION | Copy Tree to Clipboard` with `BuildNodeTextLineConcise`, `BuildNodeTextLineFull`, updated `WalkTreeToText` (lineBuilder callback), `CopyTreeToClipboard`; new DOM ID constant; new state variable; tree cache in scan handler; copy button wired in init
+- `index.html` — Copy Tree button added to Scene Inspector toolbar
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.4 - 20-Mar-2026
+### Tools Menu — Share Link + Full Screen Icon Update
+
+**Overview**
+- Updated the Tools menu icon wiring so the new dedicated Share Link and Full Screen icon assets are now used by their matching feature rows.
+
+**UI Changes**
+- Share project link row now uses `Icon__ToolsMenu__ShareLink__540p__.png`.
+- Full screen row now uses `Icon__ToolsMenu__FullScreen__540p__.png`.
+- Removed temporary text-based fullscreen icon styling now that the image icon is active.
+
+**Files Changed**
+- `index.html` — swapped icon source paths for Share Link and Full Screen rows.
+- `02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__Stylesheet__.css` — removed `.na-dropdown-menu__btn-icon--text` styling block.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.3 - 13-Mar-2026
+### Tools Menu — Icon Set Added
+
+**Overview**
+- Added custom icon set to the Tools dropdown menu to improve visual clarity and reduce reliance on text-only labels.
+
+**Icons Added**
+- Five 540p PNG icons added to `01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/`:
+  - `Icon__ToolsMenu__CameraSettings__540p__.png`
+  - `Icon__ToolsMenu__ExportImage__540p__.png`
+  - `Icon__ToolsMenu__GridSystem__540p__.png`
+  - `Icon__ToolsMenu__ViewModelLayers__540p__.png`
+  - `Icon__ToolsMenu__ElevationView__540p__.png`
+
+**UI Changes**
+- Each Tools menu button now displays its icon to the left of the label at 24px (1.2× base size).
+- Icon uses `opacity: 0.75` to sit subordinate to the text label.
+- `.na-dropdown-menu__btn-icon` and `.na-dropdown-menu__btn-label` CSS classes added to `Na__UiFeature__Styles__DropdownAndToast__.css`.
+- Menu item order updated: Grid Lines moved to third position (above Toggle Model Layers).
+
+**Files Changed**
+- `index.html` — icon `<img>` elements and `<span>` label wrappers added to all 5 Tools menu buttons; Grid Lines item reordered to position 3
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — `.na-dropdown-menu__btn-icon` and `.na-dropdown-menu__btn-label` classes added
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.2 - 13-Mar-2026
+### Elevation View — Grid Origin Plane Anchor
+
+**Overview**
+- Elevation planes are now anchored to the project's saved grid origin (the red X marker) rather than the raw raycast hit point. This aligns the elevation coordinate system to the project UCS so orthographic views are centred on the correct site reference point.
+
+**New Module**
+- `Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js` — fetches the project's persisted `GridLine__Grid__Offset__Config` from the Flask API, converts `OffsetXMm`/`OffsetZMm` to Three.js units (Z negated to match the grid convention), and caches the result as a `THREE.Vector3`. Exports `Na__ElevOffsetPlane__LoadGridOrigin()` (async, called at init) and `Na__ElevOffsetPlane__GetGridOriginPoint()` (synchronous getter).
+
+**Anchor Logic**
+- A new `Na__Elev__GridAnchorPoint` state variable holds the resolved anchor: XZ from the grid origin, Y from the raycast hit point. This replaces `Na__Elev__HitPoint` as the positional anchor in both `Na__Elev__UpdatePlaneTransform` and `Na__Elev__UpdateOrthoCameraTransform`.
+- If no grid origin is loaded (no project code, or project has no saved grid offset), the anchor falls back to the hit point — preserving the original behaviour.
+
+**Freeform Nudge Config**
+- Added `ElevationView__Plane__Config__AnchorOffsetXMm` and `ElevationView__Plane__Config__AnchorOffsetZMm` to `Na__ElevationView__Config.json` (both default `0`). These allow the anchor to be nudged away from the grid origin in world XZ without changing the saved grid UCS.
+
+**Files Added**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js`
+
+**Files Changed**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js` — import, state variable, init call, anchor computation, plane and camera transform updates, cleanup reset
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__Config.json` — two new anchor offset keys
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.1 - 13-Mar-2026
+### Grid Lines System — Configurable Scene Grid Overlay
+
+**Overview**
+- New Grid Lines system allowing users to overlay a configurable grid on the XZ plane. The grid is disabled by default and must be enabled via the "Show Grid" toggle in the toolbar. All parameters are driven by a dedicated JSON configuration file.
+
+**Grid Controls**
+- Grid Size: discrete steps (100mm, 250mm, 500mm, 1000mm, 2000mm, 2500mm, 5000mm) controlling cell spacing.
+- Grid Height: linear slider (-1000mm to 1000mm, 100mm step) to raise or lower the grid plane along Y.
+- Grid Style collapsible section containing:
+  - Line Width: discrete pixel steps (0.10, 0.25, 0.50, 1.00, 1.50, 3.00 px) using Three.js addons fat lines (`LineMaterial` / `LineSegments2`) for accurate GPU-rendered width control — standard `LineBasicMaterial` linewidth is capped at 1px on most hardware.
+  - Line Type: Solid, Dashed, or Dotted via `LineMaterial` dashing properties.
+  - Line Colour: predefined palette dropdown (Grey, Red, Black, Mid Grey, Vale Blue).
+  - Line Opacity: slider (20%–100%, default 50%) with transparent material blending.
+  - Line Gap Size: scalar slider (0.2x–5.0x) visible only for Dashed/Dotted types.
+- Localhost-only Grid Position section: X and Z axis offset sliders with a "Save Position" button that persists the current offsets and height to the project JSON via the Flask API (same pattern as Save Camera Settings). On next load, persisted offsets are read back from the project JSON and applied as initial slider values.
+
+**Technical Approach — Fat Lines**
+- Replaced `THREE.LineBasicMaterial` / `THREE.LineSegments` with `LineMaterial` / `LineSegments2` / `LineSegmentsGeometry` from `three/addons/lines` for robust line width rendering across all hardware.
+- `LineMaterial.resolution` is updated on window resize to maintain correct pixel-width rendering.
+- Z-axis offset is negated internally in the creation logic so the config and UI use intuitive positive values while correctly mapping to Three.js right-handed coordinates.
+
+**Origin Marker (Localhost Dev Aid)**
+- A red X marker renders at the grid origin on localhost, moving with X/Z position offsets to help align the grid to the model during development.
+
+**Default State**
+- Grid is disabled on startup. The user must check the "Show Grid" toggle to display it. No grid geometry is created until the user enables the toggle.
+
+**Files Added**
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__Config.json`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__GridCreationLogic.js`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js`
+
+**Files Changed**
+- `index.html` — Grid Lines menu HTML, import, and initialization call with toast callback and pipeline ref
+
+**Bug Fixes**
+- Fixed a spurious white rectangle appearing near the origin when the grid was enabled. Root cause: the profile lines system caches scene objects once on init and never re-checks when new objects are added. Each call to `Na__GridLine__Update` disposes and recreates `LineSegments2` objects, leaving the cache pointing to stale references. The new objects were not hidden before the normal prepass, so `scene.overrideMaterial = MeshNormalMaterial` rendered their internal template quad as a white filled plane with profile edges. Fix: `invalidateProfileLinesCache()` is now called via the pipeline ref on every grid geometry rebuild (`Na__GridUi__ApplyUpdate`) and on every enable/disable toggle, forcing the cache to rebuild before the next render pass.
+
+**Elevation View Config — MM Units**
+- Elevation plane config values (Width, Height, Offset, LiftY, HandleWidth, HandleHeight) now use millimeters in `Na__ElevationView__Config.json` and are converted to scene units via `Na__Math__ConvertMmToUnits()` in `Na__ElevationView__SystemLogic.js`, aligning with AppConfig conventions.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.0 - 13-Mar-2026
+### Vertical Perspective Correction — Architectural Line Straightening
+
+**Overview**
+- New feature that corrects the perspective distortion of vertical lines when the camera is tilted up or down, a critical requirement for architectural imagery. When enabled, vertical world lines render as true pixel-aligned verticals in both the live viewport and all image exports.
+
+**Technical Approach — Projection Matrix Shear**
+- Applied a shift-lens correction directly to `camera.projectionMatrix` rather than a post-process shader, eliminating resampling artifacts.
+- Each rendered frame: `camera.updateProjectionMatrix()` resets to a clean symmetric frustum, then `elements[9] += tan(pitch) * elements[5]` shifts the frustum asymmetrically to cancel vertical convergence. `projectionMatrixInverse` is kept in sync for correct raycasting.
+- The pitch angle is derived from `camera.getWorldDirection()` each frame, so the correction tracks any camera movement in real time.
+- `camera.updateProjectionMatrix()` is called at the start of `ApplyFrame` every frame to prevent the shear from compounding across frames — ensuring the horizon stays level.
+
+**Navigation Lock**
+- When vertical correction is active, orbit controls are disabled to prevent the jarring camera drift loop that occurs when navigating with the shear applied.
+- A centred overlay notification ("Navigation locked — Vertical Correction is active") appears and fades automatically after 3 seconds.
+- Any attempted navigation input (mouse, wheel, touch) while locked re-shows the notification so the user is clearly informed.
+
+**Export Pipeline Integration**
+- The correction is applied in both the "Download Image" (PNG) and "Create Drawing" (Layout View) export paths.
+- In custom-resolution export mode, `camera.updateProjectionMatrix()` is called internally to apply the export aspect ratio, which previously wiped the shear. `Na__VerticalCorrection__ApplyFrame()` is now called immediately after to re-apply the correction before `composer.render()` fires.
+- After the export restore block, `ApplyFrame()` is called again so the live viewport remains corrected immediately without waiting for the next render-loop frame.
+- All calls are no-ops when the feature is disabled, with zero impact on users not using the toggle.
+- Elevation view exports are unaffected (guarded by existing `isElevationMode` checks).
+
+**UI**
+- "Vertical Correction" toggle checkbox added inside the "Adjust Field of View" panel, below the Camera Lens Width slider, separated by an HR divider.
+- Inherits the existing fold/collapse behaviour — the panel opens automatically when Export Image is clicked.
+- HR divider also added in the Export Image panel between the Resolution slider and the Enhance Whitecard toggle for improved visual breathing room.
+
+**Files Added**
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__NavLockNotification.js`
+
+**Files Changed**
+- `index.html` — toggle HTML, import, and initialization call with orbit controls reference
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — `Na__VerticalCorrection__ApplyFrame()` called in render loop after navigation updates
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js` — `ApplyFrame()` called after `updateProjectionMatrix()` in `applyLens()` so FOV changes preserve the correction
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js` — import + two `ApplyFrame()` insertions in custom export path
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — `.na-dropdown-menu__panel-divider` HR style + `.na-navlock-notification` overlay styles
+
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
+##  ValeVision3D v2.0.8 - 12-Mar-2026
+### Image Export Fix — Download Image Black Output + Elevation-Aware 2D Pipeline
+
+**Overview**
+- Fixed "Download Image" producing black PNGs, main-thread hang, and memory leak. Create Drawing (Layout View) already worked; root cause was synchronous render capture outside `requestAnimationFrame` plus blocking `toDataURL()` at 4K.
+- Added elevation-aware export so Download Image and Create Drawing correctly render the 2D orthographic elevation view when the user is in Elevation View mode, instead of the 3D perspective pipeline.
+
+**Download Image — Black Image + Hang Fix**
+- Extracted `Na__UiFeature__RenderToCanvas` from `Na__UiFeature__RenderToDataUrl`; always copies WebGL framebuffer to a 2D offscreen canvas immediately after `render()` for reliable pixel readback regardless of `preserveDrawingBuffer`.
+- Wrapped export handler in double `requestAnimationFrame` (same pattern as Create Drawing) so render and capture occur within a proper animation frame lifecycle.
+- Replaced synchronous `canvas.toDataURL('image/png')` with async `canvas.toBlob()` + `URL.createObjectURL()` + `URL.revokeObjectURL()` to avoid blocking the main thread and large base64 string retention at 4K–6K resolution.
+- Added loading overlay (phases: "Rendering Your Image...", "Encoding Image...", "Download Ready!") reusing the existing Layout View overlay system for visual feedback on slower devices.
+
+**Elevation-Aware Export**
+- Created `Na__ElevationView__ExportOverrides.js` in `40__System__2dElevationsView`. Listens for `na-elevation-camera-changed` to capture the ortho camera and 2D profile normals renderer.
+- `Na__ElevationView__GetExportOverrides()` returns `null` in 3D mode, or an overrides object with `camera`, `renderProfileNormals`, `resizeFrustum`, `restoreFrustum` when in `VIEWING_ELEVATION`.
+- `Na__UiFeature__RenderToCanvas` now accepts optional `getElevationOverrides`; when non-null, uses 2D profile normals and ortho camera instead of 3D pipeline, and updates ortho frustum for custom-resolution exports while preserving zoom level.
+- Zero impact on real-time renderer; no `preserveDrawingBuffer` change; export logic branches only at export time.
+
+**Files Added**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js`
+
+**Files Changed**
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `index.html`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.8  -  12-Mar-2026
+### Elevation View System — 2D Elevation Tool
+
+**Overview**
+- New Elevation View tool allowing users to click a building face, place a configurable plane, and switch to a true orthographic 2D elevation view with independent profile lines rendering and 2D navigation controls.
+
+**Elevation View — Core System (`Na__ElevationView__SystemLogic.js`)**
+- Click any building face to define the elevation direction via raycasting and XZ-projected normals.
+- Semi-transparent red-tinted plane spawns offset from the selected face with directional corner arrows indicating the camera look direction.
+- Inner drag-handle rectangle with "Click and drag to set plane" label — only clicking this smaller region initiates constrained plane dragging along the face normal axis.
+- Orthographic camera created and aligned to the horizontal face normal for perfect parallel projection.
+- View switching between perspective orbit (3D) and orthographic elevation (2D) with automatic plane hide/show.
+- Left-click-only drag restriction with orbit controls suppressed during drag and restored on release.
+
+**2D Profile Lines Renderer (`Na__RenderEffect__2dProfileLines__.js`)**
+- Independent 2D profile lines module sharing the 3D system's normal and colour render targets.
+- Renders with the ortho camera instead of the captured perspective camera, fixing stale/misaligned profile line artifacts.
+- Fixed edge width (no distance-based scaling) set once on activation from config, simplifying the 2D render pipeline.
+- Render loop dynamically switches between 3D and 2D profile lines based on elevation mode state.
+
+**2D Navigation Controls**
+- `Na__ElevationNav__DesktopControls.js` — middle mouse + drag or right-click + drag for pan; scroll wheel for zoom; directly manipulates ortho camera position and frustum.
+- `Na__ElevationNav__TouchScreenControls.js` — single finger drag for pan; two-finger pinch for zoom with simultaneous pan; prevents default touch behaviour.
+- Controls activate on entering elevation view and deactivate on return to 3D.
+- Zoom step, min, and max driven by config JSON with fallback defaults.
+
+**Elevation View Config (`Na__ElevationView__Config.json`)**
+- Four config sections: Plane, Camera, 2dProfileLines, Navigation.
+- Plane section drives outer plane dimensions/appearance, inner drag handle size/opacity, label text, and directional arrow length/colour.
+- Camera section covers ortho frustum half-height, camera distance, click threshold, and drag sensitivity.
+- Async `fetch()` at init with per-key fallback defaults for graceful degradation.
+
+**3D Fog Disabled in Elevation Mode**
+- `uFogEnabled` uniform toggled to 0.0 when entering ortho view, restored when returning to 3D.
+- Placeholder for future 2D fog plane system.
+
+**UI Controls (`Na__UiFeature__ElevationView__Controls.js`)**
+- Elevation View dropdown menu with "View Elevation", "Back To 3D", "Toggle Elevation Plane", and "Reselect Elevation Plane" actions.
+- State-driven button visibility reacting to custom `na-elevation-state-changed` events.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.7  -  12-Mar-2026
+### Page Layout System — Config Externalisation
+
+**Overview**
+- Created a standalone `Na__PageLayoutSystem__Config.json` that externalises every hard-coded parameter from the six Page Layout System JS modules.
+- All sub-modules now read their settings from `state.config` (attached at boot) with typed fallback defaults for graceful degradation if the config fetch fails.
+- Follows the project double-underscore naming convention (`PageLayout__Document__Config__WidthMm`, etc.) matching `Na__AppConfig__Main.json`.
+
+**Config File — `Na__PageLayoutSystem__Config.json`**
+- Four config sections covering the entire layout system:
+  - `PageLayout__Document__Config` — A3 dimensions, title block path, fit-to-page padding, initial image placement fraction.
+  - `PageLayout__PdfExport__Config` — PDF orientation, format, DPI, JPEG quality, compression, float precision, export filenames.
+  - `PageLayout__CanvasAppearance__Config` — background colour, paper shadow, selection handle appearance, image border styling.
+  - `PageLayout__Navigation__Config` — zoom min/max/factor, mouse hit radius, touch hit radius, minimum image size, minimum visible clipping.
+
+**Loading Strategy**
+- `Na__PageLayout__FetchConfig()` added to `SystemLogic__Main__` — fetches the JSON at boot with `try/catch` fallback.
+- `Na__PageLayout__ResolveDocumentConfig()` extracts document settings with per-key type checks and fallback values.
+- The full raw config object is attached to `state.config` so every sub-module reads its own section independently.
+- Helper functions (`CalculateFitToPage`, `CalculateInitialImageTransform`) refactored to accept their previously hard-coded values as parameters from the resolved config.
+
+**Sub-Module Config Resolution**
+- `PdfExport__A3__` — `Na__PageLayout__ResolvePdfConfig(state)` reads all export parameters; `CreateDocument` and `FlattenSheetToDataUrl` now use the resolved config.
+- `CanvasRenderPipeline__` — `Na__PageLayout__ResolveAppearanceConfig(state)` reads all visual styling; appearance object threaded through all draw functions.
+- `2dNavigationControls__` — `Na__PageLayout__ResolveNavConfig(state)` reads zoom limits and step; resolved once at init.
+- `Controls__Pc__` — `Na__PageLayout__ResolvePcConfig(state)` reads hit radius and minimum dimensions; removed obsolete render pipeline import.
+- `Controls__TouchScreen__` — `Na__PageLayout__ResolveTouchConfig(state)` reads touch hit radius, zoom limits, and minimum dimensions.
+
+**Files Added**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Config.json`
+
+**Files Changed**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.6  -  12-Mar-2026
+### PDF Export — Canvas Corruption Fix, JPEG Pipeline & Data Validation
+
+**Overview**
+- Diagnosed and fixed vertical-stripe corruption in exported PDFs caused by browsers silently capping the 600 dpi offscreen canvas (`9921 × 7016 px`, ~70 M pixels).
+- Switched the flattened sheet from PNG to JPEG (0.92 quality) for a 5-10× reduction in data URL size and memory pressure.
+- Added three layers of validation to prevent corrupt PDFs from being saved.
+
+**Root Cause — Canvas Dimension Capping**
+- At 600 dpi the A3 offscreen canvas requests 9921 × 7016 px (~278 MB RGBA buffer).
+- Some browser/GPU combinations silently allocate a smaller backing store while still reporting the requested `canvas.width`/`canvas.height`.
+- `toDataURL` then serializes pixel data with the wrong row stride, producing the characteristic vertical-stripe corruption visible in the PDF.
+
+**Canvas Allocation Validation**
+- After setting `canvas.width` and `canvas.height`, a new guard checks the actual allocation matches the request; returns `null` with a descriptive console error if capped.
+- Added a `getContext('2d')` null-check for total allocation failure.
+
+**PNG → JPEG Switch**
+- `FlattenSheetToDataUrl` now serializes as `image/jpeg` at `Na__PageLayout__JPEG_QUALITY` (0.92) instead of `image/png`.
+- `addImage` format parameter changed from `'PNG'` to `'JPEG'` in both export functions.
+- New constants: `Na__PageLayout__JPEG_QUALITY`, `Na__PageLayout__MIN_DATAURL_LEN`.
+
+**Data URL Validation**
+- The returned data URL is checked for null, empty, or suspiciously short length (< 1000 chars) before being passed to jsPDF.
+- Both `ExportFullLayout` and `ExportImageOnly` now check for a `null` return from the flatten function and abort cleanly — no corrupt PDF is saved.
+
+**Files Changed**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.5  -  12-Mar-2026
+### Viewport Refresh — Camera Lens Slider & Post-Export Repaint
+
+**Overview**
+- Fixed two missing render-invalidation calls that prevented the viewport from updating after camera lens adjustments and after an image export completed.
+- The app uses an invalidation-based render loop (`Na__RenderLoop__RequestRender`); these two systems were never wired into it.
+
+**Camera Lens Slider — Real-Time FOV Feedback**
+- `Na__UiFeature__CameraLens__Controls.js` — added `Na__RenderLoop__RequestRender` import from `../05__RenderPipeline/Na__RenderLoop__Invalidation.js`.
+- Added `Na__RenderLoop__RequestRender()` as the last line of `applyLens()`, so every slider `input` event (and the initial load call) schedules a render frame immediately after `camera.updateProjectionMatrix()`.
+- Previously the FOV was updated internally but no frame was scheduled, requiring a manual pan to trigger a repaint.
+
+**Post-Export Viewport Repaint**
+- `Na__UiFeature__ImageExport__Controls.js` — added same `Na__RenderLoop__RequestRender` import.
+- Added `Na__RenderLoop__RequestRender()` after `Na__UiFeature__DownloadImage()` in the export button click handler, so the viewport repaints once the renderer, camera, and composer have been fully restored to viewport dimensions.
+- The high-res render path (`Na__UiFeature__RenderToDataUrl`) and the restore block are untouched — ability to render above viewport resolution is preserved.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.4  -  11-Mar-2026
+### Scene Inspector — Visibility Controls, Filter, Isolate Pair, Viewport Height
+
+**Overview**
+- Extended the Scene Inspector tool (introduced in v2.0.3) with a full set of interactive visibility controls for live scene debugging.
+- All changes are self-contained within `Na__UiFeature__SceneInspector__Controls.js` and its companion HTML/CSS.
+
+**Per-Node Visibility Dot Toggle**
+- Visibility dots in the node tree are now interactive — click any dot to toggle `node.visible` on the live Three.js object and immediately invalidate the render loop.
+- Dot colour syncs to the new state (green = visible, muted = hidden); tooltip updates to "Click to hide" / "Click to show".
+- `e.stopPropagation()` prevents the dot click from also triggering the row expand/collapse.
+
+**Node Registry and Visibility Snapshot**
+- A flat `Na__SceneInspector__NodeRegistry` is built during tree rendering, storing `{ uuid, nodeRef, dotEl, wrapperEl, name }` for every node.
+- On each scan, `Na__SceneInspector__VisibilitySnapshot` records the `node.visible` state of every registered node as the scan-time baseline.
+
+**Hide All / Restore All**
+- "Hide All" sets every registered node to `visible = false` and syncs all dot colours in one pass.
+- "Restore All" reinstates the scan-time snapshot state so the scene returns to exactly how it looked at last scan.
+- Both buttons added to a compact toolbar row below the filter input.
+
+**Filter Input**
+- Text input filters the displayed node tree by name fragment on every keystroke.
+- On a non-empty query, all wrappers are hidden first; matching nodes and all their DOM ancestors (`.na-scene-inspector__node`, `.na-scene-inspector__children`) are then revealed, so parent groups always display when a child matches.
+- Filter is cleared automatically on each Rescan.
+
+**Isolate Pair Mode**
+- "Isolate Pair" toggle button added to the same toolbar row as Hide All and Restore All (compact three-button layout).
+- When active, toggling any node's dot also toggles the paired sibling model under the same ValeVision category group — i.e. the mesh model and its corresponding linework model are always switched together.
+- Pairing algorithm: walks `nodeRef.parent` chain until a node matching `/^ValeVision__\w+__\w+/` is found (the category group), then toggles all other direct children of that group and syncs their dot elements from the registry.
+- Button uses the existing `na-scene-inspector__toolbar-btn--active` CSS state for ON/OFF visual feedback.
+
+**Viewport Height and Scrollability**
+- Scene Inspector tree `max-height` changed from the fixed `360px` to `calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2 - 280px)` to dynamically fill the available viewport.
+- Outer Dev Tools panel given a matching `max-height` and `overflow-y: auto` so it scrolls when content exceeds the viewport.
+- Both values divide by `1.2` to account for the inherited `transform: scale(1.2)` on the base `.na-dropdown-menu` class — without this correction the layout height is 1.2× the visual height, causing the bottom to overflow off-screen and the scrollbar to clip inside a region never visible to the user.
+
+**Files Changed**
+- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
+- `index.html`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.3  -  11-Mar-2026
+### Dev Tools Panel — Localhost-Only Developer Menu System
+
+**Overview**
+- Introduced a dedicated `Dev Tools` dropdown menu that appears exclusively on localhost and is hidden on all live deployments.
+- Extracted two developer-only actions (`Save Camera Settings`, `Profile Lines`) from the public `Tools` menu into the new panel, keeping the user-facing Tools menu clean.
+- Added a Scene Inspector tool for on-demand Three.js scene graph traversal and reporting.
+- Added a drag-resize handle so the Dev Tools panel width can be adjusted at runtime.
+- All new modules follow the existing Noble Architecture clean-code conventions and sit in a dedicated `70__System__DevTools` folder.
+
+**Dev Tools Menu**
+- New HTML shell added to `index.html` as a second `na-dropdown-menu--dev-localhost` container, pinned to the top-left of the viewport.
+- New `Na__UiFeature__DevMenu__LocalhostOnly.js` gates the container via `Na__AppUtils__IsRunningOnLocalhost()` — mirrors the TrueVision cousin project pattern.
+- `Save Camera Settings` and `Profile Lines` markup moved from the public `Tools` list into the new `Dev Tools` list with a section divider between them.
+
+**Profile Lines — Extracted Module**
+- New `Na__UiFeature__ProfileLines__Controls.js` owns Profile Lines button state, `aria-pressed` sync, status text, click handling, and render invalidation.
+- Removes all inline Profile Lines wiring from `index.html`; replaced with a single `Na__UiFeature__InitializeProfileLinesControls(pipelineRef, profileLinesConfig)` call.
+- Button restyled using new `na-dev-toggle` / `na-dev-toggle--active` classes, matching the TrueVision green active-dot indicator pattern.
+
+**Scene Inspector**
+- New `Na__UiFeature__SceneInspector__Controls.js` provides on-demand scene graph reporting.
+- Scan button traverses the live `THREE.Scene` using `Object3D.traverse()`, building a plain data tree (no DOM interaction during traversal).
+- Reports per-node: type badge (Mesh / Group / Light / Line / Camera), visibility dot (green / muted), name, and triangle/vertex counts for mesh nodes.
+- Summary header shows total nodes, meshes, triangle count, line objects, and lights after each scan.
+- Collapsible tree defaults to 3 levels expanded; click any parent row to expand/collapse its children.
+- Works on-demand because `Na__AppFlow__StartLoadingSequence` is not awaited — models may load after boot.
+
+**Drag-Resize Handle**
+- Resize grip element added to the bottom-right corner of the Dev Tools container.
+- Drag logic in `Na__UiFeature__DevMenu__LocalhostOnly.js` listens for `mousedown → mousemove → mouseup` on `document`, clamping new width between 220px and 640px.
+- Grip rendered as a 3×3 dot grid via `radial-gradient` background — no image assets required.
+
+**Styling**
+- New CSS classes: `na-dev-toggle`, `na-dev-toggle--active`, `na-dev-toggle__label`, `na-dev-toggle__status`.
+- New CSS classes: `na-scene-inspector__*` — tree rows, type badges (colour-coded by family), visibility dot, scrollable container, stats bar, scan button, resize handle.
+- `na-dropdown-menu--dev-localhost` modifier positions the panel top-left, overrides `right`, and sets `transform-origin: top left`.
+
+**Files Added**
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
+
+**Files Changed**
+- `index.html`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.2  -  11-Mar-2026
+### PDF Export — Flattened 600 dpi Pipeline & Config Naming Convention
+
+**Overview**
+- Replaced the multi-image PDF composition pipeline with a single flattened PNG export at 600 dpi.
+- Both export modes (Full Layout and Image Only) now render the entire A3 sheet to one offscreen canvas before embedding, eliminating file-size blowout caused by embedding separate full-page PNGs per layer.
+- Applied project naming conventions to the `imageExport` config block and its downstream consumers.
+
+**PDF Export Rewrite**
+- Added `Na__PageLayout__PDF_EXPORT_DPI = 600` and derived `Na__PageLayout__PIXELS_PER_MM` constants.
+- Added `Na__PageLayout__FlattenSheetToDataUrl(state, includeTitleBlock)` — composites title block and viewport image onto a single `9921 × 7016 px` offscreen canvas at 600 dpi, applying all `clipTop/Right/Bottom/Left` values with the same clip-mask approach used in the live canvas preview.
+- `Na__PageLayout__CreateA3Document` now passes `compress: true` and `floatPrecision: 'smart'` to jsPDF.
+- Both export functions reduced to: flatten sheet → single `addImage` call → `doc.save`.
+
+**Config Naming Convention**
+- `imageExport` block renamed to `ImageExport__Config` with fully-qualified double-underscore key names throughout, matching the project convention.
+- New `PageLayout__PdfExport__Config` block added documenting `TargetDpi`, `Compress`, and `FloatPrecision` settings.
+- `Na__UiFeature__ExportConfigKeys` string values updated to new JSON key names.
+- New `Na__UiFeature__NormalizeExportConfig` helper added — maps long JSON keys to short internal names so all downstream dot-property accesses remain unchanged.
+
+**Files Changed**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `index.html`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.1  -  11-Mar-2026
+### Multi-Model Loader — TrueVision Namespace Support (Ribbins 62854)
+
+**Overview**
+- Fixed loader not recognising `TrueVision` namespace in project model URLs.
+- Projects using SketchUp GLB Builder (TrueVision plugin) export naming (e.g. `Ribbins__TrueVision__MainBuildingModel__Existing__MeshModel__.glb`) were incorrectly classified as legacy, collapsing all four building models (Existing + Proposed, Mesh + Linework) into a single `ValeVision__LegacyModel` category.
+- Only the last pair (Proposed) was loaded; Existing models were overwritten and never displayed.
+
+**Root Cause**
+- Primary URL parse regex accepted only `ValeVision` or `NaModel`; `TrueVision` fell through to legacy path.
+- Legacy path assigns one mesh + one linework per category; multiple pairs overwrote each other.
+
+**Fix**
+- Added `TrueVision` to primary regex namespace alternation in `Na__ModelLoader__ParseModelUrl`.
+- URLs now parse as `ValeVision__MainBuildingModel__Existing` and `ValeVision__MainBuildingModel__Proposed` (both already in load-order priority).
+- All four GLBs load with separate model toggle controls.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.0  -  10-Mar-2026
+### GPU Performance Overhaul — Profile Lines Pipeline Optimisation
+
+**Overview**
+- Ported all TrueVision3D v2.2.4 GPU performance optimisations to ValeVision3D.
+- Diagnosed and resolved sustained 100% GPU usage introduced by the profile lines system.
+- Root cause: the profile lines effect added two extra full-scene `renderer.render()` calls per frame (normal pass + profile colour pass), and the continuous RAF loop never idled.
+- Implemented six targeted optimisations that reduce per-frame scene renders, cut profile colour pass cost by ~75%, eliminate per-frame allocations, fix a render loop spin issue, and add a user-facing toggle.
+
+**Depth Pre-Pass Elimination**
+- Attached a `DepthTexture` to the normal render target so the normal pass writes depth as a side-effect.
+- Fog now reads depth from the normal pass instead of the render target's built-in depth texture.
+- Falls back to the original depth texture when profile lines are disabled.
+
+**Half-Resolution Profile Colour Buffer**
+- Profile colour render target now created at 50% viewport dimensions (quarter the pixel count).
+- The profile colour buffer only carries edge tint information; full resolution is unnecessary.
+- `setSize()` updated to maintain half-res on window resize.
+
+**Pre-Allocated Material Swap Cache**
+- `cachedOriginalMaterials` is now a pre-allocated `Array` sized during `rebuildSceneCache()`.
+- Per-frame material swap uses index-based `for` loops writing into fixed array slots instead of creating `{ object, material }` pairs every frame.
+- Eliminates all per-frame heap allocations in the profile lines hot path.
+
+**Scene Object Caching**
+- Replaced per-frame `scene.traverseVisible()` calls with `scene.traverse()` and cached results.
+- Added `cachedLineObjects`, `cachedMeshObjects`, `sceneCacheDirty` flag, `rebuildSceneCache()`, and `invalidateSceneCache()` methods.
+- Cache is rebuilt only when models are loaded or scene structure changes.
+
+**Invalidation-Based Render Loop**
+- Replaced the unconditional `requestAnimationFrame` loop with an invalidation-based system.
+- Frames are only scheduled when user interaction, animations, or explicit invalidation events require a redraw.
+- Added `Na__RenderLoop__Invalidation.js` as a centralised event dispatcher for render requests.
+- All UI controls (model toggles, walk mode, door animations) now dispatch render requests through the invalidation system.
+
+**Orbit Controls Render Loop Fix**
+- Added a 3-frame trailing budget after the orbit `end` event.
+- Previously, `controls.update()` could return `true` after the user stopped interacting, keeping the render loop spinning indefinitely.
+- The loop now renders the trailing frames then stops, dropping GPU usage to near-zero when idle.
+
+**Profile Lines Toggle**
+- Added "Profile Lines" ON/OFF button to the Tools dropdown menu.
+- `toggleProfileLines()` disables both the shader pass and the pre-pass renders.
+- Users can instantly halve per-frame GPU load by toggling profile lines off.
+
+**Additional Optimisations**
+- Directional light shadow map resolution reduced from 2048 to 1024.
+- Renderer pixel ratio cap reduced from 2.0 to 1.5.
+- Fat line segments re-enabled frustum culling with computed bounding geometry.
+- Navigation controls (`updateMovement`/`updateNavigation`) now return booleans indicating change.
+
+**Files Added**
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js`
+
+**Files Changed**
+- `index.html`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
+- `02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js`
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.9  -  10-Mar-2026
+### Profile Lines — Dynamic Edge Width, Smooth Threshold, Config Alignment
+
+**Overview**
+- Profile line edge width now scales dynamically with camera distance to the orbit target: thicker when zoomed in, thinner when zoomed out (reduces clustering on detailed items).
+- Replaced hard threshold cutoff with `smoothstep` blending so transitions are gradual instead of abrupt.
+- Aligned main app `Na__AppConfig__Main.json` profile lines with the tuned test environment values.
+
+**Dynamic Edge Width**
+- Added four config keys: `EdgeWidthMin`, `EdgeWidthMax`, `EdgeWidthDistanceNear`, `EdgeWidthDistanceFar`.
+- `u_edgeWidth` uniform updated per-frame inside `renderProfileNormals()` using `camera.position.distanceTo(orbitTarget)`.
+- Lerp: far distance = min width (thin), near distance = max width (thick).
+- `orbitTarget` passed from `Na__AppFlow__LoadingSequence` via `Na__RenderPipeline__SetupComposer` into `Na__RenderEffect__ProfileLines__Create`.
+
+**Smooth Threshold**
+- Fragment shader now uses `smoothstep` instead of `if (edge > threshold)` for profile-line blending.
+- Softness zone = half the threshold value on each side; transitions are smoother.
+
+**Config Alignment**
+- `Na__AppConfig__Main.json` profile lines: `EdgeWidth` 0.4→0.25, `EdgeWidthMin` 0.25→0.20, `EdgeWidthMax` 1.5→0.60, `DistanceNear` 2.0→1.0, `DistanceFar` 40.0→80.0.
+
+**Key Files**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json`
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.8  -  10-Mar-2026
+### Project Structure Alignment — TrueVision3D Numbered Layout
+
+**Overview**
+- Restructured ValeVision3D source folder layout to match TrueVision3D numbered band taxonomy for consistency across ValeDesignSuite projects.
+- Moved flat `src__*` folders into `02__Src__AppModules/` with numbered bands; styles, distribution, and testing helpers relocated to their designated bands.
+- Updated imports, config fetch paths, and cross-file references throughout the codebase.
+- Browser-tested via ValeVision Gallery localhost with random project; viewer boot, model loading, navigation, export, and Layout View handoff all verified.
+
+**Folder Mapping (Numbered Bands)**
+- `01__AppCore`, `02__AppData`, `03__AppUtils`, `04__MathUtils`, `05__RenderPipeline`
+- `06__Scene__LightingEffects`, `07__Scene__EnvironmentEffects`
+- `10__NavigationAndCameras`, `11__CameraUtils`
+- `15__ModelLoader`
+- `20__System__MaterialsSystem`, `25__System__3dObject__InteractionSystem`, `26__System__ToggleModelElements`
+- `30__System__ImageExport`, `35__System__PageLayoutSystem`
+- `03__Style__AppStylesheets`, `60__DistributionEmails`
+- `79__Testing__GenerateObjects`, `80__Testing__PrototypeEnvironment`
+
+**Key Files Updated**
+- `index.html` — script/style import paths
+- `Na__AppConfig__Loader.js` — config fetch path
+- `Na__AppFlow__LoadingSequence.js` and runtime modules — module import paths
+- `Na__UiFeature__ImageExport__Controls.js` — layout page path
+- Page layout subtree and prototype sandbox HTML/JS/config — relative paths
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.7  -  27-Feb-2026
+### Stylesheet Naming Standardization 
+
+**Overview**
+- Standardized stylesheet naming to the project namespace pattern (`Na__<DomainOrModule>__Styles__<FeatureOrScope>__.css`) for improved maintainability and clearer ownership by module.
+- Updated stylesheet link/import wiring across main app, Page Layout System, and Test Environment to match renamed files.
+- Removed all remaining Babylon/BABYLON engine references from ValeVision3D runtime/docs.
+- Ported legacy `src__GenerateObjects` helper modules from Babylon APIs to Three.js-compatible utility modules.
+
+**Stylesheet Refactor**
+- Renamed `src__Styles` files to namespaced equivalents (Core UI, UiFeature, ImageExport scopes).
+- Renamed Page Layout stylesheet to `Na__PageLayoutSystem__Styles__Main__.css`.
+- Renamed Test Environment stylesheet to `Na__TestEnv__Styles__PrototypeSandbox__.css`.
+- Updated `index.html`, Page Layout HTML, and TestEnv HTML to point at new stylesheet names.
+- Updated `Na__CoreUi__Styles__Index__.css` import list to new filenames while preserving import order.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.6  -  26-Feb-2026
+### Orbit Anchor Hardening + Nav Damping Delegation
+
+**Overview**
+- Fixed an orbit regression where camera interaction could feel like head-look/first-person instead of stable orbit around the helper cube anchor.
+- Orbit target resolution is now deterministic and robust across project reloads and saved camera data.
+- Removed Dev__DefaultCube as an orbit/fog fallback anchor to avoid conflicting reference points.
+- Added explicit warning logs for missing/unloadable helper cube paths so failures are immediately visible in console output.
+
+**Orbit Target Precedence (Hardened)**
+- `Na__AppFlow__LoadingSequence.js` now resolves orbit target in strict order:
+  1. Loaded OrbitHelperCube GLB center (**authoritative**)
+  2. Saved `OrbitHelperCube__Position` from `project.json` (only if helper cube center is unavailable)
+  3. Keep current controls target (no implicit dev-cube override)
+- If both helper center and saved orbit target exist, saved target is ignored and a warning is emitted to prevent hidden drift from stale values.
+
+**Helper Cube Diagnostics**
+- Added warning when no OrbitHelperCube URL is found in the model URL list.
+- Added warning when OrbitHelperCube fails to load.
+- Added warning when helper file loads but center cannot be resolved.
+- Added warning when neither helper center nor saved orbit target can be applied.
+
+**Legacy Camera Target Conflict Guard**
+- During load, `Camera__DefaultTarget` is stripped from the applied camera payload so legacy target keys cannot overwrite helper-cube anchoring.
+- Save Camera Settings now removes legacy `valeVision_Camera__DefaultPosition` and deprecated `Camera__DefaultTarget` before writing updated project data.
+
+**Startup Fallback Update (No Dev Cube Anchor)**
+- `index.html` no longer sets initial orbit target to `Dev__DefaultCube`.
+- Initial target now derives from camera forward direction (temporary pre-load target only).
+- Initial fog anchor now follows current orbit target reference rather than dev cube position.
+
+**Key Files**
+- `src__AppFlow/Na__AppFlow__LoadingSequence.js` — strict helper-first target precedence, warnings, and legacy target guard.
+- `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — legacy camera payload cleanup before save.
+- `index.html` — removed dev-cube pivot fallback and aligned initial fog anchor with orbit target.
+
+**Nav Damping Delegation — Config-Driven OrbitControls Damping (Mouse + iPad)**
+
+**Overview**
+- Refactored orbit-controls damping into a dedicated delegated module so damping behavior is no longer hardcoded inside device nav initializers.
+- Added a new top-level AppConfig group (`Navmode__Damping`) as the single source of truth for damping enable flags and damping factor values.
+- Updated both desktop mouse controls and iPad/touch controls to consume the new damping payload shape.
+- Removed legacy `EnableDamping` keys from `Navmode__MouseControls` and `Navmode__IpadControls` active read path.
+
+**New Delegated Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js`.
+- Exposes `Na__Navmode__ApplyOrbitControlsDamping(controls, dampingConfig)`.
+- Applies:
+  - `controls.enableDamping` from `dampingConfig.enabled`
+  - `controls.dampingFactor` from `dampingConfig.factor`
+- Includes internal clamp helper for damping factor bounds (`0.0` to `1.0`) and finite-value guard with safe default (`0.08`).
+
+**AppConfig Schema Addition**
+- Added new top-level `Navmode__Damping` group in `src__AppConfig/Na__AppConfig__Main.json`:
+  - `Navmode__Damping__Description`
+  - `Navmode__Damping__Mouse`
+    - `Navmode__Damping__Mouse__Enabled`
+    - `Navmode__Damping__Mouse__Factor`
+  - `Navmode__Damping__Ipad`
+    - `Navmode__Damping__Ipad__Enabled`
+    - `Navmode__Damping__Ipad__Factor`
+- Clarified in description that damping factor is **unitless** (not millimeters).
+
+**Wiring Changes**
+- `index.html` now extracts `Navmode__Damping` from AppConfig and builds a `damping` payload block for both device paths.
+- Mouse/iPad nav modules now call the delegated damping module instead of setting damping directly.
+- Added required `@delegate` breadcrumbs at both offload call sites:
+  - `src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
+  - `src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
+
+**Units Compliance**
+- Confirmed against world-units rule: damping factor remains dimensionless and is intentionally **not** passed through mm→units conversion.
+- Existing mm-based navigation values (movement/elevation/min-max distance/zoom step) continue to use `Na__Math__ConvertMmToUnits`.
+
+**Key Files**
+- `src__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js` — new delegated damping module.
+- `src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — damping call delegated.
+- `src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — damping call delegated.
+- `src__AppConfig/Na__AppConfig__Main.json` — new `Navmode__Damping` group + legacy damping key removal from device groups.
+- `index.html` — new damping config extraction and payload wiring.
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.5  -  24-Feb-2026
+### Layout View Loading Overlay — Spinner Feedback, Button State Fix, postMessage Handshake
+
+**Overview**
+- Added a full-screen loading overlay with 3-phase status messages when the "Layout View" button is clicked, providing clear visual feedback during image rendering, data transfer, and new-tab loading.
+- Fixed the Layout View button remaining visually stuck in its pressed state after click.
+- Added white hover text and `:active` press-in effect to the secondary action button for consistent interactive feel.
+- Established a `postMessage` handshake between the parent tab and the layout tab so the overlay knows when the Drawing Document has finished loading.
+
+**Loading Overlay (3-Phase Status Messages)**
+- Phase 1: "Rendering Your Image..." — shown immediately on button click while the high-resolution render executes.
+- Phase 2: "Sending To Drawing Document..." — shown after render completes and before the new tab confirms receipt.
+- Phase 3: "Success! See new tab for your Drawing Layout" — shown in green when the layout tab sends back its `Na__PageLayout__Ready` postMessage.
+- Overlay auto-dismisses 2.5 seconds after the success message with a smooth fade-out transition.
+- 8-second timeout fallback dismisses the overlay if the postMessage is never received (cross-origin restrictions or popup blockers).
+
+**Button State and Double-Click Guard**
+- `layoutViewInProgress` flag prevents re-entry while the overlay is active.
+- Button receives `.is-loading` class during the process (dimmed, `pointer-events: none`).
+- `.is-loading` class removed on overlay dismiss, restoring the button to its default state.
+- Render deferred via double `requestAnimationFrame` so the overlay paints to screen before the blocking render call.
+
+**Button Hover and Active CSS**
+- `.na-dropdown-menu__action--secondary:hover` now sets `color: #ffffff` for white text on hover.
+- `.na-dropdown-menu__action--secondary:active` added with darker background and `scale(0.97)` press-in effect.
+- `.na-dropdown-menu__action--secondary.is-loading` added for disabled appearance during loading.
+
+**postMessage Handshake (Layout Tab → Parent Tab)**
+- `Na__PageLayoutSystem__SystemLogic__Main__.js` now calls `window.opener.postMessage({ type: 'Na__PageLayout__Ready' }, '*')` at the end of `Na__PageLayout__Initialize()` after the image and title block are loaded and state is built.
+- Parent tab listens for this message to transition from Phase 2 to Phase 3 (success).
+- Listener is cleaned up after receipt; timeout fallback also cleans up the listener.
+
+**Loading Overlay Styles**
+- Reuses the existing `.loading-spinner` and `@keyframes spinner-rotate` from the app initialization overlay.
+- Semi-transparent white background (`rgba(255,255,255,0.92)`) with `backdrop-filter: blur(4px)`.
+- `z-index: 10000` ensures visibility above all other UI elements including the dropdown menu.
+- `.na-layout-loading-overlay--visible` / `--fade-out` classes control display and opacity transitions.
+- `.na-layout-loading-overlay__status--success` turns the status text green (`#2a7d4f`) with bold weight.
+
+**Key Files**
+- `index.html` — added `#naLayoutLoadingOverlay` element with spinner and status text inside `#root`.
+- `src__Styles/loading-overlay.css` — added Layout View Loading Overlay region (container, visible, fade-out, status text, success variant).
+- `src__Styles/ui-components.css` — added `:hover` white text, `:active` press effect, `.is-loading` disabled state for secondary action button.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — refactored Layout View click handler with overlay management, double-rAF render deferral, postMessage listener, timeout fallback, dismiss sequence.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js` — added `postMessage` call to opener on successful initialization.
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.4  -  24-Feb-2026
+### `index.html` Modularisation Pass — 5 New Modules, Walk Mode Controls, Region Structure
+
+**Overview**
+- Systematic extraction of all inline JavaScript logic from `index.html` into dedicated ES modules.
+- `index.html` reduced from **1,075 lines → 691 lines** (~360 lines of inline JS removed).
+- All extractions follow the `@delegate:` breadcrumb protocol (`03-dependency-Traversal-Protocol-.mdc`) so future agents can trace offloaded logic.
+- Walk mode orchestration unified into shared modules consumed by both `index.html` and `TestEnv__PrototypeTestingSandbox__Main__.js`.
+- Inline JS section restructured with 10 named region blocks for future navigation.
+
+**New Module — `src__AppUtils/Na__AppUtils__ProjectLoader.js`**
+- Extracted 5 pure utility functions from `index.html` (lines 617–721): `Na__AppUtils__IsRunningOnLocalhost`, `Na__AppUtils__GetProjectCodeFromUrl`, `Na__AppUtils__NormalizeProjectFolderId`, `Na__AppUtils__FetchProjectJson`, `Na__AppUtils__ExtractModelUrls`.
+- Also extracts the `WebProjectsBaseUrl` and `DefaultProjectYear` constants.
+- Zero dependencies — pure browser APIs (`window`, `fetch`, `URLSearchParams`) only.
+- Housed in the new `src__AppUtils/` folder created for shared utility modules.
+
+**New Module — `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js`**
+- Extracted `Na__UiFeature__SaveCameraSettings` and `Na__UiFeature__InitializeSaveCameraButton` from `index.html` (lines 992–1053).
+- Refactored both functions from closures over parent scope to explicit parameters: `(camera, controls, showToast)`.
+- Imports `Na__UiFeature__BuildCameraJson` from the existing `Na__UiFeature__CameraPosition__Controls.js` and auth utilities from `Na__AppUtils__ProjectLoader.js`.
+
+**New Module — `src__AppFlow/Na__AppFlow__LoadingSequence.js`**
+- Extracted `Na__UiFeature__UpdateStatus` (private), `Na__UiFeature__ShowScene` (private), and `Na__AppFlow__StartLoadingSequence` (exported) from `index.html` — including the embedded RAF render loop and window resize handler.
+- Refactored to accept a **context object** instead of closing over `index.html` scope variables; all Three.js instances and config values passed explicitly.
+- `Na__RenderPipeline__State` is written back to a mutable `Na__AppFlow__PipelineRef = { current: null }` ref held in `index.html` so the `ImageExportControls` lazy getter `() => Na__AppFlow__PipelineRef.current` continues to work across the module boundary.
+- `Na__LoadedModelGroups` and `Na__RenderComposer__Main` are now fully local to the function — removed from `index.html` outer scope.
+- Module imports 14 source modules (GLTFLoader, RenderPipeline, ModelLoader, SceneLighting, FogEffect, MathUtils, CameraUtils, MaterialsSystem, ModelToggle, DoorAnimation, WalkMode, DoorProximity, AppUtils).
+- Private DOM helpers (`UpdateStatus`, `ShowScene`) use `document.getElementById` directly, consistent with the `Na__UiFeature__ModelToggle__Controls.js` pattern.
+
+**New Module — `src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js`**
+- Extracted walk mode init and toggle orchestration from both `index.html` and `TestEnv__PrototypeTestingSandbox__Main__.js`.
+- Stores `controls`, `renderer`, and `useTouchControls` in module-level state at init time; callers pass them once only.
+- `Na__UiFeature__ToggleWalkMode(onActivate, onDeactivate)` accepts optional callbacks for caller-side UI reactions (used by the test environment to update its walk mode status indicator and save button).
+- Imports `Na__Navmode__WalkMode__SystemLogic`, `Na__Navmode__WalkMode__DesktopControls`, `Na__Navmode__WalkMode__TouchScreenControls`, and `Na__DoorProximity`.
+
+**New Module — `src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js`**
+- Pure event binding module — no Three.js dependencies, no state.
+- `Na__UiFeature__InitializeWalkModeHotkey(toggleFn)` — registers the `Alt+Shift+W` keydown listener.
+- `Na__UiFeature__InitializeWalkModeToggleButton(buttonId, toggleFn)` — wires a DOM button by ID; guards gracefully if the element doesn't exist (production has no such button; test env does).
+
+**`index.html` Import Block Simplification**
+- Removed 10 individual named imports across 4 import blocks (SystemLogic walk mode exports, DesktopControls, TouchControls, DoorProximity, RenderPipeline, GLTFLoader, ModelLoader, SceneLighting, ModelToggle, MaterialsSystem, CameraPosition, ApplyCameraConfig/BuildCameraJson).
+- Added 5 new targeted imports (AppFlow, WalkModeControls, WalkModeEventListeners, AppUtils was added to dependent modules only, SaveCameraSettings).
+
+**`TestEnv__PrototypeTestingSandbox__Main__.js` Updates**
+- Trimmed `Na__Navmode__WalkMode__SystemLogic.js` import to the 4 still-needed exports: `SetCollisionMeshes`, `Update`, `IsActive`, `GetCapsulePosition` (render loop + save guard).
+- Removed `Na__WalkModeDesktop__`, `Na__WalkModeTouch__`, `Na__DoorProximity__Initialize`, `Na__DoorProximity__SetEnabled` import lines entirely.
+- Replaced 82 lines of walk mode setup with the new shared modules + test-env-specific `onActivate`/`onDeactivate` UI callbacks.
+
+**`index.html` JavaScript Region Structure (10 Regions)**
+- Added 10 named `// REGION |` / `// endregion` blocks to the inline script for future navigation and code-folding:
+  1. Module Imports
+  2. DOM References
+  3. App Config Loading and Destructuring
+  4. Dev Mode Config Extraction
+  5. Device Detection
+  6. Scene, Camera, Renderer and Navigation Setup
+  7. Walk Mode System Initialization
+  8. Dev Default Cube, Orbit Pivot and Fog Setup
+  9. Camera UI Controls Initialization
+  10. UI Notification Helpers
+  11. Engine Entry Points
+
+**Key Files**
+- `src__AppUtils/Na__AppUtils__ProjectLoader.js` — new
+- `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — new
+- `src__AppFlow/Na__AppFlow__LoadingSequence.js` — new (new `src__AppFlow/` folder)
+- `src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js` — new
+- `src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js` — new
+- `index.html` — major inline JS reduction (1,075 → 691 lines)
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — walk mode imports and setup updated
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.3  -  24-Feb-2026
+### AppConfig Key Wiring Fix — `Camera__DefaultMisc__Fov` Key Name Regression
+
+**Bug Fixed — Broken Key Reference in `index.html` (2 locations)**
+- Corrected two occurrences of the wrong key name `Camera__DefaultFov` → `Camera__DefaultMisc__Fov` in `index.html`.
+- Both errors were in the `Camera__DefaultPosition` reading block; every other module in the codebase already used the correct key name.
+
+**Location 1 — Initial FOV Application (line 492)**
+- Block reads `Camera__DefaultMisc__Fov` from `Na__Config__CameraDefault` and applies it to `Na__Camera__Main.fov`.
+- Previously the key was never found (`Camera__DefaultFov` does not exist), so the camera's initial FOV from AppConfig was silently never applied.
+
+**Location 2 — Camera Lens Slider Guard (line 586)**
+- Block sets `Na__CameraLens__Config.defaultFocalLengthMM = null` when a saved FOV is present in AppConfig, preventing the lens slider from overriding the camera's pre-set FOV on initialization.
+- Previously the guard condition always evaluated to `false` (wrong key), meaning `Na__UiFeature__InitializeCameraLensControls` always used the hardcoded `defaultFocalLengthMM: 45` from `cameraLens` config and called `applyLens(45)` immediately, overriding the camera's starting FOV.
+- Guard now fires correctly — `defaultFocalLengthMM` is set to `null`, and the lens slider initialises from the camera's current FOV state rather than the 45mm default.
+
+**Full AppConfig Wiring Audit Performed**
+- All 19 AppConfig sections traced end-to-end against their downstream consumer files.
+- All other sections confirmed correct. Three dead-config items identified (not bugs, no behaviour change):
+  - `Scene__Default__ControlsConfig` — extracted but superseded by `Navmode__Settings`; never consumed.
+  - `Global__Hotkeys__ToggleWalkMode` — extracted but walk mode hotkey handler hardcodes `Alt+Shift+W` directly.
+  - `MaterialsSystem__Config__FallbackToWhitecard` — defined in AppConfig but whitecard fallback is always implicit in the materials swap code.
+
+**Key Files**
+- `index.html` — two key name corrections in camera config reading block.
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.2  -  23-Feb-2026
+### PBR Materials Swap System — Indexed Material Library, WebApp Renderer, SketchUp Export Modes
+
+**Overview**
+- Implemented a full programmatic PBR materials swapping pipeline spanning the SketchUp GLB exporter and the ValeVision3D WebApp renderer.
+- Central single source of truth: `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` defines all indexed materials, their PBR settings, and optional texture URL overrides.
+- Materials are identified by a strict naming convention (`MAT{NNN}__Category__Variant`) matched against SketchUp `display_name` at export time and against `material.name` in the Three.js scene graph at load time.
+- Whitecard fallback guaranteed: any mesh whose material name is not found in the library renders exactly as before, preserving full schematic massing functionality.
+- System deployed to both the main production render pipeline (`index.html`) and the test environment (`TestEnv__PrototypeTestingSandbox__Main__.js`), with shared module code and independent config files.
+
+**Materials Library JSON Schema (v2.1.0)**
+- `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` expanded to full PBR template structure.
+- `MAT001__Default` is the complete reference template showing every possible key with default values; all other materials only specify keys that differ from these defaults.
+- Per-material fields: `SketchUpName`, `Description`, `BaseColor` (rgb string), `Opacity`, `Transparent`, `IsDoubleSided`, `PbrRoughness`, `PbrMetallic`, `EmissiveFactor`, `EmissiveIntensity`, `NormalScale`, `OcclusionStrength`, `AlphaTest`, `DepthWrite`, `EnvMapIntensity`, and a `TextureMaps` section with 7 URL slots (`BaseColorUrl`, `NormalUrl`, `RoughnessUrl`, `MetallicUrl`, `EmissiveUrl`, `OcclusionUrl`, `AlphaUrl`).
+- `null` texture URLs mean use scalar PBR values only; a non-null URL hot-swaps that texture channel at runtime.
+- Sparse authoring: paint materials store 3 keys (SketchUpName, BaseColor, PbrRoughness); glass stores 8; only what diverges from defaults is written.
+- `IsDoubleSided` is an explicit opt-in (`true` only for glass and mirror). Omitting it defaults to single-sided rendering, which is more performant for opaque surfaces.
+- Initial series: MAT000 (default), MAT100 (glass, timber, mirror), MAT300 (Farrow & Ball paint range), MAT500 (hardwood timbers).
+
+**WebApp — Library Loader Module (New)**
+- New file: `src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js`.
+- `Na__MaterialsSystem__LoadLibrary(url, forceReload)` — async fetch with module-scope cache; returns null on failure rather than throwing.
+- `Na__MaterialsSystem__BuildLookup(libraryData)` — flattens the nested series structure into a `Map<SketchUpName, MaterialConfig>` for O(1) lookups; cached after first build.
+- `Na__MaterialsSystem__IsIndexedName(name)` — regex test `/^MAT\d{3}__/` to identify indexed material names without requiring a loaded library.
+
+**WebApp — Material Swap Module (New)**
+- New file: `src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js`.
+- `Na__MaterialsSystem__ApplyMaterials(modelGroup, lookupMap, materialsConfig)` — traverses a THREE.Group scene graph, identifies meshes with indexed material names, creates `THREE.MeshStandardMaterial` from library config, and replaces the existing material.
+- Unmatched meshes are not touched; their whitecard material is preserved exactly as-is.
+- Applies `IsDoubleSided` → `THREE.DoubleSide` / `THREE.FrontSide`, `Transparent`, `DepthWrite`, `EnvMapIntensity`, `AlphaTest`, and polygon offset.
+- Material instances are cached by `SketchUpName` within a single traversal pass — multiple meshes sharing a material share the same instance.
+- Texture URL loading is async and parallel via `Promise.all`; `material.needsUpdate = true` called after all textures resolve.
+- Correct colour space set per texture type: sRGB for base colour/emissive, linear for normal/roughness/metallic/AO/alpha maps.
+
+**WebApp — Main App Integration**
+- `index.html`: added imports for both materials modules; added `Na__Config__MaterialsSystem` extraction from AppConfig.
+- After `Na__ModelLoader__LoadAllModels` completes, performs a second pass: fetch library → build lookup → `for...of` with `await` over all loaded model groups, calling `Na__MaterialsSystem__ApplyMaterials` on each.
+- Second pass is gated on `MaterialsSystem__Config__Enabled`; disabled flag bypasses entirely with no overhead.
+
+**WebApp — Test Environment Integration**
+- `TestEnv__PrototypeTestingSandbox__Main__.js`: imports both materials modules from `../src__MaterialsSystem/` (no code duplication).
+- Material swap called after `TestEnv__LoadAllGlbFiles()` on initial load and again inside the model refresh path (after `TestEnv__LoadAllGlbFiles()` in the node explorer refresh sequence).
+
+**AppConfig Schema Additions**
+- New `MaterialsSystem__Config` section added to `src__AppConfig/Na__AppConfig__Main.json`:
+  - `MaterialsSystem__Config__Enabled` — master on/off switch.
+  - `MaterialsSystem__Config__LibraryUrl` — path to the library JSON (`./src__AppConfig/Na__AppConfig__MaterialsLibrary.json`).
+  - `MaterialsSystem__Config__FallbackToWhitecard` — documents intent; whitecard fallback is always active.
+  - `MaterialsSystem__Config__PolygonOffsetFactor` / `PolygonOffsetUnits` — passed to all created PBR materials to avoid Z-fighting with linework.
+- Identical section added to `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` with library URL `../src__AppConfig/Na__AppConfig__MaterialsLibrary.json`.
+
+**SketchUp Plugin — Material Lookup System (New)**
+- New file: `Na__TrueVision__GlbBuilder__EngineCore__MaterialLookupSystem__.rb`.
+- `Na__MaterialLookup__FetchLibrary` — HTTPS GET to the GitHub Pages URL with 10s connect / 15s read timeout; caches result in module state; returns nil on failure.
+- `Na__MaterialLookup__BuildIndex` — parses fetched JSON, flattens all series into `{ SketchUpName => config_hash }` for O(1) lookups; skips `IsDefault` entries.
+- `Na__MaterialLookup__IsIndexedMaterial?(name)` — regex `/^MAT\d{3}__/` check without requiring the library to be loaded.
+- `Na__MaterialLookup__InLibrary?(name)` — exact key check against the built index.
+- `Na__MaterialLookup__GetConfig(name)` — returns full config hash or nil.
+- `Na__MaterialLookup__EnrichGltfMaterial(gltf_material, config)` — patches a glTF material hash in-place using `config.key?()` guards (sparse-safe): sets `metallicFactor`, `roughnessFactor`, `baseColorFactor` (with alpha from `Opacity`), `alphaMode: "BLEND"` when opacity < 1, `doubleSided` from `IsDoubleSided`, and `emissiveFactor`.
+- `Na__MaterialLookup__ParseRgbString` — `"rgb(R, G, B)"` → `[r, g, b]` normalised 0–1.
+- Added `require_relative` for new module in `Na__TrueVision__GlbBuilder__Main__.rb` after `MaterialHandling`.
+
+**SketchUp Plugin — Material Handling (Updated)**
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialHandling__.rb` rewritten to support three export modes.
+- `Na__MaterialEngine__SetExportMode(mode)` / `GetExportMode` — sets `:no_materials`, `:all_materials`, or `:indexed_only`.
+- `:no_materials` — only the default whitecard material (index 0) is emitted; all mesh primitives reference it. Fastest export, sanitised output.
+- `:all_materials` — all unique SketchUp materials exported with their colours; indexed materials additionally enriched with PBR via `Na__MaterialLookup__EnrichGltfMaterial`.
+- `:indexed_only` — only materials matching `/^MAT\d{3}__/` and found in the library index are exported; non-indexed materials fall back to index 0 (whitecard). Avoids bloated GLB files with custom or unnamed materials.
+- `Na__MaterialEngine__ResolveMaterialIndexForGroup` returns 0 in `:no_materials` mode regardless of material.
+
+**SketchUp Plugin — UI (Updated)**
+- `Na__TrueVision__GlbBuilder__UserInterface__.rb`: two new toggles added before the existing "Optimize Large Textures" option.
+- **Toggle 1 — "Export Materials"**: unchecked by default. When unchecked, export mode is `:no_materials`.
+- **Toggle 2 — "Export Standard Indexed Materials Only"**: greyed out (`opacity: 0.4`, `pointer-events: none`) when Toggle 1 is unchecked; enabled when Toggle 1 is checked; checked by default. Determines `:indexed_only` vs `:all_materials`.
+- `Na__TrueVision__GlbBuilder__ToggleMaterials()` JS function enables/disables Toggle 2 group based on Toggle 1 state.
+- Export callback reads `materialExportMode` string from JSON params, converts to symbol, calls `self.Na__MaterialEngine__SetExportMode(mode_sym)` before export proceeds.
+- Safe fallback in the rescue block sets `:no_materials` on parse error.
+
+**IsDoubleSided — Glass & Transparent Material Correctness**
+- SketchUp glass panes are single-polygon faces; without double-sided rendering the backface is culled and the transparent surface either disappears from one side or a white backface bleeds through the opacity.
+- `IsDoubleSided: true` in the library simultaneously triggers: `"doubleSided": true` in the exported glTF material entry (plugin side), and `side: THREE.DoubleSide` in the created `THREE.MeshStandardMaterial` (WebApp side).
+- Opt-in only — opaque materials (paint, timber) omit `IsDoubleSided` entirely; the renderer defaults to `THREE.FrontSide` for better performance.
+
+**Key Files**
+- `src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js` — new: library fetch, cache, index.
+- `src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js` — new: traverse, match, apply PBR.
+- `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` — v2.1.0: full PBR schema, sparse authoring.
+- `src__AppConfig/Na__AppConfig__Main.json` — added `MaterialsSystem__Config` section.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — added `MaterialsSystem__Config` section.
+- `index.html` — materials module imports, config extraction, second-pass material swap after model load.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — materials imports, swap on initial load and on refresh.
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialLookupSystem__.rb` — new: URL fetch, index, enrich.
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialHandling__.rb` — rewritten: 3 export modes, PBR enrichment.
+- `Na__TrueVision__GlbBuilder__UserInterface__.rb` — 2 new material export toggles, mode resolution in callback.
+- `Na__TrueVision__GlbBuilder__Main__.rb` — added require_relative for MaterialLookupSystem.
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.1  -  23-Feb-2026
+### Walk Mode Navigation System — First-Person Capsule Physics, Proximity Doors, Test Environment UI & Collision Exemptions
+
+**Walk Mode Navigation System (First-Person)**
+- Implemented a complete first-person walk mode navigation system as a fully self-contained module, separate from the existing orbit mode.
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — core capsule physics, gravity, stair-stepping, ground detection, camera yaw/pitch, activate/deactivate state management, and saved orbit state restore.
+- Invisible character capsule: eye height 1620mm, capsule height 1800mm, capsule radius 280mm (all config-driven, integer mm in AppConfig, converted to Three.js units at runtime).
+- Gravity (9810 mm/s²), terminal velocity cap, ground snapping via multi-point cross-pattern downward raycasting.
+- Stair-stepping: capsule climbs steps up to 350mm by ankle-level raycast detection and vertical snap.
+- Horizontal wall collision: 8 directional rays at 3 heights (ankle, waist, head); sliding response using hit face normal projection.
+- Camera uses Horizontal FOV of 75 degrees; orbit mode FOV and camera state fully restored on deactivate.
+- All config values stored as integer mm in `Na__AppConfig__Main.json` and `TestEnv__SubAppData__Config.json` under `Navmode__WalkMode` section.
+
+**Desktop Controls Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js`.
+- WASD + Arrow keys for movement, Shift for sprint (1.8× multiplier), mouse for camera look via Pointer Lock API.
+- On activate: requests pointer lock on the renderer canvas; on deactivate: exits pointer lock and removes all listeners.
+
+**Touch Screen Controls Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js`.
+- Single finger joystick for directional movement, two-finger drag for head look/rotation, pinch gesture for strafe movement.
+- Acceleration and smoothing applied to all touch inputs.
+
+**Proximity Door Trigger System**
+- New file: `src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`.
+- Detects capsule proximity to door assemblies (2000mm threshold, config-driven) and triggers existing door animations.
+- Reuses `Na__DoorAnimation__DoorRegistry` and `Na__DoorAnimation__ToggleDoor` exported from the click-to-open doors module.
+- Modified `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` to export internal registry and toggle function.
+
+**Global Hotkey — Toggle Walk Mode**
+- Alt + Shift + W toggles walk mode in both `index.html` (production) and the test environment.
+- Hotkey string defined in new `Global__Hotkeys` section of AppConfig, parsed and evaluated in keydown handlers.
+
+**AppConfig Schema Additions**
+- Added `Global__Hotkeys` section to `Na__AppConfig__Main.json` and `TestEnv__SubAppData__Config.json`.
+- Added `Navmode__WalkMode` section under `Navmode__Settings` with all walk mode parameters as integer mm values.
+
+**Test Environment — Walk Mode UI Panel**
+- Added walk mode toggle panel to `TestEnv__PrototypeTestingSandbox__DomAndLayout.html`: pedestrian icon, toggle button, active mode status indicator, and Alt+Shift+W hotkey hint.
+- Panel positioned at `left: 300px` to avoid overlapping the existing storey visibility panel.
+- Styles added to `TestEnv__PrototypeTestingSandbox__Stylesheet.css`.
+
+**Test Environment — Save Default View Feature**
+- Added "Save View" button to the walk mode panel in the test environment.
+- Captures current orbit camera position (mm), rotation quaternion, FOV, and orbit target (mm) and POSTs to a new Flask endpoint `POST /api/save-default-view`.
+- Flask server (`TestEnv__FlaskLocalServer.py`) reads `TestEnv__SubAppData__Config.json`, updates the `TestEnv__DefaultView` section, and writes it back to disk.
+- On next page load, if `TestEnv__DefaultView` exists in config, the saved camera state is restored automatically — bypassing the default auto-center.
+- Save button is disabled whilst in walk mode (must be in orbit mode); button title and state update dynamically on mode toggle.
+
+**Collision Exemption System**
+- `Na__WalkMode__SetCollisionMeshes` now filters out helper/dev objects that must always be ghostable.
+- Implemented `Na__WalkMode__IsCollisionExempt(object)` which walks the full ancestor chain of each mesh and tests every node name against a keyword list using substring matching.
+- Substring matching (not exact) is required because GLB files exported with a project prefix produce names like `NP03__01__OrbitHelperCube__MeshModel__` — exact matching silently fails for all project-prefixed variants.
+- Exempt keywords: `'Dev__DefaultCube'` (programmatic pivot reference cube) and `'OrbitHelperCube'` (GLB orbit target cube, catches both root group and child mesh names).
+
+**Key Files**
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — new: capsule physics, collision, gravity, stair stepping, activate/deactivate.
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js` — new: WASD + mouse Pointer Lock controls.
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js` — new: touch joystick, look, pinch controls.
+- `src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` — new: proximity door trigger.
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — modified: exports `Na__DoorAnimation__DoorRegistry` and `Na__DoorAnimation__ToggleDoor`.
+- `src__AppConfig/Na__AppConfig__Main.json` — added `Global__Hotkeys` and `Navmode__WalkMode` sections.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — mirrored AppConfig additions, stores `TestEnv__DefaultView`.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — walk mode integration, save view logic, toggle UI wiring.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — walk mode panel HTML.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — walk mode panel styles.
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` — added `/api/save-default-view` POST endpoint.
+- `index.html` — walk mode imports, initialization, collision mesh wiring, render loop integration, hotkey listener.
+
+# ---------------------------------------------------------
+## ValeVision3D v1.9.0  -  18-Feb-2026
+### Save Camera Settings — Localhost-Only Button & Full State Restore
+
+**Save Camera Settings Feature**
+- Added "Save Camera Settings" button to Tools menu, visible only when running on localhost (Flask server).
+- Button saves current camera position, rotation, FOV, and orbit target directly to the job-specific `project.json` via existing ValeVision Gallery Flask API (`POST /api/projects/<folder_id>`).
+- Replaced old "Download Position Data" panel (textarea, import JSON, download JSON) to simplify UI for end users.
+- Added toast notification for success/error feedback (green success, red error, auto-dismiss ~3.5s).
+- Exported `Na__UiFeature__BuildCameraJson` from `Na__UiFeature__CameraPosition__Controls.js` for use by save handler.
+- New functions: `Na__UiFeature__ShowToast`, `Na__UiFeature__SaveCameraSettings`, `Na__UiFeature__InitializeSaveCameraButton`.
+- Removed `Na__UiFeature__InitializeCameraPositionControls` import and call; left `@delegate` breadcrumb per dependency traversal protocol.
+
+**Loading Fix: Restore Full Camera State**
+- Fixed issue where rotation and FOV were not restored on reload; only position appeared to persist.
+- Root cause: OrbitHelperCube GLB load overwrote orbit target with GLB center, then `controls.update()` recalculated rotation and wiped saved state. Saved `OrbitHelperCube__Position` from `project.json` was never applied during load.
+- Hoisted `Na__Saved__ProjectCameraConfig` and `Na__Saved__ProjectOrbitTarget` so they survive into post-OrbitCube block.
+- After OrbitHelperCube loads, re-apply saved `OrbitHelperCube__Position` to `controls.target` (mm → units via `Na__Math__ConvertMmToUnits`).
+- Re-apply `Na__UiFeature__ApplyCameraConfig` and call `controls.update()` to finalize.
+- Ensures position, orbit target, FOV, and rotation all restore correctly on reload.
+
+**Key Files**
+- `index.html` — save button HTML, toast div, save handler, conditional visibility, loading-sequence re-apply block.
+- `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js` — export `Na__UiFeature__BuildCameraJson`.
+- `src__Styles/ui-components.css` — `.na-toast`, `.na-toast--visible`, `.na-toast--error` styles.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.8  -  18-Feb-2026
+### Scene Effects Delegation & Post-Processing Orbit-Anchored Fog
+
+**Scene Effects Delegation**
+- Moved default lighting and ground plane setup from inline `index.html` into dedicated module `src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js`.
+- Moved fog/environment setup into dedicated module `src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js`.
+- Architecture: AppConfig (JSON) → dedicated default-condition scripts → wider engine (render loop, main app).
+- Added `@delegate:` breadcrumbs at extraction points per dependency traversal protocol.
+
+**Fog Config Schema Migration**
+- Replaced density-based fog fields with orbit-anchored envelope model in `Scene__Default__FogConfig`:
+  - `Scene__Default__FogConfig__Description` — documents mm units and conversion requirement.
+  - `Scene__Default__FogConfig__Enabled` — true/false flag.
+  - `Scene__Default__FogConfig__Color` — integer RGB (e.g. 16777215 for white).
+  - `Scene__Default__FogConfig__StartDistanceMm` — fog begins at this distance from orbit cube (default 30000 mm).
+  - `Scene__Default__FogConfig__EndDistanceMm` — fog fully obscures beyond this distance (default 50000 mm).
+- All distance values are integer millimeters; converted to Three.js scene units via `Na__Math__ConvertMmToUnits` in code.
+
+**Post-Processing Fog Pass (Rewrite)**
+- Replaced broken per-material opacity approach with screen-space post-processing ShaderPass.
+- Fog now runs as final visual effect in the render pipeline: RenderPass → ProfileLines → **Fog Pass** → FXAA.
+- Depth-based implementation: reads depth texture from render target, reconstructs world position from logarithmic depth buffer, computes distance from orbit anchor per pixel, blends fog color via `smoothstep(fogStart, fogEnd, dist)`.
+- Covers all geometry types uniformly: meshes, linework (LineSegments2), and profile lines — no per-node traversal.
+- Orbit cube sets fog zero point; when OrbitHelperCube loads, fog anchor switches from Dev__DefaultCube to orbit cube center.
+- MM-to-units conversion applied in `Na__Scene__CreateFogPass` via `Na__Math__ConvertMmToUnits` for start/end distances.
+
+**Render Pipeline Changes**
+- Added `DepthTexture` to EffectComposer render target for fog pass depth reads.
+- `Na__RenderPipeline__SetupComposer` now accepts optional `fogPass` parameter; inserts fog pass after profile lines, before FXAA.
+- Fog pass receives depth texture uniform and per-frame camera matrices for world position reconstruction.
+
+**Key Files**
+- `src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js` — ambient + directional light, conditional ground plane.
+- `src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js` — fog ShaderPass, CreateFogPass, UpdateFogPassUniforms, SetFogOrbitReference, ApplyFogBackground.
+- `src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — DepthTexture, fog pass insertion.
+- `src__AppConfig/Na__AppConfig__Main.json` — Scene__Default__FogConfig schema.
+- `index.html` — imports, fog pass creation, composer wiring, render loop uniform updates, orbit cube reference wiring.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.7  -  18-Feb-2026
+### Configuration Architecture Refactor — Scene Config Separation & Ground Plane Control
+
+**Scene Configuration Restructure**
+- Refactored monolithic `sceneConfig` object into four dedicated configuration objects following `Scene__GroundPlane` naming convention.
+- New config sections: `Scene__Default__CameraConfig`, `Scene__Default__LightingConfig`, `Scene__Default__FogConfig`, `Scene__Default__ControlsConfig`.
+- All property names follow double-underscore pattern: `Section__Subsection__PropertyName` for consistency and discoverability.
+- Improved organization: camera, lighting, fog, and controls settings now logically separated.
+
+**Ground Plane Configuration**
+- Extracted ground plane settings from `sceneConfig` into dedicated `Scene__GroundPlane` section.
+- Added `Scene__GroundPlane__Enabled` flag (default: `false`) to conditionally create ground plane.
+- Prevents Z-fighting artifacts when landscape meshes are present in GLB models.
+- Ground plane only renders when explicitly enabled, eliminating secondary line rendering issues.
+
+**Property Mapping**
+- **CameraConfig**: `Scene__Default__CameraConfig__Fov`, `Scene__Default__CameraConfig__Near`, `Scene__Default__CameraConfig__Far`.
+- **LightingConfig**: `Scene__Default__LightingConfig__AmbientIntensity`, `Scene__Default__LightingConfig__DirectionalIntensity`.
+- **FogConfig**: `Scene__Default__FogConfig__Density`, `Scene__Default__FogConfig__Color` (used for both background and fog).
+- **ControlsConfig**: `Scene__Default__ControlsConfig__MovementSpeed`, `Scene__Default__ControlsConfig__ElevationSpeed`, `Scene__Default__ControlsConfig__EnableWASD`, `Scene__Default__ControlsConfig__EnableDamping`, `Scene__Default__ControlsConfig__StatusHideDelay`.
+- **GroundPlane**: `Scene__GroundPlane__Enabled`, `Scene__GroundPlane__Size`, `Scene__GroundPlane__yAxisOffset`, `Scene__GroundPlane__ShadowOpacity`.
+
+**Code Updates**
+- Updated `index.html`: replaced `Na__Config__SceneConfig` with four new config constants.
+- Updated scene background/fog initialization to use `Na__Config__FogConfig`.
+- Updated camera constructor to use `Na__Config__CameraConfig`.
+- Updated lighting setup function to use `Na__Config__LightingConfig`.
+- Added conditional ground plane creation based on `Scene__GroundPlane__Enabled` flag.
+
+**Test Environment Synchronization**
+- Applied identical structural changes to `TestEnv__SubAppData__Config.json`.
+- Updated `TestEnv__PrototypeTestingSandbox__Main__.js` with matching config constant refactoring.
+- Test environment now uses same separated config structure as main application.
+
+**Benefits**
+- **Eliminates Z-fighting**: Ground plane can be disabled when landscape meshes are present.
+- **Improved maintainability**: Related settings grouped logically by function.
+- **Consistent naming**: All config properties follow established double-underscore convention.
+- **Better discoverability**: Clear separation makes configuration easier to understand and modify.
+- **Backward compatible**: All existing functionality preserved with improved structure.
+
+**Key Files Modified**
+- `src__AppConfig/Na__AppConfig__Main.json` — refactored config structure.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — matching test config structure.
+- `index.html` — updated config constants and all property references.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — updated test environment config usage.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.6  -  15-Feb-2026
+### Building Storey Visibility System — Dolls House View & Per-Storey Toggle
+*Note: Developed in Test Environment, Migrated to Production Module*
+
+**Feature Overview**
+- Per-storey visibility control for multi-storey building models enabling interior exploration.
+- "Dolls house view" cut-away mode: hides topmost visible storey's roof to reveal interior spaces.
+- Intelligent roof management: lower storey roofs remain visible as ceilings for spatial context.
+- Individual storey toggle: show/hide specific floors independently.
+- Roof mode toggle: switch between solid building (all roofs) and dolls house (topmost roof hidden).
+- Automatic detection from GLB filenames: no manual configuration required.
+
+**SketchUp GLB Builder v1.6.0 Integration**
+- Storey-based export system: detects top-level storey containers tagged 90-93 at model root.
+- Per-storey per-element export: children organized by element tags (walls 21, floors 22, roofs 23, etc.).
+- World-space transform baking: storey container's transformation pre-multiplied into export root.
+- Filename pattern: `{Prefix}Storey__{StoreyName}__{ElementType}__{Suffix}.glb` (e.g., "Storey__GroundFloor__ProposedWalls__MeshModel__.glb").
+- Element tag granularity: split tag 10 (Existing) and tag 20 (Proposed) into individual element ranges for finer control.
+- Parent transform parameter: `Na__GlbEngine__ExportEntitiesToGlb` and `Na__LineworkEngine__ExportLineworkToGlb` accept optional parent transform.
+- Transform chain: `Z_UP_TO_Y_UP * storey.transformation * child.transformation` ensures correct vertical positioning.
+- MAX_NESTING_DEPTH increased from 3 to 4 to support storey container nesting level.
+- Backward compatible: non-storey models export identically using flat TAG_RANGES system.
+
+**Module Architecture**
+- Permanent module: `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js`.
+- Stateful design: maintains internal storey map, visibility state, roof map, and roof visibility flag.
+- Clean separation: pure logic in module, DOM manipulation in caller.
+- Public API: Initialize, DetectStoreys, SetStoreyVisibility, ShowOnlyBelow, ShowAll, ToggleStorey, ToggleRoof, GetState, GetStoreyDisplayName.
+- Configuration support: accepts storey order and default roof visibility mode.
+- Zero DOM dependencies: no HTML/CSS coupling, works with any UI framework.
+
+**Storey Detection System**
+- Pattern matching: scans loaded GLB model names for `Storey__{StoreyName}__` pattern.
+- Supported storey names: GroundFloor, FirstFloor, SecondFloor, ThirdFloor (configurable order).
+- Automatic grouping: models with matching storey names grouped together for batch visibility control.
+- Roof detection: filters models with "Roof" substring (ProposedRoofs, ExistingRoofs) per storey.
+- Custom storey support: detected storeys not in predefined order automatically appended.
+
+**Intelligent Roof Visibility Logic**
+- **Solid building mode** (default): All roofs visible for complete exterior view.
+- **Dolls house mode**: Topmost visible storey's roof hidden (reveals interior), lower roofs shown as ceilings.
+- Dynamic adaptation: roof logic recalculates when storey visibility changes.
+- Example flow: GF + FF visible → GF roof shown (ceiling), FF roof hidden (see inside FF).
+- Manual override: Roof toggle button switches between modes independent of storey state.
+
+**User Interaction Modes**
+- **Individual toggle**: Click storey button to show/hide that floor.
+- **Dolls house cut**: Right-click storey button to show only that storey and below (architectural section).
+- **Entire building**: "Show Entire Building" button restores all storeys with current roof mode.
+- **Roof control**: Dedicated roof button toggles between solid building and dolls house view.
+
+**Test Environment Integration**
+- Storey panel UI: bottom-left panel with roof button (top) and storey buttons (ordered top to bottom).
+- Visual feedback: green tint for visible storeys, red tint for hidden, blue tint for roof button.
+- Icon system: eye (visible), no-entry (hidden), house (solid building), no-entry (dolls house).
+- Separator line between roof and storey buttons for clear visual hierarchy.
+- State synchronization: UI buttons reflect module state via `GetState()` API.
+
+**Benefits**
+- **Interior exploration**: Remove upper floors to see room layouts and spatial relationships.
+- **Loft conversions**: Hide final roof to expose top floor interior design.
+- **Construction phasing**: Show building progress by revealing storeys sequentially.
+- **Client presentations**: Dynamic cut-away views without pre-rendered sections.
+- **Accessibility**: Understand multi-storey layouts for wheelchair access planning.
+
+**Technical Details**
+- Module state: `{ map, order, hasStoreys, visibleState, roofMap, roofVisible }`.
+- Detection complexity: O(n) where n = loaded models (single scan on load/refresh).
+- Visibility updates: O(k) where k = models per storey (small filtered sets).
+- Roof logic: O(m) where m = roof models per storey (typically 1-2).
+- Three.js integration: sets `.visible` property on Object3D nodes (no geometry modification).
+
+**Key Files**
+- `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js` — Core storey visibility module.
+- `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__README__.md` — Integration documentation.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — Test environment integration (wrapper functions).
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — Storey panel HTML structure.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — Storey panel styling (bottom-left positioning).
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — StoreyVisibility configuration section.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.5  -  15-Feb-2026
+### 3D Object Interactions System — Click-to-Open Door Animation 
+*Note: Migrated From Test Environment*
+
+**Feature Migration to Main Application**
+- Door animation feature promoted from test environment to production ValeVision3D application.
+- New module system: `src__3dObject__InteractionsSystem/` for interactive 3D object behaviors.
+- Dual model animation: synchronized rotation of mesh (solid geometry) and linework (edges) door models.
+- Y-up coordinate space integration: proper vertical rotation axis `(0, 1, 0)` via transform conjugation in GLB export.
+- Config-driven architecture: nested configuration under `3dObject__InteractionsSystem` → `3dObject__Interaction__DoorAnimation`.
+- Fully qualified property names: `3dObject__Interaction__DoorAnimation__Enabled`, `AnimationDurationMs`, `DefaultRotationDeg`, `ClickThresholdPx`.
+
+**SketchUp GLB Builder v1.5.0 Integration**
+- Hierarchy-preserving GLB export for door assemblies (ADR-prefixed entities).
+- Door Handler module (`Na__TrueVision__GlbBuilder__SpecialObject__DoorObjectHandling__.rb`) exports ADR > MOD/ROT/OuterShell node structures.
+- Transform conjugation: `Z_UP * M_su * inv(Z_UP)` converts SketchUp Z-up local spaces to glTF Y-up.
+- Inline detection during scene graph traversal: zero overhead when no doors present.
+- Tag 25 mapping: `25__ProposedBuilding__Doors` exports as `*__ProposedDoors__MeshModel/LineworkModel__.glb`.
+- Both mesh and linework exporters preserve identical hierarchy with matching node names.
+
+**Main Application Integration**
+- Module location: `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`.
+- Auto-initialization after model loading if config enabled and door model groups found.
+- Delta time tracking added to render loop for frame-rate-independent animation.
+- Model loader category support: `ValeVision__MainBuildingModel__ProposedDoors` added to load order.
+- Model toggle controls: "Doors" display name for visibility toggles.
+- Configuration: `src__AppConfig/Na__AppConfig__Main.json` under `3dObject__InteractionsSystem`.
+
+**Animation System Features**
+- Click detection with orbit drag filtering (4px threshold).
+- Raycasting against door meshes (both mesh and linework) with ADR ancestor lookup.
+- Smooth easeInOutCubic animation (600ms default duration).
+- Mid-animation reversal: click during animation to reverse direction with proportional duration scaling.
+- Toggle behavior: CLOSED → OPENING → OPEN → CLOSING → CLOSED state machine.
+- Pivot rotation around ROT hinge point using quaternion transforms.
+- Per-door configuration: rotation angle parsed from MOD name (e.g., `MOD001__ROT__90-Deg__DoorPanel`).
+
+**Test Environment Cleanup**
+- Test scripts migrated to main app; test environment now imports from production module.
+- Removed duplicate code: test feature scripts deleted, replaced with migration notes.
+- Test config inherits door animation settings with proper nested structure.
+- Clean separation: test environment validates production code, ready for next feature prototype.
+
+**Naming Convention (SketchUp → glTF)**
+- **ADR** = Door Assembly (e.g., `ADR002__InternalDoor__GroundFloor__PorchToLounge`)
+- **MOD** = Modifier Object (e.g., `MOD001__ROT__90-Deg__DoorPanel`) — contains rotating geometry
+- **ROT** = Rotation Point (e.g., `ROT001__RotationPoint__DoorHingeCentre`) — hinge pivot position
+
+**Key Files**
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — Production door animation module.
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md` — Technical documentation.
+- `src__AppConfig/Na__AppConfig__Main.json` — Door animation configuration.
+- `index.html` — Import, initialization, delta time tracking, render loop integration.
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — ProposedDoors category support.
+- `src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js` — Doors visibility toggle.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.4  -  14-Feb-2026
+### Testing Environment — Prototype Sandbox & Click-to-Open Doors Feature (Initial Prototype)
+
+**Test Environment Infrastructure**
+- Created self-contained prototype testing sandbox (`80__Testing__PrototypeEnvironment/`) for rapid feature development before main integration.
+- Standalone Flask server (`TestEnv__FlaskLocalServer.py`) on port 5500 serving test environment + parent ValeVision3D engine modules.
+- Separate HTML/JS/CSS bootstrap reusing core engine (navigation, render pipeline, math utils) from parent project.
+- Local GLB file loading from `TestEnv__GlbFiles/` folder with automatic discovery via Flask API endpoint.
+- Live statistics overlay (FPS, mesh count, vertex count, GLB file count) for performance monitoring.
+- Full node graph explorer panel (resizable, collapsible) with per-node visibility toggles for scene inspection.
+- Tree view export to clipboard with visual hierarchy (emoji icons, indentation, visibility status).
+- Testing mode banner and header modifications to clearly distinguish sandbox from production environment.
+
+**Door Animation System (First Feature Test)**
+- Click-to-open/close door animation system using scene graph naming conventions.
+- Scans loaded GLB models for door assemblies (`ADR` prefix), modifier objects (`MOD__ROT__XX-Deg`), and rotation points (`ROT` prefix).
+- Parses rotation angle from modifier name (e.g., `MOD001__ROT__90-Deg__DoorPanel` extracts 90 degrees).
+- Raycasting with pointer movement threshold (4px) to distinguish clicks from orbit camera drags.
+- Smooth animation with easeInOutCubic easing, configurable duration (600ms default).
+- Pivot rotation around hinge point (Y-axis) using quaternion math for proper door swing.
+- Toggle behavior: click closed door to open, click open door to close, click during animation to reverse from current position.
+- Mid-animation reversal scales duration proportionally to remaining travel distance.
+- Config-driven feature flag (`DoorAnimation__Enabled`) and parameters (duration, default rotation, click threshold).
+
+**Architecture & Integration**
+- Feature module pattern: standalone ES6 module (`Test__ModelInteraction__Animation__ClickToOpenDoors__.js`) with exported init and update functions.
+- Config-driven feature system: test environment config JSON (`TestEnv__SubAppData__Config.json`) controls feature flags and parameters.
+- Clean integration points: import in module region, initialize after GLB loading, update in render loop with delta time.
+- Delta time tracking added to render loop for frame-rate-independent animation.
+- Module structure follows ValeDesignSuite conventions: regions, 4-space indentation, inline comments, `Na__` namespace prefix.
+
+**Development Workflow Benefits**
+- Isolated feature prototyping without affecting production ValeVision3D environment.
+- Live reloading and debugging with dedicated dev server and file structure.
+- Node explorer provides immediate scene graph inspection for understanding model hierarchies.
+- Performance overlay monitors frame rate impact of new features during development.
+- Clean migration path: stable features copy from test scripts to main engine with minimal refactoring.
+
+**Key Files Created**
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` — Flask dev server with GLB file API.
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.bat` — Server launch script.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — Test environment bootstrap and render loop.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — Test environment HTML layout.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — Test environment UI styles.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — Test environment configuration.
+- `80__Testing__PrototypeEnvironment/TestEnv__README__.md` — Test environment documentation.
+- `80__Testing__PrototypeEnvironment/TestEnv__CurrentFeatureTestScripts/Test__ModelInteraction__Animation__ClickToOpenDoors__.js` — Door animation feature module.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.3c  -  13-Feb-2026
+### Page Layout Touch Controls — Edge Handle Clipping Parity (iOS / Touchscreen)
+
+**Issue Fixed**
+- On touch devices (including iOS), image clipping via edge handles was not available in Layout View.
+- Mouse controls supported edge clipping (`tc`, `bc`, `lc`, `rc`), but touch controls only supported body move + corner proportional resize.
+
+**Touch Control Update**
+- Added edge midpoint hit-testing in touch controls:
+  - top-center (`tc`)
+  - bottom-center (`bc`)
+  - left-center (`lc`)
+  - right-center (`rc`)
+- Added one-finger edge-drag clipping logic matching PC behavior:
+  - `rc` -> updates `clipRight`
+  - `lc` -> updates `clipLeft`
+  - `bc` -> updates `clipBottom`
+  - `tc` -> updates `clipTop`
+- Clip limits now enforce minimum visible content and max-clip bounds equivalent to PC constraints.
+
+**Behavior Preserved**
+- One-finger body drag still moves image.
+- One-finger corner drag still performs proportional resize.
+- Two-finger pinch/pan navigation path remains unchanged and still takes precedence for canvas navigation.
+
+**Key File Modified**
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+  - Added edge hit-test branches.
+  - Added clip state persistence in drag start transform.
+  - Added edge clipping branches in touch move handler.
+  - Updated module header comments to reflect clipping support.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.3b  -  13-Feb-2026
+### Layout View Export Fix — Profile Lines / Camera Projection Synchronization
+
+**Issue Fixed**
+- Layout View images could show profile lines at a slightly different perspective/FOV than the base render, creating a "layered perspective" look.
+- Root cause was capture-time desynchronization between color pass (`composer.render()`) and profile-line normal pass (`renderProfileNormals()`), especially during custom export resize/aspect changes.
+
+**Pipeline Synchronization Update**
+- Export pipeline now resolves a full render pipeline state bundle instead of composer-only access.
+- Capture order now enforces synchronized projection and buffer state:
+  - camera aspect/projection update
+  - composer resize
+  - profile lines normal render target resize
+  - profile normals re-render
+  - composer render
+- Restore order now also re-syncs profile lines after returning renderer/composer to live viewport size.
+
+**3-Stage Naming / API Wiring**
+- Naming convention preserved with `Na__...__...__...` style throughout new helper and state plumbing.
+- Added `Na__UiFeature__ResolveRenderPipelineState(...)` helper in export controls.
+- `Na__UiFeature__InitializeImageExportControls(...)` now accepts render-pipeline-state getter (composer + helpers), backward compatible with legacy composer getter shape.
+
+**Key Files Modified**
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+  - Added render-pipeline-state resolver helper.
+  - Updated export render path to call `setProfileLinesSize(...)` and `renderProfileNormals()` at capture and restore boundaries.
+- `index.html`
+  - Added shared `Na__RenderPipeline__State` module variable.
+  - Updated image export initializer wiring to pass render-pipeline-state getter.
+  - Updated render loop and resize code paths to use shared pipeline state consistently.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.3  -  12-Feb-2026
+### Render Effect — Profile Lines (SketchUp-Style Silhouette Edges)
+
+**Profile Lines Feature**
+- SketchUp-style "Profile Lines" effect: extra visible edges around rounded/cylindrical geometry (finials, chimney pots, turned details) so they read clearly in the whitecard view.
+- Implemented as a post-processing pass: scene normals rendered to a separate buffer; Sobel edge detection on the normal buffer; dark profile lines composited over the scene before FXAA.
+- Line geometry (LineSegments2) is hidden during the normal pass to avoid artifacts.
+- Enable/disable and parameters (edge color, normal threshold, edge width) driven by AppConfig `RenderEffect__ProfileLines`.
+
+**Config & Integration**
+- New AppConfig block `RenderEffect__ProfileLines`: `Enabled`, `EdgeColor`, `EdgeThresholdNormal`, `EdgeThresholdDepth`, `EdgeWidth`.
+- Composer setup returns `{ composer, renderProfileNormals, setProfileLinesSize }`; render loop calls `renderProfileNormals()` each frame before `composer.render()`; resize handler calls `setProfileLinesSize(width, height)`.
+
+**Key Files**
+- `src__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — normal buffer render, Sobel shader, pass creation.
+- `src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — optional ProfileLines pass insertion, config wiring.
+- `src__AppConfig/Na__AppConfig__Main.json` — `RenderEffect__ProfileLines` block.
+- `index.html` — config destructuring, composer result handling, loop and resize wiring.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.2  -  12-Feb-2026
+### 3D Render Pipeline — Ground Line Visibility & RenderConfig__Linework Naming
+
+**Ground Line Visibility Fix**
+- Ground line (building base meeting ground plane) was invisible in viewport due to depth fighting with mesh surfaces.
+- Root cause: renderer uses `logarithmicDepthBuffer: true`; depth is written in fragment shader via `gl_FragDepth`, so WebGL polygon offset has no effect (hardware offset does not modify `gl_FragDepth`).
+- Solution: fragment shader depth bias via `LineMaterial.onBeforeCompile` — after `#include <logdepthbuf_fragment>`, subtract a small configurable value from `gl_FragDepth` so line fragments win the depth test against coplanar mesh.
+- Depth bias value configurable in AppConfig; default `0.00015` balances visibility of ground line without causing distant lines to pop in front of surfaces.
+
+**RenderConfig__Linework Config & 3-Stage Naming**
+- Linework config block renamed from `"linework"` to `"RenderConfig__Linework"` for consistency with 3-stage naming.
+- All linework properties use `RenderConfig__Linework__*` keys: `EdgeColor`, `LineWidth`, `PolygonOffsetFactor`, `PolygonOffsetUnits`, `RenderOrder`, `DepthBias`.
+- Downstream code in `Na__ModelLoader__MultiModel.js` updated to read `config.RenderConfig__Linework` and `lineworkConfig.RenderConfig__Linework__*` properties.
+- Single source of truth for line appearance and depth behaviour; no other files reference these keys.
+
+**Key Files Modified**
+- `src__AppConfig/Na__AppConfig__Main.json` — `RenderConfig__Linework` block and property names.
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — depth bias hook on LineMaterial, config key references.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.1  -  12-Feb-2026
+### Page Layout System — Image Clipping with Edge Handles
+
+**Edge Handle Clipping Feature**
+- Edge handles (top, bottom, left, right) now clip/trim images instead of free resizing.
+- Dragging edge handles inward crops the image from that edge while maintaining container size.
+- Corner handles continue to scale the image proportionally (behavior unchanged).
+- Clipping is non-destructive: image container maintains full dimensions; only visible portion changes.
+- Minimum 10mm visible content enforced to prevent complete clipping.
+
+**Technical Implementation**
+- Added clip properties to `imageTransform` state: `clipTop`, `clipRight`, `clipBottom`, `clipLeft` (all in mm).
+- Canvas rendering applies clipping via `ctx.clip()` with calculated visible region rectangle.
+- Source image draw uses 9-parameter `drawImage()` to map clipped source region to full container bounds.
+- PC controls updated: edge handle drag calculates clip values based on drag delta and enforces maximum clip constraints.
+- Touch controls description clarified: only corner handles used on touch devices (edge handles PC-only).
+
+**Code Organization**
+- Created new "Selection Handle Rendering System" region in `Na__PageLayoutSystem__CanvasRenderPipeline__.js`.
+- Extracted handle drawing logic into specialized functions:
+  - `Na__PageLayout__DrawHandle()` — draws single handle square
+  - `Na__PageLayout__DrawSelectionHandles()` — draws all 8 handles
+  - `Na__PageLayout__DrawSelectionBorder()` — draws dashed selection border
+- Improved code maintainability by grouping all handle rendering logic in dedicated region block.
+
+**User Experience**
+- Intuitive trimming workflow: drag edge handles inward to crop unwanted portions of image.
+- Visual feedback: handles always show full container bounds for clear reference.
+- Selection border indicates full container area; clipped image visible within that boundary.
+- Allows precise image composition without affecting layout positioning.
+
+**Key Files Modified**
+- `src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js` — added clip properties to state initialization.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js` — clipping render logic, reorganized handle system.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js` — edge handle clipping behavior, clip value constraints.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js` — updated description (no edge handles on touch).
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.0  -  12-Feb-2026
+### OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
+
+**Automatic Orbit Target from SketchUp Exported Cube**
+- OrbitHelperCube GLB files exported from SketchUp now automatically define the camera orbit focus point.
+- Cube GLB files follow naming pattern: `{ProjectName}__NN__OrbitHelperCube__MeshModel__.glb`.
+- System detects OrbitHelperCube URLs in project model arrays and separates them from regular models.
+- Cube center position (bounding box) becomes the orbit target, eliminating manual JSON configuration per project.
+- Cube is hidden by default; visible only when `OrbitHelperCube__Debug__Visible` flag is enabled in AppConfig.
+
+**Implementation**
+- New functions in `Na__ModelLoader__MultiModel.js`:
+  - `Na__ModelLoader__SeparateOrbitCubeUrl()` — filters OrbitHelperCube URL from model array.
+  - `Na__ModelLoader__LoadOrbitHelperCube()` — loads cube GLB and extracts center position.
+- OrbitHelperCube URL filtered before model loading, ensuring it never appears as a category or toggle button.
+- Loading sequence: separate cube URL → load cube → set orbit target → load remaining models.
+- Falls back to `Dev__DefaultCube` position when no OrbitHelperCube found (backward compatible).
+
+**Configuration Changes**
+- Removed `Camera__DefaultTarget` from `Camera__DefaultPosition` in AppConfig (orbit target now from cube or Dev__DefaultCube).
+- Added `OrbitHelperCube__Debug__Visible: false` flag in `Dev__DeveloperMode` config.
+- Project JSON files can remove `Camera__DefaultTarget` when OrbitHelperCube GLB is present.
+- Camera UI JSON output split into two sections: `Camera__DefaultPosition` (Pos/Rotation/FOV) and `OrbitHelperCube__Position` (target) for easier copy/paste.
+
+**Benefits**
+- No manual orbit target configuration required per project — set in SketchUp instead.
+- Consistent orbit positioning across projects using exported cube geometry.
+- Debug visibility toggle allows inspection of orbit cube position when needed.
+- Backward compatible: projects without OrbitHelperCube use Dev__DefaultCube fallback.
+
+**Key Files**
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — cube detection, separation, and loading functions.
+- `index.html` — loading sequence integration, orbit target application, debug flag parsing.
+- `src__AppConfig/Na__AppConfig__Main.json` — removed Camera__DefaultTarget, added debug flag.
+- `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js` — split JSON output format.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.0.9  -  11-Feb-2026
+### Page Layout View System (LayoutVision 2D)
+
+**2D Page Layout System for A3 Document Composition**
+- Standalone browser tab opens when user clicks "Layout View" button in Export Image panel.
+- Rendered 3D viewport image positioned on A3 title block template (landscape 420x297mm).
+- Full 2D canvas interaction: drag to reposition, corner/edge handles to resize image.
+- Mouse wheel zoom toward cursor, middle/right-click pan, two-finger pinch/pan on touch.
+- Exports exact A3-scale PDFs: "Export Full Layout" (title block + image) or "Export Image Only".
+- Uses jsPDF v4.1.0 (version-locked, CDN independent, self-contained UMD build).
+
+**Architecture**
+- Data transfer via `window.opener` global property (avoids localStorage 5-10 MB size limit).
+- All positioning stored in mm coordinates relative to A3 origin; maps directly to jsPDF units.
+- DPR-aware canvas rendering for sharp display on retina screens.
+- Image initially centered at 80% of A3 printable area with source aspect ratio preserved.
+- PC controls: proportional corner resize, free edge resize, body drag.
+- Touch controls: single-finger drag/resize, two-finger pinch zoom + pan.
+
+**Key Modules**
+- `Na__PageLayoutSystem__Layout__.html` — standalone page with Vale-branded header matching main app.
+- `Na__PageLayoutSystem__SystemLogic__Main__.js` — orchestrator; loads image from opener, manages state.
+- `Na__PageLayoutSystem__CanvasRenderPipeline__.js` — 2D rendering: A3 paper, title block, image, handles.
+- `Na__PageLayoutSystem__2dNavigationControls__.js` — zoom toward cursor, pan on middle/right-click.
+- `Na__PageLayoutSystem__Controls__Pc__.js` — left-click hit-test, drag/resize with cursor feedback.
+- `Na__PageLayoutSystem__Controls__TouchScreen__.js` — touch drag/resize/pinch with gesture disambiguation.
+- `Na__PageLayoutSystem__PdfExport__A3__.js` — jsPDF integration for exact A3-scale PDF export.
+- `01__Dependencies__VersionLocked/jspdf.umd.js` — jsPDF v4.1.0 vendored dependency (1.2 MB).
+
+**Integration**
+- Shared render helper `Na__UiFeature__RenderToDataUrl()` in Export Controls module.
+- Both "Export Now" and "Layout View" use same render pipeline (custom or viewport mode).
+- Layout View button added to Export Image panel below "Export Now" button.
+- Export controls refactored to eliminate code duplication between export paths.
+
+**UI**
+- Header matches main ValeVision app (white background, Vale logo, blue border); title "LayoutVision 2D".
+- Secondary actions bar below header with Export Full Layout, Export Image Only, Close buttons.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.0.8  -  11-Feb-2026
+### Image Export Safe Frame & Rule of Thirds Grid Overlay
+
+**Safe Frame Overlay**
+- Transparent grey overlay bars (top, bottom, left, right) showing export crop area.
+- Dynamically updates based on selected aspect ratio (3:2, 4:3, 16:9).
+- Appears when Image Export panel is opened; hides when panel is closed.
+- Automatically recalculates on window resize with debounced updates.
+- Uses aspect ratio fitting algorithm for pillarbox (wider viewport) or letterbox (taller viewport) display.
+
+**Rule of Thirds Grid Overlay**
+- Composition guide lines dividing safe frame into 9 equal parts (3x3 grid).
+- Vale blue (#182c3b) at 50% opacity for brand consistency.
+- Line thickness 1.5px for improved visibility.
+- Updates dynamically with aspect ratio changes.
+- Positioned within safe frame area for accurate composition guidance.
+
+**Implementation**
+- New module `Na__UiFeature__ImageExport__ViewportOverlays.js` handles overlay creation, positioning, and updates.
+- CSS module `image-export-overlays.css` provides styling with z-index 500 (between viewport and menu).
+- Overlays use `pointer-events: none` to allow continued 3D interaction through overlay.
+- Integrated into export controls with show/hide on panel toggle and aspect ratio slider changes.
+- Overlay automatically hides when custom export is disabled.
+
+**Key Files**
+- `src__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js` — overlay logic and positioning calculations.
+- `src__Styles/image-export-overlays.css` — overlay styles and animations.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — integration with export panel controls.
+- `index.html` — overlay DOM elements added to root container.
+
+# ---------------------------------------------------------
+## 11-Feb-2026 - ValeVision3D v0.0.7
+### Enhance Whitecard Post-Process Pipeline
+
+**Image Export Post-Processing**
+- Added "Enhance Whitecard" toggle to Export Image panel (default: on).
+- Post-processing runs at export time only; viewport render pipeline unchanged.
+- Canvas 2D pixel manipulation pipeline applied after Three.js render, before download.
+- Config-driven effect order and parameters via `Na__AppConfig__Main.json` → `ImageExport__PostProcessEffects`.
+
+**Levels Effect** (`Na__ImageExport__PostProcessEffects__Levels.js`)
+- Pixel-level black/white/gamma remapping via ImageData.
+- White point set to 230 clips light grays to pure white; dark lines preserved.
+- Removes subtle face shading from render for clean whitecard line art.
+
+**High Pass Sharpen Effect** (`Na__ImageExport__PostProcessEffects__HighPassSharpen.js`)
+- CSS `blur()` filter for GPU-accelerated blur; high-pass layer = (original - blurred) / 2 + 128.
+- Overlay blend mode sharpens black lines against white background.
+- Configurable radius, blend mode, opacity.
+
+**Pipeline Orchestrator** (`Na__ImageExport__PostProcessEffects__Pipeline.js`)
+- Sorts effects by `Order` field; applies enabled effects sequentially.
+- Each effect is a standalone module; pipeline reads config and invokes them.
+
+**Key Files**
+- `src__AppConfig/Na__AppConfig__Main.json` — `ImageExport__PostProcessEffects` config block.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — enhance toggle, pipeline integration.
+- `src__ImageExport/Na__ImageExport__PostProcessEffects__*.js` — Levels, HighPassSharpen, Pipeline.
+
+# ---------------------------------------------------------
+## 10-Feb-2026 - ValeVision3D v0.0.6
+### Dynamic Model Toggle System & Build Pipeline Integration
+
+**Model Toggle Controls**
+- Created `src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js` module for per-category visibility toggling.
+- Dynamic button generation from loaded model groups Map (category -> THREE.Group).
+- User-friendly display names: "Existing Building", "Design Proposal", "Landscape".
+- Pairs Mesh + Linework models per category into single toggle button.
+- Active/inactive visual states with green dot indicator and line-through styling.
+- Future-proof: automatically generates buttons for new categories (furniture, vegetation, context).
+- Integrated as expandable dropdown menu item "Toggle Model Layers" positioned between "Export Image" and "Download Position Data".
+- Panel title: "Model Parts List" displays category toggle buttons.
+- Uses standard dropdown panel pattern with toggle button for consistent UI behavior.
+- Panel expands/collapses dynamically matching other menu items (Adjust Camera Lens, Export Image, Download Position Data).
+
+**Project.json Format v4**
+- Introduced `valeVision_ModelUrls` array format to support multiple model URLs per project.
+- Deprecated `valeVision_ModelUrl_BaseMesh` / `_Linework` (v3) format.
+- Maintains backward compatibility in `Na__AppUtils__ExtractModelUrls` for all legacy formats (v1-v4).
+- Cleans legacy keys when writing/updating project.json files.
+
+**Build Automation Pipeline Updates**
+- Updated `AutomationUtil__FetchLocalProjects__BuildValeVisionGalleryProject__Main__.py`:
+  - Removed version-based GLB selection (parse_glb_version, select_latest_glb_by_layer).
+  - Added `__NaModel__` to `__ValeVision__` namespace rebranding in CDN URL generation.
+  - Now discovers all root-level GLBs (skips `01__Archive/` subfolder).
+  - **Critical fix**: Always updates model URLs in existing projects instead of skipping entirely.
+  - Writes v4 `valeVision_ModelUrls` array format for all new and refreshed projects.
+  - Added "Model URLs refreshed" counter and status messages to console output.
+  - Fixed Unicode encoding errors in Windows console (replaced arrow and em-dash characters).
+- Verified `AutomationUtil__BuildCloudflareBucket__ValeVisionGalleryProjects__Main__.py` consistency with new naming.
+
+**Validation & Testing**
+- Successfully tested full pipeline on `2026/61721__Payne` project.
+- Confirmed 6 GLB models discovered (Landscape, Existing Building, Proposed Building × 2 types each).
+- Verified project.json updated with v4 format and `__ValeVision__` rebranded CDN URLs.
+- Confirmed models load and render correctly in ValeVision3D viewer with new toggle controls.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 10-Feb-2026 - ValeVision3D v0.0.5 
+### Multi-Model Category Loading System
+- New `Na__ModelLoader__MultiModel.js` module for loading multiple GLB model pairs.
+- Models are now classified by ValeVision category (e.g. MainBuildingModel__Existing, LandscapeEnvironment).
+- Priority-based sequential loading order matches GLB Builder tag range definitions.
+- Each category gets its own THREE.Group enabling future per-category visibility toggling.
+- URL parser accepts both `__ValeVision__` (preferred CDN) and `__NaModel__` (backstop) namespaces.
+- Mesh and linework loading logic extracted from index.html into dedicated module.
+- AppConfig modelDefaults now uses `modelUrls` array instead of separate base/linework URLs.
+- Backwards-compatible project.json extraction supporting all four legacy URL formats (v1-v4).
+- Cloudflare R2 sync script updated to rename `__NaModel__` to `__ValeVision__` in CDN filenames.
+- R2 sync script now skips `01__Archive/` subfolder and pushes all root-level GLBs without version logic.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.0.4 
+### Web Project Path Fixes
+- Added absolute GitHub Pages base URL for project.json fetching.
+- Added year-aware and legacy project ID normalization for web loading.
+- Removed hard-coded 2025 web path to prevent 404 on new year projects.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.0.3 
+### Normalized Navigation Controls
+- Added normalized mouse wheel zoom with fixed step per tick.
+- Added touch-first navigation module for iPad/mobile detection.
+- Routed nav initialization through device-aware control selection.
+- Added AppConfig-based navmode settings for mouse and iPad controls.
+- Inverted mouse wheel zoom direction for expected scroll behavior.
+- Added arrow key movement alongside WASD navigation.
+- Added mouse wheel acceleration after 3 consecutive ticks for faster long-range zoom.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.0.2 
+### Navigation, Units, and Camera Tools Updates
+- Added Dev__DeveloperMode default cube for fixed scale + pivot reference.
+- Standardized config units as integer millimeters with mm-to-units helpers.
+- Updated camera defaults schema and live JSON export/import panel.
+- Removed bounding-box recentering logic and added orbit limits by scale.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 04-Feb-2026 - ValeVision3D v0.1.0 
+### Total Engine Rebuild and New Features
+- Switched to a new engine architecture.
+  - Previously used Babylon.js as the legacy engine for the 3D runtime.
+  - Now using **Three.js** for the 3D engine.
+- Refactored the old codebase to be more modular and maintainable.
+# ---------------------------------------------------------

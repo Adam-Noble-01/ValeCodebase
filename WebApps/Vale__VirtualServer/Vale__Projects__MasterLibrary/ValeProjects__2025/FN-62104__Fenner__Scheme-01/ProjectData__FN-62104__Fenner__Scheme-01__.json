@@ -1,0 +1,37 @@
+{
+    "projectName": "Fenner Scheme-01",
+    "ProjectType": "Whitecard",
+    "projectCode": "62104",
+    "productionData": {
+        "input": "Hand Drawn Concept",
+        "additionalNotes": "Top notch concept art from Dan, was a pleasure to work with.",
+        "conceptArtist": "Dan",
+        "designer": "Dan"
+    },
+    "scheduleData": {
+        "timeAllocated": 4,
+        "timeTaken": 4,
+        "dateFulfilled": "16-Oct-2025",
+        "dateReceived": "15-Oct-2025"
+    },
+    "images": [
+        "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
+        "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
+        "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",
+        "IMG04__Scheme-01__Shot-04__WhitecardImage__16-Oct-2025.png"
+    ],
+    "displayImages": [
+        "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
+        "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
+        "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",
+        "IMG04__Scheme-01__Shot-04__WhitecardImage__16-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
+        "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
+        "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",
+        "IMG04__Scheme-01__Shot-04__WhitecardImage__16-Oct-2025.png"
+    ],
+    "thumbnailImage": "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025__Thumbnail__524p__.webp"
+}

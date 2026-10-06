@@ -1,0 +1,12 @@
+{
+    "description": "ValeVision Gallery app settings. Projects come from the Projects Master Library through the Gallery API (api/projects); this file holds only app settings and option lists.",
+    "applicationName": "ValeVision Gallery",
+    "version": "0.2.8",
+    "vale__ProductionInput__OptionsList": [
+        "CAD File",
+        "Hand Drawn Concept",
+        "Early Stage Sketch",
+        "VizDpt SketchUp Model",
+        "Designers SketchUp Model"
+    ]
+}

@@ -1,0 +1,96 @@
+/* ================================================================= */
+/* VALEVISION3D - LAYOUT EDITOR - VECTOR TOOLS STYLES                 */
+/* ================================================================= */
+/*                                                                   */
+/* FILE       : Na__LayoutEditor__Styles__VectorTools__.css          */
+/* MODULE     : Layout Editor - Vector Tools                         */
+/* AUTHOR     : Adam Noble - Noble Architecture                      */
+/* PURPOSE    : The Vector Tools section of the Properties column:   */
+/*              its rows of tool buttons and the line that says what */
+/*              the tool that is up wants next                       */
+/* CREATED    : 21-Sep-2026                                          */
+/*                                                                   */
+/* NOTES:                                                            */
+/* - Everything else the section uses is the panels' own: rows,      */
+/*   inputs, the subhead note and the lit button                     */
+/*   (Na__LayoutEditor__Styles__Panels__.css). The preview the tools */
+/*   draw on the sheet is an SVG whose colours and weights are set   */
+/*   inline from the config, so there is nothing of it here.         */
+/*                                                                   */
+/* ================================================================= */
+
+/*
+ * PORT NOTE:
+ * - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/37__System__VectorTools/Na__LayoutEditor__Styles__VectorTools__.css
+ * - Source version: none of its own - the sheet carries no version or log; taken as
+ *                   TrueVision3D v2.150.0 left it (22-Sep-2026, commit a2e0a836; read at
+ *                   b2aa9151): created with v2.130.0 (21-Sep-2026), the Boolean section's
+ *                   rule added with v2.150.0; no later change to the pin
+ * - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, linked only by
+ *                   Na__LayoutEditor__Panel__VectorTools__'s own <link>, as in TrueVision
+ *                   (nothing to register in the loader list or the CSS index)
+ * - Parity        : verbatim (every rule and comment is TrueVision's; the banner and this
+ *                   note are the only differences)
+ * - Divergences   :
+ *   - Banner reads ValeVision3D.
+ * - Legacy        : the sheet has no module version and no DEVELOPMENT LOG in TrueVision, so
+ *                   the Source version line names the release that last changed it (R6 OC-07).
+ * - Back-port     : none.
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Tool Buttons                                           */
+/* ----------------------------------------------------------------- */
+
+/* A ROW THAT WRAPS. Four or seven words will not always fit the column  */
+/* at the width somebody has dragged it to, so the buttons wrap onto a   */
+/* second line rather than squeezing or running off the edge.           */
+
+.na-le-vectools__row {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    gap                                : 4px;
+    margin-bottom                      : 6px;
+}
+
+.na-le-vectools__btn {
+    flex                               : 1 1 auto;
+    padding                            : 4px 8px;
+    font-size                          : 0.74rem;
+    white-space                        : nowrap;
+}
+
+/* THE RULE OVER THE BOOLEAN SECTION (22-Sep-2026). The Draw and Edit    */
+/* tools make and cut lines; the Boolean tools combine closed shapes as  */
+/* areas, so a hairline sets them apart before their own subhead. The    */
+/* weight and tint are the margin notes' rule (na-le-rule), kept here so */
+/* the section does not lean on another feature's stylesheet.           */
+
+.na-le-vectools__rule {
+    height                             : 0;
+    margin                             : 10px 0 2px;
+    border                             : none;
+    border-top                         : 1px solid rgba(23, 43, 58, 0.14);
+}
+
+/* endregion */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  What the Tool Wants Next                               */
+/* ----------------------------------------------------------------- */
+
+/* One line, in the colour of the rubber band, under the buttons. It    */
+/* reserves no height while no vector tool is up.                       */
+
+.na-le-vectools__hint {
+    margin                             : 2px 0 8px;
+    padding                            : 4px 8px;
+    border-left                        : 3px solid #336699;
+    background                         : #eef3f8;
+    color                              : #1f3a56;
+    font-size                          : 0.74rem;
+}
+
+/* endregion */

@@ -1,0 +1,59 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 631,
+            "Camera__DefaultPos__PosY": 3289,
+            "Camera__DefaultPos__PosZ": 16751
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0021,
+            "Camera__DefaultRotation__RotY": -0.5331,
+            "Camera__DefaultRotation__RotZ": 0.0011
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 16842,
+        "OrbitHelperCube__Position__PosY": 3347,
+        "OrbitHelperCube__Position__PosZ": -10719
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "An extremely difficult and time consuming project, large commercial sized existing building with extreme amounts of ornamentation. The orangery itself also had bespoke elements not in my standards library so these also had to be modelled, I over-ran quite dramatically on this project, but I cant think what I could have done to turn this one around faster.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File",
+        "designer": "Gary"
+    },
+    "projectCode": "62775",
+    "projectName": "Slater",
+    "ProjectType": "Whitecard",
+    "scheduleData": {
+        "dateFulfilled": "19-Mar-2026",
+        "dateReceived": "17-Mar-2026",
+        "timeAllocated": 6,
+        "timeTaken": 7.5
+    },
+    "valeVision_ModelUrls": [
+        "Slater__01__OrbitHelperCube__MeshModel__.glb",
+        "Slater__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Slater__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Slater__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Slater__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Slater__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Slater__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026__Thumbnail__524p__.webp"
+}

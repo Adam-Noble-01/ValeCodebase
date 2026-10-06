@@ -1,0 +1,6 @@
+{
+    "EmailWorkers__Config": {
+        "EmailWorkers__Config__Description": "Send Email: the ValeVision 3D API sends it (api/email/send, Microsoft Graph, the credentials in the server's secrets file) as the signed-in user, to valegardenhouses.com addresses only. The address book is the users register (api/email/contacts).",
+        "EmailWorkers__Config__RequestTimeoutMs": 15000
+    }
+}

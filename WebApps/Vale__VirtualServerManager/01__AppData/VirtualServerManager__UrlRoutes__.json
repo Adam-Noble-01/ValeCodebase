@@ -1,0 +1,78 @@
+{
+    "_About": "Public URL routes for app.valegardenhouses.com, edited in the Vale Virtual Server Manager (tab 03 URL Configurator). App routes serve an app folder of the mirror under a short lowercase path (queries pass straight through to the app). Short links redirect a tiny path, often with a {placeholder}, to a full app URL - ideal for small QR codes. Apply generates /etc/nginx/snippets/vale-site.conf on the server (tested first, restored automatically on failure).",
+    "PublicHost": "app.valegardenhouses.com",
+    "Routes": [
+        {
+            "Id": "valevision",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "valevision",
+            "Target": "Vale__ValeVision3D",
+            "Entry": "index.html",
+            "ExampleQuery": "project=64135",
+            "Api": false,
+            "ApiPort": 8002,
+            "Note": "ValeVision 3D (URL from the email to Shane)"
+        },
+        {
+            "Id": "valespec",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "valespec",
+            "Target": "Vale__ValeSpec",
+            "Entry": "index.html",
+            "ExampleQuery": "",
+            "Api": false,
+            "ApiPort": 8004,
+            "Note": "ValeSpec (URL from the email to Shane)"
+        },
+        {
+            "Id": "lanterndesigner",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "lantern-designer",
+            "Target": "Vale__LanternDesigner",
+            "Entry": "index.html",
+            "ExampleQuery": "",
+            "Api": false,
+            "ApiPort": 8003,
+            "Note": "Lantern Designer (URL from the email to Shane)"
+        },
+        {
+            "Id": "gallery",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "project-gallery",
+            "Target": "Vale__ValeVisionGallery",
+            "Entry": "index.html",
+            "ExampleQuery": "project=64135",
+            "Api": true,
+            "ApiPort": 8001,
+            "Note": "ValeVision Gallery - suggested short path, change freely"
+        },
+        {
+            "Id": "p",
+            "Enabled": false,
+            "Type": "link",
+            "Path": "p/{project}",
+            "Target": "/valevision/?project={project}",
+            "Code": 302,
+            "Example": "64135",
+            "Note": "Example QR short link: a project straight into ValeVision 3D (enable once the app reads ?project=)"
+        }
+    ],
+    "Applied": {
+        "Hash": "8c7a7ce339c7",
+        "Utc": "2026-10-06T14:29:44Z",
+        "Codes": {
+            "/": "200",
+            "/valevision/": "200",
+            "/valespec/": "404",
+            "/lantern-designer/": "404",
+            "/project-gallery/": "200",
+            "/Server__Api/": "404",
+            "/Server__DeveloperTools/": "404",
+            "/Server__UserAccountData/": "404"
+        }
+    }
+}

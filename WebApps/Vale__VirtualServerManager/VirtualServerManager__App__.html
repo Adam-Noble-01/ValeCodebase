@@ -1,0 +1,206 @@
+<!doctype html>
+<!-- =============================================================================
+     VALE VIRTUAL SERVER MANAGER - APP SHELL (PWA)
+     =============================================================================
+
+     FILE       : VirtualServerManager__App__.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Monitor the Vale VPS live and keep WebApps/Vale__VirtualServer in
+                  two-way parity with it. Served by VirtualServerManager__LocalServer__.py
+     CREATED    : 06-Oct-2026
+
+     ============================================================================= -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vale Virtual Server</title>
+    <meta name="theme-color" content="#172b3a">
+    <meta name="description" content="Live explorer and two-way parity sync for the Vale apps server (app.valegardenhouses.com).">
+    <link rel="manifest" href="VirtualServerManager__Pwa__Manifest__.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="01__AppAssets/VirtualServerManager__Icon__32x32.png">
+    <link rel="apple-touch-icon" href="01__AppAssets/VirtualServerManager__Icon__192x192.png">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/VirtualServerManager__Styles__Main__.css">
+</head>
+<body>
+
+    <header class="Vsm__Header">
+        <div class="Vsm__Brand">
+            <img class="Vsm__BrandIcon" src="01__AppAssets/VirtualServerManager__Icon__192x192.png" alt="">
+            <div>
+                <div class="Vsm__Title">Vale Virtual Server</div>
+                <div class="Vsm__Subtitle">app.valegardenhouses.com &middot; <span id="Vsm__Stats" class="Vsm__Stats"></span></div>
+            </div>
+        </div>
+        <div class="Vsm__HeaderRight">
+            <span id="Vsm__Conn" class="Vsm__Pill">Checking&hellip;</span>
+            <button id="Vsm__BtnStatus" class="Vsm__BtnGhost">Server status</button>
+            <button id="Vsm__BtnBackupAll" class="Vsm__BtnGhost" title="Dated snapshot of all server user data on this PC">Snapshot user data</button>
+            <button id="Vsm__BtnSettings" class="Vsm__BtnGhost">Settings</button>
+        </div>
+    </header>
+
+    <nav class="Vsm__Tabs" role="tablist">
+        <button class="Vsm__Tab" role="tab" data-tab="explorer"><span class="Vsm__TabNum">01</span>Live server explorer</button>
+        <button class="Vsm__Tab" role="tab" data-tab="matrix"><span class="Vsm__TabNum">02</span>Parity matrix</button>
+        <button class="Vsm__Tab" role="tab" data-tab="urls"><span class="Vsm__TabNum">03</span>URL configurator</button>
+        <button class="Vsm__Tab" role="tab" data-tab="users"><span class="Vsm__TabNum">04</span>User accounts</button>
+    </nav>
+
+    <div id="Vsm__Offline" class="Vsm__Offline" hidden>
+        The local manager server is not running. It starts at Windows sign-in (Startup shortcut), or run
+        Start__VirtualServerManager__Localhost__8020__.bat. Retrying&hellip;
+    </div>
+
+    <div id="Vsm__Stale" class="Vsm__Offline" hidden></div>
+
+    <!-- TAB 01 | LIVE SERVER EXPLORER -->
+    <section id="Vsm__TabExplorer" class="Vsm__Panel" role="tabpanel" hidden>
+        <div class="Vsm__ExplorerBar">
+            <span id="Vsm__LivePill" class="Vsm__Pill is-light">Starting&hellip;</span>
+            <button id="Vsm__BtnLive" class="Vsm__BtnSmall">Pause live</button>
+            <input id="Vsm__Search" class="Vsm__Search" type="search" placeholder="Find a file or folder&hellip;">
+            <label class="Vsm__Check"><input type="checkbox" id="Vsm__DiffOnly"> Differences only</label>
+            <select id="Vsm__LaneFilter" class="Vsm__Select" title="Lane">
+                <option value="">All lanes</option>
+                <option value="code">Source code</option>
+                <option value="content">Heavy content</option>
+                <option value="userdata">User data</option>
+                <option value="shared">Project data</option>
+            </select>
+            <button id="Vsm__BtnCollapse" class="Vsm__BtnSmall">Collapse all</button>
+            <span class="Vsm__Spacer"></span>
+            <span id="Vsm__TreeInfo" class="Vsm__Muted"></span>
+        </div>
+        <div class="Vsm__Legend">
+            <span><b class="Vsm__Verdict v-same">&#10003; in sync</b></span>
+            <span><b class="Vsm__Verdict v-push">&uarr; push</b> PC newer / new</span>
+            <span><b class="Vsm__Verdict v-collect">&darr; collect</b> server newer / new</span>
+            <span><b class="Vsm__Verdict v-server-newer">! conflict</b> newer on the other side</span>
+            <span><b class="Vsm__Verdict v-delete">&times; delete</b> code removed on PC</span>
+            <span><b class="Vsm__Verdict v-server-only">server only</b></span>
+            <span><b class="Vsm__Verdict v-pc-only">PC only</b></span>
+            <span><b class="Vsm__Verdict v-not-synced">not synced</b> excluded / unmapped</span>
+        </div>
+        <div class="Vsm__ExplorerBody">
+            <div id="Vsm__Tree" class="Vsm__Tree"></div>
+            <aside id="Vsm__Detail" class="Vsm__Detail"><span class="Vsm__Muted">Select a file or folder.</span></aside>
+        </div>
+    </section>
+
+    <!-- TAB 02 | PARITY MATRIX -->
+    <section id="Vsm__TabMatrix" class="Vsm__Panel" role="tabpanel" hidden>
+        <section class="Vsm__RootBar">
+            <div class="Vsm__RootSide"><span class="Vsm__RootLabel">This PC</span><code id="Vsm__LocalRoot"></code></div>
+            <div class="Vsm__RootArrow" aria-hidden="true">&#8644;</div>
+            <div class="Vsm__RootSide"><span class="Vsm__RootLabel">Server</span><code id="Vsm__RemoteRoot"></code></div>
+        </section>
+        <section class="Vsm__Toolbar">
+            <label class="Vsm__Check"><input type="checkbox" id="Vsm__SelectAll"> Select all</label>
+            <button id="Vsm__BtnCompare" class="Vsm__BtnPrimary">Compare selected</button>
+            <button id="Vsm__BtnPush" class="Vsm__BtnPush">&uarr; Push selected&hellip;</button>
+            <button id="Vsm__BtnCollect" class="Vsm__BtnCollect">&darr; Collect selected&hellip;</button>
+            <label class="Vsm__Check" title="Also compare source code by SHA-256. Slower.">
+                <input type="checkbox" id="Vsm__Deep"> Deep compare
+            </label>
+            <span id="Vsm__Busy" class="Vsm__Busy"></span>
+        </section>
+        <main class="Vsm__Main">
+            <div>
+                <div id="Vsm__Mappings" class="Vsm__Mappings"></div>
+                <div id="Vsm__Unmapped" class="Vsm__Unmapped"></div>
+            </div>
+            <aside class="Vsm__Activity">
+                <h3>Activity</h3>
+                <div id="Vsm__Results" class="Vsm__Results"></div>
+                <h4>Server connections</h4>
+                <pre id="Vsm__SessionLog" class="Vsm__SessionLog"></pre>
+            </aside>
+        </main>
+    </section>
+
+    <!-- TAB 03 | URL CONFIGURATOR -->
+    <section id="Vsm__TabUrls" class="Vsm__Panel" role="tabpanel" hidden>
+        <div class="Vsm__ExplorerBar">
+            <span id="Vsm__UrlPill" class="Vsm__Pill is-light">Loading&hellip;</span>
+            <button id="Vsm__BtnUrlAddApp" class="Vsm__BtnSmall Vsm__IconBtn"><span class="Vsm__Ico is-add"></span>App route</button>
+            <button id="Vsm__BtnUrlAddLink" class="Vsm__BtnSmall Vsm__IconBtn"><span class="Vsm__Ico is-link"></span>Short link</button>
+            <button id="Vsm__BtnUrlSave" class="Vsm__BtnPrimary">Save</button>
+            <button id="Vsm__BtnUrlRevert" class="Vsm__BtnSmall">Revert</button>
+            <span class="Vsm__Spacer"></span>
+            <button id="Vsm__BtnUrlTest">Test on server</button>
+            <button id="Vsm__BtnUrlApply" class="Vsm__BtnPush">Apply to nginx&hellip;</button>
+        </div>
+        <div class="Vsm__Legend">
+            <span><b>App route</b> a short public path serves an app folder; queries pass straight through (<code>/valevision/?project=64135</code>).</span>
+            <span><b>Short link</b> a tiny path redirects to a full app URL (<code>/p/64135</code>): the shorter the URL, the smaller the QR code.</span>
+        </div>
+        <div id="Vsm__UrlErrors" class="Vsm__UrlErrors"></div>
+        <div class="Vsm__ExplorerBody">
+            <div id="Vsm__UrlList" class="Vsm__UrlList"></div>
+            <aside class="Vsm__Detail">
+                <h3>Always in place</h3>
+                <dl>
+                    <dt>Web root</dt><dd><code id="Vsm__UrlRoot"></code> (the mirror)</dd>
+                    <dt>Never served</dt><dd><code>/Server__Api/</code>, <code>/Server__DeveloperTools/</code>, dot-files, <code>.md .py .sh .env .log .example</code>, and every <code>UserData</code> / <code>UserConfig</code> / <code>ServerData</code> / <code>Revisions</code> folder</dd>
+                    <dt>Private files</dt><dd>APIs stream them with <code>X-Accel-Redirect: /_internal/&hellip;</code></dd>
+                    <dt>Caching</dt><dd><code>no-cache</code>: every push shows at once</dd>
+                </dl>
+                <button id="Vsm__BtnUrlConf" class="Vsm__BtnSmall">Show generated nginx</button>
+                <pre id="Vsm__UrlConf" class="Vsm__UrlConf" hidden></pre>
+            </aside>
+        </div>
+    </section>
+
+    <!-- TAB 04 | USER ACCOUNTS -->
+    <section id="Vsm__TabUsers" class="Vsm__Panel is-wide" role="tabpanel" hidden>
+        <div class="Vsm__ExplorerBar">
+            <span id="Vsm__UserPill" class="Vsm__Pill is-light">Loading&hellip;</span>
+            <button id="Vsm__BtnUserAdd" class="Vsm__BtnSmall">+ User</button>
+            <button id="Vsm__BtnUserSave" class="Vsm__BtnPrimary">Save</button>
+            <button id="Vsm__BtnUserRevert" class="Vsm__BtnSmall">Revert</button>
+            <input id="Vsm__UserSearch" class="Vsm__Search" type="search" placeholder="Find a person, role, email or code&hellip;">
+            <label class="Vsm__Check"><input type="checkbox" id="Vsm__UserShowInactive" checked> Show inactive</label>
+            <span class="Vsm__Spacer"></span>
+            <span id="Vsm__UserCounts" class="Vsm__Muted"></span>
+        </div>
+        <div class="Vsm__Legend">
+            <span><b>Code</b> USR + 8 digits, issued on save and never reused. Every per-app user config and piece of user content carries it.</span>
+            <span><b>Never deleted</b> untick Active when someone leaves.</span>
+            <span><b>Password</b> new users get the temporary password shown; <b>Reset</b> puts it back. Only a hash is stored, never shown.</span>
+            <span><b>Sign out</b> ends every device's session; the password stays. Both act on the server at once, after you confirm.</span>
+        </div>
+        <div id="Vsm__UserErrors" class="Vsm__UrlErrors"></div>
+        <div class="Vsm__ExplorerBody is-users">
+            <div class="Vsm__UserTableWrap"><table id="Vsm__UserTable" class="Vsm__UserTable"></table></div>
+            <aside class="Vsm__Detail">
+                <h3>Permission levels</h3>
+                <div id="Vsm__UserLevels" class="Vsm__Levels"></div>
+                <h3>Files</h3>
+                <dl>
+                    <dt>Register</dt><dd><code id="Vsm__UserFile"></code></dd>
+                    <dt>Per-app configs</dt><dd><code id="Vsm__UserConfigsPath"></code></dd>
+                    <dt>Temporary password</dt><dd><code id="Vsm__UserRule"></code></dd>
+                    <dt>Never</dt><dd>web-served (nginx hides every <code>Server__</code> folder) or committed to git</dd>
+                </dl>
+                <h3>Server</h3>
+                <div id="Vsm__UserServer" class="Vsm__Muted"></div>
+            </aside>
+        </div>
+    </section>
+
+    <div id="Vsm__Modal" class="Vsm__Modal" hidden>
+        <div class="Vsm__ModalBox" role="dialog" aria-modal="true">
+            <div id="Vsm__ModalBody"></div>
+            <div id="Vsm__ModalActions" class="Vsm__ModalActions"></div>
+        </div>
+    </div>
+    <div id="Vsm__Toast" class="Vsm__Toast" hidden></div>
+
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Core__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Matrix__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Explorer__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Urls__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Users__.js"></script>
+</body>
+</html>

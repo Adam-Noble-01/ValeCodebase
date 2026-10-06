@@ -1,0 +1,461 @@
+/* =============================================================================
+   VALE VIRTUAL SERVER MANAGER - MAIN STYLES
+   =============================================================================
+
+   FILE       : VirtualServerManager__Styles__Main__.css
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Styles for the manager PWA: header, tabs, live explorer, parity
+                matrix, URL configurator, user accounts, modals (Vale brand palette).
+                Panels are content-sized (only the users table fills the width);
+                every table shares one sort-header style (.Vsm__SortTh)
+   CREATED    : 06-Oct-2026
+
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   REGION | Design Tokens
+   ----------------------------------------------------------------------------- */
+
+    :root {
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --Vale_BrandSoft                   : #e7edf2;                      /* <-- Tint of the brand blue */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Page background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Panels */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        --Vale_BorderLight                 : #d4d9de;                      /* <-- Light borders */
+        --Vsm_Good                         : #2e7d4f;                      /* <-- In sync / ready */
+        --Vsm_GoodSoft                     : #e3f2e8;
+        --Vsm_Push                         : #1d5fa8;                      /* <-- PC -> server */
+        --Vsm_PushSoft                     : #e2edf9;
+        --Vsm_Collect                      : #6b3fa0;                      /* <-- server -> PC */
+        --Vsm_CollectSoft                  : #efe7f8;
+        --Vsm_Warn                         : #a8650a;                      /* <-- Conflicts / custom path */
+        --Vsm_WarnSoft                     : #fbefd9;
+        --Vsm_Bad                          : #b42318;                      /* <-- Deletes, errors, cooldown */
+        --Vsm_BadSoft                      : #fde7e5;
+        --Vsm_Muted                        : #8a96a0;
+        --Vsm_Radius                       : 8px;
+        --Vsm_Mono                         : "Cascadia Mono", Consolas, "Courier New", monospace;
+        --Vsm_Font                         : "Open Sans", "Segoe UI", system-ui, sans-serif;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Base Layout, Header and Tabs
+   ----------------------------------------------------------------------------- */
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+        margin: 0; font-family: var(--Vsm_Font); font-size: 14px; color: var(--Vale_TextPrimary);
+        background: var(--Vale_BackgroundLight); display: flex; flex-direction: column;
+    }
+    code { font-family: var(--Vsm_Mono); font-size: 12.5px; }
+    h3 { margin: 0 0 10px; font-size: 15px; }
+    h4 { margin: 18px 0 8px; font-size: 13px; }
+    .Vsm__Muted { color: var(--Vale_TextSecondary); font-weight: 400; }
+    [hidden] { display: none !important; }
+
+    .Vsm__Header {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        padding: 12px 24px; background: var(--Vale_PrimaryBrand); color: #fff;
+    }
+    .Vsm__Brand { display: flex; align-items: center; gap: 12px; }
+    .Vsm__BrandIcon { width: 34px; height: 34px; border-radius: 7px; }
+    .Vsm__Title { font-size: 19px; font-weight: 600; letter-spacing: 0.2px; }
+    .Vsm__Subtitle { font-size: 12px; opacity: 0.75; }
+    .Vsm__Stats { font-size: 12px; opacity: 0.85; display: flex; gap: 14px; flex-wrap: wrap; }
+    .Vsm__Stats b { font-weight: 600; }
+    .Vsm__HeaderRight { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .Vsm__Tabs {
+        display: flex; gap: 4px; padding: 0 24px; background: var(--Vale_PrimaryBrand);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .Vsm__Tab {
+        border: 0; border-radius: 8px 8px 0 0; padding: 9px 18px; font-weight: 600; font-size: 13px;
+        background: transparent; color: rgba(255, 255, 255, 0.72); cursor: pointer;
+    }
+    .Vsm__Tab:hover { color: #fff; }
+    .Vsm__Tab.is-active { background: var(--Vale_BackgroundLight); color: var(--Vale_PrimaryBrand); }
+    .Vsm__TabNum { opacity: 0.55; margin-right: 6px; font-family: var(--Vsm_Mono); font-weight: 400; }
+    .Vsm__Panel {                                                           /* <-- One centred column, as wide as its widest part */
+        flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, max-content);
+        justify-content: center; align-content: start;
+    }
+    .Vsm__Panel.is-wide { grid-template-columns: minmax(0, 1fr); }          /* <-- Tab 04: the users table fills the width */
+
+    .Vsm__Offline {
+        margin: 14px 24px 0; padding: 10px 14px; border-radius: var(--Vsm_Radius);
+        background: var(--Vsm_BadSoft); color: var(--Vsm_Bad); font-weight: 600;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Buttons, Badges, Pills
+   ----------------------------------------------------------------------------- */
+
+    button {
+        font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+        border: 1px solid var(--Vale_BorderLight); background: var(--Vale_BackgroundWhite); color: var(--Vale_TextPrimary);
+    }
+    button:hover:not(:disabled) { border-color: var(--Vale_PrimaryBrand); }
+    button:disabled { opacity: 0.45; cursor: default; }
+    .Vsm__BtnPrimary { background: var(--Vale_PrimaryBrand); border-color: var(--Vale_PrimaryBrand); color: #fff; }
+    .Vsm__BtnPush { background: var(--Vsm_Push); border-color: var(--Vsm_Push); color: #fff; }
+    .Vsm__BtnCollect { background: var(--Vsm_Collect); border-color: var(--Vsm_Collect); color: #fff; }
+    .Vsm__BtnDanger { background: var(--Vsm_Bad); border-color: var(--Vsm_Bad); color: #fff; }
+    .Vsm__BtnGhost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+    .Vsm__BtnGhost:hover:not(:disabled) { border-color: #fff; }
+    .Vsm__BtnSmall { padding: 3px 9px; font-size: 12px; }
+
+    .Vsm__Pill {
+        display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+        font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.12); color: inherit; white-space: nowrap;
+    }
+    .Vsm__Pill.is-light { background: #eef1f4; color: var(--Vale_TextPrimary); }
+    .Vsm__Pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #aab4bd; }
+    .Vsm__Pill.is-good::before { background: #5fd38d; }
+    .Vsm__Pill.is-warn::before { background: #f5b94b; }
+    .Vsm__Pill.is-bad::before  { background: #ff6b5e; }
+    .Vsm__Pill.is-live::before { background: #5fd38d; box-shadow: 0 0 0 0 rgba(95, 211, 141, 0.7); animation: Vsm__Pulse 2s infinite; }
+    @keyframes Vsm__Pulse { 70% { box-shadow: 0 0 0 7px rgba(95, 211, 141, 0); } 100% { box-shadow: 0 0 0 0 rgba(95, 211, 141, 0); } }
+
+    .Vsm__Badge {
+        font-size: 10.5px; font-weight: 700; letter-spacing: 0.4px; padding: 2px 7px; border-radius: 4px;
+        text-transform: uppercase; white-space: nowrap;
+    }
+    .Vsm__Badge.kind-web    { background: var(--Vale_BrandSoft); color: var(--Vale_PrimaryBrand); }
+    .Vsm__Badge.kind-server { background: #ececec; color: #444; }
+    .Vsm__Badge.is-mirror   { background: var(--Vsm_GoodSoft); color: var(--Vsm_Good); }
+    .Vsm__Badge.is-custom   { background: var(--Vsm_WarnSoft); color: var(--Vsm_Warn); }
+    .Vsm__Badge.is-off      { background: #ececec; color: #777; }
+    .Vsm__Badge.lane-code     { background: var(--Vale_BrandSoft); color: var(--Vale_PrimaryBrand); }
+    .Vsm__Badge.lane-content  { background: var(--Vsm_PushSoft); color: var(--Vsm_Push); }
+    .Vsm__Badge.lane-userdata { background: var(--Vsm_CollectSoft); color: var(--Vsm_Collect); }
+
+    .Vsm__SortTh { cursor: pointer; user-select: none; white-space: nowrap; }
+    .Vsm__SortTh:hover, .Vsm__SortTh[data-dir] { color: var(--Vale_PrimaryBrand); }
+    .Vsm__SortTh::after { content: "\2195"; margin-left: 4px; font-size: 10px; opacity: 0.45; }
+    .Vsm__SortTh[data-dir="1"]::after { content: "\25B2"; opacity: 1; }
+    .Vsm__SortTh[data-dir="-1"]::after { content: "\25BC"; opacity: 1; }
+
+    .Vsm__Check { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+    .Vsm__Busy { color: var(--Vsm_Warn); font-weight: 600; }
+    .Vsm__Toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 14px 24px 0; }
+    .Vsm__Spacer { flex: 1; }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 01 - Live Server Explorer
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__ExplorerBar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 24px 0; }
+    .Vsm__Search {
+        min-width: 240px; flex: 0 1 340px; padding: 6px 10px; border: 1px solid var(--Vale_BorderLight);
+        border-radius: 6px; font: inherit;
+    }
+    .Vsm__Select { padding: 5px 8px; border: 1px solid var(--Vale_BorderLight); border-radius: 6px; font: inherit; background: #fff; }
+    .Vsm__Legend { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 24px 0; font-size: 11.5px; color: var(--Vale_TextSecondary); }
+    .Vsm__Legend span { display: inline-flex; align-items: center; gap: 5px; }
+
+    .Vsm__ExplorerBody {                                                    /* <-- Content-sized: tables grow with their rows */
+        display: grid; grid-template-columns: minmax(0, max-content) 360px; justify-content: center; align-items: start;
+        gap: 14px; padding: 10px 24px 24px;
+    }
+    @media (max-width: 1100px) { .Vsm__ExplorerBody { grid-template-columns: minmax(0, 1fr); } }
+    .Vsm__Tree {
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+        overflow: auto; max-height: calc(100vh - 230px); font-size: 13px;
+        display: grid; grid-template-columns: minmax(max-content, 1fr) repeat(5, max-content);   /* <-- Name stretches: rows fill the card */
+        column-gap: 28px; align-content: start;
+    }
+    .Vsm__TreeHead, .Vsm__Row {
+        display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding: 3px 12px;
+    }
+    .Vsm__Tree > .Vsm__TreeEmpty { grid-column: 1 / -1; }
+    @media (min-width: 1300px) { .Vsm__Tree { min-width: 860px; } }         /* <-- Steady centred width while folders open */
+    .Vsm__TreeHead {
+        position: sticky; top: 0; z-index: 1; background: #f7f9fa; border-bottom: 1px solid var(--Vale_BorderLight);
+        font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--Vale_TextSecondary); padding: 6px 12px;
+    }
+    .Vsm__Row { cursor: default; border-bottom: 1px solid #f2f4f6; }
+    .Vsm__Row:hover { background: #f6f9fc; }
+    .Vsm__Row.is-selected { background: var(--Vale_BrandSoft); }
+    .Vsm__Row.is-missing-server .Vsm__Name { color: var(--Vsm_Muted); }
+    .Vsm__NameCell { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .Vsm__Chevron { width: 16px; flex: 0 0 16px; text-align: center; color: var(--Vsm_Muted); cursor: pointer; user-select: none; }
+    .Vsm__Icon { width: 16px; height: 16px; flex: 0 0 16px; }
+    .Vsm__Name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .Vsm__Name.is-dir { font-weight: 600; cursor: pointer; }
+    .Vsm__Size, .Vsm__When { font-size: 12px; color: var(--Vale_TextSecondary); text-align: right; white-space: nowrap; }
+    .Vsm__SyncDir { color: var(--Vale_PrimaryBrand); font-weight: 600; }
+    .Vsm__TreeEmpty { padding: 30px; text-align: center; color: var(--Vale_TextSecondary); }
+
+    .Vsm__Verdict { font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .Vsm__Verdict.v-same { color: var(--Vsm_Good); }
+    .Vsm__Verdict.v-push { color: var(--Vsm_Push); }
+    .Vsm__Verdict.v-delete { color: var(--Vsm_Bad); }
+    .Vsm__Verdict.v-server-newer, .Vsm__Verdict.v-pc-newer { color: var(--Vsm_Warn); }
+    .Vsm__Verdict.v-server-only { color: #55616b; }
+    .Vsm__Verdict.v-collect { color: var(--Vsm_Collect); }
+    .Vsm__Verdict.v-pc-only { color: var(--Vsm_Muted); }
+    .Vsm__Verdict.v-not-synced, .Vsm__Verdict.v-unmapped { color: var(--Vsm_Muted); font-weight: 400; font-style: italic; }
+    .Vsm__Roll { display: inline-flex; gap: 6px; font-size: 11px; font-weight: 700; }
+    .Vsm__Roll .r-push { color: var(--Vsm_Push); }
+    .Vsm__Roll .r-collect { color: var(--Vsm_Collect); }
+    .Vsm__Roll .r-conflict { color: var(--Vsm_Warn); }
+    .Vsm__Roll .r-delete { color: var(--Vsm_Bad); }
+    .Vsm__Roll .r-same { color: var(--Vsm_Good); font-weight: 600; }
+
+    .Vsm__Detail {
+        align-self: start; position: sticky; top: 10px; background: #fff; border: 1px solid var(--Vale_BorderLight);
+        border-radius: var(--Vsm_Radius); padding: 14px; font-size: 13px; overflow-wrap: anywhere;
+    }
+    .Vsm__Detail h3 { font-size: 14px; }
+    .Vsm__Detail dl { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 10px; margin: 10px 0; }
+    .Vsm__Detail dt { color: var(--Vale_TextSecondary); font-size: 12px; }
+    .Vsm__Detail dd { margin: 0; }
+    .Vsm__Explain { padding: 8px 10px; border-radius: 6px; background: #f7f9fa; margin-top: 8px; }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 02 - Parity Matrix
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__RootBar {
+        display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; margin: 14px 24px 0;
+        padding: 12px 16px; background: #fff; border: 1px solid var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+    }
+    .Vsm__RootSide { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .Vsm__RootSide code { overflow-wrap: anywhere; }
+    .Vsm__RootLabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--Vale_TextSecondary); }
+    .Vsm__RootArrow { font-size: 22px; color: var(--Vale_PrimaryBrand); }
+
+    .Vsm__Main {
+        display: grid; grid-template-columns: minmax(0, max-content) 330px; justify-content: center; align-items: start;
+        gap: 18px; padding: 14px 24px 40px;
+    }
+    @media (max-width: 1100px) { .Vsm__Main { grid-template-columns: minmax(0, 1fr); } }
+    .Vsm__Mappings { display: flex; flex-direction: column; gap: 12px; }
+
+    .Vsm__Card {
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-left: 4px solid var(--Vale_PrimaryBrand);
+        border-radius: var(--Vsm_Radius); padding: 12px 14px;
+    }
+    .Vsm__Card.is-disabled { opacity: 0.6; border-left-color: #aaa; }
+    .Vsm__Card.has-changes { border-left-color: var(--Vsm_Warn); }
+    .Vsm__Card.is-synced { border-left-color: var(--Vsm_Good); }
+    .Vsm__CardHead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .Vsm__CardName { font-weight: 600; font-size: 15px; }
+    .Vsm__Id { font-family: var(--Vsm_Mono); font-size: 11.5px; color: var(--Vale_TextSecondary); margin-left: 4px; }
+
+    .Vsm__Paths { display: grid; gap: 6px; margin: 10px 0 6px; }
+    .Vsm__PathRow { display: grid; grid-template-columns: 14px 54px minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+    .Vsm__PathRow code { overflow-wrap: anywhere; }
+    .Vsm__PathLabel { font-size: 11px; text-transform: uppercase; color: var(--Vale_TextSecondary); letter-spacing: 0.5px; }
+    .Vsm__Meta { font-size: 12px; color: var(--Vale_TextSecondary); white-space: nowrap; }
+    .Vsm__Dot { width: 9px; height: 9px; border-radius: 50%; background: var(--Vale_BorderLight); }
+    .Vsm__Dot.is-ok { background: var(--Vsm_Good); }
+    .Vsm__Dot.is-missing { background: var(--Vsm_Bad); }
+    .Vsm__RemoteEdit { display: flex; align-items: center; min-width: 0; }
+    .Vsm__RemoteEdit code {
+        color: var(--Vale_TextSecondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; flex: 0 1 auto;
+    }
+    .Vsm__RemoteInput {
+        flex: 1; min-width: 120px; font-family: var(--Vsm_Mono); font-size: 12.5px; padding: 3px 6px;
+        border: 1px dashed var(--Vale_BorderLight); border-radius: 4px; background: #fafbfc; color: var(--Vale_TextPrimary);
+    }
+    .Vsm__RemoteInput:focus { outline: none; border-style: solid; border-color: var(--Vale_PrimaryBrand); background: #fff; }
+    .Vsm__Note { font-size: 12px; color: var(--Vsm_Warn); margin: 2px 0 0 76px; }
+
+    .Vsm__Lanes { display: grid; gap: 6px; margin-top: 8px; }
+    .Vsm__Lane {
+        display: grid; grid-template-columns: 130px 150px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+        padding: 7px 10px; border-radius: 6px; background: #f7f9fa; font-size: 12.5px;
+    }
+    .Vsm__Lane.lane-code { border-left: 3px solid var(--Vale_PrimaryBrand); }
+    .Vsm__Lane.lane-content { border-left: 3px solid var(--Vsm_Push); }
+    .Vsm__Lane.lane-userdata { border-left: 3px solid var(--Vsm_Collect); }
+    .Vsm__LaneName { font-weight: 600; }
+    .Vsm__LaneDir { font-size: 11.5px; color: var(--Vale_TextSecondary); }
+    .Vsm__LaneCounts { display: flex; flex-wrap: wrap; gap: 10px; }
+    .Vsm__C-push { color: var(--Vsm_Push); font-weight: 600; }
+    .Vsm__C-collect { color: var(--Vsm_Collect); font-weight: 600; }
+    .Vsm__C-delete { color: var(--Vsm_Bad); font-weight: 600; }
+    .Vsm__C-conflict { color: var(--Vsm_Warn); font-weight: 600; }
+    .Vsm__C-ok { color: var(--Vsm_Good); font-weight: 600; }
+
+    .Vsm__FileList {
+        width: 0; min-width: 100%; margin: 8px 0 0; max-height: 240px; overflow: auto; font-family: var(--Vsm_Mono); font-size: 12px;
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-radius: 4px; padding: 6px 8px;
+    }
+    .Vsm__FileList div { white-space: nowrap; }
+    .Vsm__FileList .f-head { font-family: var(--Vsm_Font); font-weight: 700; font-size: 11.5px; margin-top: 6px; color: var(--Vale_TextSecondary); }
+    .Vsm__FileList .f-push { color: var(--Vsm_Push); }
+    .Vsm__FileList .f-collect { color: var(--Vsm_Collect); }
+    .Vsm__FileList .f-delete { color: var(--Vsm_Bad); }
+    .Vsm__FileList .f-conflict { color: var(--Vsm_Warn); }
+    .Vsm__FileList .f-info { color: var(--Vsm_Muted); }
+    .Vsm__PlanFoot { display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 12px; color: var(--Vale_TextSecondary); }
+
+    .Vsm__CardActions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .Vsm__Unmapped {
+        margin-top: 14px; padding: 10px 14px; border: 1px dashed var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+        font-size: 13px; color: var(--Vale_TextSecondary);
+    }
+    .Vsm__Unmapped:empty { display: none; }
+
+    .Vsm__Activity {
+        align-self: start; position: sticky; top: 14px; background: #fff; border: 1px solid var(--Vale_BorderLight);
+        border-radius: var(--Vsm_Radius); padding: 12px 14px;
+    }
+    .Vsm__Results { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; }
+    .Vsm__Result { padding: 6px 8px; border-radius: 5px; background: #f7f9fa; overflow-wrap: anywhere; }
+    .Vsm__Result.is-ok { border-left: 3px solid var(--Vsm_Good); }
+    .Vsm__Result.is-bad { border-left: 3px solid var(--Vsm_Bad); background: var(--Vsm_BadSoft); }
+    .Vsm__SessionLog {
+        margin: 0; max-height: 300px; overflow: auto; font-family: var(--Vsm_Mono); font-size: 11px;
+        white-space: pre-wrap; color: var(--Vale_TextSecondary);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 03 - URL Configurator
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__UrlList { display: flex; flex-direction: column; gap: 10px; }
+    .Vsm__RouteCard {
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-left: 4px solid var(--Vale_PrimaryBrand);
+        border-radius: var(--Vsm_Radius); padding: 10px 12px; display: grid; gap: 8px;
+    }
+    .Vsm__RouteCard.is-link { border-left-color: var(--Vsm_Push); }
+    .Vsm__RouteCard.is-disabled { opacity: 0.55; }
+    .Vsm__RouteHead, .Vsm__RouteBody { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; }
+    .Vsm__UrlEdit { display: inline-flex; align-items: center; gap: 2px; font-family: var(--Vsm_Mono); font-size: 12.5px; }
+    .Vsm__UrlInput {
+        font-family: var(--Vsm_Mono); font-size: 12.5px; padding: 3px 6px; width: 170px;
+        border: 1px dashed var(--Vale_BorderLight); border-radius: 4px; background: #fafbfc; color: var(--Vale_TextPrimary);
+    }
+    .Vsm__UrlInput:focus { outline: none; border-style: solid; border-color: var(--Vale_PrimaryBrand); background: #fff; }
+    .Vsm__UrlInput.is-entry { width: 190px; }
+    .Vsm__UrlInput.is-port { width: 80px; }
+    .Vsm__UrlInput.is-note { width: 260px; font-family: var(--Vsm_Font); }
+    .Vsm__UrlInput.is-target { width: 300px; }
+    .Vsm__Arrow { color: var(--Vale_TextSecondary); font-weight: 700; }
+    .Vsm__UrlExample { background: #f3f6f9; padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+    .Vsm__LinkBtn { text-decoration: none; color: inherit; border: 1px solid var(--Vale_BorderLight); border-radius: 6px; background: #fff; }
+
+    /* Action icons: SVG files in 01__AppAssets/Icons, drawn as masks so they take the text colour */
+    .Vsm__IconBtn { display: inline-flex; align-items: center; gap: 5px; }
+    .Vsm__Ico {
+        width: 14px; height: 14px; flex: 0 0 14px; background: currentColor;
+        -webkit-mask: var(--Vsm_IcoUrl) center / contain no-repeat; mask: var(--Vsm_IcoUrl) center / contain no-repeat;
+    }
+    .Vsm__Ico.is-open   { --Vsm_IcoUrl: url("../01__AppAssets/Icons/VirtualServerManager__Icon__Open__Website.svg"); }
+    .Vsm__Ico.is-delete { --Vsm_IcoUrl: url("../01__AppAssets/Icons/VirtualServerManager__Icon__Delete__Trash.svg"); }
+    .Vsm__Ico.is-add    { --Vsm_IcoUrl: url("../01__AppAssets/Icons/VirtualServerManager__Icon__Add__Plus.svg"); }
+    .Vsm__Ico.is-link   { --Vsm_IcoUrl: url("../01__AppAssets/Icons/VirtualServerManager__Icon__ShortLink__Chain.svg"); }
+    .Vsm__IconBtn.is-danger:hover { color: var(--Vsm_Bad); border-color: var(--Vsm_Bad); background: var(--Vsm_BadSoft); }
+    .Vsm__UrlErrors { margin: 8px 24px 0; color: var(--Vsm_Bad); font-size: 12.5px; font-weight: 600; }
+    .Vsm__UrlErrors:empty { display: none; }
+    .Vsm__UrlConf {
+        margin: 10px 0 0; max-height: 420px; overflow: auto; font-family: var(--Vsm_Mono); font-size: 11px;
+        background: #0f1d27; color: #d7e3ec; padding: 10px; border-radius: 6px; white-space: pre;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 04 - User Accounts
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__ExplorerBody.is-users { grid-template-columns: minmax(0, 1fr) 300px; }
+    @media (max-width: 1100px) { .Vsm__ExplorerBody.is-users { grid-template-columns: 1fr; } }
+    .Vsm__UserTableWrap {
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+        overflow: auto; max-height: calc(100vh - 250px);
+    }
+    .Vsm__UserTable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .Vsm__UserTable th {
+        position: sticky; top: 0; z-index: 1; background: #f7f9fa; border-bottom: 1px solid var(--Vale_BorderLight);
+        font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--Vale_TextSecondary);
+        padding: 7px 6px; text-align: left; white-space: nowrap;
+    }
+    .Vsm__UserTable td { padding: 4px 6px; border-bottom: 1px solid #f2f4f6; white-space: nowrap; vertical-align: middle; }
+    .Vsm__UserTable tr:hover td { background: #f6f9fc; }
+    .Vsm__UserTable tr.is-inactive td { color: var(--Vsm_Muted); }
+    .Vsm__UserTable tr.is-inactive .Vsm__UrlInput, .Vsm__UserTable tr.is-inactive .Vsm__Select { opacity: 0.6; }
+    .Vsm__UserTable tr.is-new td { background: var(--Vsm_PushSoft); }
+    .Vsm__UserTable .Vsm__UrlInput { width: 100px; font-family: var(--Vsm_Font); }
+    .Vsm__UserTable .Vsm__UrlInput.is-email { width: 250px; font-family: var(--Vsm_Mono); }
+    .Vsm__UserTable .Vsm__UrlInput.is-note { width: 260px; }
+    .Vsm__UserTable .Vsm__Select { padding: 3px 6px; font-size: 12.5px; }
+    .Vsm__UserCode { font-family: var(--Vsm_Mono); font-weight: 600; }
+    .Vsm__CellSplit { display: flex; align-items: center; justify-content: space-between; gap: 10px; }   /* Text left, button flush right: buttons line up */
+    .Vsm__Chip {
+        display: inline-block; margin-right: 4px; padding: 1px 7px; border-radius: 10px; font-size: 11px;
+        background: var(--Vsm_CollectSoft); color: var(--Vsm_Collect);
+    }
+    .Vsm__Levels { display: grid; gap: 8px; margin-bottom: 16px; font-size: 12.5px; }
+
+    /* Text boxes as wide as their text (Edge / Chrome), never truncating a path or an email */
+    @supports (field-sizing: content) {
+        .Vsm__UrlInput, .Vsm__RemoteInput, .Vsm__UrlInput.is-entry, .Vsm__UrlInput.is-port, .Vsm__UrlInput.is-note,
+        .Vsm__UrlInput.is-target, .Vsm__UserTable .Vsm__UrlInput, .Vsm__UserTable .Vsm__UrlInput.is-email,
+        .Vsm__UserTable .Vsm__UrlInput.is-note { field-sizing: content; width: auto; min-width: 7ch; max-width: 70ch; }
+        .Vsm__UrlInput.is-port { min-width: 5ch; }
+        .Vsm__UrlInput.is-note, .Vsm__UserTable .Vsm__UrlInput.is-note { min-width: 16ch; max-width: 48ch; }
+        .Vsm__UserTable .Vsm__UrlInput.is-email { min-width: 26ch; }
+        .Vsm__RemoteInput { flex: 0 1 auto; min-width: 12ch; }
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Modal and Toast
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__Modal {
+        position: fixed; inset: 0; background: rgba(23, 43, 58, 0.45); display: flex;
+        align-items: flex-start; justify-content: center; padding: 6vh 16px; z-index: 2000;
+    }
+    .Vsm__ModalBox {
+        width: min(820px, 100%); max-height: 86vh; overflow: auto; background: #fff; border-radius: 10px;
+        padding: 18px 20px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+    }
+    .Vsm__ModalBox h2 { margin: 0 0 12px; font-size: 18px; }
+    .Vsm__ModalActions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .Vsm__Form { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 8px 12px; align-items: center; }
+    .Vsm__Form label { font-size: 12.5px; color: var(--Vale_TextSecondary); }
+    .Vsm__Form input[type=text], .Vsm__Form select {
+        font-family: var(--Vsm_Mono); font-size: 12.5px; padding: 5px 7px; border: 1px solid var(--Vale_BorderLight);
+        border-radius: 4px; width: 100%;
+    }
+    .Vsm__Help { grid-column: 2; font-size: 11.5px; color: var(--Vale_TextSecondary); margin-top: -4px; }
+    .Vsm__Table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .Vsm__Table code { overflow-wrap: anywhere; }
+    .Vsm__Table td, .Vsm__Table th { padding: 5px 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    .Vsm__Warn { color: var(--Vsm_Bad); font-weight: 600; }
+    .Vsm__Options { display: grid; gap: 6px; margin-top: 12px; padding: 10px 12px; background: #f7f9fa; border-radius: 6px; }
+
+    .Vsm__Toast {
+        position: fixed; right: 20px; bottom: 20px; max-width: 480px; padding: 10px 14px; border-radius: 8px;
+        background: var(--Vale_PrimaryBrand); color: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); z-index: 3000;
+    }
+    .Vsm__Toast.is-bad { background: var(--Vsm_Bad); }
+
+/* endregion ------------------------------------------------------------------- */

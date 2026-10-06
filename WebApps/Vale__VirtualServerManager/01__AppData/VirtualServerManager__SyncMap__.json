@@ -1,0 +1,234 @@
+{
+    "_About": "Sync map for the Vale Virtual Server Manager. Local.MirrorRoot IS Server.Root. Lanes: code (PC->server mirror), content (PC->server, newer wins), userdata (server->PC, newer wins), shared (both ways, newer wins). A mapping's DefaultLane (code or shared) applies to folders not named for a lane. Edit in the app (http://127.0.0.1:8020) or here. Remote paths are relative to Server.Root and can never leave it.",
+    "Server": {
+        "HostAlias": "valevps",
+        "Root": "/srv/vale",
+        "SyncArea": "/srv/vale-sync",
+        "KeepBackups": 30
+    },
+    "Local": {
+        "MirrorRoot": "D:\\10_CoreLib__ValeCodebase\\WebApps\\Vale__VirtualServer",
+        "BackupRoot": "D:\\10_CoreLib__ValeCodebase\\WebApps\\Vale__VirtualServerManager\\90__ServerBackups"
+    },
+    "NeverSync": [
+        ".git/",
+        ".gitignore",
+        ".gitattributes",
+        ".claude/",
+        ".vscode/",
+        "*.env",
+        ".env*",
+        ".dev.vars",
+        "*.--HIDDEN",
+        "*.pem",
+        "*.key",
+        "id_rsa*",
+        "id_ed25519*",
+        "id_ecdsa*",
+        "Thumbs.db",
+        "desktop.ini",
+        ".DS_Store",
+        "*.tmp",
+        "~$*",
+        "*.lnk",
+        "*.code-workspace",
+        "*.lock"
+    ],
+    "KindExcludes": {
+        "web": [
+            "*.md",
+            "*.py",
+            "*.pyc",
+            "__pycache__/",
+            "*.bat",
+            "*.ps1",
+            "*.sh",
+            "*.log",
+            "node_modules/",
+            "package.json",
+            "package-lock.json",
+            ".npmrc",
+            "*.psd",
+            "*.psb",
+            "*.skp",
+            "*.skb",
+            "*.zip",
+            "*.patch",
+            "00__Archive*/",
+            "60__Dev__*/",
+            "8?__Testing*/",
+            "85__EarlyStage*/",
+            "9?__Dev__*/"
+        ],
+        "server": [
+            "__pycache__/",
+            "*.pyc",
+            "*.log",
+            "venv/",
+            ".venv/",
+            "node_modules/"
+        ]
+    },
+    "LanePatterns": {
+        "content": [
+            "Content__*",
+            "*__ProjectContent*",
+            "*__HeavyContent*",
+            "*__Content",
+            "*__Content__*"
+        ],
+        "userdata": [
+            "UserData__*",
+            "*__UserData*",
+            "*__UserConfig*",
+            "*__User*Content*",
+            "*__ProjectData*",
+            "*__ServerData*",
+            "*__Revisions*",
+            "*LocalUserData*",
+            "*LocalProjectData*"
+        ]
+    },
+    "Mappings": [
+        {
+            "Id": "root-files",
+            "Name": "Server root files (landing page)",
+            "Kind": "web",
+            "Local": ".",
+            "Remote": ".",
+            "FilesOnly": true,
+            "Enabled": true,
+            "AllowDeletes": false,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "server-api",
+            "Name": "Server API (internal app APIs, never web-served)",
+            "Kind": "server",
+            "Local": "Server__Api",
+            "Remote": "Server__Api",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "server-devtools",
+            "Name": "Server developer tools (scripts, never web-served)",
+            "Kind": "server",
+            "Local": "Server__DeveloperTools",
+            "Remote": "Server__DeveloperTools",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "useraccounts",
+            "Name": "User accounts (users register + per-app user configs, never web-served)",
+            "Kind": "server",
+            "Local": "Server__UserAccountData",
+            "Remote": "Server__UserAccountData",
+            "DefaultLane": "shared",
+            "Enabled": true,
+            "AllowDeletes": false,
+            "Exclude": [
+                "*.example"
+            ],
+            "Content": [],
+            "UserData": []
+        },
+        {
+            "Id": "commonassets",
+            "Name": "Common application assets (logos, icons, shared graphics for every app)",
+            "Kind": "web",
+            "Local": "AppAssets__CommonApplicationAssets",
+            "Remote": "AppAssets__CommonApplicationAssets",
+            "DefaultLane": "code",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [
+                "NOTUSED__*",
+                "*.graphite",
+                "RawIcons__DoNotUse/",
+                "01__MockUps/"
+            ],
+            "Content": [],
+            "UserData": []
+        },
+        {
+            "Id": "projects",
+            "Name": "Vale Projects Master Library (shared by every app)",
+            "Kind": "web",
+            "Local": "Vale__Projects__MasterLibrary",
+            "Remote": "Vale__Projects__MasterLibrary",
+            "DefaultLane": "shared",
+            "Enabled": true,
+            "AllowDeletes": false,
+            "Exclude": [
+                "*.example"
+            ],
+            "Content": [],
+            "UserData": []
+        },
+        {
+            "Id": "valevision3d",
+            "Name": "ValeVision 3D",
+            "Kind": "web",
+            "Local": "Vale__ValeVision3D",
+            "Remote": "Vale__ValeVision3D",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "valevisiongallery",
+            "Name": "ValeVision Gallery",
+            "Kind": "web",
+            "Local": "Vale__ValeVisionGallery",
+            "Remote": "Vale__ValeVisionGallery",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "valespec",
+            "Name": "ValeSpec",
+            "Kind": "web",
+            "Local": "Vale__ValeSpec",
+            "Remote": "Vale__ValeSpec",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "lanterndesigner",
+            "Name": "Lantern Designer",
+            "Kind": "web",
+            "Local": "Vale__LanternDesigner",
+            "Remote": "Vale__LanternDesigner",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+/* ================================================================= */
+/* REGION  |  Full Screen Mode - Tools Menu Row Visual States        */
+/* ================================================================= */
+
+.na-dropdown-menu__item--full-screen .na-dropdown-menu__subarrow {
+    display                            : inline-block;
+    transform                          : rotate(-90deg);
+    transition                         : transform 0.18s ease;
+}
+
+.na-dropdown-menu__item--full-screen.is-full-screen-active .na-dropdown-menu__subarrow {
+    transform                          : rotate(0deg);
+}
+
+.na-dropdown-menu__item--full-screen.is-full-screen-unsupported .na-dropdown-menu__button {
+    opacity                            : 0.45;
+    cursor                             : not-allowed;
+}
+
+/* endregion -------------------------------------------------------- */

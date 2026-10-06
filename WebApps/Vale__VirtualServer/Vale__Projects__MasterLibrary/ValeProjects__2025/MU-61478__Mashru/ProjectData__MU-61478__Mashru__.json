@@ -1,0 +1,28 @@
+{
+    "projectName": "Mashru",
+    "ProjectType": "Whitecard",
+    "projectCode": "61478",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation",
+        "conceptArtist": "Rachael",
+        "designer": "Martin"
+    },
+    "images": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ],
+    "scheduleData": {
+        "timeAllocated": 3,
+        "timeTaken": 6,
+        "dateFulfilled": "21-Aug-2025",
+        "dateReceived": "20-Aug-2025"
+    },
+    "displayImages": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ],
+    "thumbnailImage": "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0__Thumbnail__524p__.webp"
+}

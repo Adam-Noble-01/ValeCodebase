@@ -1,0 +1,35 @@
+{
+    "hotkeys": [
+
+        {
+            "id"          : "nav_back",
+            "key"         : "Backspace",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_BACK",
+            "description" : "Navigate back to gallery from project viewer"
+        },
+
+        {
+            "id"          : "nav_back_arrow",
+            "key"         : "ArrowLeft",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_BACK",
+            "description" : "Navigate back to gallery from project viewer (arrow key variant)"
+        },
+
+        {
+            "id"          : "nav_forward",
+            "key"         : "ArrowRight",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_FORWARD",
+            "description" : "Navigate forward to last viewed project from gallery"
+        }
+
+    ]
+}

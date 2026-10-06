@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+     =============================================================================
+     VALEVISION GALLERY - APP PAGE
+     =============================================================================
+
+     FILE       : index.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : ValeVision Gallery, served at https://app.valegardenhouses.com/project-gallery/
+     CREATED    : 2025; app server version 06-Oct-2026
+
+     DESCRIPTION:
+     - Projects, images and edits come from the Vale Projects Master Library
+       through the Gallery API (api/..., relative to this page).
+     - Sign-in is the shared Vale sign-in (/AppAssets__CommonApplicationAssets/Shared__UserLogin/).
+     - React + Babel in the browser, no build step. Scripts share one global scope.
+
+     =============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ValeVision Gallery</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="description" content="ValeVision Gallery: whitecard and blockout massing model images for Vale Garden Houses projects.">
+
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="04__Assets__AppGraphics/ValeVisionGallery__AppIcon__192x192.png">
+    <link rel="manifest" href="ValeVisionGallery__Pwa__Manifest__.webmanifest">
+    <meta name="theme-color" content="#172b3a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ValeVision Gallery">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ValeVision Gallery">
+
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+
+    <!-- React, ReactDOM, Babel (cdnjs with jsdelivr fallback), d3 -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+    <script>window.React     || document.write('<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"><\/script>');</script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+    <script>window.ReactDOM  || document.write('<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"><\/script>');</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.29.7/babel.min.js"></script>
+    <script>window.Babel     || document.write('<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.29.7/babel.min.js"><\/script>');</script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script type="module">
+        import { downloadZip } from './02__Src__AppModules/01__AppDependencies__VersionLocked/client-zip.2.4.4.min.js';
+        window.downloadZip = downloadZip;                                    // <-- "Download all images" ZIP
+    </script>
+
+    <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {                                  // <-- Installable app; scope = this route only
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('ValeVisionGallery__Pwa__ServiceWorker__.js', { scope: './' })
+                    .catch(function(err) { console.warn('[ValeVisionGallery] Service worker not registered:', err); });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Data, utilities -->
+    <script type="text/babel" src="02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__DateFormatter.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SearchFilter.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SortProjects.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__TimeAdjustments.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__ProductionKpiStats.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__KpiProjectSource.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/15__Feature__ShareKpiReport/Na__Feature__ShareKpiReport__Generate__Logic__.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ImageEffects.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ContentDetector.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__UrlQueryHandler.js"></script>
+    <script src="02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js"></script>
+
+    <!-- Components -->
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__StarRating.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__EfficiencyScale.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__ImageCarousel.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SearchBox.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SortControls.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__FilterControls.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__FilterPanel.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__HamburgerMenu.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__GalleryModeToggle.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__WarningBanner.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__MaxModel__InfoBanner.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__Header.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__Breadcrumbs.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__HotkeyHandler.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__ValeVisionGalleryApp.jsx"></script>
+</body>
+</html>

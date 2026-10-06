@@ -1,0 +1,1975 @@
+/* =============================================================================
+ * VALEVISION GALLERY - MAIN APPLICATION STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : app.css
+ * NAMESPACE  : ValeVision Gallery
+ * MODULE     : Main Application Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Core styling for ValeVision Gallery React application
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Defines component styles for ValeVision Gallery application
+ * - Implements Vale Design Suite standards for consistency
+ * - Provides responsive layout for project gallery and viewer
+ * - Includes star rating, image carousel, and navigation styles
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Base Layout and Reset Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* BASE STYLES | HTML and Body Reset */
+    /* ------------------------------------------------------------ */
+    * {
+        box-sizing                         : border-box;                   /* <-- Include padding in width calculations */
+        margin                             : 0;                            /* <-- Remove default margins */
+        padding                            : 0;                            /* <-- Remove default padding */
+    }
+    
+    html, body {
+        width                              : 100%;                         /* <-- Full viewport width */
+        height                             : 100%;                         /* <-- Full viewport height */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Apply Open Sans font */
+        background                         : var(--Vale_BackgroundLight);  /* <-- Application background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        overflow-x                         : hidden;                       /* <-- Prevent horizontal scroll */
+    }
+    
+    #root {
+        width                              : 100%;                         /* <-- Full width container */
+        min-height                         : 100vh;                        /* <-- Full viewport height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | HomePage Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HOMEPAGE | Landing Page Layout */
+    /* ------------------------------------------------------------ */
+    .homepage {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        align-items                        : center;                       /* <-- Center horizontally */
+        justify-content                    : center;                       /* <-- Center vertically */
+        min-height                         : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Full viewport height minus header */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        padding-top                        : 0;                            /* <-- Remove top padding for tighter spacing */
+        margin-top                         : calc(-80px * var(--Vale_UIScale));  /* <-- Move content up */
+    }
+    
+    .homepage__logo {
+        max-width                          : 500px;                        /* <-- Maximum logo width */
+        width                              : 80%;                          /* <-- Responsive width */
+        height                             : auto;                         /* <-- Maintain aspect ratio */
+        margin-bottom                      : calc(100px * var(--Vale_UIScale));  /* <-- Space below logo */
+    }
+    
+    .homepage__button {
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_XLarge);  /* <-- Button padding */
+        font-family                        : 'Baskerville', serif;         /* <-- Baskerville font */
+        font-size                          : var(--Vale_FontSize_Heading);     /* <-- Button text size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular text */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .homepage__button:hover {
+        background                         : var(--Vale_TextSecondary);    /* <-- Darker on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+    }
+    
+    .homepage__button:active {
+        transform                          : translateY(0);                /* <-- Reset on click */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        position                           : relative;                     /* <-- Relative positioning for absolute children */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : space-between;                /* <-- Space between elements */
+        height                             : var(--Vale_HeaderHeight);     /* <-- Fixed header height */
+        padding                            : 0 var(--Vale_Spacing_Large);  /* <-- Horizontal padding */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.08);  /* <-- Subtle shadow */
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue bottom border */
+    }
+    
+    .app-header__logo-container {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .app-header__logo-container--left {
+        justify-content                    : flex-start;                   /* <-- Align left */
+    }
+    
+    .app-header__logo-container--right {
+        justify-content                    : flex-end;                     /* <-- Align right */
+    }
+    
+    .app-header__logo-left {
+        height                             : calc(42px * var(--Vale_UIScale));  /* <-- Vale logo height */
+        width                              : auto;                              /* <-- Maintain aspect ratio */
+    }
+    
+    .app-header__logo-right {
+        height                             : calc(36px * var(--Vale_UIScale));  /* <-- ValeVision Gallery logo height */
+        width                              : auto;                              /* <-- Maintain aspect ratio */
+    }
+    
+    .app-header--with-avatar {
+        padding-right                      : calc(64px * var(--Vale_UIScale)); /* <-- Room for the signed-in user's avatar */
+    }
+
+    .app-header__title-text {
+        display                            : inline-flex;                  /* <-- App title as text (replaces the old artwork) */
+        align-items                        : baseline;
+        gap                                : calc(10px * var(--Vale_UIScale));
+        font-size                          : calc(22px * var(--Vale_UIScale));
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.02em;
+        color                              : var(--Vale_PrimaryBrand);
+        white-space                        : nowrap;
+    }
+
+    .app-header__title-mode {
+        font-size                          : calc(13px * var(--Vale_UIScale));
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.08em;
+        text-transform                     : uppercase;
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+    }
+    
+    /* BREADCRUMBS | Trail navigation bar beneath the header */
+    /* ------------------------------------------------------------ */
+    /* Replaces the old .app-header__back-button, which was absolutely
+     * positioned at left:40% inside the header and overlapped both logos.
+     * A full width bar under the header cannot collide with anything. */
+    .breadcrumbs {
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White bar */
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Separator from content */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);  /* <-- Bar padding */
+    }
+
+    .breadcrumbs__list {
+        display                            : flex;                          /* <-- Flexbox trail */
+        align-items                        : center;                        /* <-- Vertical centering */
+        flex-wrap                          : wrap;                          /* <-- Wrap on narrow screens */
+        gap                                : 4px;                           /* <-- Tight gap between entries */
+        list-style                         : none;                          /* <-- Remove bullets */
+        margin                             : 0;                             /* <-- Reset margin */
+        padding                            : 0;                             /* <-- Reset padding */
+        max-width                          : 1340px;                        /* <-- Align with the tool content width */
+        margin-left                        : auto;                          /* <-- Centre the trail */
+        margin-right                       : auto;                          /* <-- Centre the trail */
+    }
+
+    .breadcrumbs__item {
+        display                            : flex;                          /* <-- Keep link and separator inline */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : 4px;                           /* <-- Gap before the separator */
+    }
+
+    .breadcrumbs__link {
+        display                            : inline-flex;                   /* <-- Icon and label on one line */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : 6px;                           /* <-- Gap between icon and label */
+        background                         : none;                          /* <-- Plain text link, not a button */
+        border                             : none;                          /* <-- No border */
+        padding                            : 4px 6px;                       /* <-- Comfortable click target */
+        border-radius                      : 4px;                           /* <-- Subtle hover shape */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Brand blue link */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : background-color var(--Vale_Transition_Standard);  /* <-- Smooth hover */
+    }
+
+    .breadcrumbs__link:hover:not(:disabled) {
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Subtle hover fill */
+        text-decoration                    : underline;                     /* <-- Reinforce it is a link */
+    }
+
+    .breadcrumbs__link:disabled {
+        cursor                             : default;                       /* <-- Not actionable */
+        color                              : var(--Vale_TextSecondary);     /* <-- Muted when inert */
+    }
+
+    .breadcrumbs__home-icon {
+        width                              : 12px;                          /* <-- Small leading chevron */
+        height                             : 12px;                          /* <-- Small leading chevron */
+        filter                             : brightness(0) saturate(100%) invert(13%) sepia(18%) saturate(1462%) hue-rotate(163deg) brightness(94%) contrast(90%);  /* <-- Tint the white SVG to brand blue */
+    }
+
+    .breadcrumbs__separator {
+        color                              : var(--Vale_BorderLight);       /* <-- Light divider glyph */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Match the trail text */
+    }
+
+    .breadcrumbs__item--current .breadcrumbs__separator {
+        display                            : none;                          /* <-- No trailing separator */
+    }
+
+    .breadcrumbs__current {
+        padding                            : 4px 6px;                       /* <-- Align with the links */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);     /* <-- Current page is not a link */
+    }
+    /* ------------------------------------------------------------ */
+    
+    .app-header__share-button {
+        display                            : flex;                         /* <-- Flexbox for icon alignment */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Horizontal centering */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
+        position                           : absolute;                     /* <-- Absolute positioning */
+        left                               : 40%;                          /* <-- Center horizontally */
+        transform                          : translateX(calc(-50% + 260px));  /* <-- Position to right of back button with spacing */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background (same as back button) */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .app-header__share-button:hover {
+        background                         : #0f1e28;                      /* <-- Darker blue on hover (same as back button) */
+        transform                          : translateX(calc(-50% + 260px)) scale(1.02);  /* <-- Maintain position and slight grow */
+        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
+    }
+    
+    .app-header__share-button:active {
+        transform                          : translateX(calc(-50% + 260px)) scale(1.0);  /* <-- Reset scale on click */
+    }
+    
+    .app-header__share-icon {
+        width                              : 16px;                         /* <-- Icon width */
+        height                             : 16px;                         /* <-- Icon height */
+        filter                             : brightness(0) invert(1);      /* <-- Make SVG white to match button text */
+    }
+    
+    .app-header__copied-message {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 100%;                         /* <-- Below button */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Center adjustment */
+        margin-top                         : 8px;                          /* <-- Space above message */
+        padding                            : 4px 12px;                     /* <-- Message padding */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background (same as button) */
+        color                              : white;                        /* <-- White text */
+        font-size                          : 12px;                         /* <-- Smaller font */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        border-radius                      : 4px;                          /* <-- Rounded corners */
+        white-space                        : nowrap;                       /* <-- No text wrapping */
+        animation                          : fadeInOut 3s ease-in-out;    /* <-- Fade animation */
+    }
+    
+    @keyframes fadeInOut {
+        0%   { opacity: 0; transform: translateX(-50%) translateY(-5px); }
+        10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+        90%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ProjectGallery Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PROJECT GALLERY | Grid Layout Container */
+    /* ------------------------------------------------------------ */
+    .project-gallery {
+        flex                               : 1;                            /* <-- Expand to fill space */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);  /* <-- Maximum content width */
+        margin                             : 0 auto;                       /* <-- Center horizontally */
+        width                              : 100%;                         /* <-- Full width */
+    }
+    
+    .project-gallery__controls {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below controls */
+    }
+    
+    .project-gallery__controls-left {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        width                              : 100%;                         /* <-- Full width so sort reaches the right edge */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Consistent spacing between all toolbar items */
+    }
+    
+    .project-gallery__search-box {
+        position                           : relative;                     /* <-- Relative for clear button positioning */
+        flex                               : 1;                            /* <-- Fill all space between tabs and sort */
+        min-width                          : 0;                            /* <-- Allow flex to shrink; tablet/mobile breakpoints cap width */
+    }
+    
+    .project-gallery__search-input {
+        width                              : 100%;                         /* <-- Full width of container */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Input padding */
+        padding-right                      : 40px;                         /* <-- Extra space for clear button */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium);  /* <-- Medium border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+    }
+    
+    .project-gallery__search-input::placeholder {
+        color                              : var(--Vale_TextTertiary);     /* <-- Tertiary text for placeholder */
+        opacity                            : 0.7;                          /* <-- Slightly transparent */
+    }
+    
+    .project-gallery__search-input:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on hover */
+    }
+    
+    .project-gallery__search-input:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Subtle focus ring */
+    }
+    
+    .project-gallery__search-clear {
+        position                           : absolute;                     /* <-- Absolute positioning within search box */
+        right                              : var(--Vale_Spacing_Small);    /* <-- Position from right edge */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Adjust for centering */
+        background                         : transparent;                  /* <-- Transparent background */
+        border                             : none;                         /* <-- No border */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        font-size                          : 24px;                         /* <-- Large X icon */
+        line-height                        : 1;                            /* <-- Tight line height */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        padding                            : 4px 8px;                      /* <-- Small padding for click area */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        border-radius                      : 4px;                          /* <-- Slight rounding for hover effect */
+    }
+    
+    .project-gallery__search-clear:hover {
+        color                              : var(--Vale_TextPrimary);      /* <-- Darker on hover */
+        background                         : rgba(0, 0, 0, 0.05);          /* <-- Subtle hover background */
+    }
+    
+    .project-gallery__search-clear:active {
+        transform                          : translateY(-50%) scale(0.9);  /* <-- Slight press effect */
+    }
+    
+    .project-gallery__sort-control {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        flex                               : 0 0 auto;                     /* <-- Fixed-size; search flex:1 fills the gap left of sort */
+    }
+    
+    .project-gallery__sort-label {
+        display                            : none;                         /* <-- Hidden; dropdown content makes context self-evident */
+    }
+    
+    .project-gallery__sort-select {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Select padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium);  /* <-- Medium border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        min-width                          : 200px;                        /* <-- Minimum width for readability */
+    }
+    
+    .project-gallery__sort-select:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on hover */
+    }
+    
+    .project-gallery__sort-select:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Subtle focus ring */
+    }
+
+    /* FILTER PANEL | Collapsible Toggle and Animated Drawer */
+    /* ------------------------------------------------------------ */
+    .filter-panel {
+        display                            : flex;                         /* <-- Horizontal layout for button + drawer */
+        align-items                        : center;                       /* <-- Vertically centred */
+        flex                               : 0 0 auto;                     /* <-- Fixed size; does not stretch */
+    }
+
+    .filter-panel__toggle {
+        display                            : flex;                         /* <-- Icon and text side by side */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : 6px;                          /* <-- Tight gap between icon and text */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium); /* <-- Match dropdown padding */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard interface text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        font-weight                        : var(--Vale_FontWeight_Regular); /* <-- Regular weight */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background to match dropdowns */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium); /* <-- Match dropdown border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast); /* <-- Fast hover transition */
+        white-space                        : nowrap;                       /* <-- Prevent text wrap */
+        line-height                        : 1;                            /* <-- Tight line height for icon alignment */
+    }
+
+    .filter-panel__toggle:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on hover */
+    }
+
+    .filter-panel__toggle:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1); /* <-- Subtle focus ring */
+    }
+
+    .filter-panel__toggle-icon {
+        display                            : block;                        /* <-- Remove inline baseline gap */
+        flex-shrink                        : 0;                            /* <-- Prevent icon squishing */
+    }
+
+    .filter-panel__toggle--open {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border when active */
+        background                         : var(--Vale_HoverBackground);  /* <-- Subtle active state background */
+    }
+
+    .filter-panel__toggle-text {
+        display                            : inline-block;                 /* <-- Needed for max-width transition */
+        max-width                          : 100px;                        /* <-- Wide enough to show "Project Filters" */
+        opacity                            : 1;                            /* <-- Fully visible when closed */
+        overflow                           : hidden;                       /* <-- Clips text during collapse */
+        transition                         : max-width var(--Vale_Transition_Standard),
+                                             opacity 0.2s ease,
+                                             margin-left var(--Vale_Transition_Standard); /* <-- Fade and collapse text */
+        margin-left                        : 2px;                          /* <-- Small nudge between icon and text */
+    }
+
+    .filter-panel__toggle-text--hidden {
+        max-width                          : 0;                            /* <-- Collapse text width to zero */
+        opacity                            : 0;                            /* <-- Fade text out */
+        margin-left                        : 0;                            /* <-- Remove gap as text disappears */
+    }
+
+    .filter-panel__drawer {
+        display                            : flex;                         /* <-- Horizontal row of dropdowns */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Consistent gap between dropdowns */
+        padding-left                       : 0;                            /* <-- No leading space when closed */
+        max-width                          : 0;                            /* <-- Collapsed: zero width */
+        opacity                            : 0;                            /* <-- Collapsed: invisible */
+        overflow                           : hidden;                       /* <-- Clip content during animation */
+        pointer-events                     : none;                         /* <-- Prevent interaction when hidden */
+        transition                         : max-width var(--Vale_Transition_Standard),
+                                             opacity 0.25s ease,
+                                             padding-left var(--Vale_Transition_Standard); /* <-- Smooth reveal animation */
+        box-sizing                         : content-box;                  /* <-- Ensure padding does not count against max-width */
+    }
+
+    .filter-panel__drawer--open {
+        max-width                          : 720px;                        /* <-- Open: wide enough for 3 dropdowns + gaps */
+        opacity                            : 1;                            /* <-- Open: fully visible */
+        padding-left                       : var(--Vale_Spacing_Medium);   /* <-- Adds spacing between toggle button and first dropdown */
+        pointer-events                     : auto;                         /* <-- Allow interaction when visible */
+    }
+    /* ------------------------------------------------------------ */
+
+    .project-gallery__grid {
+        display                            : grid;                         /* <-- CSS Grid layout */
+        grid-template-columns              : repeat(auto-fill, minmax(350px, 1fr));  /* <-- Responsive columns */
+        gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
+        margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space above grid */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PROJECT CARD | Individual Project Card */
+    /* ------------------------------------------------------------ */
+    .project-card {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White card background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        overflow                           : hidden;                       /* <-- Clip overflow content */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .project-card:hover {
+        transform                          : translateY(-4px);             /* <-- Lift effect on hover */
+        box-shadow                         : 0 8px 16px rgba(0,0,0,0.15);  /* <-- Enhanced shadow */
+    }
+    
+    .project-card__image-container {
+        position                           : relative;                     /* <-- Relative positioning for overlay */
+        z-index                            : 2;                            /* <-- Above card bg (+2) and text section (+1), ensures border renders on top */
+        width                              : 100%;                         /* <-- Full card width */
+        height                             : calc(300px * var(--Vale_UIScale));  /* <-- Fixed container height */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border-bottom                      : 1.0px solid #172b3a;            /* <-- Only bottom border, ValeDesignSuite heading/nav blue */
+        border-left                        : none;                         /* <-- No left border */
+        border-right                       : none;                         /* <-- No right border */
+        border-top                         : none;                         /* <-- No top border */
+        box-sizing                         : border-box;                   /* <-- Ensure padding/border are inside width/height */
+        padding-top                        : 5px;
+        padding-bottom                     : 5px;
+        margin-bottom                      : -5px;
+    }
+    
+    .project-card__image {
+        margin-top                         : 5px;                          /* <-- Pushes the Images down slightly reducing "sky" white space */
+        width                              : 100%;                         /* <-- Full container width */
+        height                             : 100%;                         /* <-- Full container height */
+        object-fit                         : contain;                      /* <-- Contain full image without cropping */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
+    }
+    
+    .project-card__content {
+        position                           : relative;                     /* <-- Positioning context for z-index */
+        z-index                            : 1;                            /* <-- Above card bg, below image container */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Content padding */
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between text and icons */
+        align-items                        : flex-start;                   /* <-- Align to top */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between text and icons */
+    }
+    
+    .project-card__text-content {
+        flex                               : 1;                            /* <-- Allow text to take available space */
+        min-width                          : 0;                            /* <-- Allow text to shrink if needed */
+        margin-bottom                      : -5px;
+    }
+    
+    .project-card__name {
+        font-size                          : calc(var(--Vale_FontSize_SubHeading) * 1.1);  /* <-- Sub-heading size +10% */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below name */
+    }
+    
+    .project-card__code {
+        font-size                          : calc(var(--Vale_FontSize_Standard) * 1.1);  /* <-- Standard font size +10% */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_XSmall);   /* <-- Reduced space below code */
+    }
+    
+    .project-card__date {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        color                              : var(--Vale_TextTertiary);     /* <-- Tertiary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below date */
+        font-style                         : italic;                       /* <-- Italic style for date */
+    }
+    
+    .project-card__ratings {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between ratings */
+    }
+    
+    .project-card__rating-row {
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between label and stars */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .project-card__rating-label {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+    }
+
+    /* HAND DRAWN EFFECT | Conditional styling for White overlay for hand drawn projects */
+    /* ------------------------------------------------------------ */
+    /* Note : This is loaded only when the project is a hand drawn project as defined within project json file */
+    .project-card__white-overlay {
+        position                           : absolute;                     /* <-- Absolute positioning over image */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        right                              : 0;                            /* <-- Align to right */
+        bottom                             : 0;                            /* <-- Align to bottom */
+        background                         : rgba(255, 255, 255, 0.5);    /* <-- 30% white overlay */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+        z-index                            : 10;                           /* <-- Layer above image */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* CONTENT INDICATOR ICONS | Icons showing available content types (watercolor, 3D models) */
+    /* ------------------------------------------------------------ */
+    .project-card__content-icons {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : 6px;                          /* <-- 6px gap between icons */
+        flex-shrink                        : 0;                            /* <-- Prevent icons from shrinking */
+        z-index                            : 15;                           /* <-- Layer above image */
+    }
+    
+    .project-card__content-icon {
+        width                              : calc(80px * var(--Vale_UIScale));  /* <-- Fixed icon width */
+        height                             : calc(80px * var(--Vale_UIScale));  /* <-- Fixed icon height */
+        opacity                            : 0.9;                          /* <-- Slight Reduced opacity to soften icons to make them less intrusive */
+        z-index                            : 15;                           /* <-- Layer above image */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ProjectViewer Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PROJECT VIEWER | Full Project Display Layout */
+    /* ------------------------------------------------------------ */
+    .project-viewer {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        height                             : calc(90vh - var(--Vale_HeaderHeight));  /* <-- 90% viewport height minus header */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);  /* <-- Maximum content width */
+        margin                             : 0 auto;                       /* <-- Center horizontally */
+        width                              : 100%;                         /* <-- Full width */
+    }
+    
+    .project-viewer__header {
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below header */
+    }
+    
+    .project-viewer__title {
+        font-size                          : var(--Vale_FontSize_Title);   /* <-- Title font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : 0;                            /* <-- No space below title */
+    }
+
+    /* BREADCRUMB | Top-Left Navigation Replacing Standalone "Back to Gallery" Button */
+    /* ------------------------------------------------------------ */
+    .project-viewer__breadcrumb {
+        min-width                          : 0;                            /* <-- Allow shrinking below content size for truncation */
+        max-width                          : 100%;                         /* <-- Never exceed header width */
+    }
+
+    .project-viewer__breadcrumb--overlay {
+        position                           : absolute;                     /* <-- Float over the viewer instead of reserving its own row */
+        top                                : var(--Vale_Spacing_Medium);   /* <-- Inset from carousel top edge */
+        left                               : var(--Vale_Spacing_Medium);   /* <-- Inset from carousel left edge */
+        max-width                          : calc(100% - (var(--Vale_Spacing_Medium) * 2));  /* <-- Stay clear of both edges */
+        z-index                            : 20;                           /* <-- Above the image, below carousel nav controls/counter */
+        pointer-events                     : auto;                         /* <-- Keep the link clickable over the image */
+    }
+
+    .project-viewer__breadcrumb-list {
+        display                            : flex;                         /* <-- Single-row breadcrumb trail */
+        align-items                        : baseline;                     /* <-- Align small link text with large title text */
+        list-style                         : none;                         /* <-- Remove default marker */
+        margin                             : 0;                            /* <-- Reset default ol margin */
+        padding                            : 0;                            /* <-- Reset default ol padding */
+        min-width                          : 0;                            /* <-- Allow shrinking below content size */
+        max-width                          : 100%;                         /* <-- Never exceed header width */
+        overflow                           : hidden;                       /* <-- Keep trail on a single line */
+        white-space                        : nowrap;                       /* <-- Prevent wrap to second line */
+    }
+
+    .project-viewer__breadcrumb-item {
+        display                            : flex;                         /* <-- Keep link + separator inline */
+        align-items                        : baseline;                     /* <-- Match trail alignment */
+        flex-shrink                        : 0;                            /* <-- Gallery link keeps its full width */
+    }
+
+    .project-viewer__breadcrumb-item--current {
+        min-width                          : 0;                            /* <-- Allow current-page crumb to shrink */
+        overflow                           : hidden;                       /* <-- Clip overflow for ellipsis */
+        flex-shrink                        : 1;                            /* <-- Current-page crumb yields space first */
+    }
+
+    .project-viewer__breadcrumb-link {
+        display                            : inline-flex;                  /* <-- Icon + label as one unit */
+        align-items                        : center;                       /* <-- Vertically centre chevron and label */
+        gap                                : 4px;                          /* <-- Tight chevron-to-label spacing */
+        padding                            : 4px 2px;                      /* <-- Comfortable hit target beyond visible text */
+        margin                             : -4px -2px;                    /* <-- Offset padding so layout position is unaffected */
+        background                         : none;                         /* <-- No button chrome */
+        border                             : none;                         /* <-- No button chrome */
+        border-radius                      : 4px;                          /* <-- Rounds the focus ring */
+        color                              : var(--Vale_TextSecondary);    /* <-- Muted link tone, matches secondary text elsewhere */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match app typography */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Larger, more legible breadcrumb size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight, lower emphasis than title */
+        cursor                             : pointer;                      /* <-- Pointer cursor on hover */
+        white-space                        : nowrap;                       /* <-- Never wrap the link label */
+        transition                         : color var(--Vale_Transition_Fast);  /* <-- Smooth hover colour change */
+    }
+
+    .project-viewer__breadcrumb-link:hover {
+        color                              : var(--Vale_PrimaryBrand);     /* <-- Shift to primary navy on hover */
+        text-decoration                    : underline;                    /* <-- Underline on hover per spec */
+    }
+
+    .project-viewer__breadcrumb-link:focus-visible {
+        outline                            : 2px solid var(--Vale_PrimaryBrand);  /* <-- Visible keyboard focus ring */
+        outline-offset                     : 2px;                          /* <-- Space ring away from text */
+    }
+
+    .project-viewer__breadcrumb-chevron {
+        font-size                          : 1.1em;                        /* <-- Slightly larger chevron glyph */
+        line-height                        : 1;                            /* <-- Prevent extra vertical space */
+    }
+
+    .project-viewer__breadcrumb-separator {
+        margin                             : 0 8px;                        /* <-- Space either side of separator */
+        color                              : var(--Vale_BorderLight);      /* <-- Lighter than either crumb, purely decorative */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Match the rest of the breadcrumb row */
+    }
+
+    .project-viewer__breadcrumb-current {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Same size as the rest of the trail; hierarchy comes from weight/colour, not scale */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Bolder weight marks this as "you are here" */
+        color                              : var(--Vale_TextPrimary);       /* <-- Darker tone marks this as "you are here" */
+        margin                             : 0;                             /* <-- No default heading margin */
+        overflow                           : hidden;                       /* <-- Clip overflow for ellipsis */
+        text-overflow                      : ellipsis;                     /* <-- Truncate long project titles */
+        white-space                        : nowrap;                       /* <-- Keep current-page crumb on one line */
+    }
+
+    .project-viewer__breadcrumb-current .project-viewer__code-inline {
+        font-size                          : inherit;                      /* <-- Match the rest of the breadcrumb row, no size jump */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight reads as lower emphasis than the bold title */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary tone, consistent with rest of app */
+    }
+    /* ------------------------------------------------------------ */
+
+    .project-viewer__code-inline {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular font weight */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary grey text color */
+    }
+    
+    .project-viewer__code {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below code */
+    }
+    
+    .project-viewer__description {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        line-height                        : 1.6;                          /* <-- Line height for readability */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below description */
+    }
+    
+    .project-viewer__content {
+        display                            : grid;                         /* <-- CSS Grid layout */
+        grid-template-columns              : 5fr 1.6fr;                    /* <-- 5:1.6 ratio columns (data panel 80% of previous width) */
+        gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
+        flex                               : 1;                            /* <-- Expand to fill available space */
+        min-height                         : 0;                            /* <-- Allow flexbox to shrink below content size */
+    }
+    
+    .project-viewer__carousel-container {
+        position                           : relative;                     /* <-- Positioning context for breadcrumb overlay */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        overflow                           : hidden;                       /* <-- Clip overflow content */
+        min-height                         : 0;                            /* <-- Allow flexbox to shrink below content size */
+    }
+    
+    .project-viewer__ratings-panel {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Panel padding */
+    }
+    
+    .project-viewer__data-title {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below title */
+        text-align                         : center;                       /* <-- Center text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+    }
+    
+    .project-viewer__rating-item {
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space between ratings */
+    }
+    
+    .project-viewer__rating-label {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below label */
+        display                            : block;                        /* <-- Block display */
+    }
+    
+    .project-viewer__production-title {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Large);   /* <-- Space below subhead */
+        padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above subhead */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .project-viewer__divider {
+        border                             : none;                         /* <-- Remove default border */
+        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Subtle top border */
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above divider */
+        margin-bottom                      : 0;                            /* <-- No space below (handled by title) */
+    }
+    
+    .project-viewer__actions-title {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above title */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below title */
+        padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above title */
+        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top border separator */
+        text-align                         : center;                       /* <-- Center text */
+    }
+
+    .project-viewer__divider--viewer-actions {
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above viewer actions divider */
+        margin-bottom                      : 0;                            /* <-- Keep tight before title spacing */
+    }
+
+    .project-viewer__actions-title--viewer-actions {
+        margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space after divider */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space above action buttons */
+        padding-top                        : 0;                            /* <-- Divider already provides separation */
+        border-top                         : none;                         /* <-- Avoid duplicate border line */
+    }
+
+    .project-viewer__viewer-actions {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical button stacking */
+        gap                                : 10px;                         /* <-- Slightly larger gap between action buttons */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Breathing room below final section */
+    }
+
+    .project-viewer__viewer-action-button {
+        position                           : relative;                     /* <-- Anchor copied message positioning */
+        display                            : flex;                         /* <-- Flexbox for icon alignment */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Horizontal centering */
+        gap                                : 10px;                         /* <-- Add clear icon-to-label spacing */
+        width                              : 92%;                          /* <-- Less wide buttons for cleaner panel fit */
+        min-height                         : 34px;                         /* <-- Smaller ValeVision-like action height */
+        padding                            : 8px 12px;                     /* <-- Compact button padding */
+        background                         : #172b3a;                      /* <-- ValeVision dark navy button tone */
+        color                              : #ffffff;                      /* <-- High contrast text */
+        border                             : 1px solid #172b3a;            /* <-- Match background for clean edge */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : 0.72rem;                      /* <-- Smaller label size to match VV3D tools buttons */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold label */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match app typography */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth hover/press */
+        margin                             : 0 auto;                       /* <-- Center narrower button width */
+    }
+
+    .project-viewer__viewer-action-button:hover {
+        background                         : #0f1e28;                      /* <-- Darker navy on hover */
+        border-color                       : #0f1e28;                      /* <-- Keep border matched on hover */
+        transform                          : translateY(-1px);             /* <-- Subtle lift effect */
+        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Soft elevation on hover */
+    }
+
+    .project-viewer__viewer-action-button:active {
+        transform                          : translateY(0);                /* <-- Reset lift on click */
+        box-shadow                         : none;                         /* <-- Remove elevation while pressed */
+    }
+
+    .project-viewer__viewer-action-button--share {
+        background                         : #dfe2e6;                      /* <-- ValeVision-style light grey secondary button */
+        color                              : #172b3a;                      /* <-- Dark text for contrast on light button */
+        border-color                       : #d1d5db;                      /* <-- Subtle grey border */
+    }
+
+    .project-viewer__viewer-action-button--share:hover {
+        background                         : #cfd5dc;                      /* <-- Slightly darker grey on hover */
+        border-color                       : #c2c9d2;                      /* <-- Keep secondary border in sync */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.14);  /* <-- Softer hover shadow than primary */
+    }
+
+    .project-viewer__viewer-action-icon {
+        width                              : 12px;                         /* <-- Smaller icon width */
+        height                             : 12px;                         /* <-- Smaller icon height */
+        filter                             : brightness(0) invert(1);      /* <-- Force icon to white */
+    }
+
+    .project-viewer__viewer-action-button--share .project-viewer__viewer-action-icon {
+        filter                             : none;                         /* <-- Preserve original dark icon on light button */
+    }
+
+    .project-viewer__viewer-action-copied-message {
+        position                           : absolute;                     /* <-- Show feedback below button */
+        top                                : 100%;                         /* <-- Attach message below button */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Center offset correction */
+        margin-top                         : 8px;                          /* <-- Gap below button */
+        padding                            : 4px 10px;                     /* <-- Compact chip padding */
+        border-radius                      : 4px;                          /* <-- Rounded chip */
+        background                         : #172b3a;                      /* <-- Match button tone */
+        color                              : #ffffff;                      /* <-- White feedback text */
+        font-size                          : 12px;                         /* <-- Smaller feedback size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold feedback text */
+        white-space                        : nowrap;                       /* <-- Keep text on one line */
+        pointer-events                     : none;                         /* <-- Never block button interactions */
+        z-index                            : 2;                            /* <-- Ensure feedback appears above nearby content */
+    }
+    
+    .project-viewer__data-field {
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space between fields */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between label and value */
+    }
+    
+    .project-viewer__data-field--emphasis {
+        padding-top                        : var(--Vale_Spacing_Small);    /* <-- Space above separator */
+        border-top                         : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Separator above the net figure */
+    }
+    
+    .project-viewer__data-field--notes {
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Extra space for notes field */
+    }
+    
+    .project-viewer__data-label {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        text-transform                     : uppercase;                    /* <-- Uppercase labels */
+        letter-spacing                     : 0.5px;                        /* <-- Letter spacing */
+    }
+    
+    .project-viewer__data-value {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+    }
+    
+    .project-viewer__model-button {
+        display                            : block;                        /* <-- Block display for full width */
+        width                              : 100%;                         /* <-- Full width button */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        text-align                         : center;                       /* <-- Center text */
+        text-decoration                    : none;                         /* <-- Remove underline */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        margin-top                         : 30px;                         /* <-- Space above button */
+        margin-bottom                      : 30px;                         /* <-- Space below button */
+    }
+    
+    .project-viewer__model-button:hover {
+        background                         : #0f1e28;                      /* <-- Darker blue on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+    }
+    
+    .project-viewer__model-button:active {
+        transform                          : translateY(0);                /* <-- Reset on click */
+    }
+    /* ------------------------------------------------------------ */
+    
+    /* DOWNLOAD SECTION | Image Download Container and Button */
+    /* ------------------------------------------------------------ */
+    .project-viewer__download-section {
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above section */
+    }
+    
+    .project-viewer__download-button {
+        display                            : flex;                         /* <-- Flexbox for icon alignment */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Horizontal centering */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and text */
+        width                              : 100%;                         /* <-- Full width button */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        text-decoration                    : none;                         /* <-- Remove underline from anchor tags */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .project-viewer__download-button:hover:not(:disabled) {
+        background                         : #0f1e28;                      /* <-- Darker blue on hover */
+        transform                          : scale(1.02);                  /* <-- Slight grow effect */
+        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
+    }
+    
+    .project-viewer__download-button:active:not(:disabled) {
+        transform                          : scale(1.0);                   /* <-- Reset on click */
+    }
+    
+    .project-viewer__download-button:disabled {
+        opacity                            : 0.7;                          /* <-- Reduced opacity when disabled */
+        cursor                             : not-allowed;                  /* <-- Not allowed cursor */
+    }
+    
+    .project-viewer__download-icon {
+        width                              : 16px;                         /* <-- Icon width */
+        height                             : 16px;                         /* <-- Icon height */
+        filter                             : brightness(0) invert(1);      /* <-- Make SVG white to match button text */
+    }
+    
+    .project-viewer__download-spinner {
+        width                              : 16px;                         /* <-- Spinner width */
+        height                             : 16px;                         /* <-- Spinner height */
+        border                             : 2px solid rgba(255,255,255,0.3);  /* <-- Spinner border */
+        border-top-color                   : var(--Vale_TextLight);        /* <-- Spinner active segment */
+        border-radius                      : 50%;                          /* <-- Circular spinner */
+        animation                          : spin 0.8s linear infinite;    /* <-- Spin animation */
+    }
+    
+    @keyframes spin {
+        to {
+            transform                      : rotate(360deg);               /* <-- Full rotation */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ImageCarousel Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* IMAGE CAROUSEL | Image Navigation Display */
+    /* ------------------------------------------------------------ */
+    .image-carousel {
+        position                           : relative;                     /* <-- Relative positioning for controls */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 100%;                         /* <-- Fill available container height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+    }
+    
+    .image-carousel__main {
+        flex                               : 1;                            /* <-- Expand to fill space */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        position                           : relative;                     /* <-- Relative positioning */
+    }
+    
+    .image-carousel__image {
+        max-width                          : 100%;                         /* <-- Maximum width */
+        max-height                         : 100%;                         /* <-- Maximum height */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
+    }
+    
+    .image-carousel__button {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Adjust for centering */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        border                             : none;                         /* <-- No border */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for arrows */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        border-radius                      : 50%;                          /* <-- Circular buttons */
+        width                              : calc(50px * var(--Vale_UIScale));  /* <-- Fixed width */
+        height                             : calc(50px * var(--Vale_UIScale));  /* <-- Fixed height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center content */
+        justify-content                    : center;                       /* <-- Center content */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        opacity                            : 0.7;                          /* <-- Semi-transparent */
+        z-index                            : 90;                           /* <-- High up but not top, ensures buttons above images.
+    
+    .image-carousel__button:hover {
+        opacity                            : 1;                            /* <-- Full opacity on hover */
+        background                         : var(--Vale_TextSecondary);    /* <-- Darker on hover */
+    }
+    
+    .image-carousel__button--prev {
+        left                               : var(--Vale_Spacing_Medium);   /* <-- Position left */
+    }
+    
+    .image-carousel__button--next {
+        right                              : var(--Vale_Spacing_Medium);   /* <-- Position right */
+    }
+    
+    .image-carousel__thumbnails {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between thumbnails */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Padding around thumbnails */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        overflow-x                         : auto;                         /* <-- Horizontal scroll if needed */
+    }
+    
+    .image-carousel__thumbnail {
+        width                              : calc(80px * var(--Vale_UIScale));  /* <-- Fixed thumbnail width */
+        height                             : calc(80px * var(--Vale_UIScale));  /* <-- Fixed thumbnail height */
+        object-fit                         : cover;                        /* <-- Cover thumbnail area */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        border                             : 2px solid transparent;        /* <-- Transparent border default */
+        border-radius                      : 4px;                          /* <-- Slight rounding */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        opacity                            : 0.6;                          /* <-- Semi-transparent default */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
+    }
+    
+    .image-carousel__thumbnail:hover {
+        opacity                            : 0.9;                          /* <-- More opaque on hover */
+    }
+    
+    .image-carousel__thumbnail--active {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border */
+        opacity                            : 1;                            /* <-- Full opacity */
+    }
+    
+    .image-carousel__counter {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        bottom                             : var(--Vale_Spacing_Medium);   /* <-- Position from bottom */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Adjust for true centering */
+        background                         : rgba(0,0,0,0.6);              /* <-- Semi-transparent dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Counter padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Larger font size for visibility */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        z-index                            : 100;                           /* <-- Highest z-index to appear above all carousel elements */
+    }
+    /* ------------------------------------------------------------ */
+    
+    /* IMAGE COMPARISON | ART Image Comparison Slider Styles */
+    /* ------------------------------------------------------------ */
+    .image-carousel__comparison-container {
+        position                           : relative;                     /* <-- Relative positioning for layers */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 100%;                         /* <-- Full height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        cursor                             : ew-resize;                    /* <-- Horizontal resize cursor */
+        user-select                        : none;                         /* <-- Prevent text selection */
+    }
+    
+    .image-carousel__image--base {
+        position                           : relative;                     /* <-- Base layer positioning */
+        z-index                            : 1;                            /* <-- Below ART layer */
+    }
+    
+    .image-carousel__comparison-layer {
+        position                           : absolute;                     /* <-- Absolute positioning for overlay */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 100%;                         /* <-- Full height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        overflow                           : hidden;                       /* <-- Hide clipped content */
+        z-index                            : 2;                            /* <-- Above base layer */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__image--art {
+        max-width                          : 100%;                         /* <-- Maximum width */
+        max-height                         : 100%;                         /* <-- Maximum height */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+    }
+    
+    .image-carousel__comparison-divider {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 0;                            /* <-- Align to top */
+        bottom                             : 0;                            /* <-- Extend to bottom */
+        width                              : 4px;                          /* <-- Divider width */
+        background                         : rgba(255, 255, 255, 0.9);     /* <-- Semi-transparent white */
+        box-shadow                         : 0 0 8px rgba(0, 0, 0, 0.3);   /* <-- Shadow for visibility */
+        z-index                            : 3;                            /* <-- Above both image layers */
+        transform                          : translateX(-2px);             /* <-- Center on position */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__comparison-handle {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translate(-50%, -50%);        /* <-- Adjust for true centering */
+        pointer-events                     : auto;                         /* <-- Enable clicks on handle */
+        cursor                             : ew-resize;                    /* <-- Horizontal resize cursor */
+    }
+    
+    .image-carousel__comparison-handle svg {
+        filter                             : drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));  /* <-- Shadow for depth */
+    }
+    
+    .image-carousel__art-label {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : var(--Vale_Spacing_Medium);   /* <-- Position from top */
+        right                              : var(--Vale_Spacing_Medium);   /* <-- Position from right */
+        background                         : rgba(23, 43, 58, 0.9);        /* <-- Semi-transparent dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Label padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        z-index                            : 4;                            /* <-- Above all layers */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__comparison-hint {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translate(-50%, -50%);        /* <-- Adjust for true centering */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        align-items                        : center;                       /* <-- Center content */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and text */
+        z-index                            : 5;                            /* <-- Above all other layers */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+        animation                          : hintPulse 2s ease-in-out infinite;  /* <-- Pulsing animation */
+    }
+    
+    .image-carousel__comparison-hint-icon {
+        animation                          : hintBounce 1.5s ease-in-out infinite;  /* <-- Bouncing animation */
+    }
+    
+    .image-carousel__comparison-hint-icon svg {
+        filter                             : drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));  /* <-- Shadow for visibility */
+    }
+    
+    .image-carousel__comparison-hint-text {
+        background                         : rgba(23, 43, 58, 0.95);       /* <-- Dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);  /* <-- Text padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        white-space                        : nowrap;                       /* <-- Prevent text wrapping */
+    }
+    /* ------------------------------------------------------------ */
+    
+    /* ANIMATIONS | Comparison Hint Animations */
+    /* ------------------------------------------------------------ */
+    @keyframes hintPulse {
+        0%, 100% {
+            opacity                        : 1;                            /* <-- Full opacity */
+        }
+        50% {
+            opacity                        : 0.7;                          /* <-- Reduced opacity */
+        }
+    }
+    
+    @keyframes hintBounce {
+        0%, 100% {
+            transform                      : translateY(0);                /* <-- Normal position */
+        }
+        50% {
+            transform                      : translateY(-10px);            /* <-- Bounce up */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | StarRating Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* STAR RATING | Star Display Component */
+    /* ------------------------------------------------------------ */
+    .star-rating {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : 4px;                          /* <-- Gap between stars */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .star-rating__star {
+        font-size                          : calc(20px * var(--Vale_UIScale));  /* <-- Star size */
+        color                              : var(--Vale_StarEmpty);        /* <-- Empty star color */
+        transition                         : color var(--Vale_Transition_Fast);  /* <-- Fast color transition */
+    }
+    
+    .star-rating__star--filled {
+        color                              : var(--Vale_StarGold);         /* <-- Filled star color */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | EfficiencyScale Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* EFFICIENCY SCALE | Time Efficiency Display Component */
+    /* ------------------------------------------------------------ */
+    .efficiency-scale {
+        width                              : 100%;                         /* <-- Full width container */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between elements */
+        margin-top                         : var(--Vale_Spacing_Medium);   /* <-- Space above component */
+    }
+    
+    .efficiency-scale__pictograms {
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between pictograms */
+        align-items                        : center;                       /* <-- Vertical centering */
+        padding                            : 0 10px;                       /* <-- Horizontal padding */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below pictograms */
+    }
+    
+    .efficiency-scale__pictogram {
+        height                             : calc(60px * var(--Vale_UIScale));  /* <-- Pictogram height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+    }
+    
+    .efficiency-scale__pictogram--left {
+        order                              : 1;                            /* <-- Position left */
+    }
+    
+    .efficiency-scale__pictogram--center {
+        order                              : 2;                            /* <-- Position center */
+    }
+    
+    .efficiency-scale__pictogram--right {
+        order                              : 3;                            /* <-- Position right */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--left {
+        height                             : calc(48px * var(--Vale_UIScale));  /* <-- 20% smaller than default 60px */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--right {
+        height                             : calc(48px * var(--Vale_UIScale));  /* <-- 20% smaller than default 60px */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--center {
+        height                             : calc(60px * var(--Vale_UIScale));  /* <-- Keep original size (appears larger) */
+    }
+    
+    .efficiency-scale__bar-container {
+        position                           : relative;                     /* <-- Relative positioning for marker */
+        width                              : 100%;                         /* <-- Full width */
+        padding                            : 20px 10px 10px;               /* <-- Padding for marker space */
+    }
+    
+    .efficiency-scale__bar {
+        position                           : relative;                     /* <-- Relative positioning */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 20px;                         /* <-- Bar height */
+        background                         : linear-gradient(to right, #ffebee 0%, #f5f5f5 50%, #e8f5e9 100%);  /* <-- Gradient background */
+        border-radius                      : 10px;                         /* <-- Rounded corners */
+        border                             : 2px solid var(--Vale_BorderMedium);  /* <-- Border */
+        overflow                           : visible;                      /* <-- Allow marker to overflow */
+    }
+    
+    .efficiency-scale__marker {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : -20px;                        /* <-- Position above bar */
+        transform                          : translateX(-50%);             /* <-- Center on position */
+        width                              : 0;                            /* <-- Triangle base */
+        height                             : 0;                            /* <-- Triangle base */
+        border-left                        : 12px solid transparent;       /* <-- Left side of triangle */
+        border-right                       : 12px solid transparent;       /* <-- Right side of triangle */
+        border-top                         : 18px solid var(--Vale_PrimaryBrand);  /* <-- Triangle color */
+        filter                             : drop-shadow(0 2px 4px rgba(0,0,0,0.2));  /* <-- Shadow for depth */
+    }
+    
+    .efficiency-scale__marker--critical {
+        border-top-color                   : #d32f2f;                      /* <-- Critical red */
+    }
+    
+    .efficiency-scale__marker--behind {
+        border-top-color                   : #f57c00;                      /* <-- Behind orange */
+    }
+    
+    .efficiency-scale__marker--slightly-behind {
+        border-top-color                   : #ffa726;                      /* <-- Slightly behind light orange */
+    }
+    
+    .efficiency-scale__marker--on-target {
+        border-top-color                   : var(--Vale_PrimaryBrand);     /* <-- On target brand blue */
+    }
+    
+    .efficiency-scale__marker--slightly-ahead {
+        border-top-color                   : #66bb6a;                      /* <-- Slightly ahead light green */
+    }
+    
+    .efficiency-scale__marker--ahead {
+        border-top-color                   : #43a047;                      /* <-- Ahead green */
+    }
+    
+    .efficiency-scale__status {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between header and message */
+        margin-top                         : var(--Vale_Spacing_Medium);   /* <-- Space above status */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .efficiency-scale__status-header {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin                             : 0;                            /* <-- Remove default margin */
+    }
+    
+    .efficiency-scale__status-subtext {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : #d32f2f;                      /* <-- Red for audit required */
+    }
+    
+    .efficiency-scale__status-message {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+        margin                             : 0;                            /* <-- Remove default margin */
+    }
+    
+    .efficiency-scale__status-note {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small caption text */
+        color                              : var(--Vale_TextSubtle);       /* <-- Subtle text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+        margin                             : var(--Vale_Spacing_Small) 0 0 0;  /* <-- Space above note */
+    }
+    
+    .efficiency-scale--compact {
+        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Reduced space for compact mode */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Smaller gap */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__pictogram {
+        height                             : 35px;                         /* <-- Smaller pictograms */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__bar-container {
+        padding                            : 15px 5px 5px;                 /* <-- Reduced padding */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__bar {
+        height                             : 12px;                         /* <-- Thinner bar */
+        border-radius                      : 6px;                          /* <-- Proportional rounding */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__marker {
+        top                                : -15px;                        /* <-- Adjust position */
+        border-left-width                  : 8px;                          /* <-- Smaller triangle */
+        border-right-width                 : 8px;                          /* <-- Smaller triangle */
+        border-top-width                   : 12px;                         /* <-- Smaller triangle */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | PinEntry Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PIN ENTRY | Modal Overlay */
+    /* ------------------------------------------------------------ */
+    .pin-entry-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning */
+        top                                : 0;                            /* <-- Cover from top */
+        left                               : 0;                            /* <-- Cover from left */
+        right                              : 0;                            /* <-- Cover to right */
+        bottom                             : 0;                            /* <-- Cover to bottom */
+        background                         : rgba(0, 0, 0, 0.7);           /* <-- Semi-transparent dark overlay */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        z-index                            : var(--Vale_ZIndex_Modal);     /* <-- Modal layer */
+        animation                          : fadeIn 0.2s ease;             /* <-- Fade in animation */
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity                        : 0;                            /* <-- Start transparent */
+        }
+        to {
+            opacity                        : 1;                            /* <-- End opaque */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Modal Container */
+    /* ------------------------------------------------------------ */
+    .pin-entry-modal {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White modal background */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_XLarge);   /* <-- Modal padding */
+        width                              : 90%;                          /* <-- Responsive width */
+        max-width                          : 400px;                        /* <-- Maximum modal width */
+        box-shadow                         : 0 8px 32px rgba(0,0,0,0.3);  /* <-- Strong shadow */
+        animation                          : slideUp 0.3s ease;            /* <-- Slide up animation */
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform                      : translateY(20px);             /* <-- Start below */
+            opacity                        : 0;                            /* <-- Start transparent */
+        }
+        to {
+            transform                      : translateY(0);                /* <-- End at position */
+            opacity                        : 1;                            /* <-- End opaque */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Title and Subtitle */
+    /* ------------------------------------------------------------ */
+    .pin-entry__title {
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below title */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .pin-entry__subtitle {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below subtitle */
+        text-align                         : center;                       /* <-- Center text */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Form */
+    /* ------------------------------------------------------------ */
+    .pin-entry__form {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between elements */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Input Wrapper */
+    /* ------------------------------------------------------------ */
+    .pin-entry__input-wrapper {
+        position                           : relative;                     /* <-- Relative positioning for button */
+        width                              : 100%;                         /* <-- Full width */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical center alignment */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PIN ENTRY | Input Field */
+    /* ------------------------------------------------------------ */
+    .pin-entry__input {
+        width                              : 100%;                         /* <-- Full width */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Input padding */
+        padding-right                      : 50px;                         /* <-- Extra space for toggle button */
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for PIN */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        text-align                         : center;                       /* <-- Center text */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border default */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        letter-spacing                     : 0.2em;                        /* <-- Space between characters */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+    }
+    
+    .pin-entry__input:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border */
+        box-shadow                         : 0 0 0 3px rgba(23,43,58,0.1);  /* <-- Focus ring */
+    }
+    
+    .pin-entry__input::placeholder {
+        letter-spacing                     : 0.1em;                        /* <-- Space placeholder characters */
+        color                              : var(--Vale_BorderLight);      /* <-- Light placeholder color */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PIN ENTRY | Toggle Password Button */
+    /* ------------------------------------------------------------ */
+    .pin-entry__toggle-button {
+        position                           : absolute;                     /* <-- Absolute positioning in wrapper */
+        right                              : 10px;                         /* <-- Position from right edge */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Center adjustment */
+        background                         : transparent;                  /* <-- Transparent background */
+        border                             : none;                         /* <-- No border */
+        cursor                             : pointer;                      /* <-- Pointer cursor on hover */
+        font-size                          : 20px;                         /* <-- Icon size */
+        padding                            : 5px 10px;                     /* <-- Button padding */
+        display                            : flex;                         /* <-- Flexbox for icon centering */
+        align-items                        : center;                       /* <-- Center icon vertically */
+        justify-content                    : center;                       /* <-- Center icon horizontally */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        transition                         : all 0.2s ease;                /* <-- Smooth hover transition */
+        border-radius                      : 4px;                          /* <-- Slight corner rounding */
+    }
+    
+    .pin-entry__toggle-button:hover {
+        background                         : rgba(0,0,0,0.05);             /* <-- Light hover background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary color on hover */
+    }
+    
+    .pin-entry__toggle-button:active {
+        transform                          : translateY(-50%) scale(0.95); /* <-- Slight press effect */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PIN ENTRY | Error Message */
+    /* ------------------------------------------------------------ */
+    .pin-entry__error {
+        background                         : #ffe6e6;                      /* <-- Light red background */
+        color                              : #cc0000;                      /* <-- Red text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Error padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        text-align                         : center;                       /* <-- Center text */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        animation                          : shake 0.3s ease;              /* <-- Shake animation */
+    }
+    
+    @keyframes shake {
+        0%, 100% {
+            transform                      : translateX(0);                /* <-- Start and end position */
+        }
+        25% {
+            transform                      : translateX(-10px);            /* <-- Move left */
+        }
+        75% {
+            transform                      : translateX(10px);             /* <-- Move right */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Buttons */
+    /* ------------------------------------------------------------ */
+    .pin-entry__buttons {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between buttons */
+        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Space above buttons */
+    }
+    
+    .pin-entry__button {
+        flex                               : 1;                            /* <-- Equal width buttons */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+    }
+    
+    .pin-entry__button--submit {
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+    }
+    
+    .pin-entry__button--submit:hover:not(:disabled) {
+        background                         : #0f1e28;                      /* <-- Darker on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+    }
+    
+    .pin-entry__button--submit:disabled {
+        background                         : var(--Vale_BorderLight);      /* <-- Light gray when disabled */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text when disabled */
+        cursor                             : not-allowed;                  /* <-- Not-allowed cursor */
+        opacity                            : 0.6;                          /* <-- Semi-transparent */
+    }
+    
+    .pin-entry__button--cancel {
+        background                         : var(--Vale_BackgroundLight);  /* <-- Light background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border */
+    }
+    
+    .pin-entry__button--cancel:hover {
+        background                         : var(--Vale_HoverBackground);  /* <-- Hover background */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive Design Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    /*
+     * RESPONSIVE DESIGN | Layout Tiers
+     * ------------------------------------------------------------
+     * ValeVision Gallery adapts the gallery toolbar across these tiers:
+     *
+     * 1. Wide Desktop (> 1300px)
+     *    Full toolbar on one row; the "Project Filters" drawer opens inline
+     *    (animated to 720px) while the search box stays comfortably usable.
+     *
+     * 2. Narrow Desktop / Tablet (769px–1300px)
+     *    Not enough room for the open drawer inline, so the toolbar wraps: the
+     *    search box grows to fill row 1 and the whole filter panel drops onto its
+     *    own full-width row, where the dropdowns wrap and stretch (no overflow).
+     *
+     * 3. Mobile (≤ 768px)
+     *    Tabs on row 1; search on row 2 at 85% scale; the filter panel on its own
+     *    row with dropdowns stacking full width. Builds on the ≤1300px reflow.
+     * ------------------------------------------------------------
+     */
+
+    /* RESPONSIVE | Filter Drawer Reflow (≤1300px — narrow desktop, tablet and mobile) */
+    /* ------------------------------------------------------------ */
+    /*
+     * Above 1300px the drawer keeps its inline animated 720px behaviour (there is
+     * enough room for the open drawer plus a usable search box on one row).
+     * At and below 1300px the open drawer can no longer fit inline without
+     * crushing the search box, so the whole filter panel drops onto its own
+     * full-width row and the dropdowns wrap and stretch — guaranteeing no
+     * horizontal overflow and a usable search box at every width.
+     * Drawer-scoped selectors are used so they override the mobile
+     * .project-gallery__sort-* rules regardless of source order.
+     */
+    @media (max-width: 1300px) {
+
+        .project-gallery__controls-left {
+            flex-wrap                      : wrap;                          /* <-- Allow the drawer to break onto its own row */
+        }
+
+        .filter-panel {
+            display                        : contents;                     /* <-- Dissolve the wrapper so the toggle and drawer become direct toolbar flex items */
+        }
+
+        .filter-panel__toggle {
+            order                          : 5;                             /* <-- Keep the funnel toggle inline on row 1, right after the search box */
+        }
+
+        .filter-panel__drawer {
+            order                          : 6;                             /* <-- Sit immediately after the toggle */
+            flex-wrap                      : wrap;                          /* <-- Dropdowns wrap instead of overflowing */
+            row-gap                        : var(--Vale_Spacing_Small);     /* <-- Vertical gap between wrapped dropdown rows */
+            max-height                     : 0;                             /* <-- Collapse height when closed so the wrapped dropdowns never stretch the toolbar row */
+            align-self                     : center;                        /* <-- Stay centred; never stretch the row while collapsed */
+        }
+
+        .filter-panel__drawer--open {
+            flex-basis                     : 100%;                          /* <-- Break the open drawer onto its own full-width row below the toolbar */
+            max-width                      : 100%;                          /* <-- Never cap the open drawer at a fixed 720px */
+            width                          : 100%;                          /* <-- Fill the full toolbar width */
+            max-height                     : none;                          /* <-- Release the height clamp so the open drawer shows in full */
+            padding-left                   : 0;                             /* <-- No leading indent when stacked full width */
+        }
+
+        .filter-panel__drawer .project-gallery__sort-control {
+            flex                           : 1 1 220px;                     /* <-- Each dropdown grows/shrinks and wraps as needed */
+            min-width                      : 0;                             /* <-- Permit shrink below intrinsic content width */
+            margin-left                    : 0;                             /* <-- Cancel any inherited margin-left push */
+        }
+
+        .filter-panel__drawer .project-gallery__sort-select {
+            width                          : 100%;                          /* <-- Fill its control cell */
+            min-width                      : 0;                             /* <-- Override the desktop 200px hard minimum */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Tablet Portrait (769px–1300px) is now handled by the        */
+    /* ≤1300px Filter Drawer Reflow block above: the toolbar wraps, the search  */
+    /* box grows to fill row 1, and the filter panel drops to its own row.      */
+    /* The former nowrap/search-cap tablet rules were removed because they      */
+    /* fought the reflow and left the open drawer crammed on one row.           */
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Mobile Adjustments (≤768px) */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        .project-gallery__controls {
+            flex-direction                 : column;                       /* <-- Stack controls block */
+            align-items                    : stretch;                      /* <-- Full width elements */
+        }
+
+        .project-gallery__controls-left {
+            flex-wrap                      : wrap;                         /* <-- Tabs row 1; search + sort row 2 */
+            column-gap                     : 4px;                          /* <-- Tight column gap so tabs have max room on row 1 */
+            row-gap                        : 6px;                          /* <-- Row gap between tab row and search/sort row */
+            width                          : 100%;                         /* <-- Full width toolbar */
+        }
+
+        .project-gallery__controls-left::after {
+            content                        : '';                           /* <-- Flex line break before search row */
+            flex-basis                     : 100%;                         /* <-- Force search and sort onto row 2 */
+            width                          : 0;
+            height                         : 0;
+            order                          : 3;                            /* <-- After hamburger and tabs */
+        }
+
+        .project-gallery__search-box {
+            min-width                      : 0;                            /* <-- Allow search to shrink on narrow screens */
+            max-width                      : none;                         /* <-- Override tablet cap */
+            flex                           : 1 1 160px;                    /* <-- Grow on row 2 beside sort */
+            order                          : 4;                            /* <-- After tabs on wrapped layout */
+        }
+
+        .project-gallery__search-input {
+            font-size                      : calc(var(--Vale_FontSize_Standard) * 0.85);  /* <-- 15% smaller than desktop/tablet */
+            padding                        : calc(var(--Vale_Spacing_Small) * 0.85) calc(var(--Vale_Spacing_Medium) * 0.85);
+            padding-right                  : 34px;                         /* <-- Clear button space at reduced scale */
+        }
+
+        .project-gallery__sort-control {
+            flex                           : 0 0 auto;                     /* <-- Fixed width sort cluster */
+            min-width                      : 130px;                        /* <-- Compact sort width on mobile */
+            order                          : 5;                            /* <-- Immediately after search */
+        }
+
+        .project-gallery__sort-select {
+            font-size                      : calc(var(--Vale_FontSize_Standard) * 0.85);  /* <-- 15% smaller select text */
+            padding                        : calc(var(--Vale_Spacing_Small) * 0.85) calc(var(--Vale_Spacing_Medium) * 0.85);
+            min-width                      : 130px;                        /* <-- Narrower than desktop 200px */
+        }
+        
+        .project-gallery__grid {
+            grid-template-columns          : 1fr;                          /* <-- Single column on mobile */
+        }
+        
+        .project-viewer__content {
+            grid-template-columns          : 1fr;                          /* <-- Single column on mobile */
+        }
+        
+        .image-carousel {
+            min-height                     : 400px;                        /* <-- Minimum height on mobile */
+            max-height                     : 800px;                        /* <-- Maximum height on mobile */
+        }
+        
+        .app-header {
+            padding                        : 0 var(--Vale_Spacing_Medium); /* <-- Reduced padding on mobile */
+        }
+
+        .breadcrumbs {
+            padding                        : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Reclaim width on mobile */
+        }
+        
+        .homepage__logo {
+            max-width                      : 300px;                        /* <-- Smaller logo on mobile */
+        }
+        
+        .pin-entry-modal {
+            padding                        : var(--Vale_Spacing_Large);    /* <-- Reduced padding on mobile */
+        }
+        
+        .pin-entry__input {
+            font-size                      : var(--Vale_FontSize_SubHeading);  /* <-- Smaller font on mobile */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Portrait Mobile Adjustments (≤600px) */
+    /* ------------------------------------------------------------ */
+    /* Targets narrow viewports only. iPad portrait, landscape phones, and desktop are unaffected. */
+    @media (max-width: 600px) {
+
+        /* HEADER | Hide title logo so VGH logo + toolbar have room */
+        .app-header__logo-container--right {
+            display                        : none;                          /* <-- Drop ValeVision Gallery/Blockoutopedia logo on portrait phones */
+        }
+
+        .app-header__logo-left {
+            height                         : calc(38px * var(--Vale_UIScale));  /* <-- Slightly smaller VGH logo on portrait phones */
+        }
+
+
+        /* PROJECT VIEWER | Convert from height-locked grid to natural-flow stacked column */
+        .project-viewer {
+            height                         : auto;                          /* <-- Release 90vh height lock so page can scroll */
+            min-height                     : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Still fill viewport at minimum */
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Tighter padding on phones */
+        }
+
+        .project-viewer__content {
+            display                        : flex;                          /* <-- Override grid for simple stacking */
+            flex-direction                 : column;                        /* <-- Carousel above ratings panel */
+            gap                            : var(--Vale_Spacing_Medium);    /* <-- Match new compact spacing */
+        }
+
+        .project-viewer__carousel-container {
+            aspect-ratio                   : 4 / 3;                         /* <-- Guarantee visible image area */
+            min-height                     : unset;                         /* <-- Let aspect-ratio drive height */
+            max-height                     : 70vh;                          /* <-- Cap on tall phones */
+        }
+
+        .image-carousel {
+            min-height                     : unset;                         /* <-- Override 768px rule for portrait phones */
+            max-height                     : unset;                         /* <-- Override 768px rule for portrait phones */
+        }
+
+        .project-viewer__ratings-panel {
+            display                        : flex;                          /* <-- Enable section ordering */
+            flex-direction                 : column;                        /* <-- Stack sections */
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Tighter padding on phones */
+        }
+
+        /* SECTION ORDER | Mobile portrait: actions first, then stats */
+        .project-viewer__panel-section--viewer-actions { order: 1; }       /* <-- Share */
+        .project-viewer__panel-section--download       { order: 2; }       /* <-- Download Images (when no VV3D) */
+        .project-viewer__panel-section--data           { order: 3; }       /* <-- Production Data */
+        .project-viewer__panel-section--efficiency     { order: 4; }       /* <-- Efficiency Scale */
+
+        /* Hide the now-redundant divider + duplicate "Project Actions" heading from the desktop layout */
+        .project-viewer__divider--viewer-actions,
+        .project-viewer__actions-title--viewer-actions {
+            display                        : none;                          /* <-- Sections now self-separate via order/spacing */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

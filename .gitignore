@@ -122,6 +122,15 @@ WebApps/Prototypes__ToolTesting__EarlyStage/Prototype__WindowConfigurator__Maker
 #  - Encrypted counterparts (without --HIDDEN) are safe to commit.
 *.--HIDDEN
 
+# Vale Virtual Server: user accounts (names, emails, password hashes, per-app user
+# configs) live in the mirror and on the server only, never in git
+WebApps/Vale__VirtualServer/Server__UserAccountData/
+
+# Vale Virtual Server: heavy project content (gallery images, 3D models, scene thumbnails)
+# lives in the mirror and on the server (backed up there); git keeps the code and the
+# ProjectData JSON records
+WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/**/Content__*/
+
 # PhotoMeasurePro version-locked ONNX model binaries
 WebApps/PhotoMeasurePro/00__ThirdParty__VersionLockedDependencies/00__DepthAnythingV2__Small__Onnx/*.onnx
 WebApps/PhotoMeasurePro/00__ThirdParty__VersionLockedDependencies/01__MobileSAM__Onnx/*.onnx

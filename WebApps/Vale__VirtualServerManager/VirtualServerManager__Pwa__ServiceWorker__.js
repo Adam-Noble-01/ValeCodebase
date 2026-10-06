@@ -15,7 +15,7 @@
 
    ============================================================================= */
 
-var VSM_CACHE = 'vale-virtual-server-shell-v0.5.0';
+var VSM_CACHE = 'vale-virtual-server-shell-v0.6.0';
 var VSM_SHELL = [
     '/',
     '/VirtualServerManager__Pwa__Manifest__.webmanifest',

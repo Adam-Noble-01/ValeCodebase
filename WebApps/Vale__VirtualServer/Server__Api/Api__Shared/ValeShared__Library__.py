@@ -21,7 +21,12 @@ DESCRIPTION:
   <folder>/ProjectData__Revisions/<same relative path, no .json>/<stamp>__rev<n>__<USR code>.json
   (the last 50 per file). Revisions are user data: never web-served.
 - Project JSON is written as before: 4-space indent, UTF-8 kept as text, no
-  final newline. One lock per process; the file replace itself is atomic.
+  final newline. The file replace itself is atomic.
+- Na__Library__Locked(path) holds one document across PROCESSES: the Gallery and
+  ValeVision 3D services each run several gunicorn workers and write the same
+  ProjectData files. Every write takes it; a read-modify-write (a merge) holds it
+  around the read too. Lock file: ".<document name>.lock" beside the document
+  (*.lock never syncs).
 - Content__* files are served straight by nginx; Na__Library__Url gives their
   public URL.
 
@@ -31,6 +36,11 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+06-Oct-2026 - Version 1.1.0
+- Writes lock across processes (Na__Library__Locked: fcntl on the server, msvcrt on
+  Windows). The old lock was per process, so with two workers and two apps two saves
+  of one record could both pass the _rev check and one was lost.
+
 06-Oct-2026 - Version 1.0.0
 - Initial build (shared by ValeVision Gallery and ValeVision 3D).
 
@@ -59,7 +69,74 @@ NA__LIBRARY__YEAR_DIR             = re.compile(r"^ValeProjects__(\d{4})$")
 NA__LIBRARY__INDEX_TTL_S          = 5                                          # <-- Re-scan the library at most this often
 NA__LIBRARY__KEEP_REVISIONS       = 50
 NA__LIBRARY__CACHE                = {"at": 0.0, "index": {}}
-NA__LIBRARY__LOCK                 = threading.RLock()
+NA__LIBRARY__LOCK                 = threading.RLock()                          # <-- The index cache (this process)
+NA__LIBRARY__WRITE_LOCK           = threading.RLock()                          # <-- This process's threads queue here first
+NA__LIBRARY__HELD                 = {}                                         # <-- lock file -> [handle, depth]; only under WRITE_LOCK
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Cross-Process Lock (one document at a time, every app service)
+# -----------------------------------------------------------------------------
+
+# CLASS | Hold One Document Across Processes (re-entrant in this process)
+# ------------------------------------------------------------
+class Na__Library__Locked:
+    """with Na__Library__Locked(path): ... - read, change and write `path` with no other
+    process or thread doing the same. Nesting in one thread is fine (a merge that calls
+    Na__Library__WriteJson). flock / msvcrt locks end with the process if it dies."""
+
+    def __init__(self, path):
+        doc = Path(path)
+        self.lock_path = doc.with_name(f".{doc.name}.lock")
+
+    def __enter__(self):
+        NA__LIBRARY__WRITE_LOCK.acquire()
+        held = NA__LIBRARY__HELD.get(self.lock_path)
+        if held:
+            held[1] += 1
+            return self
+        try:
+            self.lock_path.parent.mkdir(parents=True, exist_ok=True)
+            fh = open(self.lock_path, "a+")
+            if os.name == "nt":
+                import msvcrt
+                while True:
+                    try:
+                        fh.seek(0)
+                        msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+                        break
+                    except OSError:
+                        time.sleep(0.05)
+            else:
+                import fcntl
+                fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+        except BaseException:
+            NA__LIBRARY__WRITE_LOCK.release()
+            raise
+        NA__LIBRARY__HELD[self.lock_path] = [fh, 1]
+        return self
+
+    def __exit__(self, *exc):
+        try:
+            held = NA__LIBRARY__HELD[self.lock_path]
+            held[1] -= 1
+            if held[1] == 0:
+                del NA__LIBRARY__HELD[self.lock_path]
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+                        held[0].seek(0)
+                        msvcrt.locking(held[0].fileno(), msvcrt.LK_UNLCK, 1)
+                    else:
+                        import fcntl
+                        fcntl.flock(held[0].fileno(), fcntl.LOCK_UN)
+                finally:
+                    held[0].close()
+        finally:
+            NA__LIBRARY__WRITE_LOCK.release()
+# ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------
 
@@ -168,7 +245,7 @@ def Na__Library__WriteJson(path: Path, data: dict, user_code: str = "", project_
     loaded), a newer document raises Na__Library__Conflict instead of being overwritten.
     Returns {"rev": new _rev, "revision": path of the kept copy relative to the project, or ""}."""
     path = Path(path)
-    with NA__LIBRARY__LOCK:
+    with Na__Library__Locked(path):                                            # <-- The _rev check and the write are one step for every process
         current = Na__Library__ReadJson(path) if path.is_file() else None
         current_rev = int((current or {}).get("_rev", 0) or 0)
         if expected_rev is not None and int(expected_rev) != current_rev:

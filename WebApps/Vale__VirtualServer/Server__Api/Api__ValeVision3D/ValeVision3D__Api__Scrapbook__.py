@@ -49,6 +49,10 @@
 # -----
 #
 # DEVELOPMENT LOG:
+# 06-Oct-2026 - Version 1.2.0
+# - Saves, deletes and index rebuilds hold one cross-process lock (Na__Library__Locked on the index):
+#   two workers can no longer pick the same free file name or interleave index writes.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - GET /api/valevision/scrapbook/item reads one item (the folder is private now); writable is true only
 #   for an author. Moved into Api__ValeVision3D for app.valegardenhouses.com: the scrapbook is the user-data folder
@@ -77,6 +81,7 @@ from flask import Blueprint, jsonify, request
 
 import ValeVision3D__Api__Core__ as vv_shared                     # <-- The app folder; the sign-in check
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Level, Na__Auth__Ranks, Na__Auth__Require
+from ValeShared__Library__ import Na__Library__Locked               # <-- One writer at a time across every worker
 
 # endregion -------------------------------------------------------------------
 
@@ -174,7 +179,17 @@ def _index_entry(category, file_name, item):
     }
 
 
+def _scrapbook_lock():
+    """The one lock every scrapbook write holds (re-entrant, across processes)."""
+    return Na__Library__Locked(os.path.join(SCRAPBOOK_DIR, INDEX_FILE_NAME))
+
+
 def _rebuild_index():
+    with _scrapbook_lock():
+        return _rebuild_index_locked()
+
+
+def _rebuild_index_locked():
     """
     Rewrite the index from the folders and return it. A file that is not an
     item - wrong name, not JSON, not an object - is left where it is and left
@@ -318,6 +333,11 @@ def scrapbook_save_item():
     if not _is_inside(category_dir, SCRAPBOOK_DIR):
         return jsonify({'error': 'Refused category path'}), 400
 
+    with _scrapbook_lock():                                          # <-- Free name, write and index as one step
+        return _save_item_locked(category, category_dir, name, name_part, item)
+
+
+def _save_item_locked(category, category_dir, name, name_part, item):
     now = datetime.now()
     file_name = _free_file_name(category_dir, name_part, now.strftime('%Y%m%d-%H%M%S'))
     stamp_iso = _now_iso()
@@ -377,11 +397,14 @@ def scrapbook_delete_item():
 
     quarantine_dir = os.path.join(SCRAPBOOK_DIR, QUARANTINE_DIR_NAME)
     try:
-        os.makedirs(quarantine_dir, exist_ok=True)
-        base, extension = os.path.splitext(parts[1])
-        target_name = f'{parts[0]}__{base}__deleted-{datetime.now().strftime("%Y%m%d-%H%M%S")}{extension}'
-        shutil.move(source_path, os.path.join(quarantine_dir, target_name))
-        index = _rebuild_index()
+        with _scrapbook_lock():
+            if not os.path.isfile(source_path):
+                return jsonify({'error': f'{relative} is not on disk'}), 404
+            os.makedirs(quarantine_dir, exist_ok=True)
+            base, extension = os.path.splitext(parts[1])
+            target_name = f'{parts[0]}__{base}__deleted-{datetime.now().strftime("%Y%m%d-%H%M%S")}{extension}'
+            shutil.move(source_path, os.path.join(quarantine_dir, target_name))
+            index = _rebuild_index()
     except Exception as error:
         traceback.print_exc()
         return jsonify({'error': f'The item could not be moved to quarantine: {type(error).__name__}'}), 500

@@ -10,7 +10,7 @@
             "Target": "Vale__ValeVision3D",
             "Entry": "index.html",
             "ExampleQuery": "project=64135",
-            "Api": false,
+            "Api": true,
             "ApiPort": 8002,
             "Note": "ValeVision 3D (URL from the email to Shane)"
         },
@@ -62,8 +62,8 @@
         }
     ],
     "Applied": {
-        "Hash": "8c7a7ce339c7",
-        "Utc": "2026-10-06T14:29:44Z",
+        "Hash": "6be3e167b035",
+        "Utc": "2026-10-06T15:57:53Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",

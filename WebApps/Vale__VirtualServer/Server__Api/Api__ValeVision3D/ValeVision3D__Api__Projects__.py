@@ -42,6 +42,11 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 06-Oct-2026 - Version 1.1.0
+# - Saves, merges and notes writes hold Na__Library__Locked(path) across processes (two
+#   gunicorn workers, and the Gallery writing the same records); the drawings guard and the
+#   merge read now happen inside the same cross-process lock as the write.
+#
 # 06-Oct-2026 - Version 1.0.0
 # - Ported from ValeVisionGallery/server.py's project routes for the VPS (Master Library, sign-in,
 #   revisions beside the project, the Worker's asset route folded in).
@@ -60,7 +65,8 @@ from flask import Blueprint, jsonify, request, send_file
 
 import ValeVision3D__Api__Core__ as vv_shared
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require
-from ValeShared__Library__ import Na__Library__Conflict, Na__Library__ListProjects, Na__Library__ReadJson, Na__Library__WriteJson
+from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__ListProjects, Na__Library__Locked,
+                                   Na__Library__ReadJson, Na__Library__WriteJson)
 
 # endregion -------------------------------------------------------------------
 
@@ -201,7 +207,7 @@ def save_project(token):
         return missing
     path = vv_shared.project_record_path(folder)
 
-    with vv_shared.PROJECT_FILE_LOCK:
+    with Na__Library__Locked(path):
         base_sent = request.headers.get(vv_shared.DRAWINGS_BASE_HEADER)
         if base_sent is not None:
             on_disk = vv_shared.drawings_fingerprint(vv_shared.read_json_file(str(path)))
@@ -249,7 +255,7 @@ def merge_project_keys(token):
         return missing
     path = vv_shared.project_record_path(folder)
 
-    with vv_shared.PROJECT_FILE_LOCK:
+    with Na__Library__Locked(path):
         current = vv_shared.read_json_file(str(path))
         if current is None:
             return jsonify({'error': f'The record of {folder.name} could not be read'}), 500
@@ -313,7 +319,7 @@ def _sibling_file(token, file_name, label):
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({'error': f'{label} must be a JSON object'}), 400
-    with vv_shared.PROJECT_FILE_LOCK:
+    with Na__Library__Locked(path):
         revision = vv_shared.keep_revision(path, _user_code())
         vv_shared.write_json_file(path, data)
     return jsonify({'success': True, 'message': f'{label} saved for {token}', 'revision': revision})

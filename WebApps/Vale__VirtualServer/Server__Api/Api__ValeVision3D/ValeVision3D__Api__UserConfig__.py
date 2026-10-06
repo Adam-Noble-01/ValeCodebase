@@ -75,6 +75,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 06-Oct-2026 - Version 1.2.0
+# - Add / remove holds Na__Library__Locked on the dictionary across processes (two gunicorn
+#   workers): two words added at once both stay. The missing-folder message names the real folder.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - Moved into Api__ValeVision3D for app.valegardenhouses.com: the dictionary is the user-data folder
 #   Vale__ValeVision3D/50__UserData__SpellCheckDictionary (nginx never serves it; GET here does); a write
@@ -102,6 +106,7 @@ from flask import Blueprint, jsonify, request
 
 import ValeVision3D__Api__Core__ as vv_shared                     # <-- ValeVision3D's shared server helpers: the atomic write, the log, the clock
 from ValeShared__Auth__ import Na__Auth__Require                    # <-- Writes need the authoring level (vv_shared.AUTHOR_LEVEL)
+from ValeShared__Library__ import Na__Library__Locked               # <-- One writer at a time across every worker
 
 # endregion -------------------------------------------------------------------
 
@@ -369,21 +374,22 @@ def spellings_change():
         return jsonify({'error': f'"{body.get("word")}" is not one word: letters and digits, with an apostrophe inside it if needed, up to {MAX_WORD_LENGTH} characters'}), 400
 
     if not os.path.isdir(USER_CONFIG_DIR):
-        return jsonify({'error': 'The user config folder 50__ValeVision__UserConfig is missing'}), 500
+        return jsonify({'error': f'The user config folder {os.path.basename(USER_CONFIG_DIR)} is missing'}), 500
 
     try:
-        document = _read_document()
-        if document is None:
-            return jsonify({'error': f'{SPELLINGS_FILE_NAME} is missing or is not a JSON object - restore it before adding words'}), 500
+        with Na__Library__Locked(_spellings_path()):                    # <-- Read, change and write as one step
+            document = _read_document()
+            if document is None:
+                return jsonify({'error': f'{SPELLINGS_FILE_NAME} is missing or is not a JSON object - restore it before adding words'}), 500
 
-        if action == 'add':
-            changed = add_word(document, word)
-            if changed:
-                _write_document(document)
-        else:
-            removed = remove_word(document, word)
-            if removed:
-                _write_document(document)
+            if action == 'add':
+                changed = add_word(document, word)
+                if changed:
+                    _write_document(document)
+            else:
+                removed = remove_word(document, word)
+                if removed:
+                    _write_document(document)
     except UNREADABLE_ERRORS as error:
         message = f'{_unreadable_message(error)} - nothing was written'
         _log(f'[UserConfig] {message}')

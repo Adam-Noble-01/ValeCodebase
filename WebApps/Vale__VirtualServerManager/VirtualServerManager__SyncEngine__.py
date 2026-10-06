@@ -1863,7 +1863,8 @@ def Na__Routes__Render(routes: dict, cfg: dict) -> str:
            "location ~* \\.(md|py|pyc|sh|bat|ps1|env|log|bak|lock|tmp|example|code-workspace)$ { return 404; }",
            "location ~ /(?:[^/]*__)?(?:UserData|UserConfig|ServerData|Revisions)(?:__[^/]*)?/ { return 404; }", "",
            "# ---- Private files streamed by the Flask APIs (X-Accel-Redirect: /_internal/<path under the root>)",
-           f"location ~ ^/_internal/(.+)$ {{ internal; alias {root}/$1; }}", ""]
+           "#      ^~ so the deny rules above never see it (they would 404 every UserData file); internal = APIs only",
+           f"location ^~ /_internal/ {{ internal; alias {root}/; }}", ""]
     apps = [r for r in routes.get("Routes", []) if r.get("Enabled", True) and r.get("Type") == "app"]
     links = [r for r in routes.get("Routes", []) if r.get("Enabled", True) and r.get("Type") == "link"]
     if apps:

@@ -217,9 +217,22 @@ python VirtualServerManager__SyncEngine__.py nginx-test      # dry run on the se
 python VirtualServerManager__SyncEngine__.py nginx-apply     # install, reload, verify, auto-restore
 python VirtualServerManager__SyncEngine__.py nginx-status
 python VirtualServerManager__SyncEngine__.py users           # list + validate the users register; says if it may be pushed yet
+python VirtualServerManager__SyncEngine__.py push projects --scope ValeProjects__2026/64135__Washington --yes --report-file r.json
 ```
 
 `push` and `collect` without `--yes` only print the plan.
+
+**One folder only (`--scope`, 0.6.0).**
+- `compare`, `push` and `collect` take `--scope <folder>`: one folder inside the single
+  mapping given. The plan then holds only files under it, so nothing else moves.
+- Paths stay relative to the mapping, so `undo projects`, the server journal and the ledger
+  treat a scoped push like any other push of that mapping.
+- `--report-file <json>` writes the plan (counts and file lists) and the result, gateway
+  refusals included, for other tools.
+- The SketchUp **ValeVision Cloud Sync** plugin (0.5.0) uses both. For one project it runs
+  `collect projects --scope ValeProjects__<yyyy>/<id> --yes` before it touches the record,
+  and the same `push` after publishing. The app need not be running: the engine shares its
+  lock, cooldown and session log.
 
 ## On the Server
 

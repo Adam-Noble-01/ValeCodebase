@@ -30,6 +30,7 @@
         --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
         --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
         --Vale_Spacing_Large               : 24px;                         /* <-- Large spacing unit */
+        --Vale_Spacing_Medium              : 16px;                         /* <-- Medium spacing unit (title to user bubble) */
         --Vale_FontSize_Heading           : 24px;                         /* <-- Heading text size */
         --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
         --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */

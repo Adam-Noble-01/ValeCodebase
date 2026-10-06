@@ -43,6 +43,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 06-Oct-2026 - Version 1.1.0
+# - PROJECT_FILE_LOCK (one process only) is gone: guarded writes use the shared
+#   Na__Library__Locked(path), which holds across every gunicorn worker and app service.
+#
 # 06-Oct-2026 - Version 1.0.0
 # - Ported for the VPS: library paths, revisions, no repository or R2 rules.
 #
@@ -57,7 +61,6 @@ import json
 import os
 import re
 import tempfile
-import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -103,7 +106,6 @@ DRAWINGS_BASE_HEADER     = 'X-ValeVision-Drawings-Base'
 REPLACE_RETRY_DELAYS_S   = (0.05, 0.1, 0.2, 0.4, 0.8)                             # <-- A file held open by a reader can refuse a rename for a moment (Windows)
 TEMP_SUFFIX              = '.tmp'
 AUTHOR_LEVEL             = os.environ.get('VALEVISION3D_AUTHOR_LEVEL') or 'AppAdmin'   # <-- Who may write: the same level that sees the Dev Tools menu
-PROJECT_FILE_LOCK        = threading.RLock()                                      # <-- One guarded write at a time in this process
 KEEP_REVISIONS           = 50
 
 # endregion -------------------------------------------------------------------

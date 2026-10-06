@@ -1,5 +1,43 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.6.0, 06-Oct-2026: One-Project Syncs (`--scope`) for the SketchUp Cloud Sync
+
+**Asked by Adam.** The SketchUp ValeVision Cloud Sync plugin drops Cloudflare R2. It should
+collect its exports into the Project Library locally, check them, then run "a version of the
+sync script from Vale Virtual Server, just for the ValeVision project being pushed".
+
+**Changes (engine only; the app's behaviour is unchanged):**
+- `Na__Engine__Compare(cfg, ids, deep, scope="")`: `scope` is one folder inside the single
+  chosen mapping, e.g. `projects` + `ValeProjects__2026/64135__Washington`.
+  - Both scans are filtered to it, so the plan, and so the push or collect built from it,
+    holds only that folder's files.
+  - The server agent is unchanged.
+  - Paths stay relative to the mapping: `undo projects`, the journal and the ledger work as
+    for any push of `projects`.
+  - Refused: `..` or absolute scopes, scopes with two mappings, a files-only mapping.
+  - The plan carries `scope`.
+- CLI:
+  - `compare` / `push` / `collect` take `--scope` and `--report-file <json>`;
+  - the report holds the plan counts, the file lists (500 a list at most), the result and
+    any error, gateway refusals included;
+  - the printed plan names the scope.
+- `NA__SERVER__VERSION` and `Vsm.PageVersion` are 0.6.0.
+
+**Tested in a sandbox** (fake ssh that runs the agent locally, a copied sync map, an isolated
+state folder and ledger), 19 checks:
+- a scoped compare lists only that project's files;
+- a scoped collect brings that project's newer record and user data, and leaves the other
+  project's PC files alone;
+- a scoped push sends that project's GLB, and **not** the other project's newer record or
+  new image;
+- the ledger is keyed by the full server path;
+- a second push has nothing to do (no session);
+- `undo projects` reverses the scoped push;
+- the refusals above;
+- an unscoped compare still sees both projects.
+
+The plugin's own end-to-end sandbox (30 checks, through this engine) is in its DEVLOG.
+
 ## Version 0.5.0, 06-Oct-2026: Reset and Sign Out on the Server; Pushes Keep Users' Passwords
 
 **Asked by Adam.** Sign-ins used to last a month. Keep devices signed in for good, and let him sign
@@ -61,6 +99,17 @@ blueprint), 43 checks:
 - Sign out showed "Alice Tester is signed out on every device";
 - resetting an unpushed user showed "USR00000005 is not on the server yet: push useraccounts
   first".
+
+## Engine Fix (No UI Change), 06-Oct-2026: The X-Accel Location Wins Over the Deny Rules
+
+**Found at the ValeVision 3D go-live.** The internal location was `location ~ ^/_internal/(.+)$`, a
+regex placed after the `UserData` deny regex. nginx tries regexes in order, so every private file
+an API streamed (X-Accel-Redirect) matched the deny rule first and came back 404. The PC dev
+server doesn't apply the deny rules to internal redirects, so local tests passed.
+
+**Change:** `location ^~ /_internal/ { internal; alias /srv/vale/; }`. The `^~` prefix stops the
+regex search, so the deny rules never see it, and `internal` keeps it unreachable from outside.
+Applied 15:57 UTC, hash `6be3e167b035`.
 
 ## Engine Fix (No UI Change), 06-Oct-2026: nginx File Types for .mjs and Friends
 

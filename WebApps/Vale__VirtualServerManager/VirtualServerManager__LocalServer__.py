@@ -87,7 +87,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.5.0"                                   # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.6.0"                                   # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root

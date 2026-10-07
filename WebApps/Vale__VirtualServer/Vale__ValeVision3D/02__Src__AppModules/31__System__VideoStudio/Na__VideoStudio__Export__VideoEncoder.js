@@ -7,7 +7,8 @@
 // MODULE     : VideoStudio - Video Encoder
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Drive the frame renderer and the WebCodecs H.264 encoder to
-//              produce a downloadable MP4 of a saved camera path
+//              produce MP4s of a saved camera path: one to download, or several
+//              qualities at once streamed to ValeVision Theia
 // CREATED    : 12-Aug-2026
 //
 // DESCRIPTION:
@@ -42,6 +43,20 @@
 //   VideoFrame inside one unbroken synchronous block.  Nothing may await
 //   between the two.
 //
+// SEVERAL RENDITIONS, ONE RENDER (Na__VideoStudio__Encoder__ExportRenditions):
+// - Publish to Theia needs the same video in 4K and 2K. Rendering is the slow
+//   part (16x anti-aliasing renders every frame sixteen times), so each frame
+//   is rendered once at the largest size, and every smaller rendition draws
+//   that same canvas down onto a 2D canvas of its own size inside the same
+//   synchronous block, then feeds its own encoder. Two encoders, one render.
+// - Every rendition keeps the path's quality: the same bits per pixel (or the
+//   quality stop asked for), so 2K is not starved and 4K is not bloated.
+// - STREAMED: given sinks, each rendition's muxer hands its frames to an
+//   uploader as they are encoded (nothing kept in memory) and the render
+//   waits on awaitSinkSpace() whenever the uploads fall behind.
+// - POSTERS: the first frame is also drawn at posterWidths (1920 and 524 wide)
+//   and returned as WebP.
+//
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
@@ -62,6 +77,21 @@
 // - Passes the path's anti-aliasing setting to the frame renderer, which
 //   supersamples every frame at 4x, 8x or 16x, and names the sample count in
 //   the progress lines.
+//
+// 07-Oct-2026 - Version 1.4.0
+// - Na__VideoStudio__Encoder__ExportRenditions: one render feeding several
+//   encoders (4K and 2K for ValeVision Theia), optionally streamed to uploaders
+//   with backpressure, and poster frames. ExportVideo (the MP4 download) is now
+//   its one-rendition case; its file is fast-start (muxer 1.1.0).
+//
+// 07-Oct-2026 - Version 1.4.1
+// - Doors snapped open in exported videos while the preview swung them. The
+//   export only called StopActiveRender, which stops nothing (and asks for a
+//   frame), so the live loop kept waking whenever a door began to swing and
+//   advanced it by the wall-clock time since its last frame: often the whole
+//   render so far. The live loop is now paused for the length of the export
+//   (Na__RenderLoop__Pause, as the Layout Editor's snapshots do), so doors
+//   move only by the export's exact frame step, as in the preview.
 //
 // =============================================================================
 
@@ -99,7 +129,8 @@
         Na__VideoStudio__ProjectJson__GetExportOptions,
         Na__VideoStudio__ProjectJson__GetPlaybackOptions,
         Na__VideoStudio__ProjectJson__GetModelLayerOptions,
-        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation,
+        Na__VideoStudio__DeriveExportWidth
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -130,7 +161,7 @@
 
     // MODULE IMPORTS | Render Loop Invalidation
     // ------------------------------------------------------------
-    import { Na__RenderLoop__StopActiveRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    import { Na__RenderLoop__Pause, Na__RenderLoop__Resume } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -147,6 +178,7 @@
     const Na__VsEnc__GOP_SECONDS       = 2;      // <-- Forced keyframe interval, for seek responsiveness
     const Na__VsEnc__MAX_FRAME_COUNT   = 36000;  // <-- Hard ceiling: ten minutes at 60fps
     const Na__VsEnc__FLUSH_POLL_MS     = 30;     // <-- Poll interval while draining the encoder queue
+    const Na__VsEnc__RENDER_HOLD       = 'video-export';   // <-- Render loop pause reason for the length of an export
     // ------------------------------------------------------------
 
 
@@ -423,24 +455,76 @@
 // REGION | Export Orchestration
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Render and Encode a Video to an MP4 Blob
+    // HELPER FUNCTION | A Rendition's Encoder, Muxer and (Below the Render Size) Its Downscale Canvas
+    // ------------------------------------------------------------
+    async function Na__VsEnc__OpenRendition(spec, fps, isMaster, sink, onError) {
+        const config = await Na__VsEnc__ResolveEncoderConfig(spec.width, spec.height, fps, Math.max(1, spec.bitrateMbps) * 1e6);
+        if (!config) {
+            throw new Error(`This machine cannot encode H.264 at ${spec.width}x${spec.height} @ ${fps}fps. Try a lower resolution or frame rate.`);
+        }
+        const muxer = Na__VideoStudio__Mp4Muxer__Create({
+            width : spec.width, height : spec.height, fps,
+            onPayload         : sink ? sink.onPayload : null,
+            reservedHeadBytes : sink ? sink.reservedHeadBytes : 0
+        });
+        const state = { spec, muxer, config, lastTimestamp: -Infinity, orderError: false, canvas: null, ctx: null };
+        state.encoder = new window.VideoEncoder({
+            output : (chunk, metadata) => {
+                if (metadata && metadata.decoderConfig && metadata.decoderConfig.description && !muxer.hasDescription()) {
+                    muxer.setDescription(metadata.decoderConfig.description);   // <-- avcC arrives with the first chunk
+                }
+                if (chunk.timestamp < state.lastTimestamp) state.orderError = true;   // <-- See the presentation-order note in the header
+                state.lastTimestamp = chunk.timestamp;
+                const bytes = new Uint8Array(chunk.byteLength);
+                chunk.copyTo(bytes);
+                muxer.addChunk(bytes, chunk.type === 'key');
+            },
+            error  : onError
+        });
+        state.encoder.configure(config);
+        if (!isMaster) {
+            state.canvas = document.createElement('canvas');
+            state.canvas.width = spec.width;
+            state.canvas.height = spec.height;
+            state.ctx = state.canvas.getContext('2d', { alpha: false });
+            state.ctx.imageSmoothingEnabled = true;
+            state.ctx.imageSmoothingQuality = 'high';                        // <-- The browser's best resampling, on the GPU
+        }
+        return state;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render Once, Encode One or More Renditions
     // ------------------------------------------------------------
     // options:
     //   video                  {object}   Video record from project.json
     //   renderer, scene, camera, controls
     //   getRenderPipelineState {Function}
-    //   onProgress             {Function|null}  ({ percent, message }) => void
+    //   renditions             [{ label, height }]  Default: the path's own export height
+    //   qualityIndex           {number|null}  A quality stop for every rendition; null keeps the
+    //                                         path's own bitrate, at the same bits per pixel for each
+    //   sinks                  [{ onPayload(bytes), reservedHeadBytes }] | null   One per rendition: stream
+    //   awaitSinkSpace         {Function|null}  () => Promise, awaited after every frame (backpressure)
+    //   posterWidths           [number] | null  Capture the first frame as WebP at these widths
+    //   onProgress             {Function|null}  ({ percent, message, detail }) => void
     //   shouldCancel           {Function|null}  () => boolean, polled per frame
     //
-    // Returns { blob, filename, width, height, fps, frameCount, durationMs }.
+    // Returns { renditions: [{ label, width, height, fps, bitrateMbps, frameCount, codec,
+    //           payloadBytes, blob (memory) | head (streamed) }], posters: [Blob], frameCount, durationMs }.
     // Throws with a user-presentable message on any failure.
     // ------------------------------------------------------------
-    async function Na__VideoStudio__Encoder__ExportVideo(options) {
+    async function Na__VideoStudio__Encoder__ExportRenditions(options) {
         const {
             video, renderer, scene, camera, controls,
             getRenderPipelineState,
-            onProgress   = null,
-            shouldCancel = null
+            renditions     = null,
+            qualityIndex   = null,
+            sinks          = null,
+            awaitSinkSpace = null,
+            posterWidths   = null,
+            onProgress     = null,
+            shouldCancel   = null
         } = options;
 
         const progress = (percent, message, detail) => {
@@ -468,11 +552,25 @@
             throw new Error(`That is ${frameCount} frames, which is too long for a single export. Shorten the path or lower the frame rate.`);
         }
 
+        // RENDITIONS | Largest first; widths from the path's aspect; bitrates at one quality
+        // ------------------------------------------------------------
+        const asked = (renditions && renditions.length ? renditions : [{ label: `${exportOptions.height}p`, height: exportOptions.height }])
+            .map((r) => ({ label: r.label, height: Math.round(r.height) }))
+            .sort((a, b) => b.height - a.height);
+        const pathBitsPerPixel = (exportOptions.bitrateMbps * 1e6) / (exportOptions.width * exportOptions.height * fps);
+        const specs = asked.map((r) => {
+            const width = Na__VideoStudio__DeriveExportWidth(r.height, exportOptions.aspect);
+            const bitrateMbps = qualityIndex
+                ? Na__VideoStudio__Encoder__ComputeBitrateMbps(width, r.height, fps, qualityIndex)
+                : Math.max(1, Math.round((pathBitsPerPixel * width * r.height * fps) / 1e6));
+            return { label: r.label, width, height: r.height, bitrateMbps };
+        });
+        const tierNote = specs.map((s) => s.label).join(' + ');
+
         progress(0, 'Preparing render session', 'Borrowing the renderer and resizing the effect chain');
 
-        // RENDER SESSION | Borrow the live renderer at export resolution
+        // RENDER SESSION | Borrow the live renderer at the largest rendition's size
         // ------------------------------------------------------------
-        Na__RenderLoop__StopActiveRender('video-export');                    // <-- Stop the live loop fighting for the renderer
 
         // ANIMATIONS | Proximity doors are owned by Walk and Fly, so they have
         // to be switched on explicitly for the length of the export or every
@@ -504,60 +602,40 @@
         const session = Na__VideoStudio__FrameRenderer__BeginSession({
             renderer, scene, camera, controls,
             getRenderPipelineState,
-            width  : exportOptions.width,
-            height : exportOptions.height,
+            width  : specs[0].width,
+            height : specs[0].height,
             animationsEnabled,
             antiAliasSamples : exportOptions.antiAliasEnabled ? exportOptions.antiAliasSamples : 1   // <-- 1 is the single FXAA pass
         });
-
-        const outW = session.width;
-        const outH = session.height;
+        specs[0].width  = session.width;                                     // <-- The session may clamp a huge request
+        specs[0].height = session.height;
 
         const antiAliasNote = (session.antiAliasSamples > 1)
             ? `, ${session.antiAliasSamples}x anti-aliasing`
             : '';
 
-        // ENCODER | Probe for a supported configuration at this format
+        // ENCODERS | One per rendition, each with its own muxer
         // ------------------------------------------------------------
-        let encoder    = null;
-        let muxer      = null;
         let encodeError = null;
-        let orderError  = false;
-        let lastTimestamp = -Infinity;
+        const states = [];
+        const posterCanvases = [];
+
+        // LIVE LOOP HELD | The export owns the door clock. The live loop wakes
+        // whenever a door starts to swing and advances it by wall-clock time,
+        // so at 4K with 16x samples a 1 s swing finished in one export frame
+        // and every door snapped open. Held here, after the last synchronous
+        // set-up, so the frames already asked for are cancelled; resumed last.
+        Na__RenderLoop__Pause(Na__VsEnc__RENDER_HOLD);
 
         try {
-            const bitrateBps    = Math.max(1, exportOptions.bitrateMbps) * 1e6;
-            const encoderConfig = await Na__VsEnc__ResolveEncoderConfig(outW, outH, fps, bitrateBps);
-
-            if (!encoderConfig) {
-                throw new Error(`This machine cannot encode H.264 at ${outW}x${outH} @ ${fps}fps. Try a lower resolution or frame rate.`);
+            for (let i = 0; i < specs.length; i++) {
+                states.push(await Na__VsEnc__OpenRendition(specs[i], fps, i === 0, sinks ? sinks[i] : null,
+                                                           (error) => { encodeError = error; }));   // <-- Surfaced on the next frame boundary
             }
 
-            progress(1, 'Starting hardware encoder', `H.264 at ${outW} x ${outH}, ${fps}fps${antiAliasNote}`);
+            progress(1, 'Starting hardware encoder', `H.264 ${specs.map((s) => `${s.width} x ${s.height}`).join(' and ')}, ${fps}fps${antiAliasNote}`);
 
-            muxer = Na__VideoStudio__Mp4Muxer__Create({ width: outW, height: outH, fps });
-
-            encoder = new window.VideoEncoder({
-                output : (chunk, metadata) => {
-                    if (metadata && metadata.decoderConfig && metadata.decoderConfig.description && !muxer.hasDescription()) {
-                        muxer.setDescription(metadata.decoderConfig.description);   // <-- avcC arrives with the first chunk
-                    }
-
-                    if (chunk.timestamp < lastTimestamp) orderError = true;   // <-- See the presentation-order note in the header
-                    lastTimestamp = chunk.timestamp;
-
-                    const bytes = new Uint8Array(chunk.byteLength);
-                    chunk.copyTo(bytes);
-                    muxer.addChunk(bytes, chunk.type === 'key');
-                },
-                error  : (error) => {
-                    encodeError = error;                                     // <-- Surfaced on the next frame boundary
-                }
-            });
-
-            encoder.configure(encoderConfig);
-
-            // FRAME LOOP | Exact timeline steps, one render and encode each
+            // FRAME LOOP | Exact timeline steps, one render, every encoder fed
             // ------------------------------------------------------------
             const frameDurationMs = 1000 / fps;
             const frameDurationUs = Math.round(1e6 / fps);
@@ -570,7 +648,7 @@
                 if (cancelled())  throw new Error('Export cancelled.');
 
                 // SYNCHRONOUS BLOCK | Nothing may await between the render and
-                // the VideoFrame: preserveDrawingBuffer is off, so the pixels
+                // the VideoFrames: preserveDrawingBuffer is off, so the pixels
                 // are only guaranteed valid until this task yields.
                 const timeMs = frameIndex * frameDurationMs;
                 const state  = Na__VideoStudio__PathSampler__SampleAtTime(timeline, timeMs);
@@ -582,23 +660,40 @@
                 );
                 session.renderFrame(frameDurationMs);
 
-                const frame = new window.VideoFrame(session.canvas, {
-                    timestamp : frameIndex * frameDurationUs,
-                    duration  : frameDurationUs
+                const stamp  = { timestamp : frameIndex * frameDurationUs, duration : frameDurationUs };
+                const frames = states.map((r, i) => {
+                    if (i === 0) return new window.VideoFrame(session.canvas, stamp);
+                    r.ctx.drawImage(session.canvas, 0, 0, r.spec.width, r.spec.height);   // <-- The same frame, drawn down to this rendition
+                    return new window.VideoFrame(r.canvas, stamp);
                 });
+                if (frameIndex === 0 && posterWidths) {
+                    posterWidths.forEach((w) => {
+                        const width = Math.min(w, session.width);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = Math.round(width * session.height / session.width);
+                        const ctx = canvas.getContext('2d', { alpha: false });
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(session.canvas, 0, 0, canvas.width, canvas.height);
+                        posterCanvases.push(canvas);
+                    });
+                }
                 // END SYNCHRONOUS BLOCK
 
-                try {
-                    encoder.encode(frame, { keyFrame: (frameIndex % gopSize) === 0 });
-                } finally {
-                    frame.close();                                           // <-- Release the frame's backing memory promptly
-                }
+                frames.forEach((frame, i) => {
+                    try {
+                        states[i].encoder.encode(frame, { keyFrame: (frameIndex % gopSize) === 0 });
+                    } finally {
+                        frame.close();                                       // <-- Release the frame's backing memory promptly
+                    }
+                });
 
-                await Na__VsEnc__AwaitQueueSpace(encoder, Na__VsEnc__MAX_QUEUE_DEPTH);
+                for (const r of states) await Na__VsEnc__AwaitQueueSpace(r.encoder, Na__VsEnc__MAX_QUEUE_DEPTH);
+                if (typeof awaitSinkSpace === 'function') await awaitSinkSpace();   // <-- The uploads set the pace when they fall behind
 
                 if ((frameIndex % Na__VsEnc__PAINT_EVERY_N) === 0) {
                     const percent   = Math.round((frameIndex / frameCount) * 92); // <-- Reserve the tail for flush and mux
-                    const megabytes = (muxer.getByteLength() / (1024 * 1024)).toFixed(1);
+                    const megabytes = (states.reduce((sum, r) => sum + r.muxer.getByteLength(), 0) / (1024 * 1024)).toFixed(1);
 
                     // ETA | Measured from real elapsed time rather than guessed
                     // from the frame count, because the first frames are slower
@@ -613,7 +708,7 @@
 
                     progress(
                         percent,
-                        `Rendering frame ${frameIndex + 1} of ${frameCount}${antiAliasNote}`,
+                        `Rendering frame ${frameIndex + 1} of ${frameCount}${specs.length > 1 ? ` (${tierNote})` : ''}${antiAliasNote}`,
                         `${megabytes} MB encoded${eta}`
                     );
                     await Na__ExportYield__NextTick();                       // <-- Let the panel repaint
@@ -622,50 +717,84 @@
                 }
             }
 
-            // FLUSH | Drain everything still in the encoder queue
+            // FLUSH | Drain everything still in the encoders
             // ------------------------------------------------------------
             progress(94, 'Finishing encode', 'Draining frames still inside the encoder');
-            await encoder.flush();
+            await Promise.all(states.map((r) => r.encoder.flush()));
 
             let flushGuard = 0;
-            while (muxer.getSampleCount() < frameCount && flushGuard < 200) {
+            while (states.some((r) => r.muxer.getSampleCount() < frameCount) && flushGuard < 200) {
                 await Na__VsEnc__Delay(Na__VsEnc__FLUSH_POLL_MS);            // <-- Output callbacks may still be landing
                 flushGuard++;
             }
 
             if (encodeError) throw new Error(`Encoder failed: ${encodeError.message}`);
-            if (orderError) {
+            if (states.some((r) => r.orderError)) {
                 throw new Error('The encoder returned frames out of presentation order, which this writer cannot represent. Try a lower frame rate.');
             }
 
-            // MUX | Wrap the encoded stream in an MP4 container
+            // MUX | Wrap each encoded stream: a Blob, or the head of a streamed file
             // ------------------------------------------------------------
-            progress(97, 'Writing MP4 container', `${muxer.getSampleCount()} frames into the sample tables`);
-            const blob     = muxer.finalize();
-            const filename = Na__VideoStudio__Encoder__BuildFilename(video.VideoStudio__Video__Name);
+            progress(97, 'Writing MP4 container', `${states[0].muxer.getSampleCount()} frames into the sample tables`);
+            const results = states.map((r, i) => ({
+                label        : r.spec.label,
+                width        : r.spec.width,
+                height       : r.spec.height,
+                fps,
+                bitrateMbps  : r.spec.bitrateMbps,
+                codec        : r.config.codec,
+                frameCount   : r.muxer.getSampleCount(),
+                payloadBytes : r.muxer.getByteLength(),
+                blob         : sinks && sinks[i] ? null : r.muxer.finalize(),
+                head         : sinks && sinks[i] ? r.muxer.finalizeHead() : null
+            }));
+            const posters = await Promise.all(posterCanvases.map((canvas) =>
+                new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9))));
 
-            progress(100, 'Export complete', filename);
-
-            return {
-                blob,
-                filename,
-                width      : outW,
-                height     : outH,
-                fps        : fps,
-                frameCount : muxer.getSampleCount(),
-                durationMs : timeline.totalDurationMs
-            };
+            progress(100, 'Export complete', tierNote);
+            return { renditions: results, posters, frameCount, durationMs: timeline.totalDurationMs };
 
         } finally {
-            // TEARDOWN | Always release the encoder and restore the renderer
+            // TEARDOWN | Always release the encoders and restore the renderer
             // ------------------------------------------------------------
-            if (encoder && encoder.state !== 'closed') {
-                try { encoder.close(); } catch (closeError) { /* already torn down */ }
-            }
+            states.forEach((r) => {
+                if (r.encoder && r.encoder.state !== 'closed') {
+                    try { r.encoder.close(); } catch (closeError) { /* already torn down */ }
+                }
+            });
             session.end();
             Na__VideoStudio__SceneAnimations__End(animationSession);          // <-- Doors back to orbit behaviour
             Na__VideoStudio__ModelLayers__End(layerSession);                  // <-- Hidden layers back on screen
+            Na__RenderLoop__Resume(Na__VsEnc__RENDER_HOLD);                   // <-- Live loop back, with a fresh clock; one frame paints the restored view
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render and Encode a Video to an MP4 Blob (the download)
+    // ------------------------------------------------------------
+    // options:
+    //   video                  {object}   Video record from project.json
+    //   renderer, scene, camera, controls
+    //   getRenderPipelineState {Function}
+    //   onProgress             {Function|null}  ({ percent, message }) => void
+    //   shouldCancel           {Function|null}  () => boolean, polled per frame
+    //
+    // Returns { blob, filename, width, height, fps, frameCount, durationMs }.
+    // Throws with a user-presentable message on any failure.
+    // ------------------------------------------------------------
+    async function Na__VideoStudio__Encoder__ExportVideo(options) {
+        const result = await Na__VideoStudio__Encoder__ExportRenditions(Object.assign({}, options, { renditions: null, sinks: null }));
+        const only = result.renditions[0];
+        return {
+            blob       : only.blob,
+            filename   : Na__VideoStudio__Encoder__BuildFilename(options.video.VideoStudio__Video__Name),
+            width      : only.width,
+            height     : only.height,
+            fps        : only.fps,
+            frameCount : only.frameCount,
+            durationMs : result.durationMs
+        };
     }
     // ------------------------------------------------------------
 
@@ -687,7 +816,8 @@
         Na__VideoStudio__Encoder__ResolveQualityIndex,
         Na__VideoStudio__Encoder__BuildFilename,
         Na__VideoStudio__Encoder__DownloadBlob,
-        Na__VideoStudio__Encoder__ExportVideo
+        Na__VideoStudio__Encoder__ExportVideo,
+        Na__VideoStudio__Encoder__ExportRenditions
     };
     // ------------------------------------------------------------
 

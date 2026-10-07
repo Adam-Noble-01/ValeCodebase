@@ -12,6 +12,7 @@ Whitecard and blockout massing-model images for every Vale Garden Houses project
 | The API (list, read, save, visibility) | `Server__Api\Api__ValeVisionGallery\wsgi.py`, reached at `api/…` relative to this page |
 | Sign-in | the shared Vale sign-in: `Server__Api\Api__Shared` and `AppAssets__CommonApplicationAssets\Shared__UserLogin` |
 | Shared logos and icons | `/AppAssets__CommonApplicationAssets/` |
+| Project videos | ValeVision Theia (`/theia/`): the card's video icon reads `videoCount` and the project view's Project Videos section reads `theiaVideos`, both put on the records by the Gallery API |
 
 - **A project's id is its library folder name.** Share links are `?id=64135__Washington`; old
   `?id=<project code>` links still open.

@@ -35,6 +35,13 @@
 //   ("‹ Project Gallery / <Project Title>"), matching the page title's position.
 // - Project Actions sidebar panel now holds only Copy Share Link.
 //
+// 07-Oct-2026 - Version 1.3.0 (ValeVision Theia)
+// - A Project Videos section in the right panel when the project has videos in
+//   ValeVision Theia: each video (thumbnail, title, length, quality) opens it in
+//   Theia, and "Watch in ValeVision Theia" opens the project's list. Theia's
+//   breadcrumbs lead back here. The Gallery is signed-in staff only, so only
+//   employees, managers and developers ever see it.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -104,6 +111,97 @@
             setIsDownloading(false);                                     // <-- Disable loading state
         }
     };
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Project Videos (ValeVision Theia)
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | A Video's Length, as Theia Shows It (0:25, 1:02:03)
+    // ---------------------------------------------------------------
+    const formatVideoLength = (ms) => {
+        const total = Math.max(0, Math.floor((Number(ms) || 0) / 1000));    // <-- Whole seconds, rounded down as Theia's player shows them
+        const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+        return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+    };
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Where a Project (or One Video) Opens in Theia
+    // ---------------------------------------------------------------
+    const theiaVideoUrl = (folderId, videoId) =>
+        `/theia/?project=${encodeURIComponent(folderId)}${videoId ? `&video=${encodeURIComponent(videoId)}` : ''}`;
+    // ---------------------------------------------------------------
+
+
+    // COMPONENT | Project Videos Panel Section
+    // ------------------------------------------------------------
+    // The list record carries videoCount; the videos themselves (theiaVideos)
+    // come with the full record, fetched here when there are any.
+    // ------------------------------------------------------------
+    function ProjectVideosPanel({ project }) {
+        const count = Number(project.videoCount) || 0;
+        const [videos, setVideos] = React.useState(project.theiaVideos || null);
+
+        React.useEffect(() => {
+            let live = true;
+            if (project.theiaVideos) { setVideos(project.theiaVideos); return undefined; }
+            if (!count) { setVideos([]); return undefined; }
+            setVideos(null);
+            loadProjectData(project.folderId)
+                .then((full) => { if (live) setVideos((full && full.theiaVideos) || []); })
+                .catch(() => { if (live) setVideos([]); });
+            return () => { live = false; };
+        }, [project.folderId]);
+
+        if (!count && !(videos && videos.length)) return null;              // <-- No videos: no section
+
+        return (
+            <div className="project-viewer__panel-section project-viewer__panel-section--videos">
+                <hr className="project-viewer__divider project-viewer__divider--viewer-actions" />
+                <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Project Videos</h3>
+
+                {videos === null ? (
+                    <p className="project-viewer__videos-note">Loading videos...</p>
+                ) : (
+                    <ul className="project-viewer__videos-list">
+                        {videos.map((video) => (
+                            <li key={video.id} className="project-viewer__videos-item">
+                                <a className="project-viewer__video-link" href={theiaVideoUrl(project.folderId, video.id)} title={`Watch "${video.title}" in ValeVision Theia`}>
+                                    <span
+                                        className="project-viewer__video-thumb"
+                                        style={video.thumbUrl ? { backgroundImage: `url("${video.thumbUrl}")` } : undefined}
+                                    >
+                                        <span className="project-viewer__video-play" aria-hidden="true"></span>
+                                    </span>
+                                    <span className="project-viewer__video-text">
+                                        <span className="project-viewer__video-title">{video.title}</span>
+                                        <span className="project-viewer__video-meta">
+                                            {formatVideoLength(video.durationMs)}
+                                            {video.quality && <span className="project-viewer__video-quality">{video.quality}</span>}
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                <div className="project-viewer__viewer-actions">
+                    <a
+                        className="project-viewer__viewer-action-button project-viewer__viewer-action-button--videos"
+                        href={theiaVideoUrl(project.folderId, null)}
+                        title="Open this project's videos in ValeVision Theia"
+                    >
+                        <img src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__TheiaVideo__512px__.png" alt="" className="project-viewer__viewer-action-video-icon" />
+                        Watch in ValeVision Theia
+                    </a>
+                </div>
+            </div>
+        );
+    }
     // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -289,6 +387,8 @@
                             )}
                             </div>
                             
+                            <ProjectVideosPanel project={project} />
+
                             {!checkValeVisionModelUrl(project) && (
                                 <div className="project-viewer__panel-section project-viewer__panel-section--download">
                                     <h3 className="project-viewer__actions-title">Project Actions</h3>

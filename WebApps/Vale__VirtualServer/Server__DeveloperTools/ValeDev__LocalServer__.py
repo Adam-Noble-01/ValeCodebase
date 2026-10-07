@@ -25,6 +25,12 @@ DESCRIPTION:
   doesn't need its API proxy switched on in tab 03 to be mounted here.
 - X-Accel-Redirect: /_internal/<path> from an API is served from the root,
   like nginx's internal location.
+- Files stream with byte ranges (206 Partial Content), as nginx serves them:
+  a video seeks, and a 1 GB file is never read into memory.
+- A sandbox VALE_ROOT (for testing sign-ins and uploads) also holds library
+  content: /Vale__Projects__MasterLibrary/... is served from the sandbox when
+  the file is there and not empty, else from the mirror. So an upload made in a
+  test plays back, and zero-byte placeholders still show the mirror's images.
 - Development settings: VALE_ROOT = the mirror, VALE_DEV=1 (fixed session
   key) unless VALE_SECRET_KEY is set. Real data: it reads and writes the
   mirror itself, so a save here is a real change to push later.
@@ -36,6 +42,12 @@ USAGE:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+07-Oct-2026 - Version 1.1.0
+- Byte ranges (werkzeug send_file, conditional): videos seek and stream, as on
+  nginx. Needed by ValeVision Theia; models and images stream too.
+- Sandbox-first library content when VALE_ROOT is not the mirror (see above).
+- .mp4 / .m4v / .webp types named explicitly (Windows' own table may not know them).
+
 06-Oct-2026 - Version 1.0.0
 - Initial build (ValeVision Gallery and ValeVision 3D ports).
 
@@ -55,6 +67,7 @@ from pathlib import Path
 from urllib.parse import quote, unquote
 
 from werkzeug.serving import run_simple
+from werkzeug.utils import send_file
 from werkzeug.wrappers import Request, Response
 
 
@@ -75,6 +88,10 @@ mimetypes.add_type("application/manifest+json", ".webmanifest")
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("text/javascript", ".jsx")
 mimetypes.add_type("model/gltf-binary", ".glb")
+mimetypes.add_type("video/mp4", ".mp4")
+mimetypes.add_type("video/mp4", ".m4v")
+mimetypes.add_type("image/webp", ".webp")
+NA__DEV__LIBRARY                  = "/Vale__Projects__MasterLibrary/"
 
 # endregion ----------------------------------------------------
 
@@ -121,13 +138,16 @@ def Na__Dev__Load(routes_path: Path) -> tuple:
 
 # HELPER FUNCTION | Serve One File (or the entry page of a folder)
 # ------------------------------------------------------------
-def Na__Dev__File(path: Path, entry: str = "index.html") -> Response:
+def Na__Dev__File(path: Path, entry: str = "index.html", environ: dict | None = None) -> Response:
     if path.is_dir():
         path = path / entry
     if not path.is_file():
         return Response("Not Found", 404, mimetype="text/plain")
     mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-    resp = Response(path.read_bytes(), 200, mimetype=mime)
+    if environ is not None:                                                     # <-- Streamed, Range-aware (206), like nginx
+        resp = send_file(str(path), environ, mimetype=mime, conditional=True, max_age=0)
+    else:
+        resp = Response(path.read_bytes(), 200, mimetype=mime)
     resp.headers["Cache-Control"] = "no-cache"
     return resp
 # ---------------------------------------------------------------
@@ -137,6 +157,17 @@ def Na__Dev__File(path: Path, entry: str = "index.html") -> Response:
 def Na__Dev__Under(base: Path, rel: str) -> Path | None:
     target = (base / unquote(rel).lstrip("/")).resolve()
     return target if target == base.resolve() or target.is_relative_to(base.resolve()) else None
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Data Path: the Sandbox's Copy When It Has One (not empty), Else the Mirror's
+# ------------------------------------------------------------
+def Na__Dev__DataFile(rel: str) -> Path | None:
+    sandbox = Path(os.environ.get("VALE_ROOT") or NA__DEV__ROOT).resolve()
+    if sandbox != NA__DEV__ROOT.resolve():
+        alt = Na__Dev__Under(sandbox, rel)
+        if alt and alt.is_file() and alt.stat().st_size > 0:
+            return alt
+    return Na__Dev__Under(NA__DEV__ROOT, rel)
 # ---------------------------------------------------------------
 
 # CLASS | The WSGI App: nginx rules + mounted Flask APIs
@@ -162,8 +193,8 @@ class Na__Dev__Server:
         body = b"".join(api(environ, capture))
         accel = next((v for k, v in captured["headers"] if k.lower() == "x-accel-redirect"), None)
         if accel and accel.startswith("/_internal/"):                           # <-- Same as nginx's internal location
-            target = Na__Dev__Under(NA__DEV__ROOT, accel[len("/_internal/"):])
-            return (Na__Dev__File(target) if target else Response("Not Found", 404))(environ, start_response)
+            target = Na__Dev__DataFile(accel[len("/_internal/"):])                  # <-- APIs write user data under VALE_ROOT
+            return (Na__Dev__File(target, environ=environ) if target else Response("Not Found", 404))(environ, start_response)
         start_response(captured["status"], captured["headers"])
         return [body]
 
@@ -182,11 +213,11 @@ class Na__Dev__Server:
                 return Response("", 301, headers={"Location": a["path"] + "/" + ("?" + query if query else "")})
             if path.startswith(a["path"] + "/"):
                 target = Na__Dev__Under(a["target"], path[len(a["path"]) + 1:])
-                return Na__Dev__File(target, a["entry"]) if target else Response("Not Found", 404)
-        target = Na__Dev__Under(NA__DEV__ROOT, path)
+                return Na__Dev__File(target, a["entry"], req.environ) if target else Response("Not Found", 404)
+        target = Na__Dev__DataFile(path) if path.startswith(NA__DEV__LIBRARY) else Na__Dev__Under(NA__DEV__ROOT, path)
         if target and target.is_dir() and not (target / "index.html").is_file():
             return Response("Forbidden", 403)                                  # <-- autoindex is off on the server too
-        return Na__Dev__File(target) if target else Response("Not Found", 404)
+        return Na__Dev__File(target, environ=req.environ) if target else Response("Not Found", 404)
 # ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------

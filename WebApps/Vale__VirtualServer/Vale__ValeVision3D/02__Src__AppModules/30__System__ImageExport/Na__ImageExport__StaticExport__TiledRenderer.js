@@ -150,6 +150,13 @@
 //   supersampler's own sample target, encoded to sRGB on present. Without
 //   renderFrame every call renders exactly as before.
 //
+// 07-Oct-2026 - Version 1.7.0
+// - AO HELD AT THE SETTING. The export holds SSAO at the user's setting for
+//   every tile (holdAoForExport) and releases it in finally. The FPS monitor's
+//   verdict was the same flag as the setting, so on a device that had tripped
+//   it, every still and Layout Editor 3D snapshot rendered without AO. A tiled
+//   render is not a viewport; the frame rate never decides what it shows.
+//
 // =============================================================================
 
 
@@ -246,13 +253,15 @@
 
         if (!state) {
             return { composer: null, profileLinesPass: null, fxaaPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
-                     setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
+                     setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop,
+                     holdAoForExport: noop, releaseAoForExport: noop };
         }
 
         // BACKWARD COMPAT | Legacy getter may return the composer directly
         if (typeof state.render === 'function' && !state.composer) {
             return { composer: state, profileLinesPass: null, fxaaPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
-                     setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
+                     setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop,
+                     holdAoForExport: noop, releaseAoForExport: noop };
         }
 
         const fn = (candidate) => (typeof candidate === 'function') ? candidate : noop;   // <-- Optional-key guard
@@ -267,7 +276,9 @@
             setDepthPrePassSize : fn(state.setDepthPrePassSize),     // <-- MaxEngine extra (no-op under PureEngine)
             setAoSize           : fn(state.setAoSize),               // <-- MaxEngine extra (no-op under PureEngine)
             updateAoUniforms    : fn(state.updateAoUniforms),        // <-- MaxEngine extra (no-op under PureEngine)
-            renderDepthPrePass  : fn(state.renderDepthPrePass)       // <-- MaxEngine extra (no-op under PureEngine)
+            renderDepthPrePass  : fn(state.renderDepthPrePass),      // <-- MaxEngine extra (no-op under PureEngine)
+            holdAoForExport     : fn(state.holdAoForExport),         // <-- MaxEngine extra: AO by the setting, not the FPS monitor
+            releaseAoForExport  : fn(state.releaseAoForExport)       // <-- MaxEngine extra: paired with the hold in finally
         };
     }
     // ------------------------------------------------------------
@@ -462,6 +473,10 @@
         const sectionExportModeHandler = Na__SectionClipping__GetExportModeHandler();    // <-- Null until the system initializes
 
         try {
+            // AMBIENT OCCLUSION | Held at the user's setting for every tile;
+            // released in finally. First in the try so the pair always matches.
+            pipeline.holdAoForExport();
+
             // EXPORT SETUP | Renderer, composer, and camera to tile dimensions
             // ------------------------------------------------------------
             renderer.setPixelRatio(1);                               // <-- Exact 1:1 pixel mapping for tiles
@@ -708,6 +723,8 @@
             // RESTORE | Camera, renderer, and composer back to live viewport state
             // ------------------------------------------------------------
             renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+
+            pipeline.releaseAoForExport();                           // <-- Live viewport back to the FPS monitor's verdict
 
             // SUPERSAMPLING | Hand the composer and FXAA back before anything
             // else touches them, and free the tile-sized accumulation buffer

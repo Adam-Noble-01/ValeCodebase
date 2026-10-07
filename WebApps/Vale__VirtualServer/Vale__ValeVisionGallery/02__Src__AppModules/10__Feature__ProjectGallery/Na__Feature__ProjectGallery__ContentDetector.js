@@ -6,17 +6,21 @@
 // NAMESPACE  : ValeVision Gallery
 // MODULE     : ProjectContentDetector
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Detect content types available for projects (watercolor, 3D models)
+// PURPOSE    : Detect content types available for projects (watercolor, 3D models, videos)
 // CREATED    : 2025
 //
 // DESCRIPTION:
 // - Detects if project contains watercolor artwork (ART20 images)
 // - Detects if project contains 3D model content (ValeVision GLB models)
+// - Detects if project has ValeVision Theia videos (videoCount from the Gallery API)
 // - Used by gallery view to display content indicator icons
 // - Provides consistent content detection logic across application
 //
 // 18-Aug-2026: the legacy sketchUpModel URL check was removed. ValeVision3D
 // GLB models are now the only source of 3D content. See DEVLOG v0.6.15.
+//
+// 07-Oct-2026: hasVideoContent() for ValeVision Theia. The Gallery API puts
+// videoCount on every project record (the videos staff can watch in Theia).
 //
 // =============================================================================
 
@@ -43,6 +47,14 @@
         if (!projectData) return false;                                     // <-- Check if project data exists
         
         return checkValeVisionModelUrl(projectData);                        // <-- ValeVision GLB models are the only 3D source
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Check if Project Has ValeVision Theia Videos
+    // ------------------------------------------------------------
+    function hasVideoContent(projectData) {
+        return !!projectData && Number(projectData.videoCount) > 0;         // <-- From the Gallery API (ValeShared__TheiaVideo__)
     }
     // ---------------------------------------------------------------
 

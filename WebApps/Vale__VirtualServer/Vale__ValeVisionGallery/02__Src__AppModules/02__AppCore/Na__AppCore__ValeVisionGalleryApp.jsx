@@ -208,7 +208,7 @@
     // INITIALIZATION | Sign In, Then Render
     // ------------------------------------------------------------
     window.ValeUserLogin.Init({
-        appName   : 'ValeVision Gallery',
+        appName   : 'ValeVision',
         logoUrl   : '/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png',
         apiBase   : 'api/',
         menuItems : [

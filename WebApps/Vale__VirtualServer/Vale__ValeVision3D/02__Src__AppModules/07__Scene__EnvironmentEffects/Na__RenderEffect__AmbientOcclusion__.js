@@ -30,8 +30,13 @@
 // PERFORMANCE MONITOR:
 // An optional FPS-based auto-disable mechanism samples the frame rate after a
 // warmup period.  If the average falls below the configured threshold the
-// SSAO + blur passes are disabled and a user-facing toast is shown (worded as
-// "Shadows" for non-technical users).
+// SSAO + blur passes are suppressed for live navigation and a user-facing
+// toast is shown (worded as "Shadows" for non-technical users).
+//
+// EXPORT HOLD:
+// The monitor's verdict is about live frame rate, so it never reaches an
+// export. While an exporter holds the effect, AO follows the user's setting
+// alone and the monitor counts no frames.
 //
 // CONFIG (Na__AppConfig__Main.json -> RenderEffect__AmbientOcclusion):
 //   Enabled, RadiusMm, Intensity, Bias, Samples, CullDistanceMm, BlurRadius,
@@ -43,6 +48,18 @@
 // 10-Jun-2026 - Version 1.0.0
 // - Ported verbatim from TrueVision3D Na__RenderEffect__AmbientOcclusion__.js.
 // - Re-headered for ValeVision3D namespace; MaxEngine-only module.
+//
+// 07-Oct-2026 - Version 1.1.0
+// - AO switched off partway through videos published to Theia. The FPS monitor
+//   switched AO off with the same disable() the Settings toggle uses, so its
+//   verdict became the setting, and every exporter rendered whatever the live
+//   viewport last had. Before the live loop was held during video exports, the
+//   monitor could also measure the export's own frames as a slow viewport and
+//   trip mid-render. The user's setting (enable/disable) and the monitor's
+//   verdict (suppressForPerformance) are now separate. holdForExport /
+//   releaseExportHold render AO by the setting alone and freeze the monitor for
+//   the length of an export. An export is drawn frame by frame, so the
+//   device's frame rate has no bearing on it.
 //
 // =============================================================================
 
@@ -184,7 +201,9 @@
     //   blurPass       – the gaussian blur ShaderPass
     //   updateUniforms – call per-frame to sync camera matrices
     //   setSize        – call on window resize to update resolution uniforms
-    //   disable/enable – toggle both passes (perf monitor / settings)
+    //   disable/enable – the user's setting (Settings toggle, drawing views)
+    //   suppressForPerformance – the FPS monitor's live-only verdict
+    //   holdForExport/releaseExportHold – AO by the setting alone, for an export
     //
     // Parameters:
     //   camera        – the scene perspective camera
@@ -310,26 +329,82 @@
         }
         // ------------------------------------------------------------
 
-        // SUB FUNCTION | Disable Both Passes (perf monitor or manual)
+        // ON OR OFF | Two Separate Answers, One Live Result
         // ------------------------------------------------------------
-        function disable() {
-            aoPass.enabled   = false;
-            blurPass.enabled = false;
-            aoPass.uniforms['uAoEnabled'].value = 0.0;
+        // userEnabled is the setting: the Settings toggle and a drawing view's
+        // suspend. perfSuppressed is the FPS monitor's verdict, and it speaks
+        // for live navigation only. These used to be one flag, so a monitor
+        // that tripped once BECAME the setting, and every export after it
+        // rendered without AO (or lost it mid-render, if the monitor tripped
+        // during one). While exportHolds > 0, the verdict is ignored.
+        // ------------------------------------------------------------
+        let userEnabled    = true;
+        let perfSuppressed = false;
+        let exportHolds    = 0;
+
+        function applyPassState() {
+            const isOn = userEnabled && (exportHolds > 0 || !perfSuppressed);
+            aoPass.enabled   = isOn;
+            blurPass.enabled = isOn;
+            aoPass.uniforms['uAoEnabled'].value = isOn ? 1.0 : 0.0;
         }
         // ------------------------------------------------------------
 
-        // SUB FUNCTION | Re-Enable Both Passes (Settings toggle)
+        // SUB FUNCTION | Switch AO Off (Settings toggle, drawing views)
+        // ------------------------------------------------------------
+        function disable() {
+            userEnabled = false;
+            applyPassState();
+        }
+        // ------------------------------------------------------------
+
+        // SUB FUNCTION | Switch AO On (Settings toggle)
+        // ------------------------------------------------------------
+        // Overrides the monitor too: someone who switches AO back on after
+        // the toast has decided they would rather have it.
         // ------------------------------------------------------------
         function enable() {
-            aoPass.enabled   = true;
-            blurPass.enabled = true;
-            aoPass.uniforms['uAoEnabled'].value = 1.0;
+            userEnabled    = true;
+            perfSuppressed = false;
+            applyPassState();
+        }
+        // ------------------------------------------------------------
+
+        // SUB FUNCTION | Suppress AO for Live Navigation (FPS monitor only)
+        // ------------------------------------------------------------
+        function suppressForPerformance() {
+            perfSuppressed = true;
+            applyPassState();
+        }
+        // ------------------------------------------------------------
+
+        // SUB FUNCTION | Hold AO at the Setting for the Length of an Export
+        // ------------------------------------------------------------
+        // A video or still export renders frame by frame, so how fast this
+        // device draws a live frame has no bearing on it: it gets AO if the
+        // setting says so, at full quality, from its first frame to its last.
+        // Counted, so two exporters overlapping cannot release each other.
+        // Every hold MUST be paired with releaseExportHold in a finally.
+        // ------------------------------------------------------------
+        function holdForExport() {
+            exportHolds++;
+            setFullQuality();
+            applyPassState();
+        }
+
+        function releaseExportHold() {
+            exportHolds = Math.max(0, exportHolds - 1);
+            applyPassState();                                              // <-- Live viewport back to the monitor's verdict
+        }
+
+        function isExportHeld() {
+            return exportHolds > 0;
         }
         // ------------------------------------------------------------
 
         return {
             pass: aoPass, blurPass, updateUniforms, setSize, disable, enable,
+            suppressForPerformance, holdForExport, releaseExportHold, isExportHeld,
             setFullQuality, setLiveQuality, setRefineSample,
             sampleCount, samplesWhileMoving
         };
@@ -349,8 +424,12 @@
     // sampling the DURATION of ordinary frames that arrive back to back.
     // Once `sampleFrames` such frames have been collected their mean gives the
     // average FPS, which is compared against `fpsThreshold`.  If below threshold:
-    //   1. Both the SSAO and blur passes are disabled via aoState.disable()
+    //   1. Both passes are suppressed for live navigation via
+    //      aoState.suppressForPerformance() - the setting itself is untouched,
+    //      so exports still render AO
     //   2. A user-facing toast says "Shadows have been switched off..."
+    //
+    // No frame is counted while an exporter holds AO (aoState.isExportHeld).
     //
     // The word "shadows" is deliberately used instead of "ambient occlusion"
     // because end users are architects, not graphics programmers.
@@ -393,6 +472,16 @@
 
         function monitorFrame(deltaMs) {
             if (triggered) return;
+
+            // AN EXPORT IS NOT A VIEWPORT. A frame drawn while an exporter holds
+            // the renderer shares it with export-sized work, so its timing says
+            // nothing about navigation. Not counted, and the next live frame is
+            // not this one's neighbour.
+            if (aoState.isExportHeld()) {
+                lastFrameAt = 0;
+                return;
+            }
+
             frameCount++;
 
             if (frameCount <= WARMUP_FRAMES) return;
@@ -415,7 +504,7 @@
                 triggered = true;
 
                 if (avgFps < fpsThreshold) {
-                    aoState.disable();
+                    aoState.suppressForPerformance();                      // <-- Live frames only; the setting and every export keep AO
                     window.dispatchEvent(new CustomEvent('na-show-toast', {
                         detail: {
                             message: 'Shadows have been switched off to improve performance. For the full experience, please use a more capable device.',

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION - OPEN A LINK IN THE APP (PROTOCOL HANDLER TARGET)
+     =============================================================================
+
+     FILE       : open.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Where the installed ValeVision app lands for a web+valevision:
+                  link, then goes on to the page it names, inside the app window
+     CREATED    : 07-Oct-2026
+
+     DESCRIPTION:
+     - The manifest's protocol_handlers sends web+valevision:<encoded path> here
+       as ?to=<the whole link>. The shared install module makes those links from
+       a browser tab ("Open in the ValeVision app").
+     - Only a path on this site is followed (it must start with one "/"); anything
+       else opens ValeVision's home.
+     - Example: web+valevision:%2Fvalevision%2F%3Fproject%3D64135__Holt
+       -> /valevision/?project=64135__Holt
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <title>ValeVision</title>
+    <script>
+        (function() {
+            var link = new URLSearchParams(window.location.search).get('to') || '';
+            var path = link.replace(/^web[+ ]valevision:(\/\/)?/i, '');          // <-- A '+' can arrive as a space
+            try { path = decodeURIComponent(path); } catch (e) { path = ''; }
+            if (!/^\/(?!\/)/.test(path) || /[\\\s]/.test(path)) path = '/project-gallery/';   // <-- This site only
+            window.location.replace(path);
+        })();
+    </script>
+</head>
+<body style="font-family: sans-serif; padding: 24px; color: #172b3a;">Opening&hellip;</body>
+</html>

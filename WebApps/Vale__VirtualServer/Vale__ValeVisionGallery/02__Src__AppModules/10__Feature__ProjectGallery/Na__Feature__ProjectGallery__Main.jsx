@@ -15,7 +15,10 @@
 // - Handles project selection and navigation to project viewer
 // - Loads all projects dynamically from configuration
 // - Supports gallery mode toggle between Whitecard and Blockout views
-// - Filters projects by ProjectType field in project.json
+// - Filters projects by ProjectType field in project.json:
+//     Whitecard Models (the main list): Whitecard, MaxModel and untagged projects
+//     Blockout Models: Blockout only (behind its warning banner)
+//     Max Models: MaxModel only
 // - Shows warning banner when in Blockout mode
 // - Supports filtering by concept artist and designer via productionData fields
 //
@@ -34,7 +37,7 @@
         if (galleryMode === 'blockout') {
             return projects.filter(p => p.ProjectType === 'Blockout');        // <-- Show only Blockout projects
         }
-        return projects.filter(p => p.ProjectType === 'Whitecard' || !p.ProjectType);  // <-- Show Whitecard or untagged projects
+        return projects.filter(p => p.ProjectType === 'Whitecard' || p.ProjectType === 'MaxModel' || !p.ProjectType);  // <-- Whitecard, Max and untagged: Max models mix in (Adam, 07-Oct-2026); blockouts keep their own tab
     }
     // ---------------------------------------------------------------
 
@@ -284,17 +287,48 @@
 // REGION | Content Indicator Icon Components
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Where the Card's Shortcut Icons Go
+    // ------------------------------------------------------------
+    // The 3D icon opens the project in ValeVision 3D and the video icon opens
+    // its videos in ValeVision Theia, straight from the gallery, without the
+    // project page in between. Real links, so Ctrl / middle click opens a tab.
+    // ------------------------------------------------------------
+    function projectCardValeVision3dUrl(project) {
+        const routing = window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting;
+        if (routing && typeof routing.buildValeVisionProjectUrl === 'function') {
+            return routing.buildValeVisionProjectUrl(project.folderId);      // <-- Same URL the project page's 3D button uses
+        }
+        return `/valevision/?project=${encodeURIComponent(project.folderId)}`;
+    }
+
+    function projectCardTheiaUrl(project) {
+        return `/theia/?project=${encodeURIComponent(project.folderId)}`;    // <-- The project's videos in Theia, as on the project page
+    }
+
+    function stopCardClick(event) {
+        event.stopPropagation();                                             // <-- The link opens its app; the card does not also open the project page
+    }
+    // ---------------------------------------------------------------
+
+
     // COMPONENT | Content Indicator Icons for Project Cards
+    // ------------------------------------------------------------
+    // One row, inline. The watercolour icon only marks content; the 3D model
+    // and video icons are shortcuts into ValeVision 3D and ValeVision Theia.
     // ------------------------------------------------------------
     function ContentIndicatorIcons({ project }) {
         const showWatercolorIcon = hasWatercolorContent(project);            // <-- Check if project has watercolor content
         const show3DModelIcon = has3DModelContent(project);                  // <-- Check if project has 3D model content
+        const showVideoIcon = hasVideoContent(project);                      // <-- Check if project has ValeVision Theia videos
         
         // Only render container if at least one icon should be shown
-        if (!showWatercolorIcon && !show3DModelIcon) {
+        if (!showWatercolorIcon && !show3DModelIcon && !showVideoIcon) {
             return null;                                                     // <-- Return null if no icons to display
         }
-        
+
+        const name   = project.displayName || project.projectName || 'this project';
+        const videos = Number(project.videoCount) === 1 ? 'video' : `${project.videoCount} videos`;
+
         return (
             <div className="project-card__content-icons">
                 {showWatercolorIcon && (
@@ -308,14 +342,40 @@
                     />
                 )}
                 {show3DModelIcon && (
-                    <img 
-                        src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
-                        alt="3D Model Available"
-                        className="project-card__content-icon"
-                        title="3D Model Available"
-                        loading="lazy"
-                        decoding="async"
-                    />
+                    <a
+                        href={projectCardValeVision3dUrl(project)}
+                        className="project-card__content-link"
+                        title={`Open ${name} in ValeVision 3D`}
+                        aria-label={`Open ${name} in ValeVision 3D`}
+                        onClick={stopCardClick}
+                    >
+                        <img
+                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
+                            alt=""
+                            className="project-card__content-icon"
+                            loading="lazy"
+                            decoding="async"
+                            draggable="false"
+                        />
+                    </a>
+                )}
+                {showVideoIcon && (
+                    <a
+                        href={projectCardTheiaUrl(project)}
+                        className="project-card__content-link"
+                        title={`Watch ${name}'s ${videos} in ValeVision Theia`}
+                        aria-label={`Watch ${name}'s ${videos} in ValeVision Theia`}
+                        onClick={stopCardClick}
+                    >
+                        <img
+                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__TheiaVideo__512px__.png"
+                            alt=""
+                            className="project-card__content-icon"
+                            loading="lazy"
+                            decoding="async"
+                            draggable="false"
+                        />
+                    </a>
                 )}
             </div>
         );

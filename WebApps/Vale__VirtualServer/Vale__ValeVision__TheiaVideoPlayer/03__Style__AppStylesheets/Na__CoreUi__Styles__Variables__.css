@@ -1,0 +1,135 @@
+/* =============================================================================
+ * VALEVISION THEIA - CSS VARIABLES (VALE BRAND, AND THE CINEMA)
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__Variables__.css
+ * NAMESPACE  : ValeVision Theia
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The Vale colour, type and spacing tokens, and their dark "cinema"
+ *              values while a video plays
+ * CREATED    : 07-Oct-2026
+ *
+ * DESCRIPTION:
+ * - The page wears the Vale apps' light look (the Gallery's white, navy
+ *   #172b3a and Open Sans). While a video is actually playing,
+ *   body.theia--cinema swaps the tokens for a mid-dark grey (not black: Adam,
+ *   07-Oct-2026) and every surface fades across 1.2 s; it lifts when the video
+ *   stops.
+ * - TYPE: Open Sans Regular (400) for text and Open Sans SemiBold (600) for
+ *   titles, from the same files ValeVision 3D and the Gallery use, at the
+ *   Gallery's sizes (title 26px, heading 18px, text 14px).
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Fonts
+ * ----------------------------------------------------------------------------- */
+
+    @font-face {
+        font-family                        : 'Open Sans';
+        font-style                         : normal;
+        font-weight                        : 400;
+        font-display                       : swap;
+        src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_01_-_Standard-Font_-_Open-Sans-Regular.ttf') format('truetype');
+    }
+
+    @font-face {
+        font-family                        : 'Open Sans';
+        font-style                         : normal;
+        font-weight                        : 600;
+        font-display                       : swap;
+        src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf') format('truetype');
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Tokens
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        /* Brand */
+        --Theia_Brand                      : #172b3a;                      /* <-- Vale Garden Houses navy */
+        --Theia_BrandDeep                  : #0f1e28;                      /* <-- Navy, pressed */
+        --Theia_OnBrand                    : #ffffff;
+
+        /* Surfaces (light; the cinema redefines them below) */
+        --Theia_Page                       : #f5f5f5;
+        --Theia_Surface                    : #ffffff;
+        --Theia_SurfaceMuted               : #eef1f4;
+        --Theia_SurfaceHover               : #e6eaee;
+        --Theia_HeaderBg                   : #ffffff;
+        --Theia_HeaderLine                 : #172b3a;
+        --Theia_Border                     : #dde2e7;
+        --Theia_Shadow                     : 0 2px 10px rgba(15, 30, 40, 0.08);
+
+        /* Text */
+        --Theia_Text                       : #172b3a;
+        --Theia_TextSecondary              : #5a6d7a;
+        --Theia_TextFaint                  : #8a99a6;
+
+        /* States */
+        --Theia_Danger                     : #b3261e;
+        --Theia_Warn                       : #8a5a00;
+        --Theia_WarnBg                     : #fff4dc;
+        --Theia_Focus                      : #2f6f9f;
+
+        /* Type | Open Sans, as every Vale app */
+        --Theia_Font                       : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --Theia_FontRegular                : 400;
+        --Theia_FontSemiBold               : 600;
+        --Theia_FontSize_Title             : 26px;                         /* <-- The Gallery's title size */
+        --Theia_FontSize_Heading           : 18px;
+        --Theia_FontSize_Text              : 14px;
+        --Theia_FontSize_Small             : 12px;
+
+        /* Shape and space */
+        --Theia_Radius                     : 10px;
+        --Theia_RadiusSmall                : 8px;
+        --Theia_HeaderHeight               : 60px;                         /* <-- ValeVision 3D's header bar */
+        --Theia_Gutter                     : 24px;
+        --Theia_SideWidth                  : 360px;
+        --Theia_MaxWidth                   : 1800px;
+
+        /* Motion */
+        --Theia_Fade                       : 1.2s ease;
+        --Theia_Fast                       : 0.15s ease;
+    }
+
+    /* CINEMA | While a video is actually playing (Na__Player__CinemaMode__): a mid-dark grey */
+    body.theia--cinema {
+        --Theia_Page                       : #3a3f44;
+        --Theia_Surface                    : #42484e;
+        --Theia_SurfaceMuted               : #4a5157;
+        --Theia_SurfaceHover               : #525a61;
+        --Theia_HeaderBg                   : #3a3f44;
+        --Theia_HeaderLine                 : #4a5157;
+        --Theia_Border                     : #575f66;
+        --Theia_Shadow                     : 0 2px 14px rgba(0, 0, 0, 0.25);
+        --Theia_Text                       : #f2f4f6;
+        --Theia_TextSecondary              : #c7ced4;
+        --Theia_TextFaint                  : #9ea7af;
+        --Theia_WarnBg                     : #4f4636;
+        --Theia_Warn                       : #f1d08e;
+    }
+
+    /* CINEMA | ...except the header bar, which keeps the Vale colours (Adam, 07-Oct-2026):
+       the page dims under it, while the navy logo, "ValeVision THEIA" and the user bubble stay
+       exactly as they are. These are the :root values above, restated for the header alone. */
+    body.theia--cinema .theia-header {
+        --Theia_HeaderBg                   : #ffffff;
+        --Theia_HeaderLine                 : #172b3a;
+        --Theia_Shadow                     : 0 2px 10px rgba(15, 30, 40, 0.08);
+        --Theia_Text                       : #172b3a;
+        --Theia_TextSecondary              : #5a6d7a;
+        --Theia_TextFaint                  : #8a99a6;
+        --Theia_Surface                    : #ffffff;
+        --Theia_SurfaceMuted               : #eef1f4;
+        --Theia_SurfaceHover               : #e6eaee;
+        --Theia_Border                     : #dde2e7;
+    }
+
+/* endregion ------------------------------------------------------------------- */

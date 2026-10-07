@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALE HELP - INSTALL SNIPPETS STUDIO (PICTURES FOR /help/install-app/)
+     =============================================================================
+
+     FILE       : HelpSnippets__Studio__.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Draw one step picture of the install guide: a browser or phone
+                  frame with the REAL app page inside (an iframe), plus rings on
+                  what to press
+     CREATED    : 07-Oct-2026
+
+     DESCRIPTION:
+     - Opened by HelpSnippets__Capture__.mjs at /__studio/HelpSnippets__Studio__.html
+       ?snip=<id>&app=<valevision|valevision3d>. The capture server proxies every
+       other path to the Vale dev server, so the app iframes are same-origin and
+       the rings land exactly on the app's own install card.
+     - Each picture is #Snip; window.__snipReady turns true when it is drawn.
+     - Frames (Edge, Windows taskbar, iPhone Safari, Android Chrome) are drawn
+       here and are deliberately plain: they show where to press, not every
+       pixel of a given version. The apps inside are the real pages.
+     - Open it by hand to tweak a picture:
+       http://127.0.0.1:8031/__studio/HelpSnippets__Studio__.html?snip=Ios-04-AddScreen&app=valevision
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<title>Help Snippets Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap">
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 40px; background: #e9edf1; font-family: 'Segoe UI', Inter, sans-serif; color: #1b1b1b; }
+    #Snip { position: relative; display: inline-block; }
+    iframe { display: block; border: 0; background: #fff; }
+    svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* RING | What to press */
+    .Ring { position: absolute; border: 3px solid #ff8a00; border-radius: 12px; box-shadow: 0 0 0 4px rgba(255,138,0,0.28); pointer-events: none; z-index: 50; }
+    .Tip { position: absolute; z-index: 51; background: #172b3a; color: #fff; font: 600 13px/1.3 'Segoe UI', sans-serif; padding: 6px 10px; border-radius: 7px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+
+    /* EDGE WINDOW (Windows) */
+    .Edge { width: 1100px; border-radius: 9px; overflow: hidden; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.12); position: relative; }
+    .Edge__Tabs { height: 40px; background: #e9eaed; display: flex; align-items: flex-end; padding: 0 0 0 10px; }
+    .Edge__Tab { height: 32px; width: 240px; background: #fff; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 12.5px; }
+    .Edge__Tab img { width: 16px; height: 16px; border-radius: 3px; }
+    .Edge__Tab span { flex: 1; }
+    .Edge__Plus { width: 32px; height: 32px; display: grid; place-items: center; color: #444; }
+    .Edge__Ctl { margin-left: auto; display: flex; height: 40px; align-self: flex-start; }
+    .Edge__Ctl i { width: 46px; display: grid; place-items: center; font-style: normal; font-size: 14px; color: #333; }
+    .Edge__Bar { height: 46px; display: flex; align-items: center; gap: 6px; padding: 0 10px; border-bottom: 1px solid #e3e3e3; color: #444; }
+    .Edge__Btn { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 6px; }
+    .Edge__Url { flex: 1; height: 34px; border-radius: 17px; background: #f3f3f3; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 14px; font-size: 14px; }
+    .Edge__Url b { font-weight: 400; color: #1b1b1b; }
+    .Edge__Url span { color: #6b6b6b; }
+    .Edge__Url .Edge__In { margin-left: auto; display: flex; gap: 2px; }
+    .Edge__Pop { position: absolute; z-index: 40; width: 380px; background: #fff; border-radius: 9px; padding: 18px; box-shadow: 0 10px 34px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08); font-size: 14px; }
+    .Edge__Pop h4 { margin: 0 0 14px; font-size: 16px; font-weight: 600; }
+    .Edge__App { display: flex; gap: 12px; align-items: center; }
+    .Edge__App img { width: 44px; height: 44px; border-radius: 8px; }
+    .Edge__App small { display: block; color: #616161; }
+    .Edge__Act { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    .Edge__Act button { font: 600 14px 'Segoe UI', sans-serif; padding: 7px 18px; border-radius: 5px; border: 1px solid #d1d1d1; background: #fff; }
+    .Edge__Act button.is-blue { background: #0f6cbd; border-color: #0f6cbd; color: #fff; }
+    .Pwa__Title { height: 34px; display: flex; align-items: center; gap: 8px; padding-left: 12px; background: #172b3a; color: #fff; font-size: 12.5px; }
+    .Pwa__Title img { width: 16px; height: 16px; border-radius: 3px; }
+    .Pwa__Title .Edge__Ctl i { color: #fff; height: 34px; }
+
+    /* WINDOWS DESKTOP + TASKBAR */
+    .Desk { width: 900px; height: 380px; position: relative; border-radius: 10px; overflow: hidden;
+            background: radial-gradient(120% 140% at 30% 0%, #9ec5e8 0%, #5d8fc4 45%, #2e4f7c 100%); }
+    .Task { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; background: rgba(243,243,243,0.92); border-top: 1px solid rgba(0,0,0,0.08);
+            display: flex; justify-content: center; align-items: center; gap: 6px; }
+    .Task__I { width: 40px; height: 40px; border-radius: 6px; display: grid; place-items: center; position: relative; }
+    .Task__I i { width: 24px; height: 24px; border-radius: 5px; display: block; }
+    .Task__I img { width: 26px; height: 26px; border-radius: 5px; }
+    .Task__I.is-open::after { content: ''; position: absolute; bottom: 2px; width: 16px; height: 3px; border-radius: 2px; background: #0f6cbd; }
+    .Task__Search { width: 150px; height: 34px; border-radius: 17px; background: #fff; border: 1px solid #ddd; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: #666; font-size: 13px; }
+    .Jump { position: absolute; width: 270px; background: rgba(250,250,250,0.98); border-radius: 9px; padding: 8px; box-shadow: 0 12px 34px rgba(0,0,0,0.3); font-size: 14px; }
+    .Jump div { display: flex; gap: 12px; align-items: center; padding: 9px 10px; border-radius: 6px; }
+    .Jump .is-head { color: #555; font-size: 12.5px; }
+    .Jump img { width: 18px; height: 18px; border-radius: 4px; }
+    .Jump hr { border: 0; border-top: 1px solid #e3e3e3; margin: 4px 0; }
+
+    /* IPHONE (Safari) */
+    .Phone { width: 414px; padding: 12px; border-radius: 64px; background: #1c1c1e; box-shadow: 0 18px 50px rgba(0,0,0,0.35); position: relative; }
+    .Phone__Screen { width: 390px; height: 844px; border-radius: 52px; overflow: hidden; position: relative; background: #fff; font-family: Inter, sans-serif; }
+    .Phone__Status { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 40px; font: 600 16px Inter, sans-serif; position: relative; z-index: 3; }
+    .Phone__Island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 122px; height: 35px; border-radius: 20px; background: #000; z-index: 4; }
+    .Phone__Icons { display: flex; gap: 6px; align-items: center; }
+    .Phone__Home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: #111; z-index: 6; }
+    .Saf26 { position: absolute; left: 0; right: 0; bottom: 0; height: 92px; padding: 10px 14px 0; display: flex; gap: 10px; align-items: flex-start; background: linear-gradient(transparent, rgba(255,255,255,0.9) 30%); z-index: 5; }
+    .Saf26 .c { width: 48px; height: 48px; border-radius: 24px; background: rgba(255,255,255,0.92); box-shadow: 0 2px 10px rgba(0,0,0,0.16); display: grid; place-items: center; color: #111; }
+    .Saf26 .p { flex: 1; height: 48px; border-radius: 24px; background: rgba(255,255,255,0.92); box-shadow: 0 2px 10px rgba(0,0,0,0.16); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; }
+    .Saf18 { background: #f7f7f8; border-top: 1px solid #ddd; padding: 8px 14px 0; font-family: Inter, sans-serif; }
+    .Saf18 .p { height: 44px; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.14); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 16px; }
+    .Saf18 .t { display: flex; justify-content: space-around; align-items: center; height: 56px; color: #0a7aff; }
+    .Saf18 .t svg.i, .Saf26 svg.i { width: 24px; height: 24px; }
+    .Dim { position: absolute; inset: 0; background: rgba(0,0,0,0.38); z-index: 7; }
+    .Sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; background: #f2f2f7; border-radius: 16px 16px 0 0; font-family: Inter, sans-serif; }
+    .Grp { background: #fff; border-radius: 12px; margin: 0 16px 14px; overflow: hidden; }
+    .Row { display: flex; justify-content: space-between; align-items: center; height: 46px; padding: 0 16px; font-size: 16.5px; border-top: 1px solid #e5e5ea; }
+    .Row:first-child { border-top: 0; }
+    .Row svg.i { width: 22px; height: 22px; color: #111; }
+    .Targets { display: flex; gap: 16px; padding: 4px 18px 16px; }
+    .Targets div { width: 62px; text-align: center; font-size: 11.5px; color: #333; }
+    .Targets i { display: block; width: 62px; height: 62px; border-radius: 15px; margin-bottom: 6px; }
+    .Home { position: absolute; inset: 0; background: linear-gradient(160deg, #36597a 0%, #1d3448 55%, #12202e 100%); }
+    .Home__Grid { display: grid; grid-template-columns: repeat(4, 64px); justify-content: space-between; row-gap: 26px; padding: 70px 28px 0; }
+    .Home__App { text-align: center; color: #fff; font: 500 12px Inter, sans-serif; }
+    .Home__App i, .Home__App img { display: block; width: 64px; height: 64px; border-radius: 15px; margin: 0 auto 6px; }
+    .Home__Dock { position: absolute; left: 14px; right: 14px; bottom: 22px; height: 92px; border-radius: 32px; background: rgba(255,255,255,0.25); display: flex; justify-content: space-around; align-items: center; }
+    .Home__Dock i { width: 62px; height: 62px; border-radius: 15px; display: block; }
+
+    /* ANDROID (Chrome) */
+    .Droid { width: 410px; padding: 10px; border-radius: 44px; background: #202124; box-shadow: 0 18px 50px rgba(0,0,0,0.35); position: relative; }
+    .Droid__Screen { width: 390px; height: 844px; border-radius: 34px; overflow: hidden; position: relative; background: #fff; font-family: Roboto, sans-serif; }
+    .Droid__Status { height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font: 500 14px Roboto, sans-serif; position: relative; }
+    .Droid__Cam { position: absolute; top: 9px; left: 50%; width: 16px; height: 16px; border-radius: 50%; background: #111; transform: translateX(-50%); }
+    .Chr { height: 58px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; color: #444; border-bottom: 1px solid #eee; }
+    .Chr .p { flex: 1; height: 42px; border-radius: 21px; background: #f1f3f4; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 15.5px; color: #202124; }
+    .Chr .tabs { width: 22px; height: 22px; border: 2px solid #444; border-radius: 5px; display: grid; place-items: center; font: 700 11px Roboto; }
+    .Droid__Nav { position: absolute; left: 0; right: 0; bottom: 0; height: 24px; display: grid; place-items: center; background: #fff; z-index: 6; }
+    .Droid__Nav i { width: 108px; height: 4px; border-radius: 2px; background: #222; display: block; }
+    .MSheet { position: absolute; left: 0; right: 0; bottom: 24px; z-index: 8; background: #fff; border-radius: 28px 28px 0 0; padding: 12px 24px 26px; font-family: Roboto, sans-serif; }
+    .MSheet .h { width: 32px; height: 4px; border-radius: 2px; background: #c4c7c5; margin: 0 auto 18px; }
+    .MMenu { position: absolute; top: 96px; right: 6px; width: 262px; z-index: 8; background: #fff; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,0.3); padding: 6px 0; font: 400 15.5px Roboto, sans-serif; color: #202124; }
+    .MMenu .top { display: flex; justify-content: space-around; padding: 8px 4px 10px; color: #444; border-bottom: 1px solid #eee; }
+    .MMenu .it { display: flex; align-items: center; gap: 18px; height: 46px; padding: 0 18px; }
+    .MMenu .it svg.i { width: 20px; height: 20px; color: #444; }
+    .DHome { position: absolute; inset: 0; background: linear-gradient(170deg, #3d5a73 0%, #1f3346 60%, #13202c 100%); }
+    .DHome .Home__Grid { padding-top: 90px; }
+    .DHome .Home__App i, .DHome .Home__App img { border-radius: 50%; }
+    .DHome__Search { position: absolute; left: 22px; right: 22px; bottom: 56px; height: 52px; border-radius: 26px; background: rgba(255,255,255,0.9); display: flex; align-items: center; padding: 0 20px; color: #555; font: 400 16px Roboto, sans-serif; }
+
+    .Label { font: 600 15px 'Segoe UI', sans-serif; color: #172b3a; margin: 0 0 10px; }
+    .Pair { display: flex; gap: 28px; align-items: flex-end; }
+</style>
+</head>
+<body>
+<div id="Snip"></div>
+
+<script>
+(function() {
+
+    // MODULE CONSTANTS | The App, Shared Bits
+    // ------------------------------------------------------------
+    var Q = new URLSearchParams(location.search);
+    var APPS = {
+        valevision   : { name: 'ValeVision',    route: '/project-gallery/' },
+        valevision3d : { name: 'ValeVision 3D', route: '/valevision/' }
+    };
+    var APP = APPS[Q.get('app')] || APPS.valevision;
+    var NAME = APP.name, HOST = 'app.valegardenhouses.com';
+    var ICON = '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png';
+    var I = {                                                                   // <-- Plain stroke icons
+        back: '<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+        fwd: '<svg class="i" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+        reload: '<svg class="i" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>',
+        lock: '<svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+        star: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3-5.5-3-5.5 3 1-6.3L3 9.7l6.2-.9z"/></svg>',
+        appAvail: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>',
+        dots: '<svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></svg>',
+        vdots: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/></svg>',
+        share: '<svg class="i" viewBox="0 0 24 24"><path d="M8 7l4-4 4 4M12 3v13"/><path d="M7 10H5v11h14V10h-2"/></svg>',
+        book: '<svg class="i" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg>',
+        tabs: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11"/></svg>',
+        plusSq: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+        copy: '<svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
+        glasses: '<svg class="i" viewBox="0 0 24 24"><circle cx="6.5" cy="14" r="3.5"/><circle cx="17.5" cy="14" r="3.5"/><path d="M10 14h4M3 13l2-6M21 13l-2-6"/></svg>',
+        search: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+        pen: '<svg class="i" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg>',
+        print: '<svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/></svg>',
+        pin: '<svg class="i" viewBox="0 0 24 24"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v7"/></svg>',
+        close: '<svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+        home: '<svg class="i" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>',
+        tune: '<svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>',
+        down: '<svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>',
+        info: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
+        newTab: '<svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>',
+        clock: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+        trash: '<svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+        gear: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>',
+        trans: '<svg class="i" viewBox="0 0 24 24"><path d="M4 5h9M8 3v2M6 5c1 4 4 7 7 8M11 5c-1 4-4 7-7 8M13 21l4-9 4 9M14.5 18h5"/></svg>',
+        desk: '<svg class="i" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg>',
+        winStart: '<svg viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="2" width="9" height="9" rx="1.5" fill="#3b82c4"/><rect x="13" y="2" width="9" height="9" rx="1.5" fill="#3b82c4"/><rect x="2" y="13" width="9" height="9" rx="1.5" fill="#3b82c4"/><rect x="13" y="13" width="9" height="9" rx="1.5" fill="#3b82c4"/></svg>',
+        signal: '<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#111"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#111"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#111"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#111"/></svg>',
+        battery: '<svg width="27" height="13" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" fill="none" stroke="#111" opacity="0.45"/><rect x="2.5" y="2.5" width="18" height="8" rx="2" fill="#111"/><rect x="24" y="4.5" width="2" height="4" rx="1" fill="#111" opacity="0.45"/></svg>'
+    };
+    var GREY = ['#c9d3dc', '#b8c4cf', '#d6dde3', '#aebccb', '#c3ccd5', '#d0d8df', '#b3c0cc', '#cbd3db'];
+    // ------------------------------------------------------------
+
+
+    // HELPERS | App Frames and Rings
+    // ------------------------------------------------------------
+    function frame(w, h, preview) {
+        return '<iframe class="App" width="' + w + '" height="' + h + '" src="' + APP.route + '?install-preview=' + preview + '"></iframe>';
+    }
+
+    function rel(el) {                                                          // <-- An element's box relative to #Snip
+        var s = document.getElementById('Snip').getBoundingClientRect(), r = el.getBoundingClientRect();
+        return { x: r.left - s.left, y: r.top - s.top, w: r.width, h: r.height };
+    }
+
+    function ring(box, pad, radius) {
+        pad = pad == null ? 6 : pad;
+        var d = document.createElement('div');
+        d.className = 'Ring';
+        d.style.cssText = 'left:' + (box.x - pad) + 'px;top:' + (box.y - pad) + 'px;width:' + (box.w + 2 * pad) + 'px;height:' +
+                          (box.h + 2 * pad) + 'px;border-radius:' + (radius == null ? 12 : radius) + 'px';
+        document.getElementById('Snip').appendChild(d);
+    }
+
+    function ringSel(sel, pad, radius) { var el = document.querySelector(sel); if (el) ring(rel(el), pad, radius); }
+
+    function ringInFrame(sel, pad, radius) {                                    // <-- A ring on the real app's own button, following it
+        var f = document.querySelector('iframe.App');
+        var box = function() {
+            var el = f && f.contentDocument && f.contentDocument.querySelector(sel);
+            if (!el) return null;
+            var fb = rel(f), r = el.getBoundingClientRect();
+            return { x: fb.x + r.left, y: fb.y + r.top, w: r.width, h: r.height };
+        };
+        var b0 = box();
+        if (!b0) return false;
+        ring(b0, pad, radius);
+        var d = document.getElementById('Snip').lastChild;
+        pad = pad == null ? 6 : pad;
+        setInterval(function() {                                                // <-- The app can still shift it (its own bars settling)
+            var b = box();
+            if (b) { d.style.left = (b.x - pad) + 'px'; d.style.top = (b.y - pad) + 'px'; d.style.width = (b.w + 2 * pad) + 'px'; d.style.height = (b.h + 2 * pad) + 'px'; }
+        }, 100);
+        return true;
+    }
+
+    function tip(text, x, y) {
+        var d = document.createElement('div');
+        d.className = 'Tip';
+        d.textContent = text;
+        d.style.left = x + 'px';
+        d.style.top = y + 'px';
+        document.getElementById('Snip').appendChild(d);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPERS | Device Chrome
+    // ------------------------------------------------------------
+    function edgeBar(path) {
+        return '<div class="Edge__Tabs"><div class="Edge__Tab"><img src="' + ICON + '"><span>' + NAME + '</span>' + I.close.replace('class="i"', 'class="i" style="width:14px;height:14px"') +
+               '</div><div class="Edge__Plus">+</div><div class="Edge__Ctl"><i>&#8212;</i><i>&#9633;</i><i>&#10005;</i></div></div>' +
+               '<div class="Edge__Bar"><div class="Edge__Btn">' + I.back + '</div><div class="Edge__Btn">' + I.reload + '</div>' +
+               '<div class="Edge__Url">' + I.lock + '<b>' + HOST + '</b><span>' + path + '</span>' +
+               '<div class="Edge__In"><div class="Edge__Btn" id="AppAvail">' + I.appAvail + '</div><div class="Edge__Btn">' + I.star + '</div></div></div>' +
+               '<div class="Edge__Btn">' + I.tabs + '</div><div class="Edge__Btn">' + I.dots + '</div></div>';
+    }
+
+    function iphone(inner, opts) {
+        opts = opts || {};
+        return '<div class="Phone"><div class="Phone__Screen"' + (opts.dark ? ' style="background:#12202e;color:#fff"' : '') + '>' +
+               '<div class="Phone__Island"></div>' +
+               '<div class="Phone__Status"' + (opts.dark ? ' style="color:#fff"' : '') + '><span>9:41</span><span class="Phone__Icons">' +
+               (opts.dark ? I.signal.replace(/#111/g, '#fff') + I.battery.replace(/#111/g, '#fff') : I.signal + I.battery) + '</span></div>' +
+               inner + '<div class="Phone__Home"' + (opts.dark ? ' style="background:#fff"' : '') + '></div></div></div>';
+    }
+
+    function safari26(id) {
+        return '<div class="Saf26"><div class="c">' + I.back + '</div><div class="p"><b style="font-weight:600">aA</b>&nbsp; ' + HOST + '</div>' +
+               '<div class="c" id="' + (id || 'More') + '">' + I.dots + '</div></div>';
+    }
+
+    function android(inner, opts) {
+        opts = opts || {};
+        return '<div class="Droid"><div class="Droid__Screen"><div class="Droid__Cam"></div>' +
+               '<div class="Droid__Status"' + (opts.dark ? ' style="color:#fff;position:relative;z-index:2"' : '') + '><span>9:41</span><span>&#9650; &#9646;&#9646; 100%</span></div>' +
+               inner + '<div class="Droid__Nav"' + (opts.dark ? ' style="background:transparent"' : '') + '><i' + (opts.dark ? ' style="background:#fff"' : '') + '></i></div></div></div>';
+    }
+
+    function chromeBar() {
+        return '<div class="Chr"><span>' + I.home + '</span><div class="p">' + I.tune + HOST + '</div><div class="tabs">1</div><span id="Kebab">' + I.vdots + '</span></div>';
+    }
+
+    function homeGrid(rounded, labels) {
+        var names = labels || ['Mail', 'Calendar', 'Photos', 'Camera', 'Maps', 'Weather', 'Clock', 'Notes', 'Files', 'Music', 'Teams', NAME, 'Contacts', 'Settings', 'Wallet', 'Health'];
+        return '<div class="Home__Grid">' + names.map(function(n, k) {
+            return '<div class="Home__App"' + (n === NAME ? ' id="NewIcon"' : '') + '>' +
+                   (n === NAME ? '<img src="' + ICON + '">' : '<i style="background:' + GREY[k % GREY.length] + ';opacity:0.75"></i>') + n + '</div>';
+        }).join('') + '</div>';
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | The Pictures (id -> draw, then mark)
+    // ------------------------------------------------------------
+    var SNIPS = {
+
+        // WINDOWS -----------------------------------------------------------
+        'Windows-01-InstallCard': {
+            html: function() { return '<div class="Edge">' + edgeBar(APP.route) + frame(1100, 600, 'windows') + '</div>'; },
+            wait: '.ValeAppInstall__Card.is-visible',
+            mark: function() { ringInFrame('.ValeAppInstall__Btn.is-primary', 5, 11); }
+        },
+        'Windows-02-BrowserBox': {
+            html: function() {
+                return '<div class="Edge">' + edgeBar(APP.route) + frame(1100, 600, 'off') +
+                       '<div class="Edge__Pop" style="top:90px;right:110px"><h4>Install ' + NAME + '</h4>' +
+                       '<div class="Edge__App"><img src="' + ICON + '"><div><b>' + NAME + '</b><small>' + HOST + '</small></div></div>' +
+                       '<div class="Edge__Act"><button class="is-blue" id="EdgeInstall">Install</button><button>Not now</button></div></div></div>';
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('#EdgeInstall', 5, 9); }
+        },
+        'Windows-03-OwnWindow': {
+            html: function() {
+                return '<div class="Edge"><div class="Pwa__Title"><img src="' + ICON + '">' + NAME + '<div class="Edge__Ctl" style="height:34px"><i>' + I.dots.replace('class="i"', 'class="i" style="color:#fff"') +
+                       '</i><i>&#8212;</i><i>&#9633;</i><i>&#10005;</i></div></div>' + frame(1100, 600, 'off') + '</div>';
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('.Pwa__Title', 2, 6); }
+        },
+        'Windows-04-PinTaskbar': {
+            html: function() {
+                var icons = ['#3b82c4', '#f2c94c', '#2fa37a', '#7a5af8'].map(function(c) { return '<div class="Task__I"><i style="background:' + c + ';opacity:0.85"></i></div>'; }).join('');
+                return '<div class="Desk"><div class="Jump" style="left:478px;bottom:62px"><div class="is-head"><img src="' + ICON + '">' + NAME + '</div><hr>' +
+                       '<div id="PinRow">' + I.pin + 'Pin to taskbar</div><div>' + I.close + 'Close window</div></div>' +
+                       '<div class="Task"><div class="Task__I">' + I.winStart + '</div><div class="Task__Search">' + I.search + 'Search</div>' + icons +
+                       '<div class="Task__I is-open" id="TaskVale"><img src="' + ICON + '"></div></div></div>';
+            },
+            mark: function() { ringSel('#PinRow', 3, 8); ringSel('#TaskVale', 3, 9); }
+        },
+        'Windows-05-AddressBarIcon': {
+            html: function() {
+                return '<div class="Edge" style="width:760px">' + edgeBar(APP.route).replace('<div class="Edge__Tabs">', '<div class="Edge__Tabs" style="display:none">') +
+                       '<div style="height:70px;background:#fff"></div></div>';
+            },
+            mark: function() { var b = rel(document.getElementById('AppAvail')); ring(b, 4, 9); tip('App available. Install ' + NAME, b.x - 120, b.y + b.h + 14); }
+        },
+
+        // IPHONE AND IPAD ---------------------------------------------------
+        'Ios-01-InstallCard': {
+            html: function() { return iphone(frame(390, 698, 'ios') + safari26()); },
+            wait: '.ValeAppInstall__Card.is-visible',
+            mark: function() { ringInFrame('.ValeAppInstall__Card', 4, 16); }
+        },
+        'Ios-02-ShareButton': {
+            html: function() {
+                var old = '<div><p class="Label">iOS 18 and earlier</p><div style="width:390px;border-radius:0 0 30px 30px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.2)">' +
+                          '<div class="Saf18"><div class="p"><b style="font-weight:600">aA</b><span>' + HOST + '</span>' + I.reload + '</div>' +
+                          '<div class="t"><span>' + I.back + '</span><span style="opacity:0.35">' + I.fwd + '</span><span id="Share18">' + I.share + '</span><span>' + I.book + '</span><span>' + I.tabs + '</span></div>' +
+                          '<div style="height:22px"></div></div></div></div>';
+                var menu = '<div class="Grp" style="margin:0 0 12px 120px;width:250px;box-shadow:0 8px 30px rgba(0,0,0,0.22)">' +
+                           ['Share', 'Add to Favourites', 'Add Bookmark', 'New Tab', 'Find on Page'].map(function(n, k) {
+                               return '<div class="Row"' + (k === 0 ? ' id="Share26"' : '') + '>' + n + [I.share, I.star, I.book, I.newTab, I.search][k] + '</div>';
+                           }).join('') + '</div>';
+                var neu = '<div><p class="Label">iOS 26 and later: tap &middot;&middot;&middot; then Share</p><div style="width:390px;position:relative;padding-top:10px;background:linear-gradient(#fff0,#eef1f4);border-radius:0 0 30px 30px;">' + menu +
+                          '<div style="position:relative;height:92px">' + safari26('More26') + '</div></div></div>';
+                return '<div class="Pair" style="flex-direction:column;align-items:flex-start;gap:30px">' + old + neu + '</div>';
+            },
+            mark: function() { ringSel('#Share18', 8, 12); ringSel('#More26', 3, 26); ringSel('#Share26', 0, 10); }
+        },
+        'Ios-03-ShareSheet': {
+            html: function() {
+                var targets = ['AirDrop', 'Messages', 'Mail', 'Notes', 'Reminders'].map(function(n, k) {
+                    return '<div><i style="background:' + GREY[k] + '"></i>' + n + '</div>';
+                }).join('');
+                var rows = [['Copy', I.copy], ['Add to Reading List', I.glasses], ['Add Bookmark', I.book], ['Add to Favourites', I.star],
+                            ['Find on Page', I.search], ['Add to Home Screen', I.plusSq], ['Markup', I.pen], ['Print', I.print]];
+                return iphone(frame(390, 790, 'off') + '<div class="Dim"></div><div class="Sheet" style="height:600px">' +
+                       '<div style="display:flex;align-items:center;gap:12px;padding:18px 18px 16px"><img src="' + ICON + '" style="width:44px;height:44px;border-radius:10px">' +
+                       '<div style="flex:1;font-size:15px"><b>' + NAME + '</b><div style="color:#8a8a8e;font-size:13px">' + HOST + '&nbsp;&nbsp;Options &rsaquo;</div></div>' +
+                       '<span style="width:30px;height:30px;border-radius:50%;background:#e3e3e8;display:grid;place-items:center;color:#7a7a80">' + I.close + '</span></div>' +
+                       '<div class="Targets">' + targets + '</div>' +
+                       '<div class="Grp">' + rows.slice(0, 2).map(function(r) { return '<div class="Row">' + r[0] + r[1] + '</div>'; }).join('') + '</div>' +
+                       '<div class="Grp">' + rows.slice(2).map(function(r) { return '<div class="Row"' + (r[0] === 'Add to Home Screen' ? ' id="AddHome"' : '') + '>' + r[0] + r[1] + '</div>'; }).join('') + '</div>' +
+                       '</div>');
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('#AddHome', 2, 10); }
+        },
+        'Ios-04-AddScreen': {
+            html: function() {
+                return iphone(frame(390, 790, 'off') + '<div class="Dim"></div><div class="Sheet" style="height:770px;background:#f2f2f7">' +
+                       '<div style="display:flex;justify-content:space-between;align-items:center;padding:18px 18px 22px;font-size:17px">' +
+                       '<span style="color:#0a7aff">Cancel</span><b style="font-weight:600">Add to Home Screen</b><span style="color:#0a7aff;font-weight:600" id="AddBtn">Add</span></div>' +
+                       '<div class="Grp" style="display:flex;gap:14px;padding:14px;align-items:center"><img src="' + ICON + '" style="width:62px;height:62px;border-radius:14px">' +
+                       '<div style="flex:1"><div style="font-size:17px;border-bottom:1px solid #e5e5ea;padding:6px 0 10px;display:flex;justify-content:space-between">' + NAME +
+                       '<span style="width:18px;height:18px;border-radius:50%;background:#c7c7cc;color:#fff;font-size:12px;display:grid;place-items:center">&times;</span></div>' +
+                       '<div style="color:#8a8a8e;font-size:14px;padding-top:8px">' + HOST + '</div></div></div>' +
+                       '<p style="margin:-4px 30px 18px;color:#6d6d72;font-size:13px">An icon will be added to your Home Screen so you can quickly access this website.</p>' +
+                       '<div class="Grp"><div class="Row" id="WebAppRow">Open as Web App<span style="width:51px;height:31px;border-radius:16px;background:#34c759;position:relative;display:inline-block">' +
+                       '<span style="position:absolute;right:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3)"></span></span></div></div>' +
+                       '</div>');
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('#AddBtn', 8, 10); ringSel('#WebAppRow', 0, 12); }
+        },
+        'Ios-05-HomeScreen': {
+            html: function() {
+                return iphone('<div class="Home"></div><div style="position:relative">' + homeGrid() + '</div>' +
+                              '<div class="Home__Dock">' + GREY.slice(0, 4).map(function(c) { return '<i style="background:' + c + '"></i>'; }).join('') + '</div>', { dark: true });
+            },
+            mark: function() { ringSel('#NewIcon img', 6, 20); }
+        },
+
+        // ANDROID -----------------------------------------------------------
+        'Android-01-InstallCard': {
+            html: function() { return android(chromeBar() + frame(390, 728, 'android')); },
+            wait: '.ValeAppInstall__Card.is-visible',
+            mark: function() { ringInFrame('.ValeAppInstall__Btn.is-primary', 5, 11); }
+        },
+        'Android-02-ChromeBox': {
+            html: function() {
+                return android(chromeBar() + frame(390, 728, 'off') + '<div class="Dim" style="z-index:7"></div>' +
+                       '<div class="MSheet"><div class="h"></div><div style="font-size:22px;margin-bottom:18px">Install app</div>' +
+                       '<div style="display:flex;gap:16px;align-items:center"><img src="' + ICON + '" style="width:52px;height:52px;border-radius:50%">' +
+                       '<div><div style="font-size:17px;font-weight:500">' + NAME + '</div><div style="color:#5f6368;font-size:14px">' + HOST + '</div></div></div>' +
+                       '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:26px;font:500 15px Roboto">' +
+                       '<span style="padding:11px 18px;color:#0b57d0">Cancel</span><span id="DroidInstall" style="padding:11px 24px;border-radius:20px;background:#0b57d0;color:#fff">Install</span></div></div>');
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('#DroidInstall', 5, 24); }
+        },
+        'Android-03-ChromeMenu': {
+            html: function() {
+                var items = [['New tab', I.newTab], ['New Incognito tab', I.glasses], ['History', I.clock], ['Delete browsing data', I.trash],
+                             ['Downloads', I.down], ['Bookmarks', I.star], ['Share…', I.share], ['Find in page', I.search],
+                             ['Translate…', I.trans], ['Add to home screen', I.plusSq], ['Desktop site', I.desk], ['Settings', I.gear]];
+                return android(chromeBar() + frame(390, 728, 'off') + '<div class="MMenu"><div class="top">' + I.fwd + I.star + I.down + I.info + I.reload + '</div>' +
+                       items.map(function(it) { return '<div class="it"' + (it[0] === 'Add to home screen' ? ' id="AddHomeDroid"' : '') + '>' + it[1] + it[0] + '</div>'; }).join('') +
+                       '</div>');
+            },
+            wait: '#ValeUserLogin__Root, .App-loaded',
+            mark: function() { ringSel('#AddHomeDroid', 0, 10); ringSel('#Kebab', 6, 22); }
+        },
+        'Android-04-HomeScreen': {
+            html: function() {
+                return android('<div class="DHome"></div><div style="position:relative">' +
+                               homeGrid(true, ['Phone', 'Messages', 'Camera', 'Chrome', 'Photos', 'Gmail', 'Maps', 'Files', 'Calendar', 'Clock', NAME, 'Teams']) +
+                               '</div><div class="DHome__Search">' + I.search + '&nbsp;&nbsp;Search</div>', { dark: true });
+            },
+            mark: function() { ringSel('#NewIcon img', 6, 40); }
+        }
+    };
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw, Wait for the Real App, Mark, Flag Ready
+    // ------------------------------------------------------------
+    var snip = SNIPS[Q.get('snip')];
+    window.__snipList = Object.keys(SNIPS);
+    if (!snip) { document.getElementById('Snip').innerHTML = '<p>Pictures: ' + window.__snipList.join(', ') + '</p>'; window.__snipReady = true; return; }
+    document.getElementById('Snip').innerHTML = snip.html();
+    var started = Date.now();
+    (function poll() {
+        var f = document.querySelector('iframe.App'), doc = null;
+        try { doc = f && f.contentDocument; } catch (e) { doc = null; }
+        if (doc && doc.head && !doc.getElementById('StudioNoMotion')) {         // <-- No fades or slides: the picture is the end state
+            var st = doc.createElement('style');
+            st.id = 'StudioNoMotion';
+            st.textContent = '*, *::before, *::after { transition: none !important; animation: none !important; }' +
+                             'html, body { overflow: hidden !important; }';           // <-- No scrollbar coming and going under the card
+            var tag = doc.querySelector('script[data-app-avoid]');               // <-- The app's own bottom bars sit behind its sign-in screen:
+            if (tag) st.textContent += tag.getAttribute('data-app-avoid') + ' { display: none !important; }';   //     hide them so the card rests still
+            doc.head.appendChild(st);
+        }
+        var hit = doc && snip.wait && doc.querySelector(snip.wait);
+        var settled = !doc || doc.querySelector('.ValeUserLogin__Overlay--visible');   // <-- The app has loaded as far as its sign-in screen
+        var ready = !f || (hit && getComputedStyle(hit).opacity === '1' && settled) || (!snip.wait && doc && doc.readyState === 'complete');
+        if (!ready && Date.now() - started < 25000) { setTimeout(poll, 250); return; }
+        var last = '', still = 0;
+        (function steady() {                                                    // <-- Wait until the app's card has stopped moving
+            var card = null;
+            try { card = f && f.contentDocument.querySelector('.ValeAppInstall__Card'); } catch (e) { card = null; }
+            var r = card ? card.getBoundingClientRect() : null;
+            var now = r ? [r.left, r.top, r.width, r.height].map(Math.round).join(',') : 'none';
+            still = now === last ? still + 1 : 0;
+            last = now;
+            if (still < 5 && Date.now() - started < 30000) { setTimeout(steady, 400); return; }
+            if (snip.mark) snip.mark();
+            window.__snipDebug = function() {                                   // <-- VALE_SNIP_DEBUG=1: what was measured
+                var doc = f && f.contentDocument, card = doc && doc.querySelector('.ValeAppInstall__Card'), ringEl = document.querySelector('.Ring');
+                var r = card && card.getBoundingClientRect(), fb = f && rel(f);
+                var all = doc ? [].slice.call(doc.querySelectorAll('.ValeAppInstall__Card')).map(function(c) {
+                    var q = c.getBoundingClientRect(); return [Math.round(q.top), c.className, getComputedStyle(c).opacity, c.isConnected]; }) : [];
+                return JSON.stringify({ cards: all, frame: fb && [fb.x, fb.y], card: r && [Math.round(r.top), Math.round(r.bottom)], cls: card && card.className,
+                                        transform: card && getComputedStyle(card).transform, ring: ringEl && [ringEl.style.top, ringEl.style.height],
+                                        frameScrollY: doc && doc.defaultView.scrollY, docTop: doc && Math.round(doc.documentElement.getBoundingClientRect().top) });
+            };
+            window.__snipReady = true;
+        })();
+    })();
+    // ------------------------------------------------------------
+
+})();
+</script>
+</body>
+</html>

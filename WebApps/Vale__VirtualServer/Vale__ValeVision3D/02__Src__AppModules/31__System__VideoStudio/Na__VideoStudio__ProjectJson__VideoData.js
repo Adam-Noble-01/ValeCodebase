@@ -24,9 +24,17 @@
 //   VideoStudio__Config
 //     VideoStudio__Config__Enabled       {boolean}
 //     VideoStudio__Config__Description   {string}
+//     VideoStudio__Config__LastVideoNumber {number} highest Video_### ever issued, so ids are never reused
 //     VideoStudio__Config__Videos        {array}
-//       VideoStudio__Video__Id           {string}   'Video_001'
-//       VideoStudio__Video__Name         {string}
+//       VideoStudio__Video__Id           {string}   'Video_001' (never reused: see LastVideoNumber)
+//       VideoStudio__Video__Name         {string}   the path's working name (export file names)
+//       VideoStudio__Video__Title        {string}   ValeVision Theia: the title clients see; absent = Name
+//       VideoStudio__Video__Description  {string}   ValeVision Theia: a sentence or two for clients
+//       VideoStudio__Video__MetaUpdatedIso {string} when Title or Description last changed (here or in Theia)
+//       VideoStudio__Video__TheiaScheme  {string}   'Scheme-01': the Theia folder it publishes into
+//       VideoStudio__Video__TheiaPublish {object}   written by the Theia API when published:
+//         VideoStudio__TheiaPublish__TheiaVideoId, __PublishedIso, __PublishedBy, __Fingerprint,
+//         __Scheme, __DurationMs, __Renditions (['4K', '2K'])
 //       VideoStudio__Video__Order        {number}
 //       VideoStudio__Video__Export       {object}   width/height/fps/bitrate
 //         VideoStudio__Export__AntiAliasEnabled {boolean} supersample exports; absent: on
@@ -97,6 +105,25 @@
 // - Default sample count raised from 8 to 16, the clear winner in side by
 //   side exports. Paths with a count already saved keep it.
 //
+// 07-Oct-2026 - Version 1.5.0 (ValeVision Theia)
+// - Title, Description, MetaUpdatedIso, TheiaScheme and the TheiaPublish block
+//   per path, with Get/Set helpers and Na__VideoStudio__ProjectJson__Fingerprint
+//   (SHA-256 of everything that changes the rendered picture).
+// - TWO-WAY WITH THEIA: Title and Description live here and in Theia's data
+//   file; whichever was changed last wins (MetaUpdatedIso). MergeIntoProjectData
+//   now merges with the record as it is on the server instead of replacing the
+//   block, so a title edited in Theia, or a publish stamp the Theia API wrote,
+//   is never lost to a Save made from an older page. ReconcileWithTheia applies
+//   Theia's own list (newer titles in, stamps of videos removed from Theia out).
+// - Ids are never reused (Config__LastVideoNumber): a new path can no longer
+//   inherit the Theia video of a deleted one.
+//
+// 07-Oct-2026 - Version 1.5.1 (v2.74.2)
+// - A new path exports at 60 fps on the High quality stop (67 Mbps at
+//   3240 x 2160), was 30 fps (34 Mbps). The rest of the house default was
+//   already 3:2, 2160p, anti-aliasing on at 16x. Paths already saved keep
+//   their own settings; every one stores its frame rate and bitrate.
+//
 // =============================================================================
 
 
@@ -148,6 +175,22 @@
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | ValeVision Theia Key Names
+    // ------------------------------------------------------------
+    // Title and Description are what clients read in Theia; Name stays the
+    // path's working name. MetaUpdatedIso settles which side changed last.
+    // ------------------------------------------------------------
+    const Na__VideoStudio__TITLE_KEY        = 'VideoStudio__Video__Title';
+    const Na__VideoStudio__TEXT_KEY         = 'VideoStudio__Video__Description';
+    const Na__VideoStudio__META_STAMP_KEY   = 'VideoStudio__Video__MetaUpdatedIso';
+    const Na__VideoStudio__SCHEME_KEY       = 'VideoStudio__Video__TheiaScheme';
+    const Na__VideoStudio__PUBLISH_KEY      = 'VideoStudio__Video__TheiaPublish';
+    const Na__VideoStudio__LAST_NUMBER_KEY  = 'VideoStudio__Config__LastVideoNumber';
+    const Na__VideoStudio__THEIA_SCHEMES    = ['Scheme-01', 'Scheme-02', 'Scheme-03', 'Scheme-04', 'Scheme-05'];
+    const Na__VideoStudio__DEFAULT_SCHEME   = 'Scheme-01';
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Block Description Text
     // ------------------------------------------------------------
     const Na__VideoStudio__BLOCK_DESCRIPTION =
@@ -170,8 +213,8 @@
     // ------------------------------------------------------------
     const Na__VideoStudio__DEFAULT_HEIGHT       = 2160;   // <-- 4K height standard
     const Na__VideoStudio__DEFAULT_ASPECT       = '3:2';  // <-- Vale house style
-    const Na__VideoStudio__DEFAULT_FPS          = 30;     // <-- Default frame rate
-    const Na__VideoStudio__DEFAULT_BITRATE_MBPS = 34;     // <-- 3240x2160 at 30fps on the High quality stop
+    const Na__VideoStudio__DEFAULT_FPS          = 60;     // <-- Default frame rate
+    const Na__VideoStudio__DEFAULT_BITRATE_MBPS = 67;     // <-- 3240x2160 at 60fps on the High quality stop
     // ------------------------------------------------------------
 
 
@@ -668,11 +711,17 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Generate the Next Free Video Id
+    // FUNCTION | Generate the Next Video Id: one past the highest ever issued, never a freed one
+    // ------------------------------------------------------------
+    // A path's id is also its video's name in ValeVision Theia, so reusing the
+    // id of a deleted path would let the new path publish over the old video.
     // ------------------------------------------------------------
     function Na__VideoStudio__ProjectJson__GetNextVideoId(videos) {
-        const ids = (videos || []).map(v => v.VideoStudio__Video__Id);
-        return Na__VideoStudio__NextSequentialId(ids, 'Video');              // <-- Video_001, Video_002 ...
+        const config  = Na__VideoStudio__ActiveConfig || {};
+        const numbers = (videos || []).map(v => Number(String(v.VideoStudio__Video__Id || '').replace(/^Video_/, '')) || 0);
+        const next    = Math.max(Number(config[Na__VideoStudio__LAST_NUMBER_KEY]) || 0, ...numbers, 0) + 1;
+        config[Na__VideoStudio__LAST_NUMBER_KEY] = next;                     // <-- Remembered with the block
+        return `Video_${String(next).padStart(3, '0')}`;                     // <-- Video_001, Video_002 ...
     }
     // ------------------------------------------------------------
 
@@ -1438,16 +1487,20 @@
 
     // FUNCTION | Merge the Active Config into a projectData Object for Saving
     // ------------------------------------------------------------
-    // Reindexes orders, stamps the description, and writes the block onto the
-    // supplied projectData ready for the R2-first two-phase save.
+    // projectData is the record as it is on the server, fetched just before the
+    // save. Reindexes orders, stamps the description, takes from the server's
+    // copy whatever is newer there (a title edited in Theia, a publish stamp the
+    // Theia API wrote), and writes the block onto projectData.
     // ------------------------------------------------------------
     function Na__VideoStudio__ProjectJson__MergeIntoProjectData(projectData) {
         if (!projectData) return projectData;
 
         if (!Na__VideoStudio__ActiveConfig) {
-            delete projectData[Na__VideoStudio__SECTION_KEY];                // <-- Nothing authored; leave project.json clean
+            if (!Na__VideoStudio__ProjectJson__HasValidVideos(projectData)) delete projectData[Na__VideoStudio__SECTION_KEY];   // <-- Nothing authored; leave the record clean
             return projectData;
         }
+
+        Na__VideoStudio__ProjectJson__ReconcileFromServer(projectData[Na__VideoStudio__SECTION_KEY]);
 
         Na__VideoStudio__ProjectJson__ReindexVideoOrders();
         Na__VideoStudio__ProjectJson__GetSortedVideos(Na__VideoStudio__ActiveConfig)
@@ -1458,6 +1511,214 @@
 
         projectData[Na__VideoStudio__SECTION_KEY] = Na__VideoStudio__ActiveConfig;
         return projectData;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | ValeVision Theia (title, description, scheme, publish stamp)
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Now, as Every Vale App Writes It (UTC, milliseconds, Z)
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__NowIso() {
+        return new Date().toISOString();
+    }
+
+    // A stamp more than a day ahead of now (a PC clock far out, a test value)
+    // counts as blank, so it can never beat every later edit for good.
+    function Na__VideoStudio__Stamp(value) {
+        const text = String(value || '');
+        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z$/.test(text)) return '';
+        const limit = new Date(Date.now() + 86400000).toISOString().slice(0, 19);
+        return text.slice(0, 19) > limit ? '' : text;
+    }
+
+    function Na__VideoStudio__IsNewer(a, b) {
+        return Na__VideoStudio__Stamp(a) > Na__VideoStudio__Stamp(b);         // <-- Fixed-width UTC ISO strings sort as times
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Path's Theia Text: { title, description, metaUpdatedIso, scheme }
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__GetTheiaMeta(video) {
+        const v = video || {};
+        return {
+            title          : String(v[Na__VideoStudio__TITLE_KEY] || v.VideoStudio__Video__Name || '').trim(),
+            ownTitle       : String(v[Na__VideoStudio__TITLE_KEY] || ''),
+            description    : String(v[Na__VideoStudio__TEXT_KEY] || ''),
+            metaUpdatedIso : String(v[Na__VideoStudio__META_STAMP_KEY] || ''),
+            scheme         : String(v[Na__VideoStudio__SCHEME_KEY] || Na__VideoStudio__DEFAULT_SCHEME)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set a Path's Title and / or Description (stamps the change)
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetTheiaMeta(videoId, changes) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        if (!video || !changes) return false;
+        let changed = false;
+        if ('title' in changes) {
+            const title = String(changes.title || '').trim();
+            if (title !== String(video[Na__VideoStudio__TITLE_KEY] || '')) {
+                if (title) video[Na__VideoStudio__TITLE_KEY] = title; else delete video[Na__VideoStudio__TITLE_KEY];
+                changed = true;
+            }
+        }
+        if ('description' in changes) {
+            const text = String(changes.description || '').replace(/\r\n/g, '\n').trim();
+            if (text !== String(video[Na__VideoStudio__TEXT_KEY] || '')) {
+                if (text) video[Na__VideoStudio__TEXT_KEY] = text; else delete video[Na__VideoStudio__TEXT_KEY];
+                changed = true;
+            }
+        }
+        if (changed) video[Na__VideoStudio__META_STAMP_KEY] = Na__VideoStudio__ProjectJson__NowIso();
+        return changed;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set the Theia Scheme a Path Publishes Into
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetTheiaScheme(videoId, scheme) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        if (!video) return false;
+        video[Na__VideoStudio__SCHEME_KEY] = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,40}$/.test(scheme || '') ? scheme : Na__VideoStudio__DEFAULT_SCHEME;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Path's Publish Stamp: { theiaVideoId, publishedIso, publishedBy, fingerprint, scheme,
+    //            durationMs, quality, width, height, legacy } or null
+    // ------------------------------------------------------------
+    // legacy: written by the first build, which published two sizes (a
+    // Renditions list); publishing again replaces them with one file.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__GetTheiaPublish(video) {
+        const b = video && video[Na__VideoStudio__PUBLISH_KEY];
+        if (!b || typeof b !== 'object') return null;
+        const sizes = Array.isArray(b.VideoStudio__TheiaPublish__Renditions) ? b.VideoStudio__TheiaPublish__Renditions : [];
+        return {
+            theiaVideoId : b.VideoStudio__TheiaPublish__TheiaVideoId || video.VideoStudio__Video__Id,
+            publishedIso : b.VideoStudio__TheiaPublish__PublishedIso || '',
+            publishedBy  : b.VideoStudio__TheiaPublish__PublishedBy || '',
+            fingerprint  : b.VideoStudio__TheiaPublish__Fingerprint || '',
+            scheme       : b.VideoStudio__TheiaPublish__Scheme || Na__VideoStudio__DEFAULT_SCHEME,
+            durationMs   : Number(b.VideoStudio__TheiaPublish__DurationMs) || 0,
+            quality      : String(b.VideoStudio__TheiaPublish__Quality || sizes[0] || ''),
+            width        : Number(b.VideoStudio__TheiaPublish__Width) || 0,
+            height       : Number(b.VideoStudio__TheiaPublish__Height) || 0,
+            legacy       : !b.VideoStudio__TheiaPublish__Quality && sizes.length > 1
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Store a Publish Stamp as the Theia API Wrote It (null removes it)
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetTheiaPublish(videoId, block) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        if (!video) return false;
+        if (block && typeof block === 'object') video[Na__VideoStudio__PUBLISH_KEY] = block;
+        else delete video[Na__VideoStudio__PUBLISH_KEY];
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Fingerprint of Everything That Changes the Picture (keyframes, playback, export, layers)
+    // ------------------------------------------------------------
+    // 'sha256:' + hex. Title, description and scheme are not in it: changing
+    // those only needs a sync, not a new render.
+    // ------------------------------------------------------------
+    async function Na__VideoStudio__ProjectJson__Fingerprint(video) {
+        const canonical = (value) => {
+            if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+            if (value && typeof value === 'object') {
+                return `{${Object.keys(value).sort().map((k) => `${JSON.stringify(k)}:${canonical(value[k])}`).join(',')}}`;
+            }
+            return JSON.stringify(value === undefined ? null : value);
+        };
+        const picture = {
+            keyframes   : Na__VideoStudio__ProjectJson__GetSortedKeyframes(video),
+            playback    : (video && video.VideoStudio__Video__Playback) || {},
+            export      : Na__VideoStudio__ProjectJson__GetExportOptions(video),
+            modelLayers : Na__VideoStudio__ProjectJson__GetModelLayerOptions(video)
+        };
+        const bytes = new TextEncoder().encode(canonical(picture));
+        const digest = await crypto.subtle.digest('SHA-256', bytes);
+        return 'sha256:' + [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Take What Is Newer on the Server's Copy of the Block
+    // ------------------------------------------------------------
+    // Per path: the title and description if the server's MetaUpdatedIso is
+    // newer (edited in Theia since this page loaded); the publish stamp if the
+    // server's is newer (the Theia API wrote it). The id counter takes the
+    // higher of the two.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__ReconcileFromServer(serverBlock) {
+        const config = Na__VideoStudio__ActiveConfig;
+        if (!config || !serverBlock || typeof serverBlock !== 'object') return 0;
+        const serverVideos = new Map((Array.isArray(serverBlock[Na__VideoStudio__VIDEOS_KEY]) ? serverBlock[Na__VideoStudio__VIDEOS_KEY] : [])
+            .filter((v) => v && v.VideoStudio__Video__Id).map((v) => [v.VideoStudio__Video__Id, v]));
+        let taken = 0;
+        (config[Na__VideoStudio__VIDEOS_KEY] || []).forEach((local) => {
+            const server = serverVideos.get(local.VideoStudio__Video__Id);
+            if (!server) return;
+            if (Na__VideoStudio__IsNewer(server[Na__VideoStudio__META_STAMP_KEY], local[Na__VideoStudio__META_STAMP_KEY])) {
+                [Na__VideoStudio__TITLE_KEY, Na__VideoStudio__TEXT_KEY, Na__VideoStudio__META_STAMP_KEY].forEach((k) => {
+                    if (server[k] !== undefined) local[k] = server[k]; else delete local[k];
+                });
+                taken++;
+            }
+            const serverStamp = server[Na__VideoStudio__PUBLISH_KEY];
+            const localStamp  = local[Na__VideoStudio__PUBLISH_KEY];
+            if (serverStamp && (!localStamp || Na__VideoStudio__IsNewer(serverStamp.VideoStudio__TheiaPublish__PublishedIso,
+                                                                     localStamp.VideoStudio__TheiaPublish__PublishedIso))) {
+                local[Na__VideoStudio__PUBLISH_KEY] = serverStamp;
+                taken++;
+            }
+        });
+        config[Na__VideoStudio__LAST_NUMBER_KEY] = Math.max(Number(config[Na__VideoStudio__LAST_NUMBER_KEY]) || 0,
+                                                            Number(serverBlock[Na__VideoStudio__LAST_NUMBER_KEY]) || 0);
+        return taken;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bring In Theia's Own List (GET /theia/api/projects/<id>/videos, manager view)
+    // ------------------------------------------------------------
+    // Newer titles and descriptions come in; a path whose video is no longer in
+    // Theia loses its publish stamp. Returns the number of paths changed.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__ReconcileWithTheia(theiaVideos) {
+        const config = Na__VideoStudio__ActiveConfig;
+        if (!config || !Array.isArray(theiaVideos)) return 0;
+        const bySource = new Map(theiaVideos.filter((v) => v.source === 'ValeVision3D' && v.sourceVideoId).map((v) => [v.sourceVideoId, v]));
+        let changed = 0;
+        (config[Na__VideoStudio__VIDEOS_KEY] || []).forEach((local) => {
+            const theia = bySource.get(local.VideoStudio__Video__Id);
+            if (!theia) {
+                if (local[Na__VideoStudio__PUBLISH_KEY]) { delete local[Na__VideoStudio__PUBLISH_KEY]; changed++; }
+                return;
+            }
+            if (Na__VideoStudio__IsNewer(theia.metaUpdatedIso, local[Na__VideoStudio__META_STAMP_KEY])) {
+                if (theia.title) local[Na__VideoStudio__TITLE_KEY] = theia.title;
+                if (theia.description) local[Na__VideoStudio__TEXT_KEY] = theia.description; else delete local[Na__VideoStudio__TEXT_KEY];
+                local[Na__VideoStudio__META_STAMP_KEY] = theia.metaUpdatedIso;
+                changed++;
+            }
+        });
+        return changed;
     }
     // ------------------------------------------------------------
 
@@ -1535,7 +1796,16 @@
         Na__VideoStudio__ProjectJson__GetActiveVideoId,
         Na__VideoStudio__ProjectJson__SetActiveKeyframeId,
         Na__VideoStudio__ProjectJson__GetActiveKeyframeId,
-        Na__VideoStudio__ProjectJson__MergeIntoProjectData
+        Na__VideoStudio__ProjectJson__MergeIntoProjectData,
+        Na__VideoStudio__THEIA_SCHEMES,
+        Na__VideoStudio__ProjectJson__GetTheiaMeta,
+        Na__VideoStudio__ProjectJson__SetTheiaMeta,
+        Na__VideoStudio__ProjectJson__SetTheiaScheme,
+        Na__VideoStudio__ProjectJson__GetTheiaPublish,
+        Na__VideoStudio__ProjectJson__SetTheiaPublish,
+        Na__VideoStudio__ProjectJson__Fingerprint,
+        Na__VideoStudio__ProjectJson__ReconcileFromServer,
+        Na__VideoStudio__ProjectJson__ReconcileWithTheia
     };
     // ------------------------------------------------------------
 

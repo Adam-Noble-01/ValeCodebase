@@ -30,6 +30,18 @@ DESCRIPTION:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+07-Oct-2026 - Version 0.9.0
+- Version only: the engine writes the deploy stamp after every source push (engine 0.9.0).
+
+07-Oct-2026 - Version 0.8.0
+- Plans carry content_collect (ServerMadeContent: content made on the server, such as
+  ValeVision Theia's videos), counted and listed like the other lists. The live explorer
+  labels those files collect.
+
+07-Oct-2026 - Version 0.7.0
+- Job delete (POST /api/op/delete {files: {mapping id: {root-relative path: [size, mtime]}},
+  pc}): the explorer's Delete from server. Clears that mapping's compared plan.
+
 06-Oct-2026 - Version 0.5.0
 - Jobs user-reset / user-signout (POST /api/op/user-reset {code}): tab 04's Reset
   and Sign out act on the live server at once. POST /api/users no longer takes
@@ -87,7 +99,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.6.0"                                   # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.9.0"                                 # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root
@@ -249,7 +261,7 @@ class Na__Live:
         for rel in sorted(set(server) | set(local)):
             s, l = server.get(rel), local.get(rel)
             is_dir = (s or l)[0] == "d"
-            mid, lane, excluded = cls.annotator.label(rel, is_dir)
+            mid, lane, excluded, made = cls.annotator.label(rel, is_dir)
             if is_dir:
                 verdict = "dir"
             elif not mid:
@@ -257,7 +269,8 @@ class Na__Live:
             elif excluded:
                 verdict = "not-synced"
             else:
-                verdict = Na__Engine.Na__Parity__Verdict(lane, l[1:] if l else None, s[1:] if s else None)
+                verdict = Na__Engine.Na__Parity__Verdict(lane, l[1:] if l else None, s[1:] if s else None,
+                                                         made=made and lane == "content")
             out.append([rel, "d" if is_dir else "f", s[1] if s else None, s[2] if s else None,
                         l[1] if l else None, l[2] if l else None, mid, lane, verdict,
                         l[3] if l and len(l) > 3 else None, cls.ledger.get(rel)])   # <-- PC created, [last sync, how]
@@ -280,7 +293,7 @@ class Na__Live:
 # -----------------------------------------------------------------------------
 
 NA__SERVER__PLAN_LISTS = ("code_new", "code_changed", "code_delete", "content_push", "content_server_newer",
-                          "content_server_only", "user_collect", "user_pc_newer", "user_pc_only",
+                          "content_server_only", "content_collect", "user_collect", "user_pc_newer", "user_pc_only",
                           "shared_push", "shared_collect")
 
 # HELPER FUNCTION | Remember a Job Result for the Activity Panel
@@ -411,6 +424,16 @@ def Na__Server__Operate(action: str, body: dict) -> dict:
             NA__SERVER__PLANS.pop(body["id"], None)
             if res.get("ok"):
                 NA__SERVER__LAST_ACTION[body["id"]] = {"t": stamp, "text": f"undid push {res.get('undid')}"}
+        elif action == "delete":                                               # <-- Explorer: named files, root-relative paths
+            files = body.get("files")
+            if not isinstance(files, dict) or not all(isinstance(v, dict) for v in files.values()):
+                return {"ok": False, "error": "delete needs {files: {mapping id: {path: [size, mtime]}}}"}
+            label = f"delete {sum(len(v) for v in files.values())} file(s) in {', '.join(files)}"
+            NA__SERVER__BUSY.update(label=label)
+            res = Na__Engine.Na__Engine__Delete(cfg, files, bool(body.get("pc")), root_relative=True)
+            for p in res.get("plans", []):
+                NA__SERVER__PLANS.pop(p["id"], None)                           # <-- The server changed: compare again
+                NA__SERVER__LAST_ACTION[p["id"]] = {"t": stamp, "text": f"deleted {len(p['deleted'])} file(s)"}
         elif action == "seed":
             res = Na__Engine.Na__Engine__Seed(cfg, ids)
         elif action == "backup":

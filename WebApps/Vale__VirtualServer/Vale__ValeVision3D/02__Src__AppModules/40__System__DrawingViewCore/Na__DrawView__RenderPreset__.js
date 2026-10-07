@@ -66,6 +66,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 07-Oct-2026 - Version 1.4.1
+// - Entering a drawing leaves AO alone when it is already off. Off may be the
+//   FPS monitor's live-only verdict, and toggling it on and off again made
+//   that verdict the user's setting, so later exports lost AO.
+//
 // 02-Oct-2026 - Version 1.4.0 (elevation depth fog, v2.71.4)
 // - RenderFrame lays the drawing's depth fog over the picture after the
 //   composer and before the section overlay: Na__ElevFog__RenderOverlay,
@@ -279,10 +284,14 @@
     // ------------------------------------------------------------
     // MaxEngine exposes only a toggle that returns the new state, so the pass
     // is toggled once and, if that turned it ON, toggled straight back.
+    // ALREADY OFF IS LEFT ALONE. Off may be the FPS monitor's live-only verdict
+    // rather than the setting, and the toggle-twice dance would rewrite it as
+    // the setting: every later video and still export would then lose AO.
     // ------------------------------------------------------------
     function Na__DrawPreset__SuspendAo() {
         const pipeline = Na__DrawPreset__Pipeline();
         if (!pipeline || typeof pipeline.toggleAo !== 'function') return false;
+        if (pipeline.aoPassRef && !pipeline.aoPassRef.enabled) return false;    // <-- Nothing to suspend or restore
         const nowOn = pipeline.toggleAo();
         if (nowOn) {
             pipeline.toggleAo();                                                 // <-- It was off; leave it off

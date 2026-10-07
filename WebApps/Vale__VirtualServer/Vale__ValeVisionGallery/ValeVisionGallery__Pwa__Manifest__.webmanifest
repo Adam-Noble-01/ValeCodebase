@@ -1,15 +1,24 @@
 {
-    "id": "./",
-    "name": "ValeVision Gallery",
-    "short_name": "ValeVision Gallery",
-    "description": "Whitecard and blockout massing model images for Vale Garden Houses projects.",
+    "id": "/",
+    "name": "ValeVision",
+    "short_name": "ValeVision",
+    "description": "ValeVision: whitecard and blockout massing model images for Vale Garden Houses projects.",
     "start_url": "./",
-    "scope": "./",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#f5f5f5",
     "theme_color": "#172b3a",
     "icons": [
         { "src": "04__Assets__AppGraphics/ValeVisionGallery__AppIcon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
         { "src": "04__Assets__AppGraphics/ValeVisionGallery__AppIcon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-    ]
+    ],
+    "related_applications": [
+        { "platform": "webapp", "url": "https://app.valegardenhouses.com/project-gallery/ValeVisionGallery__Pwa__Manifest__.webmanifest" }
+    ],
+    "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+    "handle_links": "preferred",
+    "protocol_handlers": [
+        { "protocol": "web+valevision", "url": "/project-gallery/open.html?to=%s" }
+    ],
+    "prefer_related_applications": false
 }

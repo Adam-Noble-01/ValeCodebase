@@ -48,6 +48,8 @@
 //
 // INTEGRATION:
 // - Na__VideoStudio__Timeline__Controls calls SyncVideo before it builds tiles.
+// - Na__VideoStudio__Convert__PresentationScenes calls RenderKeyframeStill for
+//   the thumbnail of a scene made from a keyframe.
 // - SetRenderContext is called once from Na__VideoStudio__DevMenu__Controls,
 //   which already holds every reference needed.
 //
@@ -62,6 +64,11 @@
 //   In walk or fly it re-aimed the restored view at orbit's leftover target
 //   for the frame the burst paints, and could pull a fly camera to within
 //   orbit's distance limits; Go To now lands in fly, so this matters.
+//
+// 07-Oct-2026 - Version 1.1.0 (keyframe to Presentation scene, v2.74.0)
+// - RenderKeyframeStill: one keyframe's shot as a full-frame WebP at the
+//   viewport's aspect, the new scene's thumbnail. The pose, render and
+//   restore it shares with SyncVideo moved into RenderBurst, unchanged.
 //
 // =============================================================================
 
@@ -408,6 +415,122 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Copy the Whole Live Frame into a Canvas of Its Own
+    // ------------------------------------------------------------
+    // For a Presentation scene's thumbnail, which is the full frame at the
+    // viewport's aspect like every other scene thumbnail, not a timeline
+    // tile cropped to the export aspect. A canvas of its own rather than the
+    // scratch one, because the caller encodes it after this task ends.
+    // Must run in the same task as the render.
+    // ------------------------------------------------------------
+    function Na__VsThumb__CaptureFullFrame(widthPx) {
+        const source = Na__VsThumb__Renderer.domElement;
+        const srcW   = source.width  || 1;
+        const srcH   = source.height || 1;
+
+        const outW = Math.max(2, Math.round(widthPx));
+        const outH = Math.max(2, Math.round((srcH / srcW) * outW));          // <-- Keep the viewport's aspect
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = outW;
+        canvas.height = outH;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(source, 0, 0, outW, outH);
+        return canvas;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Render Burst
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Pose, Render and Capture Keyframes, Then Put Everything Back
+    // ------------------------------------------------------------
+    // The burst both public renders share. The path's model layers go on and
+    // the path itself is hidden; each keyframe is posed, rendered and handed
+    // to capture(keyframe, index) IN THE SAME TASK as its render, while the
+    // frame is still in the buffer; then the live camera, the layers and the
+    // path are put back and the live view is redrawn before the browser can
+    // composite anything in between. Nothing here awaits.
+    // ------------------------------------------------------------
+    function Na__VsThumb__RenderBurst(pipeline, video, keyframes, capture) {
+        const camera = Na__VsThumb__Camera;
+
+        // SAVED STATE | Everything the burst mutates
+        const savedPosition   = camera.position.clone();
+        const savedQuaternion = camera.quaternion.clone();
+        const savedFov        = camera.fov;
+
+        const sectionOverlayRenderer = Na__SectionClipping__GetOverlayRenderer();   // <-- Null until a section exists
+        const layerOptions           = Na__VideoStudio__ProjectJson__GetModelLayerOptions(video);
+
+        let layerSession = false;
+
+        Na__VideoStudio__PathVisualizer__SetSuppressed('thumbnails', true);   // <-- The path must never appear in a tile
+
+        try {
+            layerSession = Na__VideoStudio__ModelLayers__Begin(layerOptions.enabled, layerOptions.visibility);
+
+            keyframes.forEach((keyframe, index) => {
+                if (!Na__VideoStudio__Camera__ApplyKeyframe(camera, keyframe)) return;
+
+                camera.updateMatrixWorld(true);
+                Na__VsThumb__RenderOneFrame(pipeline, sectionOverlayRenderer);
+
+                capture(keyframe, index);                                    // <-- Same task; buffer still valid
+            });
+
+        } catch (error) {
+            console.warn('[VideoStudio] Thumbnail render failed:', error && error.message);
+
+        } finally {
+            Na__VideoStudio__ModelLayers__End(layerSession);
+
+            // RESTORE | Put the viewpoint back.
+            camera.position.copy(savedPosition);
+            camera.quaternion.copy(savedQuaternion);
+            camera.fov = savedFov;
+            camera.updateProjectionMatrix();
+            camera.updateMatrixWorld(true);
+
+            // ORBIT ONLY | Walk and fly switch the controls off while they own
+            // the camera, and an update would re-aim the restored view at
+            // orbit's leftover target and pull it to within orbit's distance
+            // limits. Landing on a keyframe in fly makes that the usual case.
+            if (Na__VsThumb__Controls && Na__VsThumb__Controls.enabled !== false
+                && typeof Na__VsThumb__Controls.update === 'function') {
+                Na__VsThumb__Controls.update();
+            }
+
+            Na__VideoStudio__PathVisualizer__SetSuppressed('thumbnails', false);   // <-- Before the redraw, so the path is in it
+
+            // REDRAW | The canvas is currently holding the last waypoint's
+            // frame, and RequestRender only schedules a redraw for the next
+            // animation frame.  Leaving it there would let the browser
+            // composite that frame first, which is a visible flash of a view
+            // the user is not standing at.  Rendering the live camera here,
+            // still inside this task, means the only frame ever composited is
+            // the right one, and the whole burst is invisible.
+            try {
+                Na__VsThumb__RenderOneFrame(pipeline, sectionOverlayRenderer);
+            } catch (redrawError) {
+                console.warn('[VideoStudio] Thumbnail redraw failed:', redrawError && redrawError.message);
+            }
+
+            Na__RenderLoop__RequestRender();                                 // <-- Hand the loop back its normal cadence
+        }
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -455,78 +578,46 @@
         const batch   = stale.slice(0, Na__VsThumb__MAX_PER_BURST);
         const pending = stale.length - batch.length;
 
-        const camera = Na__VsThumb__Camera;
+        let rendered = 0;
 
-        // SAVED STATE | Everything the burst mutates
-        const savedPosition   = camera.position.clone();
-        const savedQuaternion = camera.quaternion.clone();
-        const savedFov        = camera.fov;
-
-        const sectionOverlayRenderer = Na__SectionClipping__GetOverlayRenderer();   // <-- Null until a section exists
-        const layerOptions           = Na__VideoStudio__ProjectJson__GetModelLayerOptions(video);
-
-        let layerSession = false;
-        let rendered     = 0;
-
-        Na__VideoStudio__PathVisualizer__SetSuppressed('thumbnails', true);   // <-- The path must never appear in a tile
-
-        try {
-            layerSession = Na__VideoStudio__ModelLayers__Begin(layerOptions.enabled, layerOptions.visibility);
-
-            batch.forEach(({ keyframe, id, signature }) => {
-                if (!Na__VideoStudio__Camera__ApplyKeyframe(camera, keyframe)) return;
-
-                camera.updateMatrixWorld(true);
-                Na__VsThumb__RenderOneFrame(pipeline, sectionOverlayRenderer);
-
-                const dataUrl = Na__VsThumb__CaptureToDataUrl(framingKey.aspect);   // <-- Same task; buffer still valid
-                if (dataUrl) {
-                    Na__VsThumb__Cache.set(id, { signature, dataUrl });
-                    rendered++;
-                }
-            });
-
-        } catch (error) {
-            console.warn('[VideoStudio] Thumbnail render failed:', error && error.message);
-
-        } finally {
-            Na__VideoStudio__ModelLayers__End(layerSession);
-
-            // RESTORE | Put the viewpoint back.
-            camera.position.copy(savedPosition);
-            camera.quaternion.copy(savedQuaternion);
-            camera.fov = savedFov;
-            camera.updateProjectionMatrix();
-            camera.updateMatrixWorld(true);
-
-            // ORBIT ONLY | Walk and fly switch the controls off while they own
-            // the camera, and an update would re-aim the restored view at
-            // orbit's leftover target and pull it to within orbit's distance
-            // limits. Landing on a keyframe in fly makes that the usual case.
-            if (Na__VsThumb__Controls && Na__VsThumb__Controls.enabled !== false
-                && typeof Na__VsThumb__Controls.update === 'function') {
-                Na__VsThumb__Controls.update();
+        Na__VsThumb__RenderBurst(pipeline, video, batch.map(entry => entry.keyframe), (keyframe, index) => {
+            const { id, signature } = batch[index];
+            const dataUrl = Na__VsThumb__CaptureToDataUrl(framingKey.aspect);
+            if (dataUrl) {
+                Na__VsThumb__Cache.set(id, { signature, dataUrl });
+                rendered++;
             }
-
-            Na__VideoStudio__PathVisualizer__SetSuppressed('thumbnails', false);   // <-- Before the redraw, so the path is in it
-
-            // REDRAW | The canvas is currently holding the last waypoint's
-            // frame, and RequestRender only schedules a redraw for the next
-            // animation frame.  Leaving it there would let the browser
-            // composite that frame first, which is a visible flash of a view
-            // the user is not standing at.  Rendering the live camera here,
-            // still inside this task, means the only frame ever composited is
-            // the right one, and the whole burst is invisible.
-            try {
-                Na__VsThumb__RenderOneFrame(pipeline, sectionOverlayRenderer);
-            } catch (redrawError) {
-                console.warn('[VideoStudio] Thumbnail redraw failed:', redrawError && redrawError.message);
-            }
-
-            Na__RenderLoop__RequestRender();                                 // <-- Hand the loop back its normal cadence
-        }
+        });
 
         return { rendered, pending, ready: true };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render One Keyframe's Shot as a Full-Frame WebP
+    // ------------------------------------------------------------
+    // For Keyframe To Presentation Scene: the new scene's thumbnail, rendered
+    // here because only the Video Studio can pose the camera on a keyframe
+    // with the path's own model layers and leave the viewport untouched. The
+    // whole frame at the viewport's aspect, widthPx across, as the scene
+    // editor's own thumbnails are. Invisible on screen, like a tile burst.
+    //
+    // Resolves to a Blob, or null when the renderer is not free (the model is
+    // still loading, or an export owns it) or the keyframe cannot be posed.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__Thumbnails__RenderKeyframeStill(video, keyframe, widthPx) {
+        if (!video || !keyframe) return Promise.resolve(null);
+        if (!Na__VideoStudio__Thumbnails__IsReady()) return Promise.resolve(null);
+
+        let canvas = null;
+        Na__VsThumb__RenderBurst(Na__VsThumb__ResolvePipeline(), video, [keyframe], () => {
+            canvas = Na__VsThumb__CaptureFullFrame(widthPx);
+        });
+        if (!canvas) return Promise.resolve(null);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob || null), Na__VsThumb__FORMAT, Na__VsThumb__QUALITY);
+        });
     }
     // ------------------------------------------------------------
 
@@ -568,6 +659,7 @@
         Na__VideoStudio__Thumbnails__IsReady,
         Na__VideoStudio__Thumbnails__SetSuspended,
         Na__VideoStudio__Thumbnails__SyncVideo,
+        Na__VideoStudio__Thumbnails__RenderKeyframeStill,
         Na__VideoStudio__Thumbnails__Get,
         Na__VideoStudio__Thumbnails__Invalidate
     };

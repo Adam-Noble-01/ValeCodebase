@@ -1,5 +1,33 @@
-<h1>app.valegardenhouses.com is working</h1>
-<p>edit 2 - 06-Oct-2026</p>
-<hr>
-<h2> TESTING THE INDEX PAGE HELLOOOO <h2>
-<hr>
+<!DOCTYPE html>
+<!-- =============================================================================
+     APP.VALEGARDENHOUSES.COM - SITE ROOT (FORWARDS TO VALEVISION)
+     =============================================================================
+
+     FILE       : index.html (mirror root, mapping root-files)
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : https://app.valegardenhouses.com/ opens ValeVision (the Gallery,
+                  /project-gallery/), keeping any ?query and #anchor
+     CREATED    : 06-Oct-2026 (test page); forwarder since 07-Oct-2026
+
+     DESCRIPTION:
+     - A page, not an nginx redirect: the URL Configurator's Apply checks that /
+       answers 200 and restores the old nginx if it does not.
+     - location.replace keeps the root out of the back-button history.
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>ValeVision</title>
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="theme-color" content="#172b3a">
+    <script>window.location.replace('/project-gallery/' + window.location.search + window.location.hash);</script>
+    <noscript><meta http-equiv="refresh" content="0; url=/project-gallery/"></noscript>
+</head>
+<body style="margin: 0; background: #f5f5f5; font-family: 'Open Sans', -apple-system, 'Segoe UI', sans-serif; color: #172b3a;">
+    <p style="padding: 24px;">Opening <a href="/project-gallery/">ValeVision</a>&hellip;</p>
+</body>
+</html>

@@ -27,6 +27,7 @@ One server, one origin, one store (since v2.72.0). Nothing comes from GitHub Pag
 | Drawings, snapshots, sheet pictures, published documents, statements | `<project>/ValeVision3D/UserData__UserGeneratedContent__Drawings/` (user data: through the API only) |
 | Spelling dictionary, custom scrapbook | `50__UserData__SpellCheckDictionary/`, `51__UserData__LayoutEditorScrapbook/` in this folder (user data) |
 | Sign-in | the shared Vale sign-in (`/AppAssets__CommonApplicationAssets/Shared__UserLogin/`, `api/accounts/*`), users register `Server__UserAccountData` |
+| Videos for clients | the Video Studio's **Publish to Theia** (since v2.73.0): one MP4 per path, at its own export settings, uploaded into ValeVision Theia (`/theia/`, `Vale__ValeVision__TheiaVideoPlayer`) while it renders; the path keeps its title, description and publish stamp in `VideoStudio__Config`, in step with Theia both ways |
 
 **Who can do what.** Anyone with a project link can view it (clients have no account). Staff sign in with their
 Vale email address and password (top right); the initials bubble's menu holds their options. **App admins**

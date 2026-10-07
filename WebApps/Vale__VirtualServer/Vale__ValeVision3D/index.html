@@ -7,7 +7,7 @@
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
-    <title>ValeVision3D</title>
+    <title>ValeVision 3D</title>
     
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  BRANDING | Favicon, Brand Icons & PWA Manifest         -->
@@ -34,8 +34,16 @@
     <!-- (window.ValeUserLogin), started by Na__AppUtils__UserSession__.js. -->
     <!-- The service worker makes the app installable on its route only.    -->
 
+    <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/valevision/" data-app-name="ValeVision 3D"></script>
     <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
     <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
+    <!-- Install the app: a card for this device, the guide at /help/install-app/ -->
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__AppInstall/ValeShared__AppInstall__.css">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppInstall/ValeShared__AppInstall__.js"
+            data-app-key="valevision3d" data-app-name="ValeVision 3D" data-app-avoid="#naPresentationCarousel, #naNavToolbar"
+            data-app-icon="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png"></script>
     <script>
         if ('serviceWorker' in navigator) {                                  // <-- Installable app; scope = this route only
             window.addEventListener('load', function() {

@@ -57,6 +57,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 07-Oct-2026 - Version 1.2.0 (keyframe to Presentation scene, v2.74.0)
+// - UploadBlob: the upload half of CaptureAndUpload, which now calls it. A
+//   keyframe made into a scene brings its own still, rendered by the Video
+//   Studio at the keyframe's pose, and needs only the upload.
+//
 // 01-Oct-2026 - Version 1.1.1 (TrueVision's call shape, v2.71.1)
 // - CaptureAndUpload also takes TrueVision's (sceneId) and (sceneId,
 //   targetWidthPx) shapes: with no project code passed it uses the active
@@ -287,6 +292,22 @@
         const blob = await Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp(targetWidthPx);
         if (!blob) return { ok : false, error : 'render failed' };
 
+        return Na__PresentationMode__Thumbnail__UploadBlob(sceneId, blob, projectCode, showToast);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Upload an Already-Rendered WebP as a Scene's Thumbnail
+    // ------------------------------------------------------------
+    // The upload half of CaptureAndUpload, for a picture rendered somewhere
+    // other than the live viewport: the Video Studio's keyframe still, when
+    // a keyframe becomes a Presentation scene. Same path, same contract.
+    // Returns { ok, relUrl, publicUrl } or { ok: false, error }.
+    // ------------------------------------------------------------
+    async function Na__PresentationMode__Thumbnail__UploadBlob(sceneId, blob, projectCode, showToast) {
+        if (!sceneId || !projectCode) return { ok : false, error : 'missing scene id or project code' };
+        if (!blob)                    return { ok : false, error : 'no picture to upload' };
+
         const relUrl = 'PresentationMode/Thumbnails/' + sceneId + '.webp';
         try {
             const result = await Na__AppUtils__AssetUpload(blob, projectCode, relUrl, showToast);
@@ -314,7 +335,8 @@
         Na__PresentationMode__Thumbnail__SetRenderContext,
         Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp,
         Na__PresentationMode__Thumbnail__SetFrameRenderer,
-        Na__PresentationMode__Thumbnail__CaptureAndUpload
+        Na__PresentationMode__Thumbnail__CaptureAndUpload,
+        Na__PresentationMode__Thumbnail__UploadBlob
     };
     // ------------------------------------------------------------
 

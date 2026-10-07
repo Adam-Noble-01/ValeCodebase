@@ -18,7 +18,7 @@
 
    ============================================================================= */
 
-var VVG_VERSION = '2026-10-06-2';
+var VVG_VERSION = '2026-10-07-2';
 var VVG_SHELL   = 'valevision-gallery-shell-' + VVG_VERSION;
 var VVG_IMAGES  = 'valevision-gallery-images-' + VVG_VERSION;
 

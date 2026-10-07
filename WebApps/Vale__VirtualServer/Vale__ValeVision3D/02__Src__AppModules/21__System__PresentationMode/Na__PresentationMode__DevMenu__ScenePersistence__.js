@@ -54,6 +54,10 @@
 //   machine, so R2 had no object and the live carousel fell back to GH Pages,
 //   which only had the image once the local mirror was committed and pushed.
 //
+// 07-Oct-2026 - Version 1.2.0 (keyframe to Presentation scene, v2.74.0)
+// - UploadThumbnailBlob: a scene made from a Video Studio keyframe brings its
+//   own still, so only the upload is needed.
+//
 // =============================================================================
 
 
@@ -82,7 +86,10 @@
     // MODULE IMPORTS | Thumbnail Renderer
     // @delegate: ./Na__PresentationMode__Thumbnail__Renderer.js
     // ------------------------------------------------------------
-    import { Na__PresentationMode__Thumbnail__CaptureAndUpload } from './Na__PresentationMode__Thumbnail__Renderer.js';
+    import {
+        Na__PresentationMode__Thumbnail__CaptureAndUpload,
+        Na__PresentationMode__Thumbnail__UploadBlob
+    } from './Na__PresentationMode__Thumbnail__Renderer.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Save Utility
@@ -146,6 +153,29 @@
             showToast && showToast('Thumbnail error, see console.', true);
             return false;
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Upload a Picture Rendered Elsewhere as a Scene's Thumbnail
+    // ------------------------------------------------------------
+    // RegenerateThumbnail for a scene whose picture is not on screen: a
+    // Video Studio keyframe made into a scene arrives with its own still,
+    // rendered at the keyframe's pose. Same path, same toasts, and the same
+    // rule that a refused upload never writes a path onto the record.
+    // ------------------------------------------------------------
+    async function Na__PresentationMode__DevMenu__UploadThumbnailBlob(scene, blob, projectCode, showToast) {
+        const sceneId = scene.PresentationMode__Scene__Id;
+
+        const result = await Na__PresentationMode__Thumbnail__UploadBlob(sceneId, blob, projectCode, showToast);
+        if (!result || !result.ok) {
+            showToast && showToast(`Thumbnail upload failed: ${result ? result.error : 'no result'}`, true);
+            return false;
+        }
+
+        scene.PresentationMode__Scene__ThumbnailUrl = result.relUrl;
+        showToast && showToast(`Thumbnail saved: ${result.relUrl}`);
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -230,6 +260,7 @@
     export {
         Na__PresentationMode__DevMenu__CaptureCrossSectionIfEnabled,
         Na__PresentationMode__DevMenu__RegenerateThumbnail,
+        Na__PresentationMode__DevMenu__UploadThumbnailBlob,
         Na__PresentationMode__DevMenu__SaveScenesToProject
     };
     // ------------------------------------------------------------

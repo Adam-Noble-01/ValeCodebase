@@ -63,6 +63,14 @@
 //   longer leaves the export stair-stepped. Shadow maps are drawn once per
 //   frame rather than once per sample.
 //
+// 07-Oct-2026 - Version 1.2.0
+// - AO is held at the user's setting for the whole session (holdAoForExport),
+//   and the hold is released in end(). Videos published to Theia showed AO
+//   switching off partway: the FPS monitor's verdict was the same flag as the
+//   setting, so a monitor that tripped (before or during the export) took AO
+//   out of the video. A frame-by-frame render is not a viewport, so the
+//   device's frame rate never decides what it shows.
+//
 // =============================================================================
 
 
@@ -161,6 +169,7 @@
         const empty = {
             composer: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
             setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop,
+            holdAoForExport: noop, releaseAoForExport: noop,
             fxaaPass: null
         };
 
@@ -183,6 +192,8 @@
             setAoSize           : fn(state.setAoSize),
             updateAoUniforms    : fn(state.updateAoUniforms),
             renderDepthPrePass  : fn(state.renderDepthPrePass),
+            holdAoForExport     : fn(state.holdAoForExport),                 // <-- MaxEngine extra; no-op under PureEngine
+            releaseAoForExport  : fn(state.releaseAoForExport),
             fxaaPass            : state.fxaaPassRef || null
         };
     }
@@ -406,6 +417,13 @@
         }
         // ------------------------------------------------------------
 
+        // AMBIENT OCCLUSION | Held at the user's setting from the first frame
+        // to the last; end() releases it. The FPS monitor protects live
+        // navigation and has no say here. Taken after the last set-up step
+        // that can throw, so a hold is never left without an end() to release it.
+        // ------------------------------------------------------------
+        pipeline.holdAoForExport();
+
         return {
             canvas : renderer.domElement,
             width  : outW,
@@ -462,6 +480,8 @@
                 isEnded = true;
 
                 renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+
+                pipeline.releaseAoForExport();                                // <-- Live viewport back to the FPS monitor's verdict
 
                 if (supersampler) {
                     composer.renderToScreen = savedRenderToScreen;            // <-- The live loop draws to the canvas again

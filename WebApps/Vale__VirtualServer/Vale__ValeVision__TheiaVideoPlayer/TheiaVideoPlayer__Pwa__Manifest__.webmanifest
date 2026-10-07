@@ -1,0 +1,20 @@
+{
+    "id": "/theia/",
+    "name": "ValeVision Theia",
+    "short_name": "Theia",
+    "description": "Vale Garden Houses project videos, in full quality.",
+    "start_url": "./",
+    "scope": "/theia/",
+    "display": "standalone",
+    "background_color": "#07090c",
+    "theme_color": "#172b3a",
+    "icons": [
+        { "src": "01__AppAssets__TheiaVideoPlayer/TheiaVideoPlayer__AppIcon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "01__AppAssets__TheiaVideoPlayer/TheiaVideoPlayer__AppIcon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    ],
+    "related_applications": [
+        { "platform": "webapp", "url": "https://app.valegardenhouses.com/theia/TheiaVideoPlayer__Pwa__Manifest__.webmanifest" }
+    ],
+    "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+    "prefer_related_applications": false
+}

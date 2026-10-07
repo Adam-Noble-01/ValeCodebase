@@ -1,0 +1,81 @@
+{
+    "TheiaVideo__Library__Description"   : "ValeVision Theia: the videos published for this project, in playing order. Written by the Theia API (and by ValeVision 3D's Publish to Theia, through it). One file per video, in Content__VideoFiles/Videos__<Scheme>/; posters in Content__VideoThumbnails/. Titles and descriptions of ValeVision 3D paths are kept in step with the project record by MetaUpdatedIso: the newer side wins.",
+    "TheiaVideo__Library__SchemaVersion" : 1,
+    "TheiaVideo__Library__ProjectId"     : "12345__ExampleProject",
+    "TheiaVideo__Library__ProjectCode"   : "12345",
+    "TheiaVideo__Library__ProjectName"   : "Example Project",
+    "TheiaVideo__Library__ProjectTitle"  : "",
+    "TheiaVideo__Library__UpdatedIso"    : "2026-10-07T12:00:00.000Z",
+    "TheiaVideo__Library__UpdatedBy"     : "USR00000001",
+    "TheiaVideo__Library__Videos"        : [
+        {
+            "TheiaVideo__Video__Id"                : "Video_001",
+            "TheiaVideo__Video__Order"             : 1,
+            "TheiaVideo__Video__Title"             : "Front Approach to the Orangery",
+            "TheiaVideo__Video__Description"       : "A short glide from the drive to the orangery doors.",
+            "TheiaVideo__Video__Scheme"            : "Scheme-01",
+            "TheiaVideo__Video__Visible"           : true,
+            "TheiaVideo__Video__DurationMs"        : 25000,
+            "TheiaVideo__Video__Source"            : "ValeVision3D",
+            "TheiaVideo__Video__SourceVideoId"     : "Video_001",
+            "TheiaVideo__Video__SourceFingerprint" : "sha256:<hash of the path's keyframes, playback, export and layers>",
+            "TheiaVideo__Video__File"              : {
+                "TheiaVideo__File__Path"        : "Videos__Scheme-01/12345__ExampleProject__TheiaVideo__Video_001__2160p__.mp4",
+                "TheiaVideo__File__Quality"     : "4K",
+                "TheiaVideo__File__Width"       : 3240,
+                "TheiaVideo__File__Height"      : 2160,
+                "TheiaVideo__File__Fps"         : 30,
+                "TheiaVideo__File__Codec"       : "avc1.640033",
+                "TheiaVideo__File__Bytes"       : 106250000,
+                "TheiaVideo__File__BitrateKbps" : 34000,
+                "TheiaVideo__File__DurationMs"  : 25000,
+                "TheiaVideo__File__FastStart"   : true,
+                "TheiaVideo__File__HasAudio"    : false,
+                "TheiaVideo__File__UploadedIso" : "2026-10-07T12:00:00.000Z"
+            },
+            "TheiaVideo__Video__Poster"            : "12345__ExampleProject__TheiaVideo__Video_001__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail"         : "12345__ExampleProject__TheiaVideo__Video_001__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__PublishedIso"      : "2026-10-07T12:00:00.000Z",
+            "TheiaVideo__Video__PublishedBy"       : "USR00000001",
+            "TheiaVideo__Video__MetaUpdatedIso"    : "2026-10-07T12:00:00.000Z",
+            "TheiaVideo__Video__MetaUpdatedBy"     : "USR00000001",
+            "TheiaVideo__Video__Export"            : {
+                "TheiaVideo__Export__Aspect"           : "3:2",
+                "TheiaVideo__Export__Fps"              : 30,
+                "TheiaVideo__Export__QualityStop"      : 3,
+                "TheiaVideo__Export__AntiAliasSamples" : 8
+            }
+        },
+        {
+            "TheiaVideo__Video__Id"                : "Folder__Garden-Walk",
+            "TheiaVideo__Video__Order"             : 2,
+            "TheiaVideo__Video__Title"             : "Garden Walk",
+            "TheiaVideo__Video__Description"       : "An MP4 dropped into Content__VideoFiles by hand, written in here the first time a manager edited it.",
+            "TheiaVideo__Video__Scheme"            : "Scheme-01",
+            "TheiaVideo__Video__Visible"           : true,
+            "TheiaVideo__Video__DurationMs"        : 20000,
+            "TheiaVideo__Video__Source"            : "Folder",
+            "TheiaVideo__Video__SourceVideoId"     : "",
+            "TheiaVideo__Video__File"              : {
+                "TheiaVideo__File__Path"        : "Videos__Scheme-01/12345__ExampleProject__Garden-Walk__2160p__.mp4",
+                "TheiaVideo__File__Quality"     : "4K",
+                "TheiaVideo__File__Width"       : 3240,
+                "TheiaVideo__File__Height"      : 2160,
+                "TheiaVideo__File__Fps"         : 30,
+                "TheiaVideo__File__Codec"       : "avc1.640033",
+                "TheiaVideo__File__Bytes"       : 63977245,
+                "TheiaVideo__File__BitrateKbps" : 25590,
+                "TheiaVideo__File__DurationMs"  : 20000,
+                "TheiaVideo__File__FastStart"   : true,
+                "TheiaVideo__File__HasAudio"    : false,
+                "TheiaVideo__File__UploadedIso" : ""
+            },
+            "TheiaVideo__Video__Poster"            : "12345__ExampleProject__Garden-Walk__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail"         : "12345__ExampleProject__Garden-Walk__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__PublishedIso"      : "",
+            "TheiaVideo__Video__PublishedBy"       : "",
+            "TheiaVideo__Video__MetaUpdatedIso"    : "2026-10-07T12:00:00.000Z",
+            "TheiaVideo__Video__MetaUpdatedBy"     : "USR00000002"
+        }
+    ]
+}

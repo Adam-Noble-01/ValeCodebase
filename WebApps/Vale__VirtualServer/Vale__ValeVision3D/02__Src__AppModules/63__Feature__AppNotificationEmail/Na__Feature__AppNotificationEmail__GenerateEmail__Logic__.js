@@ -34,7 +34,7 @@
     // like the GH-Pages logo URL in the template. Do not derive these from
     // window.location.
     // ------------------------------------------------------------
-    const NA_APP_NOTIFICATION_INSTALL_GUIDE_URL = 'https://app.valegardenhouses.com/valevision/install-guide.html';   // <-- Production install guide page
+    const NA_APP_NOTIFICATION_INSTALL_GUIDE_URL = 'https://app.valegardenhouses.com/help/install-app/?app=valevision3d';   // <-- Vale Help install guide (the old install-guide.html forwards here)
 
 // endregion -------------------------------------------------------------------
 

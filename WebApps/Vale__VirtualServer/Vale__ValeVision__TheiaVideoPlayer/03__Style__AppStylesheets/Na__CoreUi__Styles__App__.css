@@ -1,0 +1,660 @@
+/* =============================================================================
+ * VALEVISION THEIA - MAIN APPLICATION STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__App__.css
+ * NAMESPACE  : ValeVision Theia
+ * MODULE     : Main Application Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The page: header, breadcrumbs, the player-and-list layout, buttons,
+ *              fields, messages, toasts and the project index
+ * CREATED    : 07-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Every surface takes its colours from the tokens, and fades when the cinema
+ *   changes them (Na__CoreUi__Styles__Variables__.css).
+ * - Two columns on a wide screen (player and details, then the list); one
+ *   column at 1100 px and below, and on a tablet held upright (up to 1400 px),
+ *   with the list as a grid of cards under the player (Adam, 07-Oct-2026: on an
+ *   iPad upright the narrow two columns left the video small and the screen empty).
+ * - The header grows by the status bar's height in an installed app
+ *   (env(safe-area-inset-top)), so the bar never covers the logo.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Base
+ * ----------------------------------------------------------------------------- */
+
+    * {
+        box-sizing                         : border-box;
+    }
+
+    html, body {
+        margin                             : 0;
+        min-height                         : 100%;
+    }
+
+    body.theia {
+        font-family                        : var(--Theia_Font);
+        font-size                          : 14px;
+        color                              : var(--Theia_Text);
+        background                         : var(--Theia_Page);
+        -webkit-font-smoothing             : antialiased;
+        transition                         : background-color var(--Theia_Fade), color var(--Theia_Fade);
+    }
+
+    button, input, select, textarea {
+        font-family                        : inherit;
+    }
+
+    a {
+        color                              : inherit;
+    }
+
+    .theia-icon {
+        display                            : inline-flex;
+        width                              : 20px;
+        height                             : 20px;
+        flex-shrink                        : 0;
+    }
+
+    .theia-icon svg {
+        width                              : 100%;
+        height                             : 100%;
+    }
+
+    :focus-visible {
+        outline                            : 2px solid var(--Theia_Focus);
+        outline-offset                     : 2px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header
+ * ----------------------------------------------------------------------------- */
+
+    .theia-header {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 16px;
+        height                             : calc(var(--Theia_HeaderHeight) + env(safe-area-inset-top, 0px));   /* <-- An installed app draws under the iPad's status bar: the bar grows by it, never squeezes the logo */
+        padding                            : env(safe-area-inset-top, 0px) max(var(--Theia_Gutter), env(safe-area-inset-right, 0px)) 0 max(var(--Theia_Gutter), env(safe-area-inset-left, 0px));
+        background                         : var(--Theia_HeaderBg);
+        color                              : var(--Theia_Text);            /* <-- Its own text colour, so the cinema never reaches it */
+        border-bottom                      : 2px solid var(--Theia_HeaderLine);   /* <-- The Vale apps' navy rule */
+        box-shadow                         : var(--Theia_Shadow);
+        transition                         : background-color var(--Theia_Fade), border-color var(--Theia_Fade), box-shadow var(--Theia_Fade);
+        z-index                            : 20;
+    }
+
+    .theia-header__brand {
+        display                            : flex;
+        align-items                        : center;
+        flex-shrink                        : 0;
+    }
+
+    .theia-header__logo {
+        height                             : 42px;                         /* <-- ValeVision 3D's logo height */
+        width                              : auto;                         /* <-- Never recoloured: the header keeps the Vale colours in the cinema too */
+    }
+
+    .theia-header__title {
+        flex                               : 1;
+        min-width                          : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : flex-end;
+        white-space                        : nowrap;
+    }
+
+    /* "ValeVision THEIA": ValeVision 3D's title, exactly (.app-header__title: 24px Open Sans SemiBold, navy) */
+    .theia-header__app {
+        font-size                          : 24px;
+        font-weight                        : var(--Theia_FontSemiBold);
+        color                              : var(--Theia_Brand);
+    }
+
+    /* The shared user bubble: initials for staff, the guest state on a client's link */
+    .theia-header__user {
+        flex-shrink                        : 0;
+        display                            : flex;
+        align-items                        : center;
+    }
+
+    .theia-header__user:empty {
+        display                            : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Page, Breadcrumbs and Layout
+ * ----------------------------------------------------------------------------- */
+
+    .theia-main {
+        max-width                          : var(--Theia_MaxWidth);
+        margin                             : 0 auto;
+        padding                            : 18px var(--Theia_Gutter) 22px;     /* <-- The footer sits near the window's foot */
+    }
+
+    .theia-crumbs {
+        display                            : inline-flex;
+        align-items                        : center;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        margin                             : 0 0 16px;
+        padding                            : 8px 16px;
+        background                         : var(--Theia_Surface);
+        border                             : 1px solid var(--Theia_Border);
+        border-radius                      : 12px;
+        box-shadow                         : var(--Theia_Shadow);
+        font-size                          : 16px;
+        transition                         : background-color var(--Theia_Fade), border-color var(--Theia_Fade);
+    }
+
+    .theia-crumbs__link {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 4px;
+        color                              : var(--Theia_TextSecondary);
+        text-decoration                    : none;
+    }
+
+    .theia-crumbs__link:hover {
+        color                              : var(--Theia_Text);
+        text-decoration                    : underline;
+    }
+
+    .theia-crumbs__link strong {
+        color                              : var(--Theia_Text);
+        font-weight                        : 600;
+    }
+
+    .theia-crumbs__chevron {
+        width                              : 16px;
+        height                             : 16px;
+    }
+
+    .theia-crumbs__sep {
+        color                              : var(--Theia_TextFaint);
+        margin                             : 0 4px;
+    }
+
+    .theia-crumbs__code,
+    .theia-crumbs__current {
+        color                              : var(--Theia_TextSecondary);
+    }
+
+    .theia-layout {
+        display                            : grid;
+        grid-template-columns              : minmax(0, 1fr) var(--Theia_SideWidth);
+        gap                                : var(--Theia_Gutter);
+        align-items                        : start;
+    }
+
+    .theia-layout__side {
+        position                           : sticky;
+        top                                : 16px;
+        max-height                         : calc(100vh - 32px);
+        overflow-y                         : auto;
+    }
+
+    @media (max-width: 1100px), (orientation: portrait) and (max-width: 1400px) {   /* <-- Also in Na__UiFeature__Styles__Playlist__.css */
+        .theia-layout {
+            grid-template-columns          : minmax(0, 1fr);
+        }
+        .theia-layout__side {
+            position                       : static;
+            max-height                     : none;
+        }
+    }
+
+    @media (max-width: 640px) {
+        :root {
+            --Theia_Gutter                 : 12px;
+            --Theia_HeaderHeight           : 50px;
+        }
+        .theia-header__logo {
+            height                         : 30px;
+        }
+        .theia-header__app {
+            display                        : none;                         /* <-- On a phone the logo carries the brand, as in ValeVision 3D */
+        }
+        .theia-crumbs {
+            font-size                      : 14px;
+        }
+    }
+
+    /* FADE TOGETHER | Text with its own colour fades with the page, not ahead of it */
+    .theia-crumbs__link,
+    .theia-crumbs__link strong,
+    .theia-crumbs__sep,
+    .theia-crumbs__code,
+    .theia-crumbs__current,
+    .theia-details__title,
+    .theia-details__meta,
+    .theia-playlist__title,
+    .theia-playlist__meta,
+    .theia-playlist__scheme,
+    .theia-playlist__quality,
+    .theia-details__quality,
+    .theia-index__meta {
+        transition                         : color var(--Theia_Fade), border-color var(--Theia_Fade);
+    }
+
+    /* FOOTER | At the foot of the window, well away from the player (Adam, 07-Oct-2026:
+       36 px under the card was too close and drew the eye). The body, the main column
+       and the watch page are columns the height of the window, and the footer's auto
+       margin takes the room left over. On a page taller than the window it keeps at
+       least 96 px from whatever comes before it. */
+    body.theia {
+        display                            : flex;
+        flex-direction                     : column;
+        min-height                         : 100vh;
+        min-height                         : 100dvh;                       /* <-- A phone's visible height, toolbars allowed for */
+    }
+
+    .theia-main {
+        flex                               : 1 0 auto;
+        width                              : 100%;                         /* <-- Auto side margins would otherwise shrink it to its content */
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .theia-page {
+        flex                               : 1 0 auto;
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .theia-main :has(+ .theia-footer) {
+        margin-bottom                      : 96px;
+    }
+
+    .theia-footer {
+        margin-top                         : auto;
+        padding-top                        : 18px;
+        border-top                         : 1px solid var(--Theia_Border);
+        color                              : var(--Theia_TextFaint);
+        font-size                          : 12px;
+        text-align                         : center;
+        transition                         : border-color var(--Theia_Fade), color var(--Theia_Fade);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Buttons, Fields, Tags
+ * ----------------------------------------------------------------------------- */
+
+    .theia-button {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : 8px;
+        height                             : 38px;
+        padding                            : 0 16px;
+        border                             : 1px solid transparent;
+        border-radius                      : var(--Theia_RadiusSmall);
+        font-size                          : 13px;
+        font-weight                        : 600;
+        cursor                             : pointer;
+        transition                         : background-color var(--Theia_Fast), border-color var(--Theia_Fade), color var(--Theia_Fade), transform var(--Theia_Fast);
+        white-space                        : nowrap;
+    }
+
+    .theia-button:active {
+        transform                          : translateY(1px);
+    }
+
+    .theia-button:disabled {
+        opacity                            : 0.5;
+        cursor                             : default;
+    }
+
+    .theia-button .theia-icon {
+        width                              : 18px;
+        height                             : 18px;
+    }
+
+    .theia-button--primary {
+        background                         : var(--Theia_Brand);
+        color                              : var(--Theia_OnBrand);
+    }
+
+    .theia-button--primary:hover {
+        background                         : var(--Theia_BrandDeep);
+    }
+
+    body.theia--cinema .theia-button--primary {
+        background                         : #e8edf2;
+        color                              : #0e1318;
+    }
+
+    .theia-button--outline {
+        background                         : transparent;
+        color                              : inherit;                      /* <-- Follows the page text as the cinema fades */
+        border-color                       : var(--Theia_Border);
+    }
+
+    .theia-button--outline:hover {
+        background                         : var(--Theia_SurfaceHover);
+    }
+
+    .theia-button--light {
+        background                         : #ffffff;
+        color                              : #0e1318;
+    }
+
+    .theia-button--ghost-light {
+        background                         : transparent;
+        color                              : #ffffff;
+        border-color                       : rgba(255, 255, 255, 0.5);
+    }
+
+    .theia-button--ghost-light:hover {
+        background                         : rgba(255, 255, 255, 0.12);
+    }
+
+    .theia-button--danger {
+        background                         : transparent;
+        color                              : var(--Theia_Danger);
+        border-color                       : var(--Theia_Border);
+    }
+
+    .theia-button--small {
+        height                             : 30px;
+        padding                            : 0 10px;
+        font-size                          : 12px;
+    }
+
+    .theia-field {
+        width                              : 100%;
+        padding                            : 9px 12px;
+        border                             : 1px solid var(--Theia_Border);
+        border-radius                      : var(--Theia_RadiusSmall);
+        background                         : var(--Theia_Surface);
+        color                              : var(--Theia_Text);
+        font-size                          : 14px;
+    }
+
+    .theia-field--area {
+        resize                             : vertical;
+        line-height                        : 1.55;
+    }
+
+    .theia-label {
+        display                            : block;
+        margin                             : 12px 0 6px;
+        font-size                          : 12px;
+        font-weight                        : 600;
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+        color                              : var(--Theia_TextSecondary);
+    }
+
+    .theia-check {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        margin                             : 6px 0;
+        cursor                             : pointer;
+    }
+
+    .theia-tag {
+        display                            : inline-block;
+        margin-top                         : 4px;
+        padding                            : 1px 7px;
+        border-radius                      : 20px;
+        background                         : var(--Theia_SurfaceMuted);
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 11px;
+        font-weight                        : 600;
+    }
+
+    .theia-tag--warn {
+        background                         : var(--Theia_WarnBg);
+        color                              : var(--Theia_Warn);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Messages, Empty States, Toasts
+ * ----------------------------------------------------------------------------- */
+
+    .theia-message {
+        max-width                          : 520px;
+        margin                             : 12vh auto 0;
+        padding                            : 32px;
+        text-align                         : center;
+    }
+
+    .theia-message__icon {
+        width                              : 56px;
+        height                             : 56px;
+        color                              : var(--Theia_TextFaint);
+    }
+
+    .theia-message__title {
+        margin                             : 16px 0 8px;
+        font-size                          : 24px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-message__text {
+        margin                             : 0 0 20px;
+        color                              : var(--Theia_TextSecondary);
+        line-height                        : 1.6;
+    }
+
+    .theia-empty {
+        padding                            : 48px 24px;
+        border                             : 1px dashed var(--Theia_Border);
+        border-radius                      : var(--Theia_Radius);
+        color                              : var(--Theia_TextSecondary);
+        text-align                         : center;
+        line-height                        : 1.6;
+    }
+
+    .theia-toasts {
+        position                           : fixed;
+        left                               : 50%;
+        bottom                             : calc(20px + env(safe-area-inset-bottom, 0));
+        transform                          : translateX(-50%);
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 8px;
+        z-index                            : 3000;
+        pointer-events                     : none;
+    }
+
+    .theia-toast {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 14px;
+        max-width                          : min(560px, calc(100vw - 24px));
+        padding                            : 10px 16px;
+        border-radius                      : 24px;
+        background                         : #172b3a;
+        color                              : #ffffff;
+        box-shadow                         : 0 6px 24px rgba(0, 0, 0, 0.25);
+        font-size                          : 13px;
+        opacity                            : 0;
+        transform                          : translateY(8px);
+        transition                         : opacity 0.25s ease, transform 0.25s ease;
+        pointer-events                     : auto;
+    }
+
+    .theia-toast.is-visible {
+        opacity                            : 1;
+        transform                          : none;
+    }
+
+    .theia-toast--error {
+        background                         : #7a1f1a;
+    }
+
+    .theia-toast__action {
+        border                             : none;
+        background                         : none;
+        color                              : #9fd0ff;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Project Index (staff, /theia/ on its own)
+ * ----------------------------------------------------------------------------- */
+
+    .theia-index__title {
+        margin                             : 8px 0 6px;
+        font-size                          : var(--Theia_FontSize_Title);
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-index__lead {
+        margin                             : 0 0 24px;
+        color                              : var(--Theia_TextSecondary);
+    }
+
+    .theia-index__grid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(260px, 1fr));
+        gap                                : 20px;
+    }
+
+    .theia-index__card {
+        display                            : flex;
+        flex-direction                     : column;
+        background                         : var(--Theia_Surface);
+        border                             : 1px solid var(--Theia_Border);
+        border-radius                      : var(--Theia_Radius);
+        overflow                           : hidden;
+        text-decoration                    : none;
+        box-shadow                         : var(--Theia_Shadow);
+        transition                         : transform var(--Theia_Fast), box-shadow var(--Theia_Fast);
+    }
+
+    .theia-index__card:hover {
+        transform                          : translateY(-2px);
+        box-shadow                         : 0 8px 24px rgba(15, 30, 40, 0.14);
+    }
+
+    .theia-index__thumb {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        aspect-ratio                       : 3 / 2;
+        background                         : #172b3a center / cover no-repeat;
+        color                              : rgba(255, 255, 255, 0.6);
+    }
+
+    .theia-index__thumb .theia-icon {
+        width                              : 48px;
+        height                             : 48px;
+    }
+
+    .theia-index__text {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+        padding                            : 14px 16px 16px;
+    }
+
+    .theia-index__name {
+        font-size                          : 16px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-index__meta {
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 12px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Start-Up Spinner (the one ValeVision 3D shows, drawn by index.html)
+ * -----------------------------------------------------------------------------
+ * The same 80px navy ring, white page and Open Sans line as ValeVision 3D's
+ * Na__UiFeature__Styles__LoadingOverlays__.css. It stays until the first video
+ * has a few seconds on the device. Below the shared sign-in (z-index 5000), so a
+ * sign-in that is needed shows over it.
+ * ----------------------------------------------------------------------------- */
+
+    .loading-overlay {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        width                              : 100vw;
+        height                             : 100vh;
+        background-color                   : #ffffff;
+        display                            : flex;
+        flex-direction                     : column;
+        justify-content                    : center;
+        align-items                        : center;
+        z-index                            : 4000;                         /* <-- Over the page, under the sign-in */
+        opacity                            : 1;
+        transition                         : opacity 0.5s ease-out;
+    }
+
+    .loading-overlay.hidden {
+        opacity                            : 0;
+        pointer-events                     : none;
+    }
+
+    .loading-spinner {
+        width                              : 80px;
+        height                             : 80px;
+        position                           : relative;
+        margin-bottom                      : 24px;
+    }
+
+    .loading-spinner::before {
+        content                            : '';
+        display                            : block;
+        width                              : 80px;
+        height                             : 80px;
+        border-radius                      : 50%;
+        border                             : 6px solid #e0e0e0;            /* <-- Light grey ring */
+        border-top-color                   : #172b3a;                      /* <-- Vale navy segment */
+        box-sizing                         : border-box;
+        animation                          : spinner-rotate 1s linear infinite;
+    }
+
+    @keyframes spinner-rotate {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 16px;
+        font-weight                        : 400;
+        color                              : #172b3a;
+        letter-spacing                     : 0.5px;
+        text-align                         : center;
+        margin-top                         : 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .loading-spinner::before {
+            animation-duration             : 2.4s;                         /* <-- Slower, never still: it still says "working" */
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

@@ -47,7 +47,7 @@
     // MODULE VARIABLES | Shared State
     // ------------------------------------------------------------
     var Vsm = window.Vsm = {
-        PageVersion: '0.6.0',                                                  // <-- Must match the local server's version
+        PageVersion: '0.9.0',                                                  // <-- Must match the local server's version
         State      : null,                                                     // <-- Last /api/state payload
         Running    : false,                                                    // <-- A job request is in flight
         Tab        : 'explorer',

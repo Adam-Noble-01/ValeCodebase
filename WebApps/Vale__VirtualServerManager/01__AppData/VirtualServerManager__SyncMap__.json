@@ -1,5 +1,5 @@
 {
-    "_About": "Sync map for the Vale Virtual Server Manager. Local.MirrorRoot IS Server.Root. Lanes: code (PC->server mirror), content (PC->server, newer wins), userdata (server->PC, newer wins), shared (both ways, newer wins). A mapping's DefaultLane (code or shared) applies to folders not named for a lane. Edit in the app (http://127.0.0.1:8020) or here. Remote paths are relative to Server.Root and can never leave it.",
+    "_About": "Sync map for the Vale Virtual Server Manager. Local.MirrorRoot IS Server.Root. Lanes: code (PC->server mirror), content (PC->server, newer wins), userdata (server->PC, newer wins), shared (both ways, newer wins). A mapping's DefaultLane (code or shared) applies to folders not named for a lane. ServerMadeContent: folders (by name) whose content is written on the server, e.g. ValeVision Theia's videos; their server-only and server-newer content is collected by every Collect, and they cannot be pruned. Edit in the app (http://127.0.0.1:8020) or here. Remote paths are relative to Server.Root and can never leave it.",
     "Server": {
         "HostAlias": "valevps",
         "Root": "/srv/vale",
@@ -32,7 +32,8 @@
         "~$*",
         "*.lnk",
         "*.code-workspace",
-        "*.lock"
+        "*.lock",
+        "ValeApps__DeployStamp__.json"
     ],
     "KindExcludes": {
         "web": [
@@ -89,6 +90,9 @@
             "*LocalProjectData*"
         ]
     },
+    "ServerMadeContent": [
+        "ValeVision__TheiaVideo"
+    ],
     "Mappings": [
         {
             "Id": "root-files",
@@ -197,6 +201,32 @@
             "Kind": "web",
             "Local": "Vale__ValeVisionGallery",
             "Remote": "Vale__ValeVisionGallery",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "help",
+            "Name": "ValeVision Help (install guides, public)",
+            "Kind": "web",
+            "Local": "Vale__ValeVision__Help",
+            "Remote": "Vale__ValeVision__Help",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
+            "Id": "theia",
+            "Name": "ValeVision Theia video player",
+            "Kind": "web",
+            "Local": "Vale__ValeVision__TheiaVideoPlayer",
+            "Remote": "Vale__ValeVision__TheiaVideoPlayer",
             "Enabled": true,
             "AllowDeletes": true,
             "Exclude": [],

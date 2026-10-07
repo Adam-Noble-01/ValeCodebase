@@ -27,7 +27,7 @@
 //   speed value box on the same line; then Advanced (collapsed) holding
 //   Position, the Nav Mode switch, Easing, the layout-editor-only flag and the
 //   Lighting subsection (built by SceneLightingRows__); then Preview, Update
-//   Scene and Delete.
+//   Scene and Delete; then, under a rule, Presentation Scene To Keyframe.
 // - The drag handle is the ONLY thing that arms a drag on the row, so the
 //   sliders stay usable and selecting text in the name field never starts a
 //   drag.
@@ -42,6 +42,7 @@
 // - handlers.onMoveByOffset(sceneId, +-1): reorder arrows
 // - handlers.onMoveToPosition(sceneId, n): Position field, 1-based within the group
 // - handlers.onMutate(action, scene)     : 'regroup' | 'update' | 'flag' | 'lighting' | 'delete'
+// - handlers.onSceneToKeyframe(sceneId)  : make a Video Studio keyframe from this scene; absent hides the button
 //
 // INTEGRATION:
 // - Consumed only by Na__PresentationMode__DevMenu__SceneEditor.js.
@@ -68,6 +69,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 07-Oct-2026 - Version 1.4.0 (keyframe <-> Presentation scene, v2.74.0)
+// - Presentation Scene To Keyframe, the last thing on an open row, under a
+//   rule: hands the scene to handlers.onSceneToKeyframe, which the editor
+//   supplies only once the Video Studio has registered. Disabled on drawing
+//   cards.
+//
 // 01-Oct-2026 - Version 1.3.1 (records hygiene, v2.71.1)
 // - Comments only. The PORT NOTE no longer offers this split to TrueVision,
 //   which withdrew it in v2.68.2.
@@ -754,6 +761,57 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Presentation Scene To Keyframe Row
+    // ------------------------------------------------------------
+    // The last thing on an open row, on a line of its own under a rule: it
+    // does not change this scene, it makes something new from it, so it is
+    // kept apart from the buttons that do. The keyframe joins the end of the
+    // path open in the Video Studio; the editor's handler says so if none is.
+    //
+    // Withheld on a floor plan or elevation card, whose camera belongs to its
+    // drawing and is not a shot anyone would fly a film through.
+    //
+    // Returns null when no handler is registered, so a build without the
+    // Video Studio shows rows exactly as before.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildSceneToKeyframeRow(scene, onSceneToKeyframe) {
+        if (typeof onSceneToKeyframe !== 'function') return null;
+
+        const isDrawingScene = Boolean(scene.PresentationMode__Scene__FloorPlanId || scene.PresentationMode__Scene__ElevationId);
+
+        const wrap = document.createElement('div');
+
+        const rule = document.createElement('hr');
+        rule.className = 'na-pm-dev__rule';
+        wrap.appendChild(rule);
+
+        const row = document.createElement('div');
+        row.className = 'na-pm-dev__actions';
+
+        const button = document.createElement('button');
+        button.type        = 'button';
+        button.className   = 'na-pm-dev__btn na-pm-dev__btn--wide';
+        button.textContent = 'Presentation Scene To Keyframe';
+        button.title       = 'Add this scene as a new keyframe at the end of the path open in the Video Studio: '
+                           + 'its camera, lens, navigation mode and move time. A one-off copy; the two are not kept in step.';
+
+        if (isDrawingScene) {
+            button.disabled = true;
+            button.title    = 'This is a drawing scene. Its camera belongs to the drawing, so it cannot become a video keyframe.';
+        }
+
+        button.addEventListener('click', () => {
+            if (button.disabled) return;
+            onSceneToKeyframe(scene.PresentationMode__Scene__Id);
+        });
+
+        row.appendChild(button);
+        wrap.appendChild(row);
+        return wrap;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build a Single Scene Editor Row
     // ------------------------------------------------------------
     // A FOLDED ROW IS A HEADER AND NOTHING ELSE. The body - every field and
@@ -971,6 +1029,10 @@
         // ACTION BUTTONS
         body.appendChild(Na__PmRows__BuildActions(scene, onMutate, previewScene));
 
+        // PRESENTATION SCENE TO KEYFRAME | Last, and only with a Video Studio to receive it
+        const toKeyframeRow = Na__PmRows__BuildSceneToKeyframeRow(scene, safeHandlers.onSceneToKeyframe);
+        if (toKeyframeRow) body.appendChild(toKeyframeRow);
+
         wrapper.appendChild(body);
         return wrapper;
     }
@@ -989,7 +1051,10 @@
         Na__PresentationMode__DevMenu__BuildSceneRow,
         Na__PmRows__FovToFocalMm   as Na__PresentationMode__DevMenu__FovToFocalMm,
         Na__PmRows__FocalMmToFov   as Na__PresentationMode__DevMenu__FocalMmToFov,
-        Na__PmRows__TRANSITION_DEFAULT as Na__PresentationMode__DevMenu__TRANSITION_DEFAULT_MS
+        Na__PmRows__TRANSITION_DEFAULT as Na__PresentationMode__DevMenu__TRANSITION_DEFAULT_MS,
+        Na__PmRows__TRANSITION_MIN_MS  as Na__PresentationMode__DevMenu__TRANSITION_MIN_MS,     // <-- The Move box's bounds, for the Video Studio's conversions
+        Na__PmRows__TRANSITION_MAX_MS  as Na__PresentationMode__DevMenu__TRANSITION_MAX_MS,
+        Na__PmRows__EASING_OPTIONS     as Na__PresentationMode__DevMenu__EASING_OPTIONS
     };
     // ------------------------------------------------------------
 

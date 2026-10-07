@@ -1,0 +1,141 @@
+/* =============================================================================
+   VALE SHARED - INSTALL THE APP (PROMPT CARD)
+   =============================================================================
+
+   FILE       : ValeShared__AppInstall__.css
+   MODULE     : Shared App Install (ValeShared__AppInstall__.js)
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : The install card: bottom centre on a computer, full width at the
+                bottom of a phone, in the Vale navy, never inside the installed app
+   CREATED    : 07-Oct-2026
+
+   ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Card
+   ----------------------------------------------------------------------------- */
+
+    .ValeAppInstall__Card {
+        --Vai_Navy       : #172b3a;
+        --Vai_NavyHover  : #243d50;
+        --Vai_Muted      : #4a6076;
+        --Vai_Line       : rgba(23, 43, 58, 0.14);
+        position         : fixed;
+        left             : 50%;
+        bottom           : 24px;
+        z-index          : 2147483000;
+        display          : flex;
+        gap              : 14px;
+        align-items      : flex-start;
+        box-sizing       : border-box;
+        width            : min(540px, calc(100% - 32px));
+        padding          : 16px 44px 16px 16px;
+        background       : #ffffff;
+        color            : var(--Vai_Navy);
+        border           : 1px solid var(--Vai_Line);
+        border-radius    : 14px;
+        box-shadow       : 0 14px 36px rgba(23, 43, 58, 0.24);
+        font-family      : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size        : 14px;
+        line-height      : 1.45;
+        opacity          : 0;
+        transform        : translate(-50%, 16px);
+        transition       : opacity 0.22s ease, transform 0.24s ease, bottom 0.25s ease;   /* bottom: lifts over an app's own bar */
+    }
+    .ValeAppInstall__Card.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    .ValeAppInstall__Card.is-phone {                                           /* Phones: full width, above the browser's own bar */
+        bottom           : calc(12px + env(safe-area-inset-bottom, 0px));
+        width            : calc(100% - 20px);
+    }
+
+    .ValeAppInstall__Icon {
+        flex             : none;
+        width            : 48px;
+        height           : 48px;
+        border-radius    : 11px;
+        box-shadow       : 0 1px 3px rgba(23, 43, 58, 0.25);
+    }
+
+    .ValeAppInstall__Words { min-width: 0; flex: 1; }
+    .ValeAppInstall__Title { font-size: 15.5px; font-weight: 700; margin: 1px 0 3px; }
+    .ValeAppInstall__Text  { color: var(--Vai_Muted); }
+    .ValeAppInstall__Text b { color: var(--Vai_Navy); font-weight: 600; }
+
+    .ValeAppInstall__Glyph {                                                   /* The Share / menu glyph inside a sentence */
+        width            : 1.15em;
+        height           : 1.15em;
+        vertical-align   : -0.2em;
+        fill             : none;
+        stroke           : var(--Vai_Navy);
+        stroke-width     : 2;
+        stroke-linecap   : round;
+        stroke-linejoin  : round;
+    }
+    .ValeAppInstall__Glyph circle { fill: var(--Vai_Navy); stroke: none; }
+
+    .ValeAppInstall__Always { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13.5px; cursor: pointer; }
+    .ValeAppInstall__Always input { width: 16px; height: 16px; margin: 0; accent-color: var(--Vai_Navy); }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Buttons
+   ----------------------------------------------------------------------------- */
+
+    .ValeAppInstall__Buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+
+    .ValeAppInstall__Btn {
+        font             : inherit;
+        font-weight      : 600;
+        padding          : 8px 16px;
+        border-radius    : 8px;
+        border           : 1px solid var(--Vai_Line);
+        background       : #ffffff;
+        color            : var(--Vai_Navy);
+        cursor           : pointer;
+    }
+    .ValeAppInstall__Btn:hover { background: #eef2f5; }
+    .ValeAppInstall__Btn.is-primary { background: var(--Vai_Navy); border-color: var(--Vai_Navy); color: #ffffff; }
+    .ValeAppInstall__Btn.is-primary:hover { background: var(--Vai_NavyHover); }
+    .ValeAppInstall__Btn.is-quiet { border-color: transparent; color: var(--Vai_Muted); }
+    .ValeAppInstall__Btn:disabled { opacity: 0.75; cursor: progress; }
+    .ValeAppInstall__Link { margin-left: auto; color: var(--Vai_Muted); font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .ValeAppInstall__Link:hover { color: var(--Vai_Navy); }
+
+    .ValeAppInstall__Close {
+        position         : absolute;
+        top              : 8px;
+        right            : 8px;
+        width            : 30px;
+        height           : 30px;
+        border           : 0;
+        border-radius    : 50%;
+        background       : transparent;
+        color            : var(--Vai_Muted);
+        font-size        : 22px;
+        line-height      : 1;
+        cursor           : pointer;
+    }
+    .ValeAppInstall__Close:hover { background: #eef2f5; color: var(--Vai_Navy); }
+
+    @media (max-width: 420px) {
+        .ValeAppInstall__Card { padding: 14px 40px 14px 14px; gap: 12px; }
+        .ValeAppInstall__Btn { flex: 1; padding: 9px 10px; }
+        .ValeAppInstall__Link { flex-basis: 100%; margin: 2px 0 0; text-align: center; }   /* Its own line, never hidden: the way to the guide */
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Never Inside the Installed App
+   ----------------------------------------------------------------------------- */
+
+    @media (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen), (display-mode: window-controls-overlay) {
+        .ValeAppInstall__Card { display: none !important; }
+    }
+
+/* endregion ------------------------------------------------------------------ */

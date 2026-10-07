@@ -22,9 +22,8 @@
 //   GitHub Pages with no build step, so pulling a muxer off a CDN would add a
 //   network failure mode to a feature that otherwise works entirely offline.
 //
-// BOX LAYOUT PRODUCED:
+// BOX LAYOUT PRODUCED (FAST-START: the index first, so a browser plays from the first bytes):
 //   ftyp                          brand isom, compatible with avc1/mp41
-//   mdat                          every encoded frame, back to back
 //   moov
 //     mvhd                        movie header, timescale 1000
 //     trak
@@ -42,25 +41,41 @@
 //             stsc                one sample per chunk
 //             stsz                per-sample byte sizes
 //             stco / co64         chunk byte offsets into the file
+//   [free]                        streaming mode only: padding up to the reserved head
+//   mdat                          every encoded frame, back to back
 //
-// WHY MDAT COMES BEFORE MOOV:
+// WHY MOOV COMES FIRST (since 1.1.0):
 // - Sample offsets in stco point into mdat, so mdat's position must be known
-//   before moov is written.  Writing mdat first and moov last is the simplest
-//   correct ordering.  The file is not progressively streamable as a result,
-//   which does not matter for a download.
+//   before moov is written. moov's own size depends only on the sample count
+//   and whether 32 or 64-bit offsets are needed, so it is sized first with
+//   placeholder offsets, then written for real once mdat's start is known.
+//   A browser can then start playing as soon as the first bytes arrive, which
+//   is what ValeVision Theia streams. Version 1.0.0 wrote mdat first.
 //
-// MEMORY:
-// - Encoded chunks are retained until finalize().  A 60 second 4K clip at
-//   24 Mbps is roughly 180 MB, which is comfortable; the caller surfaces the
-//   running size so long exports are not a surprise.
-// - finalize() hands the chunk views straight to the Blob constructor rather
-//   than concatenating into one giant ArrayBuffer, so there is no doubling.
+// TWO MODES:
+// - MEMORY (the MP4 download): chunks are kept until finalize(), which returns
+//   a Blob. A 60 second 4K clip at 24 Mbps is roughly 180 MB. The chunk views go
+//   straight to the Blob constructor, so there is no doubling.
+// - STREAMING (Publish to Theia): options.onPayload receives each frame's bytes
+//   as it is encoded and nothing is kept, so a long 4K render never fills the
+//   browser's memory. The uploader writes them into the file after a head of
+//   options.reservedHeadBytes (Na__VideoStudio__Mp4Muxer__HeadBytesFor, sized
+//   for the frame count before the render starts). finalizeHead() then returns
+//   exactly that many bytes - ftyp, moov, a free box of padding, the mdat
+//   header - to write into the space kept at the front: the file is fast-start
+//   with no copy.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
+//
+// 07-Oct-2026 - Version 1.1.0
+// - Fast-start: moov is written before mdat (sized first, then written with the
+//   real offsets). Downloads now stream in a browser too.
+// - Streaming mode for Publish to Theia: onPayload, reservedHeadBytes,
+//   finalizeHead() and Na__VideoStudio__Mp4Muxer__HeadBytesFor().
 //
 // =============================================================================
 
@@ -517,6 +532,48 @@
 // REGION | Public Muxer API
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Write moov With Given Offsets: returns its bytes
+    // ------------------------------------------------------------
+    function Na__VsMp4__BuildMoov(base, chunkOffsets, needsCo64) {
+        const writer = new Na__VsMp4__Writer(8192 + base.sampleSizes.length * 16);
+        Na__VsMp4__WriteMoov(writer, Object.assign({}, base, { chunkOffsets, needsCo64 }));
+        return new Uint8Array(writer.result());
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The mdat Header for a Payload Size (8 bytes, or 16 for the 64-bit form)
+    // ------------------------------------------------------------
+    function Na__VsMp4__MdatHeader(payloadBytes) {
+        const writer = new Na__VsMp4__Writer(32);
+        if ((payloadBytes + 8) > Na__VsMp4__UINT32_MAX) {
+            writer.u32(1);                                                   // <-- Size 1 signals a 64-bit largesize field
+            writer.fourcc('mdat');
+            writer.u64(payloadBytes + 16);
+        } else {
+            writer.u32(payloadBytes + 8);
+            writer.fourcc('mdat');
+        }
+        return new Uint8Array(writer.result());
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Head to Reserve for a Streamed File of a Given Frame Count
+    // ------------------------------------------------------------
+    // An upper bound on ftyp + moov + mdat header with at least 8 bytes over
+    // (the smallest free box), so finalizeHead() always fits: about 24 bytes a
+    // frame in the worst case (stsz 4, co64 8, stts 8, stss 4) plus the fixed
+    // boxes and up to 1 KB of SPS/PPS, rounded up to 4 KB. 200 KB for a five
+    // minute clip at 30 fps.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__Mp4Muxer__HeadBytesFor(frameCount) {
+        const bound = 64 + 2048 + 24 * Math.max(1, frameCount) + 8 + 16;
+        return Math.ceil(bound / 4096) * 4096 + 4096;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Normalise an avcC Description to a Uint8Array
     // ------------------------------------------------------------
     function Na__VsMp4__NormaliseDescription(description) {
@@ -533,19 +590,24 @@
 
     // FUNCTION | Create an MP4 Muxer for a Single H.264 Video Track
     // ------------------------------------------------------------
-    // options: { width, height, fps }
+    // options: { width, height, fps, onPayload, reservedHeadBytes }
+    //   onPayload(bytes)       Streaming mode: each frame's bytes as encoded (nothing kept)
+    //   reservedHeadBytes      Streaming mode: the head the uploader left at the front
     //
     // Returns an object with:
     //   setDescription(avcC)   Call once with decoderConfig.description
     //   addChunk(bytes, isKey) Append one encoded frame
     //   getSampleCount()       Frames appended so far
     //   getByteLength()        Encoded payload bytes so far
-    //   finalize()             Returns a Blob of type video/mp4
+    //   finalize()             Memory mode: a fast-start Blob of type video/mp4
+    //   finalizeHead()         Streaming mode: the reservedHeadBytes to write at the front
     // ------------------------------------------------------------
     function Na__VideoStudio__Mp4Muxer__Create(options) {
         const width  = Math.max(2, Math.round(options.width));
         const height = Math.max(2, Math.round(options.height));
         const fps    = (Number.isFinite(options.fps) && options.fps > 0) ? options.fps : 30;
+        const onPayload = (typeof options.onPayload === 'function') ? options.onPayload : null;
+        const reservedHeadBytes = Math.max(0, Math.floor(options.reservedHeadBytes || 0));
 
         const chunkData   = [];      // <-- Encoded frame payloads, in decode order
         const sampleSizes = [];      // <-- Byte length of each frame
@@ -577,7 +639,8 @@
             // FUNCTION | Append One Encoded Frame
             // ------------------------------------------------------------
             addChunk(bytes, isKey) {
-                chunkData.push(bytes);
+                if (onPayload) onPayload(bytes);                             // <-- Streaming: straight to the uploader, nothing kept
+                else chunkData.push(bytes);
                 sampleSizes.push(bytes.byteLength);
                 payloadBytes += bytes.byteLength;
 
@@ -602,66 +665,100 @@
             // ------------------------------------------------------------
 
 
-            // FUNCTION | Assemble the Finished MP4 as a Blob
+            // FUNCTION | Assemble the Finished MP4 as a Fast-Start Blob (memory mode)
             // ------------------------------------------------------------
             finalize() {
+                if (onPayload) throw new Error('A streaming muxer finishes with finalizeHead().');
+                const base       = this._base();
+                const ftypBytes  = this._ftyp();
+                const mdatHeader = Na__VsMp4__MdatHeader(payloadBytes);
+
+                // SIZE FIRST | moov's size depends only on the counts and the offset width
+                let needsCo64 = false;
+                let moovSize  = Na__VsMp4__BuildMoov(base, new Array(sampleSizes.length).fill(0), false).length;
+                if (ftypBytes.length + moovSize + mdatHeader.length + payloadBytes > Na__VsMp4__UINT32_MAX) {
+                    needsCo64 = true;
+                    moovSize  = Na__VsMp4__BuildMoov(base, new Array(sampleSizes.length).fill(0), true).length;
+                }
+
+                // OFFSETS | One chunk per sample, laid out back to back after the mdat header
+                const chunkOffsets = this._offsets(ftypBytes.length + moovSize + mdatHeader.length);
+                const moovBytes = Na__VsMp4__BuildMoov(base, chunkOffsets, needsCo64);
+                if (moovBytes.length !== moovSize) throw new Error('MP4 index size changed between passes.');
+
+                return new Blob(
+                    [ftypBytes, moovBytes, mdatHeader, ...chunkData],        // <-- No giant concat; Blob stitches the parts
+                    { type: 'video/mp4' }
+                );
+            },
+            // ------------------------------------------------------------
+
+
+            // FUNCTION | The Reserved Head of a Streamed File (streaming mode)
+            // ------------------------------------------------------------
+            // Exactly reservedHeadBytes: ftyp, moov (offsets counted from the end of
+            // the head, where the uploader wrote the first frame), a free box of
+            // padding, and the mdat header in the last 8 or 16 bytes.
+            // ------------------------------------------------------------
+            finalizeHead() {
+                if (!onPayload || !reservedHeadBytes) throw new Error('finalizeHead() is for a streaming muxer with a reserved head.');
+                const base       = this._base();
+                const ftypBytes  = this._ftyp();
+                const mdatHeader = Na__VsMp4__MdatHeader(payloadBytes);
+                const needsCo64  = (reservedHeadBytes + payloadBytes) > Na__VsMp4__UINT32_MAX;
+                const moovBytes  = Na__VsMp4__BuildMoov(base, this._offsets(reservedHeadBytes), needsCo64);
+                const gap = reservedHeadBytes - ftypBytes.length - moovBytes.length - mdatHeader.length;
+                if (gap < 0 || (gap > 0 && gap < 8)) {
+                    throw new Error(`The reserved head (${reservedHeadBytes} bytes) cannot hold this video's index (${moovBytes.length} bytes).`);
+                }
+                const head = new Uint8Array(reservedHeadBytes);              // <-- Zero-filled: the free box's body
+                head.set(ftypBytes, 0);
+                head.set(moovBytes, ftypBytes.length);
+                if (gap) {
+                    const at = ftypBytes.length + moovBytes.length;
+                    new DataView(head.buffer).setUint32(at, gap);
+                    head.set([0x66, 0x72, 0x65, 0x65], at + 4);              // <-- The four characters of 'free'
+                }
+                head.set(mdatHeader, reservedHeadBytes - mdatHeader.length);
+                return head;
+            },
+            // ------------------------------------------------------------
+
+
+            // HELPER | Everything moov needs except the offsets
+            _base() {
                 if (sampleSizes.length === 0) {
                     throw new Error('No frames were encoded, so there is nothing to write.');
                 }
                 if (!avcCBytes) {
                     throw new Error('Encoder never supplied an H.264 decoder configuration.');
                 }
+                const deltas = Na__VsMp4__BuildSampleDeltas(sampleSizes.length, fps, Na__VsMp4__MEDIA_TIMESCALE);
+                return {
+                    width, height, avcCBytes,
+                    movieDuration : Math.round((sampleSizes.length * Na__VsMp4__MOVIE_TIMESCALE) / fps),
+                    mediaDuration : deltas.reduce((sum, d) => sum + d, 0),
+                    sttsEntries   : Na__VsMp4__RunLengthEncodeDeltas(deltas),
+                    syncSamples, sampleSizes
+                };
+            },
 
-                // FTYP | Written first so its length is known for the offsets
-                const ftypWriter = new Na__VsMp4__Writer(64);
-                Na__VsMp4__WriteFtyp(ftypWriter);
-                const ftypBytes = new Uint8Array(ftypWriter.result());       // <-- Copy out before the writer is discarded
+            // HELPER | The ftyp box's bytes
+            _ftyp() {
+                const writer = new Na__VsMp4__Writer(64);
+                Na__VsMp4__WriteFtyp(writer);
+                return new Uint8Array(writer.result());                      // <-- Copy out before the writer is discarded
+            },
 
-                // MDAT HEADER | Widened to the 64-bit largesize form if needed
-                const mdatWriter   = new Na__VsMp4__Writer(32);
-                const useLargeSize = (payloadBytes + 8) > Na__VsMp4__UINT32_MAX;
-
-                if (useLargeSize) {
-                    mdatWriter.u32(1);                                       // <-- Size 1 signals a 64-bit largesize field
-                    mdatWriter.fourcc('mdat');
-                    mdatWriter.u64(payloadBytes + 16);
-                } else {
-                    mdatWriter.u32(payloadBytes + 8);
-                    mdatWriter.fourcc('mdat');
-                }
-                const mdatHeader = new Uint8Array(mdatWriter.result());
-
-                // OFFSETS | One chunk per sample, laid out back to back in mdat
-                const dataStart    = ftypBytes.length + mdatHeader.length;
-                const chunkOffsets = new Array(sampleSizes.length);
-                let   cursor       = dataStart;
-
+            // HELPER | Each sample's file offset, the first at dataStart
+            _offsets(dataStart) {
+                const offsets = new Array(sampleSizes.length);
+                let cursor = dataStart;
                 for (let i = 0; i < sampleSizes.length; i++) {
-                    chunkOffsets[i] = cursor;
+                    offsets[i] = cursor;
                     cursor += sampleSizes[i];
                 }
-
-                const needsCo64 = cursor > Na__VsMp4__UINT32_MAX;
-
-                // TIMING | Exact per-sample deltas, run-length encoded
-                const deltas        = Na__VsMp4__BuildSampleDeltas(sampleSizes.length, fps, Na__VsMp4__MEDIA_TIMESCALE);
-                const sttsEntries   = Na__VsMp4__RunLengthEncodeDeltas(deltas);
-                const mediaDuration = deltas.reduce((sum, d) => sum + d, 0);
-                const movieDuration = Math.round((sampleSizes.length * Na__VsMp4__MOVIE_TIMESCALE) / fps);
-
-                // MOOV | Sample tables now that every offset is known
-                const moovWriter = new Na__VsMp4__Writer(8192);
-                Na__VsMp4__WriteMoov(moovWriter, {
-                    width, height, avcCBytes,
-                    movieDuration, mediaDuration,
-                    sttsEntries, syncSamples, sampleSizes, chunkOffsets, needsCo64
-                });
-                const moovBytes = new Uint8Array(moovWriter.result());
-
-                return new Blob(
-                    [ftypBytes, mdatHeader, ...chunkData, moovBytes],        // <-- No giant concat; Blob stitches the parts
-                    { type: 'video/mp4' }
-                );
+                return offsets;
             }
             // ------------------------------------------------------------
         };
@@ -678,7 +775,8 @@
     // MODULE EXPORTS | MP4 Muxer API
     // ------------------------------------------------------------
     export {
-        Na__VideoStudio__Mp4Muxer__Create
+        Na__VideoStudio__Mp4Muxer__Create,
+        Na__VideoStudio__Mp4Muxer__HeadBytesFor
     };
     // ------------------------------------------------------------
 

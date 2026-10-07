@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALE HELP - INSTALL THE APP (ILLUSTRATED, DEVICE BY DEVICE)
+     =============================================================================
+
+     FILE       : install-app/index.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Show a colleague, step by step with pictures, how to install
+                  ValeVision or ValeVision 3D on their own device
+     CREATED    : 07-Oct-2026
+
+     DESCRIPTION:
+     - Served at https://app.valegardenhouses.com/help/install-app/
+       (route /help/ -> Vale__ValeVision__Help, Server Manager tab 03).
+     - ?app=valevision (default) | valevision3d   which app, its name and link
+       ?device=windows | ios | android | mac       which steps; detected if absent
+       The apps' install card (ValeShared__AppInstall__) links here with both.
+     - Pictures: Help__Snippets/HelpSnippet__<app>__<Step>__.webp, made by
+       Server__DeveloperTools/50__Help__InstallSnippets (re-run it when an app
+       or a browser changes). Browser and phone frames are drawn; the apps in
+       them are the real pages.
+     - Replaces the pre-server install-guide.html (the old URL
+       /valevision/install-guide.html forwards here). No sign-in needed.
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <title>Install ValeVision - Vale Help</title>
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="theme-color" content="#172b3a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppInstall/ValeShared__AppInstall__.js"></script>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Styles - Vale Design Suite                        -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <style>
+        :root {
+            --Vale_PrimaryBrand   : #172b3a;
+            --Vale_BrandHover     : #243d50;
+            --Vale_Background     : #f5f5f5;
+            --Vale_Surface        : #ffffff;
+            --Vale_TextMuted      : #4a6076;
+            --Vale_Line           : #dde3e8;
+            --Vale_Soft           : #eef3f7;
+            --Vale_Warn           : #fff5e0;
+            --Vale_WarnLine       : #f0c36d;
+            --Vale_Radius         : 12px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; background: var(--Vale_Background); color: var(--Vale_PrimaryBrand);
+            font-family: 'Open Sans', -apple-system, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; font-size: 16px;
+        }
+        a { color: inherit; }
+
+        /* HEADER | Vale logo left, Help right */
+        .Help__Header {
+            position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
+            height: 60px; padding: 0 20px; background: var(--Vale_Surface); border-bottom: 1px solid var(--Vale_Line);
+        }
+        .Help__Header img { height: 30px; }
+        .Help__Header a { text-decoration: none; font-weight: 700; letter-spacing: 0.02em; }
+
+        /* HERO | The app, the device */
+        .Help__Hero { background: var(--Vale_PrimaryBrand); color: #fff; padding: 28px 20px 30px; text-align: center; }
+        .Help__Hero img { width: 64px; height: 64px; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+        .Help__Hero h1 { margin: 12px 0 4px; font-size: clamp(24px, 4.5vw, 32px); line-height: 1.25; }
+        .Help__Hero p { margin: 0 auto; max-width: 560px; opacity: 0.85; }
+
+        .Help__Main { max-width: 860px; margin: 0 auto; padding: 24px 16px 40px; }
+        .Help__Card {
+            background: var(--Vale_Surface); border: 1px solid var(--Vale_Line); border-radius: var(--Vale_Radius);
+            padding: 22px 24px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(23,43,58,0.05);
+        }
+        .Help__Card h2 { margin: 0 0 6px; font-size: 21px; line-height: 1.3; }
+        .Help__Muted { color: var(--Vale_TextMuted); margin: 0; }
+
+        .Help__Btn {
+            display: inline-block; margin-top: 14px; padding: 12px 22px; border-radius: 9px; text-decoration: none;
+            background: var(--Vale_PrimaryBrand); color: #fff; font-weight: 700;
+        }
+        .Help__Btn:hover { background: var(--Vale_BrandHover); }
+
+        /* DEVICE TABS */
+        .Help__Tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+        .Help__Tab {
+            font: inherit; font-weight: 600; padding: 14px 8px 12px; border: 2px solid var(--Vale_Line); border-radius: 10px;
+            background: var(--Vale_Surface); color: var(--Vale_PrimaryBrand); cursor: pointer; text-align: center;
+        }
+        .Help__Tab svg { display: block; margin: 0 auto 6px; width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+        .Help__Tab small { display: block; font-weight: 400; color: var(--Vale_TextMuted); font-size: 12.5px; }
+        .Help__Tab:hover { background: var(--Vale_Soft); }
+        .Help__Tab.is-active { border-color: var(--Vale_PrimaryBrand); background: var(--Vale_Soft); }
+        .Help__Tab .Help__Yours {                                               /* Always takes its line: every tab the same height */
+            display: block; visibility: hidden; width: max-content; margin: 6px auto 0; padding: 1px 8px; border-radius: 9px;
+            background: #e3f3ea; color: #1f7a4d; font-size: 11.5px; font-weight: 700;
+        }
+        .Help__Tab.is-yours .Help__Yours { visibility: visible; }
+        @media (max-width: 560px) { .Help__Tabs { grid-template-columns: repeat(2, 1fr); } }
+
+        /* STEPS */
+        .Help__Step { display: grid; grid-template-columns: 38px 1fr; gap: 14px; padding: 18px 0; border-top: 1px solid var(--Vale_Line); }
+        .Help__Step:first-of-type { border-top: 0; }
+        .Help__Num {
+            width: 34px; height: 34px; border-radius: 50%; background: var(--Vale_PrimaryBrand); color: #fff;
+            display: grid; place-items: center; font-weight: 700;
+        }
+        .Help__Step h3 { margin: 4px 0 4px; font-size: 17.5px; line-height: 1.35; }
+        .Help__Step p { margin: 0; color: var(--Vale_TextMuted); }
+        .Help__Step p b, .Help__Callout b { color: var(--Vale_PrimaryBrand); }
+        .Help__Figure { margin: 14px 0 0; }
+        .Help__Figure img {
+            display: block; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--Vale_Line);
+            box-shadow: 0 6px 18px rgba(23,43,58,0.10); background: #fff;
+        }
+        .Help__Figure.is-phone img { max-width: min(330px, 100%); }
+        .Help__Figure figcaption { font-size: 13.5px; color: var(--Vale_TextMuted); margin-top: 6px; }
+
+        .Help__Callout { border-radius: 10px; padding: 12px 16px; margin: 14px 0 4px; background: var(--Vale_Soft); }
+        .Help__Callout.is-warn { background: var(--Vale_Warn); border: 1px solid var(--Vale_WarnLine); }
+        .Help__Callout strong { display: block; margin-bottom: 2px; }
+
+        .Help__Glyph { width: 1.15em; height: 1.15em; vertical-align: -0.2em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .Help__Glyph circle { fill: currentColor; stroke: none; }
+
+        .Help__Section[hidden] { display: none; }
+        .Help__Footer { text-align: center; color: var(--Vale_TextMuted); font-size: 13px; padding: 10px 16px 30px; }
+    </style>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+    <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/help/" data-app-name="ValeVision Help"></script>
+</head>
+<body>
+
+    <header class="Help__Header">
+        <img src="/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" alt="Vale Garden Houses">
+        <a href="/help/">Help</a>
+    </header>
+
+    <section class="Help__Hero">
+        <img id="Help__AppIcon" src="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png" alt="">
+        <h1 id="Help__Title">Install ValeVision</h1>
+        <p id="Help__Subtitle">It then opens like any other app on your device: its own icon, its own window, no web address to find.</p>
+    </section>
+
+    <main class="Help__Main">
+
+        <section class="Help__Card">
+            <h2 data-app-text="Open {app}">Open ValeVision</h2>
+            <p class="Help__Muted">The button opens the app in this browser. Then follow the steps below for your device.</p>
+            <a class="Help__Btn" data-app-href data-app-text="Open {app}" href="/project-gallery/">Open ValeVision</a>
+        </section>
+
+        <section class="Help__Card">
+            <h2>Which device are you using?</h2>
+            <p class="Help__Muted">We have picked yours. Choose another to see its steps.</p>
+            <div class="Help__Tabs" role="tablist">
+                <button class="Help__Tab" role="tab" data-device="windows">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg>
+                    Windows PC<small>Edge or Chrome</small><span class="Help__Yours">This device</span>
+                </button>
+                <button class="Help__Tab" role="tab" data-device="ios">
+                    <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10.5 19h3"/></svg>
+                    iPhone &amp; iPad<small>Safari</small><span class="Help__Yours">This device</span>
+                </button>
+                <button class="Help__Tab" role="tab" data-device="android">
+                    <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><circle cx="12" cy="18.6" r="0.6"/></svg>
+                    Android<small>Chrome or Samsung</small><span class="Help__Yours">This device</span>
+                </button>
+                <button class="Help__Tab" role="tab" data-device="mac">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 19h22"/></svg>
+                    Mac<small>Chrome, Edge or Safari</small><span class="Help__Yours">This device</span>
+                </button>
+            </div>
+        </section>
+
+        <div id="Help__Steps"></div>
+
+        <section class="Help__Card">
+            <h2>After installing</h2>
+            <p class="Help__Muted" data-app-text="Open {app} from its icon from now on, not from an email link or a bookmark. You sign in once; it then remembers you on that device until you sign out.">Open ValeVision from its icon from now on.</p>
+            <div class="Help__Callout">
+                <strong>Finding a project</strong>
+                Search by the <b>project code</b> (for example 63569) or the project name from your email. New projects appear by themselves.
+            </div>
+            <p class="Help__Muted" style="margin-top:12px">Stuck? Contact the 3D Visualisation team and we will set it up with you.</p>
+        </section>
+    </main>
+
+    <footer class="Help__Footer">&copy; 2026 Vale Garden Houses</footer>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Steps per Device, App, Page Logic                      -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <script>
+    (function() {
+
+        // MODULE CONSTANTS | The Apps This Guide Covers
+        // ------------------------------------------------------------
+        var Na__Apps = {
+            valevision   : { name: 'ValeVision',    url: '/project-gallery/', icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
+            valevision3d : { name: 'ValeVision 3D', url: '/valevision/',      icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' }
+        };
+        var Na__Share = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="Share"><path d="M8 7l4-4 4 4M12 3v13"/><path d="M7 10H5v11h14V10h-2"/></svg>';
+        var Na__Dots  = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="menu"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>';
+        // ------------------------------------------------------------
+
+
+        // MODULE CONSTANTS | Steps: title, words, picture (snippet id, phone or not, caption)
+        // ------------------------------------------------------------
+        //   {app} becomes the app's name. Pictures: Help__Snippets/HelpSnippet__<app key>__<snip>__.webp
+        var Na__Steps = {
+            windows: {
+                title: 'Install {app} on Windows',
+                intro: 'Works in Microsoft Edge and Google Chrome. About 30 seconds.',
+                steps: [
+                    { t: 'Open {app} in Edge or Chrome', p: 'Use the <b>Open {app}</b> button above, or your usual link.', open: true },
+                    { t: 'Click Install on the card', p: 'Sign in. A few seconds later a card appears at the bottom: <b>Install {app}</b>. Click <b>Install</b>.',
+                      snip: 'Windows-01-InstallCard', cap: 'The install card at the bottom of {app}.' },
+                    { t: 'Click Install in the browser’s box', p: 'Your browser asks once more. Click <b>Install</b>.',
+                      snip: 'Windows-02-BrowserBox', cap: 'Microsoft Edge’s box. Chrome’s says the same.' },
+                    { t: '{app} opens in its own window', p: 'It is now in your Start menu and opens like any other app. Edge may also offer <b>Pin to taskbar</b>: tick it.',
+                      snip: 'Windows-03-OwnWindow', cap: '{app} in its own window.' },
+                    { t: 'Pin it to your taskbar', p: 'While it is open, <b>right-click its icon on the taskbar</b> and choose <b>Pin to taskbar</b>. It is then one click away.',
+                      snip: 'Windows-04-PinTaskbar', cap: 'Right-click the {app} icon on the taskbar.' }
+                ],
+                extra: { t: 'No card?', p: 'Click the <b>install icon</b> at the right-hand end of the address bar, or open the browser menu (<b>⋯</b> or ' + Na__Dots + ') and choose <b>Apps</b>, then <b>Install {app}</b> (Edge), or <b>Cast, save and share</b>, then <b>Install page as app</b> (Chrome).',
+                         snip: 'Windows-05-AddressBarIcon', cap: 'The install icon in Edge’s address bar.' }
+            },
+            ios: {
+                title: 'Add {app} to your iPhone or iPad',
+                intro: 'Apple devices install web apps from Safari’s Share menu. About a minute.',
+                warn: { t: 'Use Safari', p: 'If the link opened inside Outlook, WhatsApp, Teams or another app, open it in <b>Safari</b> first: tap the <b>compass</b> or <b>Open in Safari</b> button in that app.' },
+                steps: [
+                    { t: 'Open {app} in Safari', p: 'Use the <b>Open {app}</b> button above and sign in. A card at the bottom then reminds you what to do.', open: true,
+                      snip: 'Ios-01-InstallCard', phone: true, cap: 'The reminder card in {app}.' },
+                    { t: 'Tap Share ' + Na__Share, p: 'On iOS 18 and earlier, Share is in the bar at the bottom of Safari (on iPad, at the top right). On iOS 26 and later, tap <b>···</b> first, then <b>Share</b>.',
+                      snip: 'Ios-02-ShareButton', phone: true, cap: 'Top: iOS 18 and earlier. Bottom: iOS 26 and later.' },
+                    { t: 'Tap Add to Home Screen', p: 'Scroll down the list until you see <b>Add to Home Screen</b> and tap it.',
+                      snip: 'Ios-03-ShareSheet', phone: true, cap: 'Scroll down the Share list.' },
+                    { t: 'Tap Add', p: 'Leave <b>Open as Web App</b> switched on (newer iPhones), then tap <b>Add</b> at the top right.',
+                      snip: 'Ios-04-AddScreen', phone: true, cap: 'The name is already filled in: {app}.' },
+                    { t: 'Open {app} from your Home Screen', p: 'The icon is now on your Home Screen. Always start from it: links in emails open Safari, not the app.',
+                      snip: 'Ios-05-HomeScreen', phone: true, cap: '{app} on the Home Screen.' }
+                ]
+            },
+            android: {
+                title: 'Install {app} on Android',
+                intro: 'Works in Google Chrome and Samsung Internet. About 30 seconds.',
+                steps: [
+                    { t: 'Open {app} in Chrome', p: 'Use the <b>Open {app}</b> button above. If the link opened inside another app, choose <b>Open in Chrome</b> from its ' + Na__Dots + ' menu first.', open: true },
+                    { t: 'Tap Install on the card', p: 'Sign in. A few seconds later a card appears at the bottom. Tap <b>Install</b>.',
+                      snip: 'Android-01-InstallCard', phone: true, cap: 'The install card in {app}.' },
+                    { t: 'Tap Install in Chrome’s box', p: 'Chrome asks once more. Tap <b>Install</b>.',
+                      snip: 'Android-02-ChromeBox', phone: true, cap: 'Chrome’s install box.' },
+                    { t: 'Open {app} from your home screen', p: 'Its icon is on your home screen and in your app list.',
+                      snip: 'Android-04-HomeScreen', phone: true, cap: '{app} on the home screen.' }
+                ],
+                extra: { t: 'No card?', p: 'Tap the menu ' + Na__Dots + ' at the top right of Chrome, then <b>Add to home screen</b> (some phones say <b>Install app</b>), then <b>Install</b>. In Samsung Internet: menu <b>≡</b>, <b>Add page to</b>, <b>Home screen</b>.',
+                         snip: 'Android-03-ChromeMenu', phone: true, cap: 'Chrome’s menu.' }
+            },
+            mac: {
+                title: 'Install {app} on a Mac',
+                intro: 'Chrome and Edge work as on Windows. Safari needs macOS Sonoma (14) or later.',
+                steps: [
+                    { t: 'Chrome or Edge: click Install on the card', p: 'Open {app} and sign in. A card appears at the bottom: click <b>Install</b>, then <b>Install</b> again in the browser’s box. {app} opens in its own window and appears in Launchpad. To keep it in the Dock, right-click its Dock icon and choose <b>Options</b>, <b>Keep in Dock</b>.', open: true,
+                      snip: 'Windows-01-InstallCard', cap: 'The same card as on Windows.' },
+                    { t: 'Safari: File, then Add to Dock', p: 'Open {app} in Safari, choose <b>File</b> in the menu bar, then <b>Add to Dock</b>, then <b>Add</b>.' }
+                ]
+            }
+        };
+        // ------------------------------------------------------------
+
+
+        // HELPER FUNCTIONS | Query, App Words, Escaping
+        // ------------------------------------------------------------
+        var Na__Query = new URLSearchParams(window.location.search);
+        var Na__AppKey = Na__Apps[Na__Query.get('app')] ? Na__Query.get('app') : 'valevision';
+        var Na__App = Na__Apps[Na__AppKey];
+        function Na__Fill(text) { return String(text || '').split('{app}').join(Na__App.name); }
+        function Na__Detected() {
+            var d = window.ValeAppInstall ? window.ValeAppInstall.Detect().device : '';
+            return { windows: 'windows', linux: 'windows', chromeos: 'windows', ios: 'ios', android: 'android', mac: 'mac' }[d] || 'windows';
+        }
+        // ------------------------------------------------------------
+
+
+        // SUB FUNCTION | One Step (or the "No card?" block)
+        // ------------------------------------------------------------
+        function Na__StepHtml(s, n) {
+            var fig = s.snip
+                ? '<figure class="Help__Figure' + (s.phone ? ' is-phone' : '') + '"><img src="Help__Snippets/HelpSnippet__' +
+                  Na__AppKey + '__' + s.snip + '__.webp" alt="' + Na__Fill(s.cap).replace(/"/g, '&quot;') + '">' +
+                  '<figcaption>' + Na__Fill(s.cap) + '</figcaption></figure>'
+                : '';
+            var open = s.open ? '<a class="Help__Btn" href="' + Na__App.url + '">Open ' + Na__App.name + '</a>' : '';
+            return '<div class="Help__Step"><div class="Help__Num">' + n + '</div><div><h3>' + Na__Fill(s.t) + '</h3><p>' +
+                   Na__Fill(s.p) + '</p>' + open + fig + '</div></div>';
+        }
+        // ------------------------------------------------------------
+
+
+        // FUNCTION | Show One Device's Steps
+        // ------------------------------------------------------------
+        function Na__ShowDevice(device, scroll) {
+            var d = Na__Steps[device] || Na__Steps.windows;
+            var html = '<section class="Help__Card Help__Section" id="Help__Device-' + device + '"><h2>' + Na__Fill(d.title) + '</h2>' +
+                       '<p class="Help__Muted">' + Na__Fill(d.intro) + '</p>' +
+                       (d.warn ? '<div class="Help__Callout is-warn"><strong>' + d.warn.t + '</strong>' + Na__Fill(d.warn.p) + '</div>' : '') +
+                       d.steps.map(function(s, i) { return Na__StepHtml(s, i + 1); }).join('') + '</section>';
+            if (d.extra) {
+                html += '<section class="Help__Card Help__Section"><h2>' + Na__Fill(d.extra.t) + '</h2>' +
+                        Na__StepHtml({ t: '', p: d.extra.p, snip: d.extra.snip, phone: d.extra.phone, cap: d.extra.cap }, '?').replace('<h3></h3>', '') + '</section>';
+            }
+            document.getElementById('Help__Steps').innerHTML = html;
+            document.querySelectorAll('.Help__Tab').forEach(function(b) {
+                b.classList.toggle('is-active', b.dataset.device === device);
+                b.setAttribute('aria-selected', b.dataset.device === device ? 'true' : 'false');
+            });
+            Na__Query.set('app', Na__AppKey);
+            Na__Query.set('device', device);
+            history.replaceState(null, '', '?' + Na__Query.toString());          // <-- The address now shares these steps
+            if (scroll) document.getElementById('Help__Steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // ------------------------------------------------------------
+
+
+        // SUB FUNCTION | Start: app words, the visitor's device, the tabs
+        // ------------------------------------------------------------
+        document.title = 'Install ' + Na__App.name + ' - Vale Help';
+        document.getElementById('Help__AppIcon').src = Na__App.icon;
+        document.getElementById('Help__Title').textContent = 'Install ' + Na__App.name;
+        document.querySelectorAll('[data-app-text]').forEach(function(el) { el.textContent = Na__Fill(el.getAttribute('data-app-text')); });
+        document.querySelectorAll('[data-app-href]').forEach(function(el) { el.href = Na__App.url; });
+        var yours = Na__Detected();
+        document.querySelectorAll('.Help__Tab').forEach(function(b) {
+            b.classList.toggle('is-yours', b.dataset.device === yours);
+            b.addEventListener('click', function() { Na__ShowDevice(b.dataset.device, true); });
+        });
+        Na__ShowDevice(Na__Steps[Na__Query.get('device')] ? Na__Query.get('device') : yours, false);
+        // ------------------------------------------------------------
+
+    })();
+    </script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+</body>
+</html>

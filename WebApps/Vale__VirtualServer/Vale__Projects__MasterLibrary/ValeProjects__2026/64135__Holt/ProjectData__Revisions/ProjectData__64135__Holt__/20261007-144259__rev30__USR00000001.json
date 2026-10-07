@@ -1,0 +1,1426 @@
+{
+    "projectName": "Holt",
+    "projectCode": "64135",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "House",
+        "designer": "Gary",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "02-Oct-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__Far____WhitecardImage__07-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__07-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__07-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__07-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__07-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__07-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__07-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__07-Oct-2026.png"
+    ],
+    "ProjectType": "MaxModel",
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "MaxEngine"
+    },
+    "valeVision_ModelUrls": [
+        "Holt__01__OrbitHelperCube__MeshModel__.glb",
+        "Holt__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Holt__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Holt__TrueVision__Linetype__DoorSwings__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ExistingRoofs__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ExistingRoofs__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedDoors__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedDoors__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedFurniture__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedFurniture__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedRoofs__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedRoofs__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedWalls__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedWindows__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Holt__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "Holt__TrueVision__SceneEntourageSilhouette__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot__Far____WhitecardImage__07-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__07-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__07-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__07-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__07-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__07-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__07-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__07-Oct-2026.png"
+    ],
+    "displayImages": [
+        "IMG01__3dView__MainShot__Far____WhitecardImage__07-Oct-2026.png",
+        "IMG02__3dView__MainShot__Closer____WhitecardImage__07-Oct-2026.png",
+        "IMG03__3dView__CloserView____WhitecardImage__07-Oct-2026.png",
+        "IMG04__3dView__FullContext-02____WhitecardImage__07-Oct-2026.png",
+        "IMG05__3dView__OrangeryDoors____WhitecardImage__07-Oct-2026.png",
+        "IMG06__3dView__EntranceDoor____WhitecardImage__07-Oct-2026.png",
+        "IMG07__3dView__BirdsEye-01____WhitecardImage__07-Oct-2026.png",
+        "IMG08__3dView__BirdsEye-02____WhitecardImage__07-Oct-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__MainShot__Far____WhitecardImage__07-Oct-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "07-Oct-2026 at 13:28",
+        "model_name": "Holt__MaxModel__0.3.0__ - Copy",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__Far__",
+                "scene_description": "01 | Main Shot",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -31832.5282,
+                        "y": -56339.2453,
+                        "z": 2500
+                    },
+                    "target": {
+                        "x": 19052.6611,
+                        "y": 16157.8555,
+                        "z": 2500
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.574502,
+                        "y": 0.818503,
+                        "z": 0
+                    },
+                    "fov_degrees": 26.9915,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG02__3dView__MainShot__Closer__",
+                "scene_description": "02 | Closer",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 15754.635,
+                        "y": -18628.1726,
+                        "z": 2041.8802
+                    },
+                    "target": {
+                        "x": 52611.9347,
+                        "y": 33271.2075,
+                        "z": 414.3676
+                    },
+                    "up": {
+                        "x": 0.014799,
+                        "y": 0.020839,
+                        "z": 0.999673
+                    },
+                    "direction": {
+                        "x": 0.578824,
+                        "y": 0.815052,
+                        "z": -0.025559
+                    },
+                    "fov_degrees": 25.3608,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG03__3dView__CloserView__",
+                "scene_description": "03 | Closer 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 49428.3104,
+                        "y": -21698.554,
+                        "z": 1573.7955
+                    },
+                    "target": {
+                        "x": 14350.1272,
+                        "y": 31444.4225,
+                        "z": 1584.6748
+                    },
+                    "up": {
+                        "x": 9.4e-05,
+                        "y": -0.000143,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": -0.550884,
+                        "y": 0.834582,
+                        "z": 0.000171
+                    },
+                    "fov_degrees": 25.3608,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG04__3dView__FullContext-02__",
+                "scene_description": "04 | Full Context 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 72013.3666,
+                        "y": -48563.1724,
+                        "z": 2800
+                    },
+                    "target": {
+                        "x": 33684.351,
+                        "y": 2285.0452,
+                        "z": 2781.6167
+                    },
+                    "up": {
+                        "x": -0.000174,
+                        "y": 0.000231,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": -0.601937,
+                        "y": 0.798544,
+                        "z": -0.000289
+                    },
+                    "fov_degrees": 25.3608,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG05__3dView__OrangeryDoors__",
+                "scene_description": "05 | Orangery Doors",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 61748.5517,
+                        "y": 1167.5635,
+                        "z": 1879.9022
+                    },
+                    "target": {
+                        "x": -385.4327,
+                        "y": 15052.7947,
+                        "z": 773.8547
+                    },
+                    "up": {
+                        "x": -0.016952,
+                        "y": 0.003788,
+                        "z": 0.999849
+                    },
+                    "direction": {
+                        "x": -0.975781,
+                        "y": 0.21806,
+                        "z": -0.01737
+                    },
+                    "fov_degrees": 28.8415,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG06__3dView__EntranceDoor__",
+                "scene_description": "06 | Entrance Door",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 42739.9236,
+                        "y": 30334.8925,
+                        "z": 2040
+                    },
+                    "target": {
+                        "x": 22710.9049,
+                        "y": -30094.9232,
+                        "z": 724.4059
+                    },
+                    "up": {
+                        "x": -0.0065,
+                        "y": -0.019612,
+                        "z": 0.999787
+                    },
+                    "direction": {
+                        "x": -0.314545,
+                        "y": -0.949018,
+                        "z": -0.020661
+                    },
+                    "fov_degrees": 28.8415,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG07__3dView__BirdsEye-01__",
+                "scene_description": "07 | Bird's-eye 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 59339.0191,
+                        "y": -33753.3878,
+                        "z": 28567.9095
+                    },
+                    "target": {
+                        "x": 27083.0769,
+                        "y": 10586.6931,
+                        "z": -3807.489
+                    },
+                    "up": {
+                        "x": -0.299101,
+                        "y": 0.411154,
+                        "z": 0.861098
+                    },
+                    "direction": {
+                        "x": -0.506562,
+                        "y": 0.696337,
+                        "z": -0.508438
+                    },
+                    "fov_degrees": 28.8415,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG08__3dView__BirdsEye-02__",
+                "scene_description": "08 | Bird's-eye 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -3265.5883,
+                        "y": -34215.2929,
+                        "z": 32557.2368
+                    },
+                    "target": {
+                        "x": 22122.4654,
+                        "y": 12518.2607,
+                        "z": -2458.1413
+                    },
+                    "up": {
+                        "x": 0.262499,
+                        "y": 0.4832,
+                        "z": 0.835232
+                    },
+                    "direction": {
+                        "x": 0.398706,
+                        "y": 0.733925,
+                        "z": -0.549898
+                    },
+                    "fov_degrees": 28.8415,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__Linetype__DoorSwings": false,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true
+                },
+                "section_planes": null
+            }
+        ]
+    },
+    "VideoStudio__Config": {
+        "VideoStudio__Config__Enabled": true,
+        "VideoStudio__Config__Description": "Per-project camera walkthrough videos. Positions are integer millimetres; convert to 3D units in code.",
+        "VideoStudio__Config__Videos": [
+            {
+                "VideoStudio__Video__Id": "Video_001",
+                "VideoStudio__Video__Name": "ExteriorVideo-01",
+                "VideoStudio__Video__Order": 1,
+                "VideoStudio__Video__Export": {
+                    "VideoStudio__Export__AspectRatio": "3:2",
+                    "VideoStudio__Export__Height": 2160,
+                    "VideoStudio__Export__Width": 3240,
+                    "VideoStudio__Export__Fps": 60,
+                    "VideoStudio__Export__BitrateMbps": 67,
+                    "VideoStudio__Export__AntiAliasEnabled": true,
+                    "VideoStudio__Export__AntiAliasSamples": 16
+                },
+                "VideoStudio__Video__Playback": {
+                    "VideoStudio__Playback__SpeedMultiplier": 1,
+                    "VideoStudio__Playback__DefaultSegmentMs": 5000,
+                    "VideoStudio__Playback__DefaultHoldMs": 0,
+                    "VideoStudio__Playback__Easing": "easeInOutSine",
+                    "VideoStudio__Playback__ClosedLoop": false,
+                    "VideoStudio__Playback__AnimationsEnabled": true,
+                    "VideoStudio__Playback__DoorOpenSeconds": 1.2,
+                    "VideoStudio__Playback__DoorDistanceM": null
+                },
+                "VideoStudio__Video__ModelLayers": {
+                    "VideoStudio__ModelLayers__Enabled": true,
+                    "VideoStudio__ModelLayers__Visibility": {
+                        "ValeVision__MainBuildingModel__Existing": true,
+                        "ValeVision__MainBuildingModel__Proposed": true,
+                        "ValeVision__MainBuildingModel__ProposedDoors": true,
+                        "ValeVision__LandscapeEnvironment": true,
+                        "ValeVision__Linetype__DoorSwings": false,
+                        "ValeVision__MainBuildingModel__ExistingRoofs": true,
+                        "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                        "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                        "ValeVision__MainBuildingModel__ProposedWalls": true,
+                        "ValeVision__MainBuildingModel__ProposedWindows": true,
+                        "ValeVision__SceneEntourageSilhouette": false
+                    }
+                },
+                "VideoStudio__Video__Keyframes": [
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_001",
+                        "VideoStudio__Keyframe__Order": 1,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 35,
+                        "VideoStudio__Keyframe__SegmentMs": 7000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 23567,
+                                "Camera__DefaultPos__PosY": 1557,
+                                "Camera__DefaultPos__PosZ": 10016
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.0021,
+                                "Camera__DefaultRotation__RotY": -0.8034,
+                                "Camera__DefaultRotation__RotZ": 0.0016
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 37.8493
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_004",
+                        "VideoStudio__Keyframe__Order": 2,
+                        "VideoStudio__Keyframe__CapturedInMode": "Orbit",
+                        "VideoStudio__Keyframe__LensMm": 35,
+                        "VideoStudio__Keyframe__SegmentMs": 6000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 28002,
+                                "Camera__DefaultPos__PosY": 1358,
+                                "Camera__DefaultPos__PosZ": 17458
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0058,
+                                "Camera__DefaultRotation__RotY": -0.3709,
+                                "Camera__DefaultRotation__RotZ": -0.0022
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 37.8493
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_002",
+                        "VideoStudio__Keyframe__Order": 3,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 35,
+                        "VideoStudio__Keyframe__SegmentMs": 10000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 35275,
+                                "Camera__DefaultPos__PosY": 1663,
+                                "Camera__DefaultPos__PosZ": 19962
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0147,
+                                "Camera__DefaultRotation__RotY": 0.0163,
+                                "Camera__DefaultRotation__RotZ": 0.0002
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 37.8493
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_005",
+                        "VideoStudio__Keyframe__Order": 4,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 35,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 49651,
+                                "Camera__DefaultPos__PosY": 1846,
+                                "Camera__DefaultPos__PosZ": 15065
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0004,
+                                "Camera__DefaultRotation__RotY": 0.6396,
+                                "Camera__DefaultRotation__RotZ": 0.0003
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 37.8493
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 1"
+                    }
+                ],
+                "VideoStudio__Video__Title": "Exterior",
+                "VideoStudio__Video__MetaUpdatedIso": "2026-10-07T13:03:18.674Z",
+                "VideoStudio__Video__Description": "A fly-around sequence showing the orangery externally and the interface with the decking.",
+                "VideoStudio__Video__TheiaPublish": {
+                    "VideoStudio__TheiaPublish__TheiaVideoId": "Video_001",
+                    "VideoStudio__TheiaPublish__PublishedIso": "2026-10-07T14:36:11.737Z",
+                    "VideoStudio__TheiaPublish__PublishedBy": "USR00000001",
+                    "VideoStudio__TheiaPublish__Fingerprint": "sha256:e7b1184fd750d997a0ae28a2bdbcbbe92bf7201a0ad443eb4faa2edb97acc1cc",
+                    "VideoStudio__TheiaPublish__Scheme": "Scheme-01",
+                    "VideoStudio__TheiaPublish__DurationMs": 25500,
+                    "VideoStudio__TheiaPublish__Quality": "4K",
+                    "VideoStudio__TheiaPublish__Width": 3240,
+                    "VideoStudio__TheiaPublish__Height": 2160
+                }
+            },
+            {
+                "VideoStudio__Video__Id": "Video_002",
+                "VideoStudio__Video__Name": "InteriorVideo-01",
+                "VideoStudio__Video__Order": 2,
+                "VideoStudio__Video__Export": {
+                    "VideoStudio__Export__AspectRatio": "3:2",
+                    "VideoStudio__Export__Height": 2160,
+                    "VideoStudio__Export__Width": 3240,
+                    "VideoStudio__Export__Fps": 60,
+                    "VideoStudio__Export__BitrateMbps": 151,
+                    "VideoStudio__Export__AntiAliasEnabled": true,
+                    "VideoStudio__Export__AntiAliasSamples": 16
+                },
+                "VideoStudio__Video__Playback": {
+                    "VideoStudio__Playback__SpeedMultiplier": 1,
+                    "VideoStudio__Playback__DefaultSegmentMs": 5000,
+                    "VideoStudio__Playback__DefaultHoldMs": 0,
+                    "VideoStudio__Playback__Easing": "easeInOutCubic",
+                    "VideoStudio__Playback__ClosedLoop": false,
+                    "VideoStudio__Playback__AnimationsEnabled": true,
+                    "VideoStudio__Playback__DoorOpenSeconds": 1,
+                    "VideoStudio__Playback__DoorDistanceM": 3.5
+                },
+                "VideoStudio__Video__ModelLayers": {
+                    "VideoStudio__ModelLayers__Enabled": false,
+                    "VideoStudio__ModelLayers__Visibility": {}
+                },
+                "VideoStudio__Video__Keyframes": [
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_001",
+                        "VideoStudio__Keyframe__Order": 1,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 6000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 35005,
+                                "Camera__DefaultPos__PosY": 1606,
+                                "Camera__DefaultPos__PosZ": 5760
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.0072,
+                                "Camera__DefaultRotation__RotY": 0.0234,
+                                "Camera__DefaultRotation__RotZ": -0.0002
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_002",
+                        "VideoStudio__Keyframe__Order": 2,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 12667,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34840,
+                                "Camera__DefaultPos__PosY": 1657,
+                                "Camera__DefaultPos__PosZ": -1322
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.0036,
+                                "Camera__DefaultRotation__RotY": 0.0144,
+                                "Camera__DefaultRotation__RotZ": -0.0001
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_016",
+                        "VideoStudio__Keyframe__Order": 3,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 3000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34848,
+                                "Camera__DefaultPos__PosY": 1707,
+                                "Camera__DefaultPos__PosZ": -14221
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.0036,
+                                "Camera__DefaultRotation__RotY": 0.0144,
+                                "Camera__DefaultRotation__RotZ": -0.0001
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 1",
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_003",
+                        "VideoStudio__Keyframe__Order": 4,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 39939,
+                                "Camera__DefaultPos__PosY": 1994,
+                                "Camera__DefaultPos__PosZ": -21983
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 3.1415,
+                                "Camera__DefaultRotation__RotY": 0.4884,
+                                "Camera__DefaultRotation__RotZ": -3.1416
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3971
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_004",
+                        "VideoStudio__Keyframe__Order": 5,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 32,
+                        "VideoStudio__Keyframe__SegmentMs": 3000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34917,
+                                "Camera__DefaultPos__PosY": 2001,
+                                "Camera__DefaultPos__PosZ": -26291
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 3.129,
+                                "Camera__DefaultRotation__RotY": 0.0017,
+                                "Camera__DefaultRotation__RotZ": -3.1415
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 41.1121
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_017",
+                        "VideoStudio__Keyframe__Order": 6,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 31626,
+                                "Camera__DefaultPos__PosY": 1933,
+                                "Camera__DefaultPos__PosZ": -22105
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1275,
+                                "Camera__DefaultRotation__RotY": -0.3725,
+                                "Camera__DefaultRotation__RotZ": -3.1365
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 2",
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_018",
+                        "VideoStudio__Keyframe__Order": 7,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 31,
+                        "VideoStudio__Keyframe__SegmentMs": 2533,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34996,
+                                "Camera__DefaultPos__PosY": 1583,
+                                "Camera__DefaultPos__PosZ": -17366
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 3.1392,
+                                "Camera__DefaultRotation__RotY": 0.0179,
+                                "Camera__DefaultRotation__RotZ": 3.1411
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 42.1802
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 3",
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_005",
+                        "VideoStudio__Keyframe__Order": 8,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34882,
+                                "Camera__DefaultPos__PosY": 1627,
+                                "Camera__DefaultPos__PosZ": -13831
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 3.1362,
+                                "Camera__DefaultRotation__RotY": -0.0102,
+                                "Camera__DefaultRotation__RotZ": 3.1415
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_006",
+                        "VideoStudio__Keyframe__Order": 9,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 36049,
+                                "Camera__DefaultPos__PosY": 1341,
+                                "Camera__DefaultPos__PosZ": -10242
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 3.1305,
+                                "Camera__DefaultRotation__RotY": 0.6072,
+                                "Camera__DefaultRotation__RotZ": -3.1353
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_007",
+                        "VideoStudio__Keyframe__Order": 10,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 38628,
+                                "Camera__DefaultPos__PosY": 1910,
+                                "Camera__DefaultPos__PosZ": -10560
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1224,
+                                "Camera__DefaultRotation__RotY": 0.7223,
+                                "Camera__DefaultRotation__RotZ": 3.1289
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_008",
+                        "VideoStudio__Keyframe__Order": 11,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 38628,
+                                "Camera__DefaultPos__PosY": 1910,
+                                "Camera__DefaultPos__PosZ": -10560
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 2.4872,
+                                "Camera__DefaultRotation__RotY": 0.6153,
+                                "Camera__DefaultRotation__RotZ": -2.7247
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_009",
+                        "VideoStudio__Keyframe__Order": 12,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 38513,
+                                "Camera__DefaultPos__PosY": 1917,
+                                "Camera__DefaultPos__PosZ": -10549
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1115,
+                                "Camera__DefaultRotation__RotY": 0.679,
+                                "Camera__DefaultRotation__RotZ": 3.1227
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_010",
+                        "VideoStudio__Keyframe__Order": 13,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 38912,
+                                "Camera__DefaultPos__PosY": 1923,
+                                "Camera__DefaultPos__PosZ": -6638
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -1.6658,
+                                "Camera__DefaultRotation__RotY": 1.5455,
+                                "Camera__DefaultRotation__RotZ": 1.6658
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_011",
+                        "VideoStudio__Keyframe__Order": 14,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 38610,
+                                "Camera__DefaultPos__PosY": 1930,
+                                "Camera__DefaultPos__PosZ": -2844
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0222,
+                                "Camera__DefaultRotation__RotY": 0.8657,
+                                "Camera__DefaultRotation__RotZ": 0.0169
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_012",
+                        "VideoStudio__Keyframe__Order": 15,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34894,
+                                "Camera__DefaultPos__PosY": 1870,
+                                "Camera__DefaultPos__PosZ": -2446
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.0234,
+                                "Camera__DefaultRotation__RotY": 0.0486,
+                                "Camera__DefaultRotation__RotZ": -0.0011
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_013",
+                        "VideoStudio__Keyframe__Order": 16,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34889,
+                                "Camera__DefaultPos__PosY": 2089,
+                                "Camera__DefaultPos__PosZ": -2318
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": 0.5168,
+                                "Camera__DefaultRotation__RotY": 0.0266,
+                                "Camera__DefaultRotation__RotZ": -0.0151
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_014",
+                        "VideoStudio__Keyframe__Order": 17,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34901,
+                                "Camera__DefaultPos__PosY": 2089,
+                                "Camera__DefaultPos__PosZ": -2544
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0684,
+                                "Camera__DefaultRotation__RotY": 0.0215,
+                                "Camera__DefaultRotation__RotZ": 0.0015
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        },
+                        "VideoStudio__Keyframe__DoorAnimation": true
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_015",
+                        "VideoStudio__Keyframe__Order": 18,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 31300,
+                                "Camera__DefaultPos__PosY": 1874,
+                                "Camera__DefaultPos__PosZ": -2611
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0214,
+                                "Camera__DefaultRotation__RotY": -0.7127,
+                                "Camera__DefaultRotation__RotZ": -0.014
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_019",
+                        "VideoStudio__Keyframe__Order": 19,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 30723,
+                                "Camera__DefaultPos__PosY": 1545,
+                                "Camera__DefaultPos__PosZ": -6620
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.1041,
+                                "Camera__DefaultRotation__RotY": -1.5533,
+                                "Camera__DefaultRotation__RotZ": -0.1041
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_020",
+                        "VideoStudio__Keyframe__Order": 20,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 7000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 31107,
+                                "Camera__DefaultPos__PosY": 1770,
+                                "Camera__DefaultPos__PosZ": -9712
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1329,
+                                "Camera__DefaultRotation__RotY": -0.8987,
+                                "Camera__DefaultRotation__RotZ": -3.1348
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_021",
+                        "VideoStudio__Keyframe__Order": 21,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 28,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34757,
+                                "Camera__DefaultPos__PosY": 1949,
+                                "Camera__DefaultPos__PosZ": -12598
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1416,
+                                "Camera__DefaultRotation__RotY": -0.0582,
+                                "Camera__DefaultRotation__RotZ": -3.1416
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 46.3972
+                            }
+                        }
+                    }
+                ],
+                "VideoStudio__Video__Description": "A fly-through showing the orangery interior and the driveway facing elevation.",
+                "VideoStudio__Video__MetaUpdatedIso": "2026-10-07T13:04:53.599Z",
+                "VideoStudio__Video__Title": "Interior",
+                "VideoStudio__Video__TheiaPublish": {
+                    "VideoStudio__TheiaPublish__TheiaVideoId": "Video_002",
+                    "VideoStudio__TheiaPublish__PublishedIso": "2026-10-07T13:43:19.682Z",
+                    "VideoStudio__TheiaPublish__PublishedBy": "USR00000001",
+                    "VideoStudio__TheiaPublish__Fingerprint": "sha256:bcb0d8f1b4c872f74de3d1ec43ba472b12878367f67e26cd69ba39b15a634818",
+                    "VideoStudio__TheiaPublish__Scheme": "Scheme-01",
+                    "VideoStudio__TheiaPublish__DurationMs": 116700,
+                    "VideoStudio__TheiaPublish__Quality": "4K",
+                    "VideoStudio__TheiaPublish__Width": 3240,
+                    "VideoStudio__TheiaPublish__Height": 2160
+                }
+            },
+            {
+                "VideoStudio__Video__Id": "Video_003",
+                "VideoStudio__Video__Name": "Birds-eyeView-01",
+                "VideoStudio__Video__Order": 3,
+                "VideoStudio__Video__Export": {
+                    "VideoStudio__Export__AspectRatio": "3:2",
+                    "VideoStudio__Export__Height": 2160,
+                    "VideoStudio__Export__Width": 3240,
+                    "VideoStudio__Export__Fps": 60,
+                    "VideoStudio__Export__BitrateMbps": 67,
+                    "VideoStudio__Export__AntiAliasEnabled": true,
+                    "VideoStudio__Export__AntiAliasSamples": 16
+                },
+                "VideoStudio__Video__Playback": {
+                    "VideoStudio__Playback__SpeedMultiplier": 1,
+                    "VideoStudio__Playback__DefaultSegmentMs": 5000,
+                    "VideoStudio__Playback__DefaultHoldMs": 0,
+                    "VideoStudio__Playback__Easing": "easeInOutSine",
+                    "VideoStudio__Playback__ClosedLoop": false,
+                    "VideoStudio__Playback__AnimationsEnabled": true,
+                    "VideoStudio__Playback__DoorOpenSeconds": 1.2,
+                    "VideoStudio__Playback__DoorDistanceM": null
+                },
+                "VideoStudio__Video__ModelLayers": {
+                    "VideoStudio__ModelLayers__Enabled": false,
+                    "VideoStudio__ModelLayers__Visibility": {}
+                },
+                "VideoStudio__Video__Keyframes": [
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_001",
+                        "VideoStudio__Keyframe__Order": 1,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 7000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 8736,
+                                "Camera__DefaultPos__PosY": 2145,
+                                "Camera__DefaultPos__PosZ": 9602
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0312,
+                                "Camera__DefaultRotation__RotY": -1.012,
+                                "Camera__DefaultRotation__RotZ": -0.0265
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_002",
+                        "VideoStudio__Keyframe__Order": 2,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 6879,
+                                "Camera__DefaultPos__PosY": 22160,
+                                "Camera__DefaultPos__PosZ": 17348
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.7399,
+                                "Camera__DefaultRotation__RotY": -0.7029,
+                                "Camera__DefaultRotation__RotZ": -0.5331
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_003",
+                        "VideoStudio__Keyframe__Order": 3,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 6000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 34879,
+                                "Camera__DefaultPos__PosY": 26700,
+                                "Camera__DefaultPos__PosZ": 28546
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.6159,
+                                "Camera__DefaultRotation__RotY": -0.0005,
+                                "Camera__DefaultRotation__RotZ": -0.0004
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_008",
+                        "VideoStudio__Keyframe__Order": 4,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 72022,
+                                "Camera__DefaultPos__PosY": 30152,
+                                "Camera__DefaultPos__PosZ": 19712
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.8401,
+                                "Camera__DefaultRotation__RotY": 0.7578,
+                                "Camera__DefaultRotation__RotZ": 0.6543
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 1"
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_004",
+                        "VideoStudio__Keyframe__Order": 5,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 74585,
+                                "Camera__DefaultPos__PosY": 31718,
+                                "Camera__DefaultPos__PosZ": -6583
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -1.5853,
+                                "Camera__DefaultRotation__RotY": 0.9296,
+                                "Camera__DefaultRotation__RotZ": 1.5888
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_009",
+                        "VideoStudio__Keyframe__Order": 6,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 6000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 63944,
+                                "Camera__DefaultPos__PosY": 31305,
+                                "Camera__DefaultPos__PosZ": -34788
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -2.3625,
+                                "Camera__DefaultRotation__RotY": 0.5994,
+                                "Camera__DefaultRotation__RotZ": 2.6333
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 2"
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_005",
+                        "VideoStudio__Keyframe__Order": 7,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 7000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 35084,
+                                "Camera__DefaultPos__PosY": 30659,
+                                "Camera__DefaultPos__PosZ": -41016
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -2.4267,
+                                "Camera__DefaultRotation__RotY": -0.0032,
+                                "Camera__DefaultRotation__RotZ": -3.1388
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_006",
+                        "VideoStudio__Keyframe__Order": 8,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 1000,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 1276,
+                                "Camera__DefaultPos__PosY": 30801,
+                                "Camera__DefaultPos__PosZ": -6064
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -1.5675,
+                                "Camera__DefaultRotation__RotY": -0.8271,
+                                "Camera__DefaultRotation__RotZ": -1.5664
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_007",
+                        "VideoStudio__Keyframe__Order": 9,
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__LensMm": 42,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 500,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": -4975,
+                                "Camera__DefaultPos__PosY": 2012,
+                                "Camera__DefaultPos__PosZ": -6204
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -1.3336,
+                                "Camera__DefaultRotation__RotY": -1.5427,
+                                "Camera__DefaultRotation__RotZ": -1.3335
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 31.8908
+                            }
+                        }
+                    }
+                ],
+                "VideoStudio__Video__Title": "Bird's-eye View",
+                "VideoStudio__Video__MetaUpdatedIso": "2026-10-07T14:22:58.548Z",
+                "VideoStudio__Video__Description": "A fly-around externally at high level showing the roof and surrounding abutment to the host dwelling."
+            }
+        ],
+        "VideoStudio__Config__LastVideoNumber": 3
+    },
+    "_rev": 30
+}

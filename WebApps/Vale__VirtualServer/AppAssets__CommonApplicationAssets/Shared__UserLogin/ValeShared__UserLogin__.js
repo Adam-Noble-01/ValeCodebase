@@ -36,10 +36,26 @@
      ValeUserLogin.User() / .IsAppAdmin() / .HasLevel('Management') / .OnChange(fn)
      ValeUserLogin.Fetch(url, init)   // same-origin fetch; a 401 re-opens the sign-in gate
      ValeUserLogin.SignOut() / .ShowChangePassword()
+     ValeUserLogin.Guest({ mountEl, name: 'Guest', detail: 'View only', notes: [lines], menuItems: [{ label, onClick }] })
+                                      // a viewer with no account (a client's link): the same bubble with
+                                      // a person in it; nothing is asked of the server, nothing to sign out of
 
    =============================================================================
 
    DEVELOPMENT LOG:
+   07-Oct-2026 - Version 1.2.0
+   - Guest(): the bubble for a viewer with no account, asked for by Adam for
+     ValeVision Theia's client links. The same navy circle and menu, a person
+     icon instead of initials, the app's notes and items, and no Change
+     password or Sign out. Init() is not called for a guest. Nothing else
+     changes: signed-in menus and the Sign in pill are as they were.
+
+   07-Oct-2026 - Version 1.1.2
+   - A reply that is not the accounts API's JSON (an nginx 404 page, a 502)
+     now says "The sign-in service is not reachable (HTTP n)" instead of
+     "Email address or password not recognised". Theia's first sign-ins hit a
+     404 (its API was not running yet) and blamed the password.
+
    06-Oct-2026 - Version 1.1.1
    - Sign-in card: "You stay signed in on this device until you sign out" (the
      session no longer ends after a month; the Server Manager can sign people out).
@@ -98,7 +114,11 @@
             headers     : body ? { 'Content-Type': 'application/json' } : {},
             body        : body ? JSON.stringify(body) : undefined
         }).then(function(r) {
-            return r.json().catch(function() { return {}; }).then(function(d) { return { status: r.status, data: d }; });
+            return r.json().catch(function() { return null; }).then(function(d) {
+                if (d && typeof d.ok === 'boolean') return { status: r.status, data: d };
+                return { status: 0, data: { ok: false,                          // <-- Not the accounts API (404 page, 502...): never blame the password
+                    error: 'The sign-in service is not reachable (HTTP ' + r.status + '). Your password was not checked; please tell IT.' } };
+            });
         }).catch(function(err) {
             return { status: 0, data: { ok: false, error: 'Cannot reach the server (' + err.message + ').' } };
         });
@@ -344,6 +364,63 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | A Viewer With No Account: the same bubble with a person in it, and a guest's menu
+    // ------------------------------------------------------------
+    // g: { mountEl, name ('Guest'), detail (the line under the name), notes [lines], menuItems [{ label, onClick }] }
+    // Called again to update it (a client link's end date arrives with the app's first answer).
+    // ------------------------------------------------------------
+    var Na__GuestIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+                        '<circle cx="12" cy="8.2" r="4.3" fill="currentColor"/>' +
+                        '<path d="M3.6 21.2c.7-4.7 4.1-7.6 8.4-7.6s7.7 2.9 8.4 7.6z" fill="currentColor"/></svg>';
+
+    function Na__RenderGuest(g) {
+        var host = g.mountEl ? (typeof g.mountEl === 'string' ? document.querySelector(g.mountEl) : g.mountEl) : null;
+        var mount = Na__El(Na__Ids.mount);
+        if (!mount) {
+            mount = document.createElement('div');
+            mount.id = Na__Ids.mount;
+            (host || document.body).appendChild(mount);
+        }
+        mount.className = 'ValeUserLogin__Mount' + (host ? ' ValeUserLogin__Mount--Inline' : '');
+        var name  = g.name || 'Guest';
+        var items = (g.menuItems || []).filter(function(it) { return it && it.label; });
+        var notes = (g.notes || []).filter(Boolean);
+        mount.innerHTML =
+            '<div class="ValeUserLogin__Menu ValeUserLogin__Menu--Guest">' +
+                '<button type="button" class="ValeUserLogin__Avatar ValeUserLogin__Avatar--Guest" title="' + Na__Esc(name) + '" aria-label="' + Na__Esc(name) + '" aria-haspopup="true" aria-expanded="false">' + Na__GuestIcon + '</button>' +
+                '<div class="ValeUserLogin__Panel" role="menu">' +
+                    '<div class="ValeUserLogin__Identity"><span class="ValeUserLogin__IdentityAvatar ValeUserLogin__IdentityAvatar--Guest">' + Na__GuestIcon + '</span>' +
+                        '<span class="ValeUserLogin__IdentityText"><span class="ValeUserLogin__IdentityName">' + Na__Esc(name) + '</span>' +
+                        (g.detail ? '<span class="ValeUserLogin__IdentityRole">' + Na__Esc(g.detail) + '</span>' : '') + '</span></div>' +
+                    notes.map(function(n) { return '<div class="ValeUserLogin__Note">' + Na__Esc(n) + '</div>'; }).join('') +
+                    (items.length ? '<div class="ValeUserLogin__Rule"></div>' : '') +
+                    items.map(function(it, i) {
+                        return '<button type="button" role="menuitem" class="ValeUserLogin__Item" data-vul-item="' + i + '">' + Na__Esc(it.label) + '</button>';
+                    }).join('') +
+                '</div>' +
+            '</div>';
+        var menu = mount.querySelector('.ValeUserLogin__Menu');
+        var setOpen = function(open) {                                          // <-- The same open and close as the signed-in menu
+            menu.classList.toggle('ValeUserLogin__Menu--open', open);
+            menu.querySelector('.ValeUserLogin__Avatar').setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        menu.querySelector('.ValeUserLogin__Avatar').addEventListener('click', function(e) {
+            e.stopPropagation();
+            setOpen(!menu.classList.contains('ValeUserLogin__Menu--open'));
+        });
+        menu.querySelector('.ValeUserLogin__Panel').addEventListener('click', function(e) {
+            var b = e.target.closest('button');
+            if (!b || b.dataset.vulItem == null) return;
+            setOpen(false);
+            var it = items[Number(b.dataset.vulItem)];
+            if (it && typeof it.onClick === 'function') it.onClick(null);
+        });
+        document.addEventListener('click', function(e) { if (!menu.contains(e.target)) setOpen(false); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') setOpen(false); });
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -406,6 +483,7 @@
             });
         },
         ShowChangePassword: function() { Na__ShowNewPassword(false); },
+        Guest      : function(opts) { Na__RenderGuest(opts || {}); },     // <-- No account, no server call (a client's link)
         Fetch      : function(url, init) {
             init = init || {};
             init.credentials = init.credentials || 'same-origin';

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!--
+     =============================================================================
+     VALEVISION THEIA - APP PAGE
+     =============================================================================
+
+     FILE       : index.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : ValeVision Theia, Vale Garden Houses' own video player, served at
+                  https://app.valegardenhouses.com/theia/
+     CREATED    : 07-Oct-2026
+
+     DESCRIPTION:
+     - Staff:   /theia/?project=<library id>[&video=<id>][&t=<seconds>]  (Vale sign-in)
+     - Clients: /theia/?project=<library id>&share=<token>  (no account; player and list only)
+     - Videos come from the Projects Master Library (ValeVision__TheiaVideo/
+       Content__VideoFiles), served by nginx in byte ranges and kept on the
+       device by the service worker. The Theia API (api/..., relative to this
+       page) says what there is and who may see it.
+     - Plain ES modules: no build step, no framework, nothing from a CDN, so a
+       client's phone opens it quickly.
+     - The start-up spinner is ValeVision 3D's (same ring, same words); the app
+       lifts it once the first video has a few seconds on the device.
+     - The header is ValeVision 3D's: the logo, then "ValeVision THEIA" and the
+       shared user bubble at the right. A client's link gets the bubble's guest
+       state; the project's name and number sit under the video.
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ValeVision Theia</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="referrer" content="same-origin">
+    <meta name="description" content="ValeVision Theia: Vale Garden Houses project videos, in full quality.">
+
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="01__AppAssets__TheiaVideoPlayer/TheiaVideoPlayer__AppIcon__192x192.png">
+    <link rel="manifest" href="TheiaVideoPlayer__Pwa__Manifest__.webmanifest">
+    <meta name="theme-color" content="#172b3a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Theia">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ValeVision Theia">
+
+    <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/theia/" data-app-name="ValeVision Theia"></script>
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
+</head>
+<body class="theia">
+    <!-- START-UP SPINNER | The one ValeVision 3D shows; lifted once the first video has a few seconds on the device -->
+    <div class="loading-overlay" id="theiaLoadingOverlay" role="status" aria-live="polite">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" id="theiaLoadingText">Loading ValeVision Theia...</p>
+    </div>
+    <script>
+        /* A client's link: their videos, not the app's name */
+        if (/[?&]share=/.test(window.location.search)) document.getElementById('theiaLoadingText').textContent = 'Loading your videos...';
+    </script>
+
+    <header class="theia-header">
+        <a class="theia-header__brand" aria-label="Vale Garden Houses">
+            <img class="theia-header__logo" src="/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" alt="Vale Garden Houses">
+        </a>
+        <div class="theia-header__title">
+            <span class="theia-header__app">ValeVision THEIA</span>
+        </div>
+        <div class="theia-header__user" id="theiaUserSlot"></div>
+    </header>
+
+    <main class="theia-main" id="theiaRoot">
+        <div class="theia-message"><p class="theia-message__text">Opening Theia…</p></div>
+    </main>
+
+    <noscript><p style="padding: 24px;">ValeVision Theia needs JavaScript to play videos.</p></noscript>
+    <script type="module" src="02__Src__AppModules/01__AppCore/Na__AppCore__TheiaApp__.js"></script>
+</body>
+</html>

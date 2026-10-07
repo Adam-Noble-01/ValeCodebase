@@ -16,10 +16,27 @@
      and redraws when the version changes.
    - Folders roll up what is inside them: to push, to collect, conflicts, deletes.
    - Pausing (or leaving the tab) lets the local server hang up after 90 s.
+   - Delete from the server: tick files (a folder ticks every deletable file
+     inside it that the search and filters show; Shift ticks a range), then
+     Delete from server, or use the detail panel's button for one file or
+     folder. A modal lists every file and asks first. Each file is backed up
+     and journaled on the server, so Undo last push in tab 02 restores them.
 
    =============================================================================
 
    DEVELOPMENT LOG:
+   07-Oct-2026 - Version 0.8.0
+   - Content made on the server (ServerMadeContent) that the PC lacks or has older
+     shows as collect, with its own explanation.
+
+   07-Oct-2026 - Version 0.7.0
+   - Delete files from the server, with a confirm modal (asked for by Adam:
+     superseded GLBs left in a project's Content__ folder). Tick boxes on every
+     row; the users register, secrets and other files left out of sync, and
+     unmapped files cannot be ticked. User data and project records need an
+     extra tick in the modal. Optionally moves this PC's copies to
+     90__ServerBackups too, so a push does not send them back.
+
    06-Oct-2026 - Version 0.4.4
    - Created (this PC's creation time) and Last synced (when push / collect last moved
      the file, from the sync ledger; folders show their latest file) columns. The
@@ -59,6 +76,15 @@
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Files Ticked for Deleting From the Server
+    // ------------------------------------------------------------
+    var Vsm__Picked    = new Set();                                            // <-- Root-relative server file paths
+    var Vsm__PickAnchor = '';                                                  // <-- Last file ticked, for Shift ranges
+    var Vsm__PickOrder = [];                                                   // <-- Deletable files in the order drawn
+    var Vsm__REGISTER  = 'Server__UserAccountData/UserAccountData__ValeUsers__Register__.json';   // <-- Never deleted: untick Active
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Verdict Labels and Roll-Up Keys
     // ------------------------------------------------------------
     var Vsm__VerdictText = {
@@ -87,7 +113,8 @@
         'not-synced'  : 'Left out of sync: secrets, docs, scripts or dev folders, by the mapping’s rules.',
         'unmapped'    : 'Not in any mapping. Add the folder in the Parity matrix to sync it.',
         'shared-push' : 'Project data (two-way): this PC\u2019s copy is newer or new. <b>Push</b> uploads it.',
-        'shared-collect': 'Project data (two-way): the server copy is newer or new. <b>Collect</b> brings it to this PC.'
+        'shared-collect': 'Project data (two-way): the server copy is newer or new. <b>Collect</b> brings it to this PC.',
+        'content-collect': 'Heavy content made on the server (ServerMadeContent, e.g. ValeVision Theia videos and posters): the server copy is new or newer. <b>Collect</b> brings it to this PC.'
     };
     var Vsm__LaneName = { code: 'Source code', content: 'Heavy content', userdata: 'User data', shared: 'Project data' };
     var Vsm__IconDir  = '<svg class="Vsm__Icon" viewBox="0 0 16 16"><path fill="#c9a04a" d="M1 3.5A1.5 1.5 0 0 1 2.5 2h3.6l1.5 1.6h5.9A1.5 1.5 0 0 1 15 5.1v7.4a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5z"/></svg>';
@@ -188,6 +215,50 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Can This File Be Deleted From the Server Here?
+    // ------------------------------------------------------------
+    // Only files the server has, inside a mapping and synced by it. Secrets and
+    // anything else the mapping leaves out stay invisible to sync, so they stay
+    // out of reach here too; the server checks all of this again.
+    // ------------------------------------------------------------
+    function Vsm__Deletable(n) {
+        return !!n && !n.dir && !!n.s && !!n.mid && n.verdict !== 'not-synced' && n.verdict !== 'unmapped' &&
+               n.rel !== Vsm__REGISTER;
+    }
+
+    function Vsm__WhyNot(n) {
+        if (n.dir) return 'Nothing inside this folder can be deleted from here.';
+        if (!n.s) return 'Not on the server.';
+        if (n.rel === Vsm__REGISTER) return 'The users register is never deleted: untick Active in tab 04.';
+        if (!n.mid) return 'Not in any mapping.';
+        return 'Left out of sync by the mapping’s rules (secrets, docs, scripts), so it cannot be deleted from here.';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Deletable Files Inside a Folder (only those the filters show)
+    // ------------------------------------------------------------
+    function Vsm__DeletableUnder(n, keep) {
+        var out = [];
+        var walk = function(x) {
+            if (keep && !keep.has(x.rel)) return;
+            if (!x.dir) { if (Vsm__Deletable(x)) out.push(x.rel); return; }
+            x.kids.forEach(walk);
+        };
+        walk(n);
+        return out;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Forget Ticks for Files the Server No Longer Has
+    // ------------------------------------------------------------
+    function Vsm__PrunePicked() {
+        Vsm__Picked.forEach(function(rel) { if (!Vsm__Deletable(Vsm__Nodes.get(rel))) Vsm__Picked.delete(rel); });
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -225,14 +296,28 @@
 
     // SUB HELPER FUNCTION | Name Cell With Chevron, Icon and Lane / Mapping Badges
     // ------------------------------------------------------------
-    function Vsm__NameCell(n, open) {
+    function Vsm__PickBox(n, keep) {
+        var rels = n.dir ? Vsm__DeletableUnder(n, keep) : (Vsm__Deletable(n) ? [n.rel] : []);
+        if (!rels.length) {
+            return '<input type="checkbox" class="Vsm__Pick" disabled title="' + Vsm.Esc(Vsm__WhyNot(n)) + '">';
+        }
+        var picked = rels.filter(function(r) { return Vsm__Picked.has(r); }).length;
+        var title = n.dir ? 'Tick the ' + rels.length + ' file' + (rels.length === 1 ? '' : 's') + ' inside that can be deleted from the server' +
+                            (keep ? ' (only those the search and filters show)' : '')
+                          : 'Tick to delete from the server (Shift: a range)';
+        return '<input type="checkbox" class="Vsm__Pick" data-pick="' + Vsm.Esc(n.rel) + '"' + (picked === rels.length ? ' checked' : '') +
+               (picked && picked < rels.length ? ' data-partial="1"' : '') + ' title="' + Vsm.Esc(title) + '">';
+    }
+
+    function Vsm__NameCell(n, open, keep) {
         var parent = n.parent && Vsm__Nodes.get(n.parent);
         var badges = '';
         if (n.dir && n.mid && (!parent || parent.mid !== n.mid)) badges += ' <span class="Vsm__Badge kind-web">' + Vsm.Esc(n.mid) + '</span>';
         if (n.dir && !n.mid && !parent) badges += ' <span class="Vsm__Badge is-off">unmapped</span>';
         if (n.dir && n.lane && n.lane !== 'code' && (!parent || parent.lane !== n.lane))
             badges += ' <span class="Vsm__Badge lane-' + n.lane + '">' + Vsm__LaneName[n.lane] + '</span>';
-        return '<div class="Vsm__NameCell" style="padding-left:' + (n.depth * 16) + 'px">' +
+        return '<div class="Vsm__NameCell">' + Vsm__PickBox(n, keep) +
+               '<span class="Vsm__Indent" style="width:' + (n.depth * 16) + 'px"></span>' +
                '<span class="Vsm__Chevron" data-toggle="' + Vsm.Esc(n.rel) + '">' + (n.dir ? (open ? '▾' : '▸') : '') + '</span>' +
                (n.dir ? Vsm__IconDir : Vsm__IconFile) +
                '<span class="Vsm__Name' + (n.dir ? ' is-dir' : '') + '"' + (n.dir ? ' data-toggle="' + Vsm.Esc(n.rel) + '"' : '') +
@@ -260,6 +345,7 @@
                     '<span' + Vsm.SortHead(Vsm__Sort, 'modified') + ' style="text-align:right">Modified</span>' +
                     '<span' + Vsm.SortHead(Vsm__Sort, 'synced') + ' style="text-align:right" title="Last pushed or collected by this manager">Last synced</span></div>'];
         var count = 0, truncated = false;
+        Vsm__PickOrder = [];
         var walk = function(list) {
             for (var i = 0; i < list.length; i++) {
                 var n = list[i];
@@ -268,8 +354,10 @@
                 var open = n.dir && (keep ? true : Vsm__Expanded.has(n.rel));
                 var size = n.dir ? '' : Vsm.Mb(n.s ? n.s[0] : (n.l ? n.l[0] : null));
                 var when = n.s ? Vsm.When(n.s[1]) : (n.l ? Vsm.When(n.l[1]) : '');
+                if (Vsm__Deletable(n)) Vsm__PickOrder.push(n.rel);
                 html.push('<div class="Vsm__Row' + (n.rel === Vsm__SelectedRel ? ' is-selected' : '') + (n.s ? '' : ' is-missing-server') +
-                          '" data-rel="' + Vsm.Esc(n.rel) + '">' + Vsm__NameCell(n, open) + Vsm__StatusCell(n) +
+                          (Vsm__Picked.has(n.rel) ? ' is-picked' : '') +
+                          '" data-rel="' + Vsm.Esc(n.rel) + '">' + Vsm__NameCell(n, open, keep) + Vsm__StatusCell(n) +
                           '<span class="Vsm__Size">' + size + '</span><span class="Vsm__When">' + Vsm.When(n.born) + '</span>' +
                           '<span class="Vsm__When">' + when + '</span>' + Vsm__SyncCell(n) + '</div>');
                 count++;
@@ -281,6 +369,22 @@
         var scroll = host.scrollTop;
         host.innerHTML = html.join('');
         host.scrollTop = scroll;
+        host.querySelectorAll('.Vsm__Pick[data-partial]').forEach(function(b) { b.indeterminate = true; });   // <-- Some, not all, inside
+        Vsm__RenderPickBar();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Toolbar's Ticked Count and Delete Button
+    // ------------------------------------------------------------
+    function Vsm__RenderPickBar() {
+        var bar = Vsm.El('Vsm__PickBar');
+        if (!bar) return;
+        bar.hidden = !Vsm__Picked.size;
+        if (!Vsm__Picked.size) return;
+        var bytes = 0;
+        Vsm__Picked.forEach(function(rel) { var n = Vsm__Nodes.get(rel); if (n && n.s) bytes += n.s[0] || 0; });
+        Vsm.El('Vsm__PickInfo').textContent = Vsm__Picked.size + ' ticked · ' + Vsm.Mb(bytes);
     }
     // ------------------------------------------------------------
 
@@ -294,6 +398,7 @@
         var root = (Vsm__Payload.root || '').replace(/\/$/, ''), mirror = (Vsm__Payload.mirror || '').replace(/\\$/, '');
         var side = function(e) { return e ? (n.dir ? 'present' : Vsm.Mb(e[0]) + ' · ' + Vsm.When(e[1])) : '<span class="Vsm__Muted">absent</span>'; };
         var key = n.lane === 'shared' && (n.verdict === 'push' || n.verdict === 'collect') ? 'shared-' + n.verdict
+                : n.lane === 'content' && n.verdict === 'collect' ? 'content-collect'
                 : n.verdict === 'push' ? 'push-' + (n.lane === 'content' ? 'content' : 'code') : n.verdict;
         var html = '<h3>' + Vsm.Esc(n.name) + '</h3><dl>' +
             '<dt>Server</dt><dd><code>' + Vsm.Esc(root + '/' + n.rel) + '</code><br>' + side(n.s) + '</dd>' +
@@ -312,6 +417,11 @@
                     (Vsm__Explain[key] || '') + '</div>';
         }
         if (n.mid) html += '<p><button class="Vsm__BtnPrimary" data-compare="' + Vsm.Esc(n.mid) + '">Compare ' + Vsm.Esc(n.mid) + ' in the matrix</button></p>';
+        var gone = n.dir ? Vsm__DeletableUnder(n, null) : (Vsm__Deletable(n) ? [n.rel] : []);
+        if (gone.length) {
+            html += '<p><button class="Vsm__BtnDanger" data-delete-node="' + Vsm.Esc(n.rel) + '">Delete ' +
+                    (n.dir ? gone.length + ' file' + (gone.length === 1 ? '' : 's') + ' inside' : 'this file') + ' from the server…</button></p>';
+        }
         host.innerHTML = html;
     }
     // ------------------------------------------------------------
@@ -348,6 +458,123 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Deleting From the Server
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Confirm Modal Limits
+    // ------------------------------------------------------------
+    var Vsm__DeleteListMax = 400;                                              // <-- Rows listed in the modal; the rest are counted
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Ask First: Delete These Files From the Server
+    // ------------------------------------------------------------
+    // rels: root-relative server files. Everything the server is about to lose
+    // is listed, with what it will mean: user data and project records need an
+    // extra tick, and a PC copy that a push would send back can go too.
+    // ------------------------------------------------------------
+    function Vsm__ConfirmDelete(rels) {
+        var items = rels.map(function(r) { return Vsm__Nodes.get(r); }).filter(Vsm__Deletable)
+                        .sort(function(a, b) { return a.rel < b.rel ? -1 : 1; });
+        if (!items.length) { Vsm.Toast('Nothing ticked can be deleted from the server.', true); return; }
+        var root  = (Vsm__Payload.root || '/srv/vale').replace(/\/$/, '');
+        var bytes = 0, mids = {}, userish = [], onPc = [], comesBack = [];
+        items.forEach(function(n) {
+            bytes += n.s[0] || 0;
+            mids[n.mid] = (mids[n.mid] || 0) + 1;
+            if (n.lane === 'userdata' || n.lane === 'shared') userish.push(n);
+            if (n.l) { onPc.push(n); if (n.lane !== 'userdata') comesBack.push(n); }
+        });
+        var midList = Object.keys(mids);
+        var count   = items.length + ' file' + (items.length === 1 ? '' : 's');
+        var rows = items.slice(0, Vsm__DeleteListMax).map(function(n) {
+            return '<tr><td><code>' + Vsm.Esc(n.rel) + '</code></td><td>' + Vsm.Esc(Vsm__LaneName[n.lane] || n.lane) + '</td>' +
+                   '<td><span class="Vsm__Verdict v-' + n.verdict + '">' + (Vsm__VerdictText[n.verdict] || n.verdict) + '</span></td>' +
+                   '<td style="text-align:right">' + Vsm.Mb(n.s[0]) + '</td><td>' + Vsm.When(n.s[1]) + '</td></tr>';
+        }).join('');
+        var more = items.length > Vsm__DeleteListMax ? '<p class="Vsm__Muted">…and ' + (items.length - Vsm__DeleteListMax) + ' more.</p>' : '';
+
+        var html = '<h2>Delete ' + count + ' from the server?</h2>' +
+            '<p>They are removed from the live server now, under <code>' + Vsm.Esc(root) + '</code> (one connection). ' +
+            '<b>' + count + ' · ' + Vsm.Mb(bytes) + '</b> in ' + midList.map(function(m) { return '<b>' + Vsm.Esc(m) + '</b> (' + mids[m] + ')'; }).join(', ') + '.</p>' +
+            '<div class="Vsm__DeleteList"><table class="Vsm__Table"><thead><tr><th>File</th><th>Lane</th><th>Status</th>' +
+            '<th style="text-align:right">Size</th><th>Modified</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + more;
+
+        var checks = '';
+        if (userish.length) {
+            checks += '<label class="Vsm__Check Vsm__Warn"><input type="checkbox" id="Vsm__DelAck"> ' + userish.length + ' of these ' +
+                      (userish.length === 1 ? 'is' : 'are') + ' user data or project records, made in the apps, perhaps by other people. ' +
+                      'I have checked they can go.</label>';
+        }
+        if (onPc.length) {
+            checks += '<label class="Vsm__Check"><input type="checkbox" id="Vsm__DelPc"> Also remove this PC’s copies (' + onPc.length +
+                      ' file' + (onPc.length === 1 ? '' : 's') + '): moved to <code>90__ServerBackups\\deleted__&lt;time&gt;</code>, not deleted</label>' +
+                      (comesBack.length ? '<div class="Vsm__Muted" id="Vsm__DelPcNote">Left ticked off, ' + comesBack.length + ' of them ' +
+                      (comesBack.length === 1 ? 'is' : 'are') + ' sent back to the server by the next push.</div>' : '');
+        }
+        if (checks) html += '<div class="Vsm__Options">' + checks + '</div>';
+        html += '<p class="Vsm__Muted">Each file is copied to <code>/srv/vale-sync/backups/&lt;stamp&gt;/</code> first and the delete is journaled: ' +
+                'to put them back, use <b>Undo last push</b> on ' + midList.map(Vsm.Esc).join(', ') + ' in tab 02 (before that mapping is pushed again). ' +
+                'Folders are kept, even when emptied.</p>';
+
+        Vsm.OpenModal(html, [
+            { label: 'Cancel' },
+            { label: 'Delete ' + count + ' from the server', cls: 'Vsm__BtnDanger', run: function() {
+                var ack = Vsm.El('Vsm__DelAck');
+                if (ack && !ack.checked) { Vsm.Toast('Tick the box to confirm the user data and project records can go.', true); return true; }
+                var pc = Vsm.El('Vsm__DelPc');
+                Vsm__RunDelete(items, !!(pc && pc.checked));
+            } }
+        ]);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Run the Delete (one server session) and Report It
+    // ------------------------------------------------------------
+    // Sends the size and time each file had when it was shown, so the server
+    // refuses the whole job if any of them changed since.
+    // ------------------------------------------------------------
+    function Vsm__RunDelete(items, pc) {
+        var files = {};
+        items.forEach(function(n) { (files[n.mid] = files[n.mid] || {})[n.rel] = [n.s[0], n.s[1]]; });
+        Vsm.Operate('delete', { files: files, pc: pc }, function(res) {
+            var n = (res.plans || []).reduce(function(t, p) { return t + (p.deleted || []).length; }, 0);
+            return 'Deleted ' + n + ' file' + (n === 1 ? '' : 's') + ' from the server (backup ' + res.stamp + '). ' +
+                   'To put them back: tab 02, Undo last push on ' + (res.plans || []).map(function(p) { return p.id; }).join(', ') + '.' +
+                   (res.pc_moved ? ' ' + res.pc_moved + ' PC cop' + (res.pc_moved === 1 ? 'y' : 'ies') + ' moved to ' + res.pc_backup + '.' : '');
+        }).then(function(res) {
+            if (!res || !res.ok) return;
+            items.forEach(function(x) { Vsm__Picked.delete(x.rel); });
+            Vsm__RenderTree();
+            Vsm__RenderDetail();
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Tick or Untick One File, a Folder's Files, or a Shift Range
+    // ------------------------------------------------------------
+    function Vsm__TogglePick(rel, shift) {
+        var n = Vsm__Nodes.get(rel);
+        if (!n) return;
+        var keep = Vsm__FilterSet();
+        var rels = n.dir ? Vsm__DeletableUnder(n, keep) : [rel];
+        if (!n.dir && shift && Vsm__PickAnchor) {
+            var a = Vsm__PickOrder.indexOf(Vsm__PickAnchor), b = Vsm__PickOrder.indexOf(rel);
+            if (a >= 0 && b >= 0) rels = Vsm__PickOrder.slice(Math.min(a, b), Math.max(a, b) + 1);
+        }
+        var on = n.dir ? !rels.every(function(r) { return Vsm__Picked.has(r); }) : !Vsm__Picked.has(rel);
+        rels.forEach(function(r) { if (on) Vsm__Picked.add(r); else Vsm__Picked.delete(r); });
+        if (!n.dir) Vsm__PickAnchor = rel;
+        Vsm__RenderTree();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Polling and Events
 // -----------------------------------------------------------------------------
 
@@ -365,6 +592,7 @@
                 if (p.nodes) {
                     Vsm__Version = p.version;
                     Vsm__Build(p.nodes);
+                    Vsm__PrunePicked();                                         // <-- Gone from the server: no longer ticked
                     Vsm__RenderTree();
                     Vsm__RenderDetail();
                 }
@@ -396,6 +624,14 @@
     // ------------------------------------------------------------
     function Vsm__OnClick(e) {
         if (!Vsm.El('Vsm__TabExplorer').contains(e.target)) return;
+        var pick = e.target.closest('input[data-pick]');
+        if (pick) { Vsm__TogglePick(pick.dataset.pick, e.shiftKey); return; }
+        var del = e.target.closest('[data-delete-node]');
+        if (del) {
+            var dn = Vsm__Nodes.get(del.dataset.deleteNode);
+            if (dn) Vsm__ConfirmDelete(dn.dir ? Vsm__DeletableUnder(dn, null) : [dn.rel]);
+            return;
+        }
         var th = e.target.closest('.Vsm__TreeHead [data-sort]');
         if (th) {
             Vsm__Sort = Vsm.SortToggle('Tree', Vsm__Sort, th.dataset.sort);
@@ -435,6 +671,8 @@
             Vsm.Store('Expanded', '[]');
             Vsm__RenderTree();
         });
+        Vsm.El('Vsm__BtnDeletePicked').addEventListener('click', function() { Vsm__ConfirmDelete(Array.from(Vsm__Picked)); });
+        Vsm.El('Vsm__BtnClearPicked').addEventListener('click', function() { Vsm__Picked.clear(); Vsm__RenderTree(); });
         Vsm.El('Vsm__BtnLive').addEventListener('click', function() {
             Vsm__LiveOn = !Vsm__LiveOn;
             Vsm.Store('LiveOn', Vsm__LiveOn ? '1' : '0');

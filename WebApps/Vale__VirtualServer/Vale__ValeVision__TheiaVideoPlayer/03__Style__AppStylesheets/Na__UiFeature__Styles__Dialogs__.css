@@ -1,0 +1,161 @@
+/* =============================================================================
+ * VALEVISION THEIA - DIALOG STYLES (SHARE)
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__Dialogs__.css
+ * NAMESPACE  : ValeVision Theia
+ * MODULE     : Dialog Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The Share dialog: staff link, client link, the project's links
+ * CREATED    : 07-Oct-2026
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Dialog
+ * ----------------------------------------------------------------------------- */
+
+    .theia-dialog__backdrop {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : flex-start;
+        justify-content                    : center;
+        padding                            : 6vh 16px 16px;
+        background                         : rgba(7, 12, 17, 0.55);
+        overflow-y                         : auto;
+        z-index                            : 2000;
+    }
+
+    .theia-dialog {
+        width                              : 100%;
+        max-width                          : 640px;
+        padding                            : 22px 24px 24px;
+        border-radius                      : 14px;
+        background                         : var(--Theia_Surface);
+        color                              : var(--Theia_Text);
+        box-shadow                         : 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .theia-dialog__head {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : 12px;
+    }
+
+    .theia-dialog__title {
+        margin                             : 0;
+        font-size                          : 26px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-dialog__close {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 36px;
+        height                             : 36px;
+        border                             : none;
+        border-radius                      : 8px;
+        background                         : transparent;
+        color                              : var(--Theia_TextSecondary);
+        cursor                             : pointer;
+    }
+
+    .theia-dialog__close:hover {
+        background                         : var(--Theia_SurfaceHover);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Share
+ * ----------------------------------------------------------------------------- */
+
+    .theia-share__section {
+        margin-top                         : 18px;
+        padding-top                        : 18px;
+        border-top                         : 1px solid var(--Theia_Border);
+    }
+
+    .theia-share__heading {
+        margin                             : 0 0 4px;
+        font-size                          : 15px;
+        font-weight                        : 600;
+    }
+
+    .theia-share__subheading {
+        margin                             : 18px 0 8px;
+        font-size                          : 12px;
+        font-weight                        : 600;
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+        color                              : var(--Theia_TextSecondary);
+    }
+
+    .theia-share__help {
+        margin                             : 0 0 10px;
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 13px;
+        line-height                        : 1.5;
+    }
+
+    .theia-share__link {
+        display                            : flex;
+        gap                                : 8px;
+        margin-top                         : 8px;
+    }
+
+    .theia-share__url {
+        flex                               : 1;
+        font-size                          : 13px;
+    }
+
+    .theia-share__form {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 10px;
+    }
+
+    .theia-share__form .theia-button--primary {
+        align-self                         : flex-start;
+    }
+
+    .theia-share__picks {
+        margin-left                        : 24px;
+        max-height                         : 180px;
+        overflow-y                         : auto;
+    }
+
+    .theia-share__row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        padding                            : 10px 0;
+        border-top                         : 1px solid var(--Theia_Border);
+    }
+
+    .theia-share__row-info {
+        flex                               : 1;
+        min-width                          : 0;
+    }
+
+    .theia-share__row-label {
+        font-weight                        : 600;
+    }
+
+    .theia-share__row-meta {
+        margin-top                         : 2px;
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 12px;
+    }
+
+    .theia-share__row.is-revoked,
+    .theia-share__row.is-expired {
+        opacity                            : 0.55;
+    }
+
+/* endregion ------------------------------------------------------------------- */

@@ -1,6 +1,151 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.74.2 - 07-Oct-2026 - New Video Paths Export at 60 fps, High Quality
+### 3:2, 2160p (4K), 60 fps, High (67 Mbps), anti-aliasing on at 16x, safe frame and rule of thirds on
+
+**Overview**
+- The export settings Adam used for ExteriorVideo_01 made the house default for a new path: frame rate
+  30 -> 60 fps, bitrate 34 -> 67 Mbps (the High quality stop at 3240 x 2160 and 60 fps). Everything else he set
+  was already the default.
+- Paths already saved keep their own settings. Every saved path in the library stores its frame rate and
+  bitrate, so none of them falls back to the new default.
+
+**Modules**
+- `31__System__VideoStudio/Na__VideoStudio__ProjectJson__VideoData.js` 1.5.1: DEFAULT_FPS 60, DEFAULT_BITRATE_MBPS 67.
+
+**Tested** (PC sandbox): Create New Video Path stores and shows 3:2, 2160p (4K), 60 fps, High (67 Mbps),
+anti-aliasing on at 16x.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.74.1 - 07-Oct-2026 - Doors Swing in the Exported Video as They Do in the Preview
+### The live render loop is paused for the length of a video export
+
+**Overview**
+- In exported and Theia-published videos the doors snapped open in one frame, while the preview swung them
+  smoothly (seen on 64135 Holt, Interior, 4K with 16x anti-aliasing).
+- Cause: the export advances the doors by its exact frame step (16.7 ms at 60 fps), but it only called
+  `StopActiveRender('video-export')`, which stops nothing and asks for a frame. The live loop kept running, and
+  each door that began to swing woke it (`RequestRender`). Its next tick advanced the door by the wall-clock time
+  since its last tick, usually the whole render so far, so the swing finished at once. The preview has one clock,
+  real time, which is why it looked right.
+- The export now holds the live loop with `Na__RenderLoop__Pause('video-export')` from the end of its set-up to the
+  end of its teardown, as the Layout Editor's snapshots do. Resume restarts the loop's clock, so walk, fly and
+  the doors take no giant step afterwards, and paints the restored viewport.
+
+**Modules**
+- `31__System__VideoStudio/Na__VideoStudio__Export__VideoEncoder.js` 1.4.1.
+
+**Tested**: syntax only. A render is the test: export a short stretch of a path with a ticked door keyframe and
+watch the door take its Door Open time.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.74.0 - 07-Oct-2026 - A Keyframe Becomes a Presentation Scene, and a Presentation Scene Becomes a Keyframe
+### One-off copies in both directions; nothing is kept in step afterwards
+
+**Overview**
+- **Keyframe To Presentation Scene** is the last item on a Video Studio timeline tile's right-click menu, under
+  its own divider below Delete. It makes a new Presentation scene from a copy of the keyframe, files it into the
+  group the carousel was last showing, renders its thumbnail at the keyframe's pose (invisibly, through the
+  timeline's own still renderer, path line hidden) and saves at once, as Add Scene From Camera does. The camera
+  does not move.
+- **Presentation Scene To Keyframe** is the last button on an open row of Presentation Scenes (Dev Tools), under a
+  rule. It adds a new keyframe to the END of the path open in the Video Studio, as K does, selects it, and is one
+  Ctrl+Z step. Like every keyframe edit it is kept by Save Video Settings. With no path open it says so. Disabled
+  on floor plan and elevation cards.
+- Neither is a link (Adam's call): changing or deleting either side afterwards leaves the other as it was made.
+
+**What goes across**
+- Both ways: the camera block (position, aim, field of view; the same format on both sides), the lens, and the
+  navigation mode (a keyframe's Orbit / Fly / Walk, a scene's `fly` / `walk`).
+- Timing: travel time and Move time are both "how long the camera flies", but the defaults suit two jobs (a 5 s
+  leg of film, a 1.8 s hop between cards). A value left at its own side's default becomes the other side's
+  default; a value someone set is carried, clamped to the other side's range (a scene's Move is 0.3 to 8 s).
+- Keyframe to scene also takes the model layers the keyframe is seen with (the live layers, with the path's own
+  layer state laid over them), the live lighting it renders in (as the smallest override, or none at the
+  default), and the path's easing when the carousel offers it (else easeInOutCubic). An orbit keyframe's scene
+  gets an orbit target 8 m along its line of sight; a walk or fly one the navigation look-ahead.
+- Scene to keyframe takes an orbit scene's aim from its orbit target, because that is what the carousel frames it
+  by (orbit controls look at the target on every update); a SketchUp scene's stored rotation can differ from it
+  by a fraction of a degree. Model layers, lighting and easing are per path in the Video Studio, so they stay with
+  the scene. A keyframe's hold and door animation, and a scene's group, have no home on the other side.
+
+**Also**
+- With the Video Studio timeline up, any Presentation Scenes edit that re-announced the scene set (Add Scene,
+  Update Scene, a reorder, and now a keyframe made into a scene) put the carousel back over the timeline. The
+  timeline now keeps the carousel down and gives it back when it stands down.
+- Add Scene From Camera and the new door share one filing tail in the scene editor (id, name, thumbnail path,
+  group, cross section, thumbnail, save, focus), so the two cannot drift. Behaviour is unchanged.
+
+**Modules**
+- `31__System__VideoStudio/Na__VideoStudio__Convert__PresentationScenes.js` 1.0.0 (new): BuildSceneRecord,
+  BuildKeyframeFields, KeyframeToPresentationScene, PresentationSceneToKeyframe, Initialize.
+- `Na__VideoStudio__Timeline__ContextMenu` 1.3.0: the last item.
+- `Na__VideoStudio__Timeline__Thumbnails` 1.1.0: RenderKeyframeStill (full frame, viewport aspect, WebP); the pose,
+  render and restore it shares with SyncVideo moved into RenderBurst, unchanged.
+- `Na__VideoStudio__Timeline__Controls` 1.1.0: the carousel stays down while the timeline is up.
+- `Na__VideoStudio__DevMenu__Controls` 1.5.0: initializes the conversions.
+- `21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor` 1.5.0: AddSceneFromRecord,
+  SetSceneToKeyframeHandler, the shared FileNewScene tail.
+- `Na__PresentationMode__DevMenu__SceneRowBuilders__` 1.4.0: the row button; exports the Move bounds and easing list.
+- `Na__PresentationMode__DevMenu__ScenePersistence__` 1.2.0: UploadThumbnailBlob.
+- `Na__PresentationMode__Thumbnail__Renderer` 1.2.0: UploadBlob (CaptureAndUpload now calls it).
+- Service worker version `2026-10-07-2`.
+
+**Tested** (PC, a second ValeDev__LocalServer__ on a sandbox copy of 57079__Mordaunt with a generated test admin;
+the real record was not touched): keyframe 4 (Fly, 10 s travel, Gentlest easing) to a scene: camera and FOV
+identical, `fly`, Move 8 s, easeInOutCubic, layers, Group_001, thumbnail of the shot with no path line, saved;
+the carousel stayed down behind the timeline and came back with the new card when the panel closed; flying to the
+card landed in Fly and framed exactly the thumbnail. Exterior 01 (a SketchUp orbit scene, no Move time) to a
+keyframe: Orbit, 43 mm, 5 s travel, aim on the scene's target to 0.002 deg with a level horizon; Ctrl+Z took it
+off. The new scene back to a keyframe: identical to keyframe 4 but for the clamped 8 s. No path open: refused with
+the reason. Add Scene From Camera after the refactor: Scene 15, filed, thumbnail, saved, row opened.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.73.0 - 07-Oct-2026 - Publish to ValeVision Theia: Video Studio Paths Become Theia Videos
+### One file per path at its own export settings, streamed into Theia while it renders; titles kept in step both ways
+
+**Overview**
+- Each Video Studio path now has a **Title** and **Description** for clients, a Theia **Scheme**, and **Publish to
+  Theia**. The path is rendered at its own export settings (exactly what Export MP4 makes: resolution, frame rate,
+  quality, anti-aliasing) and the one MP4 goes up into ValeVision Theia as it renders. Nothing is downloaded.
+- Adam's call (07-Oct): **one file per path**, no second sizes and no quality switching in the player. A path set
+  below 2K (1440p) cannot be published; the panel says so, and why, before anything renders.
+- **Publish & Sync All to Theia** (beside Save Video Settings) renders only the paths that are new or changed since
+  they were published (a fingerprint of keyframes, playback, export and layers), sends every title, description and
+  the order, and offers to remove Theia videos whose path was deleted here (AppAdmin).
+- **Two-way.** A title or description edited in Theia comes back: the panel reads Theia when it opens, and the
+  newer MetaUpdatedIso wins. Save Video Settings sends them up. A stamp more than a day ahead of now (a PC clock far
+  out, a test value) never wins.
+- **The status line of each path:** "Not in Theia yet", "In Theia since 07-Oct-2026: 4K (3240 x 2160), 0:25. Up to
+  date", or "Changed since: publish again". It updates as the path is edited. A path published by the day's first
+  build in two sizes says so; publishing it again leaves one file and deletes the old 2K one on the server.
+- Publishing shows the opaque render overlay with the frame count and the upload's progress; **Cancel publishing**
+  floats above it, and a cancelled or failed publish leaves Theia as it was.
+
+**Modules**
+- `31__System__VideoStudio/Na__VideoStudio__Publish__Theia.js` 1.0.0 (new): Theia's API (`/theia/api/`, the same
+  sign-in), the chunked uploader (16 MB chunks, each with its SHA-256, five retries, backpressure on the render),
+  PublishVideo, SyncPayload.
+- `Na__VideoStudio__Export__Mp4Muxer` 1.1.0: fast-start finalize (the index before the frames), and a streaming mode
+  (`onPayload`, `reservedHeadBytes`, `finalizeHead`) so a file can be uploaded while it is made, its index written
+  last into reserved space. Export MP4 files are fast-start too now.
+- `Na__VideoStudio__Export__VideoEncoder` 1.4.0: ExportRenditions (one render feeding one or more encoders, streamed
+  sinks, posters from the first frame). ExportVideo is a wrapper over it, the same as before in use.
+- `Na__VideoStudio__ProjectJson__VideoData` 1.5.0: `VideoStudio__Video__Title`, `__Description`, `__MetaUpdatedIso`,
+  `__TheiaScheme`, `__TheiaPublish` (written by the Theia API: Quality, Width, Height, Fingerprint, PublishedIso);
+  `VideoStudio__Config__LastVideoNumber` (path ids are never reused). Save takes newer titles and publish stamps from
+  the server's copy of the record first.
+- `Na__VideoStudio__DevMenu__Controls` 1.4.0: the ValeVision Theia section per path, Publish & Sync All, Open Theia.
+- `Na__VideoStudio__Stylesheet__` 1.4.0: the Theia section's fields, status line and the Cancel publishing bar.
+- Service worker version `2026-10-07-1`.
+
+**Tested** (PC sandbox, synthetic users): publish of a 45-frame path at 3240 x 2160 (fast-start, complete, poster and
+thumbnail, staging left empty); a first-build two-size video published again (the 2K file purged); a title edited
+in Theia arriving in the panel and one edited here arriving in Theia; Publish & Sync All removing a deleted path's
+video; the 2K gate switching Publish off at 1080p.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.72.0 - 06-Oct-2026 - ValeVision 3D Moves to app.valegardenhouses.com: One Server, One Store, and a Vale Sign-In
 ### The app now lives in WebApps/Vale__VirtualServer/Vale__ValeVision3D (served at /valevision/); this file moved with it
 

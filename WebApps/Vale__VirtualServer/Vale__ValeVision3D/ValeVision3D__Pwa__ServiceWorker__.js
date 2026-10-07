@@ -19,7 +19,7 @@
 
    ============================================================================= */
 
-var VV3D_VERSION = '2026-10-06-1';
+var VV3D_VERSION = '2026-10-07-2';
 var VV3D_SHELL   = 'valevision3d-shell-' + VV3D_VERSION;
 
 self.addEventListener('install', function() { self.skipWaiting(); });

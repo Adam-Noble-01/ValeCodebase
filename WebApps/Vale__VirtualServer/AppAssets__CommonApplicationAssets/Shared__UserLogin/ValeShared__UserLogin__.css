@@ -15,6 +15,9 @@
  *   same in every app whatever that app's stylesheet does.
  * - The avatar floats top-right unless the app gives Init a mountEl; then it
  *   sits inline (.ValeUserLogin__Mount--Inline) inside the app's own toolbar.
+ * - 07-Oct-2026 (1.2.0): the guest bubble (ValeUserLogin.Guest) for a viewer
+ *   with no account: the same circle and menu, a person icon for the initials,
+ *   and short notes under the name.
  *
  * ============================================================================= */
 
@@ -294,6 +297,26 @@
     .ValeUserLogin__Item--nested { padding-left: 18px; }
     .ValeUserLogin__Item--danger { color: var(--ValeUserLogin_Error); font-weight: 600; }
     .ValeUserLogin__Item--danger:hover { background: var(--ValeUserLogin_ErrorSoft); }
+
+    /* GUEST | A viewer with no account (ValeUserLogin.Guest): a person where the initials go */
+    .ValeUserLogin__Avatar--Guest svg {
+        width                              : 58%;
+        height                             : 58%;
+    }
+    .ValeUserLogin__IdentityAvatar--Guest svg {
+        width                              : 56%;
+        height                             : 56%;
+    }
+    .ValeUserLogin__Menu--Guest .ValeUserLogin__Panel {
+        max-width                          : calc(290px * var(--ValeUserLogin_Scale));   /* <-- Notes wrap rather than widen the menu */
+    }
+    .ValeUserLogin__Note {
+        padding                            : 0 8px 6px;
+        font-size                          : calc(12.5px * var(--ValeUserLogin_Scale));
+        line-height                        : 1.45;
+        color                              : var(--ValeUserLogin_TextSubtle);
+        white-space                        : normal;
+    }
 
 /* #endregion ------------------------------------------------------------------- */
 

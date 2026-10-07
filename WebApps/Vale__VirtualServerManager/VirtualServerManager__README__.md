@@ -65,11 +65,22 @@ way down.
 | **User data** | server → PC (**Collect**) | Additive, **newer wins**. Never pushed and never deleted. A newer PC copy is a conflict and is skipped unless you tick *overwrite*. PC-only files can be added once with **Seed** | `UserData__*` (the project library's buckets), `*__UserData*`, `*__UserConfig*`, `*__User*Content*`, `*__ProjectData*`, `*__ServerData*`, `*__Revisions*`, `*LocalUserData*`, `*LocalProjectData*`; the mapping's *User data* box |
 | **Project data** | **both ways** | **Newer wins either way.** Push sends the PC's newer copy; Collect brings the server's. Never deleted | The project library's default: `ProjectData__<code>__<Name>__.json`, written by both the PC tools and the apps |
 
+**Content made on the server** (`ServerMadeContent` in the sync map, folder names; since 0.8.0
+`ValeVision__TheiaVideo`): ValeVision Theia writes its videos and posters into `Content__` folders on
+the server, so the PC never has them first. Content under such a folder stays in the heavy-content
+lane (a newer PC copy still pushes), but a server-only or server-newer file is **collected by every
+Collect**, with no *Collect with content* tick. It shows as ↓ "made on the server: collect" on the
+card, in the explorer and in the Collect dialog. A forced push never overwrites it, and `--prune`
+refuses such a folder. Other server-only content (for example superseded gallery images) still
+waits for the tick.
+
 So:
 - source code and heavy content go **up**;
-- user content and user configs made by other people on the server come **down**;
+- user content and user configs made by other people on the server come **down**, and so do
+  Theia's videos and posters;
 - the project record goes whichever way is newer;
-- nothing outside the code lane is ever deleted;
+- nothing outside the code lane is ever deleted by a sync (only by a delete you name in tab 01,
+  or the SketchUp sync's `--prune`);
 - every file replaced on either side is kept first. On the server it goes to
   `/srv/vale-sync/backups/<stamp>/` (used by *Undo last push*); on the PC it goes to
   `90__ServerBackups\collect__<date>\`.
@@ -94,6 +105,20 @@ So:
 - sort by Name, Status (most urgent first), Size or Modified; folders stay above files;
 - a detail panel with both paths;
 - **Pause live** hangs up. Leaving the tab hangs up after 90 seconds.
+- **Delete from the server** (0.7.0):
+  - tick files in the first column. A folder's box ticks every deletable file inside it that the
+    search and filters show (search `Washington`, tick the folder: only the Washington files);
+    Shift ticks a range;
+  - then **Delete from server…** in the toolbar, or the detail panel's button for the selected
+    file or folder;
+  - a modal lists every file (lane, status, size, modified) and asks first. User data and project
+    records need an extra tick. Files also on this PC can be moved to
+    `90__ServerBackups\deleted__<time>\` with one tick, or a push would send them back;
+  - each file is backed up on the server and the delete is journaled: **Undo last push** on that
+    mapping (tab 02) restores them. Folders are kept;
+  - the users register, files left out of sync (secrets, docs, scripts) and unmapped files cannot
+    be ticked, and the server refuses them too. If any file changed since the explorer showed it,
+    nothing is deleted.
 
 **02 Parity matrix:**
 - one card per mapping, showing the PC path beside the server path (editable) and three lane rows;
@@ -208,6 +233,7 @@ python VirtualServerManager__SyncEngine__.py compare lanterndesigner
 python VirtualServerManager__SyncEngine__.py push lanterndesigner --yes [--allow-deletes] [--force-content]
 python VirtualServerManager__SyncEngine__.py collect lanterndesigner --yes [--with-content] [--force-userdata]
 python VirtualServerManager__SyncEngine__.py undo lanterndesigner
+python VirtualServerManager__SyncEngine__.py delete projects ValeProjects__2026/64135__Holt/ValeVision3D/Content__3dModel__GlbFiles/Old.glb [--yes] [--pc]
 python VirtualServerManager__SyncEngine__.py seed lanterndesigner
 python VirtualServerManager__SyncEngine__.py backup
 python VirtualServerManager__SyncEngine__.py status
@@ -234,6 +260,16 @@ python VirtualServerManager__SyncEngine__.py push projects --scope ValeProjects_
   and the same `push` after publishing. The app need not be running: the engine shares its
   lock, cooldown and session log.
 
+**One content folder kept exact (`--prune`, 0.6.2).**
+- `compare` and `push` with `--scope` also take `--prune <folder>`: a `Content__*` folder
+  inside the scope.
+- Server files in it that the PC does not have are listed as `content_prune` and deleted by
+  the push. Each is backed up on the server first, so `undo` restores them.
+- It is the only way content is ever deleted. It is refused without `--scope`, outside the
+  scope or the content lane, and when the PC folder is empty.
+- The SketchUp plugin (0.5.1) prunes `<project>/ValeVision3D/Content__3dModel__GlbFiles` on
+  every GLB sync, so the server holds only the latest GLBs and one `00__Archive` zip.
+
 ## On the Server
 
 | Path | Purpose |
@@ -242,6 +278,6 @@ python VirtualServerManager__SyncEngine__.py push projects --scope ValeProjects_
 | `/srv/vale-sync/staging/` | Uploads land here, then move into place |
 | `/srv/vale-sync/nginx-backups/<stamp>/`, `nginx-applied.json` | The previous nginx files from each apply; the last apply's hash and checks |
 | `/etc/nginx/snippets/vale-site.conf` | The generated routes (never edit on the server) |
-| `/srv/vale-sync/backups/<stamp>/` | Files replaced or deleted by each push (the last 30 pushes are kept) |
-| `/srv/vale-sync/journal/<stamp>.json` | What each push did (used by Undo) |
+| `/srv/vale-sync/backups/<stamp>/` | Files replaced or deleted by each push or explorer delete (the last 30 are kept) |
+| `/srv/vale-sync/journal/<stamp>.json` | What each push or delete did (used by Undo) |
 | `/srv/vale-sync/sync.log` | One line per push, undo, seed and collect |

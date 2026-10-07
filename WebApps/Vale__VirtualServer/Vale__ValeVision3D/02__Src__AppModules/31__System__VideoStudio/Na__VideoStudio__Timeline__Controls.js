@@ -32,7 +32,8 @@
 //                              panel's Go To button does.
 // - Right click a tile       : opens the keyframe context menu on it, which
 //                              edits travel, hold, lens, height and tilt in
-//                              place and can delete the waypoint.
+//                              place, can delete the waypoint, and last of
+//                              all makes a Presentation scene from it.
 // - Click or drag the track  : scrubs the playhead.
 // - Play / Pause / Stop      : the same transport the panel used to carry,
 //                              and the same one the spacebar drives.
@@ -54,6 +55,13 @@
 // DEVELOPMENT LOG:
 // 02-Sep-2026 - Version 1.0.0
 // - Initial implementation, replacing the in-panel transport slider.
+//
+// 07-Oct-2026 - Version 1.1.0 (v2.74.0)
+// - A Presentation scene set re-announced while the timeline is up (any
+//   Presentation Scenes edit, and now Keyframe To Presentation Scene) no
+//   longer puts the carousel back over the timeline. The carousel's wish to
+//   show is kept for when the timeline stands down.
+// - Right click a tile: the menu's last item is Keyframe To Presentation Scene.
 //
 // =============================================================================
 
@@ -777,6 +785,37 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Keep the Strip Ours When the Scene Set Changes Under It
+    // ------------------------------------------------------------
+    // The carousel shows itself every time the scene set is re-announced,
+    // which happens on every Presentation Scenes edit, Keyframe To
+    // Presentation Scene among them. With the timeline up, that put the
+    // carousel back over the timeline. Instead the carousel's wish is noted
+    // for when the timeline stands down, and it is hidden again before the
+    // browser paints. A microtask, so it runs after the carousel's own
+    // listener whichever was registered first.
+    //
+    // A cleared scene set leaves nothing to come back to.
+    // ------------------------------------------------------------
+    function Na__VsTl__HandleScenesLoaded() {
+        if (!Na__VsTl__IsActive) return;
+
+        queueMicrotask(() => {
+            if (!Na__VsTl__IsActive) return;
+            if (!Na__PresentationMode__UI__IsCarouselVisible()) return;
+
+            Na__VsTl__CarouselWasVisible = true;                             // <-- There are scenes now; show them on stand-down
+            Na__PresentationMode__UI__ToggleSceneCarousel(false);
+        });
+    }
+
+    function Na__VsTl__HandleScenesCleared() {
+        if (!Na__VsTl__IsActive) return;
+        Na__VsTl__CarouselWasVisible = false;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -973,6 +1012,10 @@
         });
 
         window.addEventListener('resize', Na__VsTl__HandleResize);
+
+        // SCENE SET CHANGES | The carousel stays down while the timeline is up
+        window.addEventListener('na-presentation-mode-scenes-loaded',  Na__VsTl__HandleScenesLoaded);
+        window.addEventListener('na-presentation-mode-scenes-cleared', Na__VsTl__HandleScenesCleared);
 
         console.log('[ValeVision3D] Video Studio timeline initialized.');
     }

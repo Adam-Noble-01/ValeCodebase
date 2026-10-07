@@ -54,6 +54,11 @@
 //   next to it: that history is cleared when the panel closes or another path
 //   is opened, so it is a working-session safety net and not a permanent one.
 //
+// KEYFRAME TO PRESENTATION SCENE:
+// - The last item, below Delete under its own divider, because it changes
+//   nothing here: it makes a new Presentation scene from a copy of the
+//   keyframe and saves it. The two are never kept in step afterwards.
+//
 // INTEGRATION:
 // - Initialize once from Na__VideoStudio__DevMenu__Controls, which supplies the
 //   live camera, the toast callback and the one refresh routine that knows
@@ -79,6 +84,11 @@
 // 11-Sep-2026 - Version 1.2.0
 // - Added the Advanced Object Animation section with the per-keyframe Door
 //   Animation tick, undoable and previewed live like the other fields.
+//
+// 07-Oct-2026 - Version 1.3.0 (v2.74.0)
+// - Keyframe To Presentation Scene, the last item, under its own divider:
+//   a new Presentation scene made from a copy of the keyframe, saved at once
+//   (Na__VideoStudio__Convert__PresentationScenes).
 //
 // =============================================================================
 
@@ -151,6 +161,12 @@
     // @delegate: ./Na__VideoStudio__Viewport__PathVisualizer.js
     // ------------------------------------------------------------
     import { Na__VideoStudio__PathVisualizer__Rebuild } from './Na__VideoStudio__Viewport__PathVisualizer.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Keyframe To Presentation Scene
+    // @delegate: ./Na__VideoStudio__Convert__PresentationScenes.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__Convert__KeyframeToPresentationScene } from './Na__VideoStudio__Convert__PresentationScenes.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog
@@ -288,6 +304,7 @@
         if (disabled) input.disabled = true;
 
         const apply = () => {
+            if (!Na__VsMenu__Element || !Na__VsMenu__Element.contains(input)) return;   // <-- Menu closing; the edit was already committed
             const raw = parseFloat(input.value);
             if (!Number.isFinite(raw)) {                                     // <-- Emptied or nonsense; put the old value back
                 input.value = String(value);
@@ -844,6 +861,31 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Build Keyframe To Presentation Scene, Last in the Menu
+    // ------------------------------------------------------------
+    // Under its own divider after Delete: it does not edit this keyframe, it
+    // makes a new Presentation scene from a copy of it, which is saved to the
+    // project at once. The ids are taken now, because closing the menu clears
+    // the ones it holds and the conversion runs after it has closed.
+    // ------------------------------------------------------------
+    function Na__VsMenu__BuildToPresentationSceneSection(menu, videoId, keyframeId) {
+        menu.appendChild(Na__VsMenu__El('div', 'na-vs-menu__divider'));
+
+        const button = Na__VsMenu__El('button', 'na-vs-menu__btn na-vs-menu__btn--wide', 'Keyframe To Presentation Scene');
+        button.type  = 'button';
+        button.title = 'Make a new Presentation scene from this keyframe: its camera, lens, navigation mode, '
+                     + 'model layers and lighting, with a thumbnail of the shot. Saved to the project at once. '
+                     + 'A one-off copy; the scene and the keyframe are not kept in step.';
+        button.addEventListener('click', () => {
+            Na__VideoStudio__Timeline__ContextMenu__Close();
+            Na__VideoStudio__Convert__KeyframeToPresentationScene(videoId, keyframeId);
+        });
+
+        menu.appendChild(button);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -930,6 +972,7 @@
         Na__VsMenu__BuildCameraSection(menu, keyframe, index);
         Na__VsMenu__BuildObjectAnimationSection(menu, video, keyframe, index);
         Na__VsMenu__BuildDeleteSection(menu, video, keyframe, index);
+        Na__VsMenu__BuildToPresentationSceneSection(menu, videoId, keyframeId);
 
         menu.dataset.vsMenuWantX = String((clientX || 0) + Na__VsMenu__CURSOR_GAP_PX);
         menu.dataset.vsMenuWantY = String((clientY || 0) + Na__VsMenu__CURSOR_GAP_PX);
@@ -960,10 +1003,14 @@
         window.removeEventListener('resize',      Na__VideoStudio__Timeline__ContextMenu__Close);
         window.removeEventListener('wheel',       Na__VideoStudio__Timeline__ContextMenu__Close);
 
-        Na__VsMenu__Element.remove();
+        // Clear the reference BEFORE removing: taking a focused input out of the
+        // DOM fires its 'change', which commits, refreshes the timeline and calls
+        // back in here. With the reference already null that re-entry returns early.
+        const element = Na__VsMenu__Element;
         Na__VsMenu__Element    = null;
         Na__VsMenu__VideoId    = null;
         Na__VsMenu__KeyframeId = null;
+        element.remove();
     }
     // ------------------------------------------------------------
 

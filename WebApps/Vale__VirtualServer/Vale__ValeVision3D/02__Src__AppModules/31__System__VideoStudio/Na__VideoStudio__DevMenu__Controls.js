@@ -26,6 +26,14 @@
 // - Save Video Settings writes the VideoStudio__Config block into project.json
 //   through the shared R2-first two-phase save, exactly as every other Dev
 //   menu save does.
+// - VALEVISION THEIA: each path has a Title and Description for clients, a
+//   Theia scheme, and Publish to Theia, which renders it at its own export
+//   settings (what Export MP4 makes) and streams the one file into Theia
+//   (Na__VideoStudio__Publish__Theia.js) - nothing is downloaded. A path set
+//   below 2K cannot be published. Publish & Sync All renders only the paths that
+//   changed since they were published, syncs every title and the order, and
+//   offers to remove Theia videos whose path is gone. A title or description
+//   edited in Theia comes back here (newer wins); Save also syncs them up.
 //
 // PANEL REBUILD STRATEGY:
 // - Structural changes (add, delete, reorder) rebuild the panel.  Value edits
@@ -71,6 +79,22 @@
 // - Added the Anti-Aliasing section between Model Layers and Export: an
 //   Enabled tick and, while it is on, a 4x | 8x | 16x Samples switch (8x by
 //   default). The export confirmation says how much longer it will take.
+//
+// 07-Oct-2026 - Version 1.4.0 (ValeVision Theia)
+// - The ValeVision Theia section per path (Title, Description, Scheme, a status
+//   line that says whether it is published and whether it has changed since,
+//   Publish to Theia, Open in Theia) and, beside Save Video Settings, Publish &
+//   Sync All to Theia and Open Theia.
+// - Opening the panel reads Theia's list and brings newer titles in; Save sends
+//   titles and descriptions to Theia after the record is saved.
+// - The same day, on Adam's call: one file per path at its own export settings
+//   (not 4K and 2K); the note under the status says what will be made, and a
+//   path below 2K has Publish switched off with the reason.
+//
+// 07-Oct-2026 - Version 1.5.0 (keyframe <-> Presentation scene, v2.74.0)
+// - Initializes Na__VideoStudio__Convert__PresentationScenes with this
+//   panel's keyframe refresh and the path it has open, which registers
+//   Presentation Scene To Keyframe with the Presentation Scenes editor.
 //
 // =============================================================================
 
@@ -154,7 +178,14 @@
         Na__VideoStudio__ProjectJson__GetActiveVideoId,
         Na__VideoStudio__ProjectJson__SetActiveKeyframeId,
         Na__VideoStudio__ProjectJson__GetActiveKeyframeId,
-        Na__VideoStudio__ProjectJson__MergeIntoProjectData
+        Na__VideoStudio__ProjectJson__MergeIntoProjectData,
+        Na__VideoStudio__THEIA_SCHEMES,
+        Na__VideoStudio__ProjectJson__GetTheiaMeta,
+        Na__VideoStudio__ProjectJson__SetTheiaMeta,
+        Na__VideoStudio__ProjectJson__SetTheiaScheme,
+        Na__VideoStudio__ProjectJson__GetTheiaPublish,
+        Na__VideoStudio__ProjectJson__Fingerprint,
+        Na__VideoStudio__ProjectJson__ReconcileWithTheia
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -182,7 +213,6 @@
     // @delegate: ./Na__VideoStudio__Edit__UndoHistory.js
     // ------------------------------------------------------------
     import {
-        Na__VsUndo__MAX_ENTRIES,
         Na__VideoStudio__UndoHistory__SnapshotKeyframe,
         Na__VideoStudio__UndoHistory__SnapshotKeyframes,
         Na__VideoStudio__UndoHistory__Record,
@@ -271,6 +301,12 @@
     import { Na__VideoStudio__Timeline__ContextMenu__Initialize } from './Na__VideoStudio__Timeline__ContextMenu.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Keyframe <-> Presentation Scene Conversions
+    // @delegate: ./Na__VideoStudio__Convert__PresentationScenes.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__Convert__Initialize } from './Na__VideoStudio__Convert__PresentationScenes.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Timeline Keyframe Thumbnails
     // @delegate: ./Na__VideoStudio__Timeline__Thumbnails.js
     // ------------------------------------------------------------
@@ -310,6 +346,22 @@
     // ------------------------------------------------------------
 
     import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
+
+    // MODULE IMPORTS | Publish to ValeVision Theia
+    // @delegate: ./Na__VideoStudio__Publish__Theia.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__GetProjectFolderFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import {
+        Na__VsTheia__IsAvailable,
+        Na__VsTheia__Spec,
+        Na__VsTheia__Videos,
+        Na__VsTheia__Sync,
+        Na__VsTheia__AppUrl,
+        Na__VsTheia__PlanFor,
+        Na__VsTheia__PublishVideo,
+        Na__VsTheia__SyncPayload
+    } from './Na__VideoStudio__Publish__Theia.js';
+    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -408,6 +460,17 @@
     // ------------------------------------------------------------
     let Na__VsDev__AdvancedAnimOpen   = false;   // <-- Survives panel rebuilds
     let Na__VsDev__AdvancedLayersOpen = false;   // <-- Advanced Layer State list, same lifetime
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | ValeVision Theia
+    // ------------------------------------------------------------
+    // What Theia said when the panel last opened: whether it is here, what it
+    // wants rendered, and the videos it has. Fingerprints are worked out in the
+    // background and say whether a published path has changed since.
+    // ------------------------------------------------------------
+    const Na__VsDev__Theia = { available: null, spec: null, videos: [] };
+    const Na__VsDev__Fingerprints = new Map();   // <-- videoId -> 'sha256:...'
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -571,6 +634,7 @@
             const video = Na__VideoStudio__ProjectJson__GetVideoById(element.dataset.vsSummaryFor);
             if (video) element.textContent = Na__VsDev__BuildVideoSummary(video).text;
         });
+        Na__VsDev__QueueTheiaStatuses();                                     // <-- A published path may have just changed
     }
     // ------------------------------------------------------------
 
@@ -1461,6 +1525,222 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | ValeVision Theia Section
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Library Folder of This Project (Theia's project id)
+    // ------------------------------------------------------------
+    function Na__VsDev__ProjectFolder() {
+        return Na__AppUtils__GetProjectFolderFromUrl() || Na__VsDev__ProjectCode || Na__AppUtils__GetProjectCodeFromUrl();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Vale Date From an ISO Stamp (07-Oct-2026)
+    // ------------------------------------------------------------
+    function Na__VsDev__Date(iso) {
+        const d = new Date(iso || '');
+        if (isNaN(d.getTime())) return '';
+        return `${String(d.getDate()).padStart(2, '0')}-${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]}-${d.getFullYear()}`;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Every Path's Theia Text and Stamp, to Tell Whether a Merge Changed Any
+    // ------------------------------------------------------------
+    function Na__VsDev__TheiaSnapshot() {
+        return JSON.stringify(Na__VideoStudio__ProjectJson__GetSortedVideos(null).map((v) =>
+            [Na__VideoStudio__ProjectJson__GetTheiaMeta(v), Na__VideoStudio__ProjectJson__GetTheiaPublish(v)]));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Does a Published Path Need Rendering Again? (null while not known)
+    // ------------------------------------------------------------
+    function Na__VsDev__TheiaStale(video) {
+        const stamp = Na__VideoStudio__ProjectJson__GetTheiaPublish(video);
+        if (!stamp) return true;
+        if (stamp.legacy) return true;                                       // <-- The first build's two sizes: publishing again makes one file
+        const now = Na__VsDev__Fingerprints.get(video.VideoStudio__Video__Id);
+        if (!now) return null;
+        return now !== stamp.fingerprint;                                    // <-- The export settings are in it: a new size is a change
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Status Line of One Path
+    // ------------------------------------------------------------
+    function Na__VsDev__TheiaStatusText(video) {
+        if (Na__VsDev__Theia.available === false) return 'ValeVision Theia is not available on this server yet.';
+        const stamp = Na__VideoStudio__ProjectJson__GetTheiaPublish(video);
+        if (!stamp) return 'Not in Theia yet.';
+        const stale = Na__VsDev__TheiaStale(video);
+        const minutes = Na__VideoStudio__PathSampler__FormatDuration(stamp.durationMs || 0);
+        const what = stamp.width ? `${stamp.quality} (${stamp.width} x ${stamp.height})` : stamp.quality;
+        return `In Theia since ${Na__VsDev__Date(stamp.publishedIso)}: ${what}, ${minutes}. `
+             + (stamp.legacy ? 'Published in two sizes by the first build: publish again to replace them with one file.'
+                : stale === null ? 'Checking for changes…' : stale ? 'Changed since: publish again to update it.' : 'Up to date.');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | What Publish to Theia Will Make of a Path (the note under the status)
+    // ------------------------------------------------------------
+    function Na__VsDev__TheiaPlanText(video) {
+        const plan = Na__VsTheia__PlanFor(video, Na__VsDev__Theia.spec);
+        if (plan.tooSmall) {
+            return `This path renders at ${plan.width} x ${plan.height}. Theia needs at least ${plan.minimumHeight}p (${plan.minimumQuality}): `
+                 + `set Resolution to ${plan.minimumHeight}p or above to publish it.`;
+        }
+        return `Publishing renders this path at its export settings, ${plan.width} x ${plan.height} (${plan.quality}), ${plan.fps} fps, `
+             + `${plan.qualityLabel} quality, and uploads the one file as it renders. Nothing is downloaded.`;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Refresh Every Theia Status Line on Screen (after fingerprints arrive)
+    // ------------------------------------------------------------
+    async function Na__VsDev__RefreshTheiaStatuses() {
+        const videos = Na__VideoStudio__ProjectJson__GetSortedVideos(null);
+        for (const video of videos) {
+            try { Na__VsDev__Fingerprints.set(video.VideoStudio__Video__Id, await Na__VideoStudio__ProjectJson__Fingerprint(video)); }
+            catch (error) { /* crypto.subtle needs https or localhost: the status says checking */ }
+        }
+        if (!Na__VsDev__PanelElement) return;
+        Na__VsDev__PanelElement.querySelectorAll('[data-vs-theia-for]').forEach((element) => {
+            const video = Na__VideoStudio__ProjectJson__GetVideoById(element.dataset.vsTheiaFor);
+            if (!video) return;
+            element.textContent = Na__VsDev__TheiaStatusText(video);
+            element.classList.toggle('is-stale', Na__VsDev__TheiaStale(video) === true && !!Na__VideoStudio__ProjectJson__GetTheiaPublish(video));
+        });
+        Na__VsDev__PanelElement.querySelectorAll('[data-vs-theia-plan-for]').forEach((element) => {
+            const video = Na__VideoStudio__ProjectJson__GetVideoById(element.dataset.vsTheiaPlanFor);
+            if (!video) return;
+            element.textContent = Na__VsDev__TheiaPlanText(video);
+            element.className = Na__VsTheia__PlanFor(video, Na__VsDev__Theia.spec).tooSmall ? 'na-vs-dev__warning' : 'na-vs-dev__note';
+        });
+        Na__VsDev__PanelElement.querySelectorAll('[data-vs-theia-publish-for]').forEach((button) => {
+            const video = Na__VideoStudio__ProjectJson__GetVideoById(button.dataset.vsTheiaPublishFor);
+            if (!video) return;
+            button.disabled = Na__VsDev__IsExporting || Na__VsDev__Theia.available === false
+                           || Na__VsTheia__PlanFor(video, Na__VsDev__Theia.spec).tooSmall || !!Na__VideoStudio__Encoder__GetUnsupportedReason();
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Refresh the Status Lines Once Edits Settle (fingerprints are cheap, the panel is not rebuilt)
+    // ------------------------------------------------------------
+    let Na__VsDev__TheiaStatusTimer = null;
+    function Na__VsDev__QueueTheiaStatuses() {
+        if (!Na__VsDev__Theia.available) return;                             // <-- Nothing published can be stale yet
+        clearTimeout(Na__VsDev__TheiaStatusTimer);
+        Na__VsDev__TheiaStatusTimer = setTimeout(() => { Na__VsDev__RefreshTheiaStatuses(); }, 400);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Ask Theia What It Has (on panel open, and after publishing)
+    // ------------------------------------------------------------
+    // The panel is rebuilt only when something it shows has changed (or when
+    // forced, after a publish), so opening it never steals focus for nothing.
+    // ------------------------------------------------------------
+    async function Na__VsDev__RefreshTheia(force) {
+        const folder = Na__VsDev__ProjectFolder();
+        const before = JSON.stringify([Na__VsDev__Theia.available, Na__VsDev__Theia.spec && Na__VsDev__Theia.spec.minimumHeight]);
+        let changed = 0;
+        Na__VsDev__Theia.available = await Na__VsTheia__IsAvailable();
+        if (Na__VsDev__Theia.available && folder) {
+            try {
+                Na__VsDev__Theia.spec = await Na__VsTheia__Spec();
+                const answer = await Na__VsTheia__Videos(folder);
+                Na__VsDev__Theia.videos = answer.videos || [];
+                if (answer.audience === 'manager') {                         // <-- Only the full list may take a stamp away
+                    changed = Na__VideoStudio__ProjectJson__ReconcileWithTheia(Na__VsDev__Theia.videos);
+                }
+                if (changed) console.log(`[VideoStudio] ${changed} path(s) brought into step with Theia.`);
+            } catch (error) {
+                console.warn('[VideoStudio] Theia could not be read:', error.message);
+            }
+        }
+        const after = JSON.stringify([Na__VsDev__Theia.available, Na__VsDev__Theia.spec && Na__VsDev__Theia.spec.minimumHeight]);
+        if ((force || changed || before !== after) && Na__VsDev__PanelElement && !Na__VsDev__IsExporting) Na__VsDev__RenderPanel();
+        Na__VsDev__RefreshTheiaStatuses();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the ValeVision Theia Section for a Video
+    // ------------------------------------------------------------
+    // Title and Description are what clients read in Theia; they are kept in
+    // step with Theia both ways. Scheme is the Theia folder it publishes into.
+    // ------------------------------------------------------------
+    function Na__VsDev__BuildTheiaSection(video) {
+        const videoId = video.VideoStudio__Video__Id;
+        const meta    = Na__VideoStudio__ProjectJson__GetTheiaMeta(video);
+        const section = Na__VsDev__El('div', 'na-vs-dev__section na-vs-dev__section--theia');
+        section.appendChild(Na__VsDev__El('div', 'na-vs-dev__section-title', 'ValeVision Theia'));
+
+        // TITLE | Clients see this; blank means the path's name
+        const titleInput = Na__VsDev__El('input', 'na-vs-dev__input na-vs-dev__input--wide');
+        titleInput.type        = 'text';
+        titleInput.maxLength   = 140;
+        titleInput.value       = meta.ownTitle;
+        titleInput.placeholder = `Title for clients (blank: "${video.VideoStudio__Video__Name}")`;
+        titleInput.title       = 'The title clients see in ValeVision Theia. Kept in step with Theia: an edit there comes back here.';
+        titleInput.addEventListener('change', () => { Na__VideoStudio__ProjectJson__SetTheiaMeta(videoId, { title: titleInput.value }); });
+        section.appendChild(titleInput);
+
+        // DESCRIPTION | A sentence or two
+        const textInput = Na__VsDev__El('textarea', 'na-vs-dev__input na-vs-dev__input--wide na-vs-dev__textarea');
+        textInput.rows        = 3;
+        textInput.maxLength   = 4000;
+        textInput.value       = meta.description;
+        textInput.placeholder = 'Description for clients: a sentence or two';
+        textInput.addEventListener('change', () => { Na__VideoStudio__ProjectJson__SetTheiaMeta(videoId, { description: textInput.value }); });
+        section.appendChild(textInput);
+
+        // SCHEME | The Theia folder (Videos__Scheme-01 ...)
+        const schemeRow = Na__VsDev__Row('Scheme');
+        const schemes = Na__VideoStudio__THEIA_SCHEMES.includes(meta.scheme) ? Na__VideoStudio__THEIA_SCHEMES : [meta.scheme, ...Na__VideoStudio__THEIA_SCHEMES];
+        const schemeSelect = Na__VsDev__Select(schemes.map((s) => ({ value: s, label: s.replace(/-/g, ' ') })), meta.scheme);
+        schemeSelect.title = 'Theia groups a project\'s videos by scheme. Takes effect when the path is next published.';
+        schemeSelect.addEventListener('change', () => Na__VideoStudio__ProjectJson__SetTheiaScheme(videoId, schemeSelect.value));
+        schemeRow.appendChild(schemeSelect);
+        section.appendChild(schemeRow);
+
+        // STATUS | Published or not, changed since or not
+        const status = Na__VsDev__El('div', 'na-vs-dev__theia-status', Na__VsDev__TheiaStatusText(video));
+        status.dataset.vsTheiaFor = videoId;
+        section.appendChild(status);
+
+        // WHAT PUBLISHING MAKES | One file at the path's export settings; below 2K it cannot go
+        const plan = Na__VsTheia__PlanFor(video, Na__VsDev__Theia.spec);
+        const planNote = Na__VsDev__El('div', plan.tooSmall ? 'na-vs-dev__warning' : 'na-vs-dev__note', Na__VsDev__TheiaPlanText(video));
+        planNote.dataset.vsTheiaPlanFor = videoId;
+        section.appendChild(planNote);
+
+        // ACTIONS
+        const actions = Na__VsDev__El('div', 'na-vs-dev__actions');
+        const publishButton = Na__VsDev__Button('Publish to Theia', 'primary', 'Render this path at its export settings and publish it to ValeVision Theia');
+        publishButton.dataset.vsTheiaPublishFor = videoId;
+        publishButton.disabled = Na__VsDev__Theia.available === false || plan.tooSmall || !!Na__VideoStudio__Encoder__GetUnsupportedReason();
+        publishButton.addEventListener('click', () => Na__VsDev__RunPublish([video], { syncAfter: true }));
+        actions.appendChild(publishButton);
+        if (Na__VideoStudio__ProjectJson__GetTheiaPublish(video)) {
+            const openButton = Na__VsDev__Button('Open in Theia', null, 'Open this video in ValeVision Theia (a new tab)');
+            openButton.addEventListener('click', () => window.open(Na__VsTheia__AppUrl(Na__VsDev__ProjectFolder(), videoId), '_blank', 'noopener'));
+            actions.appendChild(openButton);
+        }
+        section.appendChild(actions);
+        return section;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Export Execution
 // -----------------------------------------------------------------------------
 
@@ -1570,6 +1850,177 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Publish Paths to ValeVision Theia, With Progress and Cancellation
+    // ------------------------------------------------------------
+    // videos: the paths to render, in order. options: { syncAfter, applyOrder,
+    // removeIds, confirmed }. Saves the Video Studio settings first, so the
+    // record holds the paths and titles being published.
+    // ------------------------------------------------------------
+    async function Na__VsDev__RunPublish(videos, options) {
+        const opts = options || {};
+        if (Na__VsDev__IsExporting) return;
+        const folder = Na__VsDev__ProjectFolder();
+        if (!folder) { Na__VsDev__Toast('No project loaded.', true); return; }
+        if (Na__VideoStudio__Preview__IsPlaying()) Na__VideoStudio__Preview__Stop();
+
+        let spec;
+        try {
+            spec = await Na__VsTheia__Spec();
+            Na__VsDev__Theia.spec = spec;
+        } catch (error) {
+            Na__VsDev__Toast(error.message, true);
+            return;
+        }
+        const empty = videos.filter((v) => Na__VsDev__BuildVideoSummary(v).keyCount < 1);
+        if (empty.length) {
+            Na__VsDev__Toast(`"${empty[0].VideoStudio__Video__Name}" has no keyframes to render.`, true);
+            return;
+        }
+
+        const small = videos.find((v) => Na__VsTheia__PlanFor(v, spec).tooSmall);
+        if (small) {
+            Na__VsDev__Toast(`"${Na__VideoStudio__ProjectJson__GetTheiaMeta(small).title}" is set below ${spec.minimumQuality || '2K'}: raise its Resolution to publish it.`, true);
+            return;
+        }
+
+        if (!opts.confirmed && videos.length) {
+            const first = videos[0];
+            const plan = Na__VsTheia__PlanFor(first, spec);
+            const frames = videos.reduce((sum, v) => sum + Na__VsDev__BuildVideoSummary(v).frameCount, 0);
+            const antiAlias = videos.map((v) => Na__VideoStudio__ProjectJson__GetExportOptions(v)).filter((o) => o.antiAliasEnabled);
+            const samples = antiAlias.length ? Math.max(...antiAlias.map((o) => o.antiAliasSamples)) : 1;
+            const confirmed = await Na__AppUtils__ConfirmDialog__Show({
+                title         : videos.length === 1 ? 'Publish to Theia?' : `Publish ${videos.length} paths to Theia?`,
+                message       : `${videos.map((v) => `"${Na__VideoStudio__ProjectJson__GetTheiaMeta(v).title}"`).join(', ')} `
+                              + (videos.length === 1
+                                  ? `will be rendered at its export settings, ${plan.width} x ${plan.height} (${plan.quality}) at ${plan.fps} fps, `
+                                  : 'will each be rendered at their own export settings, ')
+                              + `${frames} frames in all, and uploaded to ValeVision Theia as it renders: one file per path. `
+                              + (samples > 1 ? `With ${samples}x anti-aliasing every frame is rendered ${samples} times, so allow roughly ${samples} times as long. ` : '')
+                              + 'It takes longer than the clips themselves: keep this tab open. A video already in Theia is replaced.',
+                confirmLabel  : 'Publish',
+                isDestructive : false
+            });
+            if (!confirmed) return;
+        }
+
+        // SAVE FIRST | The record should hold what is being published
+        const saveButton = Na__VsDev__PanelElement ? Na__VsDev__PanelElement.querySelector('[data-vs-save]') : null;
+        if (saveButton && !(await Na__VsDev__SaveToProject(saveButton, { quiet: true, noSync: true }))) return;
+
+        Na__VsDev__IsExporting     = true;
+        Na__VsDev__CancelRequested = false;
+        Na__VideoStudio__Thumbnails__SetSuspended(true);
+        const overlay = Na__AppUtils__LoadingOverlay__Create({ opaque: true });
+        overlay.show('Preparing to publish to Theia...');
+        await Na__ExportYield__NextPaint();
+
+        const cancelBar = Na__VsDev__El('div', 'na-vs-dev__publish-cancel');
+        const cancelButton = Na__VsDev__Button('Cancel publishing', 'danger');
+        cancelButton.addEventListener('click', () => { Na__VsDev__CancelRequested = true; cancelButton.disabled = true; cancelButton.textContent = 'Cancelling…'; });
+        cancelBar.appendChild(cancelButton);
+        document.body.appendChild(cancelBar);
+
+        const render = { renderer: Na__VsDev__Renderer, scene: Na__VsDev__Scene, camera: Na__VsDev__Camera,
+                         controls: Na__VsDev__Controls, getRenderPipelineState: Na__VsDev__GetPipeline };
+        let published = 0;
+        try {
+            for (let i = 0; i < videos.length; i++) {
+                const video = videos[i];
+                const label = videos.length > 1 ? ` (${i + 1} of ${videos.length})` : '';
+                const title = Na__VideoStudio__ProjectJson__GetTheiaMeta(video).title;
+                await Na__VsTheia__PublishVideo({
+                    video, projectFolder: folder, spec, render,
+                    shouldCancel : () => Na__VsDev__CancelRequested,
+                    onProgress   : ({ percent, message, detail }) => {
+                        overlay.setStatus(`Publishing "${title}" to Theia${label}: ${percent}%\n${message}${detail ? `\n${detail}` : ''}`);
+                    }
+                });
+                published++;
+            }
+            if (opts.syncAfter || opts.applyOrder || (opts.removeIds && opts.removeIds.length)) {
+                overlay.setStatus('Syncing titles and order with Theia...');
+                await Na__VsTheia__Sync(folder, Na__VsTheia__SyncPayload(!!opts.applyOrder, opts.removeIds || []));
+            }
+            const done = published ? `Published ${published} video${published === 1 ? '' : 's'} to Theia.` : 'Theia is in step.';
+            overlay.dismiss(done, false, 2500, null);
+            Na__VsDev__Toast(done);
+        } catch (error) {
+            const cancelled = /cancelled/i.test(error.message || '');
+            const summary = cancelled ? 'Publishing cancelled. Nothing was changed in Theia for the video in progress.'
+                                      : `Publishing failed: ${error.message}`;
+            overlay.dismiss(summary, !cancelled, cancelled ? 1500 : 6000, null);
+            Na__VsDev__Toast(summary, !cancelled);
+            if (!cancelled) console.error('[VideoStudio] Publish failed:', error);
+        } finally {
+            cancelBar.remove();
+            Na__VideoStudio__Thumbnails__SetSuspended(false);
+            Na__VsDev__IsExporting     = false;
+            Na__VsDev__CancelRequested = false;
+            Na__VsDev__RefreshTheia(true);                                   // <-- Stamps, titles and statuses as Theia now has them
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Publish & Sync All: render what changed, sync every title and the order
+    // ------------------------------------------------------------
+    async function Na__VsDev__PublishAll() {
+        const withKeys = Na__VideoStudio__ProjectJson__GetSortedVideos(null).filter((v) => Na__VsDev__BuildVideoSummary(v).keyCount > 0);
+        if (!withKeys.length) { Na__VsDev__Toast('No path has keyframes to publish yet.', true); return; }
+        if (!Na__VsDev__Theia.spec) {
+            try { Na__VsDev__Theia.spec = await Na__VsTheia__Spec(); }
+            catch (error) { Na__VsDev__Toast(error.message, true); return; }
+        }
+        const tooSmall = withKeys.filter((v) => Na__VsTheia__PlanFor(v, Na__VsDev__Theia.spec).tooSmall);
+        const videos = withKeys.filter((v) => !tooSmall.includes(v));
+        if (!videos.length) { Na__VsDev__Toast(`Every path is set below ${Na__VsDev__Theia.spec.minimumQuality || '2K'}: raise their Resolution to publish them.`, true); return; }
+        await Na__VsDev__RefreshTheiaStatuses();
+        const stale = videos.filter((v) => Na__VsDev__TheiaStale(v) !== false);
+        const fresh = videos.filter((v) => Na__VsDev__TheiaStale(v) === false);
+        const pathIds = new Set(Na__VideoStudio__ProjectJson__GetSortedVideos(null).map((v) => v.VideoStudio__Video__Id));
+        const orphans = (Na__VsDev__Theia.videos || []).filter((v) => v.source === 'ValeVision3D' && v.sourceVideoId && !pathIds.has(v.sourceVideoId));
+        const name = (v) => `"${Na__VideoStudio__ProjectJson__GetTheiaMeta(v).title}"`;
+
+        let toRender = stale;
+        if (!stale.length) {
+            const again = await Na__AppUtils__ConfirmDialog__Show({
+                title         : 'Theia is up to date',
+                message       : `Every path is already in Theia as it is now (${fresh.map(name).join(', ')}). Titles, descriptions and the order will be synced. `
+                              + 'Render every path again anyway?',
+                confirmLabel  : 'Render all again',
+                isDestructive : false
+            });
+            toRender = again ? videos : [];
+        } else {
+            const go = await Na__AppUtils__ConfirmDialog__Show({
+                title         : 'Publish & Sync All to Theia?',
+                message       : `To render and publish (new or changed): ${stale.map(name).join(', ')}. `
+                              + (fresh.length ? `Up to date, titles only: ${fresh.map(name).join(', ')}. ` : '')
+                              + (tooSmall.length ? `Set below ${Na__VsDev__Theia.spec.minimumQuality || '2K'}, left out: ${tooSmall.map(name).join(', ')}. ` : '')
+                              + 'Theia will then show the videos in the Video Studio\'s order. Rendering takes longer than the clips: keep this tab open.',
+                confirmLabel  : 'Publish & Sync',
+                isDestructive : false
+            });
+            if (!go) return;
+        }
+
+        let removeIds = [];
+        if (orphans.length) {
+            const remove = await Na__AppUtils__ConfirmDialog__Show({
+                title         : 'Remove videos from Theia?',
+                message       : `Theia still has ${orphans.length} video${orphans.length === 1 ? '' : 's'} from paths that no longer exist here: `
+                              + `${orphans.map((v) => `"${v.title}"`).join(', ')}. Remove ${orphans.length === 1 ? 'it' : 'them'} from Theia? Their files are deleted from the server.`,
+                confirmLabel  : 'Remove',
+                isDestructive : true
+            });
+            if (remove) removeIds = orphans.map((v) => v.sourceVideoId);
+        }
+        await Na__VsDev__RunPublish(toRender, { confirmed: true, syncAfter: true, applyOrder: true, removeIds });
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -1674,6 +2125,7 @@
         block.appendChild(Na__VsDev__BuildModelLayersSection(video));
         block.appendChild(Na__VsDev__BuildAntiAliasSection(video));
         block.appendChild(Na__VsDev__BuildExportSection(video));
+        block.appendChild(Na__VsDev__BuildTheiaSection(video));
 
         return block;
     }
@@ -1720,14 +2172,6 @@
         overlayRow.appendChild(overlayCheckbox);
         panel.appendChild(overlayRow);
 
-        const dragHint = Na__VsDev__El('div', 'na-vs-dev__hint',
-            'Drag a waypoint to move it. Shift: up/down. Ctrl: lock to one axis. '
-          + 'Ctrl+Shift: turn it. Ctrl+click the line to insert one there. '
-          + 'Escape cancels a drag. Click one and press Delete to remove it. '
-          + `Ctrl+Z and Ctrl+Y step back and forward through the last ${Na__VsUndo__MAX_ENTRIES} edits. `
-          + 'K captures, Space plays.');
-        panel.appendChild(dragHint);
-
         // VIDEO BLOCKS
         const videos = Na__VideoStudio__ProjectJson__GetSortedVideos(null);
 
@@ -1742,12 +2186,29 @@
         const saveActions = Na__VsDev__El('div', 'na-vs-dev__global-actions');
 
         const saveButton = Na__VsDev__Button('Save Video Settings', 'primary',
-            'Write VideoStudio__Config into the project record on the server');
+            'Write VideoStudio__Config into the project record on the server, and send titles to Theia');
+        saveButton.dataset.vsSave = '1';
         saveButton.disabled = (videos.length === 0 && !Na__VideoStudio__ProjectJson__GetActiveConfig());
         saveButton.addEventListener('click', () => Na__VsDev__SaveToProject(saveButton));
         saveActions.appendChild(saveButton);
 
         panel.appendChild(saveActions);
+
+        // THEIA | Publish & Sync All, and the project's page in Theia
+        const theiaActions = Na__VsDev__El('div', 'na-vs-dev__global-actions na-vs-dev__global-actions--theia');
+        const publishAll = Na__VsDev__Button('Publish & Sync All to Theia', 'primary',
+            'Render and publish every path that is new or changed since it was published, and sync every title and the order');
+        publishAll.disabled = videos.length === 0 || Na__VsDev__Theia.available === false || !!Na__VideoStudio__Encoder__GetUnsupportedReason();
+        publishAll.addEventListener('click', () => Na__VsDev__PublishAll());
+        theiaActions.appendChild(publishAll);
+        const openTheia = Na__VsDev__Button('Open Theia', null, 'This project\'s videos in ValeVision Theia (a new tab)');
+        openTheia.disabled = Na__VsDev__Theia.available === false;
+        openTheia.addEventListener('click', () => window.open(Na__VsTheia__AppUrl(Na__VsDev__ProjectFolder(), null), '_blank', 'noopener'));
+        theiaActions.appendChild(openTheia);
+        panel.appendChild(theiaActions);
+        if (Na__VsDev__Theia.available === false) {
+            panel.appendChild(Na__VsDev__El('div', 'na-vs-dev__note', 'ValeVision Theia is not available on this server yet, so videos can be exported but not published.'));
+        }
 
         // FRAMING OVERLAYS | Driven from here rather than from each caller, so
         // every route that rebuilds the panel leaves the viewport agreeing with
@@ -1758,6 +2219,9 @@
         // collapses one, or deletes the expanded path ends up here, so the
         // strip follows from one place instead of from all of them.
         Na__VsDev__SyncTimeline();
+
+        // THEIA | Whether each published path has changed since, worked out after the edit settles
+        Na__VsDev__QueueTheiaStatuses();
     }
     // ------------------------------------------------------------
 
@@ -2052,11 +2516,12 @@
 
     // FUNCTION | Save the VideoStudio Block to project.json — R2-First
     // ------------------------------------------------------------
-    async function Na__VsDev__SaveToProject(saveButton) {
+    async function Na__VsDev__SaveToProject(saveButton, options) {
+        const opts = options || {};
         const projectCode = Na__VsDev__ProjectCode || Na__AppUtils__GetProjectCodeFromUrl();
         if (!projectCode) {
             Na__VsDev__Toast('No project loaded, so there is nothing to save to.', true);
-            return;
+            return false;
         }
 
         const originalLabel = saveButton.textContent;
@@ -2069,7 +2534,8 @@
             if (!response.ok) throw new Error(`Failed to fetch project: ${response.status}`);
             const projectData = await response.json();
 
-            // MERGE VIDEO STUDIO CONFIG
+            // MERGE VIDEO STUDIO CONFIG | Takes titles edited in Theia, and publish stamps, from the server's copy
+            const theiaBefore = Na__VsDev__TheiaSnapshot();
             Na__VideoStudio__ProjectJson__MergeIntoProjectData(projectData);
 
             // SAVE | The whole record to the server (one write, a revision kept)
@@ -2077,11 +2543,24 @@
 
             const videoCount = Na__VideoStudio__ProjectJson__GetSortedVideos(null).length;
             console.log(`[VideoStudio] Saved ${videoCount} video path(s) to ${projectCode}.`);
-            Na__VsDev__Toast(`Saved ${videoCount} video path${videoCount === 1 ? '' : 's'} to ${projectCode}.`);
+            if (!opts.quiet) Na__VsDev__Toast(`Saved ${videoCount} video path${videoCount === 1 ? '' : 's'} to ${projectCode}.`);
+
+            // THEIA | Titles and descriptions of published paths go up too (newer wins there)
+            const published = Na__VideoStudio__ProjectJson__GetSortedVideos(null).some((v) => Na__VideoStudio__ProjectJson__GetTheiaPublish(v));
+            if (!opts.noSync && published && Na__VsDev__Theia.available !== false) {
+                Na__VsTheia__Sync(Na__VsDev__ProjectFolder(), Na__VsTheia__SyncPayload(false, []))
+                    .then((answer) => { if (answer.updated) Na__VsDev__Toast(`Theia updated: ${answer.updated} title${answer.updated === 1 ? '' : 's'}.`); })
+                    .catch((error) => console.warn('[VideoStudio] Theia sync failed:', error.message));
+            }
+            if (Na__VsDev__TheiaSnapshot() !== theiaBefore && Na__VsDev__PanelElement && !Na__VsDev__IsExporting) {
+                Na__VsDev__RenderPanel();                                    // <-- Titles merged from the server show
+            }
+            return true;
 
         } catch (error) {
             console.error('[VideoStudio] Save failed:', error);
             Na__VsDev__Toast(`Save failed: ${error.message}`, true);
+            return false;
 
         } finally {
             saveButton.disabled    = false;
@@ -2137,7 +2616,7 @@
     // HELPER FUNCTION | Fetch the Project's Existing Video Block on First Open
     // ------------------------------------------------------------
     async function Na__VsDev__LoadExistingConfig() {
-        if (Na__VideoStudio__ProjectJson__GetActiveConfig()) return;         // <-- Already loaded
+        if (Na__VideoStudio__ProjectJson__GetActiveConfig()) { Na__VsDev__RefreshTheia(); return; }   // <-- Loaded already: Theia may have moved on
 
         const projectCode = Na__VsDev__ProjectCode || Na__AppUtils__GetProjectCodeFromUrl();
         if (!projectCode) return;
@@ -2155,6 +2634,8 @@
 
         } catch (error) {
             console.warn('[VideoStudio] Could not load existing video config:', error.message);
+        } finally {
+            Na__VsDev__RefreshTheia();                                       // <-- Theia's titles, stamps and statuses
         }
     }
     // ------------------------------------------------------------
@@ -2226,6 +2707,19 @@
             camera    : options.camera,
             showToast : options.showToast,
             onChanged : (videoId) => {
+                Na__VsDev__OnDataChanged(videoId);
+                Na__VsDev__RenderPanel();
+            }
+        });
+
+        // CONVERSIONS | Presentation Scene To Keyframe adds to the path open
+        // here, through the same refresh. Registering puts the button on the
+        // Presentation Scenes rows; Keyframe To Presentation Scene is the
+        // timeline menu's last item.
+        Na__VideoStudio__Convert__Initialize({
+            showToast      : options.showToast,
+            getOpenVideoId : () => (Na__VsDev__IsPanelOpen() ? Na__VsDev__ExpandedVideoId : null),
+            onChanged      : (videoId) => {
                 Na__VsDev__OnDataChanged(videoId);
                 Na__VsDev__RenderPanel();
             }

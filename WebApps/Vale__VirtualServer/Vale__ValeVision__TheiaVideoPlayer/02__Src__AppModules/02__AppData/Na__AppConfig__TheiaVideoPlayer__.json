@@ -1,0 +1,43 @@
+{
+    "TheiaConfig__File__Description"                    : "ValeVision Theia app config: the 2K floor, the player, the media cache and prefetch, publishing, uploads and share links. One file per video at the size it was made: no second sizes, no quality switching. Read by the browser (GET api/config) and by the Theia API, which enforces the 2K floor on every upload. Keys are Area__Group__Setting.",
+    "TheiaConfig__File__UpdatedDate"                    : "07-Oct-2026",
+
+    "TheiaConfig__Quality__MinimumHeightPx"             : 1440,
+
+    "TheiaConfig__Player__AutoFullscreenOnPlay"         : true,
+    "TheiaConfig__Player__CinemaDimOnPlay"              : true,
+    "TheiaConfig__Player__AutoAdvanceSeconds"           : 6,
+    "TheiaConfig__Player__ControlsHideMs"               : 2600,
+    "TheiaConfig__Player__ResumeMinSeconds"             : 8,
+    "TheiaConfig__Player__SeekStepSeconds"              : 5,
+    "TheiaConfig__Player__StartupBufferSeconds"         : 5,
+    "TheiaConfig__Player__StartupMaxWaitMs"             : 8000,
+    "TheiaConfig__Player__StartWaitShareOfLength"       : 0.25,
+    "TheiaConfig__Player__StartWaitMinSeconds"          : 4,
+    "TheiaConfig__Player__StartWaitMaxSeconds"          : 15,
+    "TheiaConfig__Player__LandscapeInFullscreen"        : true,
+    "TheiaConfig__Player__RotateHintMs"                 : 4000,
+
+    "TheiaConfig__Prefetch__AheadSeconds"               : 90,
+    "TheiaConfig__Prefetch__NextVideosHeadSeconds"      : 20,
+    "TheiaConfig__Prefetch__NextVideosHeadCount"        : 3,
+    "TheiaConfig__Prefetch__Concurrency"                : 2,
+    "TheiaConfig__Prefetch__MeteredHeadsOnly"           : true,
+
+    "TheiaConfig__Cache__MaxBytes"                      : 21474836480,
+    "TheiaConfig__Cache__MaxQuotaFraction"              : 0.6,
+
+    "TheiaConfig__Connection__SlowNoticeFactor"         : 1.05,
+    "TheiaConfig__Connection__SafetySeconds"            : 4,
+
+    "TheiaConfig__Publish__PosterWidthPx"               : 1920,
+    "TheiaConfig__Publish__ThumbnailWidthPx"            : 524,
+
+    "TheiaConfig__Upload__ChunkBytes"                   : 16777216,
+    "TheiaConfig__Upload__MaxFileBytes"                 : 25769803776,
+    "TheiaConfig__Upload__DiskReserveBytes"             : 4294967296,
+    "TheiaConfig__Upload__StaleHours"                   : 48,
+
+    "TheiaConfig__Share__TokenBytes"                    : 18,
+    "TheiaConfig__Share__ExpiryOptionsDays"             : [0, 7, 30, 90, 365]
+}

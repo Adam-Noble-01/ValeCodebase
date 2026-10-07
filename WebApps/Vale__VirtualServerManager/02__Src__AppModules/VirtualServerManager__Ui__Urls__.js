@@ -25,6 +25,12 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   07-Oct-2026 - Version 0.6.1
+   - + App route re-reads the mirror's folders, picks the first Vale__ app folder
+     with no route (never AppAssets__ or the project library), suggests its path
+     (Vale__ValeVision__TheiaVideoPlayer -> theia-video-player), takes the lowest
+     free API port, and puts the cursor in the path. Errors name routes by path.
+
    06-Oct-2026 - Version 0.4.5
    - Open (globe icon) sits beside Remove (trash icon) at the right of each card's
      top line. Remove asks for confirmation in a dialog first.
@@ -67,6 +73,11 @@
     function Vsm__Host() { return (Vsm__Draft && Vsm__Draft.PublicHost) || 'app.valegardenhouses.com'; }
 
     function Vsm__CleanPath(p) { return String(p || '').trim().replace(/^\/+|\/+$/g, ''); }
+
+    function Vsm__SuggestPath(folder) {                                         // <-- Vale__ValeVision__TheiaVideoPlayer -> theia-video-player
+        var last = String(folder || '').split('__').filter(Boolean).pop() || '';
+        return last.replace(/([a-z])([A-Z0-9])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    }
 
     function Vsm__FullUrl(path, trailing) { return 'https://' + Vsm__Host() + '/' + Vsm__CleanPath(path) + (trailing ? '/' : ''); }
 
@@ -404,12 +415,22 @@
         document.addEventListener('keydown', Vsm__OnKey);
         document.addEventListener('click', Vsm__OnClick);
         Vsm.El('Vsm__BtnUrlAddApp').addEventListener('click', function() {
-            var used = (Vsm__Draft.Routes || []).map(function(r) { return r.Target; });
-            var free = (Vsm__Data.apps || []).find(function(a) { return used.indexOf(a.folder) < 0; }) || (Vsm__Data.apps || [])[0] || { folder: '' };
-            Vsm__Draft.Routes.push({ Id: 'app' + Date.now() % 100000, Enabled: true, Type: 'app', Path: '', Target: free.folder, Entry: 'index.html',
-                                     ExampleQuery: '', Api: false, ApiPort: 8005, Note: '' });
-            Vsm__Dirty = true;
-            Urls.Render();
+            Urls.Load().then(function() {                                       // <-- Fresh folder list (an app folder made just now)
+                var used = (Vsm__Draft.Routes || []).map(function(r) { return r.Target; });
+                var isApp = function(a) { return /^Vale__/.test(a.folder) && a.folder !== 'Vale__Projects__MasterLibrary'; };
+                var apps = (Vsm__Data.apps || []).filter(isApp);
+                var free = apps.find(function(a) { return used.indexOf(a.folder) < 0; }) || apps[0] || { folder: '' };
+                var ports = (Vsm__Draft.Routes || []).map(function(r) { return Number(r.ApiPort) || 0; });
+                var port = 8001;
+                while (ports.indexOf(port) >= 0) port += 1;                     // <-- Lowest free API port
+                Vsm__Draft.Routes.push({ Id: 'app' + Date.now() % 100000, Enabled: true, Type: 'app', Path: Vsm__SuggestPath(free.folder),
+                                         Target: free.folder, Entry: 'index.html', ExampleQuery: '', Api: false,
+                                         ApiPort: port, Note: '' });
+                Vsm__Dirty = true;
+                Urls.Render();
+                var input = document.querySelector('#Vsm__UrlList [data-route="' + (Vsm__Draft.Routes.length - 1) + '"] [data-f="Path"]');
+                if (input) { input.focus(); input.select(); input.scrollIntoView({ block: 'center' }); }
+            });
         });
         Vsm.El('Vsm__BtnUrlAddLink').addEventListener('click', function() {
             Vsm__Draft.Routes.push({ Id: 'link' + Date.now() % 100000, Enabled: true, Type: 'link', Path: '', Target: '/', Code: 302, Example: '', Note: '' });

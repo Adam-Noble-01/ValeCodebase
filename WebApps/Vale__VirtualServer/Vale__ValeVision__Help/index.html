@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALE HELP - HOME
+     =============================================================================
+
+     FILE       : index.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : https://app.valegardenhouses.com/help/ : the list of Vale help pages
+     CREATED    : 07-Oct-2026
+
+     DESCRIPTION:
+     - Route /help/ -> Vale__ValeVision__Help (Server Manager tab 03). Public, no sign-in.
+     - One page so far: install-app/ (ValeVision, ValeVision 3D).
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <title>Vale Help</title>
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="theme-color" content="#172b3a">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f5f5f5; color: #172b3a; font-family: 'Open Sans', -apple-system, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; }
+        header { display: flex; align-items: center; justify-content: space-between; height: 60px; padding: 0 20px; background: #fff; border-bottom: 1px solid #dde3e8; }
+        header img { height: 30px; }
+        header span { font-weight: 700; }
+        .Hero { background: #172b3a; color: #fff; text-align: center; padding: 30px 20px; }
+        .Hero h1 { margin: 0 0 4px; font-size: 30px; }
+        .Hero p { margin: 0; opacity: 0.85; }
+        main { max-width: 760px; margin: 0 auto; padding: 24px 16px 40px; display: grid; gap: 14px; }
+        a.Card { display: flex; gap: 16px; align-items: center; padding: 18px 20px; background: #fff; border: 1px solid #dde3e8; border-radius: 12px; text-decoration: none; color: inherit; }
+        a.Card:hover { border-color: #172b3a; }
+        a.Card img { width: 52px; height: 52px; border-radius: 12px; }
+        a.Card b { display: block; font-size: 18px; }
+        a.Card span { color: #4a6076; }
+        footer { text-align: center; color: #4a6076; font-size: 13px; padding: 0 16px 30px; }
+    </style>
+    <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/help/" data-app-name="ValeVision Help"></script>
+</head>
+<body>
+    <header>
+        <img src="/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" alt="Vale Garden Houses">
+        <span>Help</span>
+    </header>
+    <section class="Hero">
+        <h1>Vale Help</h1>
+        <p>Step-by-step guides for the Vale apps.</p>
+    </section>
+    <main>
+        <a class="Card" href="install-app/?app=valevision">
+            <img src="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png" alt="">
+            <div><b>Install ValeVision</b><span>On Windows, iPhone and iPad, Android or Mac, with pictures.</span></div>
+        </a>
+        <a class="Card" href="install-app/?app=valevision3d">
+            <img src="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png" alt="">
+            <div><b>Install ValeVision 3D</b><span>The 3D project viewer, installed the same way.</span></div>
+        </a>
+    </main>
+    <footer>&copy; 2026 Vale Garden Houses</footer>
+</body>
+</html>

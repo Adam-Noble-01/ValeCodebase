@@ -36,6 +36,11 @@
 // - Global controls: Add New Scene From Camera (filed into the group the
 //   carousel is showing), Export JSON, Save All To Project (R2-first two-phase
 //   save), Clear All Scenes.
+// - Video Studio conversions, both one-off copies that are never kept in
+//   step: a keyframe made into a scene arrives through AddSceneFromRecord and
+//   is filed like Add Scene From Camera; a row's Presentation Scene To
+//   Keyframe hands a copy of the scene to the handler the Video Studio
+//   registered. This module never imports the Video Studio.
 // - The group editor never saves for itself: it raises
 //   'na-presentation-groups-changed' and this module answers with the one
 //   normalise -> commit -> write path, so groups and scenes, which live in the
@@ -78,6 +83,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 07-Oct-2026 - Version 1.5.0 (keyframe <-> Presentation scene, v2.74.0)
+// - AddSceneFromRecord: the Video Studio's Keyframe To Presentation Scene
+//   files its scene here, through the tail Add Scene From Camera now shares
+//   (FileNewScene): next free id, the group on show, the cross section when
+//   the toggle is on, the picture, the save. A shut panel's working array is
+//   read fresh first.
+// - SetSceneToKeyframeHandler: the Video Studio registers what a scene is
+//   handed to, and rows offer Presentation Scene To Keyframe only once it has.
+//   The row's working copy goes, as a copy: nothing is kept in step after.
+//
 // 01-Oct-2026 - Version 1.4.1 (records hygiene, v2.71.1)
 // - Comments only. The PORT NOTE no longer asks TrueVision to take the
 //   row-builder split, which TrueVision withdrew in v2.68.2, and says the
@@ -211,6 +226,7 @@
     import {
         Na__PresentationMode__DevMenu__CaptureCrossSectionIfEnabled,
         Na__PresentationMode__DevMenu__RegenerateThumbnail,
+        Na__PresentationMode__DevMenu__UploadThumbnailBlob,
         Na__PresentationMode__DevMenu__SaveScenesToProject
     } from './Na__PresentationMode__DevMenu__ScenePersistence__.js';
     // ------------------------------------------------------------
@@ -345,6 +361,16 @@
     // pressed. Null means every row is folded, which is how the panel opens.
     // ------------------------------------------------------------
     let Na__PmDev__FocusedSceneId = null;
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Scene To Keyframe Handler
+    // ------------------------------------------------------------
+    // Registered by the Video Studio, which owns keyframes, so this panel
+    // never imports it. Null until then, and a row only offers Presentation
+    // Scene To Keyframe while there is something to hand the scene to.
+    // ------------------------------------------------------------
+    let Na__PmDev__SceneToKeyframe = null;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -858,7 +884,8 @@
             onPreview         : (sceneId) => { Na__PresentationMode__UI__GoToSceneById(sceneId); },
             onMoveByOffset    : Na__PmDev__MoveSceneByOffset,
             onMoveToPosition  : Na__PmDev__MoveSceneToPosition,
-            onMutate          : Na__PmDev__HandleRowMutation
+            onMutate          : Na__PmDev__HandleRowMutation,
+            onSceneToKeyframe : Na__PmDev__SceneToKeyframe ? Na__PmDev__SendSceneToKeyframe : null   // <-- No Video Studio, no button
         };
 
         const appendRow = (container, scene, indexInGroup, countInGroup) => {
@@ -1142,47 +1169,60 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Add a New Scene From the Current Camera Position
+    // HELPER FUNCTION | Is the Presentation Scenes Panel Open?
     // ------------------------------------------------------------
-    // Builds the scene from the live camera, files it into the group the
-    // carousel is currently showing, renders + uploads the WebP thumbnail,
-    // commits to the in-memory config (which refreshes the carousel and
-    // layout), and auto-saves the project.json.
+    // Read from the DOM, as the Video Studio panel reads its own, so it can
+    // never fall out of step with the toggle.
     // ------------------------------------------------------------
-    async function Na__PmDev__AddSceneFromCamera() {
-        if (!Na__PmDev__Camera) return;
+    function Na__PmDev__IsPanelOpen() {
+        const panel = document.getElementById(Na__PmDev__PANEL_ID);
+        return Boolean(panel && panel.classList.contains('is-open'));
+    }
+    // ------------------------------------------------------------
 
-        // A DRAWING IS NOT A CAMERA. Capturing here would file the perspective
-        // camera's pose as an ordinary 3D scene sitting in the drawing's group;
-        // a drawing card is created from the drawing's own panel instead.
-        if (Na__DrawView__IsActive()) {
-            Na__PmDev__ShowToast && Na__PmDev__ShowToast('Leave the drawing before adding a scene from the camera. A drawing card is created from its own panel.', true);
-            return;
+
+    // HELPER FUNCTION | File a New Scene: Id, Group, Thumbnail, Save, Show
+    // ------------------------------------------------------------
+    // The one tail every new scene goes through, whichever door it came in
+    // by: Add Scene From Camera, and a Video Studio keyframe made into a
+    // scene. Two doors into one room, so the two can never number, file or
+    // save a new scene differently.
+    //
+    // record holds the camera and everything else the scene is a snapshot
+    // of. It is given the next free id, a name if it has none, the
+    // placeholder thumbnail path, the group the carousel is showing and the
+    // live cross section (toggle-gated). renderThumbnail(scene) then makes
+    // and uploads its picture, setting ThumbnailUrl when the server takes it.
+    //
+    // Returns { scene, saved }.
+    // ------------------------------------------------------------
+    async function Na__PmDev__FileNewScene(record, renderThumbnail) {
+        // WORKING ARRAY | The open panel keeps it, holding any in-row edit not
+        // yet saved. A shut panel has not read the config since it last
+        // closed, so the array is read fresh rather than filed into stale.
+        if (!Na__PmDev__IsPanelOpen()) {
+            Na__PmDev__WorkingScenes = Na__PmDev__SortScenesByOrder(Na__PmDev__GetWorkingScenes());
         }
 
         const existing = Na__PmDev__WorkingScenes;                          // <-- Shared array (preserves in-row edits)
         const sceneId  = Na__PmDev__GetNextSceneId(existing);               // <-- Auto Scene_001, Scene_002 ...
-        const nextNum  = existing.length + 1;
 
-        const built = Na__PresentationMode__Camera__BuildSceneCameraJson(Na__PmDev__Camera, Na__PmDev__Controls);
-        if (!built) return;
-
-        const currentFov = parseFloat(Na__PmDev__Camera.fov.toFixed(4));
-        const lensMm     = Math.round(Na__PresentationMode__DevMenu__FovToFocalMm(currentFov));
+        // IDENTITY FIRST | Id, name and thumbnail lead the record in the
+        // project JSON, as they always have; whatever else the record carries
+        // follows in the order it was built.
+        const {
+            PresentationMode__Scene__Id           : _givenId,
+            PresentationMode__Scene__Name         : givenName,
+            PresentationMode__Scene__ThumbnailUrl : _givenThumb,
+            ...snapshot
+        } = record;
 
         const newScene = {
-            PresentationMode__Scene__Id                          : sceneId,
-            PresentationMode__Scene__Name                        : `Scene ${nextNum}`,
-            PresentationMode__Scene__ThumbnailUrl                : `PresentationMode/Thumbnails/${sceneId}.webp`,
-            PresentationMode__Scene__LensMm                      : lensMm,
-            PresentationMode__Scene__TransitionTimeToNextSceneMs : Na__PresentationMode__DevMenu__TRANSITION_DEFAULT_MS,
-            PresentationMode__Scene__TransitionEasing            : 'easeInOutCubic',
-            PresentationMode__Scene__CameraPosition              : built.cameraPosition,
-            PresentationMode__Scene__OrbitHelperCubePosition     : built.orbitHelperCubePosition
+            PresentationMode__Scene__Id           : sceneId,
+            PresentationMode__Scene__Name         : givenName || `Scene ${existing.length + 1}`,
+            PresentationMode__Scene__ThumbnailUrl : `PresentationMode/Thumbnails/${sceneId}.webp`,
+            ...snapshot
         };
-
-        Na__PmDev__CaptureLiveNavigationMode(newScene);                     // <-- Added while flying: a fly scene
-        Na__SceneLighting__CaptureIntoScene(newScene);                      // <-- Lit as the viewport is, so the thumbnail and the scene agree
 
         // GROUP | A new scene joins the group the carousel is currently showing
         // ------------------------------------------------------------
@@ -1199,7 +1239,7 @@
         Na__PmDev__CaptureCrossSectionIfEnabled(newScene);
 
         // RENDER + UPLOAD THUMBNAIL FIRST so the carousel card has an image
-        await Na__PmDev__RegenerateThumbnail(newScene);                     // <-- Sets ThumbnailUrl on success
+        await renderThumbnail(newScene);                                    // <-- Sets ThumbnailUrl on success
 
         Na__PmDev__WorkingScenes = [...existing, newScene];                 // <-- Append to shared array
         Na__PmDev__NormaliseSceneOrder(Na__PmDev__WorkingScenes);           // <-- Give it a correct 1..N slot inside ITS group
@@ -1218,9 +1258,69 @@
         Na__PmDev__RenderEditorPanel();                                     // <-- Rebuild panel to show new row
         Na__PmDev__ApplyFocusToDom(true);                                   // <-- Scroll the freshly built row into view
 
-        if (saved) {
-            Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Scene "${newScene.PresentationMode__Scene__Name}" added and saved to ${Na__PmDev__ProjectCode}.`);
+        return { scene : newScene, saved : saved === true };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Add a New Scene From the Current Camera Position
+    // ------------------------------------------------------------
+    // Builds the scene from the live camera, files it into the group the
+    // carousel is currently showing, renders + uploads the WebP thumbnail,
+    // commits to the in-memory config (which refreshes the carousel and
+    // layout), and auto-saves the project.json.
+    // ------------------------------------------------------------
+    async function Na__PmDev__AddSceneFromCamera() {
+        if (!Na__PmDev__Camera) return;
+
+        // A DRAWING IS NOT A CAMERA. Capturing here would file the perspective
+        // camera's pose as an ordinary 3D scene sitting in the drawing's group;
+        // a drawing card is created from the drawing's own panel instead.
+        if (Na__DrawView__IsActive()) {
+            Na__PmDev__ShowToast && Na__PmDev__ShowToast('Leave the drawing before adding a scene from the camera. A drawing card is created from its own panel.', true);
+            return;
         }
+
+        const built = Na__PresentationMode__Camera__BuildSceneCameraJson(Na__PmDev__Camera, Na__PmDev__Controls);
+        if (!built) return;
+
+        const currentFov = parseFloat(Na__PmDev__Camera.fov.toFixed(4));
+        const lensMm     = Math.round(Na__PresentationMode__DevMenu__FovToFocalMm(currentFov));
+
+        const record = {
+            PresentationMode__Scene__LensMm                      : lensMm,
+            PresentationMode__Scene__TransitionTimeToNextSceneMs : Na__PresentationMode__DevMenu__TRANSITION_DEFAULT_MS,
+            PresentationMode__Scene__TransitionEasing            : 'easeInOutCubic',
+            PresentationMode__Scene__CameraPosition              : built.cameraPosition,
+            PresentationMode__Scene__OrbitHelperCubePosition     : built.orbitHelperCubePosition
+        };
+
+        Na__PmDev__CaptureLiveNavigationMode(record);                       // <-- Added while flying: a fly scene
+        Na__SceneLighting__CaptureIntoScene(record);                        // <-- Lit as the viewport is, so the thumbnail and the scene agree
+
+        const filed = await Na__PmDev__FileNewScene(record, Na__PmDev__RegenerateThumbnail);   // <-- The picture is the live viewport
+
+        if (filed.saved) {
+            Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Scene "${filed.scene.PresentationMode__Scene__Name}" added and saved to ${Na__PmDev__ProjectCode}.`);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand One Scene to the Video Studio as a New Keyframe
+    // ------------------------------------------------------------
+    // The working copy goes across, so a name or a FOV changed in the row
+    // and not yet saved goes as it is shown. A COPY, never the record: the
+    // keyframe is a new thing made from the scene, and the two are never
+    // kept in step afterwards. Changing either later leaves the other alone.
+    // ------------------------------------------------------------
+    function Na__PmDev__SendSceneToKeyframe(sceneId) {
+        if (typeof Na__PmDev__SceneToKeyframe !== 'function') return;
+
+        const scene = Na__PmDev__WorkingScenes.find(s => s.PresentationMode__Scene__Id === sceneId);
+        if (!scene) return;
+
+        Na__PmDev__SceneToKeyframe(JSON.parse(JSON.stringify(scene)));
     }
     // ------------------------------------------------------------
 
@@ -1557,13 +1657,63 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Video Studio Conversions (Keyframe <-> Presentation Scene)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Add a Scene Built Somewhere Else
+    // ------------------------------------------------------------
+    // For the Video Studio, which makes a scene from a keyframe. The record
+    // carries the camera and everything else the scene is a snapshot of, and
+    // is filed exactly as Add Scene From Camera files one, through the same
+    // tail: next free id, the group on show, saved at once.
+    //
+    // options.thumbnailBlob is uploaded as the scene's picture. The viewport
+    // is not looking at this scene, so it cannot be photographed for one;
+    // without a blob the placeholder path stands until Update All Thumbnails.
+    //
+    // Returns { scene, saved }; scene is null when nothing was added.
+    // ------------------------------------------------------------
+    async function Na__PresentationMode__DevMenu__AddSceneFromRecord(record, options) {
+        const refused = { scene : null, saved : false };
+        if (!Na__DevGate__IsAuthoringEnabled()) return refused;              // <-- Same gate as the panel itself
+        if (!record || !record.PresentationMode__Scene__CameraPosition) return refused;
+
+        Na__PmDev__ProjectCode = Na__PmDev__ProjectCode || Na__AppUtils__GetProjectCodeFromUrl();
+
+        const blob = options && options.thumbnailBlob;
+        const renderThumbnail = blob
+            ? (scene) => Na__PresentationMode__DevMenu__UploadThumbnailBlob(scene, blob, Na__PmDev__ProjectCode, Na__PmDev__ShowToast)
+            : async () => false;
+
+        return Na__PmDev__FileNewScene(JSON.parse(JSON.stringify(record)), renderThumbnail);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Register What Presentation Scene To Keyframe Hands a Scene To
+    // ------------------------------------------------------------
+    // handler(sceneCopy) is the Video Studio's. Registering it is what puts
+    // the button on the rows: this panel has no business offering to make a
+    // keyframe when nothing is there to make one. Pass null to withdraw it.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__DevMenu__SetSceneToKeyframeHandler(handler) {
+        Na__PmDev__SceneToKeyframe = (typeof handler === 'function') ? handler : null;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
     // MODULE EXPORTS | Dev Menu Scene Editor API
     // ------------------------------------------------------------
     export {
-        Na__PresentationMode__DevMenu__InitializeSceneEditor
+        Na__PresentationMode__DevMenu__InitializeSceneEditor,
+        Na__PresentationMode__DevMenu__AddSceneFromRecord,
+        Na__PresentationMode__DevMenu__SetSceneToKeyframeHandler
     };
     // ------------------------------------------------------------
 

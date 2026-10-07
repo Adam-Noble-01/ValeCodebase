@@ -19,6 +19,12 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   07-Oct-2026 - Version 0.8.0
+   - Content made on the server (ServerMadeContent, e.g. ValeVision Theia videos)
+     counts as "to collect": the card's content lane, the file lists and a
+     "Made on the server" column in the Collect modal. Collect brings it without
+     the heavy-content tick.
+
    06-Oct-2026 - Version 0.2.0
    - Lanes, Push / Collect, conflict options.
 
@@ -53,7 +59,7 @@
     }
 
     function Vsm__PushCount(p) { return p ? p.code_new_count + p.code_changed_count + p.code_delete_count + p.content_push_count + p.shared_push_count : 0; }
-    function Vsm__CollectCount(p) { return p ? p.user_collect_count + p.shared_collect_count : 0; }
+    function Vsm__CollectCount(p) { return p ? p.user_collect_count + p.shared_collect_count + (p.content_collect_count || 0) : 0; }
     function Vsm__ConflictCount(p) { return p ? p.content_server_newer_count + p.user_pc_newer_count : 0; }
 
     function Vsm__Selection(filterFn) {
@@ -83,6 +89,7 @@
             if (p.content_push_count) counts.push('<span class="Vsm__C-push">\u2191' + p.content_push_count + ' to push</span>');
             if (p.content_server_newer_count) counts.push('<span class="Vsm__C-conflict">!' + p.content_server_newer_count + ' server newer</span>');
             if (p.content_server_only_count) counts.push('<span class="Vsm__Muted">' + p.content_server_only_count + ' server only</span>');
+            if (p.content_collect_count) counts.push('<span class="Vsm__C-collect">↓' + p.content_collect_count + ' made on the server: collect</span>');
         } else if (lane === 'shared') {
             if (p.shared_push_count) counts.push('<span class="Vsm__C-push">\u2191' + p.shared_push_count + ' PC newer: push</span>');
             if (p.shared_collect_count) counts.push('<span class="Vsm__C-collect">\u2193' + p.shared_collect_count + ' server newer: collect</span>');
@@ -120,6 +127,7 @@
             ['code_delete', 'Code: delete on server', 'f-delete', '\u2212'],
             ['content_push', 'Content: push', 'f-push', '\u2191'], ['content_server_newer', 'Content: server newer (conflict)', 'f-conflict', '!'],
             ['content_server_only', 'Content: server only', 'f-info', '\u00b7'],
+            ['content_collect', 'Content made on the server: collect', 'f-collect', '\u2193'],
             ['shared_push', 'Project data: PC newer, push', 'f-push', '\u2191'], ['shared_collect', 'Project data: server newer, collect', 'f-collect', '\u2193'],
             ['user_collect', 'User data: collect', 'f-collect', '\u2193'], ['user_pc_newer', 'User data: PC newer (conflict)', 'f-conflict', '!'],
             ['user_pc_only', 'User data: PC only', 'f-info', '\u00b7']
@@ -279,16 +287,17 @@
     // ------------------------------------------------------------
     Matrix.ConfirmCollect = function(ids) {
         var rows = ids.map(function(i) { return Vsm.State.plans[i]; }).filter(function(p) {
-            return p && (p.user_collect_count || p.shared_collect_count || p.user_pc_newer_count || p.content_server_only_count || p.content_server_newer_count);
+            return p && (Vsm__CollectCount(p) || p.user_pc_newer_count || p.content_server_only_count || p.content_server_newer_count);
         });
         if (!rows.length) { Vsm.Toast('Nothing to collect: compare first, or this PC already has everything.'); return; }
         var sum = function(k) { return rows.reduce(function(n, p) { return n + p[k]; }, 0); };
-        var html = '<h2>\u2193 Collect from the server</h2><p>Brings user content and configs made on the server into this PC\u2019s mirror, ' +
+        var html = '<h2>\u2193 Collect from the server</h2><p>Brings user content and configs made on the server, and content made there ' +
+            '(ValeVision Theia videos and posters), into this PC\u2019s mirror, ' +
             'where the server copy is newer or this PC has none. Nothing is deleted on either side. Any PC file it replaces is kept first in ' +
             '<code>' + Vsm.Esc(Vsm.State.config.Local.BackupRoot) + '\\collect__&lt;date&gt;</code>.</p>' +
-            '<table class="Vsm__Table"><tr><th>Mapping</th><th>User data to collect</th><th>Project data (server newer)</th><th>PC newer</th><th>Content server-only</th><th>Content server-newer</th><th>Size</th></tr>' +
+            '<table class="Vsm__Table"><tr><th>Mapping</th><th>User data to collect</th><th>Project data (server newer)</th><th>Made on the server</th><th>PC newer</th><th>Content server-only</th><th>Content server-newer</th><th>Size</th></tr>' +
             rows.map(function(p) {
-                return '<tr><td>' + Vsm.Esc(p.name) + '</td><td>' + p.user_collect_count + '</td><td>' + p.shared_collect_count + '</td><td>' + p.user_pc_newer_count + '</td><td>' +
+                return '<tr><td>' + Vsm.Esc(p.name) + '</td><td>' + p.user_collect_count + '</td><td>' + p.shared_collect_count + '</td><td>' + (p.content_collect_count || 0) + '</td><td>' + p.user_pc_newer_count + '</td><td>' +
                        p.content_server_only_count + '</td><td>' + p.content_server_newer_count + '</td><td>' + Vsm.Mb(p.collect_bytes) + '</td></tr>';
             }).join('') + '</table><div class="Vsm__Options">' +
             (sum('content_server_only_count') + sum('content_server_newer_count') ?

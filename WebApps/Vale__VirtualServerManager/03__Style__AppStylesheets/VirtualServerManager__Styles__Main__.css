@@ -191,6 +191,16 @@
     .Vsm__Row.is-selected { background: var(--Vale_BrandSoft); }
     .Vsm__Row.is-missing-server .Vsm__Name { color: var(--Vsm_Muted); }
     .Vsm__NameCell { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .Vsm__Indent { flex: 0 0 auto; margin-right: -6px; }                     /* <-- Tree depth; the tick box stays in one column */
+    .Vsm__Pick { flex: 0 0 auto; width: 14px; height: 14px; margin: 0 2px 0 0; cursor: pointer; accent-color: var(--Vsm_Bad); }
+    .Vsm__Pick:disabled { cursor: default; opacity: 0.25; }
+    .Vsm__Row.is-picked { background: var(--Vsm_BadSoft); }
+    .Vsm__Row.is-picked.is-selected { background: #f8d6d2; }
+    .Vsm__PickBar { display: inline-flex; align-items: center; gap: 8px; padding: 3px 4px 3px 10px; border-radius: 6px;
+                    background: var(--Vsm_BadSoft); color: var(--Vsm_Bad); font-size: 12px; font-weight: 600; }
+    .Vsm__PickBar[hidden] { display: none; }
+    .Vsm__DeleteList { max-height: 40vh; overflow: auto; border: 1px solid var(--Vale_BorderLight); border-radius: 6px; margin: 10px 0; }
+    .Vsm__DeleteList thead th { position: sticky; top: 0; background: #f7f9fa; }
     .Vsm__Chevron { width: 16px; flex: 0 0 16px; text-align: center; color: var(--Vsm_Muted); cursor: pointer; user-select: none; }
     .Vsm__Icon { width: 16px; height: 16px; flex: 0 0 16px; }
     .Vsm__Name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

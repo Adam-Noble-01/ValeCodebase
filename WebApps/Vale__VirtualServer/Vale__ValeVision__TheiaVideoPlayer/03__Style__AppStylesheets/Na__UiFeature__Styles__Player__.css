@@ -1,0 +1,588 @@
+/* =============================================================================
+ * VALEVISION THEIA - PLAYER STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__Player__.css
+ * NAMESPACE  : ValeVision Theia
+ * MODULE     : Player Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The player: a black stage in the video's own shape, the control
+ *              bar with its quality badge, and the cards and notices drawn over it
+ * CREATED    : 07-Oct-2026
+ *
+ * DESCRIPTION:
+ * - THE STAGE (.theia-stage) holds the player and its details. It takes the
+ *   video's proportions (--theia-aspect, from the file; 3:2 until it loads) and
+ *   is as wide as the column allows while the picture still fits the window's
+ *   height; the player fills it, so the title and buttons under the picture
+ *   line up with its edges. It is one card (07-Oct-2026, Adam: the player and
+ *   the text under it should read as one element): border, corners and shadow
+ *   belong to the card, the video sits flush in its top.
+ * - Everything over the picture is white on translucent black, whatever the
+ *   page around it is doing.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Stage
+ * ----------------------------------------------------------------------------- */
+
+    .theia-stage {                                                         /* <-- One card: the video on top, its details under it */
+        --theia-aspect                     : 1.5;
+        width                              : min(100%, max(320px, calc((100vh - var(--Theia_HeaderHeight) - 190px) * var(--theia-aspect))));
+        margin                             : 0 auto;
+        background                         : var(--Theia_Surface);
+        border                             : 1px solid var(--Theia_Border);
+        border-radius                      : var(--Theia_Radius);
+        overflow                           : hidden;                       /* <-- The video takes the card's top corners */
+        box-shadow                         : 0 10px 40px rgba(0, 0, 0, 0.16);
+        transition                         : background-color var(--Theia_Fade), border-color var(--Theia_Fade), box-shadow var(--Theia_Fade);
+    }
+
+    body.theia--cinema .theia-stage {
+        box-shadow                         : 0 12px 48px rgba(0, 0, 0, 0.38);
+    }
+
+    .theia-player {
+        position                           : relative;
+        width                              : 100%;
+        aspect-ratio                       : var(--theia-aspect);
+        margin                             : 0;
+        background                         : #000000;
+        overflow                           : hidden;
+        color                              : #ffffff;
+        user-select                        : none;
+        -webkit-user-select                : none;
+    }
+
+    .theia-player:fullscreen,
+    .theia-player:-webkit-full-screen {
+        width                              : 100vw;
+        height                             : 100vh;
+        max-width                          : none;
+        aspect-ratio                       : auto;
+        border-radius                      : 0;
+        box-shadow                         : none;
+    }
+
+    .theia-player [hidden] {
+        display                            : none !important;
+    }
+
+    .theia-player__video {
+        position                           : absolute;
+        inset                              : 0;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : contain;
+        background                         : #000000;
+        display                            : block;
+    }
+
+    .theia-player.is-controls-hidden {
+        cursor                             : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Big Play and Waiting
+ * ----------------------------------------------------------------------------- */
+
+    .theia-player__bigplay {
+        position                           : absolute;
+        left                               : 50%;
+        top                                : 50%;
+        width                              : 92px;
+        height                             : 92px;
+        transform                          : translate(-50%, -50%);
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        border                             : 1px solid rgba(255, 255, 255, 0.35);
+        border-radius                      : 50%;
+        background                         : rgba(10, 18, 26, 0.62);
+        color                              : #ffffff;
+        cursor                             : pointer;
+        backdrop-filter                    : blur(6px);
+        -webkit-backdrop-filter            : blur(6px);
+        z-index                            : 3;
+        transition                         : transform 0.2s ease, background-color 0.2s ease, opacity 0.3s ease;
+    }
+
+    .theia-player__bigplay:hover {
+        transform                          : translate(-50%, -50%) scale(1.06);
+        background                         : rgba(23, 43, 58, 0.85);
+    }
+
+    .theia-player__bigplay .theia-icon {
+        width                              : 42px;
+        height                             : 42px;
+        margin-left                        : 5px;
+    }
+
+    .theia-player.is-playing .theia-player__bigplay,
+    .theia-player.is-preparing .theia-player__bigplay {
+        opacity                            : 0;
+        pointer-events                     : none;
+    }
+
+    .theia-player__shade {                                                 /* <-- A light shade, so the white ring reads over a white render */
+        position                           : absolute;
+        inset                              : 0;
+        background                         : rgba(4, 7, 10, 0.4);
+        opacity                            : 0;
+        pointer-events                     : none;
+        transition                         : opacity 0.3s ease;
+        z-index                            : 2;
+    }
+
+    .theia-player__spinner {                                               /* <-- The Vale ring (the start-up .loading-spinner), white for the picture */
+        position                           : absolute;
+        left                               : 50%;
+        top                                : 50%;
+        width                              : 80px;
+        height                             : 80px;
+        margin                             : -40px 0 0 -40px;
+        box-sizing                         : border-box;
+        border                             : 6px solid rgba(255, 255, 255, 0.28);
+        border-top-color                   : #ffffff;
+        border-radius                      : 50%;
+        opacity                            : 0;
+        pointer-events                     : none;
+        animation                          : spinner-rotate 1s linear infinite;
+        transition                         : opacity 0.2s ease;
+        z-index                            : 3;
+    }
+
+    .theia-player.is-preparing .theia-player__shade,
+    .theia-player.is-preparing .theia-player__spinner {                    /* <-- Saving ahead before it plays: at once */
+        opacity                            : 1;
+    }
+
+    .theia-player.is-waiting.is-playing .theia-player__spinner {           /* <-- Waiting for data mid-play: a moment later, so a hiccup never flashes it */
+        opacity                            : 1;
+        transition-delay                   : 0.5s;
+    }
+
+    @keyframes spinner-rotate {                                            /* <-- As Na__CoreUi__Styles__App__.css, so this sheet stands alone */
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .theia-player__spinner {
+            animation-duration             : 2.4s;                         /* <-- Slower, never still: it still says "working" */
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Cards: Error, Up Next, Notice
+ * ----------------------------------------------------------------------------- */
+
+    .theia-player__error {
+        position                           : absolute;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : 16px;
+        background                         : rgba(4, 7, 10, 0.6);
+        backdrop-filter                    : blur(3px);
+        -webkit-backdrop-filter            : blur(3px);
+        z-index                            : 5;
+    }
+
+    .theia-player__card {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 10px;
+        max-width                          : 460px;
+        padding                            : 22px 24px;
+        border-radius                      : 14px;
+        background                         : rgba(12, 18, 24, 0.94);
+        box-shadow                         : 0 10px 40px rgba(0, 0, 0, 0.5);
+        text-align                         : center;
+    }
+
+    .theia-player__card-icon {
+        width                              : 30px;
+        height                             : 30px;
+        opacity                            : 0.85;
+    }
+
+    .theia-player__card-title {
+        font-size                          : var(--Theia_FontSize_Heading);
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-player__card-text {
+        font-size                          : 13px;
+        line-height                        : 1.55;
+        opacity                            : 0.85;
+    }
+
+    .theia-player__next {
+        position                           : absolute;
+        right                              : 16px;
+        bottom                             : 84px;
+        z-index                            : 6;
+    }
+
+    .theia-player__next-card {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 14px;
+        max-width                          : min(480px, calc(100vw - 32px));
+        padding                            : 12px;
+        border-radius                      : 12px;
+        background                         : rgba(12, 18, 24, 0.94);
+        box-shadow                         : 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .theia-player__next-thumb {
+        width                              : 128px;
+        aspect-ratio                       : 3 / 2;
+        flex-shrink                        : 0;
+        border-radius                      : 6px;
+        background                         : #172b3a center / cover no-repeat;
+    }
+
+    .theia-player__next-label {
+        font-size                          : 11px;
+        letter-spacing                     : 0.08em;
+        text-transform                     : uppercase;
+        opacity                            : 0.7;
+    }
+
+    .theia-player__next-title {
+        margin-top                         : 2px;
+        font-size                          : 16px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-player__next-actions {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 6px;
+    }
+
+    .theia-player__notice {
+        position                           : absolute;
+        top                                : 14px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+        width                              : max-content;
+        max-width                          : calc(100% - 28px);
+        padding                            : 8px 8px 8px 14px;
+        border-radius                      : 22px;
+        background                         : rgba(12, 18, 24, 0.88);
+        font-size                          : 13px;
+        line-height                        : 1.4;
+        z-index                            : 6;
+    }
+
+    .theia-player__notice-icon {
+        width                              : 18px;
+        height                             : 18px;
+    }
+
+    .theia-player__notice-ok {
+        flex-shrink                        : 0;
+        border                             : none;
+        border-radius                      : 14px;
+        padding                            : 5px 12px;
+        background                         : rgba(255, 255, 255, 0.16);
+        color                              : #ffffff;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+    /* ROTATE HINT | Fullscreen on a phone held upright: a turning phone and one
+       line, in the middle of the picture, for a few seconds. Never takes a tap. */
+    .theia-player__rotate {
+        position                           : absolute;
+        top                                : 50%;
+        left                               : 50%;
+        transform                          : translate(-50%, -50%);
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 12px;
+        width                              : max-content;
+        max-width                          : calc(100% - 48px);
+        padding                            : 18px 22px;
+        border-radius                      : 16px;
+        background                         : rgba(12, 18, 24, 0.82);
+        color                              : #ffffff;
+        font-size                          : 15px;
+        line-height                        : 1.4;
+        text-align                         : center;
+        pointer-events                     : none;
+        z-index                            : 7;
+        animation                          : theia-rotate-in 0.25s ease-out;
+    }
+
+    .theia-player__rotate-icon {
+        display                            : block;
+        width                              : 44px;
+        height                             : 44px;
+        animation                          : theia-rotate-turn 2.2s ease-in-out infinite;
+    }
+
+    .theia-player__rotate-icon svg {
+        width                              : 100%;
+        height                             : 100%;
+    }
+
+    @keyframes theia-rotate-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes theia-rotate-turn {                                         /* <-- Upright, turns on its side, holds, back */
+        0%, 15%   { transform: rotate(0deg); }
+        45%, 80%  { transform: rotate(-90deg); }
+        100%      { transform: rotate(0deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .theia-player__rotate,
+        .theia-player__rotate-icon {
+            animation                      : none;
+        }
+        .theia-player__rotate-icon {
+            transform                      : rotate(-90deg);               /* <-- Still, already on its side: the words say the rest */
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Control Bar and Seek
+ * ----------------------------------------------------------------------------- */
+
+    .theia-player__chrome {
+        position                           : absolute;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        padding                            : 34px 14px calc(8px + env(safe-area-inset-bottom, 0));
+        background                         : linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0));
+        z-index                            : 4;
+        transition                         : opacity 0.3s ease;
+    }
+
+    .theia-player.is-controls-hidden .theia-player__chrome {
+        opacity                            : 0;
+        pointer-events                     : none;
+    }
+
+    .theia-player__seek {
+        position                           : relative;
+        height                             : 18px;
+        display                            : flex;
+        align-items                        : center;
+        cursor                             : pointer;
+        touch-action                       : none;
+    }
+
+    .theia-player__track {
+        position                           : relative;
+        width                              : 100%;
+        height                             : 4px;
+        border-radius                      : 2px;
+        background                         : rgba(255, 255, 255, 0.24);
+        transition                         : height 0.15s ease;
+    }
+
+    .theia-player__seek:hover .theia-player__track,
+    .theia-player.is-seeking .theia-player__track {
+        height                             : 6px;
+    }
+
+    .theia-player__buffered,
+    .theia-player__played {
+        position                           : absolute;
+        left                               : 0;
+        top                                : 0;
+        bottom                             : 0;
+        width                              : 0;
+        border-radius                      : inherit;
+    }
+
+    .theia-player__buffered {
+        background                         : rgba(255, 255, 255, 0.42);
+    }
+
+    .theia-player__played {
+        background                         : #ffffff;
+    }
+
+    .theia-player__handle {
+        position                           : absolute;
+        top                                : 50%;
+        left                               : 0;
+        width                              : 14px;
+        height                             : 14px;
+        margin                             : -7px 0 0 -7px;
+        border-radius                      : 50%;
+        background                         : #ffffff;
+        transform                          : scale(0);
+        transition                         : transform 0.15s ease;
+    }
+
+    .theia-player__seek:hover .theia-player__handle,
+    .theia-player.is-seeking .theia-player__handle,
+    .theia-player__seek:focus-visible .theia-player__handle {
+        transform                          : scale(1);
+    }
+
+    .theia-player__hover-time {
+        position                           : absolute;
+        bottom                             : 22px;
+        left                               : 0;
+        transform                          : translateX(-50%);
+        padding                            : 2px 7px;
+        border-radius                      : 4px;
+        background                         : rgba(0, 0, 0, 0.8);
+        font-size                          : 12px;
+        font-variant-numeric               : tabular-nums;
+        opacity                            : 0;
+        pointer-events                     : none;
+        transition                         : opacity 0.15s ease;
+    }
+
+    .theia-player__seek:hover .theia-player__hover-time {
+        opacity                            : 1;
+    }
+
+    .theia-player__bar {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 4px;
+        margin-top                         : 4px;
+    }
+
+    .theia-player__btn {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : 6px;
+        height                             : 40px;
+        min-width                          : 40px;
+        padding                            : 0 8px;
+        border                             : none;
+        border-radius                      : 8px;
+        background                         : transparent;
+        color                              : #ffffff;
+        cursor                             : pointer;
+        transition                         : background-color var(--Theia_Fast);
+    }
+
+    .theia-player__btn:hover {
+        background                         : rgba(255, 255, 255, 0.12);
+    }
+
+    .theia-player__btn .theia-icon {
+        width                              : 24px;
+        height                             : 24px;
+    }
+
+    .theia-player__time {
+        margin-left                        : 6px;
+        font-size                          : 13px;
+        font-variant-numeric               : tabular-nums;
+        white-space                        : nowrap;
+        opacity                            : 0.92;
+    }
+
+    .theia-player__spacer {
+        flex                               : 1;
+    }
+
+    .theia-player__volume {
+        display                            : flex;
+        align-items                        : center;
+    }
+
+    .theia-player__volume-slider {
+        width                              : 0;
+        opacity                            : 0;
+        accent-color                       : #ffffff;
+        transition                         : width 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theia-player__volume:hover .theia-player__volume-slider,
+    .theia-player__volume:focus-within .theia-player__volume-slider {
+        width                              : 84px;
+        opacity                            : 1;
+    }
+
+    .theia-player__volume.is-silent .theia-player__btn {
+        opacity                            : 0.45;
+    }
+
+    .theia-player__badge {                                                /* <-- What the video is (4K): a label, not a menu */
+        display                            : inline-flex;
+        align-items                        : center;
+        height                             : 20px;
+        margin                             : 0 6px;
+        padding                            : 0 6px;
+        border-radius                      : 4px;
+        background                         : #ffffff;
+        color                              : #0e1318;
+        font-size                          : 11px;
+        font-weight                        : var(--Theia_FontSemiBold);
+        letter-spacing                     : 0.04em;
+        cursor                             : default;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Phones
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 640px) {
+        .theia-player {
+            width                          : 100%;
+            border-radius                  : 0;
+            margin                         : 0 calc(var(--Theia_Gutter) * -1);
+            width                          : calc(100% + var(--Theia_Gutter) * 2);
+        }
+        .theia-player__volume-slider {
+            display                        : none;                         /* <-- A phone's own buttons set the volume */
+        }
+        .theia-player__bigplay {
+            width                          : 72px;
+            height                         : 72px;
+        }
+        .theia-player__spinner {
+            width                          : 56px;
+            height                         : 56px;
+            margin                         : -28px 0 0 -28px;
+            border-width                   : 5px;
+        }
+        .theia-player__next {
+            left                           : 12px;
+            right                          : 12px;
+            bottom                         : 70px;
+        }
+        .theia-player__next-thumb {
+            width                          : 88px;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

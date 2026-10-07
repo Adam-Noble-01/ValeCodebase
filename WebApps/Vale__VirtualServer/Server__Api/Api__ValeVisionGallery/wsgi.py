@@ -24,6 +24,9 @@ DESCRIPTION:
   enabled. Saves carry the "_rev" the page loaded; a newer file answers 409.
 - Projects are never renamed, moved or deleted from the Gallery: a library
   folder is shared by every app.
+- ValeVision Theia videos: every record carries videoCount (the card's video
+  icon), and a full record carries theiaVideos (the viewer's Videos panel):
+  the videos staff can watch, in Theia's order (ValeShared__TheiaVideo__).
 
 ROUTES:
   GET  /api/health
@@ -38,6 +41,10 @@ RUN (server): gunicorn --bind 127.0.0.1:${VALE_PORT} wsgi:app   (systemd vale@Va
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+07-Oct-2026 - Version 1.1.0
+- videoCount on every record and theiaVideos on a full record, for the
+  Gallery's ValeVision Theia icon and Videos panel.
+
 06-Oct-2026 - Version 1.0.0
 - Initial build: replaces the old gallery dev server's project routes and the
   Cloudflare editor Worker (R2 writes). No GitHub Pages, no R2.
@@ -60,6 +67,7 @@ from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require     # no
 from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__Find, Na__Library__ListProjects,  # noqa: E402
                                    Na__Library__ProjectDataPath, Na__Library__ReadJson, Na__Library__Url,
                                    Na__Library__WriteJson, Na__Library__Year)
+from ValeShared__TheiaVideo__ import Na__Theia__HasVideos, Na__Theia__Summary       # noqa: E402
 
 
 # -----------------------------------------------------------------------------
@@ -115,6 +123,10 @@ def Na__Gallery__Record(pid: str, folder: Path, data: dict, light: bool) -> dict
     out["hasGlb"] = out["hasGlb_R2"] = has_glb                                 # <-- hasGlb_R2 kept for the old carousel gate
     out["enabled"] = data.get("enabled", True) is not False
     out["_rev"] = int(data.get("_rev", 0) or 0)
+    theia = Na__Theia__Summary(folder, data) if Na__Theia__HasVideos(folder) else {"count": 0, "videos": []}
+    out["videoCount"] = theia["count"]                                         # <-- ValeVision Theia videos staff can watch
+    if not light:
+        out["theiaVideos"] = theia["videos"]
     return out
 # ---------------------------------------------------------------
 

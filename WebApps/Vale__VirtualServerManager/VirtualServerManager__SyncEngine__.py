@@ -19,6 +19,9 @@ DESCRIPTION:
     shared    Project data          both ways     newer wins, never deletes (e.g. ProjectData__*.json)
   A folder's lane comes from its name (LanePatterns) or the mapping's Content /
   UserData lists, and is inherited by everything inside it.
+  ServerMadeContent names folders whose content is written on the server (ValeVision
+  Theia's videos and posters): server-only and server-newer files there are collected
+  by every Collect instead of waiting for --with-content.
 - Compare : one session scans the server; the plan shows every lane both ways.
 - Push    : one session uploads code + content (staged, backed up, conflict-checked).
 - Collect : one session downloads user data (and optionally content) into the PC
@@ -26,6 +29,11 @@ DESCRIPTION:
 - Undo    : puts back the last push of a mapping. Seed: first upload of user data
             (adds missing only). Backup: dated snapshot of user data on this PC.
 - Watch   : one long-lived session streams the server tree for the live explorer.
+- Deploy stamp: every push and undo that changes web-served source writes
+  ValeApps__DeployStamp__.json at the server root, in the same session: the URLs it
+  changed, by push. Every app reads it (ValeShared__AppUpdate__.js) and refreshes those
+  files in the browser, so nobody runs old code after a push (Cloudflare gives scripts
+  and stylesheets a 4-hour browser cache). Never synced (NeverSync).
 - The server-side work is a small Python agent sent over stdin, so nothing has to
   be installed on the server. Shares its lock, cooldown and session log with the
   vgh-app-server skill's vps.py (%LOCALAPPDATA%\\vgh-app-server).
@@ -37,7 +45,11 @@ USAGE (CLI, used by Claude):
   python VirtualServerManager__SyncEngine__.py collect [ID ...] [--yes] [--with-content] [--force-userdata]
          compare / push / collect also take  --scope <folder in the one mapping>  --report-file <json>
          e.g. push projects --scope ValeProjects__2026/64135__Washington --yes   (the SketchUp sync's call)
+         compare / push with --scope also take  --prune <content folder inside the scope>  (repeatable):
+         server files in that folder that are not on this PC are deleted (backed up; undo restores them)
   python VirtualServerManager__SyncEngine__.py undo ID | seed [ID ...] | backup [ID ...]
+  python VirtualServerManager__SyncEngine__.py delete ID REL [REL ...] [--yes] [--pc]
+         named server files only (paths relative to the mapping): backed up, journaled, undo ID restores them
   python VirtualServerManager__SyncEngine__.py routes | nginx-status | nginx-test | nginx-apply
   python VirtualServerManager__SyncEngine__.py users
   python VirtualServerManager__SyncEngine__.py user-reset USR00000012 [--yes] | user-signout USR00000012 [--yes]
@@ -45,6 +57,38 @@ USAGE (CLI, used by Claude):
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+07-Oct-2026 - Version 0.9.0
+- The deploy stamp (above): agent deploy_note(), called by mode_apply and mode_undo after the
+  journal is written; it can never fail the push. Code-lane files only, outside Server__; each
+  file as the URL browsers load it (an app's route from the URL routes, sent as deploy_routes;
+  otherwise /<path>). Keeps 7 days and at most 60 pushes; stamps only ever increase. Logged to
+  sync.log as "deploy-stamp".
+
+07-Oct-2026 - Version 0.8.0
+- ServerMadeContent (sync map, folder names; first ValeVision__TheiaVideo): Theia writes its videos
+  and posters into Content__ folders on the server, and Collect skipped them unless --with-content,
+  which also brings back every superseded image left on the server. Content under such a folder
+  keeps the content lane (a newer PC copy still pushes), but a server-only or server-newer file is
+  now a "collect" verdict, listed in the plan's content_collect and collected by default. A forced
+  push never overwrites it, and --prune refuses such a folder. Na__Walk__IsServerMade; Verdict
+  takes made; the Annotator's label carries made for the live explorer. The agent is unchanged.
+
+07-Oct-2026 - Version 0.7.0
+- Delete named server files (the explorer's Delete, and the CLI's delete): agent mode "delete",
+  Na__Engine__Delete. Every file must still have the size and time it was chosen with, or nothing
+  is deleted. Refused: the users register, files the mapping leaves out of sync (secrets),
+  symlinks, unsafe paths. Each file is backed up to backups/<stamp>/ and journaled like a push
+  (after = None), so undo ID restores them; folders are kept. Optionally moves the PC's copies to
+  BackupRoot/deleted__<stamp>/ so a push does not send them back. The journal trimming is now
+  trim_journals(), shared by apply and delete.
+
+07-Oct-2026 - Version 0.6.2
+- --prune <folder> on a scoped compare / push: one Content__ folder inside the scope is made an
+  exact copy of the PC's, so files the PC no longer has are deleted on the server (backed up
+  first, journaled, restored by undo). The only way content is ever deleted. Refused without
+  --scope, outside the scope, outside the content lane, or when the PC folder is empty. Used by
+  the SketchUp ValeVision Cloud Sync plugin to clear superseded GLBs after each model sync.
+
 06-Oct-2026 - Version 0.6.0
 - One-project syncs: compare / push / collect take --scope (one folder inside one mapping,
   e.g. projects --scope ValeProjects__2026/64135__Washington). The plan holds only files
@@ -123,7 +167,9 @@ NA__ENGINE__ROUTE_TARGET_SAFE     = re.compile(r"^[A-Za-z0-9/_.\-?=&%{}:+~#]*$")
 NA__ENGINE__RESULT_MARKER         = "__VALE_RESULT__"                          # <-- Prefix of the agent's JSON result line
 NA__ENGINE__WATCH_MARKER          = "__VALE_WATCH__"                           # <-- Prefix of each live-tree message
 NA__ENGINE__LANES                 = ("code", "content", "userdata", "shared")
+NA__ENGINE__DELETE_MAX            = 5000                                       # <-- Files one explorer delete may name
 NA__ENGINE__TREE_SKIP_DIRS        = [".venv", "venv", "__pycache__", ".git", "node_modules"]
+NA__ENGINE__DEPLOY_STAMP          = "ValeApps__DeployStamp__.json"              # <-- At the server root: what each source push changed (ValeShared__AppUpdate__)
 
 NA__USERS__DIR                    = "Server__UserAccountData"                  # <-- Under the mirror / server root
 NA__USERS__FILE                   = "UserAccountData__ValeUsers__Register__.json"
@@ -256,7 +302,8 @@ def Na__Config__Rules(cfg: dict, m: dict) -> dict:
             "content": m.get("Content", []), "userdata": m.get("UserData", []),
             "default_lane": m.get("DefaultLane", "code"),
             "content_patterns": cfg["LanePatterns"]["content"],
-            "userdata_patterns": cfg["LanePatterns"]["userdata"]}
+            "userdata_patterns": cfg["LanePatterns"]["userdata"],
+            "server_made": cfg.get("ServerMadeContent", [])}                # <-- Engine only; the agent never reads it
 # ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------
@@ -309,6 +356,22 @@ def Na__Walk__Classify(rel: str, r: dict, is_dir: bool = False) -> tuple:
     if not is_dir and Na__Walk__Match(rel, parts[-1], False, r["ex_code"] if lane == "code" else r["ex_data"]):
         return lane, True
     return lane, False
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Is a Path Inside a Folder Whose Content Is Made on the Server
+# ------------------------------------------------------------
+def Na__Walk__IsServerMade(rel: str, r: dict, is_dir: bool = False) -> bool:
+    """ServerMadeContent: folders (by name, or a path pattern with /) whose files are written on the
+    server, such as ValeVision Theia's videos and posters. Their content keeps the content lane (a
+    newer PC copy still pushes), but a server-only or server-newer file is collected by default."""
+    patterns = r.get("server_made") or []
+    if not patterns:
+        return False
+    parts = rel.split("/")
+    for i in range(1, len(parts) + (1 if is_dir else 0)):
+        if Na__Walk__Match("/".join(parts[:i]), parts[i - 1], True, patterns):
+            return True
+    return False
 # ---------------------------------------------------------------
 
 # FUNCTION | Scan a PC Folder Into {rel: [size, mtime, lane(, sha)]}
@@ -588,9 +651,79 @@ def push_register(staged, dst):
         os.replace(staged, dst)
     return kept
 
+DEPLOY_KEEP_DAYS = 7
+DEPLOY_KEEP_PUSHES = 60
+
+def deploy_note(kind, plans, rules):
+    # The deploy stamp: the URLs this job changed, so every app refreshes them in the browser.
+    name = ARGS.get("deploy_stamp")
+    if not name or "/" in name or not safe_rel(name):
+        return
+    routes = ARGS.get("deploy_routes") or {}
+    urls = []
+    for p in plans:
+        r = rules.get(p["id"])
+        if not r:
+            continue
+        try:
+            prefix = Path(r["path"]).resolve().relative_to(ROOT.resolve()).as_posix()
+        except ValueError:
+            continue
+        prefix = "" if prefix == "." else prefix
+        for rel in p.get("added", []) + p.get("replaced", []) + p.get("deleted", []):
+            if lane_of(rel, r) != "code":
+                continue                                                       # <-- Content and data are not code a browser holds
+            full = f"{prefix}/{rel}" if prefix else rel
+            top, _, rest = full.partition("/")
+            if top.startswith("Server__") or full == name:
+                continue                                                       # <-- Never web-served
+            bases = routes.get(top) if rest else None
+            urls += [b + rest for b in bases] if bases else ["/" + full]
+    if not urls:
+        return
+    path = ROOT / name
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    except (OSError, ValueError):
+        doc = {}
+    latest = str(doc.get("ValeDeploy__Stamp__Latest") or "")
+    stamp = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
+    while stamp <= latest:
+        stamp += "+"                                                           # <-- Two jobs in one second: still later
+    cutoff = time.strftime("%Y%m%d-%H%M%S", time.gmtime(time.time() - DEPLOY_KEEP_DAYS * 86400))
+    recent = [e for e in doc.get("ValeDeploy__Pushes__Recent") or []
+              if isinstance(e, dict) and str(e.get("ValeDeploy__Push__Stamp", "")) >= cutoff]
+    recent.append({"ValeDeploy__Push__Stamp": stamp, "ValeDeploy__Push__Utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                   "ValeDeploy__Push__Kind": kind, "ValeDeploy__Push__Job": STAMP, "ValeDeploy__Push__By": WHO,
+                   "ValeDeploy__Push__Urls": sorted(set(urls))})
+    doc = {"ValeDeploy__File__Description": "Written by the Vale Virtual Server Manager after every source push and undo: "
+                                            "the URLs each changed, newest last. Read by every app (ValeShared__AppUpdate__.js), "
+                                            "which refreshes those files in the browser. Never synced; never edit by hand.",
+           "ValeDeploy__Stamp__Latest": stamp,
+           "ValeDeploy__Pushes__Recent": recent[-DEPLOY_KEEP_PUSHES:]}
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
+    os.chmod(tmp, 0o664)
+    os.replace(tmp, path)
+    log_line(f"deploy-stamp {stamp} {kind} {len(set(urls))} url(s)")
+
+def deploy_note_safe(kind, plans, rules):
+    try:
+        deploy_note(kind, plans, rules)
+    except Exception as e:                                                     # <-- The push itself is done: never fail it
+        say(f"  (deploy stamp not written: {e})")
+        log_line(f"deploy-stamp FAILED {kind}: {e}")
+
 def mode_scan():
     check_paths()
     result({"ok": True, "scans": {r["id"]: scan(r, ARGS.get("deep")) for r in ARGS["mappings"]}})
+
+def trim_journals():                                                           # keep the last keep_backups pushes / deletes and their backups
+    keep = int(ARGS.get("keep_backups", 30))
+    stamps = sorted(p.stem for p in (AREA / "journal").glob("*.json"))
+    for old in stamps[:-keep] if keep else []:
+        shutil.rmtree(AREA / "backups" / old, ignore_errors=True)
+        (AREA / "journal" / f"{old}.json").unlink(missing_ok=True)
 
 def mode_apply():
     check_paths()
@@ -606,6 +739,10 @@ def mode_apply():
         for rel in plan["delete"]:
             if not safe_rel(rel) or lane_of(rel, r) != "code":
                 result({"ok": False, "error": f"refused delete outside the code lane: {pid}:{rel}"}); sys.exit(3)
+        for rel in plan.get("prune", []):                                      # content deletes: only inside a folder named with --prune
+            if not safe_rel(rel) or lane_of(rel, r) != "content" \
+                    or not any(rel.startswith(d + "/") for d in plan.get("prune_dirs", []) if safe_rel(d)):
+                result({"ok": False, "error": f"refused prune outside a named content folder: {pid}:{rel}"}); sys.exit(3)
         for rel, expected in plan["expect"].items():
             cur = state(base / rel)
             if cur != (expected[:2] if expected else None):
@@ -639,7 +776,7 @@ def mode_apply():
                 else:
                     os.replace(stage / pid / rel, dst)
                 done["after"][rel] = state(dst)
-            for rel in plan["delete"]:
+            for rel in plan["delete"] + plan.get("prune", []):
                 dst = base / rel
                 if dst.is_file():
                     (backup / pid / rel).parent.mkdir(parents=True, exist_ok=True)
@@ -652,14 +789,86 @@ def mode_apply():
             log_line(f"push {STAMP} {pid} +{len(done['added'])} ~{len(done['replaced'])} -{len(done['deleted'])}")
         (AREA / "journal").mkdir(parents=True, exist_ok=True)
         (AREA / "journal" / f"{STAMP}.json").write_text(json.dumps(journal), encoding="utf-8")
+        deploy_note_safe("push", journal["plans"], rules)
     finally:
         shutil.rmtree(stage, ignore_errors=True)
-    keep = int(ARGS.get("keep_backups", 30))
-    stamps = sorted(p.stem for p in (AREA / "journal").glob("*.json"))
-    for old in stamps[:-keep] if keep else []:
-        shutil.rmtree(AREA / "backups" / old, ignore_errors=True)
-        (AREA / "journal" / f"{old}.json").unlink(missing_ok=True)
+    trim_journals()
     result({"ok": True, "stamp": STAMP, "plans": [{k: v for k, v in p.items() if k != "after"} for p in journal["plans"]]})
+
+def excluded(rel, r):                                                          # left out of sync by the mapping's rules, as scan() decides
+    parts, lane = rel.split("/"), r.get("default_lane", "code")
+    if r["files_only"] and len(parts) > 1:
+        return True
+    for i in range(1, len(parts)):
+        d = "/".join(parts[:i])
+        lane = dir_lane(d, parts[i - 1], lane, r)
+        if match(d, parts[i - 1], True, r["ex_code"] if lane == "code" else r["ex_data"]):
+            return True
+    return match(rel, parts[-1], False, r["ex_code"] if lane == "code" else r["ex_data"])
+
+def mode_delete():
+    # The explorer's Delete: named files only, each still as the explorer showed it. Backed up and
+    # journaled like a push, so undo puts them back. Folders are kept, even when emptied.
+    check_paths()
+    rules = {r["id"]: r for r in ARGS["mappings"]}
+    refused, conflicts = [], []
+    for pid, files in ARGS["files"].items():
+        r = rules.get(pid)
+        if not r:
+            refused.append(f"{pid}: no such mapping")
+            continue
+        base = Path(r["path"])
+        for rel, expected in files.items():
+            p = base / rel
+            if not safe_rel(rel) or not under_root(p.parent):
+                refused.append(f"{pid}:{rel} (unsafe path)")
+            elif REGISTER and os.path.normpath(str(p)) == os.path.normpath(str(REGISTER)):
+                refused.append(f"{pid}:{rel} (the users register is never deleted: untick Active in tab 04)")
+            elif excluded(rel, r):
+                refused.append(f"{pid}:{rel} (left out of sync by the mapping's rules, e.g. a secret)")
+            elif p.is_symlink() or (p.exists() and not p.is_file()):
+                refused.append(f"{pid}:{rel} (not a regular file)")
+            elif not expected or state(p) != list(expected[:2]):
+                conflicts.append(f"{pid}:{rel} expected {expected[:2] if expected else None} found {state(p)}")
+    if refused:
+        result({"ok": False, "refused": refused[:50], "error": f"refused {len(refused)} file(s), so nothing was deleted: {refused[0]}"})
+        sys.exit(3)
+    if conflicts:
+        result({"ok": False, "conflicts": conflicts[:50], "conflict_count": len(conflicts),
+                "error": "the server changed since you looked: wait for the explorer to update, then try again (nothing was deleted)"})
+        sys.exit(4)
+    backup = AREA / "backups" / STAMP
+    journal = {"stamp": STAMP, "user": WHO, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "kind": "delete", "plans": []}
+    error = ""
+    try:
+        for pid, files in ARGS["files"].items():
+            base = Path(rules[pid]["path"])
+            done = {"id": pid, "path": str(base), "added": [], "replaced": [], "deleted": [], "after": {}}
+            journal["plans"].append(done)
+            for rel in sorted(files):
+                dst = base / rel
+                (backup / pid / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(dst, backup / pid / rel)
+                dst.unlink()
+                done["deleted"].append(rel)
+                done["after"][rel] = None                                      # <-- Undo refuses if one comes back meanwhile
+            say(f"  {pid}: -{len(done['deleted'])}")
+    except OSError as e:
+        error = f"stopped part way: {e}"
+    finally:
+        journal["plans"] = [p for p in journal["plans"] if p["deleted"]]
+        for p in journal["plans"]:
+            log_line(f"delete {STAMP} {p['id']} -{len(p['deleted'])}")
+        if journal["plans"]:
+            (AREA / "journal").mkdir(parents=True, exist_ok=True)
+            (AREA / "journal" / f"{STAMP}.json").write_text(json.dumps(journal), encoding="utf-8")
+    trim_journals()
+    plans = [{k: v for k, v in p.items() if k != "after"} for p in journal["plans"]]
+    if error:
+        result({"ok": False, "stamp": STAMP, "plans": plans,
+                "error": error + f" ({sum(len(p['deleted']) for p in plans)} deleted and journaled: undo restores them)"})
+        sys.exit(5)
+    result({"ok": True, "stamp": STAMP, "plans": plans})
 
 def mode_undo():
     check_paths()
@@ -694,6 +903,7 @@ def mode_undo():
     p["undone"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     jf.write_text(json.dumps(j), encoding="utf-8")
     log_line(f"undo {j['stamp']} {pid}")
+    deploy_note_safe("undo", [p], {r["id"]: r for r in ARGS.get("mappings", [])})
     result({"ok": True, "undid": j["stamp"], "id": pid, "removed": len(p["added"]),
             "restored": len(p["replaced"]) + len(p["deleted"])})
 
@@ -1033,7 +1243,8 @@ def mode_users():
     result({"ok": True, "text": text, "mtime": mtime, "backup": str(copy)})
 
 {"scan": mode_scan, "apply": mode_apply, "undo": mode_undo, "seed": mode_seed, "collect": mode_collect,
- "backup": mode_backup, "status": mode_status, "watch": mode_watch, "nginx": mode_nginx, "users": mode_users}[MODE]()
+ "backup": mode_backup, "status": mode_status, "watch": mode_watch, "nginx": mode_nginx, "users": mode_users,
+ "delete": mode_delete}[MODE]()
 '''
 
 # endregion ----------------------------------------------------
@@ -1317,8 +1528,25 @@ def Na__Gateway__Stream(remote_cmd: str, why: str, head: bytes, on_line, stop: t
 def Na__Agent__Head(cfg: dict, args: dict) -> bytes:
     args = {"root": cfg["Server"]["Root"], "area": cfg["Server"]["SyncArea"],
             "keep_backups": cfg["Server"].get("KeepBackups", 30),
-            "register": f"{NA__USERS__DIR}/{NA__USERS__FILE}", **args}             # <-- Pushes merge it; mode "users" edits it
+            "register": f"{NA__USERS__DIR}/{NA__USERS__FILE}",                  # <-- Pushes merge it; mode "users" edits it
+            "deploy_stamp": NA__ENGINE__DEPLOY_STAMP, "deploy_routes": Na__Engine__DeployRoutes(), **args}
     return base64.b64encode(NA__AGENT__SOURCE.encode("utf-8")) + b"\n" + json.dumps(args).encode("utf-8") + b"\n"
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Each App Folder's Public Routes, for the Deploy Stamp's URLs ({folder: ["/theia/"]})
+# ------------------------------------------------------------
+def Na__Engine__DeployRoutes() -> dict:
+    try:
+        routes = Na__Routes__Load()
+    except (OSError, ValueError):
+        return {}                                                              # <-- Then files are named by their path: /<folder>/...
+    out = {}
+    for r in routes.get("Routes", []):
+        if r.get("Enabled", True) and r.get("Type") == "app" and r.get("Target"):
+            segs = Na__Routes__Parse(r.get("Path", ""))[0]
+            if segs:
+                out.setdefault(r["Target"], []).append("/" + "/".join(segs) + "/")
+    return out
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | Parse the Agent's Result Line
@@ -1383,8 +1611,9 @@ def Na__Agent__FileMode(m: dict, rel: str) -> int:
 
 # FUNCTION | What Should Happen to One File, Given Both Sides
 # ------------------------------------------------------------
-def Na__Parity__Verdict(lane: str, local, remote, deep: bool = False) -> str:
-    """local/remote: [size, mtime, ...] or None. Returns one of:
+def Na__Parity__Verdict(lane: str, local, remote, deep: bool = False, made: bool = False) -> str:
+    """local/remote: [size, mtime, ...] or None. made: content made on the server (ServerMadeContent),
+    whose server-only and server-newer files are collected rather than left as conflicts. Returns one of:
     same | push | delete | server-newer | server-only | collect | pc-newer | pc-only"""
     if local and remote:
         if lane == "code":
@@ -1394,13 +1623,15 @@ def Na__Parity__Verdict(lane: str, local, remote, deep: bool = False) -> str:
         if local[:2] == remote[:2]:
             return "same"
         if lane == "content":
-            return "push" if local[1] > remote[1] else "server-newer"
+            return "push" if local[1] > remote[1] else ("collect" if made else "server-newer")
         if lane == "shared":
             return "push" if local[1] > remote[1] else "collect"           # <-- two-way: newer wins (ties: server)
         return "collect" if remote[1] > local[1] else "pc-newer"
     if local:
         return "push" if lane in ("code", "content", "shared") else "pc-only"
     if remote:
+        if lane == "content" and made:
+            return "collect"                                               # <-- Made on the server: Collect brings it
         return {"code": "delete", "content": "server-only", "userdata": "collect", "shared": "collect"}[lane]
     return "same"
 # ---------------------------------------------------------------
@@ -1458,15 +1689,47 @@ def Na__Engine__ScopeError(maps: list, scope: str) -> str:
     return ""
 # ---------------------------------------------------------------
 
+# HELPER FUNCTION | Check the --prune Folders (content folders inside the scope, not empty on this PC)
+# ------------------------------------------------------------
+def Na__Engine__PruneError(cfg: dict, maps: list, scope: str, prune: list) -> str:
+    """Pruning is the only way content is ever deleted on the server, so it is held tight: one
+    named Content__ folder inside a scoped plan, and never when the PC copy is empty (that would
+    empty the server folder, e.g. after a failed export)."""
+    if not prune:
+        return ""
+    if not scope:
+        return "--prune needs --scope (one folder inside one mapping)"
+    rules = Na__Config__Rules(cfg, maps[0])
+    for folder in prune:
+        parts = folder.split("/")
+        if "\\" in folder or any(p in ("", ".", "..") for p in parts) or any(c in folder for c in "'\"`$;&|<>*?:\n"):
+            return f"unsafe prune folder {folder!r}: give a folder path relative to the mapping, with / between folders"
+        if not folder.startswith(scope + "/"):
+            return f"prune folder {folder} is not inside the scope {scope}"
+        lane, excluded = Na__Walk__Classify(folder, rules, is_dir=True)
+        if lane != "content" or excluded:
+            return f"prune folder {folder} is not a synced content folder (lane {lane}): only Content__ folders can be pruned"
+        if Na__Walk__IsServerMade(folder, rules, is_dir=True):
+            return f"refused to prune {folder}: its files are made on the server (ServerMadeContent), so this PC's copy is not the master"
+        local = Na__Config__LocalPath(cfg, maps[0]) / folder
+        if not local.is_dir() or not any(f.is_file() for f in local.rglob("*")):
+            return f"refused to prune {folder}: it is empty or missing on this PC, so the server copy would be emptied"
+    return ""
+# ---------------------------------------------------------------
+
 # FUNCTION | Compare PC With the Server (ONE session for all chosen mappings)
 # ------------------------------------------------------------
-def Na__Engine__Compare(cfg: dict, ids: list | None, deep: bool = False, scope: str = "") -> dict:
+def Na__Engine__Compare(cfg: dict, ids: list | None, deep: bool = False, scope: str = "",
+                        prune: list | None = None) -> dict:
     """scope: one folder inside the single chosen mapping (e.g. ValeProjects__2026/64135__Washington).
     The plan then holds only files under it, so push and collect move nothing else. Paths stay
-    relative to the mapping, so undo, the journal and the ledger work as for any push."""
+    relative to the mapping, so undo, the journal and the ledger work as for any push.
+    prune: Content__ folders inside the scope to make exact copies of the PC's: their server-only
+    files go to content_prune, which a push deletes (backed up first, restored by undo)."""
     maps = Na__Config__Pick(cfg, ids)
     scope = scope.replace("\\", "/").strip().strip("/")
-    error = Na__Engine__ScopeError(maps, scope)
+    prune = [p.replace("\\", "/").strip().strip("/") for p in (prune or []) if p and p.strip()]
+    error = Na__Engine__ScopeError(maps, scope) or Na__Engine__PruneError(cfg, maps, scope, prune)
     if error:
         return {"ok": False, "error": error}
     res = Na__Agent__Run(cfg, {"mode": "scan", "deep": deep, "mappings": [Na__Config__Rules(cfg, m) for m in maps]},
@@ -1475,7 +1738,8 @@ def Na__Engine__Compare(cfg: dict, ids: list | None, deep: bool = False, scope: 
         return res
     plans = {}
     for m in maps:
-        local = Na__Walk__ScanLocal(Na__Config__LocalPath(cfg, m), Na__Config__Rules(cfg, m), deep)
+        rules = Na__Config__Rules(cfg, m)
+        local = Na__Walk__ScanLocal(Na__Config__LocalPath(cfg, m), rules, deep)
         remote = res["scans"][m["Id"]]
         lf, rf = local["files"], remote["files"]
         if scope:
@@ -1487,18 +1751,21 @@ def Na__Engine__Compare(cfg: dict, ids: list | None, deep: bool = False, scope: 
         for rel in sorted(set(lf) | set(rf)):
             lane = (lf.get(rel) or rf.get(rel))[2]
             lane_of[rel] = lane
-            v = Na__Parity__Verdict(lane, lf.get(rel), rf.get(rel), deep)
+            made = lane == "content" and Na__Walk__IsServerMade(rel, rules)
+            v = Na__Parity__Verdict(lane, lf.get(rel), rf.get(rel), deep, made)
             if v == "same":
                 same[lane] += 1
             else:
                 lists[v].append(rel)
         if not m.get("AllowDeletes", True):
             lists["delete"] = []
+        pruned = [r for r in lists["server-only"] if any(r.startswith(d + "/") for d in prune)]
+        lists["server-only"] = [r for r in lists["server-only"] if r not in set(pruned)]
         state = lambda d, r: (d[r][:2] if r in d else None)
         plans[m["Id"]] = {
             "id": m["Id"], "name": m["Name"], "local": str(Na__Config__LocalPath(cfg, m)),
             "remote": Na__Config__RemotePath(cfg, m), "local_exists": local["exists"], "remote_exists": remote["exists"],
-            "scope": scope,
+            "scope": scope, "prune": prune,
             "compared_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "same": same,
             "code_new": [r for r in lists["push"] if lane_of[r] == "code" and r not in rf],
             "code_changed": [r for r in lists["push"] if lane_of[r] == "code" and r in rf],
@@ -1507,12 +1774,14 @@ def Na__Engine__Compare(cfg: dict, ids: list | None, deep: bool = False, scope: 
             "shared_push": [r for r in lists["push"] if lane_of[r] == "shared"],
             "shared_collect": [r for r in lists["collect"] if lane_of[r] == "shared"],
             "content_server_newer": lists["server-newer"], "content_server_only": lists["server-only"],
+            "content_collect": [r for r in lists["collect"] if lane_of[r] == "content"],   # <-- ServerMadeContent
+            "content_prune": pruned,
             "user_collect": [r for r in lists["collect"] if lane_of[r] == "userdata"],
             "user_pc_newer": lists["pc-newer"], "user_pc_only": lists["pc-only"],
             "push_bytes": sum(lf[r][0] for r in lists["push"]),
             "collect_bytes": sum(rf[r][0] for r in lists["collect"]),
             "remote_state": {r: state(rf, r) for r in set(lists["push"]) | set(lists["delete"]) | set(lists["server-newer"])
-                             | set(lists["server-only"]) | set(lists["collect"]) | set(lists["pc-newer"])},
+                             | set(lists["server-only"]) | set(pruned) | set(lists["collect"]) | set(lists["pc-newer"])},
             "local_state": {r: state(lf, r) for r in set(lists["collect"]) | set(lists["pc-newer"])
                             | set(lists["server-newer"]) | set(lists["server-only"])},
         }
@@ -1544,7 +1813,8 @@ def Na__Engine__Push(cfg: dict, plans: dict, force_content: bool = False, force:
         upload = p["code_new"] + p["code_changed"] + p["content_push"] + p["shared_push"] \
             + (p["content_server_newer"] if force_content else [])
         delete = p["code_delete"] if allow_deletes else []
-        if not upload and not delete:
+        prune = p.get("content_prune", [])                                     # <-- Only from a compare given --prune
+        if not upload and not delete and not prune:
             continue
         guard = Na__Engine__PrivateGuard(cfg, [p["id"]])
         if guard:
@@ -1557,8 +1827,8 @@ def Na__Engine__Push(cfg: dict, plans: dict, force_content: bool = False, force:
             if not (base / rel).is_file():
                 return {"ok": False, "error": f"{p['id']}: {rel} no longer exists on this PC; compare again"}
             entries.append((f"{p['id']}/{rel}", base / rel, Na__Agent__FileMode(m, rel)))
-        work.append({"id": p["id"], "upload": upload, "delete": delete,
-                     "expect": {r: p["remote_state"].get(r) for r in upload + delete}})
+        work.append({"id": p["id"], "upload": upload, "delete": delete, "prune": prune, "prune_dirs": p.get("prune", []),
+                     "expect": {r: p["remote_state"].get(r) for r in upload + delete + prune}})
     if not work:
         return {"ok": True, "nothing": True, "plans": []}
     mb = sum((Na__Config__LocalPath(cfg, maps[w["id"]]) / r).stat().st_size for w in work for r in w["upload"]) / 1e6
@@ -1578,7 +1848,8 @@ def Na__Engine__Collect(cfg: dict, plans: dict, with_content: bool = False, forc
     maps = {m["Id"]: m for m in cfg["Mappings"]}
     files, skipped_local = {}, []
     for p in plans.values():
-        want = p["user_collect"] + p["shared_collect"] + (p["user_pc_newer"] if force_userdata else []) \
+        want = p["user_collect"] + p["shared_collect"] + p.get("content_collect", []) \
+            + (p["user_pc_newer"] if force_userdata else []) \
             + ((p["content_server_only"] + p["content_server_newer"]) if with_content else [])
         base = Na__Config__LocalPath(cfg, maps[p["id"]])
         chosen = {}
@@ -1643,6 +1914,58 @@ def Na__Engine__Undo(cfg: dict, mid: str, stamp: str = "", force: bool = False) 
     m = Na__Config__Pick(cfg, [mid])[0]
     return Na__Agent__Run(cfg, {"mode": "undo", "id": mid, "stamp": stamp, "force": force,
                                 "mappings": [Na__Config__Rules(cfg, m)]}, why=f"undo {mid}")
+# ---------------------------------------------------------------
+
+# FUNCTION | Delete Named Files From the Server (ONE session; backed up, journaled, undoable)
+# ------------------------------------------------------------
+def Na__Engine__Delete(cfg: dict, files: dict, pc: bool = False, root_relative: bool = False) -> dict:
+    """files: mapping id -> {rel: [size, mtime]}, the state each file had when it was chosen; the
+    server refuses the whole job if any differ. rel is relative to the mapping, or to the server
+    root with root_relative (the explorer's paths). pc: also move this PC's copies into
+    BackupRoot/deleted__<stamp>/, so a push does not send them back. Undo <id> restores the
+    server's copies; the PC's are restored by hand from that folder."""
+    maps = {m["Id"]: m for m in cfg["Mappings"]}
+    clean, total = {}, 0
+    for mid, rels in (files or {}).items():
+        if mid not in maps:
+            return {"ok": False, "error": f"no mapping {mid!r}"}
+        prefix = Na__Config__RemoteRel(maps[mid])
+        for rel, expected in (rels or {}).items():
+            rel = str(rel).replace("\\", "/")
+            if root_relative and prefix:
+                if not rel.startswith(prefix + "/"):
+                    return {"ok": False, "error": f"{rel} is not inside the {mid} mapping ({prefix})"}
+                rel = rel[len(prefix) + 1:]
+            parts = rel.split("/")
+            if not rel or rel.startswith("/") or any(p in ("", ".", "..") for p in parts):
+                return {"ok": False, "error": f"unsafe path {rel!r} in {mid}"}
+            if not (isinstance(expected, list) and len(expected) >= 2 and all(isinstance(x, int) for x in expected[:2])):
+                return {"ok": False, "error": f"{mid}:{rel}: no size and time to check against"}
+            clean.setdefault(mid, {})[rel] = [expected[0], expected[1]]
+            total += 1
+    if not total:
+        return {"ok": False, "error": "no files chosen"}
+    if total > NA__ENGINE__DELETE_MAX:
+        return {"ok": False, "error": f"{total} files at once is more than {NA__ENGINE__DELETE_MAX}: delete them in smaller batches"}
+    res = Na__Agent__Run(cfg, {"mode": "delete", "files": clean, "mappings": [Na__Config__Rules(cfg, maps[i]) for i in clean]},
+                         why=f"delete {','.join(clean)} ({total} file{'s' if total != 1 else ''})")
+    gone = {p["id"]: p["deleted"] for p in res.get("plans", [])}
+    if gone:
+        Na__Ledger__Record(cfg, {}, "delete", gone)                            # <-- Even a part-way stop: those files are gone
+    if res.get("ok") and pc:
+        stamp = time.strftime("%Y-%m-%d_%H%M%S")
+        keep = Path(cfg["Local"]["BackupRoot"]) / f"deleted__{stamp}"
+        moved = 0
+        for mid, rels in gone.items():
+            base = Na__Config__LocalPath(cfg, maps[mid])
+            for rel in rels:
+                src = base / rel
+                if src.is_file():
+                    (keep / mid / rel).parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(str(src), str(keep / mid / rel))
+                    moved += 1
+        res.update({"pc_moved": moved, "pc_backup": str(keep) if moved else ""})
+    return res
 # ---------------------------------------------------------------
 
 # FUNCTION | Seed User Data: Upload PC Files the Server Lacks (ONE session)
@@ -1801,10 +2124,11 @@ def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
     errs, seen = [], {}
     mirror = Path(cfg["Local"]["MirrorRoot"])
     for r in routes.get("Routes", []):
-        rid = r.get("Id") or "?"
         segs, names = Na__Routes__Parse(r.get("Path", ""))
+        rid = ("/" + "/".join(segs) + "/" if segs                                # <-- Name a route as people see it, never by its Id
+               else f"The new app route to {r.get('Target') or '?'}" if r.get("Type") == "app" else "The new short link")
         if not segs:
-            errs.append(f"{rid}: the path is empty")
+            errs.append(f"{rid}: type its short path (lowercase, e.g. theia) or remove the row")
             continue
         for s in segs:
             if not (NA__ENGINE__ROUTE_SEGMENT.match(s) or (r.get("Type") == "link" and NA__ENGINE__ROUTE_VARIABLE.match(s))):
@@ -1813,7 +2137,7 @@ def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
         key = "/".join(NA__ENGINE__ROUTE_VARIABLE.sub("{}", s) for s in segs)
         if r.get("Enabled", True):
             if key in seen:
-                errs.append(f"{rid}: same path as {seen[key]}")
+                errs.append(f"{rid}: two routes use this path (switch one off or change it)")
             seen[key] = rid
         if r.get("Type") == "app":
             target = r.get("Target", "")
@@ -1921,8 +2245,9 @@ def Na__Engine__Nginx(cfg: dict, action: str) -> dict:
 # CLASS | Fast Lane / Exclusion Labels for Whole Trees (memoised per folder)
 # ------------------------------------------------------------
 class Na__Engine__Annotator:
-    """label(rel, is_dir) -> (mapping_id or "", lane or "", excluded). rel is relative to the
-    server root (== mirror root). Each folder is classified once, so 20k files stay fast."""
+    """label(rel, is_dir) -> (mapping_id or "", lane or "", excluded, made). rel is relative to the
+    server root (== mirror root); made is True inside a ServerMadeContent folder. Each folder is
+    classified once, so 20k files stay fast."""
 
     def __init__(self, cfg: dict):
         self.cfg = cfg
@@ -1946,27 +2271,28 @@ class Na__Engine__Annotator:
             return self.memo[key]
         m, n = self.mapping_for(rel, is_dir)
         if m is None:
-            res = ("", "", True)
+            res = ("", "", True, False)
         else:
             r = self.rules[m["Id"]]
             sub = rel if n == 0 else rel[n + 1:]
             if sub == "":
-                res = (m["Id"], r.get("default_lane", "code"), False)
+                res = (m["Id"], r.get("default_lane", "code"), False, False)
             elif r["files_only"] and ("/" in sub or is_dir):
-                res = (m["Id"], r.get("default_lane", "code"), True)
+                res = (m["Id"], r.get("default_lane", "code"), True, False)
             else:
                 parent_sub, _, name = sub.rpartition("/")
                 if parent_sub:
                     parent_rel = rel[:len(rel) - len(name) - 1]
-                    _, lane_parent, parent_excluded = self.label(parent_rel, True)
+                    _, lane_parent, parent_excluded, parent_made = self.label(parent_rel, True)
                 else:
-                    lane_parent, parent_excluded = r.get("default_lane", "code"), False
+                    lane_parent, parent_excluded, parent_made = r.get("default_lane", "code"), False, False
                 if parent_excluded:
-                    res = (m["Id"], lane_parent, True)
+                    res = (m["Id"], lane_parent, True, parent_made)
                 else:
                     lane = Na__Walk__DirLane(sub, name, lane_parent, r) if is_dir else lane_parent
                     ex = r["ex_code"] if lane == "code" else r["ex_data"]
-                    res = (m["Id"], lane, Na__Walk__Match(sub, name, is_dir, ex))
+                    made = parent_made or (is_dir and Na__Walk__Match(sub, name, True, r.get("server_made") or []))
+                    res = (m["Id"], lane, Na__Walk__Match(sub, name, is_dir, ex), made)
         self.memo[key] = res
         return res
 # ---------------------------------------------------------------
@@ -2321,24 +2647,29 @@ def Na__Users__Payload(cfg: dict) -> dict:
 def Na__Cli__PrintPlans(plans: dict, limit: int = 12) -> None:
     rows = [("CODE    PC -> server", "+", "code_new"), ("", "~", "code_changed"), ("", "-", "code_delete"),
             ("CONTENT PC -> server", ">", "content_push"), ("", "!", "content_server_newer"),
+            ("", "<", "content_collect"),
             ("SHARED  both ways", ">", "shared_push"), ("", "<", "shared_collect"),
-            ("", "?", "content_server_only"),
+            ("", "?", "content_server_only"), ("", "x", "content_prune"),
             ("USER    server -> PC", "<", "user_collect"), ("", "!", "user_pc_newer"), ("", "?", "user_pc_only")]
     legend = {"code_new": "new", "code_changed": "changed", "code_delete": "delete on server",
               "content_push": "to push", "content_server_newer": "server newer (skipped unless forced)",
+              "content_collect": "made on the server: collect",
               "shared_push": "PC newer: push", "shared_collect": "server newer: collect",
-              "content_server_only": "server only", "user_collect": "to collect",
+              "content_server_only": "server only", "content_prune": "server only: deleted (--prune)",
+              "user_collect": "to collect",
               "user_pc_newer": "PC newer (skipped unless forced)", "user_pc_only": "PC only (seedable)"}
     for p in plans.values():
         print(f"\n== {p['id']}  {p['local']}  <->  valevps:{p['remote']}"
               f"{'' if p['remote_exists'] else '   (server folder will be created)'}")
         if p.get("scope"):
             print(f"   scope: {p['scope']}/ only (nothing outside it moves)")
+        for folder in p.get("prune") or []:
+            print(f"   prune: {folder}/ is made a copy of this PC's (server files not on the PC are deleted, backed up first)")
         print(f"   unchanged: code {p['same']['code']}, content {p['same']['content']}, user data {p['same']['userdata']}, "
               f"shared {p['same']['shared']}"
               f"   push {p['push_bytes'] / 1e6:.2f} MB, collect {p['collect_bytes'] / 1e6:.2f} MB")
         for head, tag, key in rows:
-            items = p[key]
+            items = p.get(key) or []
             if not items:
                 continue
             print(f"   {head or '':<21}{len(items):>5} {legend[key]}")
@@ -2351,8 +2682,8 @@ def Na__Cli__PrintPlans(plans: dict, limit: int = 12) -> None:
 # HELPER FUNCTION | Write the Machine-Readable Report (--report-file; read by other tools)
 # ------------------------------------------------------------
 NA__CLI__PLAN_LISTS = ("code_new", "code_changed", "code_delete", "content_push", "content_server_newer",
-                       "content_server_only", "shared_push", "shared_collect", "user_collect", "user_pc_newer",
-                       "user_pc_only")
+                       "content_server_only", "content_collect", "content_prune", "shared_push", "shared_collect", "user_collect",
+                       "user_pc_newer", "user_pc_only")
 
 def Na__Cli__WriteReport(path: str, report: dict) -> None:
     """Callers such as the SketchUp ValeVision Cloud Sync plugin read this file instead of
@@ -2361,10 +2692,10 @@ def Na__Cli__WriteReport(path: str, report: dict) -> None:
         return
     plans = {}
     for pid, p in (report.pop("plans", None) or {}).items():
-        plans[pid] = {"scope": p.get("scope", ""), "local": p["local"], "remote": p["remote"],
+        plans[pid] = {"scope": p.get("scope", ""), "prune": p.get("prune", []), "local": p["local"], "remote": p["remote"],
                       "push_bytes": p["push_bytes"], "collect_bytes": p["collect_bytes"],
-                      "counts": {k: len(p[k]) for k in NA__CLI__PLAN_LISTS},
-                      "files": {k: p[k][:500] for k in NA__CLI__PLAN_LISTS if p[k]}}
+                      "counts": {k: len(p.get(k) or []) for k in NA__CLI__PLAN_LISTS},
+                      "files": {k: p[k][:500] for k in NA__CLI__PLAN_LISTS if p.get(k)}}
     report["plans"] = plans
     report["written"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     target = Path(path)
@@ -2390,12 +2721,19 @@ def Na__Cli__Main() -> int:
     planned = []
     sp = sub.add_parser("compare"); sp.add_argument("ids", nargs="*"); sp.add_argument("--deep", action="store_true")
     planned.append(sp)
+    prunable = [sp]
     sp = sub.add_parser("push"); sp.add_argument("ids", nargs="*"); sp.add_argument("--deep", action="store_true")
     sp.add_argument("--yes", action="store_true", help="apply (after Adam has seen the plan)")
     sp.add_argument("--allow-deletes", action="store_true", help="let the plan delete server code files")
     sp.add_argument("--force-content", action="store_true", help="also push content the server has newer")
     sp.add_argument("--force", action="store_true", help="apply even if the server changed since compare")
     planned.append(sp)
+    prunable.append(sp)
+    for sp in prunable:
+        sp.add_argument("--prune", action="append", default=[], metavar="FOLDER",
+                        help="with --scope: make this content folder an exact copy of the PC's (server-only files "
+                             "in it are deleted, backed up first), e.g. --prune ValeProjects__2026/64135__Washington/"
+                             "ValeVision3D/Content__3dModel__GlbFiles")
     sp = sub.add_parser("collect"); sp.add_argument("ids", nargs="*")
     sp.add_argument("--yes", action="store_true", help="apply (after Adam has seen the plan)")
     sp.add_argument("--with-content", action="store_true", help="also bring server-only / server-newer content")
@@ -2410,6 +2748,10 @@ def Na__Cli__Main() -> int:
         sp.add_argument("--yes", action="store_true", help="do it on the server now (after Adam asked for it)")
     sp = sub.add_parser("undo"); sp.add_argument("id"); sp.add_argument("--stamp", default="")
     sp.add_argument("--force", action="store_true")
+    sp = sub.add_parser("delete", help="delete named server files (backed up, journaled: undo ID restores them)")
+    sp.add_argument("id"); sp.add_argument("files", nargs="+", help="paths relative to the mapping")
+    sp.add_argument("--yes", action="store_true", help="delete them (after Adam asked for it)")
+    sp.add_argument("--pc", action="store_true", help="also move this PC's copies to the backup folder")
     for name in ("seed", "backup"):
         sp = sub.add_parser(name); sp.add_argument("ids", nargs="*")
     a = ap.parse_args()
@@ -2432,10 +2774,11 @@ def Na__Cli__Main() -> int:
                       f"   PC files: {lanes or 'none'}")
             return 0
         if a.cmd in ("compare", "push", "collect"):
-            report = {"ok": False, "cmd": a.cmd, "ids": a.ids, "scope": a.scope, "applied": False,
+            report = {"ok": False, "cmd": a.cmd, "ids": a.ids, "scope": a.scope, "prune": getattr(a, "prune", []),
+                      "applied": False,
                       "error": "", "result": None}
             try:
-                res = Na__Engine__Compare(cfg, a.ids, getattr(a, "deep", False), a.scope)
+                res = Na__Engine__Compare(cfg, a.ids, getattr(a, "deep", False), a.scope, getattr(a, "prune", []))
                 if not res.get("ok"):
                     report["error"] = str(res.get("error"))
                     print(f"FAILED: {res.get('error')}"); return 1
@@ -2500,7 +2843,25 @@ def Na__Cli__Main() -> int:
             out = Na__Engine__Nginx(cfg, a.cmd.split("-", 1)[1])
             print(json.dumps({k: v for k, v in out.items() if k != "_session"}, indent=1))
             return 0 if out.get("ok") else 1
-        if a.cmd == "undo":
+        if a.cmd == "delete":
+            m = Na__Config__Pick(cfg, [a.id])[0]
+            scan = Na__Agent__Run(cfg, {"mode": "scan", "mappings": [Na__Config__Rules(cfg, m)]}, why=f"delete {a.id}: look first")
+            if not scan.get("ok"):
+                print(f"FAILED: {scan.get('error')}"); return 1
+            found, chosen = scan["scans"][a.id]["files"], {}
+            for rel in (f.replace("\\", "/").strip("/") for f in a.files):
+                e = found.get(rel)
+                print(f"  {'delete ' if e else 'MISSING'} {rel}" + (f"   {e[0]:,} bytes, lane {e[2]}" if e else
+                      "   (not on the server, or left out of sync by the mapping's rules)"))
+                if e:
+                    chosen[rel] = e[:2]
+            if len(chosen) != len(a.files):
+                print("\nSTOPPED: fix the paths above; nothing was deleted."); return 1
+            if not a.yes:
+                print(f"\n{len(chosen)} file(s) would be deleted from {Na__Config__RemotePath(cfg, m)} (backed up first). "
+                      "Run again with --yes."); return 0
+            out = Na__Engine__Delete(cfg, {a.id: chosen}, a.pc)
+        elif a.cmd == "undo":
             out = Na__Engine__Undo(cfg, a.id, a.stamp, a.force)
         elif a.cmd == "seed":
             out = Na__Engine__Seed(cfg, a.ids)

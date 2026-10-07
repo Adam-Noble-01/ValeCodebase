@@ -1,5 +1,257 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.9.0, 07-Oct-2026: Every Source Push Purges the Changed Files in Every Browser
+
+**Asked by Adam** ("update all apps to have an auto cache purge pushed after the server logs a source
+push"). Cloudflare gives every script and stylesheet a 4-hour browser cache (`max-age=14400`, its
+Browser Cache TTL, over nginx's `no-cache`). So after a push, browsers, and above all an installed app
+on an iPad, kept the old files for up to 4 hours: Theia's iPad header stayed clipped after its fix
+went live.
+
+**Changes:**
+- **The deploy stamp.** After every push and every undo that changes web-served source, the agent
+  writes `/srv/vale/ValeApps__DeployStamp__.json` in the same session, and logs `deploy-stamp` to
+  sync.log. The file lists the URLs each push changed, newest last (7 days, at most 60 pushes);
+  `ValeDeploy__Stamp__Latest` only ever increases. It covers code-lane files only, never `Server__`,
+  content or user data. Each file is named by the URL browsers load it from: an app's route from the
+  URL routes (sent as `deploy_routes`, e.g. `/theia/...`), otherwise `/<path>` (e.g.
+  `/AppAssets__CommonApplicationAssets/...`).
+  - Agent: `deploy_note()` / `deploy_note_safe()`, called by `mode_apply` after the journal and
+    by `mode_undo`. A failure is logged and never fails the push.
+  - Engine: `NA__ENGINE__DEPLOY_STAMP`; `Na__Engine__DeployRoutes()`; `Na__Agent__Head` sends
+    both.
+  - Sync map: `ValeApps__DeployStamp__.json` is in NeverSync, so it never shows in a compare and is
+    never pushed, collected or deleted.
+- **The apps read it:** `AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js`
+  1.0.0, in ValeVision 3D, ValeVision Gallery, ValeVision Theia and ValeVision Help.
+  - At start-up: if a push changed the app's files, or the shared assets, since this browser last
+    looked, it fetches each one again past the cache (`cache: 'reload'`), then reloads once.
+  - While open (back on screen after 30 s, back online, every 10 min): it purges at once, then
+    reloads if the app says it is safe (`window.ValeAppUpdate__CanReload`; Theia: no video playing,
+    no dialog or edit open). Otherwise a bar offers "Reload" or "Later".
+  - It does nothing on a first visit, with no stamp, or offline.
+- `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker cache are 0.9.0. **Restart the
+  app** (`Restart__VirtualServerManager__8020__.bat`) so pushes from it write the stamp too. The CLI
+  uses the new engine at once.
+
+**Tested in a sandbox** (the fake ssh running the agent on this PC, isolated sync map, routes, state
+and ledger; the VPS never contacted), 22 checks:
+- a first push writes the stamp at the root: Theia files under `/theia/`, shared assets and the root
+  page by path; no `Server__`, `Content__` or excluded (`.md`) files; sync.log has the line;
+- a compare after it is clean (the stamp is never a server-only file);
+- a second push: a later stamp listing only its one CSS file, and both pushes kept;
+- content-only and `Server__`-only pushes leave the stamp alone;
+- an undo of a content push leaves it alone, and an undo of the CSS push adds an `undo` entry;
+- a damaged stamp file is replaced and the push still succeeds.
+
+The browser side was tested on the dev server with a stamp in the mirror root:
+- start-up purge and one reload;
+- a push while open reloading Theia by itself, or showing the bar when a video plays;
+- no repeat once current;
+- another app's push only noted;
+- Gallery and 3D still load.
+
+**Live 07-Oct-2026 15:41 UTC:** the first stamp was written by the push that delivered the apps' script
+(commonassets, theia, valevision3d, valevisiongallery, help). A compare afterwards was clean.
+
+## Version 0.8.0, 07-Oct-2026: Collect Brings Theia's Videos (Content Made on the Server)
+
+**Asked by Adam.** "Why is the collect save feature of server manager app not collecting the video
+files and saving them here" (64135 Holt). ValeVision Theia writes each published video and its
+posters into `ValeVision__TheiaVideo/Content__VideoFiles` and `Content__VideoThumbnails` on the
+server. `Content__` is the heavy-content lane (PC → server), so Collect skipped them unless *Collect
+with content* was ticked. For Holt that tick would also have brought back 64 superseded gallery and
+thumbnail images (02-Oct and 06-Oct) left on the server. The two collects at 14:32 and 14:48 moved
+7 files each; the two videos (2.07 GB) stayed on the server. They were brought down that afternoon
+with a scoped `collect projects --scope ValeProjects__2026/64135__Holt/ValeVision__TheiaVideo
+--with-content`.
+
+**Changes:**
+- **Sync map:** `ServerMadeContent`, a list of folder-name patterns (or path patterns with `/`),
+  first `["ValeVision__TheiaVideo"]`. `_About` explains it.
+- **Engine:**
+  - `Na__Walk__IsServerMade(rel, rules, is_dir)`: inside such a folder?
+  - `Na__Parity__Verdict(..., made)`: for made content, server-only and server-newer are
+    `collect`; PC-newer and PC-only still `push`; ties go to the server, as before;
+  - Compare lists them in the plan's new `content_collect`, counted in `collect_bytes`;
+  - Collect always takes `content_collect`; `--with-content` still adds the other server content;
+  - a forced push (`--force-content`) only overwrites `content_server_newer`, so it can never
+    overwrite a newer video Theia published;
+  - `--prune` refuses a made folder: the PC copy is not the master;
+  - the Annotator's `label()` returns `(id, lane, excluded, made)`;
+  - the agent is unchanged (it never reads `server_made`).
+- **Local server:** `content_collect` joins the plan lists sent to the page (`_count` too); the live
+  explorer passes `made` to the verdict.
+- **Page:** the card's content row shows "↓N made on the server: collect", which counts towards the
+  Collect button; the file lists have "Content made on the server: collect"; the Collect dialog has a
+  **Made on the server** column and says Theia's videos and posters come down; the explorer explains
+  the file.
+- `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker cache are 0.8.0.
+
+**Tested in a sandbox** (the fake ssh running the agent on this PC; isolated sync map, state, ledger
+and lock; the VPS was never contacted), 36 engine checks:
+- compare: a server-only video and a server-newer poster are `content_collect`; a PC-newer poster
+  still pushes; an ordinary server-only gallery image stays server-only; no made file is a conflict;
+  user data still collects; `collect_bytes` counts the made files; the CLI prints the new list;
+- collect without `--with-content`: the video and the newer poster arrive (mtime kept, the older PC
+  poster kept in the backup), the PC-newer poster is untouched, the share links arrive, the gallery
+  image does not; a second compare has nothing made left;
+- `--prune` of a made folder is refused, of the GLB folder still allowed;
+- a forced push leaves a republished poster on the server and pushes the PC-newer one;
+- `--with-content` still brings the gallery image;
+- verdict and label unit checks.
+
+Then the page, on a sandboxed copy on port 8021: the card read "1 server only · ↓2 made on the
+server: collect · collect 9 B"; the Collect dialog showed 2 under Made on the server and offered the
+heavy-content tick for the 1 other file; Collect now brought the 2 and left the other; the live
+explorer marked a new server video `collect` and the gallery image `server-only`. The only console
+error was the service worker registration in the embedded browser (the file serves 200 on 8020 and
+8021).
+
+Then the real server (one session): Holt compares with its 6 Theia files unchanged, nothing to
+collect, and the 64 old gallery images still server-only.
+
+## Version 0.7.0, 07-Oct-2026: Delete Files From the Server, With a Confirm Modal
+
+**Asked by Adam.** "Make it so in the server manager app I can delete files; add a confirm modal
+for safety." The trigger was Holt's `Content__3dModel__GlbFiles`, which held 21 `Washington__…`
+GLBs left behind on the server (server only). Content is additive, so nothing ever removed them.
+
+**Changes:**
+- **Tab 01, tick boxes:**
+  - every row has one, in its own column, before the tree indent;
+  - a folder's box ticks every deletable file inside it that the search and filters show. Search
+    `Washington` and tick the folder, and only the Washington files are ticked; the box shows
+    part-ticked when only some are;
+  - Shift ticks a range of files;
+  - ticked rows are tinted red, and the toolbar shows "N ticked · size", **Delete from server…**
+    and **Clear**;
+  - the detail panel has **Delete this file / N files inside from the server…** for the selected
+    row.
+- **Cannot be ticked** (box disabled, the reason on hover): files the server does not have,
+  unmapped files, files the mapping leaves out of sync (secrets such as `*.env`, docs, scripts),
+  and the users register (users are never deleted: untick Active).
+- **The confirm modal:**
+  - lists every file with its lane, status, size and modified time, and gives the count, total
+    size and mappings;
+  - **user data or project records** need an extra tick ("I have checked they can go"); without
+    it the button only says so;
+  - files also on this PC can be moved to `90__ServerBackups\deleted__<time>\` with one tick. The
+    modal says how many a push would otherwise send back;
+  - it says how to undo.
+- **Engine:**
+  - agent mode `delete`: named files only, each checked against the size and time the explorer
+    showed. Any difference refuses the whole job, as does a refused file (the register, a file
+    left out of sync, a symlink, an unsafe path);
+  - each file is copied to `/srv/vale-sync/backups/<stamp>/` and the job is journaled like a push
+    (`kind: delete`, `after: null`), so **Undo last push** on that mapping restores them, and
+    refuses if one was re-created meanwhile;
+  - folders are kept, even when emptied (an app may expect its bucket folder);
+  - a stop part way (a permission error) journals what was done and says so;
+  - the sync ledger drops the deleted files;
+  - `AllowDeletes` is not consulted: it governs Push's automatic code deletes, not a delete
+    Adam names;
+  - at most 5,000 files a job;
+  - the journal trimming is now `trim_journals()`, shared by push and delete.
+- **CLI:** `delete ID REL [REL ...] [--yes] [--pc]`. It looks first (one session) and lists what
+  it found; `--yes` deletes those exact files (a second session); a path that is missing or left
+  out of sync stops it.
+- **Local server:** job `delete` (`POST /api/op/delete {files: {id: {root path: [size, mtime]}}, pc}`);
+  it clears that mapping's compared plan and sets its last action to "deleted N file(s)".
+- `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker cache are 0.7.0.
+
+**Tested in a sandbox** (a fake ssh that runs the agent on this PC, a sandbox server and PC
+mirror, isolated state, ledger and lock; the VPS was never contacted), 29 engine checks:
+- delete, backup, journal, log line, PC copy moved, the other files and the folder untouched;
+- undo restores size and time;
+- refused with nothing deleted: a changed file, the register, a secret in a mixed batch, `..`,
+  a path outside its mapping, an unknown mapping, an empty job;
+- user data deletes and comes back;
+- a stop part way is journaled and undone;
+- the ledger entry goes;
+- journals and their backups are trimmed to `KeepBackups`;
+- push still works after the refactor;
+- the CLI: the dry run, a missing path stopping it, `--yes`.
+
+Then the page, on a sandboxed copy of the manager on port 8021:
+- ticking the folder under a `Washington` search ticked only the two Washington files;
+- the folder showed part-ticked once the search was cleared;
+- the modal listed both, with the PC-copy option;
+- confirming deleted them, moved the PC copy, and the last action read "deleted 2 file(s)";
+- user data stayed put without the extra tick;
+- the register's and the secret's boxes were disabled;
+- no console errors.
+
+## Version 0.6.2, 07-Oct-2026: `--prune` Keeps One Project's GLB Folder an Exact Copy
+
+**Asked by Adam.** Resyncing GLB models from SketchUp never purged the previous ones on the
+server, so duplicate models and models of deleted SketchUp tags piled up. After each sync the
+GLB folder must hold only that sync's GLBs, plus `00__Archive/` with one zip of the previous set.
+
+**Why the engine had to change:** content is additive by design (Push never deletes it), so
+a file the PC library drops stays on the server for ever.
+
+**Changes (engine only; the app's behaviour is unchanged):**
+- `compare` / `push` take `--prune <folder>` (repeatable) beside `--scope`:
+  - the folder must be inside the scope and in the content lane (a `Content__*` folder);
+  - its server-only files go to a new plan list, `content_prune` (printed `x`, "server only:
+    deleted (--prune)"), instead of `content_server_only`;
+  - a push deletes them like code deletes: each is backed up to
+    `/srv/vale-sync/backups/<stamp>/` first, journaled as `deleted`, so `undo projects`
+    puts them back. The conflict check covers them too;
+  - the agent refuses a prune path that is not inside a named folder or not in the content
+    lane, whatever the plan says.
+- **Refused:** `--prune` without `--scope`, a folder outside the scope or not in the content
+  lane, and a folder that is empty or missing on the PC (that would empty the server copy).
+- `--report-file` carries `prune` and the `content_prune` counts and files.
+- This is the **only** way content is ever deleted. `AllowDeletes` still governs code deletes
+  only, and the app never passes `--prune`.
+- Caller: the SketchUp ValeVision Cloud Sync plugin (0.5.1), which runs
+  `push projects --scope ValeProjects__<yyyy>/<id> --prune ValeProjects__<yyyy>/<id>/ValeVision3D/Content__3dModel__GlbFiles --yes`
+  after publishing a GLB sync.
+- `NA__SERVER__VERSION`, `Vsm.PageVersion` and the PWA cache name are 0.6.2.
+
+**Tested in a sandbox** (fake ssh running the agent against a folder, an isolated state folder
+and ledger, a copied sync map; the plugin's publisher driving the engine end to end), 38 checks:
+- **Run 1:** stale GLBs and an older archive on the server are pruned, and backed up. The
+  server's GLB folder equals the PC's, zip included, byte for byte. Another project's
+  server-only GLB and the user data are untouched.
+- **Run 2:** an unchanged set prunes nothing.
+- **Run 3:** a dropped model is pruned.
+- **Undo:** `undo projects` restores it.
+- **Refused with no session:** no scope, the scope itself, a shared or user-data folder, outside
+  the scope, `..`, an empty PC folder.
+- **The agent alone** refuses crafted plans that prune a record, another project's GLB or a
+  user-data file.
+- **After 0.7.0:** run again on the merged engine (0.7.0's `trim_journals` / `mode_delete`), and
+  still 38 / 38.
+
+## Version 0.6.1, 07-Oct-2026: Adding an App Route Picks a Real App; Clear Route Errors
+
+**Asked by Adam.** "+ App route" made a row pointing at `AppAssets__CommonApplicationAssets` with an
+empty path, and Save answered "app99263: the path is empty". Then: route the new
+`Vale__ValeVision__TheiaVideoPlayer` at `/theia/` with API port 8005, and follow the rename of
+`Vale__Help` to `Vale__ValeVision__Help`.
+
+**Changes:**
+- **+ App route:**
+  - re-reads the mirror's folders first, so a folder made a moment ago is offered;
+  - picks the first `Vale__` app folder without a route, never `AppAssets__` or the project
+    library;
+  - suggests the path from the folder name (`Vale__ValeVision__TheiaVideoPlayer` →
+    `theia-video-player`), so Save is never blocked by a blank path;
+  - takes the lowest free API port;
+  - puts the cursor in the path, selected, ready to type over.
+- **Route errors name the route as people see it:** `/help/: …`, or "The new app route to
+  Vale__X: type its short path (lowercase, e.g. theia) or remove the row". Never the internal Id.
+  A clash reads "two routes use this path".
+- **Routes and mappings:**
+  - `/theia/` → `Vale__ValeVision__TheiaVideoPlayer`, port 8005, API proxy off until the app has an
+    API; new sync mapping `theia`;
+  - `/help/` and the `help` mapping → `Vale__ValeVision__Help`.
+
+  Saved, not applied: Test, then Apply in tab 03.
+
 ## Version 0.6.0, 06-Oct-2026: One-Project Syncs (`--scope`) for the SketchUp Cloud Sync
 
 **Asked by Adam.** The SketchUp ValeVision Cloud Sync plugin drops Cloudflare R2. It should

@@ -51,6 +51,30 @@
             "Note": "ValeVision Gallery - suggested short path, change freely"
         },
         {
+            "Id": "help",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "help",
+            "Target": "Vale__ValeVision__Help",
+            "Entry": "index.html",
+            "ExampleQuery": "",
+            "Api": false,
+            "ApiPort": 8009,
+            "Note": "ValeVision Help: install guides (/help/install-app/?app=valevision&device=ios)"
+        },
+        {
+            "Id": "theia",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "theia",
+            "Target": "Vale__ValeVision__TheiaVideoPlayer",
+            "Entry": "index.html",
+            "ExampleQuery": "",
+            "Api": true,
+            "ApiPort": 8005,
+            "Note": "ValeVision Theia video player (API vale@ValeVision__TheiaVideoPlayer on 8005)"
+        },
+        {
             "Id": "p",
             "Enabled": false,
             "Type": "link",
@@ -62,14 +86,16 @@
         }
     ],
     "Applied": {
-        "Hash": "6be3e167b035",
-        "Utc": "2026-10-06T15:57:53Z",
+        "Hash": "154e2f5eada6",
+        "Utc": "2026-10-07T11:14:45Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
             "/valespec/": "404",
             "/lantern-designer/": "404",
             "/project-gallery/": "200",
+            "/help/": "200",
+            "/theia/": "200",
             "/Server__Api/": "404",
             "/Server__DeveloperTools/": "404",
             "/Server__UserAccountData/": "404"

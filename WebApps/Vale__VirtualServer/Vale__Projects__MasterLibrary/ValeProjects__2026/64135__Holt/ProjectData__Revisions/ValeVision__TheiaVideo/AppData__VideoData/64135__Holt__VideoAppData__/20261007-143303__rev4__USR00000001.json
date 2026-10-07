@@ -1,0 +1,89 @@
+{
+    "TheiaVideo__Library__Description": "ValeVision Theia: the videos published for this project, in playing order. Written by the Theia API (and by ValeVision 3D's Publish to Theia, through it). One file per video, in Content__VideoFiles/Videos__<Scheme>/; posters in Content__VideoThumbnails/. Titles and descriptions of ValeVision 3D paths are kept in step with the project record by MetaUpdatedIso: the newer side wins.",
+    "TheiaVideo__Library__SchemaVersion": 1,
+    "TheiaVideo__Library__ProjectId": "64135__Holt",
+    "TheiaVideo__Library__ProjectCode": "64135",
+    "TheiaVideo__Library__ProjectName": "Holt",
+    "TheiaVideo__Library__ProjectTitle": "",
+    "TheiaVideo__Library__UpdatedIso": "2026-10-07T14:23:05.156Z",
+    "TheiaVideo__Library__UpdatedBy": "USR00000001",
+    "TheiaVideo__Library__Videos": [
+        {
+            "TheiaVideo__Video__Id": "Video_001",
+            "TheiaVideo__Video__Order": 1,
+            "TheiaVideo__Video__Visible": true,
+            "TheiaVideo__Video__Title": "Exterior",
+            "TheiaVideo__Video__Description": "A fly-around sequence showing the orangery externally and the interface with the decking.",
+            "TheiaVideo__Video__MetaUpdatedIso": "2026-10-07T13:03:18.674Z",
+            "TheiaVideo__Video__MetaUpdatedBy": "USR00000001",
+            "TheiaVideo__Video__Scheme": "Scheme-01",
+            "TheiaVideo__Video__DurationMs": 25500,
+            "TheiaVideo__Video__Source": "ValeVision3D",
+            "TheiaVideo__Video__SourceVideoId": "Video_001",
+            "TheiaVideo__Video__SourceFingerprint": "sha256:fbd9592e1ccb6e55a01ef3e966cbbab228611f63e2786aeb467cd77fbef698b1",
+            "TheiaVideo__Video__File": {
+                "TheiaVideo__File__Path": "Videos__Scheme-01/64135__Holt__TheiaVideo__Video_001__2160p__.mp4",
+                "TheiaVideo__File__Quality": "4K",
+                "TheiaVideo__File__Width": 3240,
+                "TheiaVideo__File__Height": 2160,
+                "TheiaVideo__File__Fps": 60.0,
+                "TheiaVideo__File__Codec": "avc1.640C34",
+                "TheiaVideo__File__Bytes": 389428819,
+                "TheiaVideo__File__BitrateKbps": 122174,
+                "TheiaVideo__File__DurationMs": 25500,
+                "TheiaVideo__File__FastStart": true,
+                "TheiaVideo__File__HasAudio": false,
+                "TheiaVideo__File__UploadedIso": "2026-10-07T13:23:17.884Z"
+            },
+            "TheiaVideo__Video__PublishedIso": "2026-10-07T13:23:18.046Z",
+            "TheiaVideo__Video__PublishedBy": "USR00000001",
+            "TheiaVideo__Video__Poster": "64135__Holt__TheiaVideo__Video_001__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail": "64135__Holt__TheiaVideo__Video_001__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__Export": {
+                "TheiaVideo__Export__Aspect": "3:2",
+                "TheiaVideo__Export__Fps": 60,
+                "TheiaVideo__Export__QualityStop": 5,
+                "TheiaVideo__Export__AntiAliasSamples": 16
+            }
+        },
+        {
+            "TheiaVideo__Video__Id": "Video_002",
+            "TheiaVideo__Video__Order": 2,
+            "TheiaVideo__Video__Visible": true,
+            "TheiaVideo__Video__Title": "Interior",
+            "TheiaVideo__Video__Description": "A fly-through showing the orangery interior and the driveway facing elevation.",
+            "TheiaVideo__Video__MetaUpdatedIso": "2026-10-07T13:04:53.599Z",
+            "TheiaVideo__Video__MetaUpdatedBy": "USR00000001",
+            "TheiaVideo__Video__Scheme": "Scheme-01",
+            "TheiaVideo__Video__DurationMs": 116700,
+            "TheiaVideo__Video__Source": "ValeVision3D",
+            "TheiaVideo__Video__SourceVideoId": "Video_002",
+            "TheiaVideo__Video__SourceFingerprint": "sha256:bcb0d8f1b4c872f74de3d1ec43ba472b12878367f67e26cd69ba39b15a634818",
+            "TheiaVideo__Video__File": {
+                "TheiaVideo__File__Path": "Videos__Scheme-01/64135__Holt__TheiaVideo__Video_002__2160p__.mp4",
+                "TheiaVideo__File__Quality": "4K",
+                "TheiaVideo__File__Width": 3240,
+                "TheiaVideo__File__Height": 2160,
+                "TheiaVideo__File__Fps": 60.0,
+                "TheiaVideo__File__Codec": "avc1.640C34",
+                "TheiaVideo__File__Bytes": 1681207652,
+                "TheiaVideo__File__BitrateKbps": 115250,
+                "TheiaVideo__File__DurationMs": 116700,
+                "TheiaVideo__File__FastStart": true,
+                "TheiaVideo__File__HasAudio": false,
+                "TheiaVideo__File__UploadedIso": "2026-10-07T13:43:19.438Z"
+            },
+            "TheiaVideo__Video__PublishedIso": "2026-10-07T13:43:19.682Z",
+            "TheiaVideo__Video__PublishedBy": "USR00000001",
+            "TheiaVideo__Video__Poster": "64135__Holt__TheiaVideo__Video_002__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail": "64135__Holt__TheiaVideo__Video_002__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__Export": {
+                "TheiaVideo__Export__Aspect": "3:2",
+                "TheiaVideo__Export__Fps": 60,
+                "TheiaVideo__Export__QualityStop": 5,
+                "TheiaVideo__Export__AntiAliasSamples": 16
+            }
+        }
+    ],
+    "_rev": 4
+}

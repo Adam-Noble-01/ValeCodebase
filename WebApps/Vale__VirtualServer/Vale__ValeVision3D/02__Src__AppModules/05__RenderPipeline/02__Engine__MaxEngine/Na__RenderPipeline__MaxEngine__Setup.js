@@ -58,6 +58,11 @@
 //   depthTexture, profileNormalTarget, profileColorTarget, profileLinesPassRef
 //   so ImageExport / ElevationView / GridLines / 2D profile lines keep working.
 //
+// 07-Oct-2026 - Version 1.0.3
+// - Pipeline state exposes holdAoForExport / releaseAoForExport. The video and
+//   still exporters hold AO at the user's setting for their whole render, so
+//   the FPS monitor's live-only verdict can no longer drop AO out of an export.
+//
 // 16-Sep-2026 - Version 1.0.2
 // - Pipeline state exposes aoPassRef, so the Visual Effects settings panel can
 //   read whether SSAO is actually on rather than remembering what it last
@@ -210,6 +215,8 @@
         let setAoFullQuality  = () => {};                               // <-- The resting state: anything that does not ask gets this
         let setAoLiveQuality  = () => {};                               // <-- Reduced kernel, borrowed for ONE ordinary frame
         let setAoRefineSample = () => {};                               // <-- Full kernel, rotated per progressive-refinement sample
+        let holdAoForExport    = () => {};                              // <-- AO by the setting alone; the FPS monitor's verdict ignored
+        let releaseAoForExport = () => {};                              // <-- Paired with the hold in the exporter's restore
         let aoPassRef        = null;
         const aoEnabled = aoConfig
             && aoConfig.RenderEffect__AmbientOcclusion__Enabled === true;
@@ -226,6 +233,8 @@
             setAoFullQuality  = aoState.setFullQuality;
             setAoLiveQuality  = aoState.setLiveQuality;
             setAoRefineSample = aoState.setRefineSample;
+            holdAoForExport    = aoState.holdForExport;
+            releaseAoForExport = aoState.releaseExportHold;
             aoPassRef        = aoState.pass;
             monitorAoFrame   = Na__RenderEffect__AmbientOcclusion__CreatePerformanceMonitor(aoState, aoConfig);
         }
@@ -318,7 +327,9 @@
             setAoFullQuality,                                              // <-- MaxEngine extra: the resting quality, restored after every borrow
             setAoLiveQuality,                                              // <-- MaxEngine extra: reduced kernel for one moving frame
             setAoRefineSample,                                             // <-- MaxEngine extra: full kernel, rotated per refinement sample
-            aoPassRef                                                      // <-- MaxEngine extra: the SSAO pass, so a readout shows its TRUE state
+            holdAoForExport,                                               // <-- MaxEngine extra: an export renders AO by the setting, not the FPS monitor
+            releaseAoForExport,                                            // <-- MaxEngine extra: always paired with the hold
+            aoPassRef                                                     // <-- MaxEngine extra: the SSAO pass, so a readout shows its TRUE state
                                                                            //     (the FPS monitor can disable AO on its own; a UI tracking only
                                                                            //     its own clicks would then show ON over a picture with no AO)
         };

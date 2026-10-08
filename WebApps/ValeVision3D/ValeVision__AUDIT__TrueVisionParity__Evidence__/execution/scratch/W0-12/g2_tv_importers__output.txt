@@ -1,2 +1,0 @@
-TrueVision importers at b2aa9151: 29 files (the two facade files themselves among them), 32 import statements of the facade, 77 names
-PASS - every specifier resolves to the ValeVision facade file at the importer's own path, and every name is exported

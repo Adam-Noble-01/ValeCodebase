@@ -1,2 +1,0 @@
-    # Collect current IMG## source PNGs (exclude our generated thumbnails)
-    source_images = na_collect_source_image_names(wcp_project_dir)

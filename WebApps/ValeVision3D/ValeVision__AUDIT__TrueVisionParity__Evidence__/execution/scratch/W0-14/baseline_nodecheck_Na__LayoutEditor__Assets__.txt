@@ -1,3 +1,0 @@
-$ node --check 02__Src__AppModules/51__System__LayoutEditor/07__Core__SheetData/Na__LayoutEditor__Assets__.js
-(exit 0)
-

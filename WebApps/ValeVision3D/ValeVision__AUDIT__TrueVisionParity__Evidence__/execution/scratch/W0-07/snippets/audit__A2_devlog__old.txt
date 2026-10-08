@@ -1,4 +1,0 @@
-# 25-Jun-2026 - Version 1.0.0
-# - Initial release: audit + backfill + master index rebuild via shared lib.
-#
-# =============================================================================

@@ -1,3 +1,0 @@
-$ node --check 80__Testing__PrototypeEnvironment/Na__Test__ColourPalette__.test.mjs
-(exit 0)
-

@@ -1,4 +1,0 @@
-GET /api/check-localhost -> 200 (70 bytes)
-GET /ValeVision3D/index.html?project=2026/3047__Doous -> 200 (175524 bytes) served==disk: True; has new block: True; sha1 2d6455b0f26ad8d6657aaff4460a98fe5951e193
-GET /ValeVision3D/02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js -> 200 (26534 bytes)
-GET /ValeVision3D/02__Src__AppModules/40__System__DrawingViewCore/Na__DrawView__AppConfig__.json -> 200 (3705 bytes)

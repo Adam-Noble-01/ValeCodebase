@@ -1,5 +1,0 @@
-m1-ready-on-import         harness: == vv: 15 step(s) [ready, layer, make, measure, hiddenViewports, turnedFrame, fixedScale,  | analysis exit 1, 5 check(s) failed; expected vv A1, vv A2, vv A3 -> caught
-m2-layer-at-the-bottom     harness: == vv: 15 step(s) [ready, layer, make, measure, hiddenViewports, turnedFrame, fixedScale,  | analysis exit 1, 2 check(s) failed; expected C3, D layer -> caught
-m3-label-left-aligned      harness: == vv: 15 step(s) [ready, layer, make, measure, hiddenViewports, turnedFrame, fixedScale,  | analysis exit 1, 2 check(s) failed; expected C19, D paint -> caught
-m4-hidden-layer-skipped    harness: == vv: 15 step(s) [ready, layer, make, measure, hiddenViewports, turnedFrame, fixedScale,  | analysis exit 1, 2 check(s) failed; expected C13, D hiddenViewports -> caught
-browser mutants: 4 planted, 0 problem(s)

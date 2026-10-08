@@ -1,3 +1,0 @@
-$ node --check 02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js
-(exit 0)
-

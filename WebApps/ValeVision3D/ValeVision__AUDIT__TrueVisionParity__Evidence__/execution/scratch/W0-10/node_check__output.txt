@@ -1,8 +1,0 @@
-﻿src\handlers\CloudflareHandler__ProjectFiles__.js -> node --check exit 0
-src\handlers\CloudflareHandler__ProjectMerge__.js -> node --check exit 0
-src\CloudflareHelper__PathGuards__.js -> node --check exit 0
-src\index.js -> node --check exit 0
-tests\Na__TestEnv__EditorWorker__Hooks__.mjs -> node --check exit 0
-tests\Na__TestEnv__EditorWorker__R2Bucket__.mjs -> node --check exit 0
-tests\Na__Test__EditorWorker__MergeKeys__.test.mjs -> node --check exit 0
-tests\Na__Test__EditorWorker__ProjectFiles__.test.mjs -> node --check exit 0

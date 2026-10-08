@@ -1,8 +1,0 @@
-$ node 80__Testing__PrototypeEnvironment/Na__Verify__ParityNaming__.mjs --files 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js 02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Modern__.js 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js 02__Src__AppModules/51__System__LayoutEditor/15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js 80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs
-ValeVision3D - parity naming lint (identity, Noble Architecture markers, headers, folder numbers, stylesheet homes)
-  app root : D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
-  checked  : 6 named file(s); 67 folders against the registry; 11 Layout Editor stylesheets
-  exempt   : PORT NOTE and DEVELOPMENT LOG blocks; history documents; 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/09__Standard__Sections/Na__LayoutEditor__Statement__Standard__TrueVisionHub__.js
-  baseline : Na__Verify__ParityBaseline__.json - 1 file(s) recorded 2026-10-01
-
-  RESULT: PASS (0 fail, 0 warn)

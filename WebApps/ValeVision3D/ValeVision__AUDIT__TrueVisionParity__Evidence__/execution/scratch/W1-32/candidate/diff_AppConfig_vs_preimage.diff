@@ -1,9 +1,0 @@
---- a/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
-+++ b/02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json
-@@ -279,5 +279,5 @@
-     "LayoutEditor__Panels__Config": {
-         "LayoutEditor__Panels__Description": "The two side columns (Layers on the left; Viewport, Text, Dimensions and Styles on the right). Widths are seeded from here on first use and then remembered for the session.",
--        "LayoutEditor__Panels__FocusNote": "AccordionSections are the markup sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
-+        "LayoutEditor__Panels__FocusNote": "AccordionSections are the sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited - a viewport folds the whole group, its own section not being in it. Nothing selected leaves the folds as they are. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
-         "LayoutEditor__Panels__AccordionSections": [ "text", "dimensions", "shapes", "leaders" ],
-         "LayoutEditor__Panels__FocusSectionOnSelect": true,

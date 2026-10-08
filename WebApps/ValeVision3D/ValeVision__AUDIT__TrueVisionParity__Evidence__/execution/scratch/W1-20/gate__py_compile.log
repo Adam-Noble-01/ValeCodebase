@@ -1,7 +1,0 @@
-﻿eol_report.py py_compile exit=0
-extract_tv.py py_compile exit=0
-import_closure.py py_compile exit=0
-make_layermenu_test.py py_compile exit=0
-mutation_check.py py_compile exit=0
-port_w1_20.py py_compile exit=0
-tv_history.py py_compile exit=0

@@ -1,4 +1,0 @@
-$ git -C D:\10_CoreLib__ValeCodebase apply --check D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-07.patch
-(cwd D:\10_CoreLib__ValeCodebase)
-exit 0
-

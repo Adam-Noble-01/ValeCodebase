@@ -1,8 +1,0 @@
-OK   control: exit 0 (want 0)
-OK   ready chain without the hatch library: exit 1 (want 1) - first FAIL: FAIL  Na__LeHatch__Ready sits straight after Na__LeDash__Ready
-OK   Patterns registration line removed: exit 1 (want 1) - first FAIL: FAIL  Patterns registered straight after the three scrapbook libraries
-OK   AccordionSections without patterns: exit 1 (want 1) - first FAIL: FAIL  "patterns" is in LayoutEditor__Panels__AccordionSections
-OK   adapted panel: never hidden while loading: exit 1 (want 1) - first FAIL: FAIL  hidden at registration, before the library loads
-OK   Construction pack swatch ink lost: exit 1 (want 1) - first FAIL: FAIL  every Construction tile is drawn in #333333 (Pack__SwatchInk), none in the woodland green
-OK   stylesheet missing: exit 1 (want 1) - first FAIL: FAIL  the linked stylesheet exists (OC-07)
-MUTATION CHECK PASS (7/7)

@@ -1,7 +1,0 @@
-# - All R2 plumbing + index helpers are delegated to the shared lib (DRY).
-# - A project.json upload (missing on R2, or every file with --force) keeps
-#   the ValeVision editor-owned keys R2 holds and writes the merged document
-#   locally too (shared lib, na_upload_project_json_preserving_editor_keys); it
-#   uploads nothing when R2's copy or the key list cannot be read.
-#
-# USAGE:

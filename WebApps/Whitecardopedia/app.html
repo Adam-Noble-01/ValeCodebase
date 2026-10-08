@@ -1,166 +1,256 @@
 <!DOCTYPE html>
-<!-- =============================================================================
-     WHITECARDOPEDIA - REACT APPLICATION CONTAINER
-     =============================================================================
-     
-     FILE       : app.html
-     NAMESPACE  : Whitecardopedia
-     VERSION    : 0.2.7 - Content Indicator Icons (Final - Working)
-     AUTHOR     : Adam Noble - Noble Architecture
-     PURPOSE    : React application container for whitecard image review system
-     CREATED    : 2025
-     UPDATED    : 10-Oct-2025 (client-zip migration)
-     
-     DESCRIPTION:
-     - React application container for Vale Garden Houses board review tool
-     - Displays whitecard (massing model) images with project metadata
-     - Implements star ratings for Quality, Prestige, and Value metrics
-     - Dynamic project loading from folder structure
-     - Uses React CDN imports for rapid development
-     
-     =============================================================================
--->
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whitecardopedia</title>
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- SEARCH ENGINE BLOCKING | Prevent Indexing and Crawling            -->
-    <!-- ----------------------------------------------------------------- -->
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="duckduckbot" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="baiduspider" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="yandex" content="noindex, nofollow, noarchive, nosnippet">
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- BRANDING | Favicon and Brand Icons                                -->
-    <!-- ----------------------------------------------------------------- -->
-    <link rel="icon" type="image/svg+xml" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <link rel="apple-touch-icon" sizes="192x192" href="02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
-    <link rel="apple-touch-icon" href="02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
-    <link rel="manifest" href="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Manifest__.webmanifest">
+    <title>Whitecardopedia has moved | Vale Garden Houses</title>
+    <meta name="description" content="The prototype Whitecardopedia app has been retired. The Vale apps now live at app.valegardenhouses.com.">
     <meta name="theme-color" content="#172b3a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ValeVision 3D">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="ValeVision 3D">
+
     <!-- ----------------------------------------------------------------- -->
-    
+    <!-- RETIREMENT NOTICE | Whitecardopedia prototype, retired 08-Oct-2026 -->
+    <!-- Self-contained on purpose: every file this page used to load has   -->
+    <!-- been archived. See MigrationDetails__README__.md in this folder.   -->
     <!-- ----------------------------------------------------------------- -->
-    <!-- META TAGS | Open Graph for Link Previews                          -->
-    <!-- ----------------------------------------------------------------- -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Whitecardopedia - Vale Garden Houses">
-    <meta property="og:description" content="Professional whitecard massing model review system for Vale Garden Houses architectural projects">
-    <meta property="og:image" content="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <meta property="og:url" content="">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Whitecardopedia - Vale Garden Houses">
-    <meta name="twitter:description" content="Professional whitecard massing model review system for Vale Garden Houses architectural projects">
-    <meta name="twitter:image" content="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- STYLES | Application Stylesheets                                  -->
-    <!-- ----------------------------------------------------------------- -->
-    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REACT | CDN Imports (production builds to reduce iOS memory load) -->
-    <!-- ----------------------------------------------------------------- -->
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-    <script>window.React     || document.write('<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"><\/script>');</script>
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-    <script>window.ReactDOM  || document.write('<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"><\/script>');</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.29.7/babel.min.js"></script>
-    <script>window.Babel     || document.write('<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.29.7/babel.min.js"><\/script>');</script>
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- D3.JS | Data Visualization Library                                -->
-    <!-- ----------------------------------------------------------------- -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- CLIENT-ZIP | Modern ZIP File Generation Library                   -->
-    <!-- ----------------------------------------------------------------- -->
-    <script type="module">
-        import { downloadZip } from './02__Src__AppModules/01__AppDependencies__VersionLocked/client-zip.2.4.4.min.js';
-        window.downloadZip = downloadZip;  // <-- Make available globally
-    </script>
-    <!-- ----------------------------------------------------------------- -->
-    
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Crect width='900' height='900' rx='120' fill='%23102b39'/%3E%3Cpath fill='%23fff' d='M133.5 163.3L342.6 163.2L341.7 196.1L267.4 196.1L458.2 634.9L638.7 196.5L575.8 196.5L575.8 163.2L744.4 163.2L744.4 195.7L686.9 195.7L452.8 764.8L193.9 196.2L133.7 196.2Z'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+
+    <style>
+        :root {
+            --Vale_PrimaryBrand         : #172b3a;
+            --Vale_PrimaryBrand_Hover   : #23415a;
+            --Vale_IconNavy             : #102b39;
+            --Vale_BackgroundPage       : #f2f4f6;
+            --Vale_BackgroundCard       : #ffffff;
+            --Vale_BackgroundTint       : #eef2f5;
+            --Vale_TextPrimary          : #172b3a;
+            --Vale_TextBody             : #3d4b56;
+            --Vale_TextSubtle           : #5a6d7a;
+            --Vale_BorderLight          : #dde3e8;
+            --Vale_FontFamily           : 'Open Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            margin              : 0;
+            min-height          : 100vh;
+            display             : flex;
+            flex-direction      : column;
+            background          : var(--Vale_BackgroundPage);
+            color               : var(--Vale_TextBody);
+            font-family         : var(--Vale_FontFamily);
+            font-size           : 16px;
+            line-height         : 1.6;
+        }
+
+        .Na__Notice__Header {
+            background          : var(--Vale_PrimaryBrand);
+            color               : #ffffff;
+            padding             : 18px 16px 96px;
+        }
+
+        .Na__Notice__Brand {
+            max-width           : 680px;
+            margin              : 0 auto;
+            display             : flex;
+            align-items         : center;
+            gap                 : 12px;
+            font-weight         : 600;
+            font-size           : 15px;
+            letter-spacing      : 0.04em;
+            text-transform      : uppercase;
+        }
+
+        .Na__Notice__Brand svg {
+            width               : 36px;
+            height              : 36px;
+            flex                : none;
+            border-radius       : 6px;
+            box-shadow          : 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+
+        .Na__Notice__Main {
+            flex                : 1;
+            width               : 100%;
+            max-width           : 712px;
+            margin              : -72px auto 0;
+            padding             : 0 16px 48px;
+        }
+
+        .Na__Notice__Card {
+            background          : var(--Vale_BackgroundCard);
+            border-radius       : 14px;
+            box-shadow          : 0 1px 2px rgba(23, 43, 58, 0.06), 0 12px 32px rgba(23, 43, 58, 0.10);
+            padding             : 40px 40px 36px;
+        }
+
+        .Na__Notice__Eyebrow {
+            display             : inline-block;
+            margin              : 0 0 14px;
+            padding             : 4px 10px;
+            border-radius       : 999px;
+            background          : #fdf1e3;
+            color               : #8a4b0f;
+            font-size           : 13px;
+            font-weight         : 600;
+            letter-spacing      : 0.02em;
+        }
+
+        h1 {
+            margin              : 0 0 12px;
+            color               : var(--Vale_TextPrimary);
+            font-size           : 32px;
+            line-height         : 1.2;
+            font-weight         : 700;
+            text-wrap           : balance;
+        }
+
+        h2 {
+            margin              : 0 0 6px;
+            color               : var(--Vale_TextPrimary);
+            font-size           : 18px;
+            font-weight         : 600;
+        }
+
+        p { margin: 0 0 12px; }
+
+        .Na__Notice__Lead {
+            font-size           : 18px;
+            color               : var(--Vale_TextBody);
+        }
+
+        .Na__Notice__NewHome {
+            margin              : 28px 0 32px;
+            padding             : 24px;
+            border-radius       : 12px;
+            background          : var(--Vale_BackgroundTint);
+            border              : 1px solid var(--Vale_BorderLight);
+        }
+
+        .Na__Notice__NewHome__Label {
+            margin              : 0 0 2px;
+            color               : var(--Vale_TextSubtle);
+            font-size           : 14px;
+            font-weight         : 600;
+        }
+
+        .Na__Notice__NewHome__Url {
+            margin              : 0 0 18px;
+            color               : var(--Vale_TextPrimary);
+            font-size           : 24px;
+            font-weight         : 700;
+            overflow-wrap       : anywhere;
+        }
+
+        .Na__Notice__Button {
+            display             : inline-flex;
+            align-items         : center;
+            justify-content     : center;
+            gap                 : 10px;
+            min-height          : 52px;
+            padding             : 14px 28px;
+            border-radius       : 10px;
+            background          : var(--Vale_PrimaryBrand);
+            color               : #ffffff;
+            font-size           : 17px;
+            font-weight         : 600;
+            text-decoration     : none;
+            transition          : background-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .Na__Notice__Button:hover        { background: var(--Vale_PrimaryBrand_Hover); }
+        .Na__Notice__Button:active       { transform: translateY(1px); }
+        .Na__Notice__Button:focus-visible { outline: 3px solid #7fb2d9; outline-offset: 3px; }
+
+        .Na__Notice__Button svg { width: 18px; height: 18px; }
+
+        .Na__Notice__NewHome__Note {
+            margin              : 16px 0 0;
+            color               : var(--Vale_TextSubtle);
+            font-size           : 14px;
+        }
+
+        .Na__Notice__Section {
+            padding-top         : 24px;
+            margin-top          : 24px;
+            border-top          : 1px solid var(--Vale_BorderLight);
+        }
+
+        .Na__Notice__Section p:last-child { margin-bottom: 0; }
+
+        .Na__Notice__SignOff {
+            margin-top          : 14px;
+            color               : var(--Vale_TextPrimary);
+            font-weight         : 600;
+        }
+
+        .Na__Notice__Footer {
+            padding             : 0 16px 28px;
+            text-align          : center;
+            color               : var(--Vale_TextSubtle);
+            font-size           : 13px;
+        }
+
+        @media (max-width: 560px) {
+            .Na__Notice__Header { padding-bottom: 88px; }
+            .Na__Notice__Card   { padding: 28px 20px 26px; border-radius: 12px; }
+            h1                  { font-size: 26px; }
+            .Na__Notice__Lead   { font-size: 17px; }
+            .Na__Notice__NewHome { padding: 20px 16px; }
+            .Na__Notice__NewHome__Url { font-size: 20px; }
+            .Na__Notice__Button { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REACT ROOT | Main Application Container                           -->
-    <!-- ----------------------------------------------------------------- -->
-    <div id="root"></div>
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- COMPONENTS | React Component Scripts                              -->
-    <!-- ----------------------------------------------------------------- -->
-    <script type="text/babel" src="02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__DateFormatter.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SearchFilter.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SortProjects.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__TimeAdjustments.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__ProductionKpiStats.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__KpiProjectSource.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/15__Feature__ShareKpiReport/Na__Feature__ShareKpiReport__Generate__Logic__.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ImageEffects.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ContentDetector.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/70__System__DevTools/Na__System__LocalhostDetector.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__UrlQueryHandler.js"></script>
-    <script src="02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__AppScopeNavigation__Logic__.js"></script>
-    <script src="02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js"></script>
-    <!-- PWA INSTALLABILITY | Modular install prompt + service worker stack -->
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Url__Constructor__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__PlatformDetector__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__SessionState__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__PromptUi__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Handler__Chromium__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Handler__IosSafari__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Handler__IosNonSafari__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Handler__MacSafari__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Handler__InstalledStandalone__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__InstallController__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"></script>
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Na__UiFeature__AppInstallability__BrowserDelegate.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__StarRating.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__EfficiencyScale.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__ImageCarousel.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/14__Feature__Authentication/Na__Feature__Authentication__PinEntry.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SearchBox.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SortControls.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__FilterControls.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__FilterPanel.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__HamburgerMenu.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__GalleryModeToggle.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__WarningBanner.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__MaxModel__InfoBanner.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__Header.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__Breadcrumbs.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__HomePage.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx"></script>
-    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__HotkeyHandler.js"></script>
-    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__WhitecardopediaApp.jsx"></script>
-    <!-- ----------------------------------------------------------------- -->
-    
+
+    <header class="Na__Notice__Header">
+        <div class="Na__Notice__Brand">
+            <svg viewBox="0 0 900 900" aria-hidden="true" focusable="false"><rect width="900" height="900" fill="#102b39"/><path fill="#ffffff" d="M133.5 163.3L342.6 163.2L341.7 196.1L267.4 196.1L458.2 634.9L638.7 196.5L575.8 196.5L575.8 163.2L744.4 163.2L744.4 195.7L686.9 195.7L452.8 764.8L193.9 196.2L133.7 196.2Z"/></svg>
+            <span>Vale Garden Houses</span>
+        </div>
+    </header>
+
+    <main class="Na__Notice__Main">
+        <article class="Na__Notice__Card">
+
+            <p class="Na__Notice__Eyebrow">This version has been retired</p>
+            <h1>Whitecardopedia has moved</h1>
+            <p class="Na__Notice__Lead">You are on the old prototype version of Whitecardopedia. It has now been retired and is no longer updated, so please stop using it.</p>
+
+            <section class="Na__Notice__NewHome" aria-labelledby="Na__Notice__NewHome__Heading">
+                <p class="Na__Notice__NewHome__Label" id="Na__Notice__NewHome__Heading">The new home of the Vale apps</p>
+                <p class="Na__Notice__NewHome__Url">app.valegardenhouses.com</p>
+                <a class="Na__Notice__Button" href="https://app.valegardenhouses.com/">
+                    Open the new Vale apps
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+                </a>
+                <p class="Na__Notice__NewHome__Note">Whitecardopedia is now called ValeVision. Please update your bookmarks, and remove any installed copy of this old version from your devices.</p>
+            </section>
+
+            <section class="Na__Notice__Section">
+                <h2>Thank you</h2>
+                <p>Thank you to everyone who used the prototype versions of Whitecardopedia and ValeVision. Your use and feedback were pivotal in developing the apps, and in securing the resources to take them online as official Vale Garden Houses tools.</p>
+            </section>
+
+            <section class="Na__Notice__Section">
+                <h2>Trouble installing the new apps?</h2>
+                <p>If you have any issues installing the new official version, please get in touch with me and I will arrange for the new apps to be installed across all of your devices.</p>
+                <p class="Na__Notice__SignOff">Adam Noble</p>
+            </section>
+
+        </article>
+    </main>
+
+    <footer class="Na__Notice__Footer">Vale Garden Houses. Whitecardopedia prototype retired on 08 October 2026.</footer>
+
 </body>
 </html>
-

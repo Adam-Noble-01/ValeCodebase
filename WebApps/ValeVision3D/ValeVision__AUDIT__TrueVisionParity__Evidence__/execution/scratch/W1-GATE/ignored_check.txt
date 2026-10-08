@@ -1,2 +1,0 @@
-﻿ignored entries: 33; ignored files modified after the W0 checkpoint: 0
-files under Projects/2026/3047__Doous modified after the W0 checkpoint: 0

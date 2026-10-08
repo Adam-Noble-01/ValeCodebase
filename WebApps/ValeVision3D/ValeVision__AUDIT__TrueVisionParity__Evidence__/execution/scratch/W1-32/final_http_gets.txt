@@ -1,6 +1,0 @@
-﻿/api/check-localhost 200 application/json b'{\n  "isLocalhost": true,\n  "message": "Server running on localhost"\n}\n'
-02__Src__AppModules/51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js 200 text/javascript; charset=utf-8 served=disk True
-02__Src__AppModules/51__System__LayoutEditor/55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js 200 text/javascript; charset=utf-8 served=disk True
-02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__LayoutEditor__AppConfig__.json         200 application/json             served=disk True
-02__Src__AppModules/51__System__LayoutEditor/31__System__DocumentKeys/Na__LayoutEditor__DocumentKeys__.js 200 text/javascript; charset=utf-8 served=disk True
-02__Src__AppModules/03__AppUtils/Na__AppUtils__KeyScope__.js                                             200 text/javascript; charset=utf-8 served=disk True

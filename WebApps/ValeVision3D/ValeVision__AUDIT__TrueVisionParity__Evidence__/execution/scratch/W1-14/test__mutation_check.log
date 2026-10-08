@@ -1,7 +1,0 @@
-control                  exit 0 (want 0) OK   0 failing check(s)
-turn-vector-sign         exit 1 (want 1) OK   1 failing check(s)  e.g. FAIL  the matrix puts each level point where the turn puts it on the paper (to a hundredth
-wrap-keeps-minus-180     exit 1 (want 1) OK   1 failing check(s)  e.g. FAIL  an angle wraps into (-180, 180]
-detent-ignored           exit 1 (want 1) OK   1 failing check(s)  e.g. FAIL  free, it settles on a right angle within the detent and nowhere else
-pdf-matrix-e             exit 1 (want 1) OK   1 failing check(s)  e.g. FAIL  the matrix puts each level point where the turn puts it on the paper (to a hundredth
-bounds-level-shortcut    exit 1 (want 1) OK   1 failing check(s)  e.g. FAIL  a level frame's box is the frame itself
-ALL OK

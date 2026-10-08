@@ -1,6 +1,0 @@
-﻿== specificationPdf  finished=true  requests=273  404s=[]  off-machine=0
-   jsPDF requests: [{"url":"/WebApps/ValeVision3D/04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js","status":200}]   window.jspdf: true
-   out (last 4 lines):   pages    : 1 |   bytes    : 2291 |   header   : %PDF-1.3 | DONE
-== titleBlockCells  finished=true  requests=270  404s=[]  off-machine=0
-   jsPDF requests: [{"url":"/WebApps/ValeVision3D/04__Lib__ThirdParty__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js","status":200}]   window.jspdf: true
-   out (last 4 lines): A4 landscape  Client 12.0  SiteAddress 60.4  Title 85.4*  DrawingNumber 14.4  Revision 6.2  Scale 17.6  Date 14.7  DrawnBy 23.1  Status 19.3   (sum 287.00 of 287.00) | A4 portrait   Client 10.9*  SiteAddress 54.6*  Title 14.4*  DrawingNumber 13.0*  Revision 5.6*  Scale 15.9*  Date 13.3*  DrawnBy 20.9*  Status 17.4*   (sum 200.00 of 200.00) | * = the value or the label was cut short with an ellipsis. | DONE - 8 sheets built with no error.

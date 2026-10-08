@@ -1,2 +1,0 @@
-﻿  PASS  the Scrapbook tab is registered on the right with its hint in the spec
-  PASS  once the scrapbook config is read, the tab button carries the hover text itself

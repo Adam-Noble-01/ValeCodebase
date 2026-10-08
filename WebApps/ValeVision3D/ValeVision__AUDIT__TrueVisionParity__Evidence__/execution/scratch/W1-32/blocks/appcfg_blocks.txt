@@ -1,5 +1,0 @@
-@@@@ cfg_01_focusnote OLD
-        "LayoutEditor__Panels__FocusNote": "AccordionSections are the markup sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
-@@@@ cfg_01_focusnote NEW
-        "LayoutEditor__Panels__FocusNote": "AccordionSections are the sections that behave as one group. FocusSectionOnSelect: selecting something on the sheet, or picking a style with the eyedropper, opens that kind's section and folds the rest of the group, so what is on show is always what is being edited - a viewport folds the whole group, its own section not being in it. Nothing selected leaves the folds as they are. Several can still be opened by hand to compare them; the next selection tidies them away again. CollapseOthersOnOpen goes further and folds the others the moment one is opened by hand.",
-@@@@ END

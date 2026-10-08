@@ -1,6 +1,0 @@
-[ValeVision3D] HotkeyHandler: 28 bindings loaded.
-fetched       : 02__Src__AppModules/51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json, 02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json, 02__Src__AppModules/02__AppData/Na__Hotkeys__3dModelTab__.json
-drawing tabs  : key file loaded = true | V M T D L R Delete Escape arrows -> V=Tool__Select M=Tool__Move T=Tool__Text D=Tool__Dimension L=Tool__Draw R=Tool__Rectangle Delete=Edit__Delete Escape=Edit__Cancel ArrowLeft=Edit__NudgeLeft ArrowRight=Edit__NudgeRight ArrowUp=Edit__NudgeUp ArrowDown=Edit__NudgeDown
-3D tab        : r=ResetView b=SetOrbitMode t=SetWalkMode y=SetFlyMode v=ToggleViewsPanel PageUp=NextScene PageDown=PrevScene 1=GoToScene1 5=GoToScene5 9=GoToScene9
-help panel    : 9 standard rows, 19 advanced rows; keys: R, B, T, Y, V, Page Up, Page Down, 1, Alt + Backspace, 2, 3, 4, 5, 6, 7, 8, 9, Alt + Shift + F, D, O, Arrows, Alt, Shift, Ctrl+Z, Ctrl+Y, Ctrl+C / Ctrl+V, Delete, Escape
-wrote D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-03\results_final.json

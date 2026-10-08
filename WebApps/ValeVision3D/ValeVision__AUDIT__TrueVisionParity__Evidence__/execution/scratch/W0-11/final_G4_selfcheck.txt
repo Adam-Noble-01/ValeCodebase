@@ -1,5 +1,0 @@
-$ C:\Users\adamw\AppData\Local\Programs\Python\Python312\python.exe D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-11\g4_selfcheck.py
-G4-equivalent self-check on D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\03__AppUtils\Na__AppUtils__ProjectLoader.js
-RESULT: PASS
-
-EXIT=0

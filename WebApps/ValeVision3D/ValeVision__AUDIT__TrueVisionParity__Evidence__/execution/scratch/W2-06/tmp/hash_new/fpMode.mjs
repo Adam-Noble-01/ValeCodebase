@@ -1,1 +1,0 @@
-export function Na__FloorPlanMode__GetActivePlan() { return null; }

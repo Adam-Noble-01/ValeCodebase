@@ -1,3 +1,0 @@
-﻿Na__LayoutEditor__Assets__.js: TV 250 lines, VV 260 lines; outside the PORT NOTE 241 vs 241; PASS
-Na__ProjectedLinework__Persistence__.js: TV 661 lines, VV 677 lines; outside the PORT NOTE 652 vs 652; PASS
-RESULT: PASS - only the declared seams differ from TrueVision

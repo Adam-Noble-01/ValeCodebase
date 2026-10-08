@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+**App Config | Single Source of Truth (Critical)**
+- All feature flags, behaviours, and settings must be sourced from the app config JSON.
+- Do not hardcode values in modules; read from config and pass values through.
+- App config path (relative): `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+
+**Project Data Note:** Project data is not app config. The project record and its place in the Projects Master Library come from the ValeVision 3D API (`api/projects/<id>`, `Server__Api/Api__ValeVision3D`), and its GLBs from `<project>/ValeVision3D/Content__3dModel__GlbFiles/` in `Vale__Projects__MasterLibrary`. There is no R2, Cloudflare Worker, CDN or GitHub Pages path: see the `vgh-app-server` skill.
+

@@ -1,7 +1,0 @@
-﻿ValeVision3D - named export resolution
-  files checked : 470
-  loader facade : 38 editor name(s) reached through mode, model, spec, config, viewport3d, pdf in 4 file(s)
-
-  PASS - every named import resolves to a real export,
-         and every Na__ identifier used is imported or declared,
-         and every editor name the loader facade calls is exported.

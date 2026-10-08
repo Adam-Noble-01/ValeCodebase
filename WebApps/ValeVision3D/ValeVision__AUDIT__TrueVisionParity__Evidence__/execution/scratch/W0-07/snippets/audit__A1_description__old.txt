@@ -1,3 +1,0 @@
-# - All R2 plumbing + index helpers are delegated to the shared lib (DRY).
-#
-# USAGE:

@@ -1,3 +1,0 @@
-$ node --check 02__Src__AppModules\03__AppUtils\Na__AppUtils__ProjectLoader.js
-
-EXIT=0

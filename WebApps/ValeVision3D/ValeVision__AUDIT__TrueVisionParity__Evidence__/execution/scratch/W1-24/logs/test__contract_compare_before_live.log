@@ -1,3 +1,0 @@
-﻿before addImage compression arguments: [null,null,null,null,null,null]
-live addImage compression arguments: ["FAST","FAST","FAST","FAST","FAST","FAST"]
-IDENTICAL after normalising: 133 default-path events (before vs live)

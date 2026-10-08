@@ -1,5 +1,0 @@
-Regular: Proposed Orangery - Elevations, Rev B, 1:50 @ ISO A2
-SemiBold: PROJECT SPECIFICATION 3047_SPEC
-Light: Vale Garden Houses Limited - Page 1 of 2
-Unicode: café, naïve, – en dash, “quotes”, £1,250, 25 m², ½ inch, © 2026
-Helvetica: the fallback face, unembedded

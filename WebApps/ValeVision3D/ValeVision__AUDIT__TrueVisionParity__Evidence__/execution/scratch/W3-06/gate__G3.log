@@ -1,5 +1,0 @@
-(records-exempt wrapper: HISTORY = (DEVLOG|PARITY__TrueVisionLedger|__PLAN__|__AUDIT__TrueVisionParity__|__WORKING_MEMORY__TrueVisionParity__))
-K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
-  checked: css @import 32, new URL 61, path strings 207, folder tokens 89
-  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
-RESULT: PASS (0 fail, 1 warn)

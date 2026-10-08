@@ -1,3 +1,0 @@
-$ node --check 02__Src__AppModules/03__AppUtils/Na__AppUtils__R2AssetUpload__.js
-(exit 0)
-

@@ -15,6 +15,7 @@
         ".gitignore",
         ".gitattributes",
         ".claude/",
+        ".cursor/",
         ".vscode/",
         "*.env",
         ".env*",

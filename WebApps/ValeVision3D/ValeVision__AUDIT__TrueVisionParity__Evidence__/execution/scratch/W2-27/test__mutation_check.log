@@ -1,5 +1,0 @@
-ok   control (no mutation)                    exit 0  Vector tools: 106 passed, 0 failed.
-ok   Curves SegmentsFor without the 4-round   exit 1  Vector tools: 105 passed, 1 failed.
-ok   Geometry SAME_MM 1e-6 -> 1               exit 1  Vector tools: 105 passed, 1 failed.
-ok   Offset SideOf returns 0 at once          exit 1  Vector tools: 104 passed, 2 failed.
-mutation check: 4/4 as expected

@@ -1,9 +1,0 @@
-PASS S.1 RenderFrame draws (preset active, plain render route)
-PASS S.2 a drawing with its fog OFF: every pixel equal to no fog source at all
-PASS E.1 an export of the drawing runs one tile with one section overlay
-
-mode    : OLD (pre-image RenderPreset and TiledRenderer); served 48 files; aborted 0
-hashes  : {"frameNull":"176e4775:64000","frameOff":"176e4775:64000","exportOff":"e9634f75:256000"}
-info    : {"exportOff":{"w":320,"h":200,"fogCalls":0,"overlayCalls":1},"mode":"OLD (pre-image RenderPreset and TiledRenderer)"}
-console : 7 line(s), 0 error(s)
-RESULT: 3/3 PASS

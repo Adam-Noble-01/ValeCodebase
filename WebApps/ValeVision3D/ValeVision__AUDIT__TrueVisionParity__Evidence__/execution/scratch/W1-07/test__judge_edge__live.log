@@ -1,3 +1,0 @@
-PASS  no base on the draft, base unknown (undefined): ask
-PASS  no base on the draft, base null: ask
-PASS  base undefined written explicitly, base unknown: restore (it said so)

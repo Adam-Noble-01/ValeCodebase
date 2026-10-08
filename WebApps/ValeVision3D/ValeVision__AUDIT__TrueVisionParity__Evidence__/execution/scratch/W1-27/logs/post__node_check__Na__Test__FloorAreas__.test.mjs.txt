@@ -1,1 +1,0 @@
-$ node --check 80__Testing__PrototypeEnvironment/Na__Test__FloorAreas__.test.mjs

@@ -1,7 +1,0 @@
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__AppConfig__.json      6144 bytes sha1 d9ace0c3  crlf 0 lf 78 nonascii 0 bom False
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__ConfigState__.js     18055 bytes sha1 afc76ef8  crlf 0 lf 351 nonascii 0 bom False
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__DevMenu__StoreyRow__.js ABSENT
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__ProjectJson__Data__.js   31253 bytes sha1 3d3e538b  crlf 0 lf 666 nonascii 0 bom False
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__StoreyLevel__.js   ABSENT
-02__Src__AppModules\42__System__FloorPlanViews\Na__FloorPlan__Styles__DevMenu__.css    5206 bytes sha1 5fd866fa  crlf 0 lf 134 nonascii 0 bom False
-80__Testing__PrototypeEnvironment\Na__Test__FloorPlanStoreyLevel__.test.mjs      ABSENT

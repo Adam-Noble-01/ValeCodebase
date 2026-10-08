@@ -1,7 +1,0 @@
-﻿file: D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\51__System__LayoutEditor\60__Feature__PdfExport\Na__LayoutEditor__PdfExporter__.js
-added lines: 63 (header 23, code 40)
-code lines verbatim in TrueVision3D at b2aa9151: 28
-code lines verbatim in TrueVision3D at b6baf301 (the viewport loop its 1.7.0 paint plan replaced; kept here until W1-28): 1 [355]
-declared ValeVision3D lines: 2 [151, 155]
-blank or rule lines: 9
-RESULT: PASS - every added code line is TrueVision3D's, or declared

@@ -1,9 +1,0 @@
-﻿== old: steps fonts, sheets, showFrame, holes, qrPrimitive, qrConfig, halo, papers, dimension
-   aborted 0
-   console errors: none
-== new: steps fonts, sheets, showFrame, holes, qrPrimitive, qrConfig, halo, papers, dimension
-   aborted 0
-   console errors: none
-== qron: steps fonts, sheets, showFrame, holes, qrPrimitive, qrConfig, halo, papers, dimension
-   aborted 0
-   console errors: none

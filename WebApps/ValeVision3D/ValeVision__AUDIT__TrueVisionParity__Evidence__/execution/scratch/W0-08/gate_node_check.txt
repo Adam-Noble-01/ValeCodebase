@@ -1,7 +1,0 @@
-﻿node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\02__Src__AppModules\51__System__LayoutEditor\07__Core__SheetData\Na__LayoutEditor__AutoSave__.js
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-08\WebApps\Whitecardopedia\02__Src__AppModules\62__Feature__AppInstallability\Whitecardopedia__Pwa__ServiceWorker__Logic__.js
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-08\WebApps\Whitecardopedia\02__Src__AppModules\62__Feature__AppInstallability\Whitecardopedia__Pwa__ServiceWorker__Registrar__.js
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-08\00__Tests__W0-08\Na__Test__PwaServiceWorkerLogic__.test.mjs
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\prepared\W0-08\00__Tests__W0-08\Na__Test__PwaServiceWorkerRegistrar__.test.mjs
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-08\test_autosave_flag.mjs
-node --check exit=0  D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D\ValeVision__AUDIT__TrueVisionParity__Evidence__\execution\scratch\W0-08\test_integration_flag.mjs

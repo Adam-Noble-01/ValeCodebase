@@ -1,6 +1,0 @@
-﻿header ends at line 172 (VV) / 162 (TV)
-changed header lines: 34
-changed code lines  : 2
-    TV  :642  console.warn('[TrueVision3D] Progressive refinement disabled: the accumulation buffer could not be created.');
-    VV  :652  console.warn('[ValeVision3D] Progressive refinement disabled: the accumulation buffer could not be created.');
-RESULT: PASS - header lines only, apart from the one K2 C1 console prefix ([TrueVision3D] -> [ValeVision3D])

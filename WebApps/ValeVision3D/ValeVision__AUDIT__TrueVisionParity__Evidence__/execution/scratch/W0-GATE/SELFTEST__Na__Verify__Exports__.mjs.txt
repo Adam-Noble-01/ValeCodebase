@@ -1,7 +1,0 @@
-ValeVision3D - named export resolution, pass 3 self-test (copies of the loader in memory)
-  PASS  the loader as it stands: every facade name is exported
-  PASS  a deliberately misspelt Na__LeMode__ name fails (Na__LeMode__Enter -> Na__LeMode__Entr)
-  PASS  a misspelt Na__LeModel__ name fails (Na__LeModel__GetSheets -> Na__LeModel__GetSheetz)
-  PASS  an import() list whose bound names cannot be read fails rather than passing
-
-  Every self-test case passed (4).

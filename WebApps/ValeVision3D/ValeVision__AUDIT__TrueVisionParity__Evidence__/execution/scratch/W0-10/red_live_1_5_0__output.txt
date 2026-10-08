@@ -1,8 +1,0 @@
-﻿1.5.0 POST /api/editor/projects/2026/delete -> 200 {"success":true,"folderId":"2026","deletedObjectCount":3,"indexEntryRemoved":false,"configEntryRemoved":false,"r2Verified":true,"remainingObjectCount":0,"buildV
-   keys left: ["VaApps/Projects/2025/3333__Gamma/project.json","VaApps/Index/Na__BuildVersion__Manifest__.json"]
-1.5.0 POST /api/editor/projects/2026/rename -> 200 {"success":true,"message":"Project moved from 2026 to 2027/Moved.","oldFolderId":"2026","newFolderId":"2027/Moved","movedObjectCount":3,"buildVersion":179088019
-   keys now: ["VaApps/Projects/2027/Moved/1111__Alpha/project.json","VaApps/Projects/2027/Moved/2222__Beta/project.json","VaApps/Projects/2027/Moved/project.json","VaApps/Index/Na__BuildVersion__Manifest__.json"]
-1.5.0 POST .../2026%2F3047__Doous/files/write (body with projectCode) -> 200; keys written: ["VaApps/Projects/2026/3047__Doous/files/write/project.json","VaApps/Index/Na__BuildVersion__Manifest__.json"]
-1.5.0 GET /api/editor/health -> 200 {"ok":true,"worker":"whitecardopedia-editor-api"}
-1.5.0 GET /api/editor/unknown without the key -> 401 {"error":"Unauthorized — invalid or missing X-Editor-Api-Key"}
-1.5.0 stray % in the folderId -> uncaught URIError: URI malformed (the runtime would answer a non-JSON 500 without CORS headers)

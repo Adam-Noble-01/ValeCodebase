@@ -1,6 +1,0 @@
-$ node 80__Testing__PrototypeEnvironment/Na__Test__VectorTools__.test.mjs
-(cwd D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D)
-exit 0
-
-
-Vector tools: 138 passed, 0 failed.

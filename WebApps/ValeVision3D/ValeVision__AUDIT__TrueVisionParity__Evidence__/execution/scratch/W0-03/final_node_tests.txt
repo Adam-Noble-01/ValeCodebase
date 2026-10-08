@@ -1,6 +1,0 @@
-Na__Test__NorthCompass__.test.mjs exit=0
-Na__Test__PerSceneLighting__.test.mjs exit=0
-Na__Test__ScrapbookDrawingTitle__.test.mjs exit=0
-Na__Test__ScrapbookScaleBar__.test.mjs exit=0
-Na__Test__TitleBlockCells__.test.mjs exit=0
-Na__Test__ViewportTitleText__.test.mjs exit=0

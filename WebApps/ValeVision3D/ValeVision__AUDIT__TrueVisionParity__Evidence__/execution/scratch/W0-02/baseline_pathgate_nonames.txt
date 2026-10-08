@@ -1,7 +1,0 @@
-K2 path gate  root=D:\10_CoreLib__ValeCodebase\WebApps\ValeVision3D
-  checked: css @import 28, new URL 34, path strings 152, folder tokens 11
-  WARN G4 path string   80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html:46 -> 03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css
-  FAIL G1 retired name  ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md:209  | P4 | The baseline gates are green from the VV root:<br>- `Na__Verify__ModuleGraph__.mjs`: 517 modules, 0 failures<br>- `Na__Verify__Export
-  FAIL G1 retired name  ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md:1060  - `python <parity>/report/tools/k2_path_gate.py --names ZZZ_NONE`: PASS (0 fail, 1 warn).
-  FAIL G1 retired name  ValeVision__AUDIT__TrueVisionParity__DrawingSystems__.md:2118  | G3 `python parity/report/tools/k2_path_gate.py --root <VV>` | FAIL (288 fail, 1 warn) by design until W0-02: all 288 are the script's reti
-RESULT: FAIL (3 fail, 1 warn)

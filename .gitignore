@@ -203,3 +203,11 @@ WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**
 !WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.html
 !WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.json
 WebApps/Whitecardopedia/Projects/**/10__StatementDocs/00__Deleted__Quarantine/
+
+# Legacy app archives (08-Oct-2026). WebApps/Whitecardopedia and WebApps/ValeVision3D were
+# retired after the move to app.valegardenhouses.com: each folder now holds only its archive
+# zip, MigrationDetails__README__.md and the retirement notice page. The zips are LOCAL ONLY:
+# they hold gitignored secrets (Cloudflare .dev.vars, API tools, the email address book) and
+# are hundreds of MB, and this repository is public. Never commit or upload them.
+**/Archived__*__PreMigration__*.zip
+**/Archived__*__PreMigration__*.zip.partial

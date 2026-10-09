@@ -37,6 +37,10 @@
     <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
     <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
             data-app-base="/valevision/" data-app-name="ValeVision 3D"></script>
+    <!-- Activity: what happens here goes into the activity ledger (the Server Manager's tab 05, User activity) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__ActivityLog/ValeShared__ActivityLog__.js"
+            data-app="valevision3d" data-api-base="/valevision/api/" data-project-param="project"></script>
+    <script src="02__Src__AppModules/03__AppUtils/Na__AppUtils__ActivityLog__.js"></script>
     <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
     <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
     <!-- Install the app: a card for this device, the guide at /help/install-app/ -->
@@ -240,14 +244,14 @@
     <div class="na-dropdown-menu">
         <details class="na-dropdown-menu__details" id="naToolsMenu">
             <summary class="na-dropdown-menu__summary">
-                <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__540p__.png" alt="" />
+                <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__.svg" alt="" />
                 <span class="na-dropdown-menu__btn-label">Tools & Settings</span>
                 <span class="na-dropdown-menu__arrow">▾</span>
             </summary>
             <ul class="na-dropdown-menu__list">
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraLensToggle">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__CameraSettings__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__CameraSettings__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Camera Settings</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -274,7 +278,7 @@
                 </li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naImageExportToggle">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ExportImage__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ExportImage__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Export Image</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -362,15 +366,35 @@
                             <span class="na-dropdown-menu__panel-title">Enhance Whitecard</span>
                             <input type="checkbox" id="naImageExportEnhanceToggle" class="na-dropdown-menu__checkbox" checked />
                         </div>
+                        <button class="na-dropdown-menu__action" id="naImageExportAction">Download Image</button>
+                    </div>
+                </li>
+                <!-- Drawings: renders the view at the Export Image settings (aspect, resolution, Enhance Whitecard) -->
+                <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naDrawingsToggle">
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Drawings__.svg" alt="" />
+                        <span class="na-dropdown-menu__btn-label">Drawings</span>
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naDrawingsPanel">
                         <button class="na-dropdown-menu__action" id="naLayoutViewAction">Create Drawing</button>
-                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naImageExportAction">Download Image</button>
+                        <!-- Saved Layouts: the job's saved drawings as the Drawing Editor lists them, there only when the job has some
+                             (signed-in people). Cards drawn by the shared Na__PageLayoutSystem__SavedList__.js (Na__AppPages__SavedDrawings__.js) -->
+                        <div class="na-saved-list" id="naSavedDrawings" hidden>
+                            <div class="na-saved-list__title">Saved Layouts <span class="na-saved-list__count" id="naSavedDrawingsCount"></span></div>
+                            <div class="na-saved-list__segmented" id="naSavedDrawingsFilter" role="group" aria-label="Whose layouts">
+                                <button class="na-saved-list__segment is-active" data-filter="all" type="button">Everyone</button>
+                                <button class="na-saved-list__segment" data-filter="mine" type="button">Mine</button>
+                            </div>
+                            <div class="na-saved-list__list" id="naSavedDrawingsList"></div>
+                        </div>
                     </div>
                 </li>
                 <!-- <li class="na-dropdown-menu__item">Document Layout</li> -->
                 <!-- <li class="na-dropdown-menu__item">Return To Project</li> -->
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naGridLineToggle">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__GridSystem__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__GridSystem__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Grid Lines</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -515,7 +539,7 @@
                 </li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naModelToggleButton">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ViewModelLayers__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ViewModelLayers__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Toggle Model Layers</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -528,7 +552,7 @@
                 </li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naElevationViewToggle">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Elevation View</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -552,7 +576,7 @@
                 <!-- ---------------------------------------------------------------- -->
                 <li class="na-dropdown-menu__item" id="naCrossSectionMenuItem" style="display:none;">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCrossSectionToggle">
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Cross Sections</span>
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
@@ -622,7 +646,7 @@
                         aria-expanded="false"
                         aria-controls="naSendEmailPanel"
                     >
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ShareLink__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ShareLink__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Share Project Link</span>
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
@@ -671,7 +695,7 @@
                         id="naFullScreenMenuButton"
                         aria-pressed="false"
                     >
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__FullScreen__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__FullScreen__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label" id="naFullScreenMenuLabel">Enter Full Screen</span>
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
@@ -686,7 +710,7 @@
                         type="button"
                         id="naAppSettingsToggle"
                     >
-                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__540p__.png" alt="" />
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">App Settings</span>
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
@@ -1075,7 +1099,11 @@
             <span class="na-breadcrumb__separator" aria-hidden="true">/</span>
             <a class="na-breadcrumb__link" id="naBreadcrumbProjectLink" href="#"><span class="na-breadcrumb__project-name" id="naBreadcrumbProjectName">Project</span> <span class="na-breadcrumb__code" id="naBreadcrumbProjectCode"></span></a>
             <span class="na-breadcrumb__separator" aria-hidden="true">/</span>
-            <span class="na-breadcrumb__current">Model View</span>
+            <span class="na-breadcrumb__current" id="naBreadcrumbModelCurrent">Model View</span>
+            <!-- On a page of the app (the Drawing Editor): Model View is the way back, the page is named after it (Na__AppPages__Navigation__.js) -->
+            <a class="na-breadcrumb__link" id="naBreadcrumbModelLink" href="#" hidden>Model View</a>
+            <span class="na-breadcrumb__separator" id="naBreadcrumbPageSeparator" aria-hidden="true" hidden>/</span>
+            <span class="na-breadcrumb__current" id="naBreadcrumbPageCurrent" hidden></span>
         </div>
     </nav>
 
@@ -1089,23 +1117,23 @@
 
     <nav class="na-nav-toolbar" id="naNavToolbar" aria-label="Model navigation toolbar">
         <button class="na-nav-toolbar__btn na-nav-toolbar__btn--active" id="naNavToolbarOrbitBtn" type="button" aria-pressed="true" title="Orbit mode">
-            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OrbitMode__.png" alt="" />
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OrbitMode__.svg" alt="" />
             <span class="na-nav-toolbar__label">Orbit</span>
         </button>
         <button class="na-nav-toolbar__btn" id="naNavToolbarWalkBtn" type="button" aria-pressed="false" title="Walk mode" style="display:none;">
-            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__WalkMode__.png" alt="" />
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__WalkMode__.svg" alt="" />
             <span class="na-nav-toolbar__label">Walk</span>
         </button>
         <button class="na-nav-toolbar__btn" id="naNavToolbarFlyBtn" type="button" aria-pressed="false" title="Fly mode" style="display:none;">
-            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.png" alt="" />
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.svg" alt="" />
             <span class="na-nav-toolbar__label">Fly</span>
         </button>
         <button class="na-nav-toolbar__btn" id="naNavToolbarResetBtn" type="button" title="Reset view to project start position">
-            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.png" alt="" />
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.svg" alt="" />
             <span class="na-nav-toolbar__label">Reset View</span>
         </button>
         <button class="na-nav-toolbar__btn" id="naNavToolbarHelpBtn" type="button" title="Navigation help">
-            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OpenNavHelpPanel__.png" alt="" />
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OpenNavHelpPanel__.svg" alt="" />
             <span class="na-nav-toolbar__label">Help</span>
         </button>
         <!-- Mobile-only (<=768px): divider + hamburger swap the toolbar for the Tools & Settings menu -->
@@ -1152,7 +1180,7 @@
                 <!-- UI SECTION | Orbit Mode Instructions -->
                 <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpOrbitSection">
                     <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
-                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OrbitMode__.png" alt="">
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OrbitMode__.svg" alt="">
                         <span class="na-nav-help__section-title">Orbit Mode (Default)</span>
                         <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
                     </button>
@@ -1194,7 +1222,7 @@
                 <!-- UI SECTION | Walk Mode Instructions (shown only when enabled) -->
                 <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpWalkSection" style="display:none;">
                     <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
-                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__WalkMode__.png" alt="">
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__WalkMode__.svg" alt="">
                         <span class="na-nav-help__section-title">Walk Mode</span>
                         <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
                     </button>
@@ -1233,7 +1261,7 @@
                 <!-- UI SECTION | Fly Mode Instructions (shown only when enabled) -->
                 <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpFlySection" style="display:none;">
                     <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
-                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.png" alt="">
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.svg" alt="">
                         <span class="na-nav-help__section-title">Fly Mode</span>
                         <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
                     </button>
@@ -1273,7 +1301,7 @@
                 <!-- UI SECTION | General Controls -->
                 <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpGeneralSection">
                     <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
-                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.png" alt="">
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.svg" alt="">
                         <span class="na-nav-help__section-title">General</span>
                         <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
                     </button>
@@ -1351,8 +1379,12 @@
         <div class="na-confirm-dialog__panel" role="document">
             <div class="na-confirm-dialog__title" id="naConfirmDialogTitle">Confirm</div>
             <div class="na-confirm-dialog__message" id="naConfirmDialogMessage"></div>
+            <!-- The word to type before a final action (Na__AppUtils__ConfirmDialog__Choose typeToConfirm, e.g. delete) -->
+            <input class="na-confirm-dialog__input" id="naConfirmDialogInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" style="display:none;">
             <div class="na-confirm-dialog__actions">
                 <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naConfirmDialogCancel" type="button">Cancel</button>
+                <!-- The third answer, for Na__AppUtils__ConfirmDialog__Choose only (e.g. Save and Start New) -->
+                <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naConfirmDialogAlternate" type="button" style="display:none;"></button>
                 <button class="na-dropdown-menu__action na-confirm-dialog__confirm" id="naConfirmDialogConfirm" type="button">Confirm</button>
             </div>
         </div>
@@ -1380,6 +1412,7 @@
     import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeVerticalCorrectionControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
+    import { Na__PageLayoutBridge__Initialize } from './02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PageLayoutBridge__.js';
     import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
     import { Na__UiFeature__InitializeOrbitMaxDistanceDevControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js';
     import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
@@ -1409,6 +1442,9 @@
     import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__Feature__BreadcrumbNav__Initialize } from './02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js';
+    import { Na__AppPages__Initialize } from './02__Src__AppModules/36__System__AppPages/Na__AppPages__Navigation__.js';
+    import { Na__DrawingPage__Initialize } from './02__Src__AppModules/36__System__AppPages/Na__AppPages__DrawingPage__Host__.js';
+    import { Na__SavedDrawings__Initialize } from './02__Src__AppModules/36__System__AppPages/Na__AppPages__SavedDrawings__.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     import { Na__FogPlaneSystem__SetFogEnabled, Na__FogPlaneSystem__IsFogEnabled } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
     import { Na__RenderLoop__RequestRender } from './02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js';
@@ -1472,7 +1508,7 @@
     // The editor, its tab strip and its Dev section are imported by the loader
     // the first time each is needed, never at start-up.
     // ------------------------------------------------------------
-    import { Na__LeLoad__Initialize } from './02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js';
+    import { Na__LeLoad__Initialize, Na__LeLoad__Leave } from './02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Video Studio System (app admins only)
@@ -1848,7 +1884,9 @@
         'ValeVision__PresentationMode__ToggleViewsPanel' : () => Na__PresentationMode__UI__ToggleSceneCarousel(),
         'ValeVision__PresentationMode__NextScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToNextScene();      }, // <-- Guard: carousel visible + not flying
         'ValeVision__PresentationMode__PrevScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToPreviousScene(); }, // <-- Guard: carousel visible + not flying
-        'ValeVision__App__NavigateBack'                  : () => window.history.back(),                                                                                                                    // <-- Alt+Backspace: back to the page before (often the Gallery)
+        // 'ValeVision__App__NavigateBack' (Alt+Backspace) has no callback here since v2.76.0: the app pages
+        // (Na__AppPages__Navigation__.js) take Alt+Backspace, Alt+Left and Alt+Right on every page, the
+        // Drawing Editor's frame included. Its row in the dictionary stays as documentation.
         'ValeVision__FogPlane__ToggleFogAndBarrier'      : () => {                                                                                                                                         // <-- Alt+Shift+F: fog + camera forcefield
             const nextEnabled = !Na__FogPlaneSystem__IsFogEnabled();
             Na__FogPlaneSystem__SetFogEnabled(nextEnabled);
@@ -1926,6 +1964,7 @@
     );
     Na__LineworkSettings__Initialize(Na__Scene__Main, () => Na__AppFlow__PipelineRef.current); // <-- Runtime linework thickness + silly lines state
     Na__UiFeature__InitializeLineworkSettingsControls();                   // <-- Advanced Linework Settings sliders (export panel)
+    Na__PageLayoutBridge__Initialize({ controls : Na__Controls__Orbit });  // <-- Create Drawing page: re-render from a layout's saved view; Saved Drawings button
     // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
     // ------------------------------------------------------------
 
@@ -2363,6 +2402,17 @@
         appConfig   : Na__AppConfig__Data,                                      // <-- LayoutEditor__Config (web read-only flag)
         showToast   : Na__UiFeature__ShowToast
     });
+    // ------------------------------------------------------------
+
+    // APP PAGES | The Drawing Editor as a page of this window (Create Drawing, Saved Drawings), no new tabs
+    // @delegate: ./02__Src__AppModules/36__System__AppPages/
+    // Each page registers first; then the navigation starts: the address
+    // (?project=<id>&page=drawing), Back and Forward, Alt+Left / Alt+Right /
+    // Alt+Backspace and the breadcrumb trail's Model View crumb. The model's
+    // rendering is paused while a page is up.
+    Na__DrawingPage__Initialize({ leaveLayoutEditor : Na__LeLoad__Leave });   // <-- Never over a drawing tab: the Layout Editor is left first
+    Na__AppPages__Initialize();
+    Na__SavedDrawings__Initialize();                                          // <-- Tools & Settings > Drawings: the job's saved layouts, when there are some
     // ------------------------------------------------------------
 
     // DRAWING PLANES | Every plan and elevation plane, shown, dragged and picked in the 3D view

@@ -78,6 +78,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 09-Oct-2026 - Version 1.1.1
+# - FIX: a copied picture took its source's mode, which could be the 0600 the old write_bytes_atomic
+#   left; it is set to vv_shared.FILE_MODE (0664) before it is moved into place.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - Moved into Api__ValeVision3D for app.valegardenhouses.com: projects come from the Master Library
 #   (<project>/ValeVision3D/UserData__UserGeneratedContent__Drawings/05__Layout__DrawingDocs__Images); every
@@ -232,6 +236,7 @@ def _copy_file(source, target):
     os.close(handle)
     try:
         shutil.copy2(source, temp_path)
+        os.chmod(temp_path, vv_shared.FILE_MODE)                                 # <-- copy2 carries the source's mode (an older upload's 0600): readable again
         _replace_with_retry(temp_path, target)
     except BaseException:
         try:

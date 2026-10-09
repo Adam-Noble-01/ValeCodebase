@@ -76,6 +76,8 @@
         --Theia_Warn                       : #8a5a00;
         --Theia_WarnBg                     : #fff4dc;
         --Theia_Focus                      : #2f6f9f;
+        --Theia_ActiveBg                   : #e9f1f8;                      /* <-- The playing video's row in the list: a light blue */
+        --Theia_ActiveLine                 : #172b3a;                      /* <-- Its navy edge */
 
         /* Type | Open Sans, as every Vale app */
         --Theia_Font                       : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -92,6 +94,7 @@
         --Theia_HeaderHeight               : 60px;                         /* <-- ValeVision 3D's header bar */
         --Theia_Gutter                     : 24px;
         --Theia_SideWidth                  : 360px;
+        --Theia_ColumnGap                  : 28px;                         /* <-- Player to divider, and divider to list (Adam's mockup, 08-Oct-2026) */
         --Theia_MaxWidth                   : 1800px;
 
         /* Motion */
@@ -114,15 +117,15 @@
         --Theia_TextFaint                  : #9ea7af;
         --Theia_WarnBg                     : #4f4636;
         --Theia_Warn                       : #f1d08e;
+        --Theia_ActiveBg                   : #4b5763;
+        --Theia_ActiveLine                 : #dfe7ee;
     }
 
-    /* CINEMA | ...except the header bar, which keeps the Vale colours (Adam, 07-Oct-2026):
-       the page dims under it, while the navy logo, "ValeVision THEIA" and the user bubble stay
-       exactly as they are. These are the :root values above, restated for the header alone. */
+    /* CINEMA | The header BAR dims with the page (its background, rule and shadow take the cinema
+       values above, fading together), but what sits on it keeps the Vale colours (Adam, 08-Oct-2026):
+       the navy logo, "ValeVision THEIA" and the user bubble stay exactly as they are. These are the
+       :root values, restated for the header's contents alone. */
     body.theia--cinema .theia-header {
-        --Theia_HeaderBg                   : #ffffff;
-        --Theia_HeaderLine                 : #172b3a;
-        --Theia_Shadow                     : 0 2px 10px rgba(15, 30, 40, 0.08);
         --Theia_Text                       : #172b3a;
         --Theia_TextSecondary              : #5a6d7a;
         --Theia_TextFaint                  : #8a99a6;

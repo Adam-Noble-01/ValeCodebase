@@ -5,7 +5,7 @@
     "TheiaVideo__Library__ProjectCode": "64135",
     "TheiaVideo__Library__ProjectName": "Holt",
     "TheiaVideo__Library__ProjectTitle": "",
-    "TheiaVideo__Library__UpdatedIso": "2026-10-07T15:10:15.273Z",
+    "TheiaVideo__Library__UpdatedIso": "2026-10-08T10:36:55.592Z",
     "TheiaVideo__Library__UpdatedBy": "USR00000001",
     "TheiaVideo__Library__Videos": [
         {
@@ -121,7 +121,45 @@
                 "TheiaVideo__Export__QualityStop": 3,
                 "TheiaVideo__Export__AntiAliasSamples": 16
             }
+        },
+        {
+            "TheiaVideo__Video__Id": "Video_004",
+            "TheiaVideo__Video__Order": 4,
+            "TheiaVideo__Video__Visible": true,
+            "TheiaVideo__Video__Title": "Interior - Balcony",
+            "TheiaVideo__Video__Description": "A fly-through of the interior from the front entrance door, through the orangery out to the balcony.",
+            "TheiaVideo__Video__MetaUpdatedIso": "2026-10-08T09:32:03.293Z",
+            "TheiaVideo__Video__MetaUpdatedBy": "USR00000001",
+            "TheiaVideo__Video__Scheme": "Scheme-01",
+            "TheiaVideo__Video__DurationMs": 32250,
+            "TheiaVideo__Video__Source": "ValeVision3D",
+            "TheiaVideo__Video__SourceVideoId": "Video_004",
+            "TheiaVideo__Video__SourceFingerprint": "sha256:23c94ceedfbecbf89a66ff48d8621da1d91f9f789c3510e3f80aac88ea153c21",
+            "TheiaVideo__Video__File": {
+                "TheiaVideo__File__Path": "Videos__Scheme-01/64135__Holt__TheiaVideo__Video_004__2160p__.mp4",
+                "TheiaVideo__File__Quality": "4K",
+                "TheiaVideo__File__Width": 3240,
+                "TheiaVideo__File__Height": 2160,
+                "TheiaVideo__File__Fps": 60.0,
+                "TheiaVideo__File__Codec": "avc1.640C34",
+                "TheiaVideo__File__Bytes": 233566188,
+                "TheiaVideo__File__BitrateKbps": 57939,
+                "TheiaVideo__File__DurationMs": 32250,
+                "TheiaVideo__File__FastStart": true,
+                "TheiaVideo__File__HasAudio": false,
+                "TheiaVideo__File__UploadedIso": "2026-10-08T09:25:57.188Z"
+            },
+            "TheiaVideo__Video__PublishedIso": "2026-10-08T09:25:57.390Z",
+            "TheiaVideo__Video__PublishedBy": "USR00000001",
+            "TheiaVideo__Video__Poster": "64135__Holt__TheiaVideo__Video_004__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail": "64135__Holt__TheiaVideo__Video_004__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__Export": {
+                "TheiaVideo__Export__Aspect": "3:2",
+                "TheiaVideo__Export__Fps": 60,
+                "TheiaVideo__Export__QualityStop": 3,
+                "TheiaVideo__Export__AntiAliasSamples": 16
+            }
         }
     ],
-    "_rev": 11
+    "_rev": 20
 }

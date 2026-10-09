@@ -18,8 +18,36 @@
 // - All drawing respects the current canvasTransform (pan/zoom).
 // - All appearance values are read from state.config
 //   (PageLayout__CanvasAppearance__Config section) with hard-coded fallbacks.
+// - DrawImageLayer draws the picture with its trims at any scale: the live
+//   canvas, the PDF flatten and the saved layout's thumbnail all call it, so
+//   the three can never disagree about a trim.
+// - The composition guide is drawn over the picture, under its handles.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.75.0)
+// - DrawImageLayer exported (the picture and its trims, one implementation for
+//   screen, PDF and thumbnail); the composition guide drawn; a sheet with no
+//   picture yet (opened on the saved list) draws as an empty sheet; the picture
+//   is drawn with high-quality smoothing (a 6K picture shrunk to the screen).
+//
+// 11-Feb-2026 - Version 1.0.0
+// - Initial implementation.
 //
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | The Composition Guide's Drawing
+    // ------------------------------------------------------------
+    import { Na__PageLayout__Guide__Draw } from './Na__PageLayoutSystem__CompositionGuide__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -101,6 +129,49 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Draw the Picture With Its Trims at a Scale (Screen, PDF, Thumbnail)
+    // ------------------------------------------------------------
+    // pxPerMm: the context's pixels per sheet mm (the live zoom, or an export's
+    // dots). The context's origin is the sheet's top-left corner. The picture
+    // stays at full size; the clip hides the trimmed edges.
+    // ------------------------------------------------------------
+    function Na__PageLayout__DrawImageLayer(ctx, state, pxPerMm) {
+        const image = state ? state.viewportImage : null;
+        const it    = state ? state.imageTransform : null;
+        if (!image || !it || !(it.width > 0) || !(it.height > 0)) return;
+
+        const imgX = it.x * pxPerMm; // <-- Image X in context pixels
+        const imgY = it.y * pxPerMm; // <-- Image Y in context pixels
+        const imgW = it.width * pxPerMm; // <-- Image width in context pixels
+        const imgH = it.height * pxPerMm; // <-- Image height in context pixels
+
+        // Calculate clipped region dimensions
+        // ------------------------------------------------------------
+        const clipT = (it.clipTop    || 0) * pxPerMm; // <-- Clip top in context pixels
+        const clipR = (it.clipRight  || 0) * pxPerMm; // <-- Clip right in context pixels
+        const clipB = (it.clipBottom || 0) * pxPerMm; // <-- Clip bottom in context pixels
+        const clipL = (it.clipLeft   || 0) * pxPerMm; // <-- Clip left in context pixels
+
+        const visibleX = imgX + clipL; // <-- Visible region X start
+        const visibleY = imgY + clipT; // <-- Visible region Y start
+        const visibleW = imgW - clipL - clipR; // <-- Visible region width
+        const visibleH = imgH - clipT - clipB; // <-- Visible region height
+
+        // Draw image with clipping mask applied (image stays at full size)
+        // ------------------------------------------------------------
+        if (visibleW > 0 && visibleH > 0) {
+            ctx.save(); // <-- Save context state
+            ctx.beginPath(); // <-- Start clipping path
+            ctx.rect(visibleX, visibleY, visibleW, visibleH); // <-- Define visible region
+            ctx.clip(); // <-- Apply clipping mask
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high'; // <-- A 6K picture shrunk to the screen or a thumbnail stays clean
+            ctx.drawImage(image, imgX, imgY, imgW, imgH); // <-- Draw full image (clip hides trimmed edges)
+            ctx.restore(); // <-- Restore context state (removes clip)
+        }
+    }
+    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -209,50 +280,21 @@
 
         // DRAW VIEWPORT IMAGE | User-positionable foreground layer with clipping
         // ------------------------------------------------------------
-        if (viewportImage) {
+        Na__PageLayout__DrawImageLayer(ctx, state, zoom); // <-- Same routine as the PDF and the thumbnail
+
+        // DRAW COMPOSITION GUIDE | Over the picture, under its handles (never printed)
+        // ------------------------------------------------------------
+        Na__PageLayout__Guide__Draw(ctx, state, zoom);
+
+        // DRAW SELECTION BORDER AND HANDLES | When image is selected
+        // ------------------------------------------------------------
+        if (viewportImage && isImageSelected) {
             const imgX = imageTransform.x * zoom; // <-- Image X in CSS pixels
             const imgY = imageTransform.y * zoom; // <-- Image Y in CSS pixels
             const imgW = imageTransform.width * zoom; // <-- Image width in CSS pixels
             const imgH = imageTransform.height * zoom; // <-- Image height in CSS pixels
-
-            // Extract clipping values in mm
-            // ------------------------------------------------------------
-            const clipT = imageTransform.clipTop || 0; // <-- Clip from top in mm
-            const clipR = imageTransform.clipRight || 0; // <-- Clip from right in mm
-            const clipB = imageTransform.clipBottom || 0; // <-- Clip from bottom in mm
-            const clipL = imageTransform.clipLeft || 0; // <-- Clip from left in mm
-
-            // Calculate clipped region dimensions
-            // ------------------------------------------------------------
-            const clipTpx = clipT * zoom; // <-- Clip top in CSS pixels
-            const clipRpx = clipR * zoom; // <-- Clip right in CSS pixels
-            const clipBpx = clipB * zoom; // <-- Clip bottom in CSS pixels
-            const clipLpx = clipL * zoom; // <-- Clip left in CSS pixels
-
-            const visibleX = imgX + clipLpx; // <-- Visible region X start
-            const visibleY = imgY + clipTpx; // <-- Visible region Y start
-            const visibleW = imgW - clipLpx - clipRpx; // <-- Visible region width
-            const visibleH = imgH - clipTpx - clipBpx; // <-- Visible region height
-
-            // Draw image with clipping mask applied (image stays at full size)
-            // ------------------------------------------------------------
-            if (visibleW > 0 && visibleH > 0) {
-                ctx.save(); // <-- Save context state
-                ctx.beginPath(); // <-- Start clipping path
-                ctx.rect(visibleX, visibleY, visibleW, visibleH); // <-- Define visible region
-                ctx.clip(); // <-- Apply clipping mask
-
-                ctx.drawImage(viewportImage, imgX, imgY, imgW, imgH); // <-- Draw full image (clip hides trimmed edges)
-
-                ctx.restore(); // <-- Restore context state (removes clip)
-            }
-
-            // DRAW SELECTION BORDER AND HANDLES | When image is selected
-            // ------------------------------------------------------------
-            if (isImageSelected) {
-                Na__PageLayout__DrawSelectionBorder(ctx, imgX, imgY, imgW, imgH, appearance); // <-- Draw border
-                Na__PageLayout__DrawSelectionHandles(ctx, imgX, imgY, imgW, imgH, appearance); // <-- Draw all 8 handles
-            }
+            Na__PageLayout__DrawSelectionBorder(ctx, imgX, imgY, imgW, imgH, appearance); // <-- Draw border
+            Na__PageLayout__DrawSelectionHandles(ctx, imgX, imgY, imgW, imgH, appearance); // <-- Draw all 8 handles
         }
 
         ctx.restore(); // <-- Restore context state
@@ -269,7 +311,8 @@
     // MODULE EXPORTS | Canvas Render Pipeline API
     // ------------------------------------------------------------
     export {
-        Na__PageLayout__RenderFrame
+        Na__PageLayout__RenderFrame,
+        Na__PageLayout__DrawImageLayer
     };
     // ------------------------------------------------------------
 

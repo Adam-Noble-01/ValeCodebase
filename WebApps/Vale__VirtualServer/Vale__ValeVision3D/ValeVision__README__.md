@@ -311,11 +311,47 @@ The orbit target position is still reported in the Camera JSON export panel, but
 # -----------------------------------------------------------------------------
 ## Page Layout View System (LayoutVision 2D)
 
-The **Page Layout View System** is a standalone 2D document composition tool that opens in a new browser tab. It allows users to position rendered 3D viewport images onto an A3 title block template and export the final layout as an exact-scale PDF.
+The **Page Layout View System** is the 2D document composition page of ValeVision 3D, the **Drawing Editor**. Since v2.76.0 it opens as a page of the app's own window, not a new browser tab. It allows users to position rendered 3D viewport images onto an A3 title block template and export the final layout as an exact-scale PDF.
 
 ### Overview
 
-When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D renders the current 3D scene at the configured resolution and aspect ratio, then opens a new tab with the **LayoutVision 2D** page layout system. The rendered image appears on an A3 landscape canvas (420×297mm) over a Vale title block template.
+When the user clicks **"Create Drawing"** in the Export Image panel, ValeVision3D renders the current 3D scene at the configured resolution and aspect ratio, then opens the **Drawing Editor** page (**LayoutVision 2D**) in the same window. The rendered image appears on an A3 landscape canvas (420×297mm) over a Vale title block template, centred in the drawing frame left of the title block.
+
+**Saved Layouts in the Drawings menu** (v2.76.1): under Create Drawing, Tools & Settings > Drawings lists the job's saved layouts exactly as the Drawing Editor does (thumbnails, who updated and created each, Everyone / Mine, Open Drawing, and a Delete that stays muted until pointed at), and only when the job has some (signed-in people: the list needs an account). Open puts the layout on the editor's sheet without a new render; the one already on the sheet is outlined, and Open on it brings the editor back as it was. Delete is final (v2.76.2): the word delete has to be typed first, then the server removes the layout and every picture of it (the editor's rule: its creator, or Management and up). It replaced the Saved Drawings button. The cards are one shared module and stylesheet used by both (`Na__PageLayoutSystem__SavedList__.js`, `Na__PageLayoutSystem__Styles__SavedList__.css`).
+
+### A Page of the App, Not a Tab (v2.76.0)
+
+Adam, 09-Oct-2026: no more browser tabs opening; everything navigable from the app; the model paused while a drawing is edited.
+
+```
+Before   Create Drawing -> blank tab -> render -> window.__Na__PageLayout__PendingImage -> tab loads the page,
+         which reads it (and the render bridge) through window.opener; Close = window.close(); the 3D tab
+         kept rendering behind every tab
+Now      Create Drawing -> render -> Na__DrawingPage__OpenPicture -> history entry ?project=<id>&page=drawing
+         -> the page in a frame over the Model View (picture and bridge through window.parent);
+         the 3D render loop held ('drawing-editor') until the Model View comes back
+```
+
+- **Address**: the Model View is `?project=<id>`, the Drawing Editor `?project=<id>&page=drawing` (`36__System__AppPages/Na__AppPages__Navigation__.js`). Opening it pushes a history entry, so the browser's Back and Forward and a mouse's side buttons move between the two.
+- **Keys** on both pages and inside the editor: **Alt+Left** Back, **Alt+Right** Forward, **Alt+Backspace** Back. From the Model View, Back is the page before the app (often ValeVision Gallery). Taken in the capture phase, so the 3D view's fine camera nudge stays on Alt+W/A/S/D and Alt+Up/Down only. Left alone in a text box, while a dialog is open, and on the Layout Editor's drawing and document tabs.
+- **Breadcrumbs**: the top-left card reads Project Gallery / project / **Model View** / **Drawing Editor** on the editor, Model View being the link back. The editor's sheet fits below it.
+- **The model pauses**: while the editor is up the render loop is held, the 3D canvas hidden (by visibility, so a Re-Render still renders offscreen), the 3D menus and panels put away (`body.na-app-page--active`), and the 3D keys stand down (the key scope's new `page` scope). The 3D view is left exactly as it was (Orbit, Walk, Fly, a plan or an elevation).
+- **Back keeps the drawing**: going back to the Model View keeps the drawing open, put away; Forward (Alt+Right), or Open on its card in the Drawings menu, returns to it as it was. The menu's Close is **Back to Model View** inside the app.
+- **A new drawing asks first**: Create Drawing over an open drawing with changes not on the Vale Cloud asks **Save and Start New** (the editor comes up, saves through its own Save Drawing, then the new picture renders), **Discard and Start New** or **Cancel**. Someone who cannot save is asked only whether to replace it.
+- **The page is embedded**: the same `Na__PageLayoutSystem__Layout__.html`, in a frame under the app's header (`?embed=1` puts its own header away), so its styles, keys and ids never meet the 3D app's. On its own (an old bookmark or link) it moves into the app at `?project=<id>&page=drawing`; `?standalone=1` keeps it alone. A tab an older ValeVision 3D opened keeps working until that tab is reloaded.
+- **Activity**: the editor opening is reported to the activity ledger as a view ("the Drawing Editor").
+
+### Side Menu, Saved Layouts, Composition Guide, Re-Render (v2.75.0)
+
+- **Side menu** on the right: Drawing Layout, Saved Layouts, Composition Guide, Picture, Render Quality, Export, and Close. Every section starts folded (v2.75.1). The menu folds away, and its width drags from its left edge (double-click the edge for the default); it remembers (per browser) whether it was folded and its width.
+- **Save Drawing** (Export) is the same save as Save Layout / Save Changes: a desaturated red "Save Drawing" until the Vale Cloud has the drawing, then a green "Drawing Saved" (red again after any change). Every confirmed save shows a green "Synced to the Vale Cloud" toast naming the layout, the job and the time.
+- **Undo and redo** (v2.75.3): Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z (Cmd on a Mac), and Undo / Redo buttons in the menu's head. Steps are the picture's place, size and trims, the guide, and re-renders; undoing back to the saved drawing makes it clean again (`Na__PageLayoutSystem__UndoHistory__.js`).
+- **An unsaved drawing is never closed without asking** (v2.75.2): closing or leaving the app (or the browser) brings up the browser's "Leave site?", then (if they stay, and the editor is on screen) the page's own Save Drawing / Keep Editing / Close Without Saving. In a tab of its own the menu's Close asks the same at once; inside the app it is Back to Model View, which loses nothing (`Na__PageLayoutSystem__UnsavedGuard__.js`).
+- **Saved layouts per job, labelled by user.** Any staff account (Employee and up) saves; every signed-in account sees the job's layouts; anyone who can save may update any layout. The server stamps who created each layout and who updated it last (from the session). Delete: the creator, or Management and up. **Delete is final** (v2.76.2, Adam): the app asks you to type the word delete, then the server removes the layout, its picture, its thumbnail and its replaced pictures for good (no archive). Re-saves keep the last 5 replaced pictures per drawing until it is deleted. Each layout has its own Rev: a save built on an older copy is refused with the other person's name.
+  - Data: `<project>/ValeVision3D/UserData__UserGeneratedContent__Images/ValeVision__PageLayouts__.json`, pictures and thumbnails in `PageLayouts/<layout id>/` beside it (user data: collected to the PC, never pushed over).
+  - API: `api/projects/<id>/page-layouts` (GET list, POST save), `/page-layouts/files/<path>`, `/page-layouts/<layout id>/delete` (`Server__Api/Api__ValeVision3D/ValeVision3D__Api__PageLayouts__.py`).
+- **Composition guide**: a grid of thirds and a centre cross over the drawing frame. Drag an edge or corner in or out; Shift (or Move Opposite Edges Together) moves the opposite edge too. Margins in mm from the frame (negative: outside it), Lock Guide, Reset to Frame. Visual only (no snapping), never printed, saved with the layout.
+- **Render Quality and Re-Render**: the Export Image panel's choices (resolution, aspect ratio, anti-aliasing, Enhance Whitecard, linework, profile line and silly lines). Re-Render asks ValeVision 3D (`window.parent.Na__PageLayout__RenderBridge`, through the page's host link) to render the picture again from the view saved with it (camera, orbit target, layers, lighting, vertical correction), then restores the Model View's own view.
 
 ### Features
 
@@ -334,16 +370,16 @@ When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D r
 - PDF files maintain exact 1:1 scale with the A3 document (no distortion)
 
 **Vale-Branded UI**
-- Header matches main ValeVision3D app styling (white background, Vale logo, blue border)
-- Secondary actions bar below header with primary/secondary/close button styles
+- Header matches main ValeVision3D app styling (white background, Vale logo, blue border), with the shared sign-in bubble
+- Side menu styled as the main app's Tools & Settings menu (the actions bar below the header was retired in v2.75.0)
 - Canvas background uses Vale grey branding (#b0b5ba)
 
 ### Technical Architecture
 
 **Data Transfer**
-- Rendered image passed from main app to layout page via `window.opener` global property
+- Rendered image (a PNG Blob) left on the app's window as `window.__Na__PageLayout__PendingImage` and read by the page through `window.parent` (v2.76.0; `window.opener` before, and still for a tab an older version opened)
 - Avoids localStorage 5-10 MB size limit (supports high-res 4096px exports up to 30+ MB)
-- Layout page reads image on load, then clears the reference to free memory
+- Layout page reads image on load, then clears the reference to free memory, and posts `Na__PageLayout__Ready` (the app checks it comes from its frame)
 
 **Coordinate System**
 - All image positioning stored in mm relative to A3 document origin (top-left)
@@ -368,15 +404,38 @@ When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D r
 
 | Module | Purpose |
 | :----- | :------ |
-| `Na__PageLayoutSystem__Layout__.html` | Standalone HTML page with header, canvas, action buttons |
-| `Na__PageLayoutSystem__Stylesheet__.css` | Layout page styles; imports main app's header.css |
-| `Na__PageLayoutSystem__SystemLogic__Main__.js` | State management, image loading, canvas sizing, resize handling |
-| `Na__PageLayoutSystem__CanvasRenderPipeline__.js` | 2D rendering of A3 paper, title block, image, handles |
+| `Na__PageLayoutSystem__Layout__.html` | The page: header (on its own only), canvas and side menu; the head's script marks it embedded or moves it into the app |
+| `Na__PageLayoutSystem__Styles__Main__.css` | Layout page styles (workspace, side menu, cards, toast, embedded); imports main app's header CSS |
+| `Na__PageLayoutSystem__Config.json` | Sheet, drawing frame, PDF, canvas, navigation, guide, render choices, saving |
+| `Na__PageLayoutSystem__Host__.js` | The page's link to ValeVision 3D: the picture, the render bridge, the ready signal, Back to Model View, what the app asks (Status, Save, StandAside, RevealSaved) |
+| `Na__PageLayoutSystem__SystemLogic__Main__.js` | State, picture loading (from the app or a saved layout), drawing frame, canvas sizing |
+| `Na__PageLayoutSystem__CanvasRenderPipeline__.js` | 2D rendering of A3 paper, title block, image (DrawImageLayer, shared with PDF and thumbnails), guide, handles |
 | `Na__PageLayoutSystem__2dNavigationControls__.js` | Zoom toward cursor, middle/right-click pan |
-| `Na__PageLayoutSystem__Controls__Pc__.js` | Mouse interaction: hit-test, drag, resize, cursor feedback |
-| `Na__PageLayoutSystem__Controls__TouchScreen__.js` | Touch interaction: drag, resize, pinch zoom, pan |
+| `Na__PageLayoutSystem__Controls__Pc__.js` | Mouse interaction: picture handles, guide drags (Shift pairs edges), cursor feedback |
+| `Na__PageLayoutSystem__Controls__TouchScreen__.js` | Touch interaction: drag, resize, guide drags, pinch zoom, pan |
+| `Na__PageLayoutSystem__CompositionGuide__.js` | The guide's geometry, drag and clamp maths, hit-testing, drawing, save and open |
+| `Na__PageLayoutSystem__CompositionGuide__Controls__.js` | The menu's guide section (show, lock, pair edges, margins, reset) |
+| `Na__PageLayoutSystem__SideMenu__.js` | Menu shell (sections start folded, fold away, drag width), the job's name, picture tools, Back to Model View (Close in a tab of its own) |
+| `Na__PageLayoutSystem__SavedLayouts__Controls__.js` | Drawing Layout (name, save, save as new), Save Layout File (Export), the job's Saved Layouts list, the synced toast; opens a layout the app's Drawings menu picked |
+| `Na__PageLayoutSystem__SavedList__.js` | The saved layout cards and Everyone / Mine, shared with the 3D app's Drawings menu (a leaf: no imports) |
+| `Na__PageLayoutSystem__Styles__SavedList__.css` | Their look, loaded by both the page and the 3D app |
+| `Na__PageLayoutSystem__LayoutStore__.js` | The page-layouts API client; building, opening and thumbnailing a layout |
+| `Na__PageLayoutSystem__RenderControls__.js` | Render Quality section and Re-Render through ValeVision 3D's bridge |
+| `Na__PageLayoutSystem__UserSession__.js` | The shared Vale sign-in (no wall), who may save or delete |
+| `Na__PageLayoutSystem__UiNotify__.js` | Toast, the Synced to the Vale Cloud toast, and the page's own events |
+| `Na__PageLayoutSystem__UnsavedGuard__.js` | The warning before an unsaved drawing is closed (leaving the app or browser; the menu's Close in a tab of its own), and the app's Save and Start New |
+| `Na__PageLayoutSystem__UndoHistory__.js` | Undo and redo: Ctrl+Z / Ctrl+Y and the Undo / Redo buttons |
 | `Na__PageLayoutSystem__PdfExport__A3__.js` | jsPDF integration for A3-scale PDF export |
 | `01__Dependencies__VersionLocked/jspdf.umd.js` | jsPDF v4.1.0 vendored (1.2 MB self-contained UMD build) |
+
+On the ValeVision 3D side: `30__System__ImageExport/Na__ImageExport__PageLayoutHandoff__.js` (the source view and render settings handed to the page, and their pose and restore) and `Na__ImageExport__PageLayoutBridge__.js` (the re-render bridge), and since v2.76.0 `36__System__AppPages/`:
+
+| Module | Purpose |
+| :----- | :------ |
+| `Na__AppPages__Navigation__.js` | The app's pages in one window: addresses (`&page=`), history entries, Back / Forward, Alt+Left / Alt+Right / Alt+Backspace, the breadcrumb's page crumb, `na-app-page-changed` |
+| `Na__AppPages__DrawingPage__Host__.js` | The Drawing Editor page: its frame, the render loop and key scope held while it is up, the picture handed over, a saved layout opened, the new drawing question |
+| `Na__AppPages__SavedDrawings__.js` | Tools & Settings > Drawings: the job's saved layouts (the editor's own cards), shown only when there are some; Open and Delete |
+| `Na__AppPages__Styles__.css` | The page host, and the 3D view's menus and panels put away while a page is up |
 
 ### Integration with Export Controls
 

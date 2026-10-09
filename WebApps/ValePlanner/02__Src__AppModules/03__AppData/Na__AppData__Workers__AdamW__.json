@@ -3510,6 +3510,14 @@
           "endTime": "15:30",
           "title": "MaxModel |  Updates Washington",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1791456192836",
+          "date": "2026-10-09",
+          "startTime": "12:00",
+          "endTime": "13:00",
+          "title": "Whitecard |  Harris",
+          "color": "na-shift-color-orange"
         }
       ]
     }

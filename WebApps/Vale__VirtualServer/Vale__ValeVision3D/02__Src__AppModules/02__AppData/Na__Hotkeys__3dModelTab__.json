@@ -185,7 +185,29 @@
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__App__NavigateBack",
-            "Na__Hotkey__Description" : "Go back to the previous page (ValeVision Gallery)"
+            "Na__Hotkey__Description" : "Go back a page: from the Drawing Editor to the Model View, from the Model View to the page before (ValeVision Gallery). Handled by Na__AppPages__Navigation__ on every page (no callback here)"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "app_navigate_back_arrow",
+            "Na__Hotkey__Key"         : "ArrowLeft",
+            "Na__Hotkey__AltKey"      : true,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
+            "Na__Hotkey__Action"      : "ValeVision__App__PageBack",
+            "Na__Hotkey__Description" : "Go back a page, as Alt+Backspace. Handled by Na__AppPages__Navigation__ on every page (no callback here); the fine camera nudge stays on Alt+W/A/S/D and Alt+Up/Down"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "app_navigate_forward_arrow",
+            "Na__Hotkey__Key"         : "ArrowRight",
+            "Na__Hotkey__AltKey"      : true,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
+            "Na__Hotkey__Action"      : "ValeVision__App__PageForward",
+            "Na__Hotkey__Description" : "Go forward a page: back to a Drawing Editor left with Back, as it was. Handled by Na__AppPages__Navigation__ on every page (no callback here)"
         },
 
         {

@@ -74,6 +74,8 @@ AppData__VideoData\PROJECTNUMBER__PROJECTNAME__VideoAppData__.json.--example`.
   Escape, or a click on the page outside the player, pauses it. A click on the player's card, the list, the header
   or a dialog does its own job.
 - Pressing play on the picture goes fullscreen; at the end the next video starts after a countdown.
+- **Keys:** Space (or K) pauses and plays, even after clicking a video in the list; **Ctrl+Space** stops and returns
+  to the start. Also arrows / J / L to seek, F fullscreen, M sound, Home / End, 0 to 9, Shift+N / P next / previous.
 
 ## Run It on This PC
 

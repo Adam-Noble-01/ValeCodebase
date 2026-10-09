@@ -14,6 +14,9 @@
  *   floating navigation toolbar's card styling.
  * - Collapsed state shows only the chevron toggle button; the open state
  *   reveals the "Project Gallery / <Name> - <Code> / Model View" trail.
+ * - On a page of the app (the Drawing Editor) the trail goes on to
+ *   "/ Model View / Drawing Editor", Model View styled as a link back
+ *   (ValeVision3D v2.76.0).
  *
  * =============================================================================
  */
@@ -116,6 +119,10 @@
 
     .na-breadcrumb--open .na-breadcrumb__trail {
         display                            : flex;                  /* <-- Reveal trail when open */
+    }
+
+    .na-breadcrumb__trail [hidden] {
+        display                            : none;                  /* <-- The Model View crumb and the page crumb take turns */
     }
     /* ------------------------------------------------------------ */
 

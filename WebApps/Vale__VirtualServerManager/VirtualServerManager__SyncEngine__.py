@@ -34,6 +34,10 @@ DESCRIPTION:
   changed, by push. Every app reads it (ValeShared__AppUpdate__.js) and refreshes those
   files in the browser, so nobody runs old code after a push (Cloudflare gives scripts
   and stylesheets a 4-hour browser cache). Never synced (NeverSync).
+- Activity: the apps' APIs append who did what to
+  Server__UserAccountData/UserData__ActivityLedger/ValeActivity__Ledger__<day>__.jsonl (user
+  data: Collect brings it). Fetch (tab 05, CLI activity --fetch) brings only those files, in
+  one read-only session; the payload reads them on this PC.
 - The server-side work is a small Python agent sent over stdin, so nothing has to
   be installed on the server. Shares its lock, cooldown and session log with the
   vgh-app-server skill's vps.py (%LOCALAPPDATA%\\vgh-app-server).
@@ -53,10 +57,29 @@ USAGE (CLI, used by Claude):
   python VirtualServerManager__SyncEngine__.py routes | nginx-status | nginx-test | nginx-apply
   python VirtualServerManager__SyncEngine__.py users
   python VirtualServerManager__SyncEngine__.py user-reset USR00000012 [--yes] | user-signout USR00000012 [--yes]
+  python VirtualServerManager__SyncEngine__.py activity [--fetch] [--days 7] [--find "holt link"] [--limit 40]
+         the activity ledger (tab 05): --fetch brings the server's new lines first (one read-only session)
 
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+08-Oct-2026 - Version 0.11.0
+- A year live, then archived (ValeShared__Activity__ 1.1.0 zips each month once all its days are a
+  year old into 00__Archive/ServerLogs__<yyyy>__Archived__.zip). Agent mode "activity" also sends
+  changed year zips and the server's whole ledger listing; Na__Activity__Fetch brings them and
+  Na__Activity__Tidy removes PC day files the server no longer has, only when this PC's zip holds the
+  same bytes (gone from the sync ledger too). Na__Activity__Payload(month=) loads one month: a live
+  one from the day files, an archived one unzipped first into BackupRoot/ServerLogs__AuditCache/<month>/
+  (Na__Activity__Unzip); every payload lists the months and the zips. CLI activity --month.
+
+08-Oct-2026 - Version 0.10.0
+- Activity ledger (tab 05, User activity): agent mode "activity" sends, as a tar stream, the
+  ledger files whose size or time differ from the PC's (read-only, sudo like collect);
+  Na__Activity__Fetch puts them in the mirror with the server's size and time (so compare shows
+  them in sync) and records them in the sync ledger as collected. Na__Activity__Payload reads the
+  PC's files for the last N days, plus the users (never a hash) and ValeVision Theia's client
+  links from the PC's copies. CLI: activity [--fetch] [--days] [--find] [--limit].
+
 07-Oct-2026 - Version 0.9.0
 - The deploy stamp (above): agent deploy_note(), called by mode_apply and mode_undo after the
   journal is written; it can never fail the push. Code-lane files only, outside Server__; each
@@ -144,6 +167,7 @@ import sys
 import tarfile
 import threading
 import time
+import zipfile
 from pathlib import Path
 
 
@@ -193,6 +217,13 @@ NA__USERS__FIELD_ORDER            = ("ValeUser__UniqueCode",) + NA__USERS__EDITA
                                      NA__USERS__SIGNED_OUT, "ValeUser__Account__Note")
 NA__USERS__ACTIONS                = ("reset", "signout")                       # <-- Done on the server at once (tab 04)
 NA__USERS__HISTORY_KEEP           = 30                                         # <-- Previous registers kept on this PC
+NA__ACTIVITY__DIR                 = "UserData__ActivityLedger"                 # <-- Under NA__USERS__DIR: written by every app API
+NA__ACTIVITY__FILE                = re.compile(r"^ValeActivity__Ledger__(\d{4}-\d{2}-\d{2})__\.jsonl$")
+NA__ACTIVITY__UI_LIMIT            = 20000                                      # <-- Newest events sent to tab 05 at most
+NA__ACTIVITY__ARCHIVE_DIR         = "00__Archive"                              # <-- In the ledger folder: the APIs' year zips
+NA__ACTIVITY__ARCHIVE             = re.compile(r"^ServerLogs__(\d{4})__Archived__\.zip$")
+NA__ACTIVITY__KEEP_DAYS           = 365                                        # <-- As ValeShared__Activity__: a year live, then zipped
+NA__ACTIVITY__CACHE               = "ServerLogs__AuditCache"                   # <-- Under BackupRoot: archived months unzipped to audit
 
 if os.name == "nt":
     NA__GATEWAY__SSH_DIR          = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" / "OpenSSH"
@@ -438,7 +469,7 @@ def say(msg):
     print(msg, file=sys.stderr, flush=True)
 
 def result(obj):
-    print("__VALE_RESULT__" + json.dumps(obj), file=sys.stderr if MODE in ("backup", "collect") else sys.stdout,
+    print("__VALE_RESULT__" + json.dumps(obj), file=sys.stderr if MODE in ("backup", "collect", "activity") else sys.stdout,
           flush=True)
 
 def match(rel, name, is_dir, patterns):
@@ -1242,9 +1273,38 @@ def mode_users():
     log_line(f"users {action} {code}")
     result({"ok": True, "text": text, "mtime": mtime, "backup": str(copy)})
 
+def mode_activity():
+    # Tab 05: the activity ledger's day files and year zips that differ from the PC's copies, as
+    # a tar stream, plus the server's whole listing (so the PC can tidy days the APIs archived).
+    # Read-only. The APIs append to today's file all day; a copy ends on a whole line.
+    check_paths()
+    rel = ARGS.get("dir", "")
+    d = ROOT / rel
+    if not safe_rel(rel) or not under_root(d):
+        result({"ok": False, "error": "refused: not a ledger folder"}); sys.exit(3)
+    have, since, sent, total, listing = ARGS.get("have", {}), ARGS.get("since", ""), [], 0, {}
+    found = sorted(d.glob("ValeActivity__Ledger__*__.jsonl")) + sorted(d.glob("00__Archive/ServerLogs__*__Archived__.zip")) \
+        if d.is_dir() else []
+    with tarfile.open(fileobj=sys.stdout.buffer, mode="w|gz") as tar:
+        for p in found:
+            if not p.is_file() or p.is_symlink():
+                continue
+            name = p.relative_to(d).as_posix()
+            listing[name] = state(p)
+            if name.startswith("ValeActivity__"):
+                day = p.name[len("ValeActivity__Ledger__"):-len("__.jsonl")]
+                if since and day < since:
+                    continue
+                total += 1
+            if have.get(name) == listing[name]:
+                continue
+            tar.add(str(p), arcname=name)
+            sent.append(name)
+    result({"ok": True, "sent": sent, "server_files": total, "exists": d.is_dir(), "listing": listing})
+
 {"scan": mode_scan, "apply": mode_apply, "undo": mode_undo, "seed": mode_seed, "collect": mode_collect,
  "backup": mode_backup, "status": mode_status, "watch": mode_watch, "nginx": mode_nginx, "users": mode_users,
- "delete": mode_delete}[MODE]()
+ "delete": mode_delete, "activity": mode_activity}[MODE]()
 '''
 
 # endregion ----------------------------------------------------
@@ -2639,6 +2699,230 @@ def Na__Users__Payload(cfg: dict) -> dict:
 
 
 # -----------------------------------------------------------------------------
+# REGION | Activity Ledger (Server__UserAccountData/UserData__ActivityLedger, tab 05)
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | The Ledger Folder in the Mirror, and the Mapping That Covers It
+# ------------------------------------------------------------
+def Na__Activity__Path(cfg: dict) -> Path:
+    return Path(cfg["Local"]["MirrorRoot"]) / NA__USERS__DIR / NA__ACTIVITY__DIR
+
+def Na__Activity__Mapping(cfg: dict) -> dict | None:
+    return next((m for m in cfg["Mappings"] if Na__Config__RemoteRel(m) == NA__USERS__DIR), None)
+
+def Na__Activity__Files(cfg: dict) -> list:
+    """[(day, path)] of the PC's ledger files, oldest first."""
+    folder = Na__Activity__Path(cfg)
+    found = [(NA__ACTIVITY__FILE.match(f.name), f) for f in folder.iterdir()] if folder.is_dir() else []
+    return sorted((m.group(1), f) for m, f in found if m and f.is_file())
+
+def Na__Activity__Since(days: int) -> str:
+    """The first UTC day of the last <days> days ("" = everything)."""
+    return time.strftime("%Y-%m-%d", time.gmtime(time.time() - (days - 1) * 86400)) if days and days > 0 else ""
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | The PC's Year Zips ({"2025": path}) and the Months in Each ({"2025-09": [member, ...]})
+# ------------------------------------------------------------
+def Na__Activity__Archives(cfg: dict) -> dict:
+    folder = Na__Activity__Path(cfg) / NA__ACTIVITY__ARCHIVE_DIR
+    found = [(NA__ACTIVITY__ARCHIVE.match(f.name), f) for f in folder.iterdir()] if folder.is_dir() else []
+    return {m.group(1): f for m, f in sorted(found, key=lambda x: x[1].name) if m and f.is_file()}
+
+def Na__Activity__ArchivedMonths(cfg: dict) -> dict:
+    """{"2025-09": (zip path, [members])}; a damaged zip is skipped (and named in the payload)."""
+    out = {}
+    for _year, path in Na__Activity__Archives(cfg).items():
+        try:
+            with zipfile.ZipFile(path) as z:
+                for n in z.namelist():
+                    m = re.match(r"^(\d{4}-\d{2})/ValeActivity__Ledger__[^/]+\.jsonl$", n)
+                    if m:
+                        out.setdefault(m.group(1), (path, []))[1].append(n)
+        except (OSError, zipfile.BadZipFile):
+            continue
+    return out
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Remove PC Day Files the Server Has Archived (only when this PC's zip holds the same bytes)
+# ------------------------------------------------------------
+def Na__Activity__Tidy(cfg: dict, listing: dict) -> list:
+    archives, gone = Na__Activity__Archives(cfg), []
+    for day, f in Na__Activity__Files(cfg):
+        if f.name in listing or day[:4] not in archives:
+            continue                                                           # <-- Still a day file on the server, or no zip here
+        try:
+            with zipfile.ZipFile(archives[day[:4]]) as z:
+                same = [n for n in z.namelist() if n.startswith(day[:7] + "/") and z.read(n) == f.read_bytes()]
+        except (OSError, zipfile.BadZipFile, KeyError):
+            continue
+        if same:
+            f.unlink()
+            gone.append(f.name)
+    return gone
+# ---------------------------------------------------------------
+
+# FUNCTION | Fetch: the Server's Ledger Files and Year Zips That Differ From This PC's (ONE session, read-only)
+# ------------------------------------------------------------
+def Na__Activity__Fetch(cfg: dict, days: int = 0) -> dict:
+    """The ledger is user data: Collect brings it too. This brings only it, at once. The files
+    are append-only, so a PC copy is replaced without a backup (the server copy holds every
+    line it had), keeping the server's size and time: a later compare shows it in sync. Day
+    files the server has archived (ValeShared__Activity__ 1.1.0: a year live, then a zip per
+    year) leave this PC too, once its copy of that zip holds the same bytes."""
+    mapping = Na__Activity__Mapping(cfg)
+    if not mapping:
+        return {"ok": False, "error": f"no sync mapping covers {NA__USERS__DIR}"}
+    folder = Na__Activity__Path(cfg)
+    have = {}
+    for f in [f for _d, f in Na__Activity__Files(cfg)] + list(Na__Activity__Archives(cfg).values()):
+        st = f.stat()
+        have[f.relative_to(folder).as_posix()] = [st.st_size, int(st.st_mtime)]
+    stage = Path(cfg["Local"]["BackupRoot"]) / "_staging" / time.strftime("activity__%Y-%m-%d_%H%M%S")
+    stage.mkdir(parents=True, exist_ok=True)
+    received = []
+
+    def sink(pipe):
+        with tarfile.open(fileobj=pipe, mode="r|gz") as tar:
+            for ti in tar:
+                parts = ti.name.split("/")
+                ok = (len(parts) == 1 and NA__ACTIVITY__FILE.match(ti.name)) or \
+                     (len(parts) == 2 and parts[0] == NA__ACTIVITY__ARCHIVE_DIR and NA__ACTIVITY__ARCHIVE.match(parts[1]))
+                if not ti.isfile() or "\\" in ti.name or not ok:
+                    continue
+                try:
+                    tar.extract(ti, stage, filter="data")
+                except TypeError:
+                    tar.extract(ti, stage)
+                received.append(ti.name)
+
+    try:
+        res = Na__Agent__Run(cfg, {"mode": "activity", "dir": f"{Na__Config__RemoteRel(mapping)}/{NA__ACTIVITY__DIR}",
+                                   "have": have, "since": Na__Activity__Since(days), "mappings": []},
+                             why=f"activity fetch ({len(have)} PC file(s))", stdout_sink=sink, sudo=True)
+        if not res.get("ok"):
+            return res
+        for name in received:
+            (folder / name).parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(stage / name), str(folder / name))
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+    tidied = Na__Activity__Tidy(cfg, res["listing"]) if res.get("exists") and isinstance(res.get("listing"), dict) else []
+    if received or tidied:
+        Na__Ledger__Record(cfg, {mapping["Id"]: [f"{NA__ACTIVITY__DIR}/{n}" for n in received]}, "collect",
+                           gone={mapping["Id"]: [f"{NA__ACTIVITY__DIR}/{n}" for n in tidied]})
+    return {"ok": True, "received": len(received), "files": received, "tidied": tidied,
+            "server_files": res.get("server_files", 0), "exists": bool(res.get("exists")), "mapping": mapping["Id"],
+            "_session": res["_session"]}
+# ---------------------------------------------------------------
+
+# FUNCTION | An Archived Month, Unzipped Into the Audit Cache (BackupRoot, never the mirror)
+# ------------------------------------------------------------
+def Na__Activity__Unzip(cfg: dict, month: str) -> tuple:
+    """(cache folder, [day files]) for an archived month; members already there with the
+    same size are kept."""
+    found = Na__Activity__ArchivedMonths(cfg).get(month)
+    if not found:
+        return None, []
+    path, members = found
+    cache = Path(cfg["Local"]["BackupRoot"]) / NA__ACTIVITY__CACHE / month
+    cache.mkdir(parents=True, exist_ok=True)
+    out = []
+    with zipfile.ZipFile(path) as z:
+        for n in sorted(members):
+            info, dst = z.getinfo(n), cache / n.split("/", 1)[1]
+            if not dst.is_file() or dst.stat().st_size != info.file_size:
+                tmp = dst.with_name(dst.name + ".tmp")
+                tmp.write_bytes(z.read(n))
+                os.replace(tmp, dst)
+            out.append(dst)
+    return cache, out
+# ---------------------------------------------------------------
+
+# FUNCTION | ValeVision Theia's Client Links, From the PC's Copies of Each Project's Links File
+# ------------------------------------------------------------
+def Na__Activity__ShareLinks(cfg: dict) -> list:
+    lib = Path(cfg["Local"]["MirrorRoot"]) / "Vale__Projects__MasterLibrary"
+    out = []
+    for f in sorted(lib.glob("ValeProjects__*/*/ValeVision__TheiaVideo/UserData__ShareLinks/*__TheiaShareLinks__.json")):
+        try:
+            doc = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for r in doc.get("TheiaShare__Links__Records") or []:
+            if isinstance(r, dict) and r.get("TheiaShare__Link__Token"):
+                out.append({"App": "ValeVision Theia", "Project": f.parents[2].name,
+                            **{k[len("TheiaShare__Link__"):]: v for k, v in r.items() if k.startswith("TheiaShare__Link__")}})
+    return out
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Read Day Files Into Events (a line cut short mid-write is skipped and counted)
+# ------------------------------------------------------------
+def Na__Activity__Read(paths: list) -> tuple:
+    events, bad = [], 0
+    for f in paths:
+        for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not line.strip():
+                continue
+            try:
+                e = json.loads(line)
+            except ValueError:
+                bad += 1
+                continue
+            if isinstance(e, dict) and e.get("Utc"):
+                events.append(e)
+    return events, bad
+# ---------------------------------------------------------------
+
+# FUNCTION | Tab 05 Payload: the Last <days> Days, or One Month (an archived one unzipped first; no connection)
+# ------------------------------------------------------------
+def Na__Activity__Payload(cfg: dict, days: int = 7, month: str = "") -> dict:
+    files = Na__Activity__Files(cfg)
+    archived = Na__Activity__ArchivedMonths(cfg)
+    since, source, cache = Na__Activity__Since(days), "live", ""
+    if month and re.fullmatch(r"\d{4}-\d{2}", month):
+        chosen = {f.name: f for d, f in files if d[:7] == month}
+        if month in archived:
+            folder, unzipped = Na__Activity__Unzip(cfg, month)
+            cache = str(folder)
+            source = "both" if chosen else "archive"
+            for f in unzipped:
+                chosen.setdefault(f.name, f)                                    # <-- A day still live here wins
+        events, bad = Na__Activity__Read([chosen[k] for k in sorted(chosen)])
+    else:
+        month = ""
+        events, bad = Na__Activity__Read([f for d, f in files if not since or d >= since])
+    events.sort(key=lambda e: str(e.get("Utc")))
+    truncated = max(0, len(events) - NA__ACTIVITY__UI_LIMIT)
+    live = {}
+    for d, _f in files:
+        live[d[:7]] = live.get(d[:7], 0) + 1
+    months = [{"Month": m, "LiveDays": live.get(m, 0), "ArchivedDays": len(archived[m][1]) if m in archived else 0,
+               "Archive": archived[m][0].name if m in archived else ""}
+              for m in sorted(set(live) | set(archived), reverse=True)]
+    zips = [{"Name": p.name, "Bytes": p.stat().st_size, "Months": sorted(m for m in archived if archived[m][0] == p)}
+            for p in Na__Activity__Archives(cfg).values()]
+    doc = Na__Users__Load(cfg) or {}
+    users = [{"Code": u.get("ValeUser__UniqueCode"), "Name": f"{u.get('ValeUser__Name__First') or ''} {u.get('ValeUser__Name__Last') or ''}".strip(),
+              "Level": u.get("ValeUser__Permission__Level") or "", "Role": u.get("ValeUser__Employee__Role") or "",
+              "Dept": u.get("ValeUser__Employee__Department") or "", "Active": bool(u.get("ValeUser__Employee__IsActive"))}
+             for u in doc.get(NA__USERS__RECORDS) or []]                       # <-- Never a hash
+    levels = [{"Code": lv.get("PermissionLevel__Code"), "Name": lv.get("PermissionLevel__Name"), "Rank": lv.get("PermissionLevel__Rank")}
+              for lv in doc.get("UserAccountData__ValeUsers__PermissionLevels") or []]
+    mapping = Na__Activity__Mapping(cfg)
+    rel = f"{NA__USERS__DIR}/{NA__ACTIVITY__DIR}"
+    return {"ok": True, "days": days if not month else None, "since": since if not month else "", "month": month,
+            "source": source, "cache": cache, "events": events[truncated:], "truncated": truncated, "bad_lines": bad,
+            "files": {"count": len(files), "bytes": sum(f.stat().st_size for _d, f in files),
+                      "first": files[0][0] if files else "", "last": files[-1][0] if files else ""},
+            "months": months, "archives": zips, "keep_days": NA__ACTIVITY__KEEP_DAYS,
+            "audit_cache": str(Path(cfg["Local"]["BackupRoot"]) / NA__ACTIVITY__CACHE),
+            "rel": rel, "server": f"{cfg['Server']['Root']}/{rel}", "mapping": mapping["Id"] if mapping else "",
+            "users": users, "levels": levels, "links": Na__Activity__ShareLinks(cfg)}
+# ---------------------------------------------------------------
+
+# endregion ----------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Command Line (used by Claude through the vgh-app-server skill)
 # -----------------------------------------------------------------------------
 
@@ -2754,6 +3038,12 @@ def Na__Cli__Main() -> int:
     sp.add_argument("--pc", action="store_true", help="also move this PC's copies to the backup folder")
     for name in ("seed", "backup"):
         sp = sub.add_parser(name); sp.add_argument("ids", nargs="*")
+    sp = sub.add_parser("activity", help="the activity ledger (tab 05): newest events on this PC")
+    sp.add_argument("--fetch", action="store_true", help="first bring the server's new ledger lines (one read-only session)")
+    sp.add_argument("--days", type=int, default=7, help="the last N days (0 = everything)")
+    sp.add_argument("--find", default="", help="only events containing every word")
+    sp.add_argument("--limit", type=int, default=40, help="newest N rows printed")
+    sp.add_argument("--month", default="", help="one month, YYYY-MM (an archived one is unzipped to the audit cache)")
     a = ap.parse_args()
     cfg = Na__Config__Load()
 
@@ -2831,6 +3121,29 @@ def Na__Cli__Main() -> int:
             if res["guard"]:
                 print("NOT PUSHABLE YET: " + res["guard"])
             return 1 if res["errors"] else 0
+        if a.cmd == "activity":
+            if a.fetch:
+                out = Na__Activity__Fetch(cfg, a.days)
+                if not out.get("ok"):
+                    print(f"FAILED: {out.get('error')}"); return 1
+                print(f"fetched {out['received']} ledger file(s) of {out['server_files']} day file(s) on the server"
+                      f"{': ' + ', '.join(out['files']) if out['files'] else ' (this PC was up to date)'}"
+                      f"{'; archived, so removed here: ' + ', '.join(out['tidied']) if out['tidied'] else ''}")
+            res = Na__Activity__Payload(cfg, a.days, a.month)
+            words = [w.lower() for w in a.find.split()]
+            rows = [e for e in res["events"] if all(w in json.dumps(e, ensure_ascii=False).lower() for w in words)]
+            for e in rows[-a.limit:]:
+                u = e.get("User") or {}
+                who = f"{u.get('Name') or u.get('Code')} ({u.get('Level')})" if u else f"External #{(e.get('DeviceId') or '')[-4:] or '?'}"
+                print(f"{e['Utc'][:16].replace('T', ' ')}  {who:<30.30} {e.get('App', ''):<19.19} "
+                      f"{('REFUSED ' if e.get('Ok') is False else '') + str(e.get('Text', '')):<46.46} "
+                      f"{e.get('Project', ''):<24.24} {e.get('Target', ''):<24.24} {e.get('Ip', '')} {e.get('Country', '')}  {e.get('Device', '')}")
+            print(f"{len(rows)} event(s) shown of {len(res['events'])} "
+                  f"{'in ' + res['month'] + ' (' + res['source'] + (', unzipped to ' + res['cache'] if res['cache'] else '') + ')' if res['month'] else 'in the last ' + str(a.days or 'all') + ' day(s)'}; "
+                  f"{res['files']['count']} ledger file(s) on this PC ({res['files']['first']} .. {res['files']['last']}), "
+                  f"{len(res['links'])} Theia client link(s) known; archived months: "
+                  f"{', '.join(m['Month'] for m in res['months'] if m['ArchivedDays']) or 'none'}")
+            return 0
         if a.cmd in ("user-reset", "user-signout"):
             action = a.cmd.split("-", 1)[1]
             if not a.yes:

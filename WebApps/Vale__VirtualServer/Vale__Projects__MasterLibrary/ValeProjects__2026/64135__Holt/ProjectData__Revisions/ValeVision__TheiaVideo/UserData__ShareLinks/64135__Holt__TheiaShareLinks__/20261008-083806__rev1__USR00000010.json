@@ -1,0 +1,20 @@
+{
+    "TheiaShare__Links__Description": "ValeVision Theia client links for this project. A link opens the videos only: no gallery, no editing. Written by the Theia API; user data (never web-served, collected to the PC).",
+    "TheiaShare__Links__ProjectId": "64135__Holt",
+    "TheiaShare__Links__Records": [
+        {
+            "TheiaShare__Link__Token": "7uYk8GMqLjnDzrkqqeF0e-MY",
+            "TheiaShare__Link__Kind": "Client",
+            "TheiaShare__Link__Label": "Test",
+            "TheiaShare__Link__VideoIds": [],
+            "TheiaShare__Link__CreatedIso": "2026-10-07T11:22:59.884Z",
+            "TheiaShare__Link__CreatedBy": "USR00000001",
+            "TheiaShare__Link__ExpiresIso": "2026-10-14T11:22:59.885Z",
+            "TheiaShare__Link__RevokedIso": null,
+            "TheiaShare__Link__RevokedBy": null,
+            "TheiaShare__Link__ViewCount": 19,
+            "TheiaShare__Link__LastViewedIso": "2026-10-08T08:27:39.266Z"
+        }
+    ],
+    "_rev": 1
+}

@@ -449,6 +449,7 @@
 
             const timeline = Na__VsPreview__LoadTimeline(video);
             if (!timeline) return 'This video has no keyframes to preview.';
+            window.ValeActivity && window.ValeActivity.Log('video.preview', { target: video.VideoStudio__Video__Name || video.VideoStudio__Video__Id });   // <-- Activity ledger
             Na__VsPreview__CurrentMs = 0;
         }
 

@@ -1,0 +1,93 @@
+/* =============================================================================
+ * VALEVISION3D - APP PAGES STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__AppPages__Styles__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : App Pages Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The pages that open over the 3D Model View in this window (the
+ *              Drawing Editor): their host, and the 3D view standing aside
+ * CREATED    : 09-Oct-2026
+ *
+ * DESCRIPTION:
+ * - THE PAGE HOST fills the window under the app header, and the page's frame
+ *   fills the host (Na__AppPages__DrawingPage__Host__.js builds both on first
+ *   use). It is put away with visibility, not display, so the page keeps its
+ *   size, and the zoom on its sheet, while the Model View is up.
+ * - WHILE A PAGE IS UP (body.na-app-page--active) the 3D view's own menus,
+ *   panels and overlays stand aside, as they do for the Layout Editor
+ *   (Na__LayoutEditor__Styles__Boot__.css), and so does the Layout Editor's tab
+ *   strip. The header and the breadcrumb trail stay: the trail is the way back
+ *   to the Model View, so it sits on its usual row just under the header.
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 09-Oct-2026 - Version 1.0.0 (ValeVision3D v2.76.0)
+ * - Initial build with the Drawing Editor page.
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Page Host and Its Frame
+ * ----------------------------------------------------------------------------- */
+
+    /* HOST | Under the header (1001) and the breadcrumbs (1002); over the 3D view and its panels */
+    /* ------------------------------------------------------------ */
+    .na-app-page {
+        position                           : fixed;
+        top                                : var(--Vale_HeaderHeight, 60px);
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        z-index                            : 600;                   /* <-- The Layout Editor's level; the toast, dialogs and spinners stay above */
+        background-color                   : #b0b5ba;               /* <-- The sheet's grey while the page loads */
+        visibility                         : hidden;                /* <-- Away, but still sized */
+    }
+
+    .na-app-page.is-shown {
+        visibility                         : visible;
+    }
+
+    .na-app-page__frame {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        border                             : 0;
+        background-color                   : #b0b5ba;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The 3D View Stands Aside While a Page Is Up
+ * ----------------------------------------------------------------------------- */
+
+    /* THE TRAIL'S ROW | Straight under the header: the tab strip is put away */
+    /* ------------------------------------------------------------ */
+    body.na-app-page--active {
+        --Vale_LayoutTabStripHeight        : 0px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* THE 3D VIEW'S OWN CONTROLS | The Layout Editor's list, less the breadcrumbs, plus its tab strip */
+    /* ------------------------------------------------------------ */
+    body.na-app-page--active .na-dropdown-menu,
+    body.na-app-page--active #naPresentationCarousel,
+    body.na-app-page--active #naNavToolbar,
+    body.na-app-page--active #naNavHelpPanel,
+    body.na-app-page--active .na-export-overlay,
+    body.na-app-page--active .na-projected-linework,
+    body.na-app-page--active .controls-instructions-panel,
+    body.na-app-page--active .na-vs-tl,
+    body.na-app-page--active .na-le-tabs {
+        display                            : none !important;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

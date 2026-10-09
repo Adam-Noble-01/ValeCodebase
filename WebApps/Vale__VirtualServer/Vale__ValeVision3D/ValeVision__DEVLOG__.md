@@ -1,6 +1,323 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.76.3 - 09-Oct-2026 - Open Drawing, and a Quieter Delete
+### Adam: "Make button say Open Drawing and the red button a little more muted until hovered over, it's too eye grabbing"
+
+- The saved layout cards' open button says **Open Drawing** (Reopen Drawing on the Drawing Editor's own sheet), in the
+  Drawings menu and the editor alike: one pair of labels in the shared list (`OPEN_LABEL`, `REOPEN_LABEL`).
+- **Delete is muted at rest**: a faint red tint, muted red words and a fine edge. It turns the full dark red, white
+  words, only when pointed at or tabbed to. The buttons wrap onto two lines in a narrow menu.
+- `Na__PageLayoutSystem__SavedList__` 1.1.0, `__Styles__SavedList__.css` 1.1.0, `Na__AppPages__SavedDrawings__` 1.1.1,
+  `__SavedLayouts__Controls__` 1.4.2. **Tested**: the shared list's 20 checks in Node (the labels, the default
+  Open Drawing). Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.76.2 - 09-Oct-2026 - Deleting a Saved Drawing Is Final, and You Type Delete First
+### Adam: "Delete should mean delete; it should ask you to type delete; make it really hard to delete, but once you do it's final"
+
+**What changed**
+- **The question**: Delete (in the Drawings menu and in the Drawing Editor) asks "Delete <name>?" with a box: the
+  Delete button stays off until the word delete is typed (any case); Enter in the box confirms only then; Escape, the
+  backdrop and Cancel back out. The box has the focus. One question for both places: the app's confirm dialog (Choose
+  with `typeToConfirm`), which the editor asks through `window.Na__PageLayout__AppHost.ConfirmDelete`; a tab of its
+  own falls back to the browser's prompt for the same word.
+- **The server** (`ValeVision3D__Api__PageLayouts__.py` 1.1.0): the record leaves the job file, then the layout's
+  folder is removed for good with its picture, thumbnail and replaced pictures; nothing goes to `PageLayouts/00__Archive`
+  any more. The answer and the activity ledger count the files removed. Only the job file's revisions
+  (`ProjectData__Revisions`, text only) still hold the record, as for every JSON the library writes.
+- **Re-saves keep the last 5 replaced pictures** per drawing, as before (Adam's choice); they go when the drawing does.
+- **On the server (11:08 UTC)**: the archives of drawings deleted before today were cleared (64435__Harris: 4.2 MB, 4
+  files, two drawings); none are left. Logged in the skill's `server-changelog.md`.
+
+**Modules**
+- `Na__AppUtils__ConfirmDialog` 1.2.0 (typeToConfirm), `index.html` (the box), `Na__UiFeature__Styles__DropdownAndToast__.css`
+  (the box; Delete greyed until typed), `Na__AppPages__DrawingPage__Host__` 1.2.0 (ConfirmDelete, also on AppHost),
+  `Na__AppPages__SavedDrawings__` 1.1.0, `Na__PageLayoutSystem__Host__` 1.1.0 (ConfirmDelete),
+  `__SavedLayouts__Controls__` 1.4.1, `__LayoutStore__` (notes), server `ValeVision3D__Api__PageLayouts__.py` 1.1.0.
+
+**Tested**: 16 checks of the type-delete question in Node (off until typed, part of the word, Enter and clicks
+while off, any case, Escape, backdrop, the button, Show unchanged, the prompt fallback); the page layouts API sandbox
+(43 checks: the folder and its replaced pictures gone, the count, nothing archived, a second delete 404). On the
+server: health 200, list and delete 401 signed out. Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.76.1 - 09-Oct-2026 - Saved Layouts in the Drawings Menu, the Drawing Editor's Own List
+### Adam: "Use the same drawings preview here if existing images exist; if no drawings made already then don't show the saved drawings buttons; if drawings exist use this same menu, it's way better and more intuitive"
+
+**The Drawings menu (Tools & Settings > Drawings)**
+- Under Create Drawing: **Saved Layouts** with its count, Everyone / Mine and the cards (thumbnail, name, updated and
+  created by whom and when, Open, Delete), exactly as the Drawing Editor's Saved Layouts section shows them.
+- **Only when the job has drawings** (and someone is signed in: the list needs an account). With none, Create Drawing
+  stands alone. The Saved Drawings button is gone.
+- **Open** puts the layout on the Drawing Editor's sheet in this window (no new render). The layout already on the
+  editor's sheet is outlined, and Open on it brings the editor back as it was, unsaved changes and all. Another layout
+  over an unsaved sheet: the editor asks first, as its own Open does. With no editor yet, it starts on that layout
+  (`?layout=<id>`).
+- **Delete** asks first (Cancel has the focus), then archives it on the server: the editor's route and rule (its
+  creator, or Management and up). An editor with it on the sheet is told: its drawing stays, as a new unsaved one.
+- Read at start, each time the panel opens, on coming back from the editor and when someone signs in or out.
+
+**One list, two places**
+- The cards and Everyone / Mine moved out of the editor into the shared `Na__PageLayoutSystem__SavedList__.js` (a leaf:
+  no imports, no state) and `Na__PageLayoutSystem__Styles__SavedList__.css` (its own colours on `.na-saved-list`),
+  loaded by the editor and by the 3D app. The editor looks exactly as before (classes renamed `na-saved-list__*`).
+
+**Modules**
+- New: `36__System__AppPages/Na__AppPages__SavedDrawings__` 1.0.0; `35__System__PageLayoutSystem/
+  Na__PageLayoutSystem__SavedList__` 1.0.0 and `__Styles__SavedList__.css` 1.0.0.
+- `Na__AppPages__DrawingPage__Host__` 1.1.0 (OpenLayout, OpenedLayoutId, LayoutDeleted; OpenSaved went with the
+  button), `Na__ImageExport__PageLayoutBridge__` 1.2.0 (the button's wiring gone), `__SavedLayouts__Controls__` 1.4.0
+  (the shared list; OpenById, Deleted, `?layout=`), `__SystemLogic__Main__` 2.3.0 (`?layout=`), `__SideMenu__`
+  (Reveal removed: nothing asks for it now), `__Host__` 1.0.1, `__Layout__.html` (shared classes; OpenLayout and
+  LayoutDeleted answered), `__Styles__Main__.css` 2.5.0 (the list's rules moved out), `index.html` (the section in
+  place of the button; the start-up), `Na__CoreUi__Styles__Index__.css` (imports the shared stylesheet).
+
+**Tested**: 19 checks of the shared list in Node (cards, the open layout outlined, thumbnails, Delete only where
+allowed, Open and Delete call back, empty messages, busy, Everyone / Mine); the 28 navigation checks still pass. Every
+changed module and both pages' boot scripts parse; every import, export and element id resolves. Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.76.0 - 09-Oct-2026 - The Drawing Editor Is a Page of the App: No More Browser Tabs
+### Adam: "Stop random browser tabs opening, keep everything navigable via the main app"; pause the model while a drawing is edited; breadcrumbs back to the 3D Model View; Alt+Left / Alt+Right / Alt+Backspace
+
+**The system it replaces (mapped first)**
+- Create Drawing opened a blank "Preparing Drawing Layout..." tab inside the click (the pop-up blocker), rendered,
+  left the PNG on `window.__Na__PageLayout__PendingImage`, then sent the tab to
+  `Na__PageLayoutSystem__Layout__.html?project=<id>`. The page took the picture, and the render bridge for
+  Re-Render, through `window.opener`, and posted `Na__PageLayout__Ready` back (no origin check).
+- Saved Drawings opened another tab (`&open=saved`); the page's Close called `window.close()`; no tab was reused, and
+  nothing linked them but window.opener. The 3D tab went on rendering behind every one; closing it broke Re-Render.
+
+**Now (Adam's choices, 09-Oct-2026: an embedded page, Alt+arrows mean pages, Back keeps the drawing, Theia stays a tab)**
+- **One window.** Create Drawing renders as before and opens the Drawing Editor page in the same window, at
+  `?project=<id>&page=drawing`. Saved Drawings opens the same page on the job's saved layouts (a drawing already open
+  stays, with the list opened beside it). Each opening pushes a history entry.
+- **The model pauses**: the render loop is held ('drawing-editor'), the 3D canvas hidden by visibility (a Re-Render
+  still renders offscreen, its size kept), the 3D menus and panels put away like the Layout Editor's, and the 3D keys
+  stand down. The 3D view is not touched (Orbit, Walk, Fly, a plan or an elevation stay as left), so the Model View
+  comes back exactly as it was and an elevation drawing can still re-render.
+- **Breadcrumbs** in the established top-left card: Project Gallery / project / **Model View** / **Drawing Editor**,
+  Model View the link back. On the editor the sheet fits below the card.
+- **Keys** on both pages and inside the editor: Alt+Left Back, Alt+Right Forward, Alt+Backspace Back (the browser's
+  Back and Forward and a mouse's side buttons do the same). From the Model View, Back is the page before the app (often
+  ValeVision Gallery). The 3D view's fine camera nudge keeps Alt+W/A/S/D and Alt+Up/Down. Left alone in a text box,
+  with a dialog open, and on the Layout Editor's drawing and document tabs.
+- **Back keeps the drawing**: the editor is put away, not closed; Alt+Right returns to it as it was. The menu's
+  Close is Back to Model View inside the app.
+- **A new drawing asks first** when the open one has changes not on the Vale Cloud: Save and Start New (the editor
+  comes up and saves through its own Save Drawing, so its checks and conflict question are seen), Discard and Start
+  New, Cancel. The shared confirm dialog gained a third button for it (`Choose`).
+- **The page itself is embedded**, in a frame under the app's header (`?embed=1` hides its own header): its 1,100
+  lines of CSS (global html/body/* rules), its keys and its ids never meet the 3D app's, and each new drawing is a
+  fresh page. Opened on its own (an old bookmark or link) it moves into the app; `?standalone=1` keeps it alone; a tab
+  an older version opened keeps working until that tab is reloaded.
+- A reload on the editor's address opens it on the saved layouts once the model has loaded; Back from there shows the
+  Model View in place (nothing of this load behind it to step back to).
+
+**Modules**
+- New `36__System__AppPages/`: `Na__AppPages__Navigation__` 1.0.0 (pages, addresses, history, Alt keys, breadcrumb,
+  `na-app-page-changed`), `Na__AppPages__DrawingPage__Host__` 1.0.0 (the frame, the holds, the picture, Saved
+  Drawings, the new drawing question; `window.Na__PageLayout__AppHost`), `Na__AppPages__Styles__.css` 1.0.0
+  (imported by `Na__CoreUi__Styles__Index__.css`).
+- 3D app: `Na__AppUtils__KeyScope__` 1.2.0 (the `page` scope, Hold / Release), `Na__AppUtils__ConfirmDialog` 1.1.0
+  (Choose), `Na__Feature__BreadcrumbNav__Controls` 1.1.0 (SetPage) and its stylesheet, `Na__UiFeature__ImageExport__Controls`
+  (no tab; ConfirmNewDrawing, OpenPicture), `Na__ImageExport__PageLayoutBridge__` 1.1.0 (Saved Drawings in the window),
+  `Na__AppUtils__ActivityLog__` 1.1.0 (the editor opening is a view), `Na__DefaultNavmode__MouseControls` 1.2.1 (notes),
+  `Na__Hotkeys__3dModelTab__.json` (Alt+Left / Alt+Right rows; Alt+Backspace's callback removed from `index.html`:
+  the app pages own all three), `index.html` (the crumbs, the dialog's third button, the start-up).
+- The page (35): new `Na__PageLayoutSystem__Host__` 1.0.0 (the host link: window.parent or window.opener, the picture,
+  the bridge, ready, Back, Expose), `__SystemLogic__Main__` 2.2.0, `__RenderControls__` 1.1.0 (and its refusal
+  wording), `__UnsavedGuard__` 1.1.0 (SaveNow, StandAside), `__SideMenu__` 1.3.0 (Back to Model View, Reveal),
+  `__Layout__.html` (the head's placement script, Expose), `__Styles__Main__.css` 2.4.0 (embedded).
+
+**Tested**: 28 checks of the navigation in Node (pages, addresses, history steps, the three keys in the window and in
+a frame, text boxes, Ctrl held, held-down repeat, an open dialog, the Layout Editor's tabs, a reload on the editor's
+address with and without a job). Every changed module parses; every import, export and element id resolves. Not run
+in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.75.4 - 09-Oct-2026 - Saved Drawings Show and Open Again (Server File Permissions)
+### Adam: "Anna cant save", and a 403 on a saved layout's thumbnail
+
+**What was wrong**
+- Anna Lacey's save at 09:13 UTC had worked: the job file names her as creator, and the activity ledger has it. But
+  every picture and thumbnail the API wrote was mode 0600. `write_bytes_atomic` in the API Core writes through
+  `tempfile.mkstemp`, which ignores the service's `UMask=0002`. nginx (`www-data`) streams private files by
+  X-Accel-Redirect and could not read them, so the Saved Layouts list showed a 403 for each thumbnail and Open
+  failed on the picture. To her, the drawing had not saved.
+- The Edge console line "[Intervention] Images loaded lazily and replaced with placeholders" was a notice, not an
+  error: the thumbnails were `loading="lazy"` inside a folded section.
+
+**Fix**
+- API Core 1.3.0: `FILE_MODE = 0o664`, set on the temporary file before it is moved into place, so every file the
+  ValeVision 3D API writes (page layouts, Layout Editor assets, published documents, sheet pictures, statements,
+  the spellings dictionary) is readable by nginx and by a Collect. Published 1.1.1 (archive zips) and SheetImages
+  1.1.1 (copies keep their source's mode) call `mkstemp` themselves and do the same.
+- `__SavedLayouts__Controls__` 1.3.1: thumbnails load straight away (no `loading="lazy"`).
+- On the server (09:29 UTC): the 6 files already written at 0600 (three layouts on 64435__Harris) set to 0664; the
+  three APIs restarted (`server-changelog.md`).
+
+**Tested**: the page layouts sandbox test (40 checks) passes on the PC. On the server, the nginx user can read Anna's
+picture and thumbnail; no API-written file is left at 0600. Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.75.3 - 09-Oct-2026 - Undo and Redo on the Create Drawing Page
+### Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z; Cmd on a Mac), and Undo / Redo buttons in the menu's head
+
+**Overview**
+- **Every change to the drawing is a step**: the picture's place, size and trims (drags, Fit Picture in Frame), the
+  composition guide (drags, typed margins, Show, Lock, Move Opposite Edges Together, Reset to Frame), and the picture
+  itself (a re-render: undo brings the earlier picture back). Panning and zooming the view are not steps.
+- **Typing in a margin box is one step** however many keys it took (a pause over 1.2 s starts a new one). Ctrl+Z
+  inside the name box or a margin box is that box's own text undo.
+- **Back to saved is saved**: undoing or redoing to exactly the drawing last saved or opened makes it clean again, so
+  Save Drawing turns green; anywhere else it is red. A picture undone to an earlier render is uploaded again on the next
+  save unless it is the one the Vale Cloud already has.
+- **Opening a saved layout starts a fresh history.** At most 100 steps, and at most 2 earlier pictures held for
+  re-render steps (an 8K picture is large); the oldest steps go first.
+- **Undo / Redo buttons** sit beside the fold arrow (for a touch screen), greyed when there is nothing to do; their
+  tooltips name the next step ("Undo picture placement (Ctrl+Z)"). The unsaved drawing question blocks the keys.
+
+**Modules (35__System__PageLayoutSystem)**
+- `__UndoHistory__` 1.0.0 (new): snapshots from the page's 'changed' events, coalescing, restore, the saved
+  signature, keys and buttons; tells the page with 'history', 'guide' and 'image'.
+- `__CompositionGuide__Controls__` 1.1.0 (a margin box's typing carries a coalesce key), `__SavedLayouts__Controls__`
+  1.3.0 (follows 'history'), `__UiNotify__` (the events named), `__Layout__.html` (the buttons; the Picture hint),
+  `__Styles__Main__.css` 2.3.0.
+
+**Tested**: 23 checks of the history in Node (steps, one step per box of typing, redo forgotten after a new change,
+re-render undo and its upload, back to saved is clean, a new history on opening, the keys and the text boxes). Every
+module parses; every import and element id resolves. Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.75.2 - 09-Oct-2026 - Save Drawing Turns Green When Saved, and an Unsaved Drawing Is Never Closed Without Asking
+### Create Drawing (LayoutVision 2D)
+
+**Overview**
+- **Save Drawing** (the Export section's save button, was Save Layout File) shows the drawing's state: a desaturated
+  red "Save Drawing" while it is not on the Vale Cloud, grey "Syncing to the Vale Cloud..." while it saves, and a
+  green "Drawing Saved" once the server has it, fading from red to green. Any change (moving or trimming the picture,
+  the guide, the name, a re-render) turns it red again. The line under it says when and by whom it was saved, or
+  that it is not saved yet.
+- **Closing an unsaved drawing asks first** (Adam): a picture on the sheet, not saved, and someone here who could
+  save it. Closing the tab or the browser brings up the browser's own "Leave site?" (browsers never let a page word
+  it); choosing to stay then shows the page's own question, "Your drawing is not saved", with Save Drawing, Keep
+  Editing and Close Without Saving. The menu's Close asks straight away: Save and Close, Keep Editing, Close Without
+  Saving. A new drawing nobody has saved now asks too (v2.75.0 let an untouched one close quietly).
+- Clients with no account are never asked: they cannot save.
+
+**Modules (35__System__PageLayoutSystem)**
+- `__UnsavedGuard__` 1.0.0 (new): the close warning, the dialog, Close's question; the save is the Drawing Layout
+  section's (SetSaver), so its checks, "Syncing..." and Vale Cloud toast are the same.
+- `__SavedLayouts__Controls__` 1.2.0 (Save Drawing states; the save answers true or false; the old warning moved to
+  the guard), `__SideMenu__` 1.2.0 (Close through the guard), `__SystemLogic__Main__` and `__LayoutStore__` (the unused
+  "touched" flag removed), `__Layout__.html` (the dialog; the button's words), `__Styles__Main__.css` 2.2.0.
+
+**Tested**: every module parses, every import and element id resolves. Not run in a browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.75.1 - 09-Oct-2026 - Create Drawing's Menu Opens Folded, Drags Wider, and Confirms Saves to the Vale Cloud
+### Adam's first look at v2.75.0 on app.valegardenhouses.com
+
+**Overview**
+- **Every menu section starts folded** when the page opens: open sections are no longer remembered. The one
+  exception is the Saved Layouts list, which still opens itself when the page comes from Saved Drawings (or has no
+  picture), since the list is then the only thing to do.
+- **The menu's width drags** from its left edge (a grip half way down, a line that lights up in Vale blue): mouse, pen
+  or finger, or the arrow keys once the handle has focus (Shift for bigger steps). Double-click the handle for the
+  default width (330 px). 260 to 760 px, always leaving the sheet 320 px; on a narrow screen, where the menu lies over
+  the sheet, up to 95% of the window. The sheet refits frame by frame while it moves. The width is remembered in this
+  browser; a window too small for it holds the menu within the limits and gives the chosen width back when it grows.
+- **Save Layout File** in the Export section: the same save as Drawing Layout's Save Layout / Save Changes, with a line
+  under it saying what it will do (or why it is off: signed out, a view-only account, no project).
+- **Synced to the Vale Cloud**: every save button (Save Layout / Save Changes, Save as New, Save Layout File) reads
+  "Syncing..." while it runs, and once the server has confirmed the save a green toast with a drawn tick says
+  "Synced to the Vale Cloud" and what was saved, to which job, and when ("Changes to Rear view saved to job 64435
+  Harris, 09-Oct-2026 09:42"). Failures stay red, with the server's reason.
+
+**Modules (35__System__PageLayoutSystem)**
+- `__SideMenu__` 1.1.0 (sections start folded; the width resizer), `__SystemLogic__Main__` 2.1.0
+  (ResizeCanvasToContainer), `__UiNotify__` 1.1.0 (SyncedToast), `__SavedLayouts__Controls__` 1.1.0 (Save Layout File,
+  Syncing labels, the synced toast), `__Layout__.html` (no section open; the resizer; Save Layout File),
+  `__Styles__Main__.css` 2.1.0 (resizer, synced toast).
+
+**Tested**: every module parses, every import and element id resolves, the guide checks still pass. Not run in a
+browser.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.75.0 - 09-Oct-2026 - Create Drawing Gets a Side Menu, Saved Layouts per Job, a Composition Guide and Re-Render
+### The quick image-to-drawing page (LayoutVision 2D), not the Layout Editor
+
+**Overview**
+- **A proper menu down the right** replaces the three buttons under the header: Drawing Layout, Saved Layouts,
+  Composition Guide, Picture, Render Quality and Export, with Close at the foot. It folds away (the sheet takes the
+  width; a Menu tab brings it back) and remembers, in this browser, whether it was folded and which sections were open.
+- **Saved layouts, per job, labelled by user** (Adam's answers, 09-Oct): any staff account (Employee and up) saves;
+  every signed-in account sees the job's layouts; anyone who can save may update any layout. The server stamps who
+  made it and when, and who changed it last and when, from the session. Deleting is for the layout's creator, or
+  Management and up; a deleted layout's pictures are archived. Save Layout / Save Changes, Save as New, a list with a
+  thumbnail of each sheet, Everyone or Mine, Open and Delete. A save built on an older copy is refused (each layout has
+  its own Rev) and the page offers their version or Save as New. Leaving with changes made here asks first.
+- **Composition guide**: a grid of thirds and a centre cross over the drawing frame (the space left of the title
+  block, 10.7, 8.3, 338.7 x 280.4 mm, measured from the title block PNG's border lines). Drag any edge or corner in
+  or out; Shift (or Move Opposite Edges Together, for touch) moves the opposite edge the same amount. Margins in mm
+  in the menu, negative past the frame, held inside the sheet and never under 40 mm; Lock Guide; Reset to Frame. A
+  visual aid only (Adam: no snapping), never printed, saved with the layout.
+- **Render Quality and Re-Render**: the Export Image panel's choices (resolution, aspect ratio, anti-aliasing,
+  Enhance Whitecard, linework thickness, profile line thickness, silly lines), set to what the picture was made at.
+  Re-Render asks the ValeVision 3D tab that opened the page to render the picture again from the view it was made
+  from (camera, orbit target, model layers, lighting, vertical correction: captured at Create Drawing and saved
+  with the layout), then puts its own view back. The new picture takes the old one's place; a new aspect keeps the
+  centre and the width. 2D drawing pictures re-render only while that drawing is open.
+- **Saved Drawings** button beside Create Drawing (signed-in people only) opens the page on the job's saved layouts.
+- A new picture now lands centred in the drawing frame at 92% (it was centred on the whole sheet at 80%, over the
+  title block). PDFs are named `<project>__<layout name>__Layout__A3.pdf`.
+
+**Where the data lives**
+- `<project>/ValeVision3D/UserData__UserGeneratedContent__Images/ValeVision__PageLayouts__.json` (the job's layouts),
+  `PageLayouts/<layout id>/<id>__Image__<utc stamp>.png` and `__Thumbnail__<utc stamp>.webp` beside it. User data:
+  made on the server, collected to the PC, never pushed over. Written through `Na__Library__WriteJson` (locked,
+  atomic, `_rev`, the replaced copy kept in `ProjectData__Revisions`). Pictures a re-render replaced: the newest 5 in
+  the layout's `00__Archive`; a deleted layout's folder: `PageLayouts/00__Archive/<id>__<stamp>/`.
+
+**Modules (ValeVision 3D)**
+- `30__System__ImageExport/Na__ImageExport__PageLayoutHandoff__.js` 1.0.0 (new): CaptureSourceView,
+  DescribeRenderSettings, ApplySourceView / RestoreView (silent layer sets), LayoutPageUrl, ProjectId, SetControls.
+- `30__System__ImageExport/Na__ImageExport__PageLayoutBridge__.js` 1.0.0 (new): `window.Na__PageLayout__RenderBridge`
+  (GetProjectId, GetRenderOptions, IsBusy, Render: render loop held, spinner shown, everything restored in finally);
+  the Saved Drawings button.
+- `Na__UiFeature__ImageExport__Controls.js`: Create Drawing captures the view and settings at the click and opens the
+  page with `?project=`; RenderWithSettings, DescribeLiveSettings, EncodePng.
+- `Na__RenderEffect__LineworkSettings__State.js` 1.3.0: GetLineworkFactor, GetSillyAmplitude.
+  `Na__UiFeature__LineworkSettings__Controls.js` 1.1.0: GetStops.
+- `index.html`: the Saved Drawings button; `Na__PageLayoutBridge__Initialize({ controls })`.
+
+**Modules (35__System__PageLayoutSystem)**
+- New: `__SideMenu__`, `__SavedLayouts__Controls__`, `__LayoutStore__`, `__UserSession__` (the shared sign-in, no
+  wall), `__CompositionGuide__` (geometry, drag, hit-test, drawing), `__CompositionGuide__Controls__`,
+  `__RenderControls__`, `__UiNotify__` (toast and page events).
+- `__SystemLogic__Main__` 2.0.0 (project, drawing frame, guide, picture blob, source view, render settings; no picture
+  is fine with a project; the canvas follows its container), `__CanvasRenderPipeline__` 1.1.0 (DrawImageLayer shared by
+  screen, PDF and thumbnail; the guide), `__Controls__Pc__` / `__Controls__TouchScreen__` 1.1.0 (guide drags; the
+  picture's handles only while it is selected), `__PdfExport__A3__` 2.3.0, `__Layout__.html`, `__Styles__Main__.css` 2.0.0,
+  `__Config.json` (drawing frame, guide, render choices, saving).
+
+**Server (Api__ValeVision3D)**
+- `ValeVision3D__Api__PageLayouts__.py` 1.0.0 (new): `GET projects/<id>/page-layouts`, `GET .../page-layouts/files/<path>`
+  (signed in), `POST .../page-layouts` (Employee; multipart layout, image, thumbnail), `POST .../page-layouts/<id>/delete`.
+- `wsgi.py` 1.2.0 registers it; `__Activity__` 1.1.0 records saves and deletes (`g.na_vv3d_activity` names them);
+  `__Core__` 1.2.0 gains `send_private_file` and `IMAGES_DIR` (moved from `__Projects__` 1.2.0, unchanged).
+- **Needs a push of `server-api` and a restart of `vale@ValeVision3D`** before saving works on the server; locally,
+  restart `ValeDev__LocalServer__.py`.
+
+**Tested**
+- API: 41 checks through Flask's test client in a sandbox `VALE_ROOT` (sign-in levels, the Rev conflict, server stamps
+  over request values, archiving, revisions, a broken file never written over, the activity lines, and the existing
+  project routes unchanged). Guide maths: 30 checks in Node. Every module parses; every import resolves.
+- Not run in a browser: Adam tests the page, the bridge and the re-render.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.74.2 - 07-Oct-2026 - New Video Paths Export at 60 fps, High Quality
 ### 3:2, 2160p (4K), 60 fps, High (67 Mbps), anti-aliasing on at 16x, safe frame and rule of thirds on
 

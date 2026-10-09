@@ -23,11 +23,17 @@
 #     MICROSOFT_TENANT_ID, MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET,
 #     MICROSOFT_SENDER_USER (no-reply-apps@valegardenhouses.com),
 #     ALLOWED_SEND_DOMAINS (default valegardenhouses.com),
-#     RATE_LIMIT_MAX_PER_HOUR (default 10), VALE_EMAIL_BCC (optional copy to an admin)
-#   Without them, send answers 503 "email is not set up on this server".
+#     RATE_LIMIT_MAX_PER_HOUR (default 10),
+#     VALE_EMAIL_BCC (the admin record copy: comma-separated, on every send)
+#   Without the Microsoft values, send answers 503 "email is not set up on this server".
+# - Every send is blind-copied to the sender (their confirmation and record)
+#   and to VALE_EMAIL_BCC (the admin's record of every send, as the Worker did).
+#   An address already in To is not copied again.
+# - Who may send: AppAdmin, Management and Employee (Na__Auth__Require
+#   'Employee'). Affiliates get 403; clients have no account.
 #
 # ROUTES:
-#   GET  /api/email/health      { ok, configured }
+#   GET  /api/email/health      { ok, configured, adminBcc }
 #   GET  /api/email/contacts    active Vale users with an email (signed in)
 #   POST /api/email/send        { to: [..], subject, htmlBody } (signed in, Employee or above)
 #
@@ -36,6 +42,10 @@
 # DEVELOPMENT LOG:
 # 06-Oct-2026 - Version 1.0.0
 # - Ported from the email Worker (src/index.js, 09-Apr-2026) for app.valegardenhouses.com.
+# 08-Oct-2026 - Version 1.1.0
+# - Blind copy to the sender on every send, plus the admin copy (VALE_EMAIL_BCC,
+#   now a list); addresses in To are not copied twice. health reports whether
+#   the admin copy is set.
 #
 # =============================================================================
 
@@ -85,6 +95,19 @@ def _allowed_domains():
     raw = _env('ALLOWED_SEND_DOMAINS')
     return {d.strip().lower() for d in raw.split(',') if d.strip()} if raw else set(DEFAULT_DOMAINS)
 
+
+def _admin_bcc():
+    return [a.strip().lower() for a in _env('VALE_EMAIL_BCC').split(',') if '@' in a]
+
+
+def _bcc_for(sender_email, to):
+    """The blind copies: the sender, then the admin record copies - never one already in To, never twice."""
+    out = []
+    for addr in [str(sender_email or '').strip().lower()] + _admin_bcc():
+        if '@' in addr and addr not in to and addr not in out:
+            out.append(addr)
+    return out
+
 # endregion -------------------------------------------------------------------
 
 
@@ -127,15 +150,14 @@ def _graph_token():
     return token
 
 
-def _graph_send(recipients, subject, html, reply_to):
+def _graph_send(recipients, subject, html, reply_to, bcc=()):
     message = {
         'subject'     : subject,
         'body'        : {'contentType': 'HTML', 'content': html},
         'toRecipients': [{'emailAddress': {'address': r}} for r in recipients],
     }
-    bcc = _env('VALE_EMAIL_BCC').lower()
     if bcc:
-        message['bccRecipients'] = [{'emailAddress': {'address': bcc}}]
+        message['bccRecipients'] = [{'emailAddress': {'address': b}} for b in bcc]  # <-- The sender's and the admin's record copies
     if reply_to:
         message['replyTo'] = [{'emailAddress': {'address': reply_to}}]          # <-- Replies reach the person who sent it
     url = f"https://graph.microsoft.com/v1.0/users/{urllib.parse.quote(_env('MICROSOFT_SENDER_USER'))}/sendMail"
@@ -154,7 +176,7 @@ def _graph_send(recipients, subject, html, reply_to):
 
 @valevision_email_api.get('/api/email/health')
 def email_health():
-    return jsonify({'ok': True, 'configured': _configured()})
+    return jsonify({'ok': True, 'configured': _configured(), 'adminBcc': bool(_admin_bcc())})
 
 
 @valevision_email_api.get('/api/email/contacts')
@@ -200,12 +222,13 @@ def email_send():
         resp = jsonify({'ok': False, 'error': f'Rate limit reached: {max_per_hour} emails an hour.', 'retryAfterSec': retry})
         resp.headers['Retry-After'] = str(retry)
         return resp, 429
+    bcc = _bcc_for(user.get('email'), to)
     try:
-        _graph_send(to, str(payload.get('subject') or DEFAULT_SUBJECT)[:250], html, user.get('email') or '')
+        _graph_send(to, str(payload.get('subject') or DEFAULT_SUBJECT)[:250], html, user.get('email') or '', bcc)
     except (urllib.error.URLError, RuntimeError, ValueError) as error:
         vv_shared.log(f' [EMAIL] Send by {user["code"]} failed: {type(error).__name__}: {error}')
         return jsonify({'ok': False, 'error': 'The email could not be sent.'}), 502
-    vv_shared.log(f' [EMAIL] {user["code"]} sent "{str(payload.get("subject") or "")[:60]}" to {len(to)} recipient(s)')
-    return jsonify({'ok': True, 'sentCount': len(to), 'remainingQuota': remaining})
+    vv_shared.log(f' [EMAIL] {user["code"]} sent "{str(payload.get("subject") or "")[:60]}" to {len(to)} recipient(s), {len(bcc)} blind copy(ies)')
+    return jsonify({'ok': True, 'sentCount': len(to), 'bccCount': len(bcc), 'remainingQuota': remaining})
 
 # endregion -------------------------------------------------------------------

@@ -10,10 +10,51 @@
  * CREATED    : 2026
  *
  * DESCRIPTION:
- * - Standalone stylesheet for the Page Layout System (new tab page).
- * - Not imported by the main ValeVision3D app; loaded only by Layout HTML.
- * - Defines toolbar, canvas container, error overlay, and cursor states.
+ * - Stylesheet for the Page Layout System: the Drawing Editor page, inside
+ *   ValeVision 3D's window since v2.76.0 (it was a new tab page).
+ * - Not imported by the main ValeVision3D app; loaded only by Layout HTML, in
+ *   its own frame, so none of it reaches the 3D app.
+ * - EMBEDDED (html.na-layout--embedded, set by the page's head script): the
+ *   page's own header is put away and the workspace starts at the top. The
+ *   app's header and its breadcrumb trail are the page's.
+ * - Defines the workspace (the sheet beside the side menu), the side menu and
+ *   its sections, the toast, the error overlay and the canvas cursor states.
+ *   The saved layout cards are in Na__PageLayoutSystem__Styles__SavedList__.css
+ *   (imported below), shared with ValeVision 3D's Drawings menu.
+ * - The menu's controls follow the main app's Tools & Settings menu
+ *   (Na__UiFeature__Styles__DropdownAndToast__.css): Vale blue, Open Sans,
+ *   the same sliders, checkboxes and buttons.
  * - Uses Vale Design Suite CSS variable conventions.
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 09-Oct-2026 - Version 2.5.0 (ValeVision3D v2.76.1)
+ * - The Saved Layouts rules (Everyone / Mine, the count, the list, the cards and
+ *   their buttons) moved to Na__PageLayoutSystem__Styles__SavedList__.css, shared
+ *   with ValeVision 3D's Drawings menu; imported here, so the page looks the same.
+ *
+ * 09-Oct-2026 - Version 2.4.0 (ValeVision3D v2.76.0)
+ * - Embedded in ValeVision 3D: no header of its own, the workspace from the top.
+ *
+ * 09-Oct-2026 - Version 2.3.0 (ValeVision3D v2.75.3)
+ * - Undo and Redo buttons in the menu's head.
+ *
+ * 09-Oct-2026 - Version 2.2.0 (ValeVision3D v2.75.2)
+ * - Save Drawing: a desaturated red that fades to green once saved (grey while
+ *   syncing); the unsaved drawing dialog.
+ *
+ * 09-Oct-2026 - Version 2.1.0 (ValeVision3D v2.75.1)
+ * - The menu's left edge is a drag handle for its width (a line that lights up,
+ *   a grip half way down); a col-resize cursor everywhere while dragging.
+ * - The synced toast (green, a drawn tick, a title and a detail line) and the
+ *   Export section's Save Layout File button.
+ *
+ * 09-Oct-2026 - Version 2.0.0 (ValeVision3D v2.75.0)
+ * - The actions bar under the header is gone: the side menu (sections, saved
+ *   layout cards, toggles, sliders, margin boxes) sits on the right, beside a
+ *   canvas that fills the rest and refits when the menu folds away.
+ * - Toast; the shared sign-in's bubble in the header.
  *
  * ============================================================================= */
 
@@ -26,6 +67,11 @@
 /* Import Main App Header Styles */
 /* ----------------------------------------------------------------- */
 @import url('../../03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css');
+
+
+/* Import the Saved Layouts List (Shared With ValeVision 3D's Drawings Menu) */
+/* ----------------------------------------------------------------- */
+@import url('Na__PageLayoutSystem__Styles__SavedList__.css');
 
 
 /* -----------------------------------------------------------------------------
@@ -43,9 +89,15 @@
         --Vale_TextLight                    : #cccccc;
         --Vale_AccentBlue                   : #336699;
         --Vale_ErrorRed                     : #d32f2f;
+        --Vale_WarnAmber                    : #a35a00;
+        --Vale_DangerRed                    : #5c2020;
+        --Vale_SyncedGreen                  : #1f6f43;
+        --Vale_UnsavedRed                   : #a65a5a;                      /* <-- Desaturated red: a drawing not on the Vale Cloud yet */
+        --Vale_UnsavedRedHover              : #8f4b4b;
+        --Vale_SyncingGrey                  : #5b6b77;
 
         /* Layout Dimensions - Vale_HeaderHeight (60px) defined in app header stylesheet */
-        --Vale_LayoutActionsBarHeight       : 48px;
+        --Vale_LayoutMenuWidth              : 330px;
 
         /* Typography */
         --Vale_FontFamily                   : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -77,95 +129,62 @@
         box-sizing                          : border-box;
     }
 
+    input, select, textarea {
+        user-select                         : text;                         /* <-- iOS will not type into a field whose parents forbid selection */
+        -webkit-user-select                 : text;
+    }
+
+    .na-layout-workspace [hidden] {
+        display                             : none !important;              /* <-- The menu's own display rules would otherwise beat the hidden attribute */
+    }
+
 /* endregion ------------------------------------------------------------------- */
 
 
 /* -----------------------------------------------------------------------------
- * REGION | Secondary Actions Bar (Below Header)
+ * REGION | Embedded in ValeVision 3D (the App's Drawing Editor Page)
  * ----------------------------------------------------------------------------- */
 
-    /* ACTIONS BAR | Container */
+    /* NO HEADER OF ITS OWN | The app's header sits above the frame */
     /* ------------------------------------------------------------ */
-    .na-layout-actions {
-        position                            : fixed;
+    html.na-layout--embedded {
+        --Vale_HeaderHeight                 : 0px;                          /* <-- Beats the header stylesheet's :root (and its narrow-screen value) */
+    }
+
+    html.na-layout--embedded .app-header {
+        display                             : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Workspace (the Sheet and the Side Menu)
+ * ----------------------------------------------------------------------------- */
+
+    /* WORKSPACE | Everything under the header */
+    /* ------------------------------------------------------------ */
+    .na-layout-workspace {
+        position                            : absolute;
         top                                 : var(--Vale_HeaderHeight);
         left                                : 0;
-        width                               : 100%;
-        height                              : 48px;
-        background-color                    : var(--Vale_GreyBackground);
+        right                               : 0;
+        bottom                              : 0;
         display                             : flex;
-        align-items                         : center;
-        justify-content                     : center;
-        gap                                 : 12px;
-        padding                             : 0 16px;
-        z-index                             : 999;
-        box-shadow                          : 0 1px 4px rgba(0, 0, 0, 0.1);
+        overflow                            : hidden;
+        background-color                    : var(--Vale_GreyCanvasBackground);
     }
     /* ------------------------------------------------------------ */
 
 
-    /* ACTIONS BAR | Button Base */
-    /* ------------------------------------------------------------ */
-    .na-layout-actions__button {
-        font-family                         : var(--Vale_FontFamily);
-        font-size                           : 0.85rem;
-        font-weight                         : 600;
-        padding                             : 8px 16px;
-        border                              : none;
-        border-radius                       : 4px;
-        cursor                              : pointer;
-        transition                          : background-color 0.2s ease, opacity 0.2s ease;
-        white-space                         : nowrap;
-    }
-
-    .na-layout-actions__button:hover {
-        opacity                             : 0.9;
-    }
-
-    .na-layout-actions__button:active {
-        opacity                             : 0.8;
-    }
-    /* ------------------------------------------------------------ */
-
-
-    /* ACTIONS BAR | Button Variants */
-    /* ------------------------------------------------------------ */
-    .na-layout-actions__button--primary {
-        background-color                    : var(--Vale_AccentBlue);
-        color                               : var(--Vale_White);
-    }
-
-    .na-layout-actions__button--secondary {
-        background-color                    : var(--Vale_BlueLight);
-        color                               : var(--Vale_White);
-    }
-
-    .na-layout-actions__button--close {
-        background-color                    : transparent;
-        color                               : var(--Vale_TextPrimary);
-        border                              : 1px solid rgba(0, 0, 0, 0.2);
-    }
-
-    .na-layout-actions__button--close:hover {
-        background-color                    : rgba(0, 0, 0, 0.05);
-    }
-    /* ------------------------------------------------------------ */
-
-/* endregion ------------------------------------------------------------------- */
-
-
-/* -----------------------------------------------------------------------------
- * REGION | Canvas Container Styles
- * ----------------------------------------------------------------------------- */
-
-    /* CANVAS CONTAINER | Full viewport below header and actions bar */
+    /* CANVAS CONTAINER | Fills what the menu leaves (the canvas follows it) */
     /* ------------------------------------------------------------ */
     .na-layout-canvas-container {
-        position                            : absolute;
-        top                                 : calc(var(--Vale_HeaderHeight) + 48px);
-        left                                : 0;
-        width                               : 100vw;
-        height                              : calc(100vh - var(--Vale_HeaderHeight) - 48px);
+        position                            : relative;
+        flex                                : 1 1 auto;
+        min-width                           : 0;
+        height                              : 100%;
         overflow                            : hidden;
         background-color                    : var(--Vale_GreyCanvasBackground);
     }
@@ -179,12 +198,725 @@
         width                               : 100%;
         height                              : 100%;
         cursor                              : default;
+        touch-action                        : none;                         /* <-- Fingers belong to the sheet, not page scroll */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Side Menu - Shell
+ * ----------------------------------------------------------------------------- */
+
+    /* MENU | The panel down the right */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu {
+        position                            : relative;                     /* <-- The resizer sits on its left edge */
+        flex                                : 0 0 var(--Vale_LayoutMenuWidth);
+        width                               : var(--Vale_LayoutMenuWidth);
+        height                              : 100%;
+        display                             : flex;
+        flex-direction                      : column;
+        background                          : var(--Vale_White);
+        border-left                         : 1px solid rgba(23, 43, 58, 0.12);
+        box-shadow                          : -2px 0 12px rgba(0, 0, 0, 0.08);
+        transition                          : margin-right 0.25s ease;
+        z-index                             : 5;
+        font-family                         : var(--Vale_FontFamily);
+        color                               : var(--Vale_BluePrimary);
+    }
+
+    .na-layout-workspace--menu-folded .na-layout-menu {
+        margin-right                        : calc(-1 * var(--Vale_LayoutMenuWidth));   /* <-- Slides off; the sheet takes the width */
+        box-shadow                          : none;
     }
     /* ------------------------------------------------------------ */
 
 
-    /* CANVAS | Cursor States */
+    /* RESIZER | The menu's left edge: drag for its width (Na__PageLayoutSystem__SideMenu__.js) */
     /* ------------------------------------------------------------ */
+    .na-layout-menu__resizer {
+        position                            : absolute;
+        top                                 : 0;
+        bottom                              : 0;
+        left                                : -5px;                         /* <-- Half over the sheet, half over the menu: easy to find */
+        width                               : 10px;
+        cursor                              : col-resize;
+        touch-action                        : none;                         /* <-- A finger drags the edge, not the page */
+        outline                             : none;
+        z-index                             : 7;
+    }
+
+    .na-layout-menu__resizer::before {
+        content                             : '';                           /* <-- The line that lights up */
+        position                            : absolute;
+        top                                 : 0;
+        bottom                              : 0;
+        left                                : 4px;
+        width                               : 2px;
+        background                          : transparent;
+        transition                          : background-color 0.15s ease;
+    }
+
+    .na-layout-menu__resizer::after {
+        content                             : '';                           /* <-- The grip, half way down */
+        position                            : absolute;
+        top                                 : 50%;
+        left                                : 2px;
+        width                               : 6px;
+        height                              : 44px;
+        margin-top                          : -22px;
+        border-radius                       : 3px;
+        background                          : rgba(23, 43, 58, 0.22);
+        transition                          : background-color 0.15s ease;
+    }
+
+    .na-layout-menu__resizer:hover::before,
+    .na-layout-menu__resizer:focus-visible::before,
+    .na-layout-workspace--menu-resizing .na-layout-menu__resizer::before,
+    .na-layout-menu__resizer:hover::after,
+    .na-layout-menu__resizer:focus-visible::after,
+    .na-layout-workspace--menu-resizing .na-layout-menu__resizer::after {
+        background                          : var(--Vale_AccentBlue);
+    }
+
+    .na-layout-workspace--menu-resizing,
+    .na-layout-workspace--menu-resizing * {
+        cursor                              : col-resize !important;        /* <-- Steady while the pointer runs ahead of the edge */
+    }
+
+    .na-layout-workspace--menu-resizing .na-layout-menu {
+        transition                          : none;
+    }
+
+    .na-layout-workspace--menu-folded .na-layout-menu__resizer {
+        display                             : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Head (title, the job, fold arrow) */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__head {
+        display                             : flex;
+        align-items                         : center;
+        justify-content                     : space-between;
+        gap                                 : 10px;
+        padding                             : 12px 14px 10px 16px;
+        border-bottom                       : 1px solid rgba(23, 43, 58, 0.1);
+    }
+
+    .na-layout-menu__head-text {
+        display                             : flex;
+        flex-direction                      : column;
+        min-width                           : 0;
+    }
+
+    .na-layout-menu__head-title {
+        font-size                           : 0.95rem;
+        font-weight                         : 600;
+    }
+
+    .na-layout-menu__head-project {
+        font-size                           : 0.75rem;
+        color                               : rgba(23, 43, 58, 0.7);
+        white-space                         : nowrap;
+        overflow                            : hidden;
+        text-overflow                       : ellipsis;
+    }
+
+    .na-layout-menu__fold {
+        flex                                : 0 0 auto;
+        width                               : 30px;
+        height                              : 30px;
+        border                              : 1px solid rgba(23, 43, 58, 0.15);
+        border-radius                       : 6px;
+        background                          : transparent;
+        color                               : var(--Vale_BluePrimary);
+        font-size                           : 1.2rem;
+        line-height                         : 1;
+        cursor                              : pointer;
+    }
+
+    .na-layout-menu__fold:hover {
+        background                          : rgba(23, 43, 58, 0.08);
+    }
+
+    .na-layout-menu__head-tools {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 6px;
+        flex                                : 0 0 auto;
+    }
+
+    /* UNDO / REDO | Drawn arrows, the fold button's look (Na__PageLayoutSystem__UndoHistory__.js) */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__history {
+        display                             : inline-flex;
+        align-items                         : center;
+        justify-content                     : center;
+        padding                             : 0;
+    }
+
+    .na-layout-menu__history svg {
+        display                             : block;
+    }
+
+    .na-layout-menu__history:disabled {
+        opacity                             : 0.35;
+        cursor                              : default;
+        background                          : transparent;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Scrolling body and foot */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__scroll {
+        flex                                : 1 1 auto;
+        overflow-y                          : auto;
+        padding                             : 4px 0 12px 0;
+    }
+
+    .na-layout-menu__foot {
+        padding                             : 10px 14px 14px 14px;
+        border-top                          : 1px solid rgba(23, 43, 58, 0.1);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU TAB | Brings a folded menu back */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__reopen {
+        position                            : absolute;
+        top                                 : 14px;
+        right                               : 14px;
+        z-index                             : 6;
+        border                              : none;
+        border-radius                       : 6px;
+        padding                             : 8px 14px;
+        background                          : var(--Vale_BluePrimary);
+        color                               : var(--Vale_White);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : 0.8rem;
+        font-weight                         : 600;
+        box-shadow                          : 0 4px 14px rgba(0, 0, 0, 0.2);
+        cursor                              : pointer;
+    }
+
+    .na-layout-menu__reopen[hidden] {
+        display                             : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Side Menu - Sections and Controls
+ * ----------------------------------------------------------------------------- */
+
+    /* SECTION | A folding group of tools */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__section {
+        border-bottom                       : 1px solid rgba(23, 43, 58, 0.08);
+    }
+
+    .na-layout-menu__section-title {
+        list-style                          : none;
+        cursor                              : pointer;
+        padding                             : 12px 16px;
+        font-size                           : 0.85rem;
+        font-weight                         : 600;
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 8px;
+    }
+
+    .na-layout-menu__section-title::-webkit-details-marker {
+        display                             : none;
+    }
+
+    .na-layout-menu__section-title::after {
+        content                             : '\25BE';                      /* <-- Down arrow, as the main menu's */
+        margin-left                         : auto;
+        font-size                           : 0.8rem;
+        transition                          : transform 0.2s ease;
+        transform                           : rotate(-90deg);
+    }
+
+    .na-layout-menu__section[open] > .na-layout-menu__section-title::after {
+        transform                           : rotate(0deg);
+    }
+
+    .na-layout-menu__section-title:hover {
+        background                          : rgba(23, 43, 58, 0.04);
+    }
+
+    .na-layout-menu__section-body {
+        padding                             : 2px 16px 14px 16px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SUBSECTION | Advanced Linework Settings */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__subsection {
+        margin                              : 10px 0 2px 0;
+        padding                             : 8px 10px;
+        background                          : rgba(23, 43, 58, 0.05);
+        border-radius                       : 6px;
+    }
+
+    .na-layout-menu__subsection-title {
+        list-style                          : none;
+        cursor                              : pointer;
+        font-size                           : 0.8rem;
+        font-weight                         : 600;
+    }
+
+    .na-layout-menu__subsection-title::-webkit-details-marker {
+        display                             : none;
+    }
+
+    .na-layout-menu__subsection-title::after {
+        content                             : ' \25BE';
+        font-size                           : 0.75rem;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABELS, ROWS, HINTS */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__label {
+        display                             : block;
+        font-size                           : 0.78rem;
+        font-weight                         : 600;
+        margin                              : 10px 0 6px 0;
+    }
+
+    .na-layout-menu__label--spaced {
+        margin-top                          : 14px;
+    }
+
+    .na-layout-menu__row {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 10px;
+    }
+
+    .na-layout-menu__row--toggle {
+        justify-content                     : space-between;
+        cursor                              : pointer;
+        margin                              : 4px 0;
+    }
+
+    .na-layout-menu__row--toggle .na-layout-menu__label {
+        margin                              : 6px 0;
+        font-weight                         : 400;
+    }
+
+    .na-layout-menu__row--buttons {
+        gap                                 : 8px;
+    }
+
+    .na-layout-menu__row--buttons .na-layout-menu__action {
+        flex                                : 1 1 0;
+    }
+
+    .na-layout-menu__hint {
+        margin                              : 10px 0 0 0;
+        font-size                           : 0.72rem;
+        line-height                         : 1.45;
+        color                               : rgba(23, 43, 58, 0.65);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* META LINES | Who saved it, what the picture is, why a button is off */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__meta {
+        margin                              : 8px 0 2px 0;
+        font-size                           : 0.74rem;
+        line-height                         : 1.45;
+        color                               : rgba(23, 43, 58, 0.8);
+    }
+
+    .na-layout-menu__meta:empty {
+        display                             : none;
+    }
+
+    .na-layout-menu__meta--picture {
+        margin                              : 0 0 4px 0;
+    }
+
+    .na-layout-menu__meta-line--warn {
+        color                               : var(--Vale_WarnAmber);
+        font-weight                         : 600;
+    }
+
+    .na-layout-menu__meta-line--muted {
+        color                               : rgba(23, 43, 58, 0.6);
+    }
+
+    .na-layout-menu__note {
+        margin-top                          : 10px;
+        padding                             : 10px 12px;
+        background                          : rgba(23, 43, 58, 0.06);
+        border-radius                       : 6px;
+        font-size                           : 0.76rem;
+        line-height                         : 1.45;
+    }
+
+    .na-layout-menu__note[hidden] {
+        display                             : none;
+    }
+
+    .na-layout-menu__note .na-layout-menu__action {
+        margin-top                          : 8px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TEXT, NUMBER AND SELECT FIELDS */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__input,
+    .na-layout-menu__select {
+        width                               : 100%;
+        padding                             : 6px 8px;
+        border                              : 1px solid rgba(23, 43, 58, 0.25);
+        border-radius                       : 4px;
+        background                          : var(--Vale_White);
+        color                               : var(--Vale_BluePrimary);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : 0.82rem;
+    }
+
+    .na-layout-menu__input:focus,
+    .na-layout-menu__select:focus,
+    .na-layout-menu__value-input:focus {
+        outline                             : 2px solid rgba(51, 102, 153, 0.35);
+        outline-offset                      : 0;
+    }
+
+    .na-layout-menu__value-input {
+        width                               : 100%;
+        padding                             : 4px 6px;
+        text-align                          : right;
+        font-weight                         : 600;
+        font-family                         : 'Courier New', monospace;
+        font-size                           : 0.85rem;
+        color                               : var(--Vale_BluePrimary);
+        border                              : 1px solid rgba(23, 43, 58, 0.25);
+        border-radius                       : 4px;
+        background                          : var(--Vale_White);
+    }
+
+    .na-layout-menu__margins {
+        display                             : grid;
+        grid-template-columns               : 1fr 1fr;
+        gap                                 : 8px 12px;
+    }
+
+    .na-layout-menu__margin {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 8px;
+        font-size                           : 0.76rem;
+    }
+
+    .na-layout-menu__margin span {
+        flex                                : 0 0 46px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SLIDERS, VALUES, CHECKBOXES (as the main app's menu) */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__slider {
+        flex                                : 1;
+        height                              : 6px;
+        border-radius                       : 3px;
+        background                          : rgba(23, 43, 58, 0.2);
+        outline                             : none;
+        -webkit-appearance                  : none;
+        appearance                          : none;
+    }
+
+    .na-layout-menu__slider::-webkit-slider-thumb {
+        -webkit-appearance                  : none;
+        appearance                          : none;
+        width                               : 16px;
+        height                              : 16px;
+        border-radius                       : 50%;
+        background                          : var(--Vale_BluePrimary);
+        cursor                              : pointer;
+    }
+
+    .na-layout-menu__slider::-moz-range-thumb {
+        width                               : 16px;
+        height                              : 16px;
+        border-radius                       : 50%;
+        background                          : var(--Vale_BluePrimary);
+        cursor                              : pointer;
+        border                              : none;
+    }
+
+    .na-layout-menu__slider:disabled,
+    .na-layout-menu__select:disabled {
+        opacity                             : 0.5;
+    }
+
+    .na-layout-menu__value {
+        min-width                           : 64px;
+        text-align                          : right;
+        font-weight                         : 600;
+        font-family                         : 'Courier New', monospace;
+        font-size                           : 0.82rem;
+    }
+
+    .na-layout-menu__checkbox {
+        width                               : 18px;
+        height                              : 18px;
+        accent-color                        : var(--Vale_BluePrimary);
+        cursor                              : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTONS (as the main app's menu actions) */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__action {
+        display                             : block;
+        width                               : 100%;
+        margin-top                          : 10px;
+        border                              : none;
+        border-radius                       : 6px;
+        padding                             : 8px 10px;
+        background                          : var(--Vale_BluePrimary);
+        color                               : var(--Vale_White);
+        font-family                         : var(--Vale_FontFamily);
+        font-weight                         : 600;
+        font-size                           : 0.8rem;
+        cursor                              : pointer;
+        transition                          : background-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .na-layout-menu__action:hover {
+        background                          : var(--Vale_BlueLight);
+    }
+
+    .na-layout-menu__action:disabled {
+        opacity                             : 0.45;
+        cursor                              : not-allowed;
+    }
+
+    .na-layout-menu__action--secondary {
+        background                          : rgba(23, 43, 58, 0.12);
+        color                               : var(--Vale_BluePrimary);
+    }
+
+    .na-layout-menu__action--secondary:hover {
+        background                          : rgba(23, 43, 58, 0.2);
+    }
+
+    /* SAVE DRAWING | Muted red until the Vale Cloud has it, green once it does */
+    /* ------------------------------------------------------------ */
+    .na-layout-menu__action--save {
+        margin-top                          : 18px;                         /* <-- Set apart from the two PDF exports */
+        background                          : var(--Vale_UnsavedRed);
+        color                               : var(--Vale_White);
+        transition                          : background-color 0.6s ease, opacity 0.15s ease;   /* <-- Red fades into green as the save lands */
+    }
+
+    .na-layout-menu__action--save:hover {
+        background                          : var(--Vale_UnsavedRedHover);
+    }
+
+    .na-layout-menu__action--save.is-syncing,
+    .na-layout-menu__action--save.is-syncing:hover {
+        background                          : var(--Vale_SyncingGrey);
+        cursor                              : progress;
+    }
+
+    .na-layout-menu__action--save.is-syncing:disabled {
+        opacity                             : 1;                            /* <-- Busy, not unavailable */
+    }
+
+    .na-layout-menu__action--save.is-saved,
+    .na-layout-menu__action--save.is-saved:hover {
+        background                          : var(--Vale_SyncedGreen);
+        cursor                              : default;
+    }
+    /* ------------------------------------------------------------ */
+
+    .na-layout-menu__action--close {
+        margin-top                          : 0;
+        background                          : transparent;
+        color                               : var(--Vale_BluePrimary);
+        border                              : 1px solid rgba(23, 43, 58, 0.2);
+    }
+
+    .na-layout-menu__action--close:hover {
+        background                          : rgba(23, 43, 58, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SAVED LAYOUTS | Everyone / Mine, the count, the list and its cards are in
+       Na__PageLayoutSystem__Styles__SavedList__.css (imported above), shared with
+       ValeVision 3D's Drawings menu (v2.76.1) */
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Toast
+ * ----------------------------------------------------------------------------- */
+
+    .na-layout-toast {
+        position                            : fixed;
+        left                                : 20px;
+        bottom                              : 20px;
+        max-width                           : min(520px, calc(100vw - var(--Vale_LayoutMenuWidth) - 40px));
+        padding                             : 10px 16px;
+        border-radius                       : 6px;
+        background                          : var(--Vale_BluePrimary);
+        color                               : var(--Vale_White);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : 0.82rem;
+        line-height                         : 1.4;
+        box-shadow                          : 0 6px 18px rgba(23, 43, 58, 0.25);
+        opacity                             : 0;
+        transform                           : translateY(8px);
+        transition                          : opacity 0.25s ease, transform 0.25s ease;
+        pointer-events                      : none;
+        z-index                             : 3000;
+    }
+
+    .na-layout-toast--visible {
+        opacity                             : 1;
+        transform                           : translateY(0);
+    }
+
+    .na-layout-toast--error {
+        background                          : #8b1e1e;
+    }
+
+    /* SYNCED | A save the server has confirmed: tick, "Synced to the Vale Cloud", what and when */
+    /* ------------------------------------------------------------ */
+    .na-layout-toast--synced {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 12px;
+        padding                             : 12px 18px 12px 14px;
+        background                          : var(--Vale_SyncedGreen);
+    }
+
+    .na-layout-toast__tick {
+        position                            : relative;
+        flex                                : 0 0 26px;
+        width                               : 26px;
+        height                              : 26px;
+        border                              : 2px solid var(--Vale_White);
+        border-radius                       : 50%;
+        background                          : rgba(255, 255, 255, 0.16);
+    }
+
+    .na-layout-toast__tick::after {
+        content                             : '';                           /* <-- The tick, drawn (no icon font, no emoji) */
+        position                            : absolute;
+        left                                : 7px;
+        top                                 : 3px;
+        width                               : 6px;
+        height                              : 11px;
+        border                              : solid var(--Vale_White);
+        border-width                        : 0 2.5px 2.5px 0;
+        transform                           : rotate(45deg);
+    }
+
+    .na-layout-toast__words {
+        display                             : flex;
+        flex-direction                      : column;
+        gap                                 : 2px;
+        min-width                           : 0;
+    }
+
+    .na-layout-toast__title {
+        font-weight                         : 600;
+        font-size                           : 0.86rem;
+    }
+
+    .na-layout-toast__detail {
+        font-size                           : 0.76rem;
+        opacity                             : 0.92;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Unsaved Drawing Dialog (Na__PageLayoutSystem__UnsavedGuard__.js)
+ * ----------------------------------------------------------------------------- */
+
+    .na-layout-dialog {
+        position                            : fixed;
+        inset                               : 0;
+        z-index                             : 4000;
+        display                             : flex;
+        align-items                         : center;
+        justify-content                     : center;
+        padding                             : 16px;
+        font-family                         : var(--Vale_FontFamily);
+    }
+
+    .na-layout-dialog[hidden] {
+        display                             : none;
+    }
+
+    .na-layout-dialog__backdrop {
+        position                            : absolute;
+        inset                               : 0;
+        background                          : rgba(23, 43, 58, 0.45);
+    }
+
+    .na-layout-dialog__panel {
+        position                            : relative;
+        width                               : min(420px, 100%);
+        padding                             : 22px 22px 18px 22px;
+        background                          : var(--Vale_White);
+        border-radius                       : 12px;
+        box-shadow                          : 0 18px 48px rgba(0, 0, 0, 0.28);
+        color                               : var(--Vale_BluePrimary);
+    }
+
+    .na-layout-dialog__title {
+        margin                              : 0 0 8px 0;
+        font-size                           : 1.05rem;
+        font-weight                         : 600;
+    }
+
+    .na-layout-dialog__message {
+        margin                              : 0 0 12px 0;
+        font-size                           : 0.84rem;
+        line-height                         : 1.5;
+        color                               : rgba(23, 43, 58, 0.85);
+    }
+
+    .na-layout-dialog__actions .na-layout-menu__action {
+        margin-top                          : 8px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Canvas Cursor States
+ * ----------------------------------------------------------------------------- */
+
     .na-layout-canvas--grab {
         cursor                              : grab !important;
     }
@@ -228,7 +960,6 @@
     .na-layout-canvas--pan {
         cursor                              : move !important;
     }
-    /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */
 
@@ -259,7 +990,7 @@
     .na-layout-error__content {
         text-align                          : center;
         padding                             : 40px;
-        max-width                           : 480px;
+        max-width                           : 520px;
     }
 
     .na-layout-error__title {
@@ -280,5 +1011,33 @@
         color                               : var(--Vale_BluePrimary);
     }
     /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive | Narrow Screens
+ * -----------------------------------------------------------------------------
+ * Below 760px the menu lies over the sheet instead of beside it, so a phone
+ * keeps the whole width for the drawing; folding it shows all of the sheet.
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 760px) {
+        :root {
+            --Vale_LayoutMenuWidth          : min(330px, 88vw);
+        }
+
+        .na-layout-menu {
+            position                        : absolute;
+            top                             : 0;
+            right                           : 0;
+            bottom                          : 0;
+            box-shadow                      : -4px 0 18px rgba(0, 0, 0, 0.18);
+        }
+
+        .na-layout-toast {
+            max-width                       : calc(100vw - 40px);
+        }
+    }
 
 /* endregion ------------------------------------------------------------------- */

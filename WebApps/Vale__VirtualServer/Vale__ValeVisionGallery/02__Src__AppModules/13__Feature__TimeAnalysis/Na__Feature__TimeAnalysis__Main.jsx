@@ -1495,6 +1495,7 @@
 
                 try {
                     const filename = await na_kpi_email_generate_and_download(libraryStats);
+                    window.ValeActivity && window.ValeActivity.Log('report.create', { project: '', target: filename });   // <-- Activity ledger: the KPI report email
                     setShareState('done');
                     setShareMessage(`Saved ${filename} to your downloads.`);
                 } catch (error) {

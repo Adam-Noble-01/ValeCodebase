@@ -255,6 +255,7 @@
             Na__PlanDimClient__Notify();
             return;
         }
+        window.ValeActivity && window.ValeActivity.Log('tool.use', { target: 'the measure tool' });   // <-- Activity ledger
         Na__PlanDimClient__RequestPlacement();
     }
     // ------------------------------------------------------------

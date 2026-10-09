@@ -83,6 +83,7 @@
     // HELPER FUNCTION | Handle ValeVision Button Click
     // ---------------------------------------------------------------
     const handleValeVisionClick = (projectData) => {
+        window.ValeActivity && window.ValeActivity.Log('app.switch', { project: (projectData && projectData.folderId) || '', target: 'ValeVision 3D' });   // <-- Activity ledger
         const valeVisionLinkRoutingHelper = window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting; // <-- Read dedicated PWA helper
         if (valeVisionLinkRoutingHelper && typeof valeVisionLinkRoutingHelper.navigateToValeVisionProject === 'function') {
             valeVisionLinkRoutingHelper.navigateToValeVisionProject(projectData); // <-- Keep navigation in current app client

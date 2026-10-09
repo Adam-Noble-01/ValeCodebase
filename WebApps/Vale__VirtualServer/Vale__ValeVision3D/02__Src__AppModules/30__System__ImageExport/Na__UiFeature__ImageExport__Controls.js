@@ -14,6 +14,25 @@
 // - The Layout View tab is pre-opened synchronously inside the click gesture
 //   (popup-blocker safe now that renders take many seconds) and receives the
 //   image as a Blob instead of a ~40-90MB base64 data URL string.
+//   [Superseded 09-Oct-2026, v2.76.0: no tab at all - see APP PAGE NOTE below.]
+//
+// PAGE LAYOUT NOTE (09-Oct-2026, v2.75.0):
+// - Create Drawing captures the view the picture is rendered from (camera,
+//   layers, lighting, vertical correction) at the click, and hands it to the
+//   page with the settings the picture was made at and this project's id, so
+//   the page can save the layout and re-render it later
+//   (Na__ImageExport__PageLayoutHandoff__.js).
+// - RenderWithSettings: the same render at settings the caller names, for the
+//   page's Re-render (Na__ImageExport__PageLayoutBridge__.js). DescribeLiveSettings
+//   and EncodePng serve the same bridge.
+//
+// APP PAGE NOTE (09-Oct-2026, v2.76.0):
+// - Create Drawing no longer opens a browser tab (Adam: keep everything in the
+//   app). It first asks about an open drawing with changes not on the Vale
+//   Cloud (Save and Start New, Discard and Start New, Cancel), then renders as
+//   before and hands the picture to the Drawing Editor page in this window
+//   (Na__AppPages__DrawingPage__Host__.js), which pauses the model's rendering
+//   while it is up. The spinner goes once the page says it has the picture.
 //
 // -----------------------------------------------------------------------------
 
@@ -51,6 +70,25 @@
     // @delegate: ../50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js
     // ------------------------------------------------------------
     import { Na__PlExport__Apply } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Page Layout Handoff (Create Drawing: the view, the settings, the page's address)
+    // @delegate: ./Na__ImageExport__PageLayoutHandoff__.js
+    // ------------------------------------------------------------
+    import {
+        Na__PageLayoutHandoff__CaptureSourceView,
+        Na__PageLayoutHandoff__DescribeRenderSettings,
+        Na__PageLayoutHandoff__ProjectId
+    } from './Na__ImageExport__PageLayoutHandoff__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The Drawing Editor Page (Create Drawing opens it in this window)
+    // @delegate: ../36__System__AppPages/Na__AppPages__DrawingPage__Host__.js
+    // ------------------------------------------------------------
+    import {
+        Na__DrawingPage__ConfirmNewDrawing,
+        Na__DrawingPage__OpenPicture
+    } from '../36__System__AppPages/Na__AppPages__DrawingPage__Host__.js';
     // ------------------------------------------------------------
     // ------------------------------------------------------------
 
@@ -432,6 +470,16 @@
             // ------------------------------------------------------------
         });
 
+        // Drawings submenu | Create Drawing and Saved Drawings live in their own section
+        // ------------------------------------------------------------
+        const drawingsToggle = document.getElementById('naDrawingsToggle');   // <-- Drawings section header
+        const drawingsPanel  = document.getElementById('naDrawingsPanel');    // <-- Drawings section panel
+        if (drawingsToggle && drawingsPanel) {
+            drawingsToggle.addEventListener('click', () => {
+                drawingsPanel.classList.toggle('is-open');                    // <-- Same open/close convention as the other submenus
+            });
+        }
+
         customToggle.addEventListener('change', (event) => {
             isCustomEnabled = event.target.checked;
             updateControlsState();
@@ -570,30 +618,31 @@
                 if (layoutViewInProgress) return;                            // <-- Ignore if already running
                 layoutViewInProgress = true;                                 // <-- Lock
 
+                const unlock = () => { layoutViewInProgress = false; };
+
+                // AN OPEN DRAWING WITH CHANGES NOT ON THE VALE CLOUD | Asked about first:
+                // Save and Start New, Discard and Start New, or Cancel (nothing renders)
+                // ------------------------------------------------------------
+                let goAhead = false;
+                try {
+                    goAhead = await Na__DrawingPage__ConfirmNewDrawing();
+                } catch (confirmError) {
+                    console.error('[ImageExport] The open drawing could not be checked:', confirmError);
+                    goAhead = false;
+                }
+                if (!goAhead) { unlock(); return; }
+
                 const overlayUi = Na__UiFeature__CreateOverlayController(layoutViewButton);
-                const unlock    = () => { layoutViewInProgress = false; };
+
+                // SOURCE VIEW | Captured before anything renders, so a saved layout
+                // re-renders exactly this view (camera, layers, lighting)
+                // ------------------------------------------------------------
+                const isDrawingView = (typeof getElevationOverrides === 'function') && getElevationOverrides() !== null;
+                const sourceView    = Na__PageLayoutHandoff__CaptureSourceView(camera, isDrawingView);
+                const renderEnhance = isEnhanceEnabled;                      // <-- The settings this picture is made at
+                const renderCustom  = isCustomEnabled;
 
                 overlayUi.show('Rendering Your Image...');                   // <-- Phase 1 message
-
-                // PRE-OPEN TAB | Must happen synchronously inside the click gesture.
-                // Tiled renders take many seconds; a window.open after the render
-                // would be popup-blocked (transient activation expires).
-                // ------------------------------------------------------------
-                let layoutTab = null;
-                try {
-                    layoutTab = window.open('', '_blank');                   // <-- Placeholder tab while the render runs
-                    if (layoutTab) {
-                        layoutTab.document.write(
-                            '<!DOCTYPE html><html><head><title>Preparing Drawing Layout...</title></head>'
-                            + '<body style="margin:0; height:100vh; display:flex; align-items:center; justify-content:center; font-family:sans-serif; color:#555555;">'
-                            + '<p style="text-align:center;">Preparing your drawing layout...<br>This tab will load automatically when the image render completes.</p>'
-                            + '</body></html>'
-                        );
-                        layoutTab.document.close();
-                    }
-                } catch (tabError) {
-                    layoutTab = null;                                        // <-- Popup blocked; fall back to opening after render
-                }
 
                 try {
                     await Na__ExportYield__NextPaint();                        // <-- Let the overlay paint before heavy work
@@ -611,61 +660,25 @@
 
                     const blob = await Na__UiFeature__CanvasToBlob(result.canvas); // <-- Blob transfer (no 40-90MB base64 string)
 
-                    overlayUi.setStatus('Sending To Drawing Document...');   // <-- Phase 3 message
+                    overlayUi.setStatus('Opening the Drawing Editor...');    // <-- Phase 3 message
 
-                    // Store rendered image data on window global for the layout tab to read
+                    // THE DRAWING EDITOR | A page of this window: the picture goes to it, the
+                    // model's rendering pauses underneath (Na__AppPages__DrawingPage__Host__)
                     // ------------------------------------------------------------
-                    window.__Na__PageLayout__PendingImage = {                // <-- Set global property
-                        blob        : blob,                                  // <-- PNG blob (layout tab creates its own object URL)
-                        width       : result.width,                          // <-- Image width in pixels
-                        height      : result.height,                         // <-- Image height in pixels
-                        aspectRatio : result.aspectRatio                     // <-- Aspect ratio string or null
-                    };
+                    const ready = await Na__DrawingPage__OpenPicture({
+                        blob           : blob,                               // <-- PNG blob (the page makes its own copy)
+                        width          : result.width,                       // <-- Image width in pixels
+                        height         : result.height,                      // <-- Image height in pixels
+                        aspectRatio    : result.aspectRatio,                 // <-- Aspect ratio string or null
+                        projectId      : Na__PageLayoutHandoff__ProjectId(), // <-- The job the layout is saved to
+                        sourceView     : sourceView,                         // <-- The view a re-render poses again
+                        renderSettings : Na__PageLayoutHandoff__DescribeRenderSettings(result, renderCustom, renderEnhance, exportConfig.antiAliasSamples)
+                    });
 
-                    // Navigate the pre-opened tab to the Page Layout System
-                    // ------------------------------------------------------------
-                    const layoutUrl = new URL('./02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', window.location.href).href;
-                    if (layoutTab && !layoutTab.closed) {
-                        layoutTab.location.href = layoutUrl;                 // <-- Load layout page in the placeholder tab
-                    } else {
-                        window.open(layoutUrl, '_blank');                    // <-- Fallback (may be popup-blocked; best effort)
-                    }
-
-                    // LISTEN FOR POSTMESSAGE | Layout tab confirms it loaded successfully
-                    // ------------------------------------------------------------
-                    let layoutMessageReceived = false;                       // <-- Track if message arrived
-                    let layoutDismissed       = false;                       // <-- Guard against double dismiss
-
-                    function Na__LayoutView__Finish() {
-                        if (layoutDismissed) return;                         // <-- Only dismiss once
-                        layoutDismissed = true;
-                        overlayUi.dismiss('Success! See new tab for your Drawing Layout', false, 2500, unlock);
-                    }
-
-                    function Na__LayoutView__OnMessage(event) {
-                        if (event.data && event.data.type === 'Na__PageLayout__Ready') {
-                            layoutMessageReceived = true;                    // <-- Mark received
-                            window.removeEventListener('message', Na__LayoutView__OnMessage); // <-- Clean up listener
-                            Na__LayoutView__Finish();                        // <-- Show success and dismiss
-                        }
-                    }
-
-                    window.addEventListener('message', Na__LayoutView__OnMessage); // <-- Register listener
-
-                    // TIMEOUT FALLBACK | Dismiss after 8s if no postMessage received
-                    // ------------------------------------------------------------
-                    setTimeout(() => {
-                        if (!layoutMessageReceived) {
-                            window.removeEventListener('message', Na__LayoutView__OnMessage); // <-- Clean up listener
-                            Na__LayoutView__Finish();                        // <-- Dismiss regardless
-                        }
-                    }, 8000);
+                    overlayUi.dismiss(ready ? 'Drawing Ready' : 'Opening the Drawing Editor...', false, ready ? 600 : 1200, unlock);
 
                 } catch (layoutError) {
                     console.error('[ImageExport] Layout view failed:', layoutError);
-                    if (layoutTab && !layoutTab.closed) {
-                        try { layoutTab.close(); } catch (closeError) {}     // <-- Remove the orphaned placeholder tab
-                    }
                     Na__RenderLoop__RequestRender();                         // <-- Engine state was restored by the tiled renderer's finally
                     const reason = (layoutError && layoutError.message) ? layoutError.message : 'Unknown error';
                     overlayUi.dismiss(`Layout Failed - ${reason}`, true, 5000, unlock); // <-- Error dismiss then unlock
@@ -734,6 +747,72 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Render the Live View at Settings the Caller Names (the Page Layout's Re-render)
+    // ------------------------------------------------------------
+    // settings: { aspectRatio : 'W:H', heightPx, antiAliasSamples, enhance,
+    // drawingView }. Always the tiled route, so the picture is exactly the size
+    // asked for whatever the window is, through the same composer, enhance and
+    // projected linework as Download Image. drawingView true renders through
+    // the open 2D drawing's export overrides; false renders the 3D camera (the
+    // bridge refuses first when the two do not match what is on screen).
+    //
+    // Returns { canvas, width, height, aspectRatio, wasClamped }, or null when
+    // the export panel never initialised. THROWS ON A FAILED RENDER.
+    // ------------------------------------------------------------
+    async function Na__UiFeature__ImageExport__RenderWithSettings(settings, onStatus) {
+        const live = Na__UiFeature__ImageExport__LiveSettings;
+        if (!live || !settings) return null;
+
+        const exportConfig = {
+            ...live.exportConfig,
+            aspectRatios     : [String(settings.aspectRatio)],                // <-- One choice each, picked at index 0 below
+            resolutions      : [Math.max(16, Math.round(settings.heightPx))],
+            antiAliasSamples : Number.isFinite(settings.antiAliasSamples) ? settings.antiAliasSamples : live.exportConfig.antiAliasSamples
+        };
+        const overrides = (settings.drawingView === true) ? live.getElevationOverrides : () => null;
+
+        return Na__UiFeature__RenderToCanvas(
+            live.renderer, live.scene, live.camera, live.getRenderPipelineState,
+            live.postProcessConfig, settings.enhance === true,
+            true, exportConfig, 0, 0,
+            overrides,
+            (typeof onStatus === 'function') ? onStatus : null
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What an Export Would Use Right Now (Read Only, for the Page Layout Bridge)
+    // ------------------------------------------------------------
+    // Null until the panel initialises. The camera is the live one: the
+    // bridge poses it for a re-render and puts it back.
+    // ------------------------------------------------------------
+    function Na__UiFeature__ImageExport__DescribeLiveSettings() {
+        const live = Na__UiFeature__ImageExport__LiveSettings;
+        if (!live) return null;
+        return {
+            camera           : live.camera,
+            aspectRatios     : live.exportConfig.aspectRatios.slice(),
+            resolutions      : live.exportConfig.resolutions.slice(),
+            antiAliasSamples : live.exportConfig.antiAliasSamples,
+            isCustomEnabled  : live.GetIsCustomEnabled(),
+            isEnhanceEnabled : live.GetIsEnhanceEnabled(),
+            aspectRatio      : live.exportConfig.aspectRatios[live.GetRatioIndex()],
+            heightPx         : live.exportConfig.resolutions[live.GetResIndex()],
+            isDrawingView    : (typeof live.getElevationOverrides === 'function') && live.getElevationOverrides() !== null
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Encode a Rendered Canvas as a PNG Blob (Throws Rather Than Hand Back an Empty One)
+    // ------------------------------------------------------------
+    function Na__UiFeature__ImageExport__EncodePng(canvas) {
+        return Na__UiFeature__CanvasToBlob(canvas);
+    }
+    // ------------------------------------------------------------
+
     // endregion --------------------------------------------------------------
 
 
@@ -747,7 +826,10 @@
         Na__UiFeature__InitializeImageExportControls,
         Na__UiFeature__ImageExport__IsReady,
         Na__UiFeature__ImageExport__RenderCurrentView,
-        Na__UiFeature__ImageExport__DownloadCanvas
+        Na__UiFeature__ImageExport__DownloadCanvas,
+        Na__UiFeature__ImageExport__RenderWithSettings,
+        Na__UiFeature__ImageExport__DescribeLiveSettings,
+        Na__UiFeature__ImageExport__EncodePng
     };
     // ------------------------------------------------------------
 

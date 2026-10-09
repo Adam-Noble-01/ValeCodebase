@@ -119,6 +119,10 @@
         // ---------------------------------------------------------------
         const handleSearchChange = (newSearchTerm) => {
             setSearchTerm(newSearchTerm);                                // <-- Update search term state
+            window.clearTimeout(window.Na__Gallery__SearchLogTimer);     // <-- Activity ledger: the search once typing stops
+            window.Na__Gallery__SearchLogTimer = window.setTimeout(() => {
+                if (String(newSearchTerm || '').trim().length > 1) window.ValeActivity && window.ValeActivity.Log('search.use', { project: '', target: String(newSearchTerm).trim() });
+            }, 1500);
         };
         // ---------------------------------------------------------------
 
@@ -143,6 +147,7 @@
         // ---------------------------------------------------------------
         const handleModeChange = (newMode) => {
             setGalleryMode(newMode);                                     // <-- Update gallery mode state
+            window.ValeActivity && window.ValeActivity.Log('view.mode', { project: '', target: newMode + ' gallery' });   // <-- Activity ledger
             setSearchTerm('');                                           // <-- Clear search when switching modes
             setFilterArtist('all');                                      // <-- Reset artist filter when switching modes
             setFilterDesigner('all');                                    // <-- Reset designer filter when switching modes
@@ -350,7 +355,7 @@
                         onClick={stopCardClick}
                     >
                         <img
-                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
+                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__AvailableApps__ValeVision3d__.svg"
                             alt=""
                             className="project-card__content-icon"
                             loading="lazy"
@@ -368,7 +373,7 @@
                         onClick={stopCardClick}
                     >
                         <img
-                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__TheiaVideo__512px__.png"
+                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__AvailableApps__TheiaVideo__.svg"
                             alt=""
                             className="project-card__content-icon"
                             loading="lazy"

@@ -1436,12 +1436,40 @@ body.na-crosssection-selecting canvas {
 }
 
 
+/* The Word to Type (Choose with typeToConfirm: a final action, e.g. delete) */
+/* ----------------------------------------------------------------- */
+.na-confirm-dialog__input {
+    display                            : block;
+    width                              : 100%;
+    margin                             : -6px 0 16px;
+    padding                            : 8px 10px;
+    border                             : 1px solid rgba(23, 43, 58, 0.3);
+    border-radius                      : 6px;
+    font-family                        : inherit;
+    font-size                          : 0.9rem;
+    color                              : #172b3a;
+    background                         : #ffffff;
+}
+
+.na-confirm-dialog__input:focus {
+    outline                            : 2px solid rgba(179, 56, 44, 0.35);   /* <-- The destructive red, faint */
+    outline-offset                     : 0;
+    border-color                       : #b3382c;
+}
+
+
 /* Action Row */
 /* ----------------------------------------------------------------- */
 .na-confirm-dialog__actions {
     display                            : flex;
     justify-content                    : flex-end;
     gap                                : 8px;
+}
+
+.na-confirm-dialog__confirm:disabled,
+.na-confirm-dialog__confirm:disabled:hover {
+    opacity                            : 0.45;                               /* <-- Off until the word is typed */
+    cursor                             : not-allowed;
 }
 
 

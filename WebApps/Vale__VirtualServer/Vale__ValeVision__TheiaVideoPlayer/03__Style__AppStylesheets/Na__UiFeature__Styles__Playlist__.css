@@ -17,10 +17,26 @@
  * REGION | Playlist
  * ----------------------------------------------------------------------------- */
 
-    .theia-playlist__title {
+    .theia-playlist__head {                                                /* <-- "In this project" and, at the right, "4 videos" */
+        display                            : flex;
+        align-items                        : baseline;
+        justify-content                    : space-between;
+        gap                                : 12px;
         margin                             : 6px 4px 14px;
+    }
+
+    .theia-playlist__title {
+        margin                             : 0;
         font-size                          : var(--Theia_FontSize_Heading);
         font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-playlist__count {
+        flex-shrink                        : 0;
+        color                              : var(--Theia_TextFaint);
+        font-size                          : 13px;
+        font-variant-numeric               : tabular-nums;
+        white-space                        : nowrap;
     }
 
     .theia-playlist__list {
@@ -63,10 +79,11 @@
         background                         : var(--Theia_SurfaceHover);
     }
 
-    .theia-playlist__item.is-current .theia-playlist__button {
-        background                         : var(--Theia_Surface);
-        border-color                       : var(--Theia_Border);
-        box-shadow                         : var(--Theia_Shadow);
+    .theia-playlist__item.is-current .theia-playlist__button {             /* <-- The playing video: light blue, a navy edge (Adam's mockup) */
+        background                         : var(--Theia_ActiveBg);
+        border-color                       : transparent;
+        box-shadow                         : inset 3px 0 0 var(--Theia_ActiveLine);
+        transition                         : background-color var(--Theia_Fade), box-shadow var(--Theia_Fade);
     }
 
     .theia-playlist__thumb {
@@ -81,6 +98,21 @@
         overflow                           : hidden;
         background                         : #172b3a center / cover no-repeat;
         color                              : rgba(255, 255, 255, 0.55);
+    }
+
+    .theia-playlist__thumb::after {                                         /* <-- Cinema: a light shade over every thumbnail, so the eye goes to the player */
+        content                            : '';
+        position                           : absolute;
+        inset                              : 0;
+        z-index                            : 1;
+        background                         : #0f1e28;
+        opacity                            : 0;
+        pointer-events                     : none;
+        transition                         : opacity var(--Theia_Fade);    /* <-- Fades with the page */
+    }
+
+    body.theia--cinema .theia-playlist__thumb::after {
+        opacity                            : 0.22;
     }
 
     .theia-playlist__thumb-icon {
@@ -102,6 +134,7 @@
         text-transform                     : uppercase;
         opacity                            : 0;
         transition                         : opacity 0.2s ease;
+        z-index                            : 2;                            /* <-- Above the cinema shade: "Playing" stays crisp */
     }
 
     .theia-playlist__item.is-current .theia-playlist__now {

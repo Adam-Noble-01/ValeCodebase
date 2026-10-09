@@ -30,6 +30,16 @@ DESCRIPTION:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+08-Oct-2026 - Version 0.11.0
+- GET /api/activity?month=YYYY-MM (an archived month is unzipped into the audit cache).
+
+08-Oct-2026 - Version 0.10.0
+- Tab 05, User activity: GET /api/activity?days=7 (the PC's copy of the activity ledger, the
+  users and Theia's client links; no connection) and job activity (POST /api/op/activity
+  {days}): one read-only session brings the server's new ledger lines (engine 0.10.0). The
+  last fetch is reported with the payload. ?month=YYYY-MM loads one month; an archived one
+  (00__Archive/ServerLogs__<yyyy>__Archived__.zip) is unzipped into the audit cache first.
+
 07-Oct-2026 - Version 0.9.0
 - Version only: the engine writes the deploy stamp after every source push (engine 0.9.0).
 
@@ -99,7 +109,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.9.0"                                 # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.11.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root
@@ -125,6 +135,7 @@ NA__SERVER__BUSY                  = {"label": "", "since": 0.0}
 NA__SERVER__PLANS                 = {}                                         # <-- id -> (time, plan) from the last Compare
 NA__SERVER__RESULTS               = []                                         # <-- Recent job results for the activity panel
 NA__SERVER__LAST_ACTION           = {}                                         # <-- id -> last push / collect / undo summary
+NA__SERVER__ACTIVITY_FETCH        = {}                                         # <-- Tab 05: the last fetch of the activity ledger
 NA__SERVER__QUIET                 = False
 NA__SERVER__HTTPD                 = None                                       # <-- Set in Main; /api/shutdown stops it
 
@@ -444,6 +455,14 @@ def Na__Server__Operate(action: str, body: dict) -> dict:
             res = Na__Engine.Na__Engine__PrepareRoot(cfg)
         elif action in ("nginx-test", "nginx-apply", "nginx-status"):
             res = Na__Engine.Na__Engine__Nginx(cfg, action.split("-", 1)[1])
+        elif action == "activity":                                             # <-- Tab 05: the server's new ledger lines
+            label = "fetch user activity"
+            NA__SERVER__BUSY.update(label=label)
+            res = Na__Engine.Na__Activity__Fetch(cfg, int(body.get("days") or 0))
+            if res.get("ok"):
+                NA__SERVER__ACTIVITY_FETCH.update(t=time.time(), received=res["received"], server_files=res["server_files"])
+                if res["received"]:
+                    NA__SERVER__PLANS.pop(res["mapping"], None)                # <-- PC files changed: compare again
         elif action in ("user-reset", "user-signout"):                         # <-- Tab 04: on the server now
             if not NA__SERVER__USERS_LOCK.acquire(blocking=False):
                 return {"ok": False, "error": "a user accounts save is still running"}
@@ -525,6 +544,12 @@ class Na__Server__Handler(BaseHTTPRequestHandler):
                 return self.Na__Handler__Json(Na__Server__Routes())
             if path == "/api/users":
                 return self.Na__Handler__Json(Na__Engine.Na__Users__Payload(Na__Engine.Na__Config__Load()))
+            if path == "/api/activity":                                         # <-- ?days=7, or ?month=2025-09 (an archived one is unzipped)
+                q = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
+                days = q.get("days", "7")
+                res = Na__Engine.Na__Activity__Payload(Na__Engine.Na__Config__Load(), int(days) if days.isdigit() else 7,
+                                                       q.get("month", ""))
+                return self.Na__Handler__Json({**res, "fetch": NA__SERVER__ACTIVITY_FETCH})
             if path == "/api/tree":
                 Na__Live.touch()
                 cfg = Na__Engine.Na__Config__Load()

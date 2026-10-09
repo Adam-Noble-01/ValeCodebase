@@ -21,7 +21,9 @@
 #   says which files exist, who may see them, and takes new ones in.
 # - ValeVision 3D's page (/valevision/) calls this API directly - same site,
 #   same session cookie - to publish videos and keep titles in step.
-# - The shared sign-in is mounted at /api/accounts (ValeShared__Accounts__).
+# - The shared sign-in is mounted at /api/accounts (ValeShared__Accounts__), and
+#   the activity route at /api/activity (ValeShared__Activity__): links made and
+#   opened, publishes and edits go into the shared activity ledger.
 #
 # ENVIRONMENT (see the skill's flask-services.md):
 #   VALE_ROOT         the mirror root (/srv/vale)          VALE_SECRET_KEY   the shared session key
@@ -33,6 +35,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 08-Oct-2026 - Version 1.1.0
+# - Activity ledger: client links made, opened (and dead ones tried), switched off;
+#   videos published, edited, ordered, removed; /api/activity mounted.
+#
 # 07-Oct-2026 - Version 1.0.0
 # - First build: videos (per audience), titles and order kept in step with
 #   ValeVision 3D, client share links, chunked resumable uploads, publish.
@@ -52,6 +58,7 @@ from flask import Flask, jsonify                                                
 from werkzeug.middleware.proxy_fix import ProxyFix                                # noqa: E402
 
 from ValeShared__Accounts__ import Na__Accounts__Blueprint                        # noqa: E402
+from ValeShared__Activity__ import Na__Activity__Blueprint                        # noqa: E402
 from TheiaVideoPlayer__Api__ShareLinks__ import theia_shares_api                  # noqa: E402
 from TheiaVideoPlayer__Api__Uploads__ import theia_uploads_api                    # noqa: E402
 from TheiaVideoPlayer__Api__Videos__ import theia_videos_api                      # noqa: E402
@@ -63,7 +70,9 @@ def create_app() -> Flask:
     app.json.sort_keys = False                                                    # <-- Keys stay in the order they were written
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)           # <-- Behind nginx: the real scheme (Secure cookies) and visitor IP
 
+    app.config['VALE_ACTIVITY_APP'] = 'ValeVision Theia'                          # <-- Its name in the activity ledger
     app.register_blueprint(Na__Accounts__Blueprint, url_prefix='/api/accounts')
+    app.register_blueprint(Na__Activity__Blueprint, url_prefix='/api/activity')
     for bp in (theia_videos_api, theia_uploads_api, theia_shares_api):
         app.register_blueprint(bp)
 

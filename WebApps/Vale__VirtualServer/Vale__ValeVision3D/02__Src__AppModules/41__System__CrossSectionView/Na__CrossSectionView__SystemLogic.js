@@ -1258,6 +1258,7 @@
 
         Na__CrossSection__CancelFaceSelection();
         Na__CrossSection__AddSectionFromHit(hitPoint, planeNormal, Na__Sect__PlacementMode);
+        window.ValeActivity && window.ValeActivity.Log('tool.use', { target: 'a cross section (' + Na__Sect__PlacementMode + ')' });   // <-- Activity ledger
     }
     // ------------------------------------------------------------
 

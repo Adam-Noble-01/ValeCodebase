@@ -18,10 +18,15 @@
 //   this device (the media cache), so a full line means it plays offline.
 // - Managers see hidden and below-2K videos, greyed and labelled, and can move
 //   a video up or down and hide or show it.
+// - The heading carries the count at its right ("4 videos"); the playing video's
+//   row is light blue with a navy edge.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Oct-2026 - Version 1.1.0
+// - "N videos" at the right of the heading (Adam's mockup).
+//
 // 07-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -41,15 +46,18 @@
     function Na__Playlist__Build(container, options) {
         const opts = options || {};
         container.classList.add('theia-playlist');
-        const heading = Na__Dom__El('h2', 'theia-playlist__title', 'In this project');
+        const head = Na__Dom__El('div', 'theia-playlist__head');
+        const count = Na__Dom__El('span', 'theia-playlist__count');
+        head.append(Na__Dom__El('h2', 'theia-playlist__title', 'In this project'), count);
         const list = Na__Dom__El('div', 'theia-playlist__list', null, { role: 'list' });
-        container.append(heading, list);
+        container.append(head, list);
         const rows = new Map();
         let currentId = null;
 
         const render = (videos, schemes) => {
             Na__Dom__Clear(list);
             rows.clear();
+            count.textContent = videos.length === 1 ? '1 video' : `${videos.length} videos`;
             const grouped = (schemes || []).length > 1;
             let lastScheme = null;
             videos.forEach((video, index) => {

@@ -45,6 +45,7 @@
         <button class="Vsm__Tab" role="tab" data-tab="matrix"><span class="Vsm__TabNum">02</span>Parity matrix</button>
         <button class="Vsm__Tab" role="tab" data-tab="urls"><span class="Vsm__TabNum">03</span>URL configurator</button>
         <button class="Vsm__Tab" role="tab" data-tab="users"><span class="Vsm__TabNum">04</span>User accounts</button>
+        <button class="Vsm__Tab" role="tab" data-tab="activity"><span class="Vsm__TabNum">05</span>User activity</button>
     </nav>
 
     <div id="Vsm__Offline" class="Vsm__Offline" hidden>
@@ -194,6 +195,56 @@
         </div>
     </section>
 
+    <!-- TAB 05 | USER ACTIVITY -->
+    <section id="Vsm__TabActivity" class="Vsm__Panel is-wide" role="tabpanel" hidden>
+        <div class="Vsm__ExplorerBar">
+            <span id="Vsm__ActPill" class="Vsm__Pill is-light">Loading&hellip;</span>
+            <button id="Vsm__BtnActFetch" class="Vsm__BtnPrimary" title="One read-only connection: brings the server's new activity lines to this PC">Fetch from server</button>
+            <select id="Vsm__ActView" class="Vsm__Select" title="View">
+                <option value="ledger">Activity ledger</option>
+                <option value="links">Generated links</option>
+                <option value="people">People and devices</option>
+            </select>
+            <select id="Vsm__ActDays" class="Vsm__Select" title="Period">
+                <option value="1">Today</option>
+                <option value="7" selected>Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="0">Everything not archived</option>
+            </select>
+            <input id="Vsm__ActSearch" class="Vsm__Search" type="search" placeholder="Find a person, IP, device, project, action or link&hellip;">
+            <select id="Vsm__ActApp" class="Vsm__Select" title="App"><option value="">All apps</option></select>
+            <select id="Vsm__ActWho" class="Vsm__Select" title="Account type"><option value="">Everyone</option></select>
+            <select id="Vsm__ActKind" class="Vsm__Select" title="Action">
+                <option value="">All actions</option>
+                <option value="account">Sign-in and account</option>
+                <option value="open">Opened</option>
+                <option value="save">Saved and edited</option>
+                <option value="link">Links</option>
+                <option value="video">Videos</option>
+                <option value="email">Email</option>
+                <option value="download">Downloads</option>
+                <option value="tool">Tools, reports, prints</option>
+                <option value="refused">Refused</option>
+            </select>
+            <label class="Vsm__Check" title="The same thing by the same person within 10 minutes: one row"><input type="checkbox" id="Vsm__ActGroup" checked> Group repeats</label>
+            <span class="Vsm__Spacer"></span>
+            <span id="Vsm__ActCounts" class="Vsm__Muted"></span>
+        </div>
+        <div class="Vsm__Legend">
+            <span><b>External</b> no sign-in: a client or guest who opened a link, told apart by device and IP address.</span>
+            <span><b>IP</b> the visitor's address and country, from Cloudflare.</span>
+            <span><b>Device</b> a random id in that browser's cookie: the same device on every visit.</span>
+            <span><b>Fetch</b> by itself when the copy here is 5 minutes old, while this tab is open.</span>
+            <span><b>Archive</b> a year live, then each month is zipped on the server; pick an archived month to audit it.</span>
+        </div>
+        <div id="Vsm__ActErrors" class="Vsm__UrlErrors"></div>
+        <div class="Vsm__ExplorerBody is-users">
+            <div class="Vsm__UserTableWrap"><table id="Vsm__ActTable" class="Vsm__UserTable"></table></div>
+            <aside id="Vsm__ActDetail" class="Vsm__Detail"><span class="Vsm__Muted">Loading&hellip;</span></aside>
+        </div>
+    </section>
+
     <div id="Vsm__Modal" class="Vsm__Modal" hidden>
         <div class="Vsm__ModalBox" role="dialog" aria-modal="true">
             <div id="Vsm__ModalBody"></div>
@@ -207,5 +258,6 @@
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Explorer__.js"></script>
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Urls__.js"></script>
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Users__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Activity__.js"></script>
 </body>
 </html>

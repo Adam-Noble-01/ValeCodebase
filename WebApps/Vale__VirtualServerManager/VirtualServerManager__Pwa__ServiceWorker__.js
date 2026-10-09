@@ -15,7 +15,7 @@
 
    ============================================================================= */
 
-var VSM_CACHE = 'vale-virtual-server-shell-v0.9.0';
+var VSM_CACHE = 'vale-virtual-server-shell-v0.11.0';
 var VSM_SHELL = [
     '/',
     '/VirtualServerManager__Pwa__Manifest__.webmanifest',
@@ -25,6 +25,7 @@ var VSM_SHELL = [
     '/02__Src__AppModules/VirtualServerManager__Ui__Explorer__.js',
     '/02__Src__AppModules/VirtualServerManager__Ui__Urls__.js',
     '/02__Src__AppModules/VirtualServerManager__Ui__Users__.js',
+    '/02__Src__AppModules/VirtualServerManager__Ui__Activity__.js',
     '/01__AppAssets/VirtualServerManager__Icon__32x32.png',
     '/01__AppAssets/VirtualServerManager__Icon__192x192.png',
     '/01__AppAssets/VirtualServerManager__Icon__512x512.png'

@@ -85,12 +85,12 @@ So:
   `/srv/vale-sync/backups/<stamp>/` (used by *Undo last push*); on the PC it goes to
   `90__ServerBackups\collect__<date>\`.
 
-## The Four Tabs
+## The Five Tabs
 
 **Layout and sorting.**
 - **Tabs 01 to 03** are centred, and only as wide as their content. Columns fit their widest entry
   and text boxes fit their text.
-- **Tab 04** (the users table) uses the full width.
+- **Tabs 04 and 05** (the users and activity tables) use the full width.
 - **Every table grows with its rows**, and scrolls only past the screen height.
 - **Every table sorts the same way:** click a column header to sort, again to reverse (▲ / ▼). Blanks
   stay last. The explorer and users tables remember your choice; the dialog tables (push, collect,
@@ -184,6 +184,63 @@ So:
 - The side panel shows the permission levels, the file paths, and whether the folder can be pushed
   yet: never before the applied nginx hides every `Server__` folder.
 
+**05 User activity** (`Vale__VirtualServer\Server__UserAccountData\UserData__ActivityLedger\`, 0.10.0):
+- **The ledger.** Every app's API appends one line per important action to
+  `ValeActivity__Ledger__<yyyy-mm-dd>__.jsonl` (one file per UTC day) on the server: who (the
+  signed-in person as they were then, or *External* with no sign-in), the app, what, the project,
+  what it acted on, a generated link's token, the IP and country (from Cloudflare), the device and
+  whether it was the installed app. Written by `Server__Api\Api__Shared\ValeShared__Activity__.py`;
+  what only the browser sees comes from
+  `AppAssets__CommonApplicationAssets\Shared__ActivityLog\ValeShared__ActivityLog__.js`.
+- **What is recorded:**
+  - every app: sign-in, refused sign-in (a known person by name; an unknown address by its domain
+    only), sign-out, password changes; the app opened (installed app or browser tab), back on screen
+    after 30 minutes, a project opened, a link to the site copied, a video played (with its sound
+    on), a download clicked;
+  - ValeVision Gallery: project saves (which fields), show / hide;
+  - ValeVision 3D: every save, named by what changed ("Saved video paths (created Garden walk)",
+    "Saved animation scenes (created Kitchen dusk)"); a save that changed nothing is left out.
+    Also drawing notes, published drawings and archives, sheet pictures, statements, scrapbook,
+    spelling dictionary, emails sent (subject and recipients);
+  - ValeVision Theia: client links made, opened (one per browser session), opened after they expired
+    or were switched off, switched off; videos published, edited, re-ordered, synced, removed;
+    posters.
+- **Fetch from server** brings only the ledger files that changed, in one read-only connection. It
+  runs by itself when the tab opens and the copy here is 5 minutes old, and every 5 minutes while
+  the tab is on screen, unless a job is running, the key is not loaded or the connection is cooling
+  down. Files keep the server's size and time, so Compare shows them in sync; Collect brings them
+  too (user-data lane).
+- **Three views of the same events:**
+  - *Activity ledger*: User, Account type, Role, App, Action, Project, Detail, Date, Time, IP address,
+    Device. The same thing by the same person within 10 minutes is one row (×12); untick *Group
+    repeats* to see each;
+  - *Generated links*: ValeVision Theia's client links (from the PC's copies of each project's links
+    file, and the ledger) with who made them, expiry, state, opens, distinct visitors, the last open
+    and where from; links staff copied (a plain `/valevision/?project=` link has no token, so it
+    counts the project's external opens since it was copied). Click one for everyone who opened it;
+  - *People and devices*: one row per signed-in person and per external device (or IP), with apps,
+    events, projects, first and last seen, IP addresses and devices. Click one for their ledger.
+- **Filters** like the other tabs: period (today to everything), search (every word must match:
+  name, code, IP, device id, project, action, link token), app, account type (staff, external, a
+  permission level) and action. Click a row for every detail and *This person / device / IP / link
+  / project* filters.
+- **External** visitors are told apart by the device id: a random id the apps keep in the browser's
+  `vale_device` cookie (400 days, this site only), plus the IP. It holds nothing about the person.
+- **A year live, then archived** (0.11.0). The server keeps each day's file for a year. Once every
+  day of a month is a year old, the month goes into
+  `UserData__ActivityLedger\00__Archive\ServerLogs__<yyyy>__Archived__.zip` (one zip per year, a folder
+  per month inside), checked byte for byte before the day files go. Fetch brings the zips, and
+  removes this PC's copies of archived days once the zip here holds the same bytes.
+- **Auditing an old month:** the period list names every month (*Months*, then *Archived months*).
+  An archived one is unzipped into `90__ServerBackups\ServerLogs__AuditCache\<yyyy-mm>\` and loaded
+  from there; the side panel says which zip it came from. *Everything not archived* is the live year.
+- **ValeVision 3D and ValeVision Gallery in detail:** the model loaded, the Layout Editor or the
+  client drawings, each drawing a client opens, presentation scenes, walk / orbit / fly, sheet PDFs,
+  the specification printed, cross sections, the measure tool, Video Studio previews and the project
+  link email; the Gallery's Project Editor and 3D Production KPI report, the KPI report email, the
+  images ZIP, Open in ValeVision 3D, searches and the gallery mode. The *Tools, reports, prints*
+  action filter picks these out.
+
 Header: connection state (key loaded, cooldown, logins in the last 10 minutes) and live server
 stats (load, memory, disk, nginx, uptime). *Server status* gives the full report.
 
@@ -209,12 +266,13 @@ stats (load, memory, disk, nginx, uptime). *Server status* gives the full report
 
 | File | Purpose |
 |---|---|
-| `VirtualServerManager__App__.html` | The PWA shell (four tabs) |
+| `VirtualServerManager__App__.html` | The PWA shell (five tabs) |
 | `02__Src__AppModules/VirtualServerManager__Ui__Core__.js` | API, header, modals, settings, status, tabs, service-worker registration |
 | `02__Src__AppModules/VirtualServerManager__Ui__Explorer__.js` | Tab 01: the live server explorer |
 | `02__Src__AppModules/VirtualServerManager__Ui__Matrix__.js` | Tab 02: the parity matrix, push / collect / undo / seed |
 | `02__Src__AppModules/VirtualServerManager__Ui__Urls__.js` | Tab 03: the URL configurator |
 | `02__Src__AppModules/VirtualServerManager__Ui__Users__.js` | Tab 04: user accounts |
+| `02__Src__AppModules/VirtualServerManager__Ui__Activity__.js` | Tab 05: user activity (ledger, generated links, people and devices) |
 | `03__Style__AppStylesheets/VirtualServerManager__Styles__Main__.css` | Styles (Vale palette) |
 | `01__AppAssets/` | App icons (PNG, maskable, ICO) |
 | `VirtualServerManager__Pwa__Manifest__.webmanifest`, `VirtualServerManager__Pwa__ServiceWorker__.js` | Installable app; the shell opens even before the server is up |
@@ -243,6 +301,8 @@ python VirtualServerManager__SyncEngine__.py nginx-test      # dry run on the se
 python VirtualServerManager__SyncEngine__.py nginx-apply     # install, reload, verify, auto-restore
 python VirtualServerManager__SyncEngine__.py nginx-status
 python VirtualServerManager__SyncEngine__.py users           # list + validate the users register; says if it may be pushed yet
+python VirtualServerManager__SyncEngine__.py activity --fetch --days 7 --find "holt link"   # tab 05 in a console (--fetch: one read-only session)
+python VirtualServerManager__SyncEngine__.py activity --month 2025-09                        # one month; an archived one is unzipped to the audit cache
 python VirtualServerManager__SyncEngine__.py push projects --scope ValeProjects__2026/64135__Washington --yes --report-file r.json
 ```
 

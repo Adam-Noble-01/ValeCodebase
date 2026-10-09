@@ -8,118 +8,336 @@
     <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
     <title>LayoutVision 2D | Page Layout</title>
-    
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Where This Page Is: Inside ValeVision 3D, or Alone      -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- Since ValeVision3D v2.76.0 this page is the app's Drawing Editor   -->
+    <!-- page, in a frame (?embed=1): marked embedded here, before it first -->
+    <!-- paints, so the stylesheet puts its own header away (the app's      -->
+    <!-- header and breadcrumbs are its). A tab an older ValeVision 3D      -->
+    <!-- opened keeps working as one. On its own (an old bookmark, a link)  -->
+    <!-- it moves into the app, where the model it re-renders from is;      -->
+    <!-- ?standalone=1 keeps it alone. (Na__PageLayoutSystem__Host__.js)    -->
+
+    <script>
+        (function Na__PageLayout__Boot__Place() {
+            var params = new URLSearchParams(window.location.search);
+            if (window.parent !== window) {                                  // <-- In a frame: never moves the frame anywhere
+                if (params.get('embed') === '1') document.documentElement.classList.add('na-layout--embedded');
+                return;
+            }
+            if (params.get('standalone') === '1') return;
+            try {
+                if (window.opener && window.opener.Na__PageLayout__RenderBridge) return;   // <-- A tab an older ValeVision 3D opened
+            } catch (error) { /* an opener that cannot be read is no ValeVision 3D */ }
+            var app     = new URL('../../', window.location.href);           // <-- The app's own address (this file is two folders down)
+            var project = params.get('project');
+            if (project) {
+                app.searchParams.set('project', project);
+                app.searchParams.set('page', 'drawing');
+            }
+            window.location.replace(app.href);
+        })();
+    </script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  BRANDING | Favicon and Brand Icons                     -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <link rel="apple-touch-icon" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <meta name="theme-color" content="#172b3a">
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
+
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Sign-In (the shared Vale sign-in, as in ValeVision 3D)  -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- The initials bubble or a "Sign in" pill in the header              -->
+    <!-- (Na__PageLayoutSystem__UserSession__.js). Saving layouts needs an  -->
+    <!-- account; laying out and exporting a PDF do not.                    -->
+    <!-- No ValeShared__AppUpdate__ here on purpose: it may reload a page at -->
+    <!-- start-up, and this page's picture arrives once, from ValeVision 3D. -->
+    <!-- ValeVision 3D's own copy refreshes this page's files after a push.  -->
+
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Page Layout System Stylesheet                          -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <link rel="stylesheet" href="Na__PageLayoutSystem__Styles__Main__.css">
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
+
+
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  jsPDF Dependency (Version Locked, CDN Independent)     -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <!-- jsPDF v4.1.0 UMD Build - Self-contained, all dependencies bundled -->
     <!-- CDN Reference: https://esm.sh/jspdf@4.1.0 -->
     <script src="01__Dependencies__VersionLocked/jspdf.umd.js"></script>
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
+
 </head>
 <body>
-    
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Application Header Bar (Matches Main ValeVision App)   -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <header class="app-header">
         <div class="app-header__logo-container app-header__logo-container--left">
-            <img 
+            <img
                 src="/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
                 alt="Vale Garden Houses"
                 class="app-header__logo-left"
             />
         </div>
-        
+
         <div class="app-header__logo-container app-header__logo-container--right">
             <h1 class="app-header__title">LayoutVision 2D</h1>
+            <!-- Signed-in user: the initials bubble and its menu, or a "Sign in" pill -->
+            <div class="app-header__user-slot" id="naLayoutUserSlot"></div>
         </div>
     </header>
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
+
+
+
     <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Secondary Actions Bar (Below Header)                   -->
+    <!-- REGION  |  Workspace: the Sheet and the Side Menu                 -->
     <!-- ----------------------------------------------------------------- -->
-    
-    <div class="na-layout-actions">
-        <button class="na-layout-actions__button na-layout-actions__button--primary" id="naLayoutExportFull">
-            Export Full Layout
-        </button>
-        <button class="na-layout-actions__button na-layout-actions__button--secondary" id="naLayoutExportImageOnly">
-            Export Image Only
-        </button>
-        <button class="na-layout-actions__button na-layout-actions__button--close" id="naLayoutClose">
-            Close
-        </button>
+
+    <div class="na-layout-workspace" id="naLayoutWorkspace">
+
+        <!-- THE SHEET | Layout canvas (fills what the menu leaves) -->
+        <div class="na-layout-canvas-container" id="naLayoutCanvasContainer">
+            <canvas id="naLayoutCanvas"></canvas>
+        </div>
+
+        <!-- THE MENU | Every tool, in sections, all folded on opening (Na__PageLayoutSystem__SideMenu__.js wires the shell) -->
+        <aside class="na-layout-menu" id="naLayoutMenu" aria-label="Drawing layout tools">
+
+            <!-- RESIZER | Drag the menu's left edge for its width; double-click for the default -->
+            <div class="na-layout-menu__resizer" id="naLayoutMenuResizer" role="separator" aria-orientation="vertical"
+                 aria-label="Menu width: drag, or use the arrow keys; double-click for the default" tabindex="0"
+                 title="Drag to change the menu's width (double-click for the default)"></div>
+
+            <div class="na-layout-menu__head">
+                <div class="na-layout-menu__head-text">
+                    <span class="na-layout-menu__head-title">Drawing Tools</span>
+                    <span class="na-layout-menu__head-project" id="naLayoutProjectName"></span>
+                </div>
+                <!-- Undo / Redo (Na__PageLayoutSystem__UndoHistory__.js): Ctrl+Z, Ctrl+Y; the buttons for a touch screen -->
+                <div class="na-layout-menu__head-tools">
+                    <button class="na-layout-menu__fold na-layout-menu__history" id="naLayoutUndo" type="button" title="Nothing to undo" aria-label="Undo" disabled>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 14 4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="na-layout-menu__fold na-layout-menu__history" id="naLayoutRedo" type="button" title="Nothing to redo" aria-label="Redo" disabled>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m15 14 5-5-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="na-layout-menu__fold" id="naLayoutMenuCollapse" type="button" title="Fold the menu away" aria-label="Fold the menu away">&#8250;</button>
+                </div>
+            </div>
+
+            <div class="na-layout-menu__scroll">
+
+                <!-- SECTION | Drawing Layout (Na__PageLayoutSystem__SavedLayouts__Controls__.js) -->
+                <details class="na-layout-menu__section" data-section="drawing">
+                    <summary class="na-layout-menu__section-title">Drawing Layout</summary>
+                    <div class="na-layout-menu__section-body">
+                        <label class="na-layout-menu__label" for="naLayoutName">Layout Name</label>
+                        <input type="text" id="naLayoutName" class="na-layout-menu__input" maxlength="120" placeholder="For example: Rear view from the garden" autocomplete="off" />
+                        <div class="na-layout-menu__meta" id="naLayoutMeta"></div>
+                        <div class="na-layout-menu__row na-layout-menu__row--buttons">
+                            <button class="na-layout-menu__action" id="naLayoutSave" type="button">Save Layout</button>
+                            <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutSaveAsNew" type="button">Save as New</button>
+                        </div>
+                        <div class="na-layout-menu__note" id="naLayoutSignInNote" hidden>
+                            <span id="naLayoutSignInNoteText"></span>
+                            <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutSignIn" type="button">Sign In</button>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION | Saved Layouts for this job (Na__PageLayoutSystem__SavedLayouts__Controls__.js) -->
+                <!-- The list's look and its cards are shared with ValeVision 3D's Drawings menu (Na__PageLayoutSystem__SavedList__.js, __Styles__SavedList__.css) -->
+                <details class="na-layout-menu__section na-saved-list" data-section="saved" id="naLayoutSavedSection">
+                    <summary class="na-layout-menu__section-title">Saved Layouts <span class="na-saved-list__count" id="naLayoutSavedCount"></span></summary>
+                    <div class="na-layout-menu__section-body">
+                        <div class="na-saved-list__segmented" id="naLayoutSavedFilter" role="group" aria-label="Whose layouts">
+                            <button class="na-saved-list__segment is-active" data-filter="all" type="button">Everyone</button>
+                            <button class="na-saved-list__segment" data-filter="mine" type="button">Mine</button>
+                        </div>
+                        <div class="na-saved-list__list" id="naLayoutSavedList"></div>
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutSavedRefresh" type="button">Refresh List</button>
+                    </div>
+                </details>
+
+                <!-- SECTION | Composition Guide (Na__PageLayoutSystem__CompositionGuide__Controls__.js) -->
+                <details class="na-layout-menu__section" data-section="guide">
+                    <summary class="na-layout-menu__section-title">Composition Guide</summary>
+                    <div class="na-layout-menu__section-body">
+                        <label class="na-layout-menu__row na-layout-menu__row--toggle">
+                            <span class="na-layout-menu__label">Show Guide</span>
+                            <input type="checkbox" id="naGuideVisible" class="na-layout-menu__checkbox" />
+                        </label>
+                        <label class="na-layout-menu__row na-layout-menu__row--toggle">
+                            <span class="na-layout-menu__label">Lock Guide</span>
+                            <input type="checkbox" id="naGuideLocked" class="na-layout-menu__checkbox" />
+                        </label>
+                        <label class="na-layout-menu__row na-layout-menu__row--toggle">
+                            <span class="na-layout-menu__label">Move Opposite Edges Together</span>
+                            <input type="checkbox" id="naGuidePairEdges" class="na-layout-menu__checkbox" />
+                        </label>
+                        <div class="na-layout-menu__label na-layout-menu__label--spaced">Margins From the Drawing Frame (mm)</div>
+                        <div class="na-layout-menu__margins">
+                            <label class="na-layout-menu__margin"><span>Top</span><input type="number" id="naGuideMarginTop" class="na-layout-menu__value-input" step="0.5" /></label>
+                            <label class="na-layout-menu__margin"><span>Bottom</span><input type="number" id="naGuideMarginBottom" class="na-layout-menu__value-input" step="0.5" /></label>
+                            <label class="na-layout-menu__margin"><span>Left</span><input type="number" id="naGuideMarginLeft" class="na-layout-menu__value-input" step="0.5" /></label>
+                            <label class="na-layout-menu__margin"><span>Right</span><input type="number" id="naGuideMarginRight" class="na-layout-menu__value-input" step="0.5" /></label>
+                        </div>
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naGuideReset" type="button">Reset to Frame</button>
+                        <p class="na-layout-menu__hint">Drag an edge of the guide in or out. Hold Shift to move the opposite edge with it. A negative margin sits outside the frame.</p>
+                    </div>
+                </details>
+
+                <!-- SECTION | Picture (Na__PageLayoutSystem__SideMenu__.js) -->
+                <details class="na-layout-menu__section" data-section="picture">
+                    <summary class="na-layout-menu__section-title">Picture</summary>
+                    <div class="na-layout-menu__section-body">
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutResetImage" type="button">Fit Picture in Frame</button>
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutFitSheet" type="button">Fit Sheet to Window</button>
+                        <p class="na-layout-menu__hint">Drag the picture to move it. Drag a corner to scale it. Drag an edge handle to trim it. Scroll to zoom; drag with the right or middle button to pan. Ctrl+Z undoes a change, Ctrl+Y redoes it.</p>
+                    </div>
+                </details>
+
+                <!-- SECTION | Render Quality (Na__PageLayoutSystem__RenderControls__.js) -->
+                <details class="na-layout-menu__section" data-section="render">
+                    <summary class="na-layout-menu__section-title">Render Quality</summary>
+                    <div class="na-layout-menu__section-body">
+                        <div class="na-layout-menu__meta na-layout-menu__meta--picture" id="naRenderPicture"></div>
+                        <div class="na-layout-menu__label">Resolution</div>
+                        <div class="na-layout-menu__row">
+                            <input type="range" id="naRenderResolution" class="na-layout-menu__slider" />
+                            <span class="na-layout-menu__value" id="naRenderResolutionValue"></span>
+                        </div>
+                        <label class="na-layout-menu__label" for="naRenderAspect">Aspect Ratio</label>
+                        <select id="naRenderAspect" class="na-layout-menu__select"></select>
+                        <label class="na-layout-menu__label" for="naRenderAntiAlias">Anti-Aliasing</label>
+                        <select id="naRenderAntiAlias" class="na-layout-menu__select"></select>
+                        <label class="na-layout-menu__row na-layout-menu__row--toggle">
+                            <span class="na-layout-menu__label">Enhance Whitecard</span>
+                            <input type="checkbox" id="naRenderEnhance" class="na-layout-menu__checkbox" />
+                        </label>
+                        <details class="na-layout-menu__subsection">
+                            <summary class="na-layout-menu__subsection-title">Advanced Linework Settings</summary>
+                            <div class="na-layout-menu__label">Linework Thickness</div>
+                            <div class="na-layout-menu__row">
+                                <input type="range" id="naRenderLinework" class="na-layout-menu__slider" />
+                                <span class="na-layout-menu__value" id="naRenderLineworkValue"></span>
+                            </div>
+                            <div class="na-layout-menu__label">Profile Line Thickness</div>
+                            <div class="na-layout-menu__row">
+                                <input type="range" id="naRenderProfile" class="na-layout-menu__slider" />
+                                <span class="na-layout-menu__value" id="naRenderProfileValue"></span>
+                            </div>
+                            <div class="na-layout-menu__label">Silly Lines</div>
+                            <div class="na-layout-menu__row">
+                                <input type="range" id="naRenderSilly" class="na-layout-menu__slider" />
+                                <span class="na-layout-menu__value" id="naRenderSillyValue"></span>
+                            </div>
+                        </details>
+                        <button class="na-layout-menu__action" id="naRenderRerender" type="button">Re-Render Picture</button>
+                        <div class="na-layout-menu__meta" id="naRenderStatus"></div>
+                    </div>
+                </details>
+
+                <!-- SECTION | Export (Na__PageLayoutSystem__PdfExport__A3__.js) -->
+                <details class="na-layout-menu__section" data-section="export">
+                    <summary class="na-layout-menu__section-title">Export</summary>
+                    <div class="na-layout-menu__section-body">
+                        <button class="na-layout-menu__action" id="naLayoutExportFull" type="button">Export Full Layout (PDF)</button>
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutExportImageOnly" type="button">Export Image Only (PDF)</button>
+                        <!-- Save Drawing: the same save as Drawing Layout's button; red until saved, green once saved (Na__PageLayoutSystem__SavedLayouts__Controls__.js) -->
+                        <button class="na-layout-menu__action na-layout-menu__action--save" id="naLayoutExportSaveFile" type="button">Save Drawing</button>
+                        <p class="na-layout-menu__hint" id="naLayoutExportSaveHint">Not saved yet. Save it to the Vale Cloud to open it again from Saved Drawings.</p>
+                    </div>
+                </details>
+
+            </div>
+
+            <div class="na-layout-menu__foot">
+                <button class="na-layout-menu__action na-layout-menu__action--close" id="naLayoutClose" type="button">Close</button>
+            </div>
+        </aside>
+
+        <!-- MENU TAB | Brings the folded menu back -->
+        <button class="na-layout-menu__reopen" id="naLayoutMenuReopen" type="button" hidden>&#8249; Menu</button>
+
     </div>
-    
-    <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Layout Canvas                                          -->
-    <!-- ----------------------------------------------------------------- -->
-    
-    <div class="na-layout-canvas-container" id="naLayoutCanvasContainer">
-        <canvas id="naLayoutCanvas"></canvas>
+
+    <!-- Toast (Na__PageLayoutSystem__UiNotify__.js) -->
+    <div class="na-layout-toast" id="naLayoutToast" role="status" aria-live="polite"></div>
+
+    <!-- Unsaved drawing question: the menu's Close, and after the browser's own "Leave site?" (Na__PageLayoutSystem__UnsavedGuard__.js) -->
+    <div class="na-layout-dialog" id="naLayoutUnsavedDialog" role="dialog" aria-modal="true" aria-labelledby="naLayoutUnsavedTitle" aria-describedby="naLayoutUnsavedMessage" hidden>
+        <div class="na-layout-dialog__backdrop" data-dialog-dismiss></div>
+        <div class="na-layout-dialog__panel">
+            <h2 class="na-layout-dialog__title" id="naLayoutUnsavedTitle">Save your drawing before closing?</h2>
+            <p class="na-layout-dialog__message" id="naLayoutUnsavedMessage">This drawing has not been saved to the Vale Cloud. If you close now, it will be lost.</p>
+            <div class="na-layout-dialog__actions">
+                <button class="na-layout-menu__action na-layout-menu__action--save" id="naLayoutUnsavedSave" type="button">Save and Close</button>
+                <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutUnsavedKeep" type="button">Keep Editing</button>
+                <button class="na-layout-menu__action na-layout-menu__action--close" id="naLayoutUnsavedDiscard" type="button">Close Without Saving</button>
+            </div>
+        </div>
     </div>
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
+
+
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Error Overlay (No Image Data)                          -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <div class="na-layout-error" id="naLayoutError" style="display: none;">
         <div class="na-layout-error__content">
-            <h2 class="na-layout-error__title">No Image Data</h2>
+            <h2 class="na-layout-error__title">No Drawing to Show</h2>
             <p class="na-layout-error__message">
-                Please open the Layout View from the ValeVision 3D viewer.<br>
-                Use the <strong>Export Image</strong> menu and click <strong>Layout View</strong>.
+                Please open this page from ValeVision 3D.<br>
+                In <strong>Tools &amp; Settings</strong>, open <strong>Export Image</strong>, then press
+                <strong>Create Drawing</strong> (or <strong>Saved Drawings</strong> for the job's saved layouts).
             </p>
         </div>
     </div>
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    
+
+
+
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Page Layout System Application Logic                   -->
     <!-- ----------------------------------------------------------------- -->
-    
+
     <script type="module">
     // -------------------------------------------------------------------------
     // REGION | Page Layout System - Module Initialization
@@ -127,12 +345,26 @@
 
         // MODULE IMPORTS | Page Layout System Modules
         // ------------------------------------------------------------
-        import { Na__PageLayout__Initialize }        from './Na__PageLayoutSystem__SystemLogic__Main__.js';
-        import { Na__PageLayout__RenderFrame }        from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
-        import { Na__PageLayout__InitNavigation }     from './Na__PageLayoutSystem__2dNavigationControls__.js';
-        import { Na__PageLayout__InitPcControls }     from './Na__PageLayoutSystem__Controls__Pc__.js';
-        import { Na__PageLayout__InitTouchControls }  from './Na__PageLayoutSystem__Controls__TouchScreen__.js';
-        import { Na__PageLayout__InitPdfExport }      from './Na__PageLayoutSystem__PdfExport__A3__.js';
+        import { Na__PageLayout__Initialize }                    from './Na__PageLayoutSystem__SystemLogic__Main__.js';
+        import { Na__PageLayout__RenderFrame }                   from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
+        import { Na__PageLayout__InitNavigation }                from './Na__PageLayoutSystem__2dNavigationControls__.js';
+        import { Na__PageLayout__InitPcControls }                from './Na__PageLayoutSystem__Controls__Pc__.js';
+        import { Na__PageLayout__InitTouchControls }             from './Na__PageLayoutSystem__Controls__TouchScreen__.js';
+        import { Na__PageLayout__InitPdfExport }                 from './Na__PageLayoutSystem__PdfExport__A3__.js';
+        import { Na__PageLayout__UserSession__Start }            from './Na__PageLayoutSystem__UserSession__.js';
+        import { Na__PageLayout__InitSideMenu }                  from './Na__PageLayoutSystem__SideMenu__.js';
+        import { Na__PageLayout__InitSavedLayoutsControls,
+                 Na__PageLayout__SavedLayouts__OpenById,
+                 Na__PageLayout__SavedLayouts__Deleted }         from './Na__PageLayoutSystem__SavedLayouts__Controls__.js';
+        import { Na__PageLayout__InitCompositionGuideControls }  from './Na__PageLayoutSystem__CompositionGuide__Controls__.js';
+        import { Na__PageLayout__InitRenderControls }            from './Na__PageLayoutSystem__RenderControls__.js';
+        import { Na__PageLayout__InitUnsavedGuard,
+                 Na__PageLayout__UnsavedGuard__IsUnsaved,
+                 Na__PageLayout__UnsavedGuard__SaveNow,
+                 Na__PageLayout__UnsavedGuard__StandAside }      from './Na__PageLayoutSystem__UnsavedGuard__.js';
+        import { Na__PageLayout__InitUndoHistory }               from './Na__PageLayoutSystem__UndoHistory__.js';
+        import { Na__PageLayout__CanSave }                       from './Na__PageLayoutSystem__UserSession__.js';
+        import { Na__PageLayout__Host__Expose }                  from './Na__PageLayoutSystem__Host__.js';
         // ------------------------------------------------------------
 
 
@@ -145,10 +377,15 @@
 
             if (!canvas || !canvasContainer) return; // <-- Guard against missing elements
 
-            // Initialize the system (loads image data from opener, loads title block)
+            // Sign in first (who may save), alongside reading the picture
+            // ------------------------------------------------------------
+            const sessionReady = Na__PageLayout__UserSession__Start(); // <-- Never rejects; null for a viewer with no account
+
+            // Initialize the system (takes the picture from ValeVision 3D, loads title block)
             // ------------------------------------------------------------
             const state = await Na__PageLayout__Initialize(canvas, canvasContainer, errorOverlay); // <-- Init and get shared state
             if (!state) return; // <-- Initialization failed (error overlay shown)
+            await sessionReady;
 
             // Render function bound to state
             // ------------------------------------------------------------
@@ -159,12 +396,38 @@
 
             state.requestRedraw = requestRedraw; // <-- Store redraw reference on state
 
-            // Initialize sub-modules
+            // Initialize sub-modules (the menu shell first: the saved list may open itself after)
             // ------------------------------------------------------------
             Na__PageLayout__InitNavigation(canvas, state, requestRedraw); // <-- 2D zoom/pan controls
             Na__PageLayout__InitPcControls(canvas, state, requestRedraw); // <-- PC mouse interaction
             Na__PageLayout__InitTouchControls(canvas, state, requestRedraw); // <-- Touch interaction
+            Na__PageLayout__InitUnsavedGuard(state); // <-- Warns before an unsaved drawing is closed
+            Na__PageLayout__InitUndoHistory(state, requestRedraw); // <-- Ctrl+Z / Ctrl+Y and the Undo / Redo buttons
+            Na__PageLayout__InitSideMenu(state, requestRedraw); // <-- Menu shell, picture tools, Close
+            Na__PageLayout__InitSavedLayoutsControls(state, requestRedraw); // <-- Name, save, the job's saved layouts
+            Na__PageLayout__InitCompositionGuideControls(state, requestRedraw); // <-- Grid of thirds and centre cross
+            Na__PageLayout__InitRenderControls(state, requestRedraw); // <-- Render quality and Re-Render
             Na__PageLayout__InitPdfExport(state); // <-- PDF export button handlers
+
+            // What ValeVision 3D may ask this page (inside the app only): is a drawing
+            // open and saved (and which layout), save it, stand aside for a new one,
+            // open a saved layout, and one was deleted from its Drawings menu
+            // ------------------------------------------------------------
+            Na__PageLayout__Host__Expose({
+                Status        : () => ({
+                    hasPicture : !!state.viewportImage,
+                    dirty      : state.layout.dirty === true,
+                    unsaved    : Na__PageLayout__UnsavedGuard__IsUnsaved(),
+                    canSave    : Na__PageLayout__CanSave(),
+                    saved      : !!state.layout.record,
+                    layoutId   : state.layout.record ? state.layout.record.PageLayouts__Layout__Id : '',
+                    name       : state.layout.name || ''
+                }),
+                Save          : () => Na__PageLayout__UnsavedGuard__SaveNow(),
+                StandAside    : () => Na__PageLayout__UnsavedGuard__StandAside(),
+                OpenLayout    : (layoutId) => Na__PageLayout__SavedLayouts__OpenById(layoutId),
+                LayoutDeleted : (layoutId) => Na__PageLayout__SavedLayouts__Deleted(layoutId)
+            });
 
             // Initial render
             // ------------------------------------------------------------
@@ -180,8 +443,8 @@
 
     // endregion -------------------------------------------------------------------
     </script>
-    
+
     <!-- endregion -------------------------------------------------------- -->
-    
+
 </body>
 </html>

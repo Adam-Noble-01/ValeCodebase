@@ -11,15 +11,23 @@
 //
 // DESCRIPTION:
 //   Space or K    play / pause          F            fullscreen
+//   Ctrl+Space    stop: pause and return to the start
 //   Left / Right  back / on 5 s         J / L        back / on 10 s
 //   M             sound on / off        Shift+N / P  next / previous video
 //   Home / End    start / end           0 - 9        jump to 0% - 90%
 //   Escape        pause (the page fades back from cinema; left to menus too)
 // - Ignored while typing in a field, so editing a title never pauses the video.
+// - Space pauses / plays even when a button has focus (after clicking a video in
+//   the list, Space used to "click" that button again); only menus keep it.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Oct-2026 - Version 1.2.0
+// - Space always pauses / plays, whatever button has focus (menus excepted).
+// - Ctrl+Space (Cmd+Space is the Mac's search, so Ctrl only) stops: pauses
+//   and returns to the start (Adam).
+//
 // 07-Oct-2026 - Version 1.1.0
 // - Escape pauses (Adam).
 //
@@ -38,18 +46,33 @@
 
     // FUNCTION | Wire the Keys: actions { toggle, stop, seekBy, seekTo, fullscreen, mute, next, previous }
     // ------------------------------------------------------------
+    const Na__Keys__MENU = '[role="menu"], [role="menuitem"], .ValeUserLogin__Menu';  // <-- Inside a menu, Space keeps its usual job
+
     function Na__Keys__Attach(actions) {
         const step = Number(Na__AppConfig__Get('Player__SeekStepSeconds', 5)) || 5;
+        let spaceTaken = false;                                                 // <-- Space handled here: its keyup must not click the focused button
+        document.addEventListener('keyup', (event) => {
+            if (event.key === ' ' && spaceTaken) { spaceTaken = false; event.preventDefault(); }
+        });
         document.addEventListener('keydown', (event) => {
             const target = event.target;
             if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
-            if (event.ctrlKey || event.metaKey || event.altKey) return;
             if (document.querySelector('.theia-dialog')) return;                // <-- A dialog owns the keyboard while open
             const key = event.key;
+            const inMenu = !!(target && target.closest && target.closest(Na__Keys__MENU));
+            if (key === ' ' && event.ctrlKey && !event.metaKey && !event.altKey && !inMenu) {
+                actions.stop();                                                // <-- Ctrl+Space: stop, back to the start
+                actions.seekTo(0);
+                spaceTaken = true;
+                event.preventDefault();
+                return;
+            }
+            if (event.ctrlKey || event.metaKey || event.altKey) return;
             let handled = true;
             if (key === ' ' || key === 'k' || key === 'K') {
-                if (target && target.tagName === 'BUTTON' && key === ' ') return;  // <-- A focused button already answers Space
+                if (key === ' ' && inMenu) return;
                 actions.toggle();
+                if (key === ' ') spaceTaken = true;
             } else if (key === 'ArrowLeft')        actions.seekBy(-step);
             else if (key === 'ArrowRight')         actions.seekBy(step);
             else if (key === 'j' || key === 'J')   actions.seekBy(-10);

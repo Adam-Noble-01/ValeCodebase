@@ -5,15 +5,23 @@
 # FILE       : Script__CreateProjectSharingEmail__.ps1
 # NAMESPACE  : ValeTypingShorthand
 # AUTHOR     : Adam Noble - Noble Architecture
-# PURPOSE    : Generate and populate Whitecardopedia project sharing email
+# PURPOSE    : Generate and populate ValeVision Gallery project sharing email
 # CREATED    : 23-Jan-2026
 #
 # DESCRIPTION:
 # - Reads project data from 00__ProjectData folder
-# - Builds Whitecardopedia sharing URL from project number
+# - Takes the ValeVision Gallery link from the project data file
+#   (Project__PublicLinksIndex.Link__ValeVisionGallery.Link__Url), or builds it from the
+#   project folder name (64435__Harris__Whitecard -> ?id=64435__Harris)
 # - Creates project sharing email with populated HTML template
 # - Supports addressing to designer (default), artist, or both
 # - Auto-opens the generated email in default browser
+#
+# DEVELOPMENT LOG:
+# 08-Oct-2026
+# - Links to ValeVision Gallery on the Vale app server (app.valegardenhouses.com). The
+#   Whitecardopedia link on GitHub Pages now shows its retirement notice, and the new
+#   Gallery names a project by its library folder (64435__Harris), not the bare number.
 #
 # USAGE:
 # - Run from project root directory in PowerShell
@@ -37,7 +45,8 @@ param(
 $DELIVERY_FOLDER_NAME      = "20__DeliveryEmails"
 $PROJECT_DATA_FOLDER       = "00__ProjectData"
 $TEMPLATE_PATH             = "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\05__Python__HotkeyManagers\Py__HotkeyManager__ValeTypingShorthand\10__Standard__ValeEmails\EmailTemplate__ProjectIntroductionEmail.html"
-$WHITECARDOPEDIA_BASE_URL  = "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html"
+$GALLERY_PROJECT_BASE_URL  = "https://app.valegardenhouses.com/project-gallery/?id="
+$PROJECT_TYPE_SUFFIX_REGEX = '__(Whitecard|Blockout|MaxModel|DigitalConcept)$'
 
 # endregion -------------------------------------------------------------------
 
@@ -72,19 +81,31 @@ function Find-ProjectJsonFile {
 # FUNCTION | Read Project Data from JSON
 # ------------------------------------------------------------
 function Read-ProjectData {
-    param([string]$JsonPath)
-    
+    param(
+        [string]$JsonPath,
+        [string]$ProjectRoot
+    )
+
     try {
         $jsonContent = Get-Content -Path $JsonPath -Raw | ConvertFrom-Json
-        
+
         # Extract metadata from first object
         $metadata = $jsonContent[0].Project__MetaData
-        
+
+        # ValeVision Gallery link: from the data file, else from the folder name (64435__Harris__Whitecard -> 64435__Harris)
+        $publicLinks = ($jsonContent | Where-Object { $_.Project__PublicLinksIndex } | Select-Object -First 1).Project__PublicLinksIndex
+        $galleryUrl  = $publicLinks.Link__ValeVisionGallery.Link__Url
+        if ([string]::IsNullOrWhiteSpace($galleryUrl)) {
+            $libraryId  = (Split-Path $ProjectRoot -Leaf) -replace $PROJECT_TYPE_SUFFIX_REGEX, ''
+            $galleryUrl = "$GALLERY_PROJECT_BASE_URL$libraryId"
+        }
+
         return @{
             ProjectName     = $metadata.Project__Name
             ProjectNumber   = $metadata.Project__Number
             ConceptArtist   = $metadata.Project__ConceptArtist
             Designer        = $metadata.Project__Designer
+            GalleryUrl      = $galleryUrl
         }
     }
     catch {
@@ -178,9 +199,9 @@ function New-ProjectSharingEmail {
     # Build recipient string based on mode
     $recipient = Get-RecipientString -ProjectData $ProjectData -RecipientMode $RecipientMode
     
-    # Build Whitecardopedia URL
-    $whitecardopediaUrl = "$WHITECARDOPEDIA_BASE_URL`?id=$($ProjectData.ProjectNumber)"
-    
+    # ValeVision Gallery URL (read or built in Read-ProjectData)
+    $galleryUrl = $ProjectData.GalleryUrl
+
     # Create delivery folder
     $deliveryFolder = Join-Path $ProjectRoot $DELIVERY_FOLDER_NAME
     if (!(Test-Path $deliveryFolder)) {
@@ -207,7 +228,8 @@ function New-ProjectSharingEmail {
     $populatedContent = $populatedContent -replace '\{\{ProjectName\}\}', $ProjectData.ProjectName
     $populatedContent = $populatedContent -replace '\{\{ProjectNumber\}\}', $ProjectData.ProjectNumber
     $populatedContent = $populatedContent -replace '\{\{ConceptArtist\}\}', $ProjectData.ConceptArtist
-    
+    $populatedContent = $populatedContent.Replace('{{GalleryUrl}}', $galleryUrl)
+
     # Write populated template
     $populatedContent | Out-File -FilePath $destPath -Encoding UTF8
     
@@ -221,8 +243,8 @@ function New-ProjectSharingEmail {
     Write-Host "  Concept Artist: $($ProjectData.ConceptArtist)" -ForegroundColor White
     Write-Host "  Designer:       $($ProjectData.Designer)" -ForegroundColor White
     Write-Host ""
-    Write-Host "Whitecardopedia URL:" -ForegroundColor Yellow
-    Write-Host "  $whitecardopediaUrl" -ForegroundColor Cyan
+    Write-Host "ValeVision Gallery URL:" -ForegroundColor Yellow
+    Write-Host "  $galleryUrl" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Addressed to: $recipient" -ForegroundColor Cyan
     Write-Host ""
@@ -250,7 +272,7 @@ if ($null -eq $jsonPath) {
 Write-Host "Found project data: $jsonPath" -ForegroundColor DarkGray
 
 # Step 2: Read project data
-$projectData = Read-ProjectData -JsonPath $jsonPath
+$projectData = Read-ProjectData -JsonPath $jsonPath -ProjectRoot $ProjectRoot
 if ($null -eq $projectData) {
     Write-Host "Press any key to exit..." -ForegroundColor DarkGray
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

@@ -554,6 +554,7 @@
     // ------------------------------------------------------------
     function Na__LeSpecDoc__Print() {
         Na__LeSpecDoc__BeforePrint();                                              // <-- beforeprint lays them out again; this is for a browser that does not send it
+        window.ValeActivity && window.ValeActivity.Log('file.print', { target: 'the specification' });   // <-- Activity ledger
         window.print();
     }
     // ------------------------------------------------------------

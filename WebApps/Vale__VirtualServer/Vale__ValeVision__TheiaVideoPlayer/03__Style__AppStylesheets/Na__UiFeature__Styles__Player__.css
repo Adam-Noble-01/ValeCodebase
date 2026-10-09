@@ -12,7 +12,8 @@
  *
  * DESCRIPTION:
  * - THE STAGE (.theia-stage) holds the player and its details. It takes the
- *   video's proportions (--theia-aspect, from the file; 3:2 until it loads) and
+ *   video's proportions (--theia-aspect, set on .theia-page from the file, so
+ *   the page's centred box can use it too; 3:2 until it loads) and
  *   is as wide as the column allows while the picture still fits the window's
  *   height; the player fills it, so the title and buttons under the picture
  *   line up with its edges. It is one card (07-Oct-2026, Adam: the player and
@@ -29,8 +30,7 @@
  * ----------------------------------------------------------------------------- */
 
     .theia-stage {                                                         /* <-- One card: the video on top, its details under it */
-        --theia-aspect                     : 1.5;
-        width                              : min(100%, max(320px, calc((100vh - var(--Theia_HeaderHeight) - 190px) * var(--theia-aspect))));
+        width                              : min(100%, max(320px, calc((100vh - var(--Theia_HeaderHeight) - var(--theia-chrome, 190px)) * var(--theia-aspect))));
         margin                             : 0 auto;
         background                         : var(--Theia_Surface);
         border                             : 1px solid var(--Theia_Border);

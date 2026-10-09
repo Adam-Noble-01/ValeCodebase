@@ -45,6 +45,14 @@
 //   the view direction holds instead of re-aiming at the orbit pivot).
 // - Arrow preventDefault also blocks Alt+arrow browser history navigation.
 //
+// 09-Oct-2026 - Version 1.2.1 (ValeVision3D v2.76.0, notes only)
+// - Alt+Left and Alt+Right are page navigation now (Adam: Back and Forward
+//   between the Model View and the Drawing Editor). Na__AppPages__Navigation__
+//   takes them first, in the capture phase, so they never reach this listener
+//   on the Model View; the fine nudge stays on Alt+W/A/S/D and Alt+Up/Down. On
+//   the Layout Editor's drawing and document tabs they still arrive here, as
+//   before.
+//
 // =============================================================================
 
 

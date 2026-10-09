@@ -71,6 +71,12 @@
 /* BREADCRUMB NAVIGATION | Top-left collapsed trail back to ValeVision Gallery */
 @import url('../02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Stylesheet__.css');
 
+/* APP PAGES | The Drawing Editor as a page of this window; the 3D view stands aside while it is up */
+@import url('../02__Src__AppModules/36__System__AppPages/Na__AppPages__Styles__.css');
+
+/* SAVED LAYOUTS | The Drawings menu's list, the Drawing Editor's own (shared with its page) */
+@import url('../02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Styles__SavedList__.css');
+
 
 /* Presentation Mode - Scene Carousel and Dev Editor */
 /* ----------------------------------------------------------------- */

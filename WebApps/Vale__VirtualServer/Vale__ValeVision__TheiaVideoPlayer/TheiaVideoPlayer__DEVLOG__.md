@@ -1,5 +1,105 @@
 # ValeVision Theia: DEVLOG
 
+## Version 1.6.0, 08-Oct-2026: Share Dialog - Client and Staff Links Can't Be Mixed Up
+
+**Asked by Adam:** the Share dialog was hard to read, and sales could send a client the wrong kind of link. Each
+link type is now in its own panel, both closed when the dialog opens:
+- **Client link, first:** a person icon on green, the tag "Safe to send to clients", and "For clients and
+  anyone outside Vale: the player and the videos only…", plus "N active links for this project". Inside: the
+  form, the new link, and the project's client links.
+- **Staff link, second:** a lock icon on amber, the tag "Vale staff only", and "Needs a Vale sign-in. Never send
+  it to a client." Inside, above the link: "Not for clients: this link asks for a Vale sign-in, so a client
+  cannot open it. Use a client link instead."
+- **One panel at a time:** opening one closes the other. Opening the client panel puts the cursor in "Who is it
+  for?". When the dialog opens, the focus is on the client panel's header, not on a hidden field.
+- **Copy says what it copied:** "Client link copied", or "Staff link copied (Vale staff only)". The account
+  menu's "Copy a staff link to this video" says the same.
+
+**Changes:**
+- `Na__ShareLinks__Dialog__` 1.1.0: `Na__Share__Panel`; `Na__Share__Copy(text, copiedMessage)`.
+- `Na__AppUtils__Dom__`: the `client` and `staff` icons.
+- `Na__AppCore__TheiaApp__`: the menu item's message.
+- The dialog stylesheet: the panels, badges, tags and warning. They use fixed green and amber, so they read the
+  same in cinema.
+
+**Checked** on the sandbox: both panels closed on opening, with the right icons, tags and active count; opening
+either closes the other; the staff warning shows; the cursor lands in "Who is it for?".
+
+## Version 1.5.2, 08-Oct-2026: More Air Under the Header on a Client's Link
+
+**Asked by Adam.** On the client link (no breadcrumbs) the player sat 18 px under the header, which felt tight. It
+now sits 40 px under it (`body.theia--client .theia-main`; 18 px on a phone). The page keeps 22 px more beside the
+video's height (`--theia-chrome` 212 px instead of 190 px, used by the box's fit and the stage), so the whole video
+and its details still fit the window. The staff view is unchanged: its breadcrumbs row gives it room.
+
+**Checked** on the sandbox client link at 1920 x 960: 40 px from the header to the card; the card ends at 933 px.
+
+## Version 1.5.1, 08-Oct-2026: The Breadcrumbs Sit on the Page
+
+**Asked by Adam.** In 1.5.0 the breadcrumb card stretched across the whole box ("way too wide"): the page is a flex
+column, so the inline card became as wide as the page. The breadcrumbs are now plain text on the page background:
+no card, border or shadow, only as wide as their words, aligned to the box's left edge. Staff only; a client's link
+has no breadcrumbs and already had the 1.5.0 layout (same page, same files).
+
+**Changes:** `Na__CoreUi__Styles__App__` (`.theia-crumbs`). **Checked** on the sandbox at 1600 x 860: the crumbs
+are 325 px wide with no background, border or shadow, flush with the box. The client link (guest bubble, no crumbs)
+is centred with the divider, the count and the light blue row.
+
+## Version 1.5.0, 08-Oct-2026: Player and List in One Centred Box
+
+**Asked by Adam**, with screenshots and a mockup. On shorter screens a wide empty column opened between the player
+and the list. Why: the player's width comes from the window's height, so the whole video shows without scrolling,
+but the list sat in a fixed column at the far right of a page 1800 px wide. The shorter the screen, the narrower
+the player and the wider the gap. Now:
+- **One centred box:** `.theia-page` is exactly the player the height allows, plus the divider, plus the list
+  (`--theia-fit`), and it is centred. The breadcrumbs and the footer share its edges. `--theia-aspect` now lives
+  on `.theia-page` (set by `Na__Player__Controls__`); the stage inherits it.
+- **The divider:** a 1 px line the height of the row, 28 px from the player and 28 px from the list
+  (`--Theia_ColumnGap`).
+- **"N videos"** at the right of "In this project" (Playlist 1.1.0).
+- **The playing video's row:** light blue (`--Theia_ActiveBg` #e9f1f8) with a 3 px navy edge
+  (`--Theia_ActiveLine`). In cinema, a muted blue-grey with a light edge.
+- One column (1100 px and below, a tablet upright) is unchanged: the list full width under the player.
+
+**Checked** on the sandbox:
+
+| Window | Box centred | Gap player to list |
+|---|---|---|
+| 1536 x 730 | 192 / 192 px | 57 px (28 + 1 + 28) |
+| 1920 x 1000 | 181 / 182 px | 57 px |
+| 2560 x 1300 | 404 / 404 px | 57 px |
+| 1024 x 1366 | one column, no divider | n/a |
+
+The breadcrumbs and footer line up with the box; the count reads "3 videos"; the cinema colours follow.
+
+## Version 1.4.5, 08-Oct-2026: Space Pauses, Ctrl+Space Stops
+
+**Asked by Adam.**
+- **Space pauses and plays, whatever has focus.** After clicking a video in the list, that list button kept the
+  focus, and the keyboard module left Space to it, so Space "clicked" the video again instead of pausing. Space now
+  always toggles play (its keyup is swallowed, so the focused button is not clicked too); only menus keep Space.
+- **Ctrl+Space stops:** pauses and returns to the start. (Cmd+Space is the Mac's Spotlight, so Ctrl only.)
+
+**Changes:** `Na__Player__Keyboard__` 1.2.0; service worker `2026-10-08-2`; README keys line.
+
+## Version 1.4.4, 08-Oct-2026: The Header Bar and Thumbnails Join the Cinema
+
+**Asked by Adam** (from the iPad): while a video plays, the page fades to the cinema grey but the white header bar
+stuck out. Keep everything on the bar as it is; only the bar itself should fade with the page. Shade the list
+thumbnails slightly too, to draw the eye to the player.
+
+**Changes:**
+- `Na__CoreUi__Styles__Variables__`: the cinema header override no longer restates `--Theia_HeaderBg`,
+  `--Theia_HeaderLine` or `--Theia_Shadow`, so the bar, its rule and its shadow take the cinema values and fade
+  with the page (1.2 s). The logo (a transparent PNG), "ValeVision THEIA" and the user bubble keep the Vale colours.
+- `Na__UiFeature__Styles__Playlist__`: every thumbnail has a navy `::after` shade at 0, fading to 0.22 in the
+  cinema. The "Playing" badge sits above it.
+- Service worker `2026-10-08-1`.
+
+**Checked live** (with transitions off, since a hidden browser pane does not animate): in the cinema the bar is
+`#3a3f44`, the same as the page; its rule `#4a5157`; the title stays `#172b3a`. Pushed 07:13 UTC (stamp
+`20261008-071355`).
+
 ## Version 1.4.3, 07-Oct-2026: Updates Reach Every Browser After a Push
 
 **Asked by Adam:** every Vale app now refreshes the files a source push changed (the Server Manager's

@@ -23,10 +23,17 @@ DESCRIPTION:
   register syncs both ways, so collect it before editing users on the PC.
 - Failed sign-ins are slowed: 8 failures from one address in 10 minutes earn
   a 10 minute wait.
+- Every sign-in, refused sign-in, sign-out and password change is written to
+  the activity ledger (ValeShared__Activity__.py), named for the app it came
+  through.
 
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+08-Oct-2026 - Version 1.2.0
+- Sign-ins, refused sign-ins, sign-outs and password changes go into the
+  activity ledger (the Server Manager's tab 05, User activity).
+
 06-Oct-2026 - Version 1.1.0
 - /me renews the session cookie, so a device that keeps using any Vale app
   stays signed in (ValeShared__Auth__ 1.1.0).
@@ -50,6 +57,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ValeShared__Activity__ import Na__Activity__AppName, Na__Activity__Record
 from ValeShared__Auth__ import (NA__AUTH__RECORDS, NA__AUTH__REGISTER, Na__Auth__ClearCookie, Na__Auth__CurrentRecord,
                                 Na__Auth__FindRecord, Na__Auth__IssueCookie, Na__Auth__PublicUser, Na__Auth__Ranks)
 
@@ -217,17 +225,38 @@ def Na__Accounts__Login():
         check_password_hash(rec.get("ValeUser__Password__Hash") or "", password)
     if not ok:
         Na__Accounts__NoteFailure(addr)
+        Na__Accounts__LogRefused(rec, email)
         return jsonify({"ok": False, "error": "Email address or password not recognised."}), 401
+    temporary = bool(rec.get("ValeUser__Password__IsTemporary"))
+    Na__Activity__Record(Na__Activity__AppName(), "account.signin",
+                         "Signed in with the temporary password" if temporary else "Signed in", user_rec=rec)
     return Na__Auth__IssueCookie(jsonify({"ok": True, "user": Na__Auth__PublicUser(rec)}), rec)
 
 def Na__Accounts__FindRecord(email: str):
     return Na__Auth__FindRecord(email=email)
+
+# HELPER FUNCTION | Ledger a Refused Sign-In (a known person by name; an unknown address by its domain only)
+# ------------------------------------------------------------
+def Na__Accounts__LogRefused(rec, email: str) -> None:
+    if rec:
+        why = ("account switched off" if not rec.get("ValeUser__Employee__IsActive")
+               else "no sign-in for this account" if rec.get("ValeUser__Permission__Level") not in Na__Auth__Ranks()
+               else "wrong password")
+        Na__Activity__Record(Na__Activity__AppName(), "account.signin-refused", f"Sign-in refused: {why}", ok=False,
+                             user_rec=rec)
+    else:
+        domain = email.rsplit("@", 1)[-1].lower() if "@" in email else ""
+        Na__Activity__Record(Na__Activity__AppName(), "account.signin-refused", "Sign-in refused: unknown email address",
+                             ok=False, as_guest=True, detail={"EmailDomain": domain} if domain else None)
 # ---------------------------------------------------------------
 
 # FUNCTION | Sign Out
 # ------------------------------------------------------------
 @Na__Accounts__Blueprint.post("/logout")
 def Na__Accounts__Logout():
+    rec = Na__Auth__CurrentRecord()
+    if rec:
+        Na__Activity__Record(Na__Activity__AppName(), "account.signout", "Signed out", user_rec=rec)
     return Na__Auth__ClearCookie(jsonify({"ok": True}))
 # ---------------------------------------------------------------
 
@@ -251,15 +280,21 @@ def Na__Accounts__ChangePassword():
     body = request.get_json(silent=True) or {}
     current, new = str(body.get("current") or ""), str(body.get("new") or "")
     if not check_password_hash(rec.get("ValeUser__Password__Hash") or "", current):
+        Na__Activity__Record(Na__Activity__AppName(), "account.password-refused",
+                             "Password change refused: current password wrong", ok=False, user_rec=rec)
         return jsonify({"ok": False, "error": "Your current password is not right."}), 400
     if len(new) < NA__ACCOUNTS__MIN_PASSWORD or not re.search(r"[A-Za-z]", new) or not re.search(r"\d", new):
         return jsonify({"ok": False, "error": f"Use at least {NA__ACCOUNTS__MIN_PASSWORD} characters, with letters and a number."}), 400
     if new == current or new.lower() == Na__Accounts__TempPassword(rec).lower():
         return jsonify({"ok": False, "error": "Choose a password that is not your temporary one."}), 400
+    was_temporary = bool(rec.get("ValeUser__Password__IsTemporary"))
     try:
         rec = Na__Accounts__WritePassword(rec["ValeUser__UniqueCode"], new)
     except (OSError, KeyError, ValueError) as e:
         return jsonify({"ok": False, "error": f"Could not save the new password ({type(e).__name__})."}), 500
+    Na__Activity__Record(Na__Activity__AppName(), "account.password",
+                         "Chose their own password (first sign-in)" if was_temporary else "Changed their password",
+                         user_rec=rec)
     return Na__Auth__IssueCookie(jsonify({"ok": True, "user": Na__Auth__PublicUser(rec)}), rec)
 # ---------------------------------------------------------------
 

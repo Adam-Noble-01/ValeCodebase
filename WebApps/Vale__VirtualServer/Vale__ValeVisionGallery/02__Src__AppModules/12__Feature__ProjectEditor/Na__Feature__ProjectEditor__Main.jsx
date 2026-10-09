@@ -92,6 +92,7 @@
         const handleSelectProject = (project) => {
             setSelectedProject(project);                                     // <-- Set selected project
             setEditorView(EDITOR_VIEWS.EDITING);                             // <-- Switch to editing view
+            window.ValeActivity && window.ValeActivity.Log('project.edit', { project: (project && project.folderId) || '', target: (project && project.projectName) || '' });   // <-- Activity ledger
         };
         // ---------------------------------------------------------------
         

@@ -57,6 +57,30 @@
 # - __MaxModel suffix drives ValeVision Cloud Sync (SSOT indexed material GLB
 #   export), Whitecardopedia Max Models tab, and ValeVision3D MaxEngine boot
 #
+# 08-Oct-2026 - Version 1.5.1
+# - Designer and Concept Artist lists now load from the live ValeVision Gallery
+#   (WebApps/Vale__VirtualServer/Vale__ValeVisionGallery/02__Src__AppModules/03__AppData).
+#   WebApps/Whitecardopedia was archived on 08-Oct-2026, which left both dropdowns empty.
+#
+# 08-Oct-2026 - Version 1.6.0
+# - Project data schema brought in line with the Vale app server (Vale__VirtualServer):
+#   Project__PublicLinksIndex now holds Link__ProjectsMasterLibrary (library project id
+#   and folder), Link__ValeVisionGallery and Link__ValeVision3D (app URLs), replacing the
+#   retired Link__Whitecardopedia. The library id is <number>__<Name>, the same id
+#   ValeVision Cloud Sync derives from the local folder.
+# - Paths are stored once: they were escaped by hand and again by json.dump, so every
+#   file held doubled backslashes.
+# - No VisDpt__<Type>__FirstEdition__DD-MMM-YYYY placeholder folder: Cloud Sync creates
+#   the first edition folder on its first image export, and the placeholder pushed every
+#   export into a SecondEdition folder.
+# - Never overwrites: refuses a project whose data file exists (Cloud Sync keeps camera
+#   data in it) and never copies the SketchUp template over an existing model.
+# - Folder names are made safe (Cape Construction -> CapeConstruction): Cloud Sync
+#   refuses library ids with spaces. Project__Name keeps the name as typed.
+# - Checks the pasted Vale Server path has separators (a path pasted without them gave
+#   64143 the name "NSalesTom RamsdenTom 2026Thorpe"), the number (64435 or PC-61922)
+#   and the year (four digits).
+#
 # =============================================================================
 
 import os
@@ -112,6 +136,14 @@ if not DEV_CONSOLE_ON and sys.platform == 'win32':                            # 
 VALE_PROJECTS_ROOT       =   "C:\\01__ValeProjects"                          # <-- Root directory for all Vale projects
 PROJECTS_FOLDER_PREFIX   =   "ValeProjects__"                                # <-- Prefix for year-based project folders
 PROJECT_NUMBER_PATTERN   =   r'^(.+?)(\d{5,6})'                              # <-- Regex pattern: name + 5-6 digit number
+PROJECT_CODE_PATTERN     =   r'^(?:[A-Z]{2}-)?\d+$'                          # <-- Valid project code: 64435 or PC-61922 (same rule as ValeVision Cloud Sync)
+    # ---------------------------------------------------------------
+
+    # MODULE CONSTANTS | Vale App Server Links (Vale__VirtualServer, live at app.valegardenhouses.com)
+    # ------------------------------------------------------------
+VALE_APP_SITE_URL        =   "https://app.valegardenhouses.com"              # <-- The Vale app server
+VALE_GALLERY_PROJECT_URL =   "/project-gallery/?id="                         # <-- ValeVision Gallery project page, by library project id
+VALE_VV3D_PROJECT_URL    =   "/valevision/?project="                         # <-- ValeVision 3D project page, by library project id
     # ---------------------------------------------------------------
 
     # MODULE CONSTANTS | Project Type Folder Suffixes
@@ -192,43 +224,56 @@ def get_script_root_directory():
     return script_dir                                                         # <-- Return script root directory
     # ---------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Relative Path to Whitecardopedia AppData Directory
+    # HELPER FUNCTION | Build Relative Path to ValeVision Gallery AppData Directory
     # ---------------------------------------------------------------
-def get_whitecardopedia_appdata_directory():
-    """Get path to Whitecardopedia AppData directory using relative paths"""
+def get_valevision_gallery_appdata_directory():
+    """Get path to ValeVision Gallery AppData directory using relative paths"""
     script_dir = get_script_root_directory()                                  # <-- Get script directory
     appdata_directory = os.path.join(
         script_dir,                                                           # <-- Start from script location
         "..", "..", "..", "..",                                               # <-- Up to ValeCodebase root
-        "WebApps", "Whitecardopedia",                                        # <-- Down to Whitecardopedia
+        "WebApps", "Vale__VirtualServer", "Vale__ValeVisionGallery",         # <-- Down to ValeVision Gallery (the live app)
         "02__Src__AppModules", "03__AppData"                                 # <-- AppData folder
     )
     return os.path.normpath(appdata_directory)                                # <-- Return normalized appdata directory
     # ---------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Relative Path to Whitecardopedia Master Config
+    # HELPER FUNCTION | Build Relative Path to the Vale Projects Master Library
+    # ---------------------------------------------------------------
+def get_projects_master_library_directory():
+    """Get path to the Vale Projects Master Library (one folder per project, shared by every app)"""
+    script_dir = get_script_root_directory()                                  # <-- Get script directory
+    library_directory = os.path.join(
+        script_dir,                                                           # <-- Start from script location
+        "..", "..", "..", "..",                                               # <-- Up to ValeCodebase root
+        "WebApps", "Vale__VirtualServer", "Vale__Projects__MasterLibrary"    # <-- Down to the Projects Master Library
+    )
+    return os.path.normpath(library_directory)                                # <-- Return normalized library directory
+    # ---------------------------------------------------------------
+
+    # HELPER FUNCTION | Build Relative Path to ValeVision Gallery Master Config
     # ---------------------------------------------------------------
 def get_master_config_path():
-    """Get path to Whitecardopedia master config JSON using relative paths"""
-    appdata_directory = get_whitecardopedia_appdata_directory()               # <-- Get AppData directory path
+    """Get path to ValeVision Gallery master config JSON using relative paths"""
+    appdata_directory = get_valevision_gallery_appdata_directory()            # <-- Get AppData directory path
     config_path = os.path.join(appdata_directory, "Na__AppData__MasterConfig__Main.json")  # <-- Master config filename
     return os.path.normpath(config_path)                                      # <-- Return normalized path
     # ---------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Relative Path to Whitecardopedia Designers List JSON
+    # HELPER FUNCTION | Build Relative Path to ValeVision Gallery Designers List JSON
     # ---------------------------------------------------------------
 def get_designers_list_path():
     """Get path to dedicated designers list JSON"""
-    appdata_directory = get_whitecardopedia_appdata_directory()               # <-- Get AppData directory path
+    appdata_directory = get_valevision_gallery_appdata_directory()            # <-- Get AppData directory path
     designers_path = os.path.join(appdata_directory, "Na__AppData__ValeDesignersList__Main.json")  # <-- Designers list filename
     return os.path.normpath(designers_path)                                   # <-- Return normalized path
     # ---------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Relative Path to Whitecardopedia Concept Artists List JSON
+    # HELPER FUNCTION | Build Relative Path to ValeVision Gallery Concept Artists List JSON
     # ---------------------------------------------------------------
 def get_concept_artists_list_path():
     """Get path to dedicated concept artists list JSON"""
-    appdata_directory = get_whitecardopedia_appdata_directory()               # <-- Get AppData directory path
+    appdata_directory = get_valevision_gallery_appdata_directory()            # <-- Get AppData directory path
     artists_path = os.path.join(appdata_directory, "Na__AppData__ValeConceptArtistsList__Main.json")  # <-- Concept artists list filename
     return os.path.normpath(artists_path)                                     # <-- Return normalized path
     # ---------------------------------------------------------------
@@ -366,8 +411,40 @@ def parse_vale_server_path(vale_path):
         name, number = parse_project_name_and_number(project_folder)          # <-- Parse name and number
         result["project_name"] = name                                          # <-- Store project name
         result["project_number"] = number                                      # <-- Store project number
-    
+
     return result                                                              # <-- Return parsed data
+    # ---------------------------------------------------------------
+
+    # HELPER FUNCTION | Check a Pasted Vale Server Path Has Folder Separators
+    # ---------------------------------------------------------------
+def is_folder_path(path_string):
+    """True when the pasted path contains folder separators (a path pasted without them garbles every name)"""
+    cleaned = strip_path_quotes(path_string)                                  # <-- Clean the path string
+    return "\\" in cleaned or "/" in cleaned                                  # <-- Needs at least one separator
+    # ---------------------------------------------------------------
+
+    # HELPER FUNCTION | Build a Folder-Safe Project Name
+    # ---------------------------------------------------------------
+def build_safe_project_name(project_name):
+    """
+    Make a project name safe for folder names and library ids.
+    ValeVision Cloud Sync refuses a library id with spaces, so words are joined
+    in CamelCase and anything but letters, digits and hyphens is dropped.
+    Examples:
+        - Harris            -> Harris
+        - Cape Construction -> CapeConstruction
+        - Smith-Jones       -> Smith-Jones
+    """
+    words = str(project_name or '').split()                                   # <-- Split on any whitespace
+    joined = "".join(word[:1].upper() + word[1:] for word in words)           # <-- Join words in CamelCase
+    return re.sub(r'[^A-Za-z0-9-]', '', joined)                               # <-- Keep letters, digits and hyphens
+    # ---------------------------------------------------------------
+
+    # HELPER FUNCTION | Build the Library Project Id
+    # ---------------------------------------------------------------
+def build_library_project_id(project_number, safe_project_name):
+    """The project's id in the Projects Master Library and in every app link (64435__Harris)"""
+    return f"{project_number}__{safe_project_name}"                           # <-- Same id ValeVision Cloud Sync derives from the folder
     # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -395,19 +472,14 @@ def build_project_root_path(project_number, project_name, year, project_type=Non
     return os.path.normpath(project_root)                                      # <-- Return normalized path
     # ---------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Content Delivery Folder Name
-    # ---------------------------------------------------------------
-def build_content_delivery_folder_name(project_type, delivery_date):
-    """Build the VisDpt content delivery folder name"""
-    folder_name = f"VisDpt__{project_type}__FirstEdition__{delivery_date}"    # <-- Construct folder name
-    return folder_name                                                         # <-- Return folder name
-    # ---------------------------------------------------------------
-
     # FUNCTION | Create Project Folder Structure
     # ------------------------------------------------------------
-def create_project_folder_structure(project_number, project_name, year, project_type, delivery_date):
+def create_project_folder_structure(project_number, project_name, year, project_type):
     """
     Create the complete project folder structure.
+    No VisDpt edition folder is made here: ValeVision Cloud Sync creates
+    VisDpt__Whitecard__FirstEdition__<date> on the first image export, and a
+    placeholder would push every export into a SecondEdition folder.
     Returns tuple: (success: bool, project_root_path: str, error_message: str)
     """
     project_root = build_project_root_path(project_number, project_name, year, project_type)  # <-- Get project root path with type suffix
@@ -424,12 +496,7 @@ def create_project_folder_structure(project_number, project_name, year, project_
         for subfolder in CONTENT_DELIVERED_SUBS:                              # <-- Iterate through subfolders
             subfolder_path = os.path.join(content_delivered_path, subfolder)  # <-- Construct subfolder path
             os.makedirs(subfolder_path, exist_ok=True)                        # <-- Create subfolder
-        
-        # Create the VisDpt delivery folder
-        delivery_folder_name = build_content_delivery_folder_name(project_type, delivery_date)  # <-- Build name
-        delivery_folder_path = os.path.join(content_delivered_path, delivery_folder_name)       # <-- Build path
-        os.makedirs(delivery_folder_path, exist_ok=True)                      # <-- Create delivery folder
-        
+
         # Create SketchUp subfolders
         sketchup_path = os.path.join(project_root, "02__SketchUp")            # <-- Get SketchUp folder path
         
@@ -494,6 +561,8 @@ def copy_sketchup_templates(project_root_path, project_name, project_type):
         primary_model_label = build_primary_model_label(project_type)          # <-- Build model label from project type
         main_model_filename = f"{project_name}__{primary_model_label}__0.0.1__.skp"  # <-- Build filename
         main_model_path = os.path.join(main_model_folder, main_model_filename)  # <-- Full destination path
+        if os.path.exists(main_model_path):                                   # <-- Never overwrite a model that already exists
+            return True, None
         shutil.copy2(SKETCHUP_TEMPLATE_PATH, main_model_path)                 # <-- Copy with metadata
         
         return True, None                                                      # <-- Return success
@@ -512,23 +581,62 @@ def copy_sketchup_templates(project_root_path, project_name, project_type):
 # REGION | JSON Project Data File Creation
 # -----------------------------------------------------------------------------
 
+    # HELPER FUNCTION | Build Project Data JSON File Path
+    # ---------------------------------------------------------------
+def build_project_data_json_path(project_root_path, project_number, safe_project_name):
+    """Full path of the project's data file: 00__ProjectData/<number>__<Name>__ProjectData__.json"""
+    json_filename = f"{project_number}__{safe_project_name}__ProjectData__.json"  # <-- JSON filename
+    return os.path.join(project_root_path, "00__ProjectData", json_filename)  # <-- Full JSON path
+    # ---------------------------------------------------------------
+
+    # FUNCTION | Build the Public Links Index (Projects Master Library and ValeVision Apps)
+    # ------------------------------------------------------------
+def build_public_links_index(library_project_id, year):
+    """
+    Build the Project__PublicLinksIndex block: where the project lives on the Vale app server.
+    Every app names a project by its library folder (64435__Harris); ValeVision Cloud
+    Sync creates that folder and its record on the first sync from SketchUp.
+    """
+    library_project_path = os.path.join(
+        get_projects_master_library_directory(),                              # <-- Projects Master Library root
+        f"{PROJECTS_FOLDER_PREFIX}{year}",                                    # <-- Year folder (ValeProjects__2026)
+        library_project_id                                                    # <-- Project folder (64435__Harris)
+    )
+    return {
+        "Project__PublicLinksIndex" : {
+            "Link__ProjectsMasterLibrary" : {
+                    "Link__LibraryProjectId" : library_project_id,
+                    "Link__WindowsPath"      : library_project_path,
+                    "Link__Location"         : "Vale__VirtualServer on this PC, pushed to the Vale app server (app.valegardenhouses.com) by the Vale Virtual Server Manager.",
+                    "Link__Description"      : f"The project's folder in the Vale Projects Master Library: the shared project record (ProjectData__{library_project_id}__.json) plus each app's images and models. ValeVision Cloud Sync creates it on the first sync from SketchUp.",
+                    "Link__ImportantNote"    : "The library record can be read on the web: keep client details (names, addresses, phone numbers) in this local file, never in the library."
+            },
+            "Link__ValeVisionGallery" : {
+                    "Link__Url"              : f"{VALE_APP_SITE_URL}{VALE_GALLERY_PROJECT_URL}{library_project_id}",
+                    "Link__Location"         : "Vale app server (sign-in with a Vale account)",
+                    "Link__Description"      : "The project's page in ValeVision Gallery: the delivered images for review and quality control."
+            },
+            "Link__ValeVision3D" : {
+                    "Link__Url"              : f"{VALE_APP_SITE_URL}{VALE_VV3D_PROJECT_URL}{library_project_id}",
+                    "Link__Location"         : "Vale app server (viewing is open to anyone with the link)",
+                    "Link__Description"      : "The project's 3D model in ValeVision 3D."
+            }
+        }
+    }
+    # ---------------------------------------------------------------
+
     # FUNCTION | Build Project Data JSON Structure
     # ------------------------------------------------------------
 def build_project_data_json(project_name, project_number, project_type, project_status,
                             start_date, delivery_date, designer, concept_artist,
-                            project_description, vale_server_path, project_root_path):
+                            project_description, vale_server_path, project_root_path,
+                            safe_project_name, year):
     """Build the complete JSON structure for the project data file"""
-    
-    # Build local paths
-    project_data_folder = os.path.join(project_root_path, "00__ProjectData")  # <-- Data folder path
-    json_filename = f"{project_number}__{project_name}__ProjectData__.json"   # <-- JSON filename
-    json_file_path = os.path.join(project_data_folder, json_filename)         # <-- Full JSON path
-    
-    # Escape backslashes for JSON string storage
-    project_root_escaped = project_root_path.replace("\\", "\\\\")            # <-- Escape backslashes
-    json_path_escaped = json_file_path.replace("\\", "\\\\")                  # <-- Escape backslashes
-    vale_server_escaped = vale_server_path.replace("\\", "\\\\")              # <-- Escape backslashes
-    
+
+    # Build local paths (json.dump escapes the backslashes; never escape them by hand)
+    json_file_path = build_project_data_json_path(project_root_path, project_number, safe_project_name)  # <-- Full JSON path
+    library_project_id = build_library_project_id(project_number, safe_project_name)                     # <-- 64435__Harris
+
     project_data = [                                                           # <-- Build JSON structure
     {
         "Project__MetaData" : {
@@ -546,34 +654,24 @@ def build_project_data_json(project_name, project_number, project_type, project_
     {
         "Project__PrivateLinksIndex" : {
             "Link__MainLocalDirectory" : {
-                    "Link__WindowsPath"  : project_root_escaped,
+                    "Link__WindowsPath"  : project_root_path,
                     "Link__Location"     : "Local Machine, i.e. my own work station",
                     "Link__Description"  : "This is the main project directory hosting the larger project production files such as SketchUp files, CAD files, Photoshop files, etc."
             },
             "Link__MainLocalDataFile" : {
-                    "Link__WindowsPath"  : json_path_escaped,
+                    "Link__WindowsPath"  : json_file_path,
                     "Link__Location"     : "Local Machine, i.e. my own work station",
                     "Link__Description"  : "This is the master project data file (This file) with all of the project data including private sensitive project data not exposed to the web."
             },
             "Link__ValeServerProjectDirectory" : {
-                    "Link__WindowsPath"  : vale_server_escaped,
+                    "Link__WindowsPath"  : vale_server_path,
                     "Link__Location"     : "Vale Garden Houses Office Network & physical private server",
-                    "Link__Usage"        : "This is used to create a .link file in the main project directory to link to the ValeServerProjectDirectory. Place link in `/60__ValeServerLinks` ",
+                    "Link__Usage"        : "The builder places a .url shortcut to this folder in `/60__ValeServerLinks`.",
                     "Link__Description"  : "This is the main project directory used by Vale's team to store all departmental project files, I only usually place my final content here."
             }
         }
     },
-    {
-        "Project__PublicLinksIndex" : {
-            "Link__Whitecardopedia" : {
-                    "Link__WindowsPath"    : f"D:\\\\10_CoreLib__ValeCodebase\\\\WebApps\\\\Whitecardopedia\\\\Projects\\\\{start_date[-4:]}\\\\{project_number}__{project_name}",
-                    "Link__Location"       : "Local Machine peripherally pushed and synced to GitHub repository, synced version is live on the Whitecardopedia website.",
-                    "Link__Description01"  : "This is a selectively duplicated project folder which is pushed to GitHub ensure sensitive project data is not exposed to the public.",
-                    "Link__Description02"  : "Files stored include: a reduced project data `project.json` file and the Images used to populate the gallery and project page on the Whitecardopedia website.",
-                    "Link__ImportantNote"  : "Its critical all of the client details are kept private and not exposed to the public."
-            }
-        }
-    },
+    build_public_links_index(library_project_id, year),                       # <-- Projects Master Library and ValeVision app links
     {
         "Project__SiteData" : {
                 "Site__AddressLine1"  : "",
@@ -594,9 +692,9 @@ def build_project_data_json(project_name, project_number, project_type, project_
     # FUNCTION | Write Project Data JSON File
     # ------------------------------------------------------------
 def write_project_data_json(project_data, json_file_path):
-    """Write the project data JSON to file"""
+    """Write the project data JSON to file (never over an existing one: Cloud Sync keeps camera data in it)"""
     try:
-        with open(json_file_path, 'w', encoding='utf-8') as file:             # <-- Open file for writing
+        with open(json_file_path, 'x', encoding='utf-8') as file:             # <-- Create only; fails if the file exists
             json.dump(project_data, file, indent=4, ensure_ascii=False)       # <-- Write JSON with formatting
         return True, None                                                      # <-- Return success
     except PermissionError as e:
@@ -985,7 +1083,13 @@ class ValeProjectBuilderApp:
         if not vale_path:                                                      # <-- Check for empty input
             messagebox.showwarning("Warning", "Please enter a Vale Server path.")  # <-- Show warning
             return                                                             # <-- Exit function
-        
+
+        if not is_folder_path(vale_path):                                      # <-- A path without separators garbles every name
+            messagebox.showerror("Error",
+                "That doesn't look like a folder path (it has no \\ or /).\n\n"
+                "Copy it from the address bar of the project's folder in File Explorer.")
+            return                                                             # <-- Exit function
+
         # Parse the path
         parsed = parse_vale_server_path(vale_path)                            # <-- Extract project info
         
@@ -1006,14 +1110,26 @@ class ValeProjectBuilderApp:
         """Validate all required form fields before creating project"""
         errors = []                                                            # <-- Initialize error list
         
-        if not self.var_project_number.get().strip():                         # <-- Check project number
+        project_number = self.var_project_number.get().strip()                 # <-- Typed project number
+        if not project_number:                                                 # <-- Check project number
             errors.append("Project Number is required")
-        
+        elif not re.match(PROJECT_CODE_PATTERN, project_number):               # <-- ValeVision Cloud Sync's code rule
+            errors.append("Project Number must be digits, optionally with a two-letter prefix (64435 or PC-61922)")
+
         if not self.var_project_name.get().strip():                           # <-- Check project name
             errors.append("Project Name is required")
-        
-        if not self.var_year.get().strip():                                    # <-- Check year
+        elif not build_safe_project_name(self.var_project_name.get()):         # <-- Nothing usable left for a folder name
+            errors.append("Project Name needs at least one letter or digit")
+
+        year = self.var_year.get().strip()                                     # <-- Typed year
+        if not year:                                                           # <-- Check year
             errors.append("Year is required")
+        elif not re.match(r'^\d{4}$', year):                                   # <-- ValeProjects__<yyyy>
+            errors.append("Year must be four digits (2026)")
+
+        vale_path = self.var_vale_path.get().strip()                           # <-- Optional Vale Server path
+        if vale_path and not is_folder_path(vale_path):                        # <-- A path without separators garbles the shortcut
+            errors.append("The Vale Server path has no \\ or /: copy it from File Explorer's address bar")
         
         if not self.var_project_type.get():                                    # <-- Check project type
             errors.append("Project Type is required")
@@ -1048,21 +1164,31 @@ class ValeProjectBuilderApp:
         start_date       = datetime.now().strftime("%d-%b-%Y")                 # <-- Auto-set to current date
         delivery_date    = "DD-MMM-YYYY"                                       # <-- Placeholder for future script
         description      = self.var_description.get().strip() or "New Vale project"  # <-- Get description
-        vale_server_path = self.var_vale_path.get().strip()                   # <-- Get Vale server path
-        
+        vale_server_path = strip_path_quotes(self.var_vale_path.get())        # <-- Get Vale server path (no surrounding quotes)
+        safe_name        = build_safe_project_name(project_name)               # <-- Folder, file and library id name (CapeConstruction)
+
+        # Refuse to overwrite a project that already exists (its JSON holds Cloud Sync's camera data)
+        existing_root = build_project_root_path(project_number, safe_name, year, project_type)  # <-- Where this project would go
+        existing_json = build_project_data_json_path(existing_root, project_number, safe_name)  # <-- Its data file
+        if os.path.exists(existing_json):
+            messagebox.showerror("Project Already Exists",
+                f"This project is already set up:\n\n{existing_json}\n\nNothing was changed.")
+            return                                                             # <-- Exit function
+
         # Create folder structure
         success, project_root, error = create_project_folder_structure(
-            project_number, project_name, year, project_type, delivery_date)  # <-- Create folders
-        
+            project_number, safe_name, year, project_type)                    # <-- Create folders
+
         if not success:                                                        # <-- Check for folder creation error
             messagebox.showerror("Error", f"Failed to create folder structure:\n{error}")
             return                                                             # <-- Exit function
-        
+
         # Build and write JSON data file
         project_data, json_path = build_project_data_json(
             project_name, project_number, project_type, project_status,
             start_date, delivery_date, designer, concept_artist,
-            description, vale_server_path, project_root)                       # <-- Build JSON data
+            description, vale_server_path, project_root,
+            safe_name, year)                                                   # <-- Build JSON data
         
         success, error = write_project_data_json(project_data, json_path)     # <-- Write JSON file
         
@@ -1071,7 +1197,7 @@ class ValeProjectBuilderApp:
             return                                                             # <-- Exit function
         
         # Copy SketchUp template files
-        success, error = copy_sketchup_templates(project_root, project_name, project_type)  # <-- Copy template files
+        success, error = copy_sketchup_templates(project_root, safe_name, project_type)  # <-- Copy template files
         
         if not success:                                                        # <-- Check for template copy error
             messagebox.showwarning("Warning", 
@@ -1080,22 +1206,23 @@ class ValeProjectBuilderApp:
         # Create Vale Server shortcut
         if vale_server_path:                                                   # <-- Check if path provided
             success, error = create_vale_server_shortcut(
-                project_root, project_name, project_number, vale_server_path)  # <-- Create shortcut
+                project_root, safe_name, project_number, vale_server_path)    # <-- Create shortcut
             
             if not success:                                                    # <-- Check for shortcut error
                 messagebox.showwarning("Warning", 
                     f"Project created but shortcut failed:\n{error}")         # <-- Show warning
         
         # Build display folder name with suffix
-        display_folder = f"{project_number}__{project_name}"                   # <-- Base folder name
+        display_folder = f"{project_number}__{safe_name}"                      # <-- Base folder name
         if project_type in PROJECT_TYPE_SUFFIXES:                              # <-- Check for suffix
             display_folder += PROJECT_TYPE_SUFFIXES[project_type]             # <-- Add suffix for display
-        
+
         # Show success message
-        messagebox.showinfo("Success", 
+        messagebox.showinfo("Success",
             f"Project created successfully!\n\n"
             f"Location: {project_root}\n\n"
-            f"Project: {display_folder}")                                      # <-- Success dialog
+            f"Project: {display_folder}\n"
+            f"Library id: {build_library_project_id(project_number, safe_name)}")  # <-- Success dialog
         
         # Open project folder
         try:

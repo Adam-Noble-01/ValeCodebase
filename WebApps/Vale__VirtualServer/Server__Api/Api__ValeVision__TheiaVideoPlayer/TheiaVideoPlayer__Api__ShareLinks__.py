@@ -164,6 +164,9 @@ def create_share(pid):
         doc[theia_core.SHARE_RECORDS].append(record)
         theia_core.write_shares(folder, doc, user['code'])
     theia_core.log(f" [THEIA] {user['code']} made a client link for {folder.name} ({label or 'no label'})")
+    theia_core.activity('link.create', 'Generated a client link', folder, target=label, link=record['TheiaShare__Link__Token'],
+                        detail={'Expires': record['TheiaShare__Link__ExpiresIso'] or 'never',
+                                'Videos': len(video_ids) or 'all'})
     return jsonify({'ok': True, 'link': _public(record, user, {})})
 
 
@@ -186,6 +189,8 @@ def revoke_share(pid, token):
             record['TheiaShare__Link__RevokedIso'] = theia.Na__Theia__NowIso()
             record['TheiaShare__Link__RevokedBy'] = user['code']
             theia_core.write_shares(folder, doc, user['code'])
+            theia_core.activity('link.revoke', 'Switched off a client link', folder,
+                                target=record.get('TheiaShare__Link__Label') or '', link=record.get('TheiaShare__Link__Token') or '')
     return jsonify({'ok': True, 'link': _public(record, user, {})})
 
 # endregion -------------------------------------------------------------------

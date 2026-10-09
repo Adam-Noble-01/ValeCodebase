@@ -6,23 +6,26 @@
      FILE       : EmailTemplate__ProjectIntroductionEmail.html
      NAMESPACE  : ValeTypingShorthand
      AUTHOR     : Adam Noble - Noble Architecture
-     PURPOSE    : Automated email template for sharing Whitecardopedia project links
+     PURPOSE    : Automated email template for sharing ValeVision Gallery project links
      CREATED    : December 2025
-     
+
      DESCRIPTION:
-     - Professional project introduction email for Whitecardopedia
+     - Professional project introduction email for ValeVision (the project gallery)
      - Uses inline CSS for maximum email client compatibility
      - Table-based layout for robust rendering across email clients
-     - Absolute URLs for all assets hosted on GitHub Pages
+     - Absolute URLs for all assets, served by the Vale app server (app.valegardenhouses.com)
      - Vale Garden Houses branded styling
-     - Includes clickable button to view project on Whitecardopedia
-     
+     - Includes clickable button to view the project in ValeVision
+     - 08-Oct-2026: moved from Whitecardopedia (GitHub Pages, retired) to ValeVision on the
+       Vale app server. Readers sign in with their own Vale account: no shared password.
+
      PLACEHOLDERS:
      - {{Recipient}}      : Recipient's name(s) (e.g., "Rachael" or "Amy & Dan")
      - {{ProjectName}}    : Project/client surname (e.g., "Newington")
      - {{ProjectNumber}}  : Project number (e.g., "62108")
      - {{ConceptArtist}}  : Concept artist name (e.g., "Adam Widdowson")
-     
+     - {{GalleryUrl}}     : The project's ValeVision Gallery link (e.g., ".../project-gallery/?id=62108__Newington")
+
      =============================================================================
 -->
 <html lang="en">
@@ -33,7 +36,7 @@
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
-    <title>Project Introduction - Whitecardopedia</title>
+    <title>Project Introduction - ValeVision</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,25 +56,23 @@
                 <!-- OUTLOOK COMPATIBLE VERSION - Simplified CSS               -->
                 <!-- ========================================================= -->
                 <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; max-width: 600px; width: 100%; margin: 20px auto; border: 2px solid #172b3a;">
-                    <!-- Header Section with Whitecardopedia Logo -->
+                    <!-- Header Section with Vale Garden Houses Logo -->
                     <tr>
-                        <td align="center" bgcolor="#ffffff" style="background-color: #ffffff; padding: 30px 30px 20px;">
-                            <img src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__.png" 
-                                 alt="Whitecardopedia" 
-                                 width="350"
+                        <td align="center" bgcolor="#ffffff" style="background-color: #ffffff; padding: 30px 30px 12px;">
+                            <img src="https://app.valegardenhouses.com/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                                 alt="Vale Garden Houses"
+                                 width="260"
                                  border="0"
                                  style="display: block; max-width: 100%; height: auto;">
                         </td>
                     </tr>
-                    
-                    <!-- Vale Garden Houses Logo -->
+
+                    <!-- ValeVision Title -->
                     <tr>
                         <td align="center" bgcolor="#ffffff" style="background-color: #ffffff; padding: 0 30px 25px;">
-                            <img src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" 
-                                 alt="Vale Garden Houses" 
-                                 width="150"
-                                 border="0"
-                                 style="display: block; max-width: 100%; height: auto;">
+                            <p align="center" style="margin: 0; padding: 0; color: #172b3a; font-size: 22px; font-weight: 700; letter-spacing: 1px; font-family: Arial, sans-serif;">
+                                ValeVision
+                            </p>
                         </td>
                     </tr>
                     
@@ -85,7 +86,7 @@
                             
                             <!-- Introduction Text -->
                             <p style="margin: 0 0 20px; padding: 0; color: #172b3a; font-size: 15px; line-height: 1.6; font-family: Arial, sans-serif;">
-                                This is an automated notification to let you know that <strong>{{ProjectName}} - {{ProjectNumber}}</strong> has been added to the Whitecardopedia platform.
+                                This is an automated notification to let you know that <strong>{{ProjectName}} - {{ProjectNumber}}</strong> has been added to ValeVision.
                             </p>
                             
                             <!-- Description Text -->
@@ -93,9 +94,9 @@
                                 View your 3D Images through the link below.
                             </p>
                             
-                            <!-- Password Information -->
+                            <!-- Sign-In Information -->
                             <p style="margin: 0 0 25px; padding: 0; color: #172b3a; font-size: 15px; line-height: 1.6; font-family: Arial, sans-serif;">
-                                <strong>Access Password:</strong> <span style="color: #d32f2f; font-weight: 700;">Vale1982</span>
+                                <strong>Sign in</strong> with your own Vale account.
                             </p>
                             
                             <!-- Call to Action Button - Outlook Safe Version -->
@@ -105,10 +106,10 @@
                                         <table cellpadding="0" cellspacing="0" border="0" style="border-radius: 8px; overflow: hidden;">
                                             <tr>
                                                 <td align="center" bgcolor="#172b3a" style="background-color: #172b3a; padding: 16px 40px; border-radius: 8px;">
-                                                    <a href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html?id={{ProjectNumber}}" 
-                                                       target="_blank" 
+                                                    <a href="{{GalleryUrl}}"
+                                                       target="_blank"
                                                        style="color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; font-family: Arial, sans-serif; display: block;">
-                                                        View Project on Whitecardopedia
+                                                        View Project on ValeVision
                                                     </a>
                                                 </td>
                                             </tr>
@@ -139,7 +140,7 @@
                     <tr>
                         <td align="center" bgcolor="#f5f5f5" style="background-color: #f5f5f5; padding: 20px 30px; border-top: 1px solid #e0e0e0;">
                             <p align="center" style="margin: 0 0 8px; padding: 0; color: #656565; font-size: 13px; line-height: 1.5; font-family: Arial, sans-serif;">
-                                <strong>Whitecardopedia</strong> - Quality Control & 3D Project Review Platform
+                                <strong>ValeVision</strong> - Quality Control & 3D Project Review Platform
                             </p>
                             <p align="center" style="margin: 0; padding: 0; color: #656565; font-size: 12px; line-height: 1.5; font-family: Arial, sans-serif;">
                                 © 2026 Vale Garden Houses | All Rights Reserved

@@ -20,10 +20,25 @@
 // - Single dialog instance reused across callsites; if a previous call is
 //   still open when a new Show() is invoked, the previous one auto-resolves
 //   false to prevent listener / promise leaks.
+// - Choose() is the three-way form (ValeVision3D v2.76.0): Cancel, an
+//   alternate (the safe way on, e.g. Save and Start New) and the confirm (e.g.
+//   Discard and Start New). It resolves 'confirm', 'alternate' or 'cancel'.
+//   Enter presses the button with the focus (the alternate, else Cancel), never
+//   a destructive confirm by default; Escape and the backdrop cancel.
+// - Choose({ typeToConfirm : 'delete' }) is the hardest form (v2.76.2): a box
+//   takes the focus, and the confirm button stays off until the word is typed.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.2.0 (ValeVision3D v2.76.2)
+// - Choose({ typeToConfirm }): a box for a word (delete), the confirm button off
+//   until it is typed. First used by deleting a saved drawing, which is final.
+//
+// 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.76.0)
+// - Choose(): an optional third button (#naConfirmDialogAlternate), first used by
+//   Create Drawing when the open drawing has changes not on the Vale Cloud.
+//
 // 29-Apr-2026 - Version 1.0.0
 // - Initial implementation alongside Dev Tools menu reorganisation.
 //
@@ -36,12 +51,22 @@
 
     // MODULE CONSTANTS | DOM IDs
     // ------------------------------------------------------------
-    const Na__ConfirmDialog__RootId       = 'naConfirmDialog';
-    const Na__ConfirmDialog__BackdropId   = 'naConfirmDialogBackdrop';
-    const Na__ConfirmDialog__TitleId      = 'naConfirmDialogTitle';
-    const Na__ConfirmDialog__MessageId    = 'naConfirmDialogMessage';
-    const Na__ConfirmDialog__ConfirmBtnId = 'naConfirmDialogConfirm';
-    const Na__ConfirmDialog__CancelBtnId  = 'naConfirmDialogCancel';
+    const Na__ConfirmDialog__RootId         = 'naConfirmDialog';
+    const Na__ConfirmDialog__BackdropId     = 'naConfirmDialogBackdrop';
+    const Na__ConfirmDialog__TitleId        = 'naConfirmDialogTitle';
+    const Na__ConfirmDialog__MessageId      = 'naConfirmDialogMessage';
+    const Na__ConfirmDialog__ConfirmBtnId   = 'naConfirmDialogConfirm';
+    const Na__ConfirmDialog__CancelBtnId    = 'naConfirmDialogCancel';
+    const Na__ConfirmDialog__AlternateBtnId = 'naConfirmDialogAlternate';   // <-- Choose() only; put away otherwise
+    const Na__ConfirmDialog__InputId        = 'naConfirmDialogInput';       // <-- Choose() with typeToConfirm only
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Choose() Answers
+    // ------------------------------------------------------------
+    const Na__ConfirmDialog__CHOICE_CONFIRM   = 'confirm';
+    const Na__ConfirmDialog__CHOICE_ALTERNATE = 'alternate';
+    const Na__ConfirmDialog__CHOICE_CANCEL    = 'cancel';
     // ------------------------------------------------------------
 
 
@@ -189,6 +214,123 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Show a Three-Way Question (Returns Promise<'confirm' | 'alternate' | 'cancel'>)
+    // ------------------------------------------------------------
+    // options: title, message, confirmLabel, alternateLabel, cancelLabel,
+    // isDestructive, typeToConfirm. With no alternateLabel it is Show() with
+    // named answers. typeToConfirm (e.g. 'delete'): a box for the word, and
+    // the confirm button stays off until it is typed (any case); Enter in the
+    // box confirms only then.
+    // ------------------------------------------------------------
+    function Na__AppUtils__ConfirmDialog__Choose(options) {
+        const opts = options || {};
+        const title          = typeof opts.title === 'string'          ? opts.title          : Na__ConfirmDialog__DefaultTitle;
+        const message        = typeof opts.message === 'string'        ? opts.message        : '';
+        const confirmLabel   = typeof opts.confirmLabel === 'string'   ? opts.confirmLabel   : Na__ConfirmDialog__DefaultConfirmLabel;
+        const alternateLabel = typeof opts.alternateLabel === 'string' ? opts.alternateLabel : '';
+        const cancelLabel    = typeof opts.cancelLabel === 'string'    ? opts.cancelLabel    : Na__ConfirmDialog__DefaultCancelLabel;
+        const typeToConfirm  = typeof opts.typeToConfirm === 'string'  ? opts.typeToConfirm.trim().toLowerCase() : '';
+        const isDestructive  = opts.isDestructive !== false;
+
+        Na__ConfirmDialog__ForceCloseActive();                          // <-- Auto-cancel any currently open dialog
+
+        const dom          = Na__ConfirmDialog__ResolveDom();
+        const alternateBtn = document.getElementById(Na__ConfirmDialog__AlternateBtnId);
+        const input        = document.getElementById(Na__ConfirmDialog__InputId);
+        if (!dom || (typeToConfirm && !input)) {
+            // FALLBACK | The browser's own box: the word typed into a prompt, or a plain confirm (two buttons)
+            const fallbackText = title + (message ? `\n\n${message}` : '');
+            if (typeToConfirm) {
+                const typed = window.prompt(`${fallbackText}\n\nType ${typeToConfirm} to confirm.`, '');
+                return Promise.resolve(String(typed || '').trim().toLowerCase() === typeToConfirm ? Na__ConfirmDialog__CHOICE_CONFIRM : Na__ConfirmDialog__CHOICE_CANCEL);
+            }
+            return Promise.resolve(window.confirm(fallbackText) ? Na__ConfirmDialog__CHOICE_CONFIRM : Na__ConfirmDialog__CHOICE_CANCEL);
+        }
+        const hasAlternate = !!alternateBtn && !!alternateLabel;
+        const matches      = () => !typeToConfirm || String(input.value || '').trim().toLowerCase() === typeToConfirm;
+
+        // POPULATE | Title, message, the three labels, the word box, destructive flag
+        dom.titleEl.textContent    = title;
+        dom.messageEl.textContent  = message;
+        dom.confirmBtn.textContent = confirmLabel;
+        dom.cancelBtn.textContent  = cancelLabel;
+        if (alternateBtn) {
+            alternateBtn.textContent   = alternateLabel;
+            alternateBtn.style.display = hasAlternate ? '' : 'none';    // <-- style, not hidden: the button class sets its own display
+        }
+        if (input) {
+            input.value         = '';
+            input.placeholder   = typeToConfirm ? `Type ${typeToConfirm}` : '';
+            input.setAttribute('aria-label', typeToConfirm ? `Type ${typeToConfirm} to confirm` : '');
+            input.style.display = typeToConfirm ? '' : 'none';
+        }
+        dom.confirmBtn.disabled = !matches();                            // <-- Off until the word is typed
+        Na__ConfirmDialog__ApplyDestructiveFlag(dom.confirmBtn, isDestructive);
+
+        // SHOW | Open modal
+        dom.root.classList.add('is-open');
+        dom.root.setAttribute('aria-hidden', 'false');
+
+        return new Promise((resolve) => {
+            const onConfirm   = () => { if (matches()) cleanup(Na__ConfirmDialog__CHOICE_CONFIRM); };
+            const onAlternate = () => cleanup(Na__ConfirmDialog__CHOICE_ALTERNATE);
+            const onCancel    = () => cleanup(Na__ConfirmDialog__CHOICE_CANCEL);
+            const onInput     = () => { dom.confirmBtn.disabled = !matches(); };
+            const onInputKey  = (event) => {
+                if (event.key !== 'Enter') return;
+                event.preventDefault();
+                if (matches()) cleanup(Na__ConfirmDialog__CHOICE_CONFIRM);   // <-- Enter in the box: only once the word is there
+            };
+            const onKeyDown   = (event) => {
+                if (event.key !== 'Escape') return;                    // <-- Enter presses the focused button itself
+                event.preventDefault();
+                cleanup(Na__ConfirmDialog__CHOICE_CANCEL);
+            };
+
+            const cleanup = (choice) => {
+                dom.confirmBtn.removeEventListener('click', onConfirm);
+                dom.cancelBtn.removeEventListener('click', onCancel);
+                if (alternateBtn) {
+                    alternateBtn.removeEventListener('click', onAlternate);
+                    alternateBtn.style.display = 'none';               // <-- Show() never sees it
+                }
+                if (input) {
+                    input.removeEventListener('input', onInput);
+                    input.removeEventListener('keydown', onInputKey);
+                    input.value         = '';
+                    input.style.display = 'none';                      // <-- Show() never sees it either
+                }
+                dom.confirmBtn.disabled = false;
+                if (dom.backdrop) dom.backdrop.removeEventListener('click', onCancel);
+                document.removeEventListener('keydown', onKeyDown);
+
+                dom.root.classList.remove('is-open');
+                dom.root.setAttribute('aria-hidden', 'true');
+
+                Na__ConfirmDialog__ActiveCleanup = null;
+                resolve(choice);
+            };
+
+            // BIND | All three answers, the word box, the backdrop and Escape
+            dom.confirmBtn.addEventListener('click', onConfirm);
+            dom.cancelBtn.addEventListener('click', onCancel);
+            if (hasAlternate) alternateBtn.addEventListener('click', onAlternate);
+            if (typeToConfirm) {
+                input.addEventListener('input', onInput);
+                input.addEventListener('keydown', onInputKey);
+            }
+            if (dom.backdrop) dom.backdrop.addEventListener('click', onCancel);
+            document.addEventListener('keydown', onKeyDown);
+
+            // FOCUS | The word box when there is one; else the safe way on, else Cancel: Enter never discards by default
+            try { (typeToConfirm ? input : (hasAlternate ? alternateBtn : dom.cancelBtn)).focus(); } catch (_) { /* focus failures are non-fatal */ }
+
+            Na__ConfirmDialog__ActiveCleanup = () => cleanup(Na__ConfirmDialog__CHOICE_CANCEL);   // <-- A later Show() or Choose() cancels this one
+        });
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -199,7 +341,8 @@
     // MODULE EXPORTS | Confirm Dialog API
     // ------------------------------------------------------------
     export {
-        Na__AppUtils__ConfirmDialog__Show
+        Na__AppUtils__ConfirmDialog__Show,
+        Na__AppUtils__ConfirmDialog__Choose
     };
     // ------------------------------------------------------------
 

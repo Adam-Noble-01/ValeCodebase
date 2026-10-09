@@ -587,6 +587,7 @@
             await Promise.race([ Na__LeSpec__EnsureLoaded(), new Promise((resolve) => { window.setTimeout(resolve, cap); }) ]);   // <-- The notes margin prints its notes, not an empty column
             const built = await Na__LePdf__BuildDocument(sheet, options);
             await built.doc.save(built.filename, { returnPromise : true });
+            window.ValeActivity && window.ValeActivity.Log('file.download', { target: built.filename });   // <-- Activity ledger (jsPDF's link is never on the page)
             const margin = Na__LeMargin__Report(sheet, null);
             if (margin.overflow > 0) toast(Na__LeCfg__FormatLabel('PdfMarginOverflow', 'PDF downloaded, but {count} note(s) did not fit and were left out. Widen the notes margin, enlarge a note region or make the text smaller.', { count : margin.overflow }), true);   // <-- Every note that fitted nowhere: the margin's, or a note region's with the margin off
             else toast(Na__LeCfg__GetLabel('PdfReadyMessage', 'PDF downloaded.'), false);

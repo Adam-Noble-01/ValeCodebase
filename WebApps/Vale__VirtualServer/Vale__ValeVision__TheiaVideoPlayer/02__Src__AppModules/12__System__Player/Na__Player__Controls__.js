@@ -264,7 +264,7 @@
         // the title and buttons under it line up with its edges.
         const setAspect = (w, h) => {
             if (!(w > 0 && h > 0)) return;
-            const stage = container.closest('.theia-stage') || container;
+            const stage = container.closest('.theia-page') || container.closest('.theia-stage') || container;   // <-- The page: its centred box sizes from it too
             stage.style.setProperty('--theia-aspect', (w / h).toFixed(4));
         };
         video.addEventListener('loadedmetadata', () => setAspect(video.videoWidth, video.videoHeight));

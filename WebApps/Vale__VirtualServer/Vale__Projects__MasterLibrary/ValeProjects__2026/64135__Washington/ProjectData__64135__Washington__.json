@@ -417,7 +417,7 @@
         "IMG08__3dView__BirdsEye-02____WhitecardImage__02-Oct-2026.png"
     ],
     "displayName": "Washington",
-    "enabled": true,
+    "enabled": false,
     "images": [
         "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026.png",
         "IMG02__3dView__MainShot__Closer____WhitecardImage__02-Oct-2026.png",
@@ -442,9 +442,9 @@
         "dateReceived": "24-Sep-2026",
         "timeAdjustments": {
             "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
-            "timeAdjustments__DesignDevelopment": 2,
             "timeAdjustments__ReusableAssets": 2,
-            "timeAdjustments__ScopeAmendments": 2
+            "timeAdjustments__ScopeAmendments": 2,
+            "timeAdjustments__DesignDevelopment": 2
         },
         "timeAllocated": 6,
         "timeTaken": 6
@@ -829,5 +829,6 @@
                 "PresentationMode__Group__Enabled": false
             }
         ]
-    }
+    },
+    "_rev": 2
 }

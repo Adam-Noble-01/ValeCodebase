@@ -5,7 +5,8 @@
    FILE       : VirtualServerManager__Styles__Main__.css
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Styles for the manager PWA: header, tabs, live explorer, parity
-                matrix, URL configurator, user accounts, modals (Vale brand palette).
+                matrix, URL configurator, user accounts, user activity, modals (Vale
+                brand palette).
                 Panels are content-sized (only the users table fills the width);
                 every table shares one sort-header style (.Vsm__SortTh)
    CREATED    : 06-Oct-2026
@@ -86,7 +87,7 @@
         flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, max-content);
         justify-content: center; align-content: start;
     }
-    .Vsm__Panel.is-wide { grid-template-columns: minmax(0, 1fr); }          /* <-- Tab 04: the users table fills the width */
+    .Vsm__Panel.is-wide { grid-template-columns: minmax(0, 1fr); }          /* <-- Tabs 04 and 05: the table fills the width */
 
     .Vsm__Offline {
         margin: 14px 24px 0; padding: 10px 14px; border-radius: var(--Vsm_Radius);
@@ -431,6 +432,22 @@
         .Vsm__UserTable .Vsm__UrlInput.is-email { min-width: 26ch; }
         .Vsm__RemoteInput { flex: 0 1 auto; min-width: 12ch; }
     }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 05 - User Activity (the users table, rows selectable)
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__UserTable tr.Vsm__ActRow { cursor: pointer; }
+    .Vsm__UserTable tr.Vsm__ActRow.is-selected td { background: var(--Vale_BrandSoft); }
+    .Vsm__UserTable tr.Vsm__ActRow.is-refused td:first-child { box-shadow: inset 3px 0 0 var(--Vsm_Bad); }
+    .Vsm__UserTable td.Vsm__ActText { white-space: normal; min-width: 180px; max-width: 420px; }
+    .Vsm__UserTable tr.Vsm__ActMore td { text-align: center; color: var(--Vale_TextSecondary); padding: 12px; }
+    .Vsm__Badge.is-refused { background: var(--Vsm_BadSoft); color: var(--Vsm_Bad); }
+    .Vsm__ActFind { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    #Vsm__ActDetail .Vsm__Table { font-size: 12px; }
 
 /* endregion ------------------------------------------------------------------- */
 

@@ -48,7 +48,28 @@
 // - All hard-coded export parameters now read from state.config
 //   (PageLayout__PdfExport__Config section) with fallback defaults.
 //
+// 09-Oct-2026 - Version 2.3.0 (ValeVision3D v2.75.0)
+// - The picture and its trims are drawn by the render pipeline's DrawImageLayer,
+//   the routine the screen uses, instead of a copy of it.
+// - With a project the file is named <project>__<layout name>__Layout__A3.pdf
+//   (FilenamePattern* in the config); without one, as before.
+// - The buttons live in the side menu (same ids). A sheet with no picture, and a
+//   failed flatten, say so on screen rather than only in the console.
+//
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | The Picture Layer, the Toast
+    // ------------------------------------------------------------
+    import { Na__PageLayout__DrawImageLayer } from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
+    import { Na__PageLayout__Toast } from './Na__PageLayoutSystem__UiNotify__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -76,6 +97,8 @@
     // ------------------------------------------------------------
     const Na__PageLayout__FALLBACK_FILENAME_FULL  = 'ValeVision3D__Layout__A3.pdf';   // <-- Default full layout filename
     const Na__PageLayout__FALLBACK_FILENAME_IMG   = 'ValeVision3D__ImageOnly__A3.pdf'; // <-- Default image only filename
+    const Na__PageLayout__FALLBACK_PATTERN_FULL   = '{project}__{layout}__Layout__A3.pdf';    // <-- With a project
+    const Na__PageLayout__FALLBACK_PATTERN_IMG    = '{project}__{layout}__ImageOnly__A3.pdf'; // <-- With a project
     // ------------------------------------------------------------
 
 
@@ -123,8 +146,31 @@
                                 : Na__PageLayout__FALLBACK_FILENAME_FULL,
             filenameImg    : (section && typeof section['PageLayout__PdfExport__Config__FilenameImageOnly'] === 'string')
                                 ? section['PageLayout__PdfExport__Config__FilenameImageOnly']
-                                : Na__PageLayout__FALLBACK_FILENAME_IMG
+                                : Na__PageLayout__FALLBACK_FILENAME_IMG,
+            patternFull    : (section && typeof section['PageLayout__PdfExport__Config__FilenamePatternFull'] === 'string')
+                                ? section['PageLayout__PdfExport__Config__FilenamePatternFull']
+                                : Na__PageLayout__FALLBACK_PATTERN_FULL,
+            patternImg     : (section && typeof section['PageLayout__PdfExport__Config__FilenamePatternImageOnly'] === 'string')
+                                ? section['PageLayout__PdfExport__Config__FilenamePatternImageOnly']
+                                : Na__PageLayout__FALLBACK_PATTERN_IMG
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The File Name: the Project and the Layout When Known, Else the Plain Name
+    // ------------------------------------------------------------
+    function Na__PageLayout__ResolvePdfFilename(state, pdfConfig, isFullLayout) {
+        const project = (state.project && state.project.id) ? String(state.project.id) : '';
+        if (!project) return isFullLayout ? pdfConfig.filenameFull : pdfConfig.filenameImg;
+
+        const safe   = (text) => String(text || '').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+        const record = state.layout && state.layout.record;
+        const name   = safe(state.layout && state.layout.name) || safe(record && record.PageLayouts__Layout__Name) || 'Drawing';
+        const file   = (isFullLayout ? pdfConfig.patternFull : pdfConfig.patternImg)
+            .replace('{project}', safe(project.split('/').pop()) || 'Project')
+            .replace('{layout}', name);
+        return /\.pdf$/i.test(file) ? file : file + '.pdf';
     }
     // ------------------------------------------------------------
 
@@ -214,38 +260,9 @@
         }
 
         // Draw viewport image with position, scale, and clipping applied
+        // (the render pipeline's own routine, so the PDF is exactly the screen)
         // ------------------------------------------------------------
-        if (state.viewportImage) {
-            const imgX = state.imageTransform.x      * ppm; // <-- Image X position in pixels
-            const imgY = state.imageTransform.y      * ppm; // <-- Image Y position in pixels
-            const imgW = state.imageTransform.width  * ppm; // <-- Image width in pixels
-            const imgH = state.imageTransform.height * ppm; // <-- Image height in pixels
-
-            // Convert clipping values from mm to pixels
-            // ------------------------------------------------------------
-            const clipT = (state.imageTransform.clipTop    || 0) * ppm; // <-- Clip from top in pixels
-            const clipR = (state.imageTransform.clipRight  || 0) * ppm; // <-- Clip from right in pixels
-            const clipB = (state.imageTransform.clipBottom || 0) * ppm; // <-- Clip from bottom in pixels
-            const clipL = (state.imageTransform.clipLeft   || 0) * ppm; // <-- Clip from left in pixels
-
-            // Calculate the visible (clipped) region on the export canvas
-            // ------------------------------------------------------------
-            const visibleX = imgX + clipL; // <-- Visible region X start
-            const visibleY = imgY + clipT; // <-- Visible region Y start
-            const visibleW = imgW - clipL - clipR; // <-- Visible region width
-            const visibleH = imgH - clipT - clipB; // <-- Visible region height
-
-            // Draw image with clipping mask (mirrors CanvasRenderPipeline exactly)
-            // ------------------------------------------------------------
-            if (visibleW > 0 && visibleH > 0) {
-                ctx.save(); // <-- Save context state
-                ctx.beginPath(); // <-- Begin clip path
-                ctx.rect(visibleX, visibleY, visibleW, visibleH); // <-- Define visible region
-                ctx.clip(); // <-- Apply clipping mask
-                ctx.drawImage(state.viewportImage, imgX, imgY, imgW, imgH); // <-- Draw full image (clip hides trimmed edges)
-                ctx.restore(); // <-- Restore context state (removes clip)
-            }
-        }
+        Na__PageLayout__DrawImageLayer(ctx, state, ppm);
 
         // Serialize as JPEG (5-10x smaller than PNG for photographic content)
         // ------------------------------------------------------------
@@ -273,17 +290,25 @@
     // ------------------------------------------------------------
     function Na__PageLayout__ExportFullLayout(state) {
         if (!state) return; // <-- Guard against missing state
+        if (!state.viewportImage) {
+            Na__PageLayout__Toast('There is no picture on the sheet yet: open a saved layout first', true);
+            return;
+        }
 
         const pdfConfig = Na__PageLayout__ResolvePdfConfig(state); // <-- Resolve config with fallbacks
         const doc       = Na__PageLayout__CreateDocument(pdfConfig); // <-- Create PDF document
-        if (!doc) return; // <-- Abort if jsPDF unavailable
+        if (!doc) {
+            Na__PageLayout__Toast('The PDF library did not load: reload the page and try again', true);
+            return; // <-- Abort if jsPDF unavailable
+        }
 
         // Flatten full sheet (title block + viewport) into one JPEG
         // ------------------------------------------------------------
         try {
             const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, true, pdfConfig);
             if (!flattenedDataUrl) {
-                console.error('[PageLayout] Flatten returned null — canvas may have been capped or corrupt');
+                console.error('[PageLayout] Flatten returned null - canvas may have been capped or corrupt');
+                Na__PageLayout__Toast('This device could not make the PDF at full quality', true);
                 return;
             }
 
@@ -297,10 +322,11 @@
             );
         } catch (err) {
             console.error('[PageLayout] Failed to flatten or embed full layout sheet:', err);
+            Na__PageLayout__Toast('The PDF could not be made', true);
             return;
         }
 
-        doc.save(pdfConfig.filenameFull); // <-- Download PDF
+        doc.save(Na__PageLayout__ResolvePdfFilename(state, pdfConfig, true)); // <-- Download PDF
     }
     // ------------------------------------------------------------
 
@@ -309,17 +335,25 @@
     // ------------------------------------------------------------
     function Na__PageLayout__ExportImageOnly(state) {
         if (!state) return; // <-- Guard against missing state
+        if (!state.viewportImage) {
+            Na__PageLayout__Toast('There is no picture on the sheet yet: open a saved layout first', true);
+            return;
+        }
 
         const pdfConfig = Na__PageLayout__ResolvePdfConfig(state); // <-- Resolve config with fallbacks
         const doc       = Na__PageLayout__CreateDocument(pdfConfig); // <-- Create PDF document
-        if (!doc) return; // <-- Abort if jsPDF unavailable
+        if (!doc) {
+            Na__PageLayout__Toast('The PDF library did not load: reload the page and try again', true);
+            return; // <-- Abort if jsPDF unavailable
+        }
 
         // Flatten viewport-only sheet (no title block) into one JPEG
         // ------------------------------------------------------------
         try {
             const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, false, pdfConfig);
             if (!flattenedDataUrl) {
-                console.error('[PageLayout] Flatten returned null — canvas may have been capped or corrupt');
+                console.error('[PageLayout] Flatten returned null - canvas may have been capped or corrupt');
+                Na__PageLayout__Toast('This device could not make the PDF at full quality', true);
                 return;
             }
 
@@ -333,10 +367,11 @@
             );
         } catch (err) {
             console.error('[PageLayout] Failed to flatten or embed image-only sheet:', err);
+            Na__PageLayout__Toast('The PDF could not be made', true);
             return;
         }
 
-        doc.save(pdfConfig.filenameImg); // <-- Download PDF
+        doc.save(Na__PageLayout__ResolvePdfFilename(state, pdfConfig, false)); // <-- Download PDF
     }
     // ------------------------------------------------------------
 

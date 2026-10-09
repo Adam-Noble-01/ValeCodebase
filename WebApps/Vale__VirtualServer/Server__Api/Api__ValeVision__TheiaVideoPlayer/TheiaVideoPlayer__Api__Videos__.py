@@ -241,13 +241,19 @@ def project_videos(pid):
     if missing:
         return missing
     audience, user, share, error = theia_core.audience_for(folder)
+    token = request.args.get('share') or request.headers.get(theia_core.SHARE_HEADER) or ''
     if error:
+        if token and request.args.get('view') == '1':                         # <-- Someone opened a dead link: who, and from where
+            theia_core.activity('link.open-refused', 'Opened a client link that has expired or been switched off', folder,
+                                link=token[:64], ok=False)
         return error
     only_ids = None
     if share:
         only_ids = [str(i) for i in (share.get('TheiaShare__Link__VideoIds') or []) if i] or None
         if request.args.get('view') == '1':
             theia_core.note_share_view(folder, share.get('TheiaShare__Link__Token'))
+            theia_core.activity('link.open', 'Opened the Theia web viewer from a client link', folder,
+                                target=share.get('TheiaShare__Link__Label') or '', link=share.get('TheiaShare__Link__Token') or '')
     response = jsonify(library_answer(folder, audience, user, share, only_ids))
     response.headers['Cache-Control'] = 'no-store'
     return response
@@ -271,6 +277,8 @@ def edit_library(pid):
         except Na__Library__Conflict:
             return theia_core.fail('Someone else changed these videos since you opened them. Reload and try again.', 409,
                                    **library_answer(folder, 'manager', Na__Auth__CurrentUser()))
+    theia_core.activity('video.library', 'Renamed the project in Theia', folder,
+                        target=data.get('TheiaVideo__Library__ProjectTitle') or '')
     return jsonify(library_answer(folder, 'manager', Na__Auth__CurrentUser()))
 
 
@@ -317,6 +325,10 @@ def edit_video(pid, vid):
         except Na__Library__Conflict:
             return theia_core.fail('Someone else changed these videos since you opened them. Reload and try again.', 409,
                                    **library_answer(folder, 'manager', Na__Auth__CurrentUser()))
+    changed = [k for k in ('title', 'description') if k in body] + (['shown' if body.get('visible') else 'hidden']
+                                                                      if 'visible' in body else [])
+    theia_core.activity('video.edit', 'Edited a video: ' + (', '.join(changed) or 'no change'), folder,
+                        target=entry.get('TheiaVideo__Video__Title') or vid)
     synced = None
     if vv3d_changes:                                                           # <-- Outside the data file's lock: the record has its own
         synced = theia.Na__Theia__UpdateVv3dVideo(folder, entry['TheiaVideo__Video__SourceVideoId'], vv3d_changes, code)
@@ -348,6 +360,7 @@ def order_videos(pid):
         except Na__Library__Conflict:
             return theia_core.fail('Someone else changed these videos since you opened them. Reload and try again.', 409,
                                    **library_answer(folder, 'manager', Na__Auth__CurrentUser()))
+    theia_core.activity('video.order', 'Changed the order of the videos', folder, detail={'Videos': len(wanted)})
     return jsonify(library_answer(folder, 'manager', Na__Auth__CurrentUser()))
 
 
@@ -407,6 +420,9 @@ def sync_from_valevision3d(pid):
                 removed_files += delete_files(folder, view)
             entries.remove(entry)
         theia.Na__Theia__WriteData(folder, library['data'], code)
+    if updated or remove:                                                      # <-- Called after every Video Studio save: real changes only
+        theia_core.activity('video.sync', 'Synced videos from ValeVision 3D', folder,
+                            detail={'Titles updated': updated, 'Removed': len(remove)})
     answer = library_answer(folder, 'manager', user)
     answer.update({'updated': updated, 'removedFiles': removed_files})
     return jsonify(answer)
@@ -436,6 +452,8 @@ def delete_video(pid, vid):
     if source_id:
         theia.Na__Theia__UpdateVv3dVideo(folder, source_id, {'VideoStudio__Video__TheiaPublish': None}, code)
     theia_core.log(f' [THEIA] {code} removed {vid} from {folder.name}: {len(removed)} files')
+    theia_core.activity('video.delete', 'Removed a video from Theia', folder, target=view.get('title') or vid,
+                        detail={'Files': len(removed)})
     answer = library_answer(folder, 'manager', Na__Auth__CurrentUser())
     answer['removedFiles'] = removed
     return jsonify(answer)
@@ -491,6 +509,7 @@ def save_poster(pid, vid):
         entry['TheiaVideo__Video__Poster'] = names['poster']
         entry['TheiaVideo__Video__Thumbnail'] = names['thumbnail'] if 'thumbnail' in blobs else entry.get('TheiaVideo__Video__Thumbnail', names['thumbnail'])
         theia.Na__Theia__WriteData(folder, library['data'], theia_core.user_code())
+    theia_core.activity('video.poster', 'Set a video poster', folder, target=view.get('title') or vid)
     return jsonify(library_answer(folder, 'manager', Na__Auth__CurrentUser()))
 
 # endregion -------------------------------------------------------------------

@@ -1,0 +1,255 @@
+/* =============================================================================
+ * VALEVISION3D - PAGE LAYOUT SYSTEM - SAVED LAYOUTS LIST STYLES (SHARED)
+ * =============================================================================
+ *
+ * FILE       : Na__PageLayoutSystem__Styles__SavedList__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Saved Layouts List Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The job's saved layouts as cards, the Everyone / Mine choice and
+ *              the count: one look in the Drawing Editor and in the 3D app
+ * CREATED    : 09-Oct-2026
+ *
+ * DESCRIPTION:
+ * - LOADED BY BOTH DOCUMENTS: the Drawing Editor page (imported by
+ *   Na__PageLayoutSystem__Styles__Main__.css) and ValeVision 3D (imported by
+ *   Na__CoreUi__Styles__Index__.css for Tools & Settings > Drawings). The cards are
+ *   drawn by Na__PageLayoutSystem__SavedList__.js in both.
+ * - ITS OWN COLOURS: the wrapper (.na-saved-list) sets them, so the list looks the
+ *   same whichever document's tokens are around it. Nothing here styles anything
+ *   outside a .na-saved-list wrapper's own na-saved-list__ elements.
+ * - The values are the Drawing Editor's (v2.75.0) as they were, moved here.
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.76.3)
+ * - Delete is muted at rest (a faint red tint, muted red words, a fine edge) and
+ *   turns the full dark red only when pointed at or tabbed to (Adam: "too eye
+ *   grabbing"). The buttons wrap in a narrow menu ("Open Drawing" is wider).
+ *
+ * 09-Oct-2026 - Version 1.0.0 (ValeVision3D v2.76.1)
+ * - Initial build: the Saved Layouts rules moved out of the Drawing Editor's
+ *   stylesheet to be shared with the 3D app's Drawings menu.
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Wrapper's Colours
+ * ----------------------------------------------------------------------------- */
+
+    .na-saved-list {
+        --NaSavedList_Ink                   : #172b3a;                      /* <-- Vale blue */
+        --NaSavedList_InkHover              : #1e3a4f;
+        --NaSavedList_Paper                 : #ffffff;
+        --NaSavedList_Accent                : #336699;                      /* <-- The open layout's outline */
+        --NaSavedList_Danger                : #5c2020;                      /* <-- Delete when pointed at or focused */
+        --NaSavedList_DangerHover           : #6e2828;
+        --NaSavedList_DangerQuiet           : rgba(92, 32, 32, 0.07);       /* <-- Delete at rest: a faint tint... */
+        --NaSavedList_DangerQuietInk        : #7d4545;                      /* <-- ...muted red words... */
+        --NaSavedList_DangerQuietEdge       : rgba(92, 32, 32, 0.22);       /* <-- ...and a fine edge */
+        --NaSavedList_Font                  : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Title, Count and Everyone / Mine
+ * ----------------------------------------------------------------------------- */
+
+    /* TITLE | The 3D app's heading (the Drawing Editor's is its section's summary) */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__title {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 8px;
+        margin                              : 14px 0 8px 0;
+        font-family                         : var(--NaSavedList_Font);
+        font-size                           : 0.85rem;
+        font-weight                         : 600;
+        color                               : var(--NaSavedList_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* COUNT | The badge beside the title */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__count {
+        min-width                           : 20px;
+        padding                             : 1px 7px;
+        border-radius                       : 10px;
+        background                          : rgba(23, 43, 58, 0.1);
+        font-size                           : 0.7rem;
+        text-align                          : center;
+    }
+
+    .na-saved-list__count:empty {
+        display                             : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SEGMENTED | Everyone / Mine */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__segmented {
+        display                             : flex;
+        padding                             : 3px;
+        margin                              : 2px 0 10px 0;
+        background                          : rgba(23, 43, 58, 0.08);
+        border-radius                       : 7px;
+    }
+
+    .na-saved-list__segment {
+        flex                                : 1 1 0;
+        border                              : none;
+        border-radius                       : 5px;
+        padding                             : 5px 8px;
+        background                          : transparent;
+        color                               : var(--NaSavedList_Ink);
+        font-family                         : var(--NaSavedList_Font);
+        font-size                           : 0.76rem;
+        font-weight                         : 600;
+        cursor                              : pointer;
+    }
+
+    .na-saved-list__segment.is-active {
+        background                          : var(--NaSavedList_Paper);
+        box-shadow                          : 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The List and Its Cards
+ * ----------------------------------------------------------------------------- */
+
+    /* LIST | The job's saved layouts */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__list {
+        display                             : flex;
+        flex-direction                      : column;
+        gap                                 : 8px;
+        max-height                          : 420px;
+        overflow-y                          : auto;
+    }
+
+    .na-saved-list__list--busy {
+        opacity                             : 0.55;
+        pointer-events                      : none;
+    }
+
+    .na-saved-list__empty {
+        padding                             : 10px 2px;
+        font-family                         : var(--NaSavedList_Font);
+        font-size                           : 0.76rem;
+        color                               : rgba(23, 43, 58, 0.65);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | One saved layout */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__card {
+        display                             : flex;
+        gap                                 : 10px;
+        padding                             : 8px;
+        border                              : 1px solid rgba(23, 43, 58, 0.12);
+        border-radius                       : 8px;
+        background                          : var(--NaSavedList_Paper);
+        font-family                         : var(--NaSavedList_Font);
+        color                               : var(--NaSavedList_Ink);
+    }
+
+    .na-saved-list__card--current {
+        border-color                        : var(--NaSavedList_Accent);
+        box-shadow                          : 0 0 0 1px var(--NaSavedList_Accent) inset;
+    }
+
+    .na-saved-list__thumb {
+        flex                                : 0 0 96px;
+        width                               : 96px;
+        height                              : 68px;                         /* <-- An A3 sheet's proportions */
+        object-fit                          : contain;
+        background                          : #f3f4f5;
+        border                              : 1px solid rgba(23, 43, 58, 0.08);
+        border-radius                       : 4px;
+    }
+
+    .na-saved-list__body {
+        flex                                : 1 1 auto;
+        min-width                           : 0;
+        display                             : flex;
+        flex-direction                      : column;
+        gap                                 : 2px;
+    }
+
+    .na-saved-list__name {
+        font-size                           : 0.8rem;
+        font-weight                         : 600;
+        white-space                         : nowrap;
+        overflow                            : hidden;
+        text-overflow                       : ellipsis;
+    }
+
+    .na-saved-list__meta {
+        font-size                           : 0.7rem;
+        line-height                         : 1.35;
+        color                               : rgba(23, 43, 58, 0.7);
+    }
+
+    .na-saved-list__actions {
+        display                             : flex;
+        flex-wrap                           : wrap;                         /* <-- A narrow menu puts Delete under Open Drawing */
+        gap                                 : 6px;
+        margin-top                          : 6px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD BUTTONS | Open Drawing (Vale blue) and Delete (quiet until pointed at, then dark red) */
+    /* ------------------------------------------------------------ */
+    .na-saved-list__button {
+        display                             : inline-block;
+        width                               : auto;
+        margin                              : 0;
+        border                              : none;
+        border-radius                       : 6px;
+        padding                             : 4px 12px;
+        background                          : var(--NaSavedList_Ink);
+        color                               : var(--NaSavedList_Paper);
+        font-family                         : var(--NaSavedList_Font);
+        font-weight                         : 600;
+        font-size                           : 0.74rem;
+        cursor                              : pointer;
+        transition                          : background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .na-saved-list__button:hover {
+        background                          : var(--NaSavedList_InkHover);
+    }
+
+    .na-saved-list__button:disabled {
+        opacity                             : 0.45;
+        cursor                              : not-allowed;
+    }
+
+    /* DELETE | Muted at rest so it never pulls the eye (Adam, 09-Oct-2026); full red when pointed at or tabbed to */
+    .na-saved-list__button--danger {
+        background                          : var(--NaSavedList_DangerQuiet);
+        color                               : var(--NaSavedList_DangerQuietInk);
+        box-shadow                          : inset 0 0 0 1px var(--NaSavedList_DangerQuietEdge);
+    }
+
+    .na-saved-list__button--danger:hover,
+    .na-saved-list__button--danger:focus-visible {
+        background                          : var(--NaSavedList_Danger);
+        color                               : var(--NaSavedList_Paper);
+        box-shadow                          : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

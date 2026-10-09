@@ -13,7 +13,9 @@
  * DESCRIPTION:
  * - Every surface takes its colours from the tokens, and fades when the cinema
  *   changes them (Na__CoreUi__Styles__Variables__.css).
- * - Two columns on a wide screen (player and details, then the list); one
+ * - Two columns on a wide screen (player and details, a divider, then the
+ *   list), as one box centred on the page, as wide as the player the window's
+ *   height allows plus the list (Adam, 08-Oct-2026); one
  *   column at 1100 px and below, and on a tablet held upright (up to 1400 px),
  *   with the list as a grid of cards under the player (Adam, 07-Oct-2026: on an
  *   iPad upright the narrow two columns left the video small and the screen empty).
@@ -143,19 +145,23 @@
         padding                            : 18px var(--Theia_Gutter) 22px;     /* <-- The footer sits near the window's foot */
     }
 
-    .theia-crumbs {
-        display                            : inline-flex;
+    body.theia--client {
+        --theia-chrome                     : 212px;                        /* <-- Room the page keeps beside the video's height: 22 px more for the gap below */
+    }
+
+    body.theia--client .theia-main {                                       /* <-- A client's link has no breadcrumbs: more air under the header (Adam, 08-Oct-2026) */
+        padding-top                        : 40px;
+    }
+
+    .theia-crumbs {                                                        /* <-- Plain text on the page, no card (Adam, 08-Oct-2026: the bubble ran the box's full width) */
+        display                            : flex;
+        align-self                         : flex-start;                   /* <-- As wide as its words, never the page's */
         align-items                        : center;
         flex-wrap                          : wrap;
         gap                                : 6px;
-        margin                             : 0 0 16px;
-        padding                            : 8px 16px;
-        background                         : var(--Theia_Surface);
-        border                             : 1px solid var(--Theia_Border);
-        border-radius                      : 12px;
-        box-shadow                         : var(--Theia_Shadow);
+        margin                             : 0 0 14px;
+        padding                            : 0 2px;
         font-size                          : 16px;
-        transition                         : background-color var(--Theia_Fade), border-color var(--Theia_Fade);
     }
 
     .theia-crumbs__link {
@@ -191,14 +197,44 @@
         color                              : var(--Theia_TextSecondary);
     }
 
+    /* ONE CENTRED BOX (Adam, 08-Oct-2026): the player, a divider and the list sit
+       together as one box, centred on the page. The player's width comes from the
+       window's height (the whole video shows without scrolling), so the box is just
+       that player, the divider and the list: no stray column opens between them on a
+       shorter screen. The breadcrumbs and the footer share the box's edges. */
+    .theia-page {
+        --theia-aspect                     : 1.5;                          /* <-- The video's shape: Na__Player__Controls__ sets it here once known */
+        --theia-fit                        : max(320px, calc((100vh - var(--Theia_HeaderHeight) - var(--theia-chrome, 190px)) * var(--theia-aspect)));
+        width                              : min(100%, calc(var(--theia-fit) + var(--Theia_SideWidth) + 2 * var(--Theia_ColumnGap) + 1px));
+        margin-inline                      : auto;
+    }
+
     .theia-layout {
         display                            : grid;
-        grid-template-columns              : minmax(0, 1fr) var(--Theia_SideWidth);
-        gap                                : var(--Theia_Gutter);
+        grid-template-columns              : minmax(0, 1fr) 1px var(--Theia_SideWidth);
+        column-gap                         : var(--Theia_ColumnGap);
+        row-gap                            : var(--Theia_Gutter);
         align-items                        : start;
     }
 
+    .theia-layout::before {                                                /* <-- The divider: a hairline as tall as the row */
+        content                            : '';
+        grid-column                        : 2;
+        grid-row                           : 1;
+        align-self                         : stretch;
+        background                         : var(--Theia_Border);
+        transition                         : background-color var(--Theia_Fade);
+    }
+
+    .theia-layout__main {
+        grid-column                        : 1;
+        grid-row                           : 1;
+        min-width                          : 0;
+    }
+
     .theia-layout__side {
+        grid-column                        : 3;
+        grid-row                           : 1;
         position                           : sticky;
         top                                : 16px;
         max-height                         : calc(100vh - 32px);
@@ -206,8 +242,19 @@
     }
 
     @media (max-width: 1100px), (orientation: portrait) and (max-width: 1400px) {   /* <-- Also in Na__UiFeature__Styles__Playlist__.css */
+        .theia-page {
+            width                          : 100%;                         /* <-- One column: the list under the player, full width */
+        }
         .theia-layout {
             grid-template-columns          : minmax(0, 1fr);
+        }
+        .theia-layout::before {
+            display                        : none;
+        }
+        .theia-layout__main,
+        .theia-layout__side {
+            grid-column                    : 1;
+            grid-row                       : auto;
         }
         .theia-layout__side {
             position                       : static;
@@ -229,6 +276,9 @@
         .theia-crumbs {
             font-size                      : 14px;
         }
+        body.theia--client .theia-main {
+            padding-top                    : 18px;                         /* <-- A phone keeps the tight top: the picture needs the room */
+        }
     }
 
     /* FADE TOGETHER | Text with its own colour fades with the page, not ahead of it */
@@ -240,6 +290,7 @@
     .theia-details__title,
     .theia-details__meta,
     .theia-playlist__title,
+    .theia-playlist__count,
     .theia-playlist__meta,
     .theia-playlist__scheme,
     .theia-playlist__quality,

@@ -22,13 +22,19 @@
 #         LayoutEditor/{Linework,Snapshots}/ ValeVision__DrawingNotes__.json   Editor and the Statement
 #         ValeVision__StatementDocs__.json 05__Layout__DrawingDocs__Images/    Writer make (user data:
 #         06__Layout__PublishedDocuments/ 10__StatementDocs/                   collected, never pushed)
-#   resolve_project_dir() answers that last folder, so the blueprints ported
+#     <id>/ValeVision3D/UserData__UserGeneratedContent__Images/               the page layouts made from
+#         ValeVision__PageLayouts__.json  PageLayouts/<layout id>/             Create Drawing (user data too)
+#   resolve_project_dir() answers the drawings folder, so the blueprints ported
 #   from the local server write exactly where they always wrote, relative to it.
+# - PRIVATE FILES are sent by send_private_file(): nginx streams them on the server
+#   (X-Accel-Redirect), Flask on the PC. Every route that reads a UserData file uses it.
 # - THE PROJECT ID IS THE LIBRARY FOLDER NAME ("64135__Washington"). A bare job
 #   number ("64135"), a legacy "2026/<folder>" and a legacy folder name with a
 #   space ("FN-62104__Fenner Scheme-01") all resolve to it (resolve_project).
 # - EVERY JSON WRITE IS ATOMIC, AND THE COPY OVERWRITTEN IS KEPT as a revision in
 #   <id>/ProjectData__Revisions/<same relative path>/ (ValeShared__Library__'s rule).
+# - EVERY FILE A ROUTE WRITES IS 0664 (FILE_MODE). A temporary file starts as 0600, and
+#   neither nginx (www-data, which streams private files) nor a Collect could read it.
 #
 # -----------------------------------------------------------------------------
 #
@@ -43,6 +49,15 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 09-Oct-2026 - Version 1.3.0
+# - FIX: write_bytes_atomic() left every file it wrote at mkstemp's 0600 (owner valeapp only), so
+#   nginx answered 403 for saved page layout pictures and thumbnails, and a Collect could not read
+#   them. The temporary file is now set to FILE_MODE (0664) before it is moved into place.
+#
+# 09-Oct-2026 - Version 1.2.0
+# - send_private_file() moved here from the Projects blueprint (its _send_private, unchanged), so
+#   the page layouts blueprint sends its images the same way. IMAGES_DIR names the page layouts' folder.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - PROJECT_FILE_LOCK (one process only) is gone: guarded writes use the shared
 #   Na__Library__Locked(path), which holds across every gunicorn worker and app service.
@@ -58,6 +73,7 @@
 
 import hashlib
 import json
+import mimetypes
 import os
 import re
 import tempfile
@@ -65,7 +81,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Response, jsonify, request
+from flask import Response, jsonify, request, send_file
 
 from ValeShared__Library__ import (NA__LIBRARY__DIR, NA__LIBRARY__ROOT, Na__Library__Find, Na__Library__ListProjects,
                                    Na__Library__Year)
@@ -87,6 +103,7 @@ APP_BUCKET               = 'ValeVision3D'                                       
 MODELS_DIR               = 'Content__3dModel__GlbFiles'
 SCENE_THUMBS_DIR         = 'Content__AnimationScenes__Thumbnails'
 DRAWINGS_DIR             = 'UserData__UserGeneratedContent__Drawings'             # <-- resolve_project_dir() answers <project>/ValeVision3D/<this>
+IMAGES_DIR               = 'UserData__UserGeneratedContent__Images'               # <-- The page layouts (ValeVision3D__Api__PageLayouts__): <project>/ValeVision3D/<this>
 
 SIBLING_FILES            = frozenset({
     'ValeVision__DrawingNotes__.json',                                            # <-- The specification (drawing notes)
@@ -105,8 +122,15 @@ DRAWINGS_BASE_HEADER     = 'X-ValeVision-Drawings-Base'
 
 REPLACE_RETRY_DELAYS_S   = (0.05, 0.1, 0.2, 0.4, 0.8)                             # <-- A file held open by a reader can refuse a rename for a moment (Windows)
 TEMP_SUFFIX              = '.tmp'
+FILE_MODE                = 0o664                                                  # <-- Every file a route writes: what UMask=0002 gives a plain open(), so nginx (www-data) can send it and a Collect (adam) read it
 AUTHOR_LEVEL             = os.environ.get('VALEVISION3D_AUTHOR_LEVEL') or 'AppAdmin'   # <-- Who may write: the same level that sees the Dev Tools menu
 KEEP_REVISIONS           = 50
+
+# PRIVATE FILES | How a UserData file reaches the browser (send_private_file)
+SANDBOXED_EXTENSIONS     = ('.html', '.svg')                                      # <-- Served with a sandbox CSP: they can never run script on this origin
+ACCEL_PREFIX             = '/_internal/'                                          # <-- nginx streams private files through its internal location
+for _ext, _type in (('.webp', 'image/webp'), ('.svg', 'image/svg+xml'), ('.md', 'text/markdown'), ('.json', 'application/json')):
+    mimetypes.add_type(_type, _ext)                                               # <-- Not every host's table knows them (Windows answers octet-stream for .webp)
 
 # endregion -------------------------------------------------------------------
 
@@ -294,7 +318,7 @@ def _replace_with_retry(source, target):
 
 
 def write_bytes_atomic(file_path, data, in_place_fallback=False):
-    """Bytes through a temporary file beside the target, flushed, then moved over it."""
+    """Bytes through a temporary file beside the target, flushed, made readable (FILE_MODE), then moved over it."""
     directory = os.path.dirname(os.path.abspath(file_path))
     os.makedirs(directory, exist_ok=True)
     handle, temp_path = tempfile.mkstemp(prefix=os.path.basename(file_path) + '.', suffix=TEMP_SUFFIX, dir=directory)
@@ -303,6 +327,7 @@ def write_bytes_atomic(file_path, data, in_place_fallback=False):
             fh.write(data)
             fh.flush()
             os.fsync(fh.fileno())
+        os.chmod(temp_path, FILE_MODE)                                            # <-- mkstemp makes it 0600: nginx could not send it, nor a Collect read it
     except BaseException:
         _remove_quietly(temp_path)
         raise
@@ -341,6 +366,22 @@ def unreadable_message(file_name, error):
     if isinstance(error, UnicodeDecodeError):
         return f'{file_name} is not UTF-8 text (byte {error.start}): save it as UTF-8'
     return f'{file_name} could not be read ({type(error).__name__})'
+
+
+def send_private_file(path):
+    """A file from a UserData folder: nginx streams it on the server (X-Accel-Redirect), Flask locally."""
+    if os.environ.get('VALE_ACCEL_REDIRECT') == '1':
+        rel = os.path.relpath(path, VALE_ROOT).replace(os.sep, '/')
+        response = jsonify({})
+        response.headers['X-Accel-Redirect'] = ACCEL_PREFIX + rel
+        response.headers['Content-Type'] = mimetypes.guess_type(path)[0] or 'application/octet-stream'
+        if path.lower().endswith(SANDBOXED_EXTENSIONS):
+            response.headers['Content-Security-Policy'] = 'sandbox'
+        return response
+    response = send_file(path, conditional=True, max_age=0)
+    if path.lower().endswith(SANDBOXED_EXTENSIONS):
+        response.headers['Content-Security-Policy'] = 'sandbox'
+    return response
 
 
 def send_json_file(file_path):

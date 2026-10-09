@@ -557,6 +557,9 @@ def publish_video(pid, vid):
     if source == theia.NA__THEIA__SOURCE_VV3D and source_id:
         synced = theia.Na__Theia__UpdateVv3dVideo(folder, source_id, {'VideoStudio__Video__TheiaPublish': publish_block}, code)
     theia_core.log(f' [THEIA] {code} published {folder.name}/{vid}: {rel}' + (f' (removed {", ".join(removed)})' if removed else ''))
+    theia_core.activity('video.publish', 'Published a video to Theia', folder, target=final_title,
+                        detail={'Quality': record['TheiaVideo__File__Quality'], 'Height': record['TheiaVideo__File__Height'],
+                                'From': source})
     answer = theia_videos.library_answer(folder, 'manager', Na__Auth__CurrentUser())
     answer.update({'publish': publish_block, 'valevision3dSynced': synced, 'removedFiles': removed,
                    'title': final_title, 'description': final_description, 'metaUpdatedIso': final_meta})

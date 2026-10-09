@@ -6,7 +6,8 @@
  * NAMESPACE  : ValeVision Theia
  * MODULE     : Dialog Styles
  * AUTHOR     : Adam Noble - Noble Architecture
- * PURPOSE    : The Share dialog: staff link, client link, the project's links
+ * PURPOSE    : The Share dialog: client link and staff link in two collapsed
+ *              panels (green / amber), the project's links
  * CREATED    : 07-Oct-2026
  *
  * =============================================================================
@@ -79,6 +80,135 @@
         margin-top                         : 18px;
         padding-top                        : 18px;
         border-top                         : 1px solid var(--Theia_Border);
+    }
+
+    /* THE TWO PANELS (Adam, 08-Oct-2026): closed when the dialog opens, one open at
+       a time, each with its own icon, colour and tag, so the two kinds of link can
+       never be mistaken for each other. Fixed colours: they read the same in cinema. */
+    .theia-share__panel {
+        --share-ink                        : #1f6b45;                      /* <-- Client: green */
+        --share-tint                       : #e6f3eb;
+        margin-top                         : 14px;
+        border                             : 1px solid var(--Theia_Border);
+        border-left                        : 4px solid var(--share-ink);
+        border-radius                      : 12px;
+        background                         : var(--Theia_Surface);
+        overflow                           : hidden;
+    }
+
+    .theia-share__panel + .theia-share__panel {
+        margin-top                         : 10px;
+    }
+
+    .theia-share__panel--staff {
+        --share-ink                        : #8a5a00;                      /* <-- Staff: amber */
+        --share-tint                       : #fff1d6;
+    }
+
+    .theia-share__summary {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 14px;
+        padding                            : 14px 16px;
+        cursor                             : pointer;
+        list-style                         : none;
+        user-select                        : none;
+    }
+
+    .theia-share__summary::-webkit-details-marker {
+        display                            : none;
+    }
+
+    .theia-share__summary:hover {
+        background                         : var(--Theia_SurfaceHover);
+    }
+
+    .theia-share__badge {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        flex-shrink                        : 0;
+        width                              : 42px;
+        height                             : 42px;
+        border-radius                      : 50%;
+        background                         : var(--share-tint);
+        color                              : var(--share-ink);
+    }
+
+    .theia-share__badge .theia-icon {
+        width                              : 24px;
+        height                             : 24px;
+    }
+
+    .theia-share__summary-text {
+        display                            : flex;
+        flex                               : 1;
+        flex-direction                     : column;
+        gap                                : 3px;
+        min-width                          : 0;
+    }
+
+    .theia-share__summary-title {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        align-items                        : center;
+        gap                                : 6px 10px;
+        font-size                          : 16px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-share__tag {
+        padding                            : 2px 9px;
+        border-radius                      : 999px;
+        background                         : var(--share-tint);
+        color                              : var(--share-ink);
+        font-size                          : 11px;
+        font-weight                        : var(--Theia_FontSemiBold);
+        letter-spacing                     : 0.04em;
+        text-transform                     : uppercase;
+        white-space                        : nowrap;
+    }
+
+    .theia-share__summary-sub {
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 13px;
+        line-height                        : 1.45;
+    }
+
+    .theia-share__chevron {
+        display                            : inline-flex;
+        flex-shrink                        : 0;
+        color                              : var(--Theia_TextSecondary);
+        transition                         : transform 0.2s ease;
+    }
+
+    .theia-share__panel[open] .theia-share__chevron {
+        transform                          : rotate(180deg);
+    }
+
+    .theia-share__panel[open] .theia-share__summary {
+        border-bottom                      : 1px solid var(--Theia_Border);
+    }
+
+    .theia-share__body {
+        padding                            : 14px 16px 16px;
+    }
+
+    .theia-share__warn {
+        margin                             : 0 0 10px;
+        padding                            : 8px 12px;
+        border-radius                      : 8px;
+        background                         : var(--share-tint);
+        color                              : var(--share-ink);
+        font-size                          : 13px;
+        font-weight                        : var(--Theia_FontSemiBold);
+        line-height                        : 1.45;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .theia-share__chevron {
+            transition                     : none;
+        }
     }
 
     .theia-share__heading {

@@ -1,14 +1,19 @@
 {
     "PageLayout__Document__Config": {
-        "PageLayout__Document__Config__Description"              : "A3 document dimensions, title block asset, and initial image placement settings for the Page Layout System.",
+        "PageLayout__Document__Config__Description"              : "A3 document dimensions, the title block asset, the drawing frame inside it (the space left of the title block, measured from the PNG's border lines), and where a new picture first lands: centred in the drawing frame at this fraction of it.",
         "PageLayout__Document__Config__WidthMm"                  : 420,
         "PageLayout__Document__Config__HeightMm"                 : 297,
+        "PageLayout__Document__Config__Format"                   : "A3",
         "PageLayout__Document__Config__TitleBlockPath"           : "PageLayoutSystem__TitleBlock__A3__.png",
         "PageLayout__Document__Config__FitToPagePaddingPx"       : 40,
-        "PageLayout__Document__Config__InitialImagePlacement"    : 0.80
+        "PageLayout__Document__Config__DrawingAreaXMm"           : 10.7,
+        "PageLayout__Document__Config__DrawingAreaYMm"           : 8.3,
+        "PageLayout__Document__Config__DrawingAreaWidthMm"       : 338.7,
+        "PageLayout__Document__Config__DrawingAreaHeightMm"      : 280.4,
+        "PageLayout__Document__Config__InitialImagePlacement"    : 0.92
     },
     "PageLayout__PdfExport__Config": {
-        "PageLayout__PdfExport__Config__Description"             : "PDF export and flattening settings. The full A3 sheet is flattened to a single JPEG at the target DPI before embedding into the PDF via jsPDF.",
+        "PageLayout__PdfExport__Config__Description"             : "PDF export and flattening settings. The full A3 sheet is flattened to a single JPEG at the target DPI before embedding into the PDF via jsPDF. With a project, the file is named from the patterns ({project}, {layout}); without one, from the plain file names.",
         "PageLayout__PdfExport__Config__Orientation"             : "landscape",
         "PageLayout__PdfExport__Config__Unit"                    : "mm",
         "PageLayout__PdfExport__Config__Format"                  : "a3",
@@ -17,7 +22,9 @@
         "PageLayout__PdfExport__Config__Compress"                : true,
         "PageLayout__PdfExport__Config__FloatPrecision"          : "smart",
         "PageLayout__PdfExport__Config__FilenameFullLayout"      : "ValeVision3D__Layout__A3.pdf",
-        "PageLayout__PdfExport__Config__FilenameImageOnly"       : "ValeVision3D__ImageOnly__A3.pdf"
+        "PageLayout__PdfExport__Config__FilenameImageOnly"       : "ValeVision3D__ImageOnly__A3.pdf",
+        "PageLayout__PdfExport__Config__FilenamePatternFull"     : "{project}__{layout}__Layout__A3.pdf",
+        "PageLayout__PdfExport__Config__FilenamePatternImageOnly": "{project}__{layout}__ImageOnly__A3.pdf"
     },
     "PageLayout__CanvasAppearance__Config": {
         "PageLayout__CanvasAppearance__Config__Description"      : "Visual styling of the 2D layout canvas: background colour, paper shadow, selection handles, and image border appearance.",
@@ -41,5 +48,47 @@
         "PageLayout__Navigation__Config__TouchHitRadiusPx"       : 20,
         "PageLayout__Navigation__Config__MinImageSizeMm"         : 10,
         "PageLayout__Navigation__Config__MinVisibleMm"           : 10
+    },
+    "PageLayout__CompositionGuide__Config": {
+        "PageLayout__CompositionGuide__Config__Description"      : "The composition guide: a grid of thirds and a centre cross over the drawing frame. Its four margins are measured in mm in from the frame's edges (negative: out past them) and drag in or out. Never printed.",
+        "PageLayout__CompositionGuide__Config__Divisions"        : 3,
+        "PageLayout__CompositionGuide__Config__LineColor"        : "rgba(214, 40, 57, 0.85)",
+        "PageLayout__CompositionGuide__Config__LineWidthPx"      : 1,
+        "PageLayout__CompositionGuide__Config__FrameLineWidthPx" : 1.5,
+        "PageLayout__CompositionGuide__Config__CentreCrossSizeMm": 16,
+        "PageLayout__CompositionGuide__Config__CentreCrossLineWidthPx": 1.5,
+        "PageLayout__CompositionGuide__Config__GripSizePx"       : 9,
+        "PageLayout__CompositionGuide__Config__GripFillColor"    : "#d62839",
+        "PageLayout__CompositionGuide__Config__GripStrokeColor"  : "#ffffff",
+        "PageLayout__CompositionGuide__Config__GripHitRadiusPx"  : 12,
+        "PageLayout__CompositionGuide__Config__TouchGripHitRadiusPx": 22,
+        "PageLayout__CompositionGuide__Config__MinSizeMm"        : 40,
+        "PageLayout__CompositionGuide__Config__LabelFont"        : "600 11px 'Open Sans', sans-serif",
+        "PageLayout__CompositionGuide__Config__LabelTextColor"   : "#ffffff",
+        "PageLayout__CompositionGuide__Config__LabelFillColor"   : "rgba(214, 40, 57, 0.92)"
+    },
+    "PageLayout__RenderControls__Config": {
+        "PageLayout__RenderControls__Config__Description"        : "The Render Quality choices used when the ValeVision 3D tab cannot be asked (they match its Export Image panel). When it answers, its own choices are used.",
+        "PageLayout__RenderControls__Config__Resolutions"        : [1024, 2048, 4096, 8192],
+        "PageLayout__RenderControls__Config__AspectRatios"       : ["3:2", "4:3", "16:9"],
+        "PageLayout__RenderControls__Config__AntiAliasSamples"   : [1, 2, 4, 8, 16],
+        "PageLayout__RenderControls__Config__DefaultAntiAliasSamples": 16,
+        "PageLayout__RenderControls__Config__LineworkStops"      : [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0],
+        "PageLayout__RenderControls__Config__SillyStops"         : [
+            { "Label": "Straight",  "AmplitudePx": 0.0  },
+            { "Label": "Subtle",    "AmplitudePx": 0.75 },
+            { "Label": "Gentle",    "AmplitudePx": 1.5  },
+            { "Label": "Wavy",      "AmplitudePx": 2.5  },
+            { "Label": "Very Wavy", "AmplitudePx": 4.0  },
+            { "Label": "Silly",     "AmplitudePx": 6.0  },
+            { "Label": "Absurd",    "AmplitudePx": 9.0  }
+        ]
+    },
+    "PageLayout__SavedLayouts__Config": {
+        "PageLayout__SavedLayouts__Config__Description"          : "Saving layouts to the job (ValeVision 3D API, page-layouts): the name a new layout is offered, and the small picture of the sheet shown in the Saved Layouts list.",
+        "PageLayout__SavedLayouts__Config__DefaultName"          : "Drawing Layout",
+        "PageLayout__SavedLayouts__Config__ThumbnailWidthPx"     : 480,
+        "PageLayout__SavedLayouts__Config__ThumbnailType"        : "image/webp",
+        "PageLayout__SavedLayouts__Config__ThumbnailQuality"     : 0.85
     }
 }

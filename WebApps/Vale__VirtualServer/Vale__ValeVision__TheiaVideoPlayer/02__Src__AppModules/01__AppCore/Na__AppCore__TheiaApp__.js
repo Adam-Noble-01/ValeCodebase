@@ -586,7 +586,7 @@
                 { label: 'Open ValeVision Gallery', onClick: () => { window.location.href = Na__Theia__GALLERY; } },
                 { label: 'All project videos', onClick: () => { window.location.href = Na__Share__Url({}); } },
                 ...(projectId ? [
-                    { label: 'Copy a staff link to this video', onClick: () => Na__Share__Copy(Na__Share__Url({ project: projectId, video: S.current ? S.current.id : '' })) },
+                    { label: 'Copy a staff link to this video', onClick: () => Na__Share__Copy(Na__Share__Url({ project: projectId, video: S.current ? S.current.id : '' }), 'Staff link copied (Vale staff only)') },
                     { label: 'Share with a client…', onClick: () => S.project && Na__Share__Open({ project: S.project, videos: S.videos, video: S.current, time: S.controller ? S.controller.video.currentTime : 0 }) }
                 ] : []),
                 { label: 'Clear saved videos on this device', adminOnly: true, section: 'Developer tools', onClick: async () => {

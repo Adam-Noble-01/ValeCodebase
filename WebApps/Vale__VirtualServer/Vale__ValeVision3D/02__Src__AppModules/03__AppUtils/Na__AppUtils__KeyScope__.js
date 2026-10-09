@@ -49,6 +49,11 @@
 //   text area or a list has the focus - with the one case it missed added:
 //   anything contenteditable. The statement being written is one, and so is a
 //   plan annotation label being edited on the 3D Model tab.
+// - A PAGE OVER THE APP (ValeVision3D v2.76.0): while a page of the app is up
+//   over the 3D Model View - the Drawing Editor (Na__AppPages__DrawingPage__Host__)
+//   - none of the three keyboards is live. The page holds the scope (Hold) and
+//   it answers 'page' until the page lets go (Release), whatever the mode
+//   controller's reader says. The page's own keys are its own, in its own frame.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__ModeController__ is the ONE source. It hands its reader
@@ -77,10 +82,17 @@
 //     its own handler, the Na__ValeVision__HotkeysDictionary root key and the
 //     ValeVision__ actions (DR-33). The code is TrueVision's byte for byte.
 // - Back-port     : none.
+// - Divergence (ValeVision3D v2.76.0, this app only): the fourth scope, 'page',
+//   with Hold and Release, for the app's pages (TrueVision has none).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.2.0 (ValeVision3D v2.76.0)
+// - The 'page' scope: Hold(reason) and Release(reason). While any hold is on,
+//   Get answers 'page', so the 3D Model tab's keys stand down under the Drawing
+//   Editor page the way they do under a drawing or a document tab.
+//
 // 21-Sep-2026 - Version 1.1.0
 // - ControlKeepsKey: which keys a focused control uses itself. A tick box, a
 //   list or a button keeps the focus after it is clicked, and the drawing
@@ -110,11 +122,17 @@
     const Na__KeyScope__SHEET    = 'sheet';       // <-- A drawing tab: the drawing tools' keys
     const Na__KeyScope__DOCUMENT = 'document';    // <-- A document tab: typing, and the documents' own keys
     const Na__KeyScope__ALL      = Object.freeze([ Na__KeyScope__MODEL, Na__KeyScope__SHEET, Na__KeyScope__DOCUMENT ]);
+    const Na__KeyScope__PAGE     = 'page';        // <-- A page of the app over the 3D view (the Drawing Editor): its keys are its own, in its own frame
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | The Function That Answers Which Scope Is Live (none: the 3D model's)
     // ------------------------------------------------------------
     let Na__KeyScope__Reader = null;
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | The Pages Holding the Scope (one name per page; any one is enough)
+    // ------------------------------------------------------------
+    const Na__KeyScope__Holds = new Set();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -137,13 +155,29 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Page Takes the Keyboard From the 3D View, and Gives It Back
+    // ------------------------------------------------------------
+    // Holds are named (the page's own name), so a page letting go twice, or
+    // two pages, can never leave the scope held or let it go early.
+    // ------------------------------------------------------------
+    function Na__KeyScope__Hold(reason) {
+        Na__KeyScope__Holds.add(String(reason || Na__KeyScope__PAGE));
+    }
+    function Na__KeyScope__Release(reason) {
+        Na__KeyScope__Holds.delete(String(reason || Na__KeyScope__PAGE));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Which Keyboard Is Live
     // ------------------------------------------------------------
-    // Asked afresh on every key. A reader that fails, or answers with a name
-    // that is not one of the three, gives the 3D model's scope: the keyboard
-    // the app had before the Layout Editor existed, never a deaf one.
+    // Asked afresh on every key. A page holding the scope answers first. A
+    // reader that fails, or answers with a name that is not one of the three,
+    // gives the 3D model's scope: the keyboard the app had before the Layout
+    // Editor existed, never a deaf one.
     // ------------------------------------------------------------
     function Na__KeyScope__Get() {
+        if (Na__KeyScope__Holds.size > 0) return Na__KeyScope__PAGE;
         if (!Na__KeyScope__Reader) return Na__KeyScope__MODEL;
         let scope;
         try { scope = Na__KeyScope__Reader(); } catch (error) { return Na__KeyScope__MODEL; }
@@ -236,7 +270,10 @@
         Na__KeyScope__MODEL,
         Na__KeyScope__SHEET,
         Na__KeyScope__DOCUMENT,
+        Na__KeyScope__PAGE,
         Na__KeyScope__Follow,
+        Na__KeyScope__Hold,
+        Na__KeyScope__Release,
         Na__KeyScope__Get,
         Na__KeyScope__Is,
         Na__KeyScope__IsTypingTarget,

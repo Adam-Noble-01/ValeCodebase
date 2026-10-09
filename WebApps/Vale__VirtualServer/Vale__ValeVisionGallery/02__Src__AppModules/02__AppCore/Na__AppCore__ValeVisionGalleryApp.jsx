@@ -82,6 +82,14 @@
         const [lastSelectedProject, setLastSelectedProject] = React.useState(null);  // <-- For the forward hotkey
         const [isLoadingUrlProject, setIsLoadingUrlProject] = React.useState(false);
 
+        // EFFECT | Activity Ledger: the Tools Opened (a project opened is reported by the shared script)
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            const words = { [APP_VIEWS.EDITOR]: 'the Project Editor', [APP_VIEWS.TIME_ANALYSIS]: 'the 3D Production KPI report' };
+            if (words[currentView]) window.ValeActivity && window.ValeActivity.Log('view.open', { project: '', target: words[currentView] });
+        }, [currentView]);
+        // ---------------------------------------------------------------
+
         // EFFECT | Open the Project Named in the URL (or the editor after a reload)
         // ---------------------------------------------------------------
         React.useEffect(() => {

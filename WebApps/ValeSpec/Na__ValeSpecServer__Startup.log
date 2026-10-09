@@ -388,3 +388,14 @@
 [REQUEST] 07-Oct-2026 - 09:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
 [REQUEST] 07-Oct-2026 - 09:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
 [REQUEST] 07-Oct-2026 - 09:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.100:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================

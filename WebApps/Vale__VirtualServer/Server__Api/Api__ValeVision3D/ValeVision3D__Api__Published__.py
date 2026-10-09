@@ -82,6 +82,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 09-Oct-2026 - Version 1.1.1
+# - FIX: an archived revision's zip was left at mkstemp's 0600; it is set to vv_shared.FILE_MODE
+#   (0664) before it is moved into place, like every file write_bytes_atomic writes.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - Moved into Api__ValeVision3D for app.valegardenhouses.com: projects come from the Master Library
 #   (<project>/ValeVision3D/UserData__UserGeneratedContent__Drawings/06__Layout__PublishedDocuments); every
@@ -420,6 +424,7 @@ def published_archive():
             for relative in _walk(source, source):
                 bundle.write(os.path.join(source, *relative.split('/')), relative)
                 count += 1
+        os.chmod(temp_path, vv_shared.FILE_MODE)                                 # <-- mkstemp makes it 0600: a Collect could not read the zip
         _replace_with_retry(temp_path, target)
     except Exception as error:                                                  # noqa: BLE001
         try:

@@ -1,5 +1,120 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.11.0, 08-Oct-2026: A Year Live, Then Archived; ValeVision 3D and Gallery in Detail
+
+**Asked by Adam:** "keep the data for 1 year and then zip files per month year them with the correct
+ServerLogs__2026__Archived__.zip; if required I should have the ability to audit older months and the
+files will be copied to a new logs cache unzipped and loaded" (one zip per year, chosen when asked),
+and log the actions people take in ValeVision 3D and ValeVision Gallery (two separate apps), with the
+Gallery's stats tools.
+
+**Live first (10:42 UTC):** Adam's Theia link test was not logged. His 10:41 push of `server-api` had
+put the new code on the server, but a push never restarts an API, so the old code answered
+`api/activity` with 404. The three services were restarted (server-changelog.md).
+
+**The archive:**
+- `ValeShared__Activity__` 1.1.0, on the server: the first line of each new day runs
+  `Na__Activity__Archive`. Each month whose days are all more than 365 days old is added to
+  `00__Archive/ServerLogs__<yyyy>__Archived__.zip` as a folder named for the month. The zip is
+  written as a copy (`.w.tmp`), read back byte for byte and put in place; only then are the month's
+  day files removed. One worker at a time (`.ValeActivity__Archive.lock`); a damaged zip is left
+  alone and nothing is archived; a clash keeps both copies (`__part2`).
+- Engine 0.11.0: agent mode `activity` also sends changed year zips and the server's whole listing;
+  `Na__Activity__Fetch` brings them, then `Na__Activity__Tidy` removes this PC's day files that the
+  server no longer has, only when the PC's zip holds the same bytes. `Na__Activity__Payload(month=)`
+  loads one month, an archived one unzipped first into `BackupRoot/ServerLogs__AuditCache/<yyyy-mm>/`
+  (`Na__Activity__Unzip`); every payload lists the months and zips. CLI `activity --month`.
+- Tab 05: the period list names every month ("Months", "Archived months (unzipped to audit)"); the
+  side panel says which zip a month came from and lists the archives and the audit cache. Links show
+  Theia's own all-time view counter beside the ledger's opens.
+
+**ValeVision 3D and ValeVision Gallery:**
+- ValeVision 3D: `03__AppUtils/Na__AppUtils__ActivityLog__.js` listens to the app's own events
+  (`na-app-scene-ready`, `na-layouteditor-mode-changed`, `na-drawing-view-changed`,
+  `na-pm-scene-activated`, `na-navigation-mode-changed`): model loaded with its load time, the Layout
+  Editor or the client drawings, floor plan and elevations, scenes viewed, walk / orbit / fly.
+  Start-up choices are left out until the person has touched or pressed a key. One-line hooks: a
+  drawing or the specification opened in the web viewer, sheet PDFs (jsPDF), the specification
+  printed, a cross section placed, the measure tool, a Video Studio preview, the project link email.
+- ValeVision Gallery: one effect on the app's view (the Project Editor, the 3D Production KPI report),
+  the KPI report email, a project opened in the editor, the images ZIP, Open in ValeVision 3D,
+  searches (1.5 s after typing stops), the gallery mode.
+- The server allows the new actions; the shared script 1.1.0 lets an app's own report replace the
+  automatic download report (within 3 s either side). Tab 05's action filter has *Tools, reports,
+  prints*.
+
+**Tested in sandboxes:** archive on the server 12 checks (due months, one zip per year, a folder per
+month, byte for byte, the rest kept, the next month into the same zip, a clash, a damaged zip, run by
+the first line of a day); end to end 15 (fetch the zips, tidy, months, audit an archived month from
+the cache, a live month, compare in sync); the earlier suites again (APIs 32, engine 13); tab 05 41
+(with the months); the browser script 16; ValeVision 3D's listener and the download hand-over 7; the
+11 new actions accepted by the server.
+
+## Version 0.10.0, 08-Oct-2026: Tab 05, User Activity (Who Did What, and Who Opened Our Links)
+
+**Asked by Adam:** "a user logging tab that shows a ledger of interactions users of the app are making
+and also tracks links that are generated and who might be viewing and logging their IP", with
+External for people outside the business opening generated links, filters and search like the other
+tabs, and the other tabs' design borrowed rather than new styles.
+
+**The ledger (on the server, written by the apps):**
+- `Server__Api/Api__Shared/ValeShared__Activity__.py` 1.0.0: `Na__Activity__Record(app, action, text,
+  project, target, link, detail, ok)` appends one JSON line to
+  `$VALE_ROOT/Server__UserAccountData/UserData__ActivityLedger/ValeActivity__Ledger__<UTC day>__.jsonl`
+  (0660, one `os.write` under `fcntl.flock`: two workers in each of three services). Never fails the
+  request. Who comes from the session cookie (a snapshot: code, name, level, role, department);
+  where from `CF-Connecting-IP`, `CF-IPCountry`, the User-Agent and the `vale_device` cookie.
+  `VALE_DEV=1` writes to a temp folder, never the mirror, so local tests never look like newer user
+  data to Collect.
+- `POST /api/activity` (`Na__Activity__Blueprint`, mounted by all three APIs) takes what only the
+  browser sees, from a fixed list of apps and actions, trimmed, 120 per address per 10 minutes.
+- Shared sign-in (`ValeShared__Accounts__` 1.2.0): sign-in, refused sign-in, sign-out, password.
+- ValeVision Gallery API 1.2.0: saves (which fields), show / hide.
+- ValeVision 3D API 1.1.0: `ValeVision3D__Api__Activity__.py`, one before / after-request hook (no
+  route edited). Record saves are read before and after, and each changed key is named, items with
+  an `__Id` compared by id: "Saved video paths (created Garden walk)". Unchanged saves are skipped;
+  asset uploads, the published prune and the sheet-picture reconcile are quiet on purpose.
+- ValeVision Theia API 1.1.0: client links made, opened (`view=1`: one per browser session), dead
+  links tried, switched off; publish, edit, order, sync (real changes only), remove, poster.
+- `AppAssets__CommonApplicationAssets/Shared__ActivityLog/ValeShared__ActivityLog__.js` 1.0.0, in the
+  `<head>` of ValeVision Gallery, ValeVision 3D, ValeVision Theia and both ValeVision Help pages (Help
+  reports through the Gallery API). It sets the device id cookie at once, then reports the app opened
+  (installed or tab), back after 30 minutes, project changes (pushState / replaceState / back), links
+  to the site copied (`navigator.clipboard.writeText` and copy events), videos played with sound
+  (once per video per page) and download clicks, with no change to the apps' own code.
+
+**The manager:**
+- Engine 0.10.0: agent mode `activity` (read-only, sudo like collect) streams the ledger files whose
+  size or time differ from the PC's; `Na__Activity__Fetch` puts them in the mirror with the server's
+  size and time (so Compare shows them in sync) and records them in the sync ledger;
+  `Na__Activity__Payload` reads the PC's copy for the last N days (20,000 events at most), the users
+  (never a hash), the permission levels and Theia's client links from the PC's copies. CLI `activity
+  [--fetch] [--days] [--find] [--limit]`.
+- Local server 0.10.0: `GET /api/activity?days=` (no connection) and job `activity`.
+- Tab 05 (`Ui__Activity__.js`): three views (ledger, generated links, people and devices), period,
+  search, app, account type, action, group repeats, the shared column sort, a side panel with the
+  period's summary or the selected event / link. Styles: the users table, explorer bar, pills,
+  selects, legend and detail panel as they are; the new CSS is only a selected row, a refused mark and
+  a "Refused" badge colour.
+- `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker cache are 0.10.0.
+
+**Tested in sandboxes (the VPS never contacted):**
+- APIs, Flask test clients with synthetic users and projects: 32 checks (every sign-in case, the
+  client route's allow-list, throttle, foreign paths and bad project ids dropped, Gallery save text,
+  ValeVision 3D new video path named and the no-change save skipped, Theia guest open, dead link,
+  view counter unchanged, one file per UTC day, nothing written into the mirror).
+- Engine with the fake ssh running the real agent: 13 checks (first fetch, identical bytes and times,
+  nothing on a second fetch, only today's file after a new line, the period filter, a cut-short line
+  skipped, no hashes, the links, Compare in sync, the sync ledger).
+- Tab 05's own page code in Node against the sandbox manager on port 8029: 36 checks (the real Fetch
+  job, columns, grouping, External and Guest, filters, sort, row details, links opens and visitors,
+  people, period). The browser script in a fake browser: 16 checks.
+- Not yet seen in a real browser window (the browser pane was not available to the session).
+
+**Not live yet:** nothing was pushed. To go live: push `server-api` and restart
+`vale@ValeVisionGallery`, `vale@ValeVision3D` and `vale@ValeVision__TheiaVideoPlayer`; push
+`commonassets`, `valevisiongallery`, `valevision3d`, `theia` and `help`; restart this app.
+
 ## Version 0.9.0, 07-Oct-2026: Every Source Push Purges the Changed Files in Every Browser
 
 **Asked by Adam** ("update all apps to have an auto cache purge pushed after the server logs a source

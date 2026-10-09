@@ -1,0 +1,346 @@
+{
+    "projectName": "Harris",
+    "projectCode": "64435",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Anna",
+        "designer": "Dan",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "08-Oct-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__08-Oct-2026.png",
+        "IMG02__3dView__NoBoundary____WhitecardImage__08-Oct-2026.png",
+        "IMG03__CloserView__WhitecardImage__08-Oct-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "valeVision_ModelUrls": [
+        "Harris__01__OrbitHelperCube__MeshModel__.glb",
+        "Harris__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Harris__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Harris__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Harris__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Harris__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Harris__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "Harris__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "Harris__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__08-Oct-2026.png",
+        "IMG02__3dView__NoBoundary____WhitecardImage__08-Oct-2026.png",
+        "IMG03__CloserView__WhitecardImage__08-Oct-2026.png"
+    ],
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__08-Oct-2026.png",
+        "IMG02__3dView__NoBoundary____WhitecardImage__08-Oct-2026.png",
+        "IMG03__CloserView__WhitecardImage__08-Oct-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__08-Oct-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "08-Oct-2026 at 16:26",
+        "model_name": "Harris__WhiteCardModel__0.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Full Context",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -1889.9624,
+                        "y": -17199.7845,
+                        "z": 4018.8804
+                    },
+                    "target": {
+                        "x": 14427.5845,
+                        "y": 19493.2642,
+                        "z": 3944.2797
+                    },
+                    "up": {
+                        "x": 0.000755,
+                        "y": 0.001697,
+                        "z": 0.999998
+                    },
+                    "direction": {
+                        "x": 0.406336,
+                        "y": 0.913722,
+                        "z": -0.001858
+                    },
+                    "fov_degrees": 24.616,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": false
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG02__3dView__NoBoundary__",
+                "scene_description": "Boundary Visible",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 7934.8929,
+                        "y": -10709.2667,
+                        "z": 3000
+                    },
+                    "target": {
+                        "x": 9461.2581,
+                        "y": 9945.3139,
+                        "z": 3000
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.073699,
+                        "y": 0.997281,
+                        "z": 0
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG03__CloserView",
+                "scene_description": "Closer View",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 6895.985,
+                        "y": 2388.8103,
+                        "z": 1796.8239
+                    },
+                    "target": {
+                        "x": 9870.8084,
+                        "y": 10267.1144,
+                        "z": 1401.7958
+                    },
+                    "up": {
+                        "x": 0.016552,
+                        "y": 0.043836,
+                        "z": 0.998902
+                    },
+                    "direction": {
+                        "x": 0.352864,
+                        "y": 0.9345,
+                        "z": -0.046857
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            }
+        ]
+    },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Source": "SketchUpCameraData",
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__Id": "su_scene_1",
+                "PresentationMode__Scene__Name": "Full Context",
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainShot____WhitecardImage__08-Oct-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": -1890,
+                        "Camera__DefaultPos__PosY": 4019,
+                        "Camera__DefaultPos__PosZ": 17200
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0019,
+                        "Camera__DefaultRotation__RotY": -0.4184,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 24.616
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 14428,
+                    "OrbitHelperCube__Position__PosY": 3944,
+                    "OrbitHelperCube__Position__PosZ": -19493
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": false
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_3",
+                "PresentationMode__Scene__Name": "Closer View",
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG03__CloserView__WhitecardImage__08-Oct-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 6896,
+                        "Camera__DefaultPos__PosY": 1797,
+                        "Camera__DefaultPos__PosZ": -2389
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0469,
+                        "Camera__DefaultRotation__RotY": -0.361,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 36.2437
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 9871,
+                    "OrbitHelperCube__Position__PosY": 1402,
+                    "OrbitHelperCube__Position__PosZ": -10267
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_2",
+                "PresentationMode__Scene__Name": "Boundary Visible",
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__NoBoundary____WhitecardImage__08-Oct-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 7935,
+                        "Camera__DefaultPos__PosY": 3000,
+                        "Camera__DefaultPos__PosZ": 10709
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": -0.0738,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 36.2437
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 9461,
+                    "OrbitHelperCube__Position__PosY": 3000,
+                    "OrbitHelperCube__Position__PosZ": -9945
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__Groups": [
+            {
+                "PresentationMode__Group__Id": "Group_001",
+                "PresentationMode__Group__Name": "Exterior 3D Views",
+                "PresentationMode__Group__Order": 1,
+                "PresentationMode__Group__Enabled": true
+            },
+            {
+                "PresentationMode__Group__Id": "Group_002",
+                "PresentationMode__Group__Name": "Interior 3D Views",
+                "PresentationMode__Group__Order": 2,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_003",
+                "PresentationMode__Group__Name": "Dollhouse View",
+                "PresentationMode__Group__Order": 3,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_004",
+                "PresentationMode__Group__Name": "Floor Plans",
+                "PresentationMode__Group__Order": 4,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_005",
+                "PresentationMode__Group__Name": "Elevations",
+                "PresentationMode__Group__Order": 5,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_006",
+                "PresentationMode__Group__Name": "Cross Sections",
+                "PresentationMode__Group__Order": 6,
+                "PresentationMode__Group__Enabled": false
+            }
+        ]
+    },
+    "_rev": 1
+}

@@ -126,6 +126,8 @@
                 const stamp = new Date().toISOString().slice(0, 10);
                 const safeId = Na__Feature__ShareProjectLink__SanitizeFilenamePart(share.displayProjectId);
                 const filename = `ValeVision3D_Share_${safeId}_${stamp}.html`;
+                window.ValeActivity && window.ValeActivity.Log('link.email', { project: share.rawProjectCode || undefined, target: filename,
+                                                                   detail: { Link: share.projectUrl } });   // <-- Activity ledger
                 Na__Feature__ShareProjectLink__DownloadHtmlFile(filename, html);
                 showToast('Email HTML downloaded.');
                 form.hide();

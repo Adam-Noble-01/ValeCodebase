@@ -1,0 +1,280 @@
+{
+    "PageLayouts__Library__Description": "LayoutVision 2D page layouts made with Create Drawing in ValeVision 3D: one record per layout, the picture and a thumbnail of the sheet in PageLayouts/<layout id>/. Written by the ValeVision 3D API only (ValeVision3D__Api__PageLayouts__.py), which stamps who made each layout and who changed it last.",
+    "PageLayouts__Library__SchemaVersion": 1,
+    "PageLayouts__Library__ProjectId": "64435__Harris",
+    "PageLayouts__Library__UpdatedIso": "2026-10-09T09:30:06.614Z",
+    "PageLayouts__Library__UpdatedBy": "USR00000001",
+    "PageLayouts__Library__Layouts": [
+        {
+            "PageLayouts__Layout__Id": "PL-20261009-091319-445t",
+            "PageLayouts__Layout__Name": "Drawing Layout",
+            "PageLayouts__Layout__Rev": 1,
+            "PageLayouts__Layout__CreatedBy": "USR00000017",
+            "PageLayouts__Layout__CreatedByName": "Anna Lacey",
+            "PageLayouts__Layout__CreatedIso": "2026-10-09T09:13:19.200Z",
+            "PageLayouts__Layout__UpdatedBy": "USR00000017",
+            "PageLayouts__Layout__UpdatedByName": "Anna Lacey",
+            "PageLayouts__Layout__UpdatedIso": "2026-10-09T09:13:19.200Z",
+            "PageLayouts__Layout__ImageFile": "PageLayouts/PL-20261009-091319-445t/PL-20261009-091319-445t__Image__20261009-091319-194.png",
+            "PageLayouts__Layout__ImageWidthPx": 6144,
+            "PageLayouts__Layout__ImageHeightPx": 4096,
+            "PageLayouts__Layout__ThumbnailFile": "PageLayouts/PL-20261009-091319-445t/PL-20261009-091319-445t__Thumbnail__20261009-091319-194.webp",
+            "PageLayouts__Layout__Sheet": {
+                "Sheet__Format": "A3",
+                "Sheet__WidthMm": 420,
+                "Sheet__HeightMm": 297,
+                "Sheet__TitleBlock": "PageLayoutSystem__TitleBlock__A3__.png",
+                "Sheet__DrawingAreaXMm": 10.7,
+                "Sheet__DrawingAreaYMm": 8.3,
+                "Sheet__DrawingAreaWidthMm": 338.7,
+                "Sheet__DrawingAreaHeightMm": 280.4
+            },
+            "PageLayouts__Layout__ImagePlacement": {
+                "Placement__XMm": 24.248,
+                "Placement__YMm": 44.632,
+                "Placement__WidthMm": 311.604,
+                "Placement__HeightMm": 207.736,
+                "Placement__ClipTopMm": 0,
+                "Placement__ClipRightMm": 0,
+                "Placement__ClipBottomMm": 0,
+                "Placement__ClipLeftMm": 0
+            },
+            "PageLayouts__Layout__Guide": {
+                "Guide__Visible": false,
+                "Guide__Locked": false,
+                "Guide__PairEdges": false,
+                "Guide__MarginTopMm": 0,
+                "Guide__MarginRightMm": 0,
+                "Guide__MarginBottomMm": 0,
+                "Guide__MarginLeftMm": 0
+            },
+            "PageLayouts__Layout__RenderSettings": {
+                "Render__WidthPx": 6144,
+                "Render__HeightPx": 4096,
+                "Render__AspectRatio": "3:2",
+                "Render__AntiAliasSamples": 16,
+                "Render__EnhanceWhitecard": true,
+                "Render__LineworkFactor": 1,
+                "Render__ProfileLineFactor": 1,
+                "Render__SillyLinesPx": 0,
+                "Render__Route": "custom"
+            },
+            "PageLayouts__Layout__SourceView": {
+                "View__Kind": "3d",
+                "View__CapturedIso": "2026-10-09T09:10:21.295Z",
+                "View__Camera": {
+                    "Camera__PosXMm": -1890,
+                    "Camera__PosYMm": 4019,
+                    "Camera__PosZMm": 17200,
+                    "Camera__QuatX": -0.00091345,
+                    "Camera__QuatY": -0.20770269,
+                    "Camera__QuatZ": -0.00019396,
+                    "Camera__QuatW": 0.97819156,
+                    "Camera__UpX": 0,
+                    "Camera__UpY": 1,
+                    "Camera__UpZ": 0,
+                    "Camera__Fov": 24.616,
+                    "Camera__Zoom": 1,
+                    "Camera__TargetXMm": 14428,
+                    "Camera__TargetYMm": 3944,
+                    "Camera__TargetZMm": -19493
+                },
+                "View__ModelLayers": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": false,
+                    "ValeVision__LandscapeEnvironment": true
+                },
+                "View__Lighting": {
+                    "rotationDeg": 0,
+                    "heightDeg": 57.368059693570586,
+                    "directionalIntensity": 0.5,
+                    "ambientIntensity": 2.8,
+                    "shadowIntensity": 1
+                },
+                "View__VerticalCorrection": false
+            }
+        },
+        {
+            "PageLayouts__Layout__Id": "PL-20261009-092605-8x3e",
+            "PageLayouts__Layout__Name": "Drawing Layout",
+            "PageLayouts__Layout__Rev": 1,
+            "PageLayouts__Layout__CreatedBy": "USR00000017",
+            "PageLayouts__Layout__CreatedByName": "Anna Lacey",
+            "PageLayouts__Layout__CreatedIso": "2026-10-09T09:26:05.846Z",
+            "PageLayouts__Layout__UpdatedBy": "USR00000017",
+            "PageLayouts__Layout__UpdatedByName": "Anna Lacey",
+            "PageLayouts__Layout__UpdatedIso": "2026-10-09T09:26:05.846Z",
+            "PageLayouts__Layout__ImageFile": "PageLayouts/PL-20261009-092605-8x3e/PL-20261009-092605-8x3e__Image__20261009-092605-839.png",
+            "PageLayouts__Layout__ImageWidthPx": 6144,
+            "PageLayouts__Layout__ImageHeightPx": 4096,
+            "PageLayouts__Layout__ThumbnailFile": "PageLayouts/PL-20261009-092605-8x3e/PL-20261009-092605-8x3e__Thumbnail__20261009-092605-839.webp",
+            "PageLayouts__Layout__Sheet": {
+                "Sheet__Format": "A3",
+                "Sheet__WidthMm": 420,
+                "Sheet__HeightMm": 297,
+                "Sheet__TitleBlock": "PageLayoutSystem__TitleBlock__A3__.png",
+                "Sheet__DrawingAreaXMm": 10.7,
+                "Sheet__DrawingAreaYMm": 8.3,
+                "Sheet__DrawingAreaWidthMm": 338.7,
+                "Sheet__DrawingAreaHeightMm": 280.4
+            },
+            "PageLayouts__Layout__ImagePlacement": {
+                "Placement__XMm": 36.378,
+                "Placement__YMm": 64.481,
+                "Placement__WidthMm": 273.009,
+                "Placement__HeightMm": 182.006,
+                "Placement__ClipTopMm": 0,
+                "Placement__ClipRightMm": 15.071,
+                "Placement__ClipBottomMm": 0,
+                "Placement__ClipLeftMm": 25.73
+            },
+            "PageLayouts__Layout__Guide": {
+                "Guide__Visible": false,
+                "Guide__Locked": false,
+                "Guide__PairEdges": false,
+                "Guide__MarginTopMm": 0,
+                "Guide__MarginRightMm": 0,
+                "Guide__MarginBottomMm": 0,
+                "Guide__MarginLeftMm": 0
+            },
+            "PageLayouts__Layout__RenderSettings": {
+                "Render__WidthPx": 6144,
+                "Render__HeightPx": 4096,
+                "Render__AspectRatio": "3:2",
+                "Render__AntiAliasSamples": 16,
+                "Render__EnhanceWhitecard": true,
+                "Render__LineworkFactor": 1,
+                "Render__ProfileLineFactor": 1,
+                "Render__SillyLinesPx": 0,
+                "Render__Route": "custom"
+            },
+            "PageLayouts__Layout__SourceView": {
+                "View__Kind": "3d",
+                "View__CapturedIso": "2026-10-09T09:24:27.565Z",
+                "View__Camera": {
+                    "Camera__PosXMm": -2407.7,
+                    "Camera__PosYMm": 3115.32,
+                    "Camera__PosZMm": 14574.97,
+                    "Camera__QuatX": 0.0252353,
+                    "Camera__QuatY": -0.22107612,
+                    "Camera__QuatZ": 0.00572248,
+                    "Camera__QuatW": 0.97491322,
+                    "Camera__UpX": 0,
+                    "Camera__UpY": 1,
+                    "Camera__UpZ": 0,
+                    "Camera__Fov": 24.616,
+                    "Camera__Zoom": 1,
+                    "Camera__TargetXMm": 8243.55,
+                    "Camera__TargetYMm": 4394.51,
+                    "Camera__TargetZMm": -7702.6
+                },
+                "View__ModelLayers": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": false,
+                    "ValeVision__LandscapeEnvironment": true
+                },
+                "View__Lighting": {
+                    "rotationDeg": 0,
+                    "heightDeg": 57.368059693570586,
+                    "directionalIntensity": 0.5,
+                    "ambientIntensity": 2.8,
+                    "shadowIntensity": 1
+                },
+                "View__VerticalCorrection": false
+            }
+        },
+        {
+            "PageLayouts__Layout__Id": "PL-20261009-093003-kbby",
+            "PageLayouts__Layout__Name": "Drawing Layout",
+            "PageLayouts__Layout__Rev": 1,
+            "PageLayouts__Layout__CreatedBy": "USR00000001",
+            "PageLayouts__Layout__CreatedByName": "Adam Widdowson",
+            "PageLayouts__Layout__CreatedIso": "2026-10-09T09:30:03.014Z",
+            "PageLayouts__Layout__UpdatedBy": "USR00000001",
+            "PageLayouts__Layout__UpdatedByName": "Adam Widdowson",
+            "PageLayouts__Layout__UpdatedIso": "2026-10-09T09:30:03.014Z",
+            "PageLayouts__Layout__ImageFile": "PageLayouts/PL-20261009-093003-kbby/PL-20261009-093003-kbby__Image__20261009-093003-007.png",
+            "PageLayouts__Layout__ImageWidthPx": 6144,
+            "PageLayouts__Layout__ImageHeightPx": 4096,
+            "PageLayouts__Layout__ThumbnailFile": "PageLayouts/PL-20261009-093003-kbby/PL-20261009-093003-kbby__Thumbnail__20261009-093003-007.webp",
+            "PageLayouts__Layout__Sheet": {
+                "Sheet__Format": "A3",
+                "Sheet__WidthMm": 420,
+                "Sheet__HeightMm": 297,
+                "Sheet__TitleBlock": "PageLayoutSystem__TitleBlock__A3__.png",
+                "Sheet__DrawingAreaXMm": 10.7,
+                "Sheet__DrawingAreaYMm": 8.3,
+                "Sheet__DrawingAreaWidthMm": 338.7,
+                "Sheet__DrawingAreaHeightMm": 280.4
+            },
+            "PageLayouts__Layout__ImagePlacement": {
+                "Placement__XMm": 26.343,
+                "Placement__YMm": 57.727,
+                "Placement__WidthMm": 311.604,
+                "Placement__HeightMm": 207.736,
+                "Placement__ClipTopMm": 0,
+                "Placement__ClipRightMm": 0,
+                "Placement__ClipBottomMm": 0,
+                "Placement__ClipLeftMm": 0
+            },
+            "PageLayouts__Layout__Guide": {
+                "Guide__Visible": false,
+                "Guide__Locked": false,
+                "Guide__PairEdges": false,
+                "Guide__MarginTopMm": 0,
+                "Guide__MarginRightMm": 0,
+                "Guide__MarginBottomMm": 0,
+                "Guide__MarginLeftMm": 0
+            },
+            "PageLayouts__Layout__RenderSettings": {
+                "Render__WidthPx": 6144,
+                "Render__HeightPx": 4096,
+                "Render__AspectRatio": "3:2",
+                "Render__AntiAliasSamples": 16,
+                "Render__EnhanceWhitecard": true,
+                "Render__LineworkFactor": 1,
+                "Render__ProfileLineFactor": 1,
+                "Render__SillyLinesPx": 0,
+                "Render__Route": "custom"
+            },
+            "PageLayouts__Layout__SourceView": {
+                "View__Kind": "3d",
+                "View__CapturedIso": "2026-10-09T09:29:46.969Z",
+                "View__Camera": {
+                    "Camera__PosXMm": 6973.92,
+                    "Camera__PosYMm": 1301.79,
+                    "Camera__PosZMm": -5764.98,
+                    "Camera__QuatX": -0.02044906,
+                    "Camera__QuatY": -0.30491776,
+                    "Camera__QuatZ": -0.00654873,
+                    "Camera__QuatW": 0.9521366,
+                    "Camera__UpX": 0,
+                    "Camera__UpY": 1,
+                    "Camera__UpZ": 0,
+                    "Camera__Fov": 50,
+                    "Camera__Zoom": 1,
+                    "Camera__TargetXMm": 15017.81,
+                    "Camera__TargetYMm": 1447.84,
+                    "Camera__TargetZMm": -19225.6
+                },
+                "View__ModelLayers": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": false,
+                    "ValeVision__LandscapeEnvironment": true
+                },
+                "View__Lighting": {
+                    "rotationDeg": 0,
+                    "heightDeg": 57.368059693570586,
+                    "directionalIntensity": 0.5,
+                    "ambientIntensity": 2.8,
+                    "shadowIntensity": 1
+                },
+                "View__VerticalCorrection": false
+            }
+        }
+    ],
+    "_rev": 5
+}

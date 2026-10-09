@@ -139,6 +139,9 @@
     <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
     <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
             data-app-base="/help/" data-app-name="ValeVision Help"></script>
+    <!-- Activity: what happens here goes into the activity ledger (the Server Manager's tab 05, User activity) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__ActivityLog/ValeShared__ActivityLog__.js"
+            data-app="help" data-api-base="/project-gallery/api/"></script>
 </head>
 <body>
 
@@ -158,7 +161,7 @@
         <section class="Help__Card">
             <h2 data-app-text="Open {app}">Open ValeVision</h2>
             <p class="Help__Muted">The button opens the app in this browser. Then follow the steps below for your device.</p>
-            <a class="Help__Btn" data-app-href data-app-text="Open {app}" href="/project-gallery/">Open ValeVision</a>
+            <a class="Help__Btn" data-app-href data-app-text="Open {app}" href="https://app.valegardenhouses.com/project-gallery/">Open ValeVision</a>
         </section>
 
         <section class="Help__Card">
@@ -210,8 +213,9 @@
         // MODULE CONSTANTS | The Apps This Guide Covers
         // ------------------------------------------------------------
         var Na__Apps = {
-            valevision   : { name: 'ValeVision',    url: '/project-gallery/', icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
-            valevision3d : { name: 'ValeVision 3D', url: '/valevision/',      icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' }
+            //   Both open the gallery: /valevision/ on its own opens an empty project, so a project is chosen from the gallery
+            valevision   : { name: 'ValeVision',    url: 'https://app.valegardenhouses.com/project-gallery/', icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
+            valevision3d : { name: 'ValeVision 3D', url: 'https://app.valegardenhouses.com/project-gallery/', icon:'/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' }
         };
         var Na__Share = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="Share"><path d="M8 7l4-4 4 4M12 3v13"/><path d="M7 10H5v11h14V10h-2"/></svg>';
         var Na__Dots  = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="menu"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>';

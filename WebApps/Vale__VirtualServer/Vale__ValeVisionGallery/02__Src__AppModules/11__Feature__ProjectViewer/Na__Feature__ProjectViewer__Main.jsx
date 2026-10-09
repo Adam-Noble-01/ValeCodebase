@@ -101,6 +101,7 @@
             const link = document.createElement('a');                    // <-- Create download link
             link.href = URL.createObjectURL(blob);                       // <-- Create object URL
             link.download = filename;                                    // <-- Set download filename
+            window.ValeActivity && window.ValeActivity.Log('file.download', { project: project.folderId || '', target: filename, detail: { Images: allFiles.length } });   // <-- Activity ledger
             link.click();                                                // <-- Trigger download
             URL.revokeObjectURL(link.href);                              // <-- Clean up object URL
             

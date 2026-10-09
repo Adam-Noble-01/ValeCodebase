@@ -46,6 +46,7 @@ from pathlib import Path
 
 from flask import jsonify, request
 
+from ValeShared__Activity__ import Na__Activity__Record
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Ranks
 from ValeShared__Library__ import Na__Library__Find, Na__Library__Locked, Na__Library__ReadJson, Na__Library__WriteJson
 import ValeShared__TheiaVideo__ as theia
@@ -58,6 +59,7 @@ import ValeShared__TheiaVideo__ as theia
 # -----------------------------------------------------------------------------
 
 APP_NAME                 = 'ValeVision__TheiaVideoPlayer'
+ACTIVITY_APP             = 'ValeVision Theia'                                     # <-- Its name in the activity ledger (Server Manager tab 05)
 SERVICE_NAME             = 'theia-api'                                            # <-- What GET /api/health names
 SHARE_HEADER             = 'X-Theia-Share'                                        # <-- A share token may come as a header instead of ?share=
 EDIT_LEVEL               = 'Management'                                           # <-- Titles, descriptions, order, publishing
@@ -77,6 +79,11 @@ def log(message):
         print(message, flush=True)
     except Exception:
         pass
+
+
+def activity(action, text, folder=None, **extra):
+    """One line in the shared activity ledger (who did what, from where). Never fails the request."""
+    Na__Activity__Record(ACTIVITY_APP, action, text, project=folder.name if folder else '', **extra)
 
 
 def fail(message, status=400, **extra):

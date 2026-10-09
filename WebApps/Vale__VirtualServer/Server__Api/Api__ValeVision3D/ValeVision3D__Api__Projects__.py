@@ -42,6 +42,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 09-Oct-2026 - Version 1.2.0
+# - _send_private moved into the core library as vv_shared.send_private_file (unchanged), with its
+#   sandbox list, nginx prefix and content types, for the page layouts blueprint to share.
+#
 # 06-Oct-2026 - Version 1.1.0
 # - Saves, merges and notes writes hold Na__Library__Locked(path) across processes (two
 #   gunicorn workers, and the Gallery writing the same records); the drawings guard and the
@@ -57,11 +61,10 @@
 # REGION | Imports
 # -----------------------------------------------------------------------------
 
-import mimetypes
 import os
 import re
 
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request
 
 import ValeVision3D__Api__Core__ as vv_shared
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require
@@ -87,11 +90,7 @@ ASSET_THUMBS_PREFIX      = 'PresentationMode/Thumbnails/'                       
 
 # USER DATA | What a GET of userdata/<path> may send (the Layout Editor's own files)
 USERDATA_EXTENSIONS      = ('.webp', '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tif', '.tiff', '.json', '.pdf', '.svg',
-                            '.md', '.txt', '.html', '.zip')
-SANDBOXED_EXTENSIONS     = ('.html', '.svg')                                      # <-- Served with a sandbox CSP: they can never run script on this origin
-ACCEL_PREFIX             = '/_internal/'                                          # <-- nginx streams private files through its internal location
-for _ext, _type in (('.webp', 'image/webp'), ('.svg', 'image/svg+xml'), ('.md', 'text/markdown'), ('.json', 'application/json')):
-    mimetypes.add_type(_type, _ext)                                               # <-- Not every host's table knows them (Windows answers octet-stream for .webp)
+                            '.md', '.txt', '.html', '.zip')                       # <-- Sent by vv_shared.send_private_file (HTML and SVG sandboxed)
 
 # endregion -------------------------------------------------------------------
 
@@ -110,22 +109,6 @@ def _project_or_404(token):
 def _user_code():
     user = Na__Auth__CurrentUser()
     return (user or {}).get('code') or ''
-
-
-def _send_private(path):
-    """A file from a UserData folder: nginx streams it on the server (X-Accel-Redirect), Flask locally."""
-    if os.environ.get('VALE_ACCEL_REDIRECT') == '1':
-        rel = os.path.relpath(path, vv_shared.VALE_ROOT).replace(os.sep, '/')
-        response = jsonify({})
-        response.headers['X-Accel-Redirect'] = ACCEL_PREFIX + rel
-        response.headers['Content-Type'] = mimetypes.guess_type(path)[0] or 'application/octet-stream'
-        if path.lower().endswith(SANDBOXED_EXTENSIONS):
-            response.headers['Content-Security-Policy'] = 'sandbox'
-        return response
-    response = send_file(path, conditional=True, max_age=0)
-    if path.lower().endswith(SANDBOXED_EXTENSIONS):
-        response.headers['Content-Security-Policy'] = 'sandbox'
-    return response
 
 # endregion -------------------------------------------------------------------
 
@@ -396,6 +379,6 @@ def read_project_userdata(token, rel_path):
     path = os.path.join(drawings, *parts)
     if not vv_shared.is_inside(path, drawings) or not os.path.isfile(path):
         return jsonify({'error': f'Not on the server: {rel_path}', 'missing': True}), 404
-    return _send_private(path)
+    return vv_shared.send_private_file(path)
 
 # endregion -------------------------------------------------------------------

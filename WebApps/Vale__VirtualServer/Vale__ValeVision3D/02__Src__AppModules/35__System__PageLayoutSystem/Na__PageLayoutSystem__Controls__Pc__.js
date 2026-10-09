@@ -14,12 +14,50 @@
 // - Left-click drag on image body: move the image on the A3 document.
 // - Left-click drag on corner handle: proportional resize (maintain aspect).
 // - Left-click drag on edge handle: clip/trim the image in that axis.
+// - Left-click drag on the composition guide: move that margin in or out
+//   (Shift, or the menu's Move Opposite Edges Together, moves the opposite one too).
 // - Cursor feedback changes based on hover state.
 // - All coordinates transformed through canvasTransform for accurate interaction.
 // - Hit-test radius and minimum image dimensions read from state.config
 //   (PageLayout__Navigation__Config section) with hard-coded fallbacks.
+// - Every finished drag that changed something tells the page ('changed'), so
+//   the Drawing Layout section can show the layout has unsaved changes.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.75.0)
+// - The composition guide: its grips and edges drag (Na__PageLayoutSystem__CompositionGuide__).
+//   Order under the pointer: the picture's handles (while it is selected), the guide,
+//   the picture's body.
+// - The picture's eight handles answer only while the picture is selected (they
+//   are only drawn then), so an unselected picture never hides a guide grip.
+// - A sheet with no picture (opened on the saved list) takes only guide drags.
+// - Finished drags emit 'changed' (image or guide).
+//
+// 11-Feb-2026 - Version 1.0.0
+// - Initial implementation.
 //
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | The Composition Guide, Page Events
+    // ------------------------------------------------------------
+    import {
+        Na__PageLayout__Guide__ResolveConfig,
+        Na__PageLayout__Guide__HitTest,
+        Na__PageLayout__Guide__IsHandle,
+        Na__PageLayout__Guide__CursorFor,
+        Na__PageLayout__Guide__Drag
+    } from './Na__PageLayoutSystem__CompositionGuide__.js';
+    import { Na__PageLayout__Emit } from './Na__PageLayoutSystem__UiNotify__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -108,7 +146,15 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Hit-Test Handles and Image Body
+    // HELPER FUNCTION | Is There a Picture on the Sheet?
+    // ------------------------------------------------------------
+    function Na__PageLayout__HasImage(state) {
+        return !!state.viewportImage && state.imageTransform.width > 0 && state.imageTransform.height > 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Hit-Test the Picture's Handles and Body
     // ------------------------------------------------------------
     function Na__PageLayout__HitTest(screenX, screenY, state, hitRadiusPx) {
         const ct  = state.canvasTransform; // <-- Canvas transform shorthand
@@ -124,19 +170,23 @@
         const imgMidX   = (imgLeft + imgRight) / 2; // <-- Horizontal midpoint
         const imgMidY   = (imgTop + imgBottom) / 2; // <-- Vertical midpoint
 
-        // Check corner handles first (highest priority)
+        // Handles only while the picture is selected (they are only drawn then)
         // ------------------------------------------------------------
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgTop) < hit)       return HANDLE_TL;
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TR;
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BL;
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return HANDLE_BR;
+        if (state.isImageSelected) {
+            // Check corner handles first (highest priority)
+            // ------------------------------------------------------------
+            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgTop) < hit)       return HANDLE_TL;
+            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TR;
+            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BL;
+            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return HANDLE_BR;
 
-        // Check edge midpoint handles
-        // ------------------------------------------------------------
-        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TC;
-        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BC;
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return HANDLE_LC;
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return HANDLE_RC;
+            // Check edge midpoint handles
+            // ------------------------------------------------------------
+            if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TC;
+            if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BC;
+            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return HANDLE_LC;
+            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return HANDLE_RC;
+        }
 
         // Check image body (move region)
         // ------------------------------------------------------------
@@ -149,11 +199,37 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | What Is Under the Pointer: Picture Handle, Then Guide, Then Picture Body
+    // ------------------------------------------------------------
+    function Na__PageLayout__PointerTarget(screenX, screenY, state, pcConfig, guideRadiusPx) {
+        const imageHit = Na__PageLayout__HasImage(state)
+            ? Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx)
+            : HANDLE_NONE;
+        if (imageHit !== HANDLE_NONE && imageHit !== HANDLE_BODY) return imageHit; // <-- A picture handle wins
+
+        const guideHit = Na__PageLayout__Guide__HitTest(screenX, screenY, state, guideRadiusPx, imageHit === HANDLE_BODY);
+        if (guideHit) return guideHit;                                     // <-- Over the picture: grips only
+
+        return imageHit;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Cursor Class for Any Handle
+    // ------------------------------------------------------------
+    function Na__PageLayout__CursorClassFor(handle) {
+        return Na__PageLayout__Guide__IsHandle(handle)
+            ? Na__PageLayout__Guide__CursorFor(handle)
+            : (Na__PageLayout__HandleCursorMap[handle] || '');
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Clear All Cursor Classes from Canvas
     // ------------------------------------------------------------
     function Na__PageLayout__ClearCursorClasses(canvas) {
         Object.values(Na__PageLayout__HandleCursorMap).forEach((cls) => {
-            if (cls) canvas.classList.remove(cls); // <-- Remove each cursor class
+            if (cls) canvas.classList.remove(cls); // <-- Remove each cursor class (the guide uses the same classes)
         });
         canvas.classList.remove('na-layout-canvas--grabbing'); // <-- Also remove grabbing cursor
     }
@@ -171,12 +247,14 @@
     function Na__PageLayout__InitPcControls(canvas, state, requestRedraw) {
         if (!canvas || !state) return; // <-- Guard against missing canvas or state
 
-        const pcConfig   = Na__PageLayout__ResolvePcConfig(state); // <-- Resolve once at init
-        let activeHandle = HANDLE_NONE; // <-- Currently active drag handle
-        let isDragging   = false; // <-- Drag active flag
-        let dragStartMm  = { x: 0, y: 0 }; // <-- Mouse position at drag start (mm)
+        const pcConfig    = Na__PageLayout__ResolvePcConfig(state); // <-- Resolve once at init
+        const guideConfig = Na__PageLayout__Guide__ResolveConfig(state);
+        let activeHandle  = HANDLE_NONE; // <-- Currently active drag handle
+        let isDragging    = false; // <-- Drag active flag
+        let dragStartMm   = { x: 0, y: 0 }; // <-- Mouse position at drag start (mm)
         let dragStartTransform = { x: 0, y: 0, width: 0, height: 0 }; // <-- Image transform at drag start
-        let imageAspect  = 1; // <-- Image aspect ratio (width / height)
+        let dragStartMargins   = null; // <-- Guide margins at drag start
+        let imageAspect   = 1; // <-- Image aspect ratio (width / height)
 
 
         // SUB FUNCTION | Handle Mouse Down (Start Drag)
@@ -188,7 +266,7 @@
             const screenX = event.clientX - rect.left; // <-- Mouse X in CSS pixels
             const screenY = event.clientY - rect.top; // <-- Mouse Y in CSS pixels
 
-            const hitResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
+            const hitResult = Na__PageLayout__PointerTarget(screenX, screenY, state, pcConfig, guideConfig.gripHitRadiusPx);
 
             if (hitResult === HANDLE_NONE) {
                 state.isImageSelected = false; // <-- Deselect image
@@ -197,14 +275,28 @@
                 return;
             }
 
-            // Start drag operation
-            // ------------------------------------------------------------
-            state.isImageSelected = true; // <-- Ensure image is selected
+            const mmPos = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
+            dragStartMm = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
             isDragging   = true; // <-- Set drag active
             activeHandle = hitResult; // <-- Store active handle
 
-            const mmPos  = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
-            dragStartMm  = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
+            // Start a guide drag (the picture keeps its own selection)
+            // ------------------------------------------------------------
+            if (Na__PageLayout__Guide__IsHandle(hitResult)) {
+                dragStartMargins       = { ...state.guide.margins };
+                state.guide.dragHandle = hitResult;
+                state.guide.dragPaired = event.shiftKey === true || state.guide.pairEdges === true;
+                Na__PageLayout__ClearCursorClasses(canvas);
+                const cursorClass = Na__PageLayout__Guide__CursorFor(hitResult);
+                if (cursorClass) canvas.classList.add(cursorClass);
+                requestRedraw(); // <-- Show the margin labels
+                event.preventDefault();
+                return;
+            }
+
+            // Start a picture drag operation
+            // ------------------------------------------------------------
+            state.isImageSelected = true; // <-- Ensure image is selected
 
             dragStartTransform = {
                 x          : state.imageTransform.x,
@@ -229,6 +321,7 @@
                 if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply cursor
             }
 
+            requestRedraw(); // <-- Show the handles at once
             event.preventDefault(); // <-- Prevent text selection
         };
         // ------------------------------------------------------------
@@ -242,22 +335,34 @@
             const screenY = event.clientY - rect.top; // <-- Mouse Y in CSS pixels
 
             if (!isDragging) {
-                // Hover cursor feedback (no drag active)
+                // Hover cursor feedback (no drag active), only over the canvas itself
                 // ------------------------------------------------------------
-                if (!state.isImageSelected) return; // <-- No cursor feedback when deselected
-
-                const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
+                if (event.target !== canvas) return;
+                const hoverResult = Na__PageLayout__PointerTarget(screenX, screenY, state, pcConfig, guideConfig.gripHitRadiusPx);
                 Na__PageLayout__ClearCursorClasses(canvas); // <-- Clear previous cursor
-                const cursorClass = Na__PageLayout__HandleCursorMap[hoverResult]; // <-- Get cursor class
+                const showBody    = hoverResult !== HANDLE_BODY || state.isImageSelected; // <-- The grab hand only on a selected picture, as before
+                const cursorClass = showBody ? Na__PageLayout__CursorClassFor(hoverResult) : '';
                 if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply cursor
+                return;
+            }
+
+            const mmPos = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
+            const dx    = mmPos.x - dragStartMm.x; // <-- Delta X in mm
+            const dy    = mmPos.y - dragStartMm.y; // <-- Delta Y in mm
+
+            // Active guide drag - move its margins
+            // ------------------------------------------------------------
+            if (Na__PageLayout__Guide__IsHandle(activeHandle)) {
+                const paired = event.shiftKey === true || state.guide.pairEdges === true; // <-- Shift can be pressed mid-drag
+                state.guide.dragPaired = paired;
+                Na__PageLayout__Guide__Drag(state, activeHandle, dragStartMargins, dx, dy, paired);
+                Na__PageLayout__Emit('guide', { dragging : true });
+                requestRedraw();
                 return;
             }
 
             // Active drag - update image transform
             // ------------------------------------------------------------
-            const mmPos = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
-            const dx    = mmPos.x - dragStartMm.x; // <-- Delta X in mm
-            const dy    = mmPos.y - dragStartMm.y; // <-- Delta Y in mm
             const it    = state.imageTransform; // <-- Shorthand for image transform
 
             if (activeHandle === HANDLE_BODY) {
@@ -316,20 +421,36 @@
             if (event.button !== 0) return; // <-- Only left-click
 
             if (isDragging) {
+                const wasGuide = Na__PageLayout__Guide__IsHandle(activeHandle);
                 isDragging   = false; // <-- Clear drag flag
                 activeHandle = HANDLE_NONE; // <-- Clear active handle
+
+                // Tell the page what changed
+                // ------------------------------------------------------------
+                if (wasGuide) {
+                    const m     = state.guide.margins;
+                    const moved = !dragStartMargins || ['top', 'right', 'bottom', 'left'].some((side) => m[side] !== dragStartMargins[side]);
+                    state.guide.dragHandle = null;
+                    state.guide.dragPaired = false;
+                    Na__PageLayout__Emit('guide', { dragging : false });
+                    if (moved) Na__PageLayout__Emit('changed', { what : 'guide' });
+                    requestRedraw(); // <-- Hide the margin labels
+                } else {
+                    const it    = state.imageTransform;
+                    const keys  = ['x', 'y', 'width', 'height', 'clipTop', 'clipRight', 'clipBottom', 'clipLeft'];
+                    const moved = keys.some((key) => (it[key] || 0) !== (dragStartTransform[key] || 0));
+                    if (moved) Na__PageLayout__Emit('changed', { what : 'image' });
+                }
 
                 // Reset cursor to hover state
                 // ------------------------------------------------------------
                 Na__PageLayout__ClearCursorClasses(canvas); // <-- Clear drag cursor
-                if (state.isImageSelected) {
-                    const rect    = canvas.getBoundingClientRect(); // <-- Canvas bounding rect
-                    const screenX = event.clientX - rect.left; // <-- Mouse position
-                    const screenY = event.clientY - rect.top; // <-- Mouse position
-                    const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
-                    const cursorClass = Na__PageLayout__HandleCursorMap[hoverResult]; // <-- Get cursor
-                    if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply hover cursor
-                }
+                const rect    = canvas.getBoundingClientRect(); // <-- Canvas bounding rect
+                const screenX = event.clientX - rect.left; // <-- Mouse position
+                const screenY = event.clientY - rect.top; // <-- Mouse position
+                const hoverResult = Na__PageLayout__PointerTarget(screenX, screenY, state, pcConfig, guideConfig.gripHitRadiusPx);
+                const cursorClass = Na__PageLayout__CursorClassFor(hoverResult); // <-- Get cursor
+                if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply hover cursor
             }
         };
         // ------------------------------------------------------------

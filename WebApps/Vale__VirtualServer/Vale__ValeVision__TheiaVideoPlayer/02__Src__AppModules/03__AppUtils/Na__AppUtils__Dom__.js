@@ -56,7 +56,9 @@
         phone       : '<rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M10.5 18.5h3"/>',
         next        : '<path d="M6 5.5v13l9-6.5z" fill="currentColor" stroke="none"/><path d="M18 5.5v13"/>',
         replay      : '<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9"/><path d="M4.5 4.5V9H9"/>',
-        info        : '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/>'
+        info        : '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.1"/>',
+        client      : '<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20.5c0-4 3.2-6.8 7.2-6.8s7.2 2.8 7.2 6.8"/>',
+        staff       : '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/><path d="M12 14.5v2.5"/>'
     };
     // ------------------------------------------------------------
 

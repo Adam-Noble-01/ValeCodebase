@@ -25,6 +25,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.1.0 (v2.75.0)
+// - GetStops: the slider stops, for the Page Layout's render controls to
+//   offer exactly the same choices.
+//
 // 08-Jul-2026 - Version 1.0.0
 // - Initial release.
 //
@@ -167,6 +171,18 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | The Slider Stops (Copies), for Another Panel to Offer the Same Choices
+    // ------------------------------------------------------------
+    function Na__UiFeature__LineworkSettings__GetStops() {
+        return {
+            factorStops       : Na__LineworkSettings__FACTOR_STOPS.slice(),
+            factorDefaultIndex: Na__LineworkSettings__FACTOR_DEFAULT_INDEX,
+            sillyStops        : Na__LineworkSettings__SILLY_STOPS.map((stop) => ({ label: stop.label, amplitudePx: stop.amplitudePx }))
+        };
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -177,7 +193,8 @@
     // MODULE EXPORTS | Linework Settings Controls API
     // ------------------------------------------------------------
     export {
-        Na__UiFeature__InitializeLineworkSettingsControls
+        Na__UiFeature__InitializeLineworkSettingsControls,
+        Na__UiFeature__LineworkSettings__GetStops
     };
     // ------------------------------------------------------------
 

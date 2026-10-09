@@ -21,15 +21,26 @@
 // - Trail stays open until the chevron is clicked again (no click-away).
 // - Markup lives in index.html (#naBreadcrumbNav) following the established
 //   stable-element-ID pattern; this module owns behaviour and link targets.
+// - A PAGE OF THE APP (ValeVision3D v2.76.0): while a page is up over the 3D view
+//   the trail reads "Project Gallery / <Name> - <Code> / Model View / <Page>",
+//   with Model View a link back to the 3D model (SetPage). The app pages'
+//   navigation (Na__AppPages__Navigation__) says which page is up and what the
+//   link does; a Ctrl / Shift / middle click is still the browser's own.
 //
 // INTEGRATION:
 // - Call Na__Feature__BreadcrumbNav__Initialize() from index.html after the
 //   loading sequence has been started (fetch is memoised so this never adds
 //   a second network request for project.json).
+// - Na__Feature__BreadcrumbNav__SetPage(page | null) from the app pages'
+//   navigation on every change of page.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.76.0)
+// - SetPage: Model View becomes a link back from a page, and the page is named
+//   after it (the Drawing Editor).
+//
 // 28-Jul-2026 - Version 1.0.0
 // - Initial implementation: collapsed chevron menu, ValeVision Gallery links.
 //
@@ -58,17 +69,34 @@
 
     // MODULE CONSTANTS | DOM Element IDs
     // ------------------------------------------------------------
-    const Na__BreadcrumbNav__NavId         = 'naBreadcrumbNav';          // <-- Fixed top-left container
-    const Na__BreadcrumbNav__ToggleBtnId   = 'naBreadcrumbToggleBtn';    // <-- Chevron fold/unfold button
-    const Na__BreadcrumbNav__GalleryLinkId = 'naBreadcrumbGalleryLink';  // <-- ValeVision Gallery gallery anchor
-    const Na__BreadcrumbNav__ProjectLinkId = 'naBreadcrumbProjectLink';  // <-- ValeVision Gallery project page anchor
-    const Na__BreadcrumbNav__ProjectNameId = 'naBreadcrumbProjectName';  // <-- Project display name span
-    const Na__BreadcrumbNav__ProjectCodeId = 'naBreadcrumbProjectCode';  // <-- Project numeric code span
+    const Na__BreadcrumbNav__NavId           = 'naBreadcrumbNav';            // <-- Fixed top-left container
+    const Na__BreadcrumbNav__ToggleBtnId     = 'naBreadcrumbToggleBtn';      // <-- Chevron fold/unfold button
+    const Na__BreadcrumbNav__GalleryLinkId   = 'naBreadcrumbGalleryLink';    // <-- ValeVision Gallery gallery anchor
+    const Na__BreadcrumbNav__ProjectLinkId   = 'naBreadcrumbProjectLink';    // <-- ValeVision Gallery project page anchor
+    const Na__BreadcrumbNav__ProjectNameId   = 'naBreadcrumbProjectName';    // <-- Project display name span
+    const Na__BreadcrumbNav__ProjectCodeId   = 'naBreadcrumbProjectCode';    // <-- Project numeric code span
+    const Na__BreadcrumbNav__ModelCurrentId  = 'naBreadcrumbModelCurrent';   // <-- "Model View" as the page you are on
+    const Na__BreadcrumbNav__ModelLinkId     = 'naBreadcrumbModelLink';      // <-- "Model View" as the way back from a page
+    const Na__BreadcrumbNav__PageSeparatorId = 'naBreadcrumbPageSeparator';  // <-- The "/" before the page's name
+    const Na__BreadcrumbNav__PageCurrentId   = 'naBreadcrumbPageCurrent';    // <-- The page's own name (Drawing Editor)
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | CSS Classes
     // ------------------------------------------------------------
     const Na__BreadcrumbNav__OpenClass = 'na-breadcrumb--open';          // <-- Trail-visible state class
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module State
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | What the Model View Link Does on a Page
+    // ------------------------------------------------------------
+    let Na__BreadcrumbNav__OnModel   = null;                              // <-- The app pages' Back, while a page is up
+    let Na__BreadcrumbNav__LinkWired = false;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -169,13 +197,59 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | The Page Crumb
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Name the Page That Is Up (null: the 3D Model View)
+    // ------------------------------------------------------------
+    // page: { label, modelHref, onModel } - the page's name, the Model View's
+    // address (a real link, so it can still be opened deliberately elsewhere)
+    // and what a plain click on Model View does (the app pages' Back).
+    // ------------------------------------------------------------
+    function Na__Feature__BreadcrumbNav__SetPage(page) {
+        const onPage       = !!(page && page.label);
+        const modelCurrent = document.getElementById(Na__BreadcrumbNav__ModelCurrentId);
+        const modelLink    = document.getElementById(Na__BreadcrumbNav__ModelLinkId);
+        const separator    = document.getElementById(Na__BreadcrumbNav__PageSeparatorId);
+        const pageCurrent  = document.getElementById(Na__BreadcrumbNav__PageCurrentId);
+
+        if (modelCurrent) modelCurrent.hidden = onPage;
+        if (separator)    separator.hidden    = !onPage;
+        if (pageCurrent) {
+            pageCurrent.hidden      = !onPage;
+            pageCurrent.textContent = onPage ? String(page.label) : '';
+        }
+        if (modelLink) {
+            modelLink.hidden = !onPage;
+            if (onPage && page.modelHref) modelLink.href = page.modelHref;
+        }
+        Na__BreadcrumbNav__OnModel = (onPage && typeof page.onModel === 'function') ? page.onModel : null;
+
+        // WIRE ONCE | A plain click goes back in this window; a Ctrl, Shift or middle click stays the browser's
+        if (modelLink && !Na__BreadcrumbNav__LinkWired) {
+            Na__BreadcrumbNav__LinkWired = true;
+            modelLink.addEventListener('click', (event) => {
+                if (!Na__BreadcrumbNav__OnModel) return;
+                if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                Na__BreadcrumbNav__OnModel();
+            });
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
     // MODULE EXPORTS | Breadcrumb Navigation API
     // ------------------------------------------------------------
     export {
-        Na__Feature__BreadcrumbNav__Initialize
+        Na__Feature__BreadcrumbNav__Initialize,
+        Na__Feature__BreadcrumbNav__SetPage
     };
     // ------------------------------------------------------------
 

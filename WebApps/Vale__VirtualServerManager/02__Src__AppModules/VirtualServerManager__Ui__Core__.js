@@ -19,6 +19,9 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   08-Oct-2026 - Version 0.10.0
+   - Fifth tab: user activity (Vsm.Activity).
+
    06-Oct-2026 - Version 0.4.0
    - Fourth tab: user accounts.
    - Version banner says which side is old: reload the page, or --restart the server.
@@ -47,7 +50,7 @@
     // MODULE VARIABLES | Shared State
     // ------------------------------------------------------------
     var Vsm = window.Vsm = {
-        PageVersion: '0.9.0',                                                  // <-- Must match the local server's version
+        PageVersion: '0.11.0',                                                 // <-- Must match the local server's version
         State      : null,                                                     // <-- Last /api/state payload
         Running    : false,                                                    // <-- A job request is in flight
         Tab        : 'explorer',
@@ -464,8 +467,10 @@
         Vsm.El('Vsm__TabMatrix').hidden = name !== 'matrix';
         Vsm.El('Vsm__TabUrls').hidden = name !== 'urls';
         Vsm.El('Vsm__TabUsers').hidden = name !== 'users';
+        Vsm.El('Vsm__TabActivity').hidden = name !== 'activity';
         if (Vsm.Urls && name === 'urls') Vsm.Urls.Show();
         if (Vsm.Users && name === 'users') Vsm.Users.Show();
+        if (Vsm.Activity && name === 'activity') Vsm.Activity.Show();
         if (Vsm.Explorer) { if (name === 'explorer') Vsm.Explorer.Show(); else Vsm.Explorer.Hide(); }
     };
     // ------------------------------------------------------------
@@ -501,8 +506,9 @@
         if (Vsm.Explorer) Vsm.Explorer.Init();
         if (Vsm.Urls) Vsm.Urls.Init();
         if (Vsm.Users) Vsm.Users.Init();
+        if (Vsm.Activity) Vsm.Activity.Init();
         var wanted = new URLSearchParams(window.location.search).get('tab') || Vsm.Store('Tab');   // <-- Start-menu shortcuts pass ?tab=
-        Vsm.SetTab(['matrix', 'urls', 'users'].indexOf(wanted) >= 0 ? wanted : 'explorer');
+        Vsm.SetTab(['matrix', 'urls', 'users', 'activity'].indexOf(wanted) >= 0 ? wanted : 'explorer');
         Vsm.Refresh();
         Vsm.RegisterServiceWorker();
     };

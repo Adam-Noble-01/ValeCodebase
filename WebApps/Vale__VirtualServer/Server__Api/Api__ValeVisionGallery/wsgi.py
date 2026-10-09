@@ -27,6 +27,9 @@ DESCRIPTION:
 - ValeVision Theia videos: every record carries videoCount (the card's video
   icon), and a full record carries theiaVideos (the viewer's Videos panel):
   the videos staff can watch, in Theia's order (ValeShared__TheiaVideo__).
+- Saves and show / hide go into the activity ledger (ValeShared__Activity__),
+  and /api/activity takes what only the browser sees (the Gallery and ValeVision
+  Help open, projects opened, links copied).
 
 ROUTES:
   GET  /api/health
@@ -35,12 +38,17 @@ ROUTES:
   POST /api/projects/<id>             {project: {...}, _rev}        (Management)
   POST /api/projects/<id>/visibility  {enabled, _rev}               (Management)
   /api/accounts/...                   shared sign-in (ValeShared__Accounts__.py)
+  POST /api/activity                  what the browser saw (ValeShared__Activity__.py)
 
 RUN (server): gunicorn --bind 127.0.0.1:${VALE_PORT} wsgi:app   (systemd vale@ValeVisionGallery)
 
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+08-Oct-2026 - Version 1.2.0
+- Activity ledger: project saves (which fields) and show / hide are recorded;
+  /api/activity mounted (ValeShared__Activity__ 1.0.0).
+
 07-Oct-2026 - Version 1.1.0
 - videoCount on every record and theiaVideos on a full record, for the
   Gallery's ValeVision Theia icon and Videos panel.
@@ -63,6 +71,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "Api__Shared"))
 from ValeShared__Accounts__ import Na__Accounts__Blueprint                  # noqa: E402
+from ValeShared__Activity__ import Na__Activity__Blueprint, Na__Activity__Record  # noqa: E402
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require     # noqa: E402
 from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__Find, Na__Library__ListProjects,  # noqa: E402
                                    Na__Library__ProjectDataPath, Na__Library__ReadJson, Na__Library__Url,
@@ -77,7 +86,9 @@ from ValeShared__TheiaVideo__ import Na__Theia__HasVideos, Na__Theia__Summary   
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.json.sort_keys = False
+app.config["VALE_ACTIVITY_APP"] = "ValeVision Gallery"                     # <-- Its name in the activity ledger
 app.register_blueprint(Na__Accounts__Blueprint, url_prefix="/api/accounts")
+app.register_blueprint(Na__Activity__Blueprint, url_prefix="/api/activity")
 
 NA__GALLERY__APP                  = "ValeVisionGallery"
 NA__GALLERY__FULL                 = "ValeVisionGallery/Content__GalleryImages__FullQuality__VariantImages"
@@ -86,6 +97,9 @@ NA__GALLERY__JPG524               = "ValeVisionGallery/Content__GalleryImages__5
 NA__GALLERY__GLB                  = "ValeVision3D/Content__3dModel__GlbFiles"
 NA__GALLERY__EDITABLE             = ("projectName", "projectCode", "projectNameAlias", "productionData",
                                      "scheduleData", "description")
+NA__GALLERY__FIELD_WORDS          = {"projectName": "name", "projectCode": "code", "projectNameAlias": "display name",
+                                     "productionData": "production data", "scheduleData": "schedule",
+                                     "description": "description"}     # <-- How a save reads in the activity ledger
 NA__GALLERY__LIST_KEYS            = ("projectName", "projectCode", "projectNameAlias", "ProjectType", "description",
                                      "productionData", "scheduleData", "images", "thumbnailImage", "enabled",
                                      "valeVision_ModelUrls", "valeVision_ModelUrl", "projectDate", "_rev")
@@ -197,6 +211,7 @@ def Na__Gallery__Save(pid):
     posted = body.get("project") if isinstance(body.get("project"), dict) else {}
     if not str(posted.get("projectName", data.get("projectName", ""))).strip():
         return jsonify({"ok": False, "error": "Project name is required"}), 400
+    changed = [NA__GALLERY__FIELD_WORDS[k] for k in NA__GALLERY__EDITABLE if k in posted and posted[k] != data.get(k)]
     for k in NA__GALLERY__EDITABLE:
         if k in posted:
             data[k] = posted[k]
@@ -208,7 +223,10 @@ def Na__Gallery__Save(pid):
         return jsonify({"ok": False, "error": "Someone else saved this project since you opened it. Reload it and try again.",
                         "project": Na__Gallery__Record(folder.name, folder, c.current, light=False)}), 409
     data["_rev"] = res["rev"]
-    return jsonify({"ok": True, "project": Na__Gallery__Record(folder.name, folder, data, light=False)})
+    record = Na__Gallery__Record(folder.name, folder, data, light=False)
+    Na__Activity__Record("ValeVision Gallery", "project.save", "Saved the project: " + (", ".join(changed) or "no change"),
+                         project=folder.name, target=record["displayName"])
+    return jsonify({"ok": True, "project": record})
 # ---------------------------------------------------------------
 
 # FUNCTION | Show or Hide a Project in the Gallery
@@ -226,6 +244,9 @@ def Na__Gallery__Visibility(pid):
     except Na__Library__Conflict as c:
         return jsonify({"ok": False, "error": "Someone else saved this project since you opened it. Reload it and try again.",
                         "project": Na__Gallery__Record(folder.name, folder, c.current, light=False)}), 409
+    Na__Activity__Record("ValeVision Gallery", "project.visibility",
+                         "Showed the project in the Gallery" if data["enabled"] else "Hid the project from the Gallery",
+                         project=folder.name, target=(data.get("projectNameAlias") or "").strip() or data.get("projectName") or "")
     return jsonify({"ok": True, "enabled": data["enabled"], "_rev": res["rev"]})
 # ---------------------------------------------------------------
 

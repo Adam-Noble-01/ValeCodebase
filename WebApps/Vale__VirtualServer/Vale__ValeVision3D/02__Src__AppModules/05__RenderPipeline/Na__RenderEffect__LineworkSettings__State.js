@@ -65,6 +65,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Oct-2026 - Version 1.3.0 (v2.75.0)
+// - GetLineworkFactor and GetSillyAmplitude: the Page Layout re-render reads the
+//   user's three values before it sets a layout's own and puts them back after.
+//
 // 02-Oct-2026 - Version 1.2.0 (v2.71.4)
 // - SetLineworkBaseOverride(widthPx, modifiers): an optional list of nested
 //   LineworkModifier rules for the same render - per-tag width factor,
@@ -373,6 +377,14 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Get Linework Thickness Factor (Model Fat Lines)
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__GetLineworkFactor() {
+        return Na__LineworkSettings__LineworkFactor;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Set Export Line Scales (Called by the Static Export Renderer)
     // ------------------------------------------------------------
     // Set both compensation scales at export start; reset with (1, 1) in
@@ -451,6 +463,14 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Get Silly Lines Wave Amplitude in Pixels
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__GetSillyAmplitude() {
+        return Na__LineworkSettings__SillyAmplitudePx;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -463,9 +483,11 @@
     export {
         Na__LineworkSettings__Initialize,
         Na__LineworkSettings__SetLineworkFactor,
+        Na__LineworkSettings__GetLineworkFactor,
         Na__LineworkSettings__SetProfileLineFactor,
         Na__LineworkSettings__GetProfileLineFactor,
         Na__LineworkSettings__SetSillyAmplitude,
+        Na__LineworkSettings__GetSillyAmplitude,
         Na__LineworkSettings__SetExportScales,
         Na__LineworkSettings__SetLineworkBaseOverride,
         Na__LineworkSettings__GetProfileExportScale,

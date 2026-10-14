@@ -217,3 +217,15 @@ WebApps/Whitecardopedia/Projects/**/10__StatementDocs/00__Deleted__Quarantine/
 # repository is public, so the email stays on this PC. Its pictures ARE tracked: GitHub
 # Pages serves them to the email, with no sign-in.
 WebApps/Vale__Presentations/02__EmailToDirectors__14-Oct-2026/Email__Directors__*.html
+
+# VALEVISION THEIA CLIENT LINKS (14-Oct-2026). Each project's ValeVision__TheiaVideo/
+# UserData__ShareLinks/<id>__TheiaShareLinks__.json holds its client links, and every token
+# in it opens that project's videos with no sign-in. This repository is public and GitHub
+# Pages serves every tracked file, so the Holt register (committed 07-Oct-2026) was readable
+# there. Links are user data: the Theia API writes them on the server and the Vale Virtual
+# Server Manager collects them to this PC, reading and writing the files on disk, never
+# through git. Ignored at any depth, so the library's copies under ProjectData__Revisions/
+# and any later app's UserData__ShareLinks are covered too. UserData__UploadStaging/ holds
+# Theia uploads in progress.
+**/UserData__ShareLinks/
+**/UserData__UploadStaging/

@@ -218,6 +218,16 @@ WebApps/Whitecardopedia/Projects/**/10__StatementDocs/00__Deleted__Quarantine/
 # Pages serves them to the email, with no sign-in.
 WebApps/Vale__Presentations/02__EmailToDirectors__14-Oct-2026/Email__Directors__*.html
 
+# VALE PROJECTS LIBRARY USER DATA (14-Oct-2026). Every UserData__ folder in the library
+# (drawings, page layouts, snapshots, per-user configs, and their ProjectData__Revisions
+# copies) is user data: made in the apps on the server, collected to this PC by the Vale
+# Virtual Server Manager, never pushed, and never in git. Some of it names staff beside
+# their USR codes, and this repository is public. The schema project's .example files stay
+# tracked: they document the layout. This block sits above the Theia client links block, so
+# its re-include can never bring a share-links folder back.
+WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/**/UserData__*/
+!WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/ValeProjects__2026/12345__ExampleProject__Schema/**/UserData__*/
+
 # VALEVISION THEIA CLIENT LINKS (14-Oct-2026). Each project's ValeVision__TheiaVideo/
 # UserData__ShareLinks/<id>__TheiaShareLinks__.json holds its client links, and every token
 # in it opens that project's videos with no sign-in. This repository is public and GitHub

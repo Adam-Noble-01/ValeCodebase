@@ -211,3 +211,9 @@ WebApps/Whitecardopedia/Projects/**/10__StatementDocs/00__Deleted__Quarantine/
 # are hundreds of MB, and this repository is public. Never commit or upload them.
 **/Archived__*__PreMigration__*.zip
 **/Archived__*__PreMigration__*.zip.partial
+
+# DIRECTOR UPDATE EMAIL (14-Oct-2026). The email in WebApps/Vale__Presentations/
+# 02__EmailToDirectors__14-Oct-2026 carries a live ValeVision Theia client link, and this
+# repository is public, so the email stays on this PC. Its pictures ARE tracked: GitHub
+# Pages serves them to the email, with no sign-in.
+WebApps/Vale__Presentations/02__EmailToDirectors__14-Oct-2026/Email__Directors__*.html

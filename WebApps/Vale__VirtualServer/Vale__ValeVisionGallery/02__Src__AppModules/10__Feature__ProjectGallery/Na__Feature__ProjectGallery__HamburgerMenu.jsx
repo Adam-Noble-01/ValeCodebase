@@ -12,6 +12,9 @@
 // DESCRIPTION:
 // - Hamburger menu button with dropdown for tool navigation
 // - Provides access to Project Editor and future utility tools
+// - Blockout Models (everyone): the blockout list, moved here from its tab
+//   (13-Oct-2026); in that list the item reads Back to Whitecard Models.
+//   So the menu now shows for every signed-in user.
 // - Toggles visibility on button click
 // - Closes when clicking outside menu
 // - Styled with Vale Design Suite standards
@@ -24,7 +27,7 @@
 
     // COMPONENT | Hamburger Menu Navigation
     // ------------------------------------------------------------
-    function HamburgerMenu({ onProjectEditorClick, onTimeAnalysisClick, onPurgeCacheClick }) {
+    function HamburgerMenu({ onProjectEditorClick, onTimeAnalysisClick, onPurgeCacheClick, isBlockoutMode, onBlockoutModelsClick }) {
         const [isOpen, setIsOpen] = React.useState(false);                   // <-- Menu open state
         const menuRef = React.useRef(null);                                  // <-- Menu DOM reference
         
@@ -49,6 +52,14 @@
         const handleTimeAnalysisClick = () => {
             setIsOpen(false);                                                // <-- Close menu
             onTimeAnalysisClick();                                           // <-- Call parent handler
+        };
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Handle Blockout Models Click (in and out of the blockout list)
+        // ---------------------------------------------------------------
+        const handleBlockoutModelsClick = () => {
+            setIsOpen(false);                                                // <-- Close menu
+            onBlockoutModelsClick();                                         // <-- Call parent handler
         };
         // ---------------------------------------------------------------
 
@@ -83,7 +94,7 @@
         
         const canManage = !!(window.ValeUserLogin && window.ValeUserLogin.HasLevel('Management'));   // <-- Editor and KPI report
         const isAppAdmin = !!(window.ValeUserLogin && window.ValeUserLogin.IsAppAdmin());           // <-- Developer tools
-        if (!canManage && !isAppAdmin) return null;                                                  // <-- Nothing to offer: no menu
+        // Blockout Models is for everyone, so every signed-in user gets the menu
 
         return (
             <div className="hamburger-menu" ref={menuRef}>
@@ -109,6 +120,9 @@
                                 3D Production KPI Report
                             </button>
                         )}
+                        <button className="hamburger-menu__item" onClick={handleBlockoutModelsClick}>
+                            {isBlockoutMode ? 'Back to Whitecard Models' : 'Blockout Models'}
+                        </button>
                         {isAppAdmin && (
                             <button className="hamburger-menu__item hamburger-menu__item--danger" onClick={handlePurgeCacheClick}>
                                 Purge App Cache (developer)

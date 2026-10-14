@@ -17,10 +17,15 @@ Whitecard and blockout massing-model images for every Vale Garden Houses project
 - **A project's id is its library folder name.** Share links are `?id=64135__Washington`; old
   `?id=<project code>` links still open.
 - **Who can do what:**
-  - everyone signed in browses;
+  - everyone signed in browses, and finds Blockout Models in the hamburger menu;
+  - **Designers and Concept Artists** (the account's Role) open on **My Projects**, the projects
+    naming them as designer or concept artist. A My Projects / All Projects button flicks between the
+    two. Their name on the projects is their first name, unless the master config's
+    `vale__MyProjects__GalleryNameByUserCode` lists another (Edward is Ted);
   - **Management** and up get the Project Editor and the 3D Production KPI Report (hamburger menu
     and avatar menu);
-  - **App Admins** also get Developer tools (purge the app cache).
+  - **App Admins** also get Developer tools (purge the app cache), and can preview a designer's or
+    artist's gallery with `?viewAs=<name>` (`?viewAs=Dan`).
 - **The editor saves only the Gallery's fields:** name, code, display alias, production data,
   schedule data and gallery visibility. ValeVision 3D's data in the same record is never touched.
   A save made from an out-of-date copy is refused.

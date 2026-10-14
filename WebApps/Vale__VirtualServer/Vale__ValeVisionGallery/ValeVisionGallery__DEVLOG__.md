@@ -1,5 +1,72 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.5.0, 13-Oct-2026: My Projects for Designers and Concept Artists; Blockout Models Moves to the Menu
+
+**Asked by Adam.** Designers and Concept Artists should not be bombarded with every project: the
+gallery should open on their own jobs, with a toggle to see all of Vale's. Everyone else sees every
+project and gets no toggle. To make room for it on phones, the barely used Blockout Models tab (three
+blockouts ever) moves into the hamburger menu. Each state gets its own icon, so it is clear which
+view is showing.
+
+**Decisions (Adam):**
+- The button shows the current view, not the action.
+- The choice lasts until the app is closed.
+- A person's projects are the ones naming them as designer or concept artist. Dan also gets the 2
+  Martin jobs he drew the concept for, Jo the 1.
+- App Admins get a preview link.
+
+**Changes:**
+- **Who gets it:** the account's Role in the user register: Designer or Concept Artist. The
+  permission level does not count, so James (Designer, Management) gets it too. Everyone else is
+  unchanged.
+- **Their name on the projects:** the account's first name, matched against
+  `productionData.designer` and `productionData.conceptArtist` (any case). An account whose
+  projects carry another name is listed in the master config,
+  `vale__MyProjects__GalleryNameByUserCode`: USR00000015 Edward is "Ted".
+- **The button** (`Na__Feature__ProjectGallery__MyProjectsToggle.jsx`), between the search box and
+  Project Filters:
+  - **My Projects**: one-person icon, white on a dark Vale blue fill, so it is clear a filter is on;
+  - **All Projects**: two-person icon on white, like Project Filters;
+  - a click flicks between them. The tooltip names the view and what a click does.
+  - On phones it sits on the first row beside Whitecard Models and Max Models, in the old Blockout
+    tab's place, at the tabs' size.
+- **Opening:** the gallery opens on My Projects. It waits for the master config (a few ms), so all
+  projects never flash up first.
+- **The choice** is kept in sessionStorage per account. Opening a project and coming back keeps
+  All Projects; a fresh launch opens on My Projects again.
+- **Scope:** My Projects applies in every list (Whitecard, Max, Blockout). Search, the Artist and
+  Designer filters and the sort work inside it.
+- **Nothing to show:** when My Projects is empty, the grid says why ("None of your projects match
+  your search.", "None of your projects are Max Models." ...) and offers **View All Projects (n)**,
+  where n is what All Projects would show.
+- **Activity ledger:** the toggle logs `view.mode`, "Switched to my projects / all projects".
+- **Preview (App Admins):** `?viewAs=Dan` opens the gallery exactly as Dan gets it, button
+  included; the tooltip says it is a preview. It is read once at start-up, so it lasts until the
+  page is reloaded without it. Ignored for anyone who is not an App Admin.
+  - The parameter name works in any case. The first live try, `?ViewAs=Gary`, did nothing,
+    because URL parameter names are case-sensitive and the code only read `viewAs`.
+- **Blockout Models:**
+  - its tab is gone (`GalleryModeToggle` 1.2.0); it is a hamburger menu item, between the
+    3D Production KPI Report and Purge App Cache;
+  - in the blockout list the item reads **Back to Whitecard Models**, and clicking the Whitecard
+    Models tab also works;
+  - the hamburger menu now shows for every signed-in user, because Blockout Models is open to all.
+    Employees see just that one item.
+- **Icons:** `04__Assets__AppGraphics/Na__Icon__MyProjects__.svg` and `Na__Icon__AllProjects__.svg`.
+  - They are drawn at the funnel icon's weight (1.2 px at 14 px, 88 per 1024), not the 34 menu
+    weight.
+  - Round caps, #172b3a; the dark fill turns them white with a CSS filter.
+  - Their editable specs are in the vector skill's `01__ProductionFiles`.
+  - A three-person group was tried first. At 14 px the back heads read as brackets, "( O )", so
+    All Projects shows two people (one in front, one behind).
+- No service worker version change: app files are network first.
+
+**Checked:**
+- Every edited script parses.
+- The icons were rendered at 14, 28, 56 and 112 px beside the funnel, on white and on the blue
+  fill. They lint clean apart from the deliberate weight.
+- Not run in a browser: Adam tests.
+
 ## Version 1.4.0, 07-Oct-2026: Max Models in the Main List; Updates Reach Browsers After a Push
 
 **Asked by Adam.**

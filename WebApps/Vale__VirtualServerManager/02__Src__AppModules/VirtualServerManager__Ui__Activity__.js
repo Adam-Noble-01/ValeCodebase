@@ -31,6 +31,11 @@
      told apart by device id (a random id in the browser's cookie) and IP.
    - Filters (period, search, app, account type, action) and the shared column
      sort work as on the other tabs. Click a row for every detail.
+   - HIDE MY ACTIONS leaves out the person using this PC (USR00000001, or
+     localStorage Vsm__ActivityMe): their signed-in events, and external events
+     from any browser they have signed in on (their own client-link tests). The
+     devices are remembered on this PC (Vsm__ActivityMyDevices), so a test in a
+     short period is still known. Never by IP: the office address is shared.
    - A YEAR LIVE, THEN ARCHIVED: the server zips each month once all its days are
      a year old (00__Archive/ServerLogs__<yyyy>__Archived__.zip, a folder per month).
      The period list names every month: a live one loads from the day files, an
@@ -40,6 +45,10 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   13-Oct-2026 - Version 0.12.0
+   - Hide my actions (beside Group repeats): the ledger, people and the links'
+     opens and visitors leave out the PC's own person and their browsers.
+
    08-Oct-2026 - Version 0.11.0
    - Months in the period list: live months, and archived months unzipped into the
      audit cache to audit. Links show Theia's own view counter beside the ledger's.
@@ -67,6 +76,7 @@
     var Vsm__Rows      = [];                                                   // <-- Rows on screen (for clicks)
     var Vsm__Timer     = null;
     var Vsm__PeriodHtml = '';                                                  // <-- The fixed period options (the months follow)
+    var Vsm__MyDevices = {};                                                   // <-- Device ids the PC's own person signed in on
     var Vsm__Sorts     = {
         ledger : Vsm.SortState('Activity', { key: 'when', dir: -1 }),
         links  : Vsm.SortState('ActivityLinks', { key: 'created', dir: -1 }),
@@ -80,6 +90,8 @@
     var Vsm__RowLimit   = 1500;                                                // <-- Rows drawn at most (the filters narrow)
     var Vsm__StaleMs    = 5 * 60e3;                                            // <-- Fetch by itself when older than this
     var Vsm__GroupGapS  = 600;                                                 // <-- The same thing again within 10 min: one row
+    var Vsm__MeDefault  = 'USR00000001';                                       // <-- Adam: the person using this PC unless Vsm__ActivityMe says otherwise
+    var Vsm__MyDevicesMax = 200;                                               // <-- Remembered device ids at most (newest kept)
     var Vsm__Months     = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     var Vsm__Kinds      = {                                                    // <-- Badge colours borrowed from the lane badges
         account  : { label: 'Account',  cls: 'kind-web' },
@@ -160,6 +172,37 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Me: the Person Using This PC, and the Browsers They Signed In On
+    // ------------------------------------------------------------
+    function Vsm__MeCode() { return Vsm.Store('ActivityMe') || Vsm__MeDefault; }
+
+    function Vsm__IsMine(e) {
+        if (e.User) return e.User.Code === Vsm__MeCode();
+        return !!(e.DeviceId && Vsm__MyDevices[e.DeviceId]);                   // <-- External, but one of my browsers: my own link test
+    }
+
+    function Vsm__LearnMyDevices(events) {                                     // <-- Remembered, so a short period still knows them
+        var me = Vsm__MeCode(), list = [];
+        try { list = JSON.parse(Vsm.Store('ActivityMyDevices') || '[]'); } catch (err) { list = []; }
+        if (!Array.isArray(list)) list = [];
+        var before = list.length;
+        events.forEach(function(e) {
+            if (e.User && e.User.Code === me && e.DeviceId && list.indexOf(e.DeviceId) < 0) list.push(e.DeviceId);
+        });
+        list = list.slice(-Vsm__MyDevicesMax);
+        if (list.length !== before) Vsm.Store('ActivityMyDevices', JSON.stringify(list));
+        Vsm__MyDevices = {};
+        list.forEach(function(id) { Vsm__MyDevices[id] = true; });
+    }
+
+    function Vsm__NameMe() {                                                   // <-- The toggle says who "me" is
+        var code = Vsm__MeCode(), n = Object.keys(Vsm__MyDevices).length;
+        Vsm.El('Vsm__ActHideMeLabel').title = 'Leave out everything you (' + Vsm__UserName(code) + ', ' + code + ') did: signed in, and external visits from the ' +
+            n + ' browser' + (n === 1 ? '' : 's') + ' you have signed in on (your own client-link tests). Never by IP: the office address is shared.';
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Prepare Events Once Per Load (date, search text)
     // ------------------------------------------------------------
     function Vsm__Prepare(events) {
@@ -191,7 +234,8 @@
             app   : Vsm.El('Vsm__ActApp').value,
             who   : Vsm.El('Vsm__ActWho').value,
             kind  : Vsm.El('Vsm__ActKind').value,
-            group : Vsm.El('Vsm__ActGroup').checked
+            group : Vsm.El('Vsm__ActGroup').checked,
+            hideMe: Vsm.El('Vsm__ActHideMe').checked
         };
     }
 
@@ -201,6 +245,7 @@
     }
 
     function Vsm__Matches(e, f) {
+        if (f.hideMe && Vsm__IsMine(e)) return false;
         if (f.app && e.App !== f.app) return false;
         if (f.who === 'staff' && !e.User) return false;
         if (f.who === 'external' && e.User) return false;
@@ -295,8 +340,11 @@
 
     // FUNCTION | Links: Theia Client Links (records + ledger) and Links Staff Copied
     // ------------------------------------------------------------
-    function Vsm__Links() {
-        var map = {}, order = [];
+    // Hide my actions keeps the links I made but leaves my own opens out of
+    // the opens, visitors and last open.
+    // ------------------------------------------------------------
+    function Vsm__Links(f) {
+        var map = {}, order = [], hide = !!(f && f.hideMe);
         function link(key, base) {
             if (!map[key]) { map[key] = Object.assign({ key: key, opens: [], refused: [], seen: [], plays: 0, copies: 0 }, base); order.push(key); }
             return map[key];
@@ -316,6 +364,8 @@
                     if (e.Detail && e.Detail.Expires && !l.expires) l.expires = e.Detail.Expires === 'never' ? null : e.Detail.Expires;
                 } else if (e.Action === 'link.revoke') {
                     l.revoked = l.revoked || e.Utc;
+                } else if (hide && e.Action !== 'link.copy' && Vsm__IsMine(e)) {
+                    return;                                                    // <-- My own open or play of the link
                 } else if (e.Action === 'link.open') {
                     l.opens.push(e); l.label = l.label || e.Target || '';
                 } else if (e.Action === 'link.open-refused') {
@@ -342,7 +392,7 @@
             var since = Vsm__Parse(l.created);
             events.forEach(function(e) {
                 if (!e.User && !e.Link && e.App === l.app && e.Project && e.Project === l.project && /^(app|project)\.open$/.test(e.Action) &&
-                    (!since || e._d >= since)) l.opens.push(e);
+                    (!since || e._d >= since) && !(hide && Vsm__IsMine(e))) l.opens.push(e);
             });
         });
         var now = new Date().toISOString();
@@ -380,6 +430,7 @@
     function Vsm__People(f) {
         var map = {}, order = [];
         Vsm__Data.events.forEach(function(e) {
+            if (f.hideMe && Vsm__IsMine(e)) return;
             if (f.app && e.App !== f.app) return;
             if (f.who === 'staff' && !e.User) return;
             if (f.who === 'external' && e.User) return;
@@ -497,8 +548,11 @@
             (rows.length ? '' : '<tr><td colspan="' + Vsm__LedgerCols.length + '" class="Vsm__TreeEmpty">' + Vsm__EmptyText() + '</td></tr>') + '</tbody>';
         var events = rows.reduce(function(n, r) { return n + r.n; }, 0), people = {}, ext = {};
         rows.forEach(function(r) { (r.e.User ? people : ext)[Vsm__WhoKey(r.e)] = true; });
+        var all = Object.assign({}, f, { hideMe: false });
+        var mine = f.hideMe ? Vsm__Data.events.filter(function(e) { return Vsm__IsMine(e) && Vsm__Matches(e, all); }).length : 0;
         return events.toLocaleString() + ' event' + (events === 1 ? '' : 's') + ' · ' + Object.keys(people).length + ' signed-in ' +
-               (Object.keys(people).length === 1 ? 'person' : 'people') + ' · ' + Object.keys(ext).length + ' external device' + (Object.keys(ext).length === 1 ? '' : 's');
+               (Object.keys(people).length === 1 ? 'person' : 'people') + ' · ' + Object.keys(ext).length + ' external device' + (Object.keys(ext).length === 1 ? '' : 's') +
+               (mine ? ' · ' + mine.toLocaleString() + ' of yours hidden' : '');
     }
     // ------------------------------------------------------------
 
@@ -508,7 +562,7 @@
     function Vsm__RenderLinks(f) {
         var sort = Vsm__Sorts.links;
         var col = Vsm__LinkCols.find(function(c) { return c.key === sort.key; }) || Vsm__LinkCols[0];
-        var list = Vsm__Links().filter(function(l) { return (!f.app || l.app === f.app) && Vsm__TextMatch(l._s, f.terms); });
+        var list = Vsm__Links(f).filter(function(l) { return (!f.app || l.app === f.app) && Vsm__TextMatch(l._s, f.terms); });
         list.sort(function(a, b) { return Vsm.SortCompare(col.val(a), col.val(b), sort.dir); });
         Vsm__Rows = list.slice(0, Vsm__RowLimit);
         var sel = Vsm__Selected && Vsm__Selected.view === 'links' ? Vsm__Selected.key : null;
@@ -794,7 +848,9 @@
         }).then(function(d) {
             if (!d.ok) throw new Error(d.error || 'no data');
             Vsm__Prepare(d.events || []);
+            Vsm__LearnMyDevices(d.events || []);
             Vsm__Data = d;
+            Vsm__NameMe();
             Vsm__FillSelects();
             Activity.Render();
             return d;
@@ -898,6 +954,11 @@
         });
         ['Vsm__ActApp', 'Vsm__ActWho', 'Vsm__ActKind', 'Vsm__ActGroup'].forEach(function(id) {
             Vsm.El(id).addEventListener('change', Activity.Render);
+        });
+        Vsm.El('Vsm__ActHideMe').checked = Vsm.Store('ActivityHideMe') === '1';
+        Vsm.El('Vsm__ActHideMe').addEventListener('change', function() {
+            Vsm.Store('ActivityHideMe', this.checked ? '1' : '0');
+            Activity.Render();
         });
         var typing = null;
         Vsm.El('Vsm__ActSearch').addEventListener('input', function() {

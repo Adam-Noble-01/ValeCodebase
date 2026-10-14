@@ -1,0 +1,51 @@
+{
+    "TheiaVideo__Library__Description": "ValeVision Theia: the videos published for this project, in playing order. Written by the Theia API (and by ValeVision 3D's Publish to Theia, through it). One file per video, in Content__VideoFiles/Videos__<Scheme>/; posters in Content__VideoThumbnails/. Titles and descriptions of ValeVision 3D paths are kept in step with the project record by MetaUpdatedIso: the newer side wins.",
+    "TheiaVideo__Library__SchemaVersion": 1,
+    "TheiaVideo__Library__ProjectId": "57079__Mordaunt",
+    "TheiaVideo__Library__ProjectCode": "57079",
+    "TheiaVideo__Library__ProjectName": "Mordaunt",
+    "TheiaVideo__Library__ProjectTitle": "",
+    "TheiaVideo__Library__UpdatedIso": "2026-10-09T15:13:15.291Z",
+    "TheiaVideo__Library__UpdatedBy": "USR00000001",
+    "TheiaVideo__Library__Videos": [
+        {
+            "TheiaVideo__Video__Id": "Video_001",
+            "TheiaVideo__Video__Order": 1,
+            "TheiaVideo__Video__Visible": true,
+            "TheiaVideo__Video__Title": "Full Tour",
+            "TheiaVideo__Video__Description": "A full walk-through video showing the orangery exterior, interior and the basement wine cellar space.",
+            "TheiaVideo__Video__MetaUpdatedIso": "2026-10-09T15:08:04.982Z",
+            "TheiaVideo__Video__MetaUpdatedBy": "USR00000001",
+            "TheiaVideo__Video__Scheme": "Scheme-01",
+            "TheiaVideo__Video__DurationMs": 111183,
+            "TheiaVideo__Video__Source": "ValeVision3D",
+            "TheiaVideo__Video__SourceVideoId": "Video_001",
+            "TheiaVideo__Video__SourceFingerprint": "sha256:7a882333b7faebb44476cd570e98b0dc4b2d9693732bab60f2bd53b6c9b5b869",
+            "TheiaVideo__Video__File": {
+                "TheiaVideo__File__Path": "Videos__Scheme-01/57079__Mordaunt__TheiaVideo__Video_001__2160p__.mp4",
+                "TheiaVideo__File__Quality": "4K",
+                "TheiaVideo__File__Width": 3240,
+                "TheiaVideo__File__Height": 2160,
+                "TheiaVideo__File__Fps": 60.0,
+                "TheiaVideo__File__Codec": "avc1.640C34",
+                "TheiaVideo__File__Bytes": 794729012,
+                "TheiaVideo__File__BitrateKbps": 57183,
+                "TheiaVideo__File__DurationMs": 111183,
+                "TheiaVideo__File__FastStart": true,
+                "TheiaVideo__File__HasAudio": false,
+                "TheiaVideo__File__UploadedIso": "2026-10-09T15:13:15.104Z"
+            },
+            "TheiaVideo__Video__PublishedIso": "2026-10-09T15:13:15.284Z",
+            "TheiaVideo__Video__PublishedBy": "USR00000001",
+            "TheiaVideo__Video__Poster": "57079__Mordaunt__TheiaVideo__Video_001__Poster__.webp",
+            "TheiaVideo__Video__Thumbnail": "57079__Mordaunt__TheiaVideo__Video_001__Thumbnail__524p__.webp",
+            "TheiaVideo__Video__Export": {
+                "TheiaVideo__Export__Aspect": "3:2",
+                "TheiaVideo__Export__Fps": 60,
+                "TheiaVideo__Export__QualityStop": 3,
+                "TheiaVideo__Export__AntiAliasSamples": 16
+            }
+        }
+    ],
+    "_rev": 1
+}

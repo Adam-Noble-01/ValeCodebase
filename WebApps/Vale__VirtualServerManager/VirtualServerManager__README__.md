@@ -224,6 +224,14 @@ So:
   name, code, IP, device id, project, action, link token), app, account type (staff, external, a
   permission level) and action. Click a row for every detail and *This person / device / IP / link
   / project* filters.
+- **Hide my actions** (beside *Group repeats*, remembered on this PC) leaves out the person using
+  this PC, `USR00000001` unless localStorage `Vsm__ActivityMe` names someone else: everything
+  they did signed in, and external visits from any browser they have signed in on (their own
+  client-link tests). In *Generated links* it keeps the links they made but leaves their own opens
+  out of the opens, visitors and last open. The browsers are remembered on this PC
+  (`Vsm__ActivityMyDevices`), so a short period still knows them. Never by IP: the office address
+  is shared (Anna Lacey signs in from it too). A test in a private window gets a new device id,
+  so it still shows as External.
 - **External** visitors are told apart by the device id: a random id the apps keep in the browser's
   `vale_device` cookie (400 days, this site only), plus the IP. It holds nothing about the person.
 - **A year live, then archived** (0.11.0). The server keeps each day's file for a year. Once every

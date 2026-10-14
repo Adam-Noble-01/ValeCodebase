@@ -514,6 +514,96 @@
     }
     /* ------------------------------------------------------------ */
 
+    /* MY PROJECTS TOGGLE | My Projects / All Projects (Designers and Concept Artists) */
+    /* ------------------------------------------------------------ */
+    .my-projects-toggle {
+        display                            : flex;                         /* <-- Icon and text side by side */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : 6px;                          /* <-- Same gap as Project Filters */
+        flex                               : 0 0 auto;                     /* <-- Fixed size; the search box takes the slack */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium); /* <-- Match Project Filters */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard interface text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        font-weight                        : var(--Vale_FontWeight_Regular); /* <-- Regular weight */
+        color                              : var(--Vale_TextPrimary);      /* <-- All Projects: dark text */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- All Projects: white, like Project Filters */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium); /* <-- Match dropdown border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast); /* <-- Fast hover transition */
+        white-space                        : nowrap;                       /* <-- Prevent text wrap */
+        line-height                        : 1;                            /* <-- Tight line height for icon alignment */
+    }
+
+    .my-projects-toggle:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on hover */
+    }
+
+    .my-projects-toggle:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1); /* <-- Subtle focus ring */
+    }
+
+    .my-projects-toggle--mine {
+        color                              : var(--Vale_TextLight);        /* <-- My Projects: white text */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- My Projects: Vale blue fill, a filter is on */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Matching border */
+    }
+
+    .my-projects-toggle--mine:hover {
+        background                         : #0f1e28;                      /* <-- Darker blue on hover */
+        border-color                       : #0f1e28;                      /* <-- Matching border */
+    }
+
+    .my-projects-toggle__icon {
+        display                            : block;                        /* <-- Remove inline baseline gap */
+        flex-shrink                        : 0;                            /* <-- Prevent icon squishing */
+    }
+
+    .my-projects-toggle--mine .my-projects-toggle__icon {
+        filter                             : brightness(0) invert(1);      /* <-- Navy ink to white on the blue fill */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* MY PROJECTS | Nothing to Show (offers View All Projects) */
+    /* ------------------------------------------------------------ */
+    .my-projects-empty {
+        grid-column                        : 1 / -1;                       /* <-- Span the whole grid row */
+        display                            : flex;                         /* <-- Message above the button */
+        flex-direction                     : column;                       /* <-- Stacked */
+        align-items                        : center;                       /* <-- Centred */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Space between message and button */
+    }
+
+    .my-projects-empty__text {
+        margin                             : 0;                            /* <-- Remove default margin */
+        font-size                          : 18px;                         /* <-- As the gallery's other empty messages */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        text-align                         : center;                       /* <-- Centred */
+    }
+
+    .my-projects-empty__button {
+        display                            : inline-flex;                  /* <-- Icon and text side by side */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : 6px;                          /* <-- Same gap as the toggle */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium); /* <-- Match the toggle */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard interface text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White, like All Projects */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium); /* <-- Match dropdown border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast); /* <-- Fast hover transition */
+        line-height                        : 1;                            /* <-- Tight line height for icon alignment */
+    }
+
+    .my-projects-empty__button:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on hover */
+    }
+    /* ------------------------------------------------------------ */
+
     .project-gallery__grid {
         display                            : grid;                         /* <-- CSS Grid layout */
         grid-template-columns              : repeat(auto-fill, minmax(350px, 1fr));  /* <-- Responsive columns */
@@ -1990,6 +2080,18 @@
             font-size                      : calc(var(--Vale_FontSize_Standard) * 0.85);  /* <-- 15% smaller than desktop/tablet */
             padding                        : calc(var(--Vale_Spacing_Small) * 0.85) calc(var(--Vale_Spacing_Medium) * 0.85);
             padding-right                  : 34px;                         /* <-- Clear button space at reduced scale */
+        }
+
+        .my-projects-toggle {
+            order                          : 2;                            /* <-- Row 1 beside the tabs, in the old Blockout tab's place */
+            gap                            : 4px;                          /* <-- Tighter icon gap */
+            font-size                      : clamp(9px, 2.6vw, 11px);      /* <-- Same scale as the mode tabs */
+            padding                        : clamp(5px, 1.1vw, 6px) clamp(5px, 2vw, 10px); /* <-- Same padding as the mode tabs */
+        }
+
+        .my-projects-toggle__icon {
+            width                          : 12px;                         /* <-- Smaller icon to suit the tab-sized text */
+            height                         : 12px;
         }
 
         .project-gallery__sort-control {

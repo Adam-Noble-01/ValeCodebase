@@ -6,7 +6,7 @@
 // NAMESPACE  : ValeVision Gallery
 // MODULE     : ProjectGallery Component
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Grid view of all available projects with Whitecard/Blockout mode toggle
+// PURPOSE    : Grid view of all available projects with Whitecard/Max mode tabs
 // CREATED    : 2025
 //
 // DESCRIPTION:
@@ -14,12 +14,15 @@
 // - Shows project name, code, and star ratings
 // - Handles project selection and navigation to project viewer
 // - Loads all projects dynamically from configuration
-// - Supports gallery mode toggle between Whitecard and Blockout views
+// - Supports gallery mode tabs (Whitecard Models, Max Models); Blockout Models
+//   is in the hamburger menu (barely used, so it gave up its tab, 13-Oct-2026)
 // - Filters projects by ProjectType field in project.json:
 //     Whitecard Models (the main list): Whitecard, MaxModel and untagged projects
 //     Blockout Models: Blockout only (behind its warning banner)
 //     Max Models: MaxModel only
 // - Shows warning banner when in Blockout mode
+// - Designers and Concept Artists open on My Projects, with a My Projects /
+//   All Projects button (Na__Feature__ProjectGallery__MyProjects.js)
 // - Supports filtering by concept artist and designer via productionData fields
 //
 // =============================================================================
@@ -68,12 +71,15 @@
         const [loadProgress, setLoadProgress] = React.useState({ loaded: 0, total: 0 });  // <-- Progressive load progress
         const [sortBy, setSortBy] = React.useState('date-newest');       // <-- Sort option state
         const [searchTerm, setSearchTerm] = React.useState('');          // <-- Search term state
-        const [galleryMode, setGalleryMode] = React.useState('whitecard');  // <-- Gallery mode state (whitecard or blockout)
+        const [galleryMode, setGalleryMode] = React.useState('whitecard');  // <-- Gallery mode state (whitecard, maxmodel or blockout)
         const [filterArtist, setFilterArtist] = React.useState('all');   // <-- Active concept artist filter ('all' = unfiltered)
         const [filterDesigner, setFilterDesigner] = React.useState('all');  // <-- Active designer filter ('all' = unfiltered)
         const [artistOptions, setArtistOptions] = React.useState([]);    // <-- Artist names from master config
         const [designerOptions, setDesignerOptions] = React.useState([]); // <-- Designer names from master config
-        
+        const [nameByUserCode, setNameByUserCode] = React.useState(null);  // <-- My Projects names by USR code (master config); null until it answers
+        const [projectScope, setProjectScope] = React.useState(() => loadProjectScope(getMyProjectsViewer(null)));  // <-- 'mine' or 'all', kept until the app is closed
+        const myProjectsViewer = React.useMemo(() => getMyProjectsViewer(nameByUserCode), [nameByUserCode]);   // <-- Designers and Concept Artists; null for everyone else
+
         // EFFECT | Load Projects Progressively in Batches
         // ---------------------------------------------------------------
         React.useEffect(() => {
@@ -99,6 +105,7 @@
         // ---------------------------------------------------------------
         React.useEffect(() => {
             loadMasterConfig().then(config => {
+                setNameByUserCode((config && config.vale__MyProjects__GalleryNameByUserCode) || {});   // <-- My Projects names; {} lets first names stand
                 if (!config) return;                                     // <-- Bail if config unavailable
                 setArtistOptions(config.vale__ConceptArtist__OptionsList || []);   // <-- Populate artist dropdown
                 setDesignerOptions(config.vale__Designer__OptionsList   || []);    // <-- Populate designer dropdown
@@ -153,8 +160,26 @@
             setFilterDesigner('all');                                    // <-- Reset designer filter when switching modes
         };
         // ---------------------------------------------------------------
-        
-        if (loading) {
+
+
+        // SUB FUNCTION | Handle Blockout Models (hamburger menu): in and out of the blockout list
+        // ---------------------------------------------------------------
+        const handleBlockoutModelsClick = () => {
+            handleModeChange(galleryMode === 'blockout' ? 'whitecard' : 'blockout');
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Handle My Projects / All Projects Change
+        // ---------------------------------------------------------------
+        const handleScopeChange = (newScope) => {
+            setProjectScope(newScope);                                   // <-- Flick between My Projects and All Projects
+            saveProjectScope(myProjectsViewer, newScope);                // <-- Kept until the app is closed
+            window.ValeActivity && window.ValeActivity.Log('view.mode', { project: '', target: newScope === 'mine' ? 'my projects' : 'all projects' });   // <-- Activity ledger
+        };
+        // ---------------------------------------------------------------
+
+        if (loading || (myProjectsViewer && nameByUserCode === null)) {  // <-- Designers and artists also wait for their name, so all projects never flash up
             return (
                 <div className="project-gallery">
                     <p style={{ textAlign: 'center', fontSize: '18px' }}>Loading projects...</p>
@@ -171,11 +196,16 @@
         }
         
         const modeFilteredProjects     = filterProjectsByGalleryMode(projects, galleryMode);          // <-- Filter by gallery mode
-        const artistFilteredProjects   = filterByArtist(modeFilteredProjects, filterArtist);          // <-- Filter by concept artist
+        const scopeFilteredProjects    = filterProjectsByScope(modeFilteredProjects, myProjectsViewer, projectScope);   // <-- My Projects (Designers and Concept Artists)
+        const artistFilteredProjects   = filterByArtist(scopeFilteredProjects, filterArtist);         // <-- Filter by concept artist
         const designerFilteredProjects = filterByDesigner(artistFilteredProjects, filterDesigner);    // <-- Filter by designer
         const sortedProjects           = sortProjects(designerFilteredProjects, sortBy);              // <-- Apply sorting
         const filteredProjects         = filterProjects(sortedProjects, searchTerm);                  // <-- Apply search filtering
-        
+        const showMyProjectsEmpty      = filteredProjects.length === 0 && !!myProjectsViewer && projectScope === 'mine';   // <-- Nothing of theirs: offer All Projects
+        const allProjectsMatchCount    = showMyProjectsEmpty                                          // <-- What All Projects would show
+            ? filterProjects(filterByDesigner(filterByArtist(modeFilteredProjects, filterArtist), filterDesigner), searchTerm).length
+            : 0;
+
         return (
             <>
                 <Header galleryMode={galleryMode} />
@@ -183,18 +213,25 @@
                 <div className="project-gallery">
                     <div className="project-gallery__controls">
                         <div className="project-gallery__controls-left">
-                            <HamburgerMenu 
+                            <HamburgerMenu
                                 onProjectEditorClick={onOpenProjectEditor}
                                 onTimeAnalysisClick={onOpenTimeAnalysis}
                                 onPurgeCacheClick={onPurgeCacheClick}
+                                isBlockoutMode={galleryMode === 'blockout'}
+                                onBlockoutModelsClick={handleBlockoutModelsClick}
                             />
                             <GalleryModeToggle
                                 galleryMode={galleryMode}
                                 onModeChange={handleModeChange}
                             />
-                            <SearchBox 
+                            <SearchBox
                                 searchTerm={searchTerm}
                                 onSearchChange={handleSearchChange}
+                            />
+                            <MyProjectsToggle
+                                viewer={myProjectsViewer}
+                                projectScope={projectScope}
+                                onScopeChange={handleScopeChange}
                             />
                             <FilterPanel
                                 filterArtist={filterArtist}
@@ -219,13 +256,24 @@
                     
                     <div className="project-gallery__grid">
                         {filteredProjects.length === 0 ? (
-                            <p style={{ gridColumn: '1 / -1', textAlign: 'center', fontSize: '18px', color: 'var(--Vale_TextSecondary)' }}>
-                                {galleryMode === 'maxmodel'
-                                    ? 'No Max Models available — tag a project with __MaxModel suffix in the WCP builder'
-                                    : galleryMode === 'blockout'
-                                    ? 'No blockout models available'
-                                    : 'No projects match your search'}
-                            </p>
+                            showMyProjectsEmpty ? (
+                                <MyProjectsEmptyState
+                                    viewer={myProjectsViewer}
+                                    galleryMode={galleryMode}
+                                    isSearching={searchTerm.trim() !== ''}
+                                    isFiltering={filterArtist !== 'all' || filterDesigner !== 'all'}
+                                    allMatchCount={allProjectsMatchCount}
+                                    onViewAll={() => handleScopeChange('all')}
+                                />
+                            ) : (
+                                <p style={{ gridColumn: '1 / -1', textAlign: 'center', fontSize: '18px', color: 'var(--Vale_TextSecondary)' }}>
+                                    {galleryMode === 'maxmodel'
+                                        ? 'No Max Models available — tag a project with __MaxModel suffix in the WCP builder'
+                                        : galleryMode === 'blockout'
+                                        ? 'No blockout models available'
+                                        : 'No projects match your search'}
+                                </p>
+                            )
                         ) : (
                             filteredProjects.map((project) => (
                             <div 

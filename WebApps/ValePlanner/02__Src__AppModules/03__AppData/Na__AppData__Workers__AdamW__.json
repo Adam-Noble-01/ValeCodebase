@@ -3518,6 +3518,22 @@
           "endTime": "13:00",
           "title": "Whitecard |  Harris",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1791875647473",
+          "date": "2026-10-13",
+          "startTime": "11:00",
+          "endTime": "13:30",
+          "title": "Whitecard |  King",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1791965836191",
+          "date": "2026-10-16",
+          "startTime": "14:30",
+          "endTime": "16:45",
+          "title": "Factory Tour",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

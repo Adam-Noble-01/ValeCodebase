@@ -1,5 +1,25 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.12.0, 13-Oct-2026: Hide My Actions (Tab 05)
+
+**Asked by Adam:** "Add a toggle so I can filter myself out, seeing everyone and everything else
+apart from my own actions" (User Activity tab 05), beside *Group repeats*.
+
+- **Hide my actions** checkbox, remembered on this PC (`Vsm__ActivityHideMe`). "Me" is
+  `USR00000001` unless localStorage `Vsm__ActivityMe` says otherwise; the tooltip names the person
+  and how many of their browsers are known.
+- **What counts as mine:** every event signed in as me, and every external event whose device id
+  has been seen signed in as me: my own tests of client links in my own browsers.
+  `Vsm__LearnMyDevices` adds them on each load and keeps them (`Vsm__ActivityMyDevices`, newest 200),
+  so the *Today* period still knows a browser I signed in on last week.
+- **Not by IP.** On 13-Oct the ledger's 440 events had Anna Lacey signing in from the office IP 46
+  times, and 20 external events from that IP on no browser of mine (a client link opened in another
+  profile or a private window, or Anna): they stay visible.
+- **Views:** the ledger and *People and devices* leave mine out; the counts end "· N of yours
+  hidden". *Generated links* keeps the links I made and my copies, but leaves my opens and plays
+  out of the opens, visitors and last open. The side panel's period summary is unfiltered, as before.
+- Page only: `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker cache move to 0.12.0.
+
 ## Version 0.11.0, 08-Oct-2026: A Year Live, Then Archived; ValeVision 3D and Gallery in Detail
 
 **Asked by Adam:** "keep the data for 1 year and then zip files per month year them with the correct

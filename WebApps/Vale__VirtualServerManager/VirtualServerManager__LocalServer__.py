@@ -30,6 +30,9 @@ DESCRIPTION:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+13-Oct-2026 - Version 0.12.0
+- Page only: tab 05 Hide my actions. No server change; the version moves with Vsm.PageVersion.
+
 08-Oct-2026 - Version 0.11.0
 - GET /api/activity?month=YYYY-MM (an archived month is unzipped into the audit cache).
 
@@ -109,7 +112,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.11.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.12.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root

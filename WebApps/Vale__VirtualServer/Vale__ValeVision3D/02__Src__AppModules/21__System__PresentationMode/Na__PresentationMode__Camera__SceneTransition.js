@@ -417,6 +417,7 @@
         if (values.fov !== null) {
             camera.fov = values.fov;
             camera.updateProjectionMatrix();                                             // <-- Rebuild projection after FOV change
+            window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));              // <-- Keep the lens readout honest
         }
 
         if (controls) {
@@ -635,6 +636,7 @@
                 camera.setRotationFromQuaternion(endQuat);
                 camera.fov = endFov;
                 camera.updateProjectionMatrix();
+                window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));  // <-- Keep the lens readout honest (once, on arrival)
                 if (blendLight) Na__SceneLighting__Apply(lightTo, { requestRender : false });  // <-- Exactly the scene's lighting
 
                 if (controls) {

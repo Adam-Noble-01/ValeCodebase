@@ -770,15 +770,43 @@
     },
     {
       "Timecard__Date": "2026-10-08",
-      "Timcard__Clock-In__": "16:50",
-      "Timcard__Clock-Out__": "08:35",
-      "Timecard__AuthHash": "sha256__a938f801540c686af316df7f92b3adf887e68dc42ba4a59348b492f26c8cb5d2"
+      "Timcard__Clock-In__": "07:55",
+      "Timcard__Clock-Out__": "18:25",
+      "Timecard__AuthHash": "sha256__b68055ff566fc965c6765940ca0b7d02349b48f9b696cff2bb7aa7072ed83376",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-10-13T07:13:33.769155Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "16:50",
+        "Timecard__OriginalClockOut": "08:35"
+      }
     },
     {
       "Timecard__Date": "2026-10-09",
-      "Timcard__Clock-In__": "08:35",
+      "Timcard__Clock-In__": "08:00",
+      "Timcard__Clock-Out__": "18:10",
+      "Timecard__AuthHash": "sha256__3adaccb836d4c776a7ca02a437e7f7e6455c0c0f4091ab58fb8efcfe8af2f3c7",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-10-13T07:11:57.565892Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:35",
+        "Timecard__OriginalClockOut": "08:10"
+      }
+    },
+    {
+      "Timecard__Date": "2026-10-13",
+      "Timcard__Clock-In__": "08:10",
+      "Timcard__Clock-Out__": "18:00",
+      "Timecard__AuthHash": "sha256__92c5278e953677b0a189b623c37486ec62ddab6675b3e62c27ba9806cb813814"
+    },
+    {
+      "Timecard__Date": "2026-10-14",
+      "Timcard__Clock-In__": "08:05",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__e6af1e87eaf44473607bdd8b80263292ba6e4550caeb82db14d0975e56b7282d"
+      "Timecard__AuthHash": "sha256__9b2ba22584fde9ef11b69874e1eeb6fd950bfa1d9068719abdfbae72ea2efa02"
     }
   ]
 }

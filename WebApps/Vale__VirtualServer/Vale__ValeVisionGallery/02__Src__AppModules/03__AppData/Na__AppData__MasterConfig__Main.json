@@ -8,5 +8,9 @@
         "Early Stage Sketch",
         "VizDpt SketchUp Model",
         "Designers SketchUp Model"
-    ]
+    ],
+    "vale__MyProjects__Note": "My Projects: Designer and Concept Artist accounts open the gallery on the projects naming them as designer or concept artist, matched on the account's first name. List an account here (USR code: the name on its projects) when its projects carry another name.",
+    "vale__MyProjects__GalleryNameByUserCode": {
+        "USR00000015": "Ted"
+    }
 }

@@ -1400,7 +1400,7 @@
                 "VideoStudio__Video__Export": {
                     "VideoStudio__Export__AntiAliasSamples": 16,
                     "VideoStudio__Export__AspectRatio": "3:2",
-                    "VideoStudio__Export__BitrateMbps": 151,
+                    "VideoStudio__Export__BitrateMbps": 67,
                     "VideoStudio__Export__Fps": 60,
                     "VideoStudio__Export__Height": 2160,
                     "VideoStudio__Export__Width": 3240
@@ -1941,9 +1941,24 @@
                     "VideoStudio__Playback__DoorOpenSeconds": 1.2,
                     "VideoStudio__Playback__Easing": "easeInOutSine",
                     "VideoStudio__Playback__SpeedMultiplier": 1
+                },
+                "VideoStudio__Video__Title": "Full Tour",
+                "VideoStudio__Video__MetaUpdatedIso": "2026-10-09T15:08:04.982Z",
+                "VideoStudio__Video__Description": "A full walk-through video showing the orangery exterior, interior and the basement wine cellar space.",
+                "VideoStudio__Video__TheiaPublish": {
+                    "VideoStudio__TheiaPublish__TheiaVideoId": "Video_001",
+                    "VideoStudio__TheiaPublish__PublishedIso": "2026-10-09T15:13:15.284Z",
+                    "VideoStudio__TheiaPublish__PublishedBy": "USR00000001",
+                    "VideoStudio__TheiaPublish__Fingerprint": "sha256:7a882333b7faebb44476cd570e98b0dc4b2d9693732bab60f2bd53b6c9b5b869",
+                    "VideoStudio__TheiaPublish__Scheme": "Scheme-01",
+                    "VideoStudio__TheiaPublish__DurationMs": 111183,
+                    "VideoStudio__TheiaPublish__Quality": "4K",
+                    "VideoStudio__TheiaPublish__Width": 3240,
+                    "VideoStudio__TheiaPublish__Height": 2160
                 }
             }
-        ]
+        ],
+        "VideoStudio__Config__LastVideoNumber": 0
     },
     "allImages": [
         "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026.png",
@@ -2046,5 +2061,6 @@
         "Mordaunt__TrueVision__MainBuildingModel__ProposedWindows__LineworkModel__.glb",
         "Mordaunt__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
         "Mordaunt__TrueVision__SceneContextual__MeshModel__.glb"
-    ]
+    ],
+    "_rev": 2
 }

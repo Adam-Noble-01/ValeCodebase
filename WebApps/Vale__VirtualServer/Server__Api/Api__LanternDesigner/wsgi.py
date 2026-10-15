@@ -37,8 +37,13 @@ DESCRIPTION:
 - Who: everyone signed in reads (Affiliate up); Employee and up create and save;
   a delete is the design's creator, or Management and up. A delete removes the
   design file only (its revision copies stay), never a library folder or record.
-- VghLantern__ProjectFile__ServerStamp is written here and never by the app:
-  who created the design and who saved it last.
+- VghLantern__ProjectFile__ServerStamp is written here and never by the app: who
+  created the design, who saved it last, each person's editing sessions (saves by
+  one person less than 30 minutes apart are one session) and every change of its
+  status, project, document or client name (who, when, from what to what). The
+  project list shows who created and who last modified each design; History
+  shows the rest. A design saved before 1.1.0 starts its sessions from the older
+  CreatedBy / SavedBy fields.
 - Per-user settings (the old per-user menu file): Server__UserAccountData/
   UserData__UserAppConfigs/LanternDesigner/UserConfig__<USR code>__LanternDesigner__.json.
   The app asks for "me"; nobody can read or write anyone else's.
@@ -52,6 +57,7 @@ ROUTES (under /lantern-designer/api/):
   GET    projects                      designs in the library (light records, newest first)
   POST   projects                      create {project, library: {id} | {newProject: {code, name}}}   (Employee)
   GET    projects/<id>                 one design {data, rev}
+  GET    projects/<id>/history         who created it, who saved it last, editing sessions and changes, newest first
   POST   projects/<id>                 save the whole design, "_rev" checked              (Employee)
   DELETE projects/<id>                 remove the design (creator, or Management)
   GET    library[?code=57079][&q=text] library projects to put a design in (hasDesign, hasModel ...)
@@ -66,6 +72,12 @@ RUN (server): gunicorn --bind 127.0.0.1:${VALE_PORT} wsgi:app   (systemd vale@La
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+15-Oct-2026 - Version 1.1.0
+- Ownership and edits per project (Adam): the list carries who last modified each
+  design (modifiedByCode/Name, modifiedUtc) beside who created it, plus createdUtc
+  and migrated; the server stamp keeps EditSessions and Events (status, project,
+  document and client name changes); GET projects/<id>/history serves them.
+
 15-Oct-2026 - Version 1.0.1
 - Designs move into LanternDesigner/UserData__LanternDesign/: the first live check found
   nginx serving LanternDesigner/ directly (a design names the client and their address).
@@ -81,6 +93,7 @@ DEVELOPMENT LOG:
 
 from __future__ import annotations
 
+import calendar
 import json
 import os
 import re
@@ -128,6 +141,12 @@ NA__LANTERN__S                    = "VghLantern__ProjectFile__ServerStamp__"
 NA__LANTERN__REVISION_EVERY_S     = 600                                     # <-- One revision copy per 10 minutes of editing
 NA__LANTERN__KEEP_REVISIONS       = 20
 NA__LANTERN__EDIT_LOG_EVERY_S     = 900                                     # <-- One "edited" ledger line per person per design per 15 minutes
+NA__LANTERN__SESSION_GAP_S        = 1800                                    # <-- Saves by one person less than 30 minutes apart are one editing session
+NA__LANTERN__KEEP_SESSIONS        = 500                                     # <-- Editing sessions a design's history keeps (the oldest go first)
+NA__LANTERN__KEEP_EVENTS          = 300                                     # <-- Status and name changes it keeps
+NA__LANTERN__TRACKED_FIELDS       = ("DocumentStatus", "ProjectName", "DocumentName", "ClientName")  # <-- Metadata changes History lists, field by field
+NA__LANTERN__STAMP_NOTE           = ("Written by the Lantern Designer API, never by the app: who made this design, who saved "
+                                     "it last, each person's editing sessions and every status or name change.")
 NA__LANTERN__INDEXES              = {
     "component-index": "05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json",
     "profile-index"  : "06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json",
@@ -135,7 +154,7 @@ NA__LANTERN__INDEXES              = {
 }
 NA__LANTERN__USERCFG_DIR          = NA__LIBRARY__ROOT / "Server__UserAccountData" / "UserData__UserAppConfigs" / "LanternDesigner"
 NA__LANTERN__NOT_A_PROJECT        = ("ExampleProject",)                     # <-- The schema project is a template, never a job
-NA__LANTERN__CACHE                = {"designs": {}, "records": {}}          # <-- path -> (mtime_ns, size, summary): files are only re-read when they change
+NA__LANTERN__CACHE                = {"designs": {}, "records": {}, "history": {}}  # <-- path -> (mtime_ns, size, summary): files are only re-read when they change
 NA__LANTERN__EDIT_LOG             = {}                                      # <-- (USR code, project id) -> time the last "edited" line was written
 NA__LANTERN__EDIT_LOG_LOCK        = threading.Lock()
 
@@ -158,16 +177,46 @@ def Na__Lantern__DesignPath(folder: Path) -> Path:
     return folder / NA__LANTERN__DESIGN_DIR / f"VghLantern__ProjectFile__{folder.name}__.json"
 # ---------------------------------------------------------------
 
-# HELPER FUNCTION | Now, as the Server Stamp Writes It
+# HELPER FUNCTION | Now (one clock for the stamp's times and its session arithmetic)
 # ------------------------------------------------------------
-def Na__Lantern__Utc() -> str:
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+def Na__Lantern__Now() -> float:
+    return time.time()
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Time as the Server Stamp Writes It ("2026-10-15T14:32:07Z"; now when none is given)
+# ------------------------------------------------------------
+def Na__Lantern__Utc(when: float | None = None) -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(Na__Lantern__Now() if when is None else when))
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Server Stamp Time as Seconds (None when it is not one)
+# ------------------------------------------------------------
+def Na__Lantern__UtcSeconds(text) -> float | None:
+    try:
+        return float(calendar.timegm(time.strptime(str(text), "%Y-%m-%dT%H:%M:%SZ")))
+    except (TypeError, ValueError):
+        return None
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | Who, as the Server Stamp Writes It
 # ------------------------------------------------------------
 def Na__Lantern__Who(user: dict) -> dict:
     return {"Code": user.get("code") or "", "Name": user.get("name") or ""}
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Design's Metadata and Server Stamp (empty when missing or malformed)
+# ------------------------------------------------------------
+def Na__Lantern__Parts(design: dict) -> tuple:
+    meta = design.get(NA__LANTERN__META) if isinstance(design.get(NA__LANTERN__META), dict) else {}
+    stamp = design.get(NA__LANTERN__STAMP) if isinstance(design.get(NA__LANTERN__STAMP), dict) else {}
+    return meta, stamp
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Person the Stamp Names ({} when it names nobody)
+# ------------------------------------------------------------
+def Na__Lantern__StampWho(stamp: dict, key: str) -> dict:
+    who = stamp.get(NA__LANTERN__S + key)
+    return who if isinstance(who, dict) else {}
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | A Design With Its Key Set From the Folder
@@ -202,25 +251,29 @@ def Na__Lantern__Cached(kind: str, path: Path, build):
 # FUNCTION | A Design as the Project List Needs It
 # ------------------------------------------------------------
 def Na__Lantern__Summary(project_id: str, folder: Path, design: dict, st) -> dict:
-    meta = design.get(NA__LANTERN__META) if isinstance(design.get(NA__LANTERN__META), dict) else {}
-    stamp = design.get(NA__LANTERN__STAMP) if isinstance(design.get(NA__LANTERN__STAMP), dict) else {}
-    created = stamp.get(NA__LANTERN__S + "CreatedBy") or {}
+    meta, stamp = Na__Lantern__Parts(design)
+    created, saved = Na__Lantern__StampWho(stamp, "CreatedBy"), Na__Lantern__StampWho(stamp, "SavedBy")
     lanterns = design.get(NA__LANTERN__LANTERNS)
     return {
-        "libraryId"    : project_id,
-        "year"         : Na__Library__Year(folder),
-        "projectCode"  : meta.get(NA__LANTERN__M + "ProjectCode", ""),
-        "projectName"  : meta.get(NA__LANTERN__M + "ProjectName", ""),
-        "documentName" : meta.get(NA__LANTERN__M + "DocumentName", ""),
-        "clientName"   : meta.get(NA__LANTERN__M + "ClientName", ""),
-        "status"       : meta.get(NA__LANTERN__M + "DocumentStatus", "Draft"),
-        "dateCreated"  : meta.get(NA__LANTERN__M + "DateCreated", ""),
-        "dateModified" : meta.get(NA__LANTERN__M + "DateModified", ""),
-        "lanternCount" : len(lanterns) if isinstance(lanterns, list) else 0,
-        "createdByCode": created.get("Code", ""),
-        "createdByName": created.get("Name", ""),
-        "rev"          : int(design.get("_rev", 0) or 0),
-        "_mtime"       : st.st_mtime,
+        "libraryId"     : project_id,
+        "year"          : Na__Library__Year(folder),
+        "projectCode"   : meta.get(NA__LANTERN__M + "ProjectCode", ""),
+        "projectName"   : meta.get(NA__LANTERN__M + "ProjectName", ""),
+        "documentName"  : meta.get(NA__LANTERN__M + "DocumentName", ""),
+        "clientName"    : meta.get(NA__LANTERN__M + "ClientName", ""),
+        "status"        : meta.get(NA__LANTERN__M + "DocumentStatus", "Draft"),
+        "dateCreated"   : meta.get(NA__LANTERN__M + "DateCreated", ""),
+        "dateModified"  : meta.get(NA__LANTERN__M + "DateModified", ""),
+        "lanternCount"  : len(lanterns) if isinstance(lanterns, list) else 0,
+        "createdByCode" : created.get("Code", ""),
+        "createdByName" : created.get("Name", ""),
+        "createdUtc"    : stamp.get(NA__LANTERN__S + "CreatedUtc", ""),
+        "modifiedByCode": saved.get("Code", ""),                              # <-- Who saved it last (the API's stamp, not the app's)
+        "modifiedByName": saved.get("Name", ""),
+        "modifiedUtc"   : stamp.get(NA__LANTERN__S + "SavedUtc", ""),
+        "migrated"      : bool(stamp.get(NA__LANTERN__S + "MigratedFrom")),   # <-- Started in the prototype, before sign-in: no creator
+        "rev"           : int(design.get("_rev", 0) or 0),
+        "_mtime"        : st.st_mtime,
     }
 # ---------------------------------------------------------------
 
@@ -254,8 +307,8 @@ def Na__Lantern__Load(project_id: str):
 def Na__Lantern__CanDelete(user: dict, design: dict) -> bool:
     if user.get("levelRank", 99) <= Na__Auth__Ranks().get("Management", 2):
         return True
-    stamp = design.get(NA__LANTERN__STAMP) if isinstance(design.get(NA__LANTERN__STAMP), dict) else {}
-    return bool(user.get("code")) and (stamp.get(NA__LANTERN__S + "CreatedBy") or {}).get("Code") == user.get("code")
+    _, stamp = Na__Lantern__Parts(design)
+    return bool(user.get("code")) and Na__Lantern__StampWho(stamp, "CreatedBy").get("Code") == user.get("code")
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | Should This Save Reach the Activity Ledger?
@@ -271,6 +324,146 @@ def Na__Lantern__ShouldLogEdit(user_code: str, project_id: str, source: str) -> 
         NA__LANTERN__EDIT_LOG[(user_code, project_id)] = now
         return True
 # ---------------------------------------------------------------
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Ownership and Edit History (the server stamp)
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | A Design's Editing Sessions, Oldest First
+# ------------------------------------------------------------
+# Stored since 1.1.0. A design saved before then kept only who made it and who
+# saved it last: those become its first sessions (their save counts unknown: 0).
+def Na__Lantern__Sessions(stamp: dict) -> list:
+    stored = stamp.get(NA__LANTERN__S + "EditSessions")
+    if isinstance(stored, list):
+        return [dict(s) for s in stored if isinstance(s, dict)]
+    begun = []
+    for who_key, utc_key in (("CreatedBy", "CreatedUtc"), ("SavedBy", "SavedUtc")):
+        who, utc = Na__Lantern__StampWho(stamp, who_key), str(stamp.get(NA__LANTERN__S + utc_key) or "")
+        at = Na__Lantern__UtcSeconds(utc)
+        if not who.get("Code") or at is None:
+            continue
+        last = begun[-1] if begun else None
+        if last and last["Code"] == who["Code"] and at - Na__Lantern__UtcSeconds(last["ToUtc"]) <= NA__LANTERN__SESSION_GAP_S:
+            last["ToUtc"] = max(last["ToUtc"], utc)                            # <-- Made and saved in one sitting: one session
+            continue
+        begun.append({"Code": who["Code"], "Name": who.get("Name", ""), "FromUtc": utc, "ToUtc": utc, "Saves": 0})
+    return begun
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | A Design's Recorded Changes (status and names), Oldest First
+# ------------------------------------------------------------
+def Na__Lantern__Events(stamp: dict) -> list:
+    stored = stamp.get(NA__LANTERN__S + "Events")
+    return [dict(e) for e in stored if isinstance(e, dict)] if isinstance(stored, list) else []
+# ---------------------------------------------------------------
+
+# FUNCTION | The Stamp of a New Design: Its Creator, and Their First Session
+# ------------------------------------------------------------
+def Na__Lantern__NewStamp(user: dict, now: float) -> dict:
+    who, utc = Na__Lantern__Who(user), Na__Lantern__Utc(now)
+    return {
+        NA__LANTERN__S + "Description" : NA__LANTERN__STAMP_NOTE,
+        NA__LANTERN__S + "CreatedBy"   : who,
+        NA__LANTERN__S + "CreatedUtc"  : utc,
+        NA__LANTERN__S + "SavedBy"     : who,
+        NA__LANTERN__S + "SavedUtc"    : utc,
+        NA__LANTERN__S + "EditSessions": [{"Code": who["Code"], "Name": who["Name"], "FromUtc": utc, "ToUtc": utc, "Saves": 1}],
+        NA__LANTERN__S + "Events"      : [],
+    }
+# ---------------------------------------------------------------
+
+# FUNCTION | Record One Save: Who Saved Last, Their Editing Session, Any Status or Name Change
+# ------------------------------------------------------------
+# Runs inside the design's lock, on the stamp of the file as it is on disk (the
+# app's copy of the stamp is never trusted). One person's changes to one field
+# within a session fold into one entry, so a name typed letter by letter (autosaved
+# as it goes) is one change from the old name to the new one, and a change undone
+# within the session disappears.
+def Na__Lantern__RecordEdit(stamp: dict, user: dict, old_meta: dict, new_meta: dict, now: float) -> dict:
+    who, utc = Na__Lantern__Who(user), Na__Lantern__Utc(now)
+    sessions, events = Na__Lantern__Sessions(stamp), Na__Lantern__Events(stamp)   # <-- Read before SavedBy changes: a pre-1.1.0 design begins its sessions from it
+
+    last = sessions[-1] if sessions else None
+    last_to = Na__Lantern__UtcSeconds(last.get("ToUtc")) if last else None
+    if last and last.get("Code") == who["Code"] and last_to is not None and now - last_to <= NA__LANTERN__SESSION_GAP_S:
+        last["ToUtc"], last["Saves"] = utc, int(last.get("Saves") or 0) + 1
+        last["Name"] = who["Name"] or last.get("Name", "")
+    else:
+        sessions.append({"Code": who["Code"], "Name": who["Name"], "FromUtc": utc, "ToUtc": utc, "Saves": 1})
+
+    for field in NA__LANTERN__TRACKED_FIELDS:
+        before = str(old_meta.get(NA__LANTERN__M + field) or "").strip()
+        after = str(new_meta.get(NA__LANTERN__M + field) or "").strip()
+        if field == "DocumentStatus":
+            before, after = before or "Draft", after or "Draft"
+        if before == after:
+            continue
+        prev = next((e for e in reversed(events) if e.get("Field") == field), None)
+        prev_at = Na__Lantern__UtcSeconds(prev.get("Utc")) if prev else None
+        if prev and prev.get("Code") == who["Code"] and prev_at is not None and now - prev_at <= NA__LANTERN__SESSION_GAP_S:
+            prev["To"], prev["Utc"] = after, utc
+            prev["Name"] = who["Name"] or prev.get("Name", "")
+            if prev.get("From", "") == after:
+                events.remove(prev)                                            # <-- Changed back: nothing changed after all
+        else:
+            events.append({"Utc": utc, "Code": who["Code"], "Name": who["Name"], "Field": field, "From": before, "To": after})
+
+    stamp = dict(stamp)
+    stamp[NA__LANTERN__S + "Description"] = NA__LANTERN__STAMP_NOTE
+    stamp[NA__LANTERN__S + "SavedBy"] = who
+    stamp[NA__LANTERN__S + "SavedUtc"] = utc
+    stamp[NA__LANTERN__S + "EditSessions"] = sessions[-NA__LANTERN__KEEP_SESSIONS:]
+    stamp[NA__LANTERN__S + "Events"] = events[-NA__LANTERN__KEEP_EVENTS:]
+    return stamp
+# ---------------------------------------------------------------
+
+# FUNCTION | A Design's History as the History Panel Needs It (newest first)
+# ------------------------------------------------------------
+def Na__Lantern__HistoryOf(project_id: str, design: dict) -> dict:
+    meta, stamp = Na__Lantern__Parts(design)
+    created, saved = Na__Lantern__StampWho(stamp, "CreatedBy"), Na__Lantern__StampWho(stamp, "SavedBy")
+    migrated = bool(stamp.get(NA__LANTERN__S + "MigratedFrom"))
+    sessions = Na__Lantern__Sessions(stamp)
+
+    editors = {}                                                               # <-- One row per person: sessions, saves, last seen
+    for s in sessions:
+        e = editors.setdefault(s.get("Code") or s.get("Name") or "?",
+                               {"code": s.get("Code", ""), "name": s.get("Name", ""), "sessions": 0, "saves": 0, "lastUtc": ""})
+        e["sessions"] += 1
+        e["saves"] += int(s.get("Saves") or 0)
+        e["lastUtc"] = max(e["lastUtc"], str(s.get("ToUtc") or ""))
+        e["name"] = s.get("Name") or e["name"]
+
+    return {
+        "libraryId"           : project_id,
+        "projectCode"         : meta.get(NA__LANTERN__M + "ProjectCode", ""),
+        "projectName"         : meta.get(NA__LANTERN__M + "ProjectName", ""),
+        "documentName"        : meta.get(NA__LANTERN__M + "DocumentName", ""),
+        "createdBy"           : {"code": created.get("Code", ""), "name": created.get("Name", "")},
+        "createdUtc"          : stamp.get(NA__LANTERN__S + "CreatedUtc", ""),
+        "migrated"            : migrated,
+        "migratedUtc"         : stamp.get(NA__LANTERN__S + "MigratedUtc", ""),
+        "prototypeDateCreated": meta.get(NA__LANTERN__M + "DateCreated", "") if migrated else "",
+        "modifiedBy"          : {"code": saved.get("Code", ""), "name": saved.get("Name", "")},
+        "modifiedUtc"         : stamp.get(NA__LANTERN__S + "SavedUtc", ""),
+        "sessions"            : [{"code": s.get("Code", ""), "name": s.get("Name", ""), "fromUtc": s.get("FromUtc", ""),
+                                  "toUtc": s.get("ToUtc", ""), "saves": int(s.get("Saves") or 0)} for s in reversed(sessions)],
+        "events"              : [{"utc": e.get("Utc", ""), "code": e.get("Code", ""), "name": e.get("Name", ""), "field": e.get("Field", ""),
+                                  "from": e.get("From", ""), "to": e.get("To", "")} for e in reversed(Na__Lantern__Events(stamp))],
+        "editors"             : sorted(editors.values(), key=lambda e: e["lastUtc"], reverse=True),
+    }
+# ---------------------------------------------------------------
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Per-User Settings Files
+# -----------------------------------------------------------------------------
 
 # HELPER FUNCTION | Write a Per-User Settings File (atomic, 0664 like every file an API writes)
 # ------------------------------------------------------------
@@ -359,6 +552,23 @@ def Na__Lantern__Get(project_id):
     return jsonify({"ok": True, "data": design, "rev": int(design.get("_rev", 0) or 0)})
 # ---------------------------------------------------------------
 
+# FUNCTION | One Design's History: Who Created It, Who Saved It Last, Sessions and Changes
+# ------------------------------------------------------------
+@app.get("/api/projects/<project_id>/history")
+@Na__Auth__Require("Affiliate")
+def Na__Lantern__History(project_id):
+    folder = Na__Library__Find(project_id)
+    if folder is None:
+        return Na__Lantern__Error(404, f"No project {project_id!r} in the library.")
+    path = Na__Lantern__DesignPath(folder)
+    if not path.is_file():
+        return Na__Lantern__Error(404, f"{folder.name} has no Lantern design.")
+    history = Na__Lantern__Cached("history", path, lambda d, st, pid=folder.name: Na__Lantern__HistoryOf(pid, d))
+    if history is None:
+        return Na__Lantern__Error(500, f"The design in {folder.name} could not be read.")
+    return jsonify({"ok": True, "data": history})
+# ---------------------------------------------------------------
+
 # FUNCTION | Create a Design (in a library project, or a new one)
 # ------------------------------------------------------------
 @app.post("/api/projects")
@@ -406,13 +616,7 @@ def Na__Lantern__Create():
         if not str(meta.get(NA__LANTERN__M + "ProjectName") or "").strip():
             meta[NA__LANTERN__M + "ProjectName"] = record.get("projectNameAlias") or record.get("projectName") or folder.name
         design.pop("_rev", None)
-        design[NA__LANTERN__STAMP] = {
-            NA__LANTERN__S + "Description": "Written by the Lantern Designer API, never by the app: who made this design and who saved it last.",
-            NA__LANTERN__S + "CreatedBy"  : Na__Lantern__Who(user),
-            NA__LANTERN__S + "CreatedUtc" : Na__Lantern__Utc(),
-            NA__LANTERN__S + "SavedBy"    : Na__Lantern__Who(user),
-            NA__LANTERN__S + "SavedUtc"   : Na__Lantern__Utc(),
-        }
+        design[NA__LANTERN__STAMP] = Na__Lantern__NewStamp(user, Na__Lantern__Now())   # <-- Whatever stamp the app sent is replaced
         res = Na__Library__WriteJson(path, design, user["code"], folder)
     design["_rev"] = res["rev"]
     Na__Activity__Record(NA__LANTERN__ACTIVITY, "project.create",
@@ -449,17 +653,15 @@ def Na__Lantern__Save(project_id):
         if not isinstance(current, dict):
             return Na__Lantern__Error(404, f"{folder.name} has no Lantern design (it may have been deleted).")
         current_rev = int(current.get("_rev", 0) or 0)
-        stamp = current.get(NA__LANTERN__STAMP) if isinstance(current.get(NA__LANTERN__STAMP), dict) else {}
+        old_meta, stamp = Na__Lantern__Parts(current)
         if expected != current_rev:
-            saved_by = (stamp.get(NA__LANTERN__S + "SavedBy") or {}).get("Name", "")
+            saved_by = Na__Lantern__StampWho(stamp, "SavedBy").get("Name", "")
             return Na__Lantern__Error(409, "This design was saved by " + (saved_by or "someone else") +
                                       " since you opened it.", rev=current_rev, savedBy=saved_by,
                                       data=Na__Lantern__Keyed(current, folder.name))
         design = Na__Lantern__Keyed(design, folder.name)
-        stamp = dict(stamp)
-        stamp[NA__LANTERN__S + "SavedBy"] = Na__Lantern__Who(user)
-        stamp[NA__LANTERN__S + "SavedUtc"] = Na__Lantern__Utc()
-        design[NA__LANTERN__STAMP] = stamp                                     # <-- The app's copy of the stamp is never trusted
+        design[NA__LANTERN__STAMP] = Na__Lantern__RecordEdit(stamp, user, old_meta, design[NA__LANTERN__META],
+                                                             Na__Lantern__Now())  # <-- From the file on disk: the app's copy of the stamp is never trusted
         try:
             res = Na__Library__WriteJson(path, design, user["code"], folder, expected_rev=current_rev,
                                          keep_revisions=NA__LANTERN__KEEP_REVISIONS,

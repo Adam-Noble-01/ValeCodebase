@@ -19,7 +19,7 @@
         "DefaultSortDirection" : "desc",
 
         "SearchPlaceholder"    : "Search lantern projects...",
-        "SearchFields"         : ["projectCode", "libraryId", "projectName", "clientName", "documentName", "status"]
+        "SearchFields"         : ["projectCode", "libraryId", "projectName", "clientName", "documentName", "status", "createdByName", "modifiedByName"]
     },
 
     "VghLantern__DocManagement__Config__EmptyState": {

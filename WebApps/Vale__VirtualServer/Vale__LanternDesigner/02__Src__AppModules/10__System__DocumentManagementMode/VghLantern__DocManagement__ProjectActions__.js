@@ -27,6 +27,11 @@
    - Delete removes the design only (never the library project, nor the other
      apps' work in it), after a confirmation modal; the API allows it for the
      design's creator and for Management and up
+   - History (everyone signed in) shows who started the design and who saved it
+     last, everyone who has worked on it, and one timeline, newest first: each
+     person's editing sessions, and every change of status, project, document or
+     client name (from what to what). The API keeps all of it in the design's
+     server stamp, which the app can never write
    - Owns the single delegated click listener on the table container, covering
      both sortable headers and row action buttons
    - Coordinates with ProjectFileManager, StateManager, and ModeManager
@@ -41,6 +46,10 @@
    -----------------------------------------------------------------------------
 
    DEVELOPMENT LOG:
+   15-Oct-2026 - Version 2.1.0
+   - History: a row button opening the design's ownership and edit timeline
+     (Adam: "track users so people can see ownership and edits per project").
+
    15-Oct-2026 - Version 2.0.0 (the Vale app server)
    - Designs are created in Master Library projects (picked by job number, or
      added to the library), and opened, edited and deleted by library id through
@@ -911,6 +920,189 @@ const VghLantern__DocManagement__ProjectActions = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | History - Who Started a Design, Who Has Worked on It, What Changed
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | The Metadata Changes the API Records, as History Words Them
+    // ------------------------------------------------------------
+    const HISTORY_FIELD_LABELS  =  {
+        'DocumentStatus' : 'the status',
+        'ProjectName'    : 'the project name',
+        'DocumentName'   : 'the document name',
+        'ClientName'     : 'the client name'
+    };
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | The Newest History Request (a late answer to an older one is dropped)
+    // ------------------------------------------------------------
+    let VghLantern__ProjectActions__HistoryToken  =  0;
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Server Time as "15 Oct 2026, 15:32" (local)
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__When(utcText) {
+        var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
+        if (!utcText || !DateFormatter) return '';
+        return DateFormatter.VghLantern__DateFormatter__FormatShortTime(utcText);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Session's Time Span: "15 Oct 2026, 14:02 - 14:35" (both dates when it crosses midnight)
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__Span(fromUtc, toUtc) {
+        var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
+        if (!DateFormatter || !fromUtc) return VghLantern__ProjectActions__When(toUtc);
+        if (!toUtc || toUtc === fromUtc) return VghLantern__ProjectActions__When(fromUtc);
+        var sameDay  =  DateFormatter.VghLantern__DateFormatter__FormatShort(fromUtc) === DateFormatter.VghLantern__DateFormatter__FormatShort(toUtc);
+        return VghLantern__ProjectActions__When(fromUtc) + ' &ndash; ' +
+               (sameDay ? DateFormatter.VghLantern__DateFormatter__FormatTime(toUtc) : VghLantern__ProjectActions__When(toUtc));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Person's Initials for the Timeline ("Adam Noble" -> "AN")
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__Initials(name) {
+        var parts  =  String(name || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return '?';
+        return (parts[0].charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | One Timeline Entry
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__HistoryItem(kind, avatarText, whatHtml, metaHtml) {
+        return '<li class="VghLantern__History__Item VghLantern__History__Item--' + kind + '">' +
+                   '<span class="VghLantern__History__Avatar" aria-hidden="true">' + avatarText + '</span>' +
+                   '<div class="VghLantern__History__Text">' +
+                       '<div class="VghLantern__History__What">' + whatHtml + '</div>' +
+                       (metaHtml ? '<div class="VghLantern__History__Meta">' + metaHtml + '</div>' : '') +
+                   '</div>' +
+               '</li>';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the History Panel From the API's Answer
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__BuildHistoryHtml(h) {
+        var esc         =  VghLantern__ProjectActions__Escape;
+        var when        =  VghLantern__ProjectActions__When;
+        var created     =  h.createdBy  || {};
+        var modified    =  h.modifiedBy || {};
+        var sessions    =  Array.isArray(h.sessions) ? h.sessions : [];
+        var events      =  Array.isArray(h.events)   ? h.events   : [];
+        var editors     =  Array.isArray(h.editors)  ? h.editors  : [];
+        var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
+        var muted       =  function(text) { return text ? ' <span class="VghLantern__History__Muted">' + text + '</span>' : ''; };
+
+        var html  =  '<div class="VghLantern__History">';
+        html     +=  '<div class="VghLantern__History__Design"><strong>' + esc(h.projectCode || '') + ' ' + esc(h.projectName || '') + '</strong>' +
+                     (h.documentName ? ' &middot; ' + esc(h.documentName) : '') +
+                     '<span class="VghLantern__DocManagement__LibraryId">' + esc(h.libraryId || '') + '</span></div>';
+
+        // Facts: owner, last modifier, everyone who has worked on it
+        var createdHtml  =  created.name
+            ? esc(created.name) + muted(esc(when(h.createdUtc)))
+            : (h.migrated
+                ? 'The prototype app, before sign-in' + muted(h.prototypeDateCreated && DateFormatter
+                    ? 'started ' + esc(DateFormatter.VghLantern__DateFormatter__FormatShort(h.prototypeDateCreated)) : '')
+                : '&mdash;');
+        var modifiedHtml =  modified.name ? esc(modified.name) + muted(esc(when(h.modifiedUtc))) : '&mdash;';
+        var editorsHtml  =  editors.length
+            ? editors.map(function(e) {
+                  return esc(e.name || e.code || '?') + muted('(' + e.sessions + (e.sessions === 1 ? ' session' : ' sessions') + ')');
+              }).join(', ')
+            : '&mdash;';
+
+        html  +=  '<dl class="VghLantern__History__Facts">';
+        html  +=      '<dt>Created by</dt><dd>' + createdHtml + '</dd>';
+        html  +=      '<dt>Last modified by</dt><dd>' + modifiedHtml + '</dd>';
+        html  +=      '<dt>Worked on by</dt><dd>' + editorsHtml + '</dd>';
+        html  +=  '</dl>';
+
+        // Timeline: sessions, changes, the start (and the move from the prototype), newest first
+        var items  =  [];
+        var startShownInSession  =  false;
+        sessions.forEach(function(s) {
+            var isStart  =  !!(created.code && s.code === created.code && h.createdUtc && s.fromUtc === h.createdUtc);
+            if (isStart) startShownInSession  =  true;
+            items.push({ at: s.toUtc || s.fromUtc || '', rank: 1, html: VghLantern__ProjectActions__HistoryItem(
+                'session', esc(VghLantern__ProjectActions__Initials(s.name)),
+                '<strong>' + esc(s.name || s.code || 'Someone') + '</strong> ' + (isStart ? 'started the design' : 'edited the design'),
+                VghLantern__ProjectActions__Span(s.fromUtc, s.toUtc) + (s.saves ? ' &middot; ' + s.saves + (s.saves === 1 ? ' save' : ' saves') : '')) });
+        });
+        events.forEach(function(e) {
+            var label  =  HISTORY_FIELD_LABELS[e.field] || esc(e.field || 'a detail');
+            var what   =  e.from && e.to ? 'changed ' + label + ' from <em>' + esc(e.from) + '</em> to <em>' + esc(e.to) + '</em>'
+                       :  e.to           ? 'set ' + label + ' to <em>' + esc(e.to) + '</em>'
+                       :                   'cleared ' + label + ' (it was <em>' + esc(e.from) + '</em>)';
+            items.push({ at: e.utc || '', rank: 0, html: VghLantern__ProjectActions__HistoryItem(
+                'change', esc(VghLantern__ProjectActions__Initials(e.name)),
+                '<strong>' + esc(e.name || e.code || 'Someone') + '</strong> ' + what, esc(when(e.utc))) });
+        });
+        if (created.name && h.createdUtc && !startShownInSession) {
+            items.push({ at: h.createdUtc, rank: 2, html: VghLantern__ProjectActions__HistoryItem(
+                'session', esc(VghLantern__ProjectActions__Initials(created.name)),
+                '<strong>' + esc(created.name) + '</strong> started the design', esc(when(h.createdUtc))) });
+        }
+        if (h.migrated && h.migratedUtc) {
+            items.push({ at: h.migratedUtc, rank: 2, html: VghLantern__ProjectActions__HistoryItem(
+                'system', '&#8682;', 'Moved from the prototype app into the Vale Projects Master Library', esc(when(h.migratedUtc))) });
+        }
+        items.sort(function(a, b) { return (b.at > a.at) - (b.at < a.at) || a.rank - b.rank; });  // <-- UTC text sorts as time; a change shows above the session it ended
+
+        html  +=  '<h4 class="VghLantern__History__Heading">Activity</h4>';
+        if (!items.length) {
+            html  +=  '<p class="VghLantern__History__Empty">Nothing recorded yet: saves are tracked from 15 Oct 2026.</p>';
+        } else {
+            html  +=  '<ol class="VghLantern__History__List">' + items.map(function(item) { return item.html; }).join('') + '</ol>';
+        }
+        html  +=  '</div>';
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show a Design's History
+    // ------------------------------------------------------------
+    async function VghLantern__ProjectActions__ShowHistory(libraryId) {
+        var esc        =  VghLantern__ProjectActions__Escape;
+        var token      =  ++VghLantern__ProjectActions__HistoryToken;
+        var closeHtml  =  '<button id="VghLantern__Modal__BtnCloseHistory" class="VghLantern__Modal__BtnSecondary">Close</button>';
+        var bindClose  =  function() {
+            var closeBtn  =  document.getElementById('VghLantern__Modal__BtnCloseHistory');
+            if (closeBtn) closeBtn.addEventListener('click', VghLantern__ProjectActions__HideModal);
+        };
+
+        VghLantern__ProjectActions__ShowModal('Project History',
+            '<p class="VghLantern__History__Loading" data-history-token="' + token + '">Loading the history of ' + esc(libraryId) + '&hellip;</p>', closeHtml);
+        bindClose();
+
+        var FileManager  =  window.VghLantern__AppData__ProjectFileManager;
+        var result  =  FileManager
+            ? await FileManager.VghLantern__ProjectFileManager__FetchHistory(libraryId)
+            : { ok: false, error: 'the project file manager is not loaded' };
+
+        var root     =  document.getElementById(MODAL_ROOT_ID);
+        var waiting  =  document.querySelector('.VghLantern__History__Loading[data-history-token="' + token + '"]');
+        if (!waiting || !root || !root.classList.contains(MODAL_VISIBLE_CLASS)) return;   // <-- Closed, or another dialog took its place meanwhile
+
+        VghLantern__ProjectActions__ShowModal('Project History', result.ok
+            ? VghLantern__ProjectActions__BuildHistoryHtml(result.data)
+            : '<p class="VghLantern__Modal__DangerNote">The history could not be loaded: ' + esc(result.error) + '</p>', closeHtml);
+        bindClose();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Render, Delegation, and Initialisation
 // -----------------------------------------------------------------------------
 
@@ -970,12 +1162,13 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         var btn  =  event.target.closest('.VghLantern__DocManagement__RowBtn');
         if (!btn) return;
 
-        var action  =  btn.getAttribute('data-action');                           // <-- 'open', 'edit', 'save-edit', 'cancel-edit', or 'delete'
+        var action  =  btn.getAttribute('data-action');                           // <-- 'open', 'edit', 'history', 'save-edit', 'cancel-edit', or 'delete'
         var id      =  btn.getAttribute('data-code');                             // <-- The design's library id from the row
         if (!action || !id) return;
 
         if (action === 'open')        VghLantern__ProjectActions__OpenProject(id);
         if (action === 'edit')        VghLantern__ProjectActions__OnEditProjectClick(id);
+        if (action === 'history')     VghLantern__ProjectActions__ShowHistory(id);
         if (action === 'save-edit')   VghLantern__ProjectActions__OnSaveEditClick(id, btn);
         if (action === 'cancel-edit') VghLantern__ProjectActions__OnCancelEditClick(id);
         if (action === 'delete')      VghLantern__ProjectActions__DeleteProject(id);
@@ -1010,6 +1203,7 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         VghLantern__ProjectActions__OnSaveEditClick     : VghLantern__ProjectActions__OnSaveEditClick,
         VghLantern__ProjectActions__OnCancelEditClick   : VghLantern__ProjectActions__OnCancelEditClick,
         VghLantern__ProjectActions__DeleteProject    : VghLantern__ProjectActions__DeleteProject,
+        VghLantern__ProjectActions__ShowHistory      : VghLantern__ProjectActions__ShowHistory,
         VghLantern__ProjectActions__HideModal        : VghLantern__ProjectActions__HideModal
     };
 

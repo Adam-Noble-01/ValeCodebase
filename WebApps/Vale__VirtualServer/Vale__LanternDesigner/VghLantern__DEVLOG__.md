@@ -3,6 +3,67 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.7.0 - 15-Oct-2026
+### FEATURE | Ownership and edits per project: Created By, Last Modified By, and History
+
+Adam, looking at the live project list: "Add a created by and last modified by and track users so people can see
+ownership and edits per project." The API (`Server__Api/Api__LanternDesigner/wsgi.py` 1.1.0) already wrote who made a
+design and who saved it last into the design's server stamp; the list now shows both, and the API keeps the rest.
+
+---
+
+#### THE PROJECT LIST
+
+- **Created By** (the owner: they, and Management, may delete the design) and **Last Modified By** columns, beside Date
+  Created and Last Modified. Both sort and are searched; the full time is the tooltip ("Saved 15 Oct 2026, 15:32").
+- **Date Created and Last Modified now come from the API's own times** when it has them, so a date and its name always
+  describe the same save. A prototype design not saved since the move keeps its metadata dates.
+- The 20 prototype designs have no creator (they predate sign-in): Created By says *Prototype*, in muted italics.
+  Last Modified By fills in with the first save on the server.
+- A save marks the signed-in person as the last modifier at once; other people's saves show the next time the Projects
+  tab opens (it re-reads the list every time).
+- **Narrower screens:** ten columns need about 1,330px. Below 1,440px the two By columns fold into a muted name under
+  each date, so the buttons stay on screen; below 1,200px the table scrolls sideways instead of clipping (the eight-column
+  table already clipped Actions in a narrow window).
+
+---
+
+#### HISTORY
+
+A **History** button on every row, for everyone signed in (Affiliates too: it is read-only). It shows:
+
+- Created by, last modified by (with times) and everyone who has worked on the design (with their session counts);
+- one timeline, newest first: each person's editing sessions ("edited the design, 14:02 - 14:35, 37 saves"), every change
+  of status, project name, document name or client name ("changed the status from Draft to For Approval"), the start of
+  the design, and for a prototype design its move into the Master Library.
+
+How the API records it (all of it in `VghLantern__ProjectFile__ServerStamp`, written by the API inside the design's
+lock, from the file on disk: the app's copy of the stamp is never trusted, so nobody can write their own history):
+
+- `EditSessions`: saves by one person less than 30 minutes apart are one session (from, to, saves); the last 500 are kept.
+  Autosaves every few seconds would otherwise be thousands of entries.
+- `Events`: one person's changes to one field within a session fold into one entry, so a name typed letter by letter is
+  one change from the old name to the new one, and a change undone within the session disappears. The last 300 are kept.
+- A design saved before 1.1.0 begins its sessions from its CreatedBy / SavedBy fields.
+- `GET api/projects/<id>/history` (Affiliate up) serves it; `GET api/projects` adds `modifiedByCode`, `modifiedByName`,
+  `modifiedUtc`, `createdUtc` and `migrated` to each row.
+
+---
+
+#### FILES
+
+- `wsgi.py` 1.1.0 (API); `VghLantern__AppData__ProjectFileManager__.js` 2.1.0 (`FetchHistory`, the new list fields);
+  `VghLantern__DocManagement__ProjectList__.js` (columns, the fold, the API's dates); `VghLantern__DocManagement__ProjectActions__.js`
+  2.1.0 (History); `VghLantern__DocManagement__Styles__Main__.css`; `Na__DocManagement__Config.json` (search fields);
+  `VghLantern__AppUtils__DateFormatter__.js` (reads the API's UTC times; `FormatShortTime`, `FormatTime`); the app
+  version 0.7.0 and the service worker `2026-10-15-2`.
+- Tested on the PC: 30 new API checks (sessions, the 30-minute gap, folding, an undone change, a forged stamp ignored,
+  new and pre-1.1.0 designs, the caps) and the 55 from the move, against a sandbox `VALE_ROOT` with generated accounts;
+  then the app on the dev server (port 8033) with a seeded sandbox: the columns at 1,680px and 985px, History for a
+  prototype design and a new one, and a status change by the signed-in person showing in the list and in History.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.6.0 - 15-Oct-2026
 ### SERVER | Onto app.valegardenhouses.com, with the Master Library as the only home of a design
 

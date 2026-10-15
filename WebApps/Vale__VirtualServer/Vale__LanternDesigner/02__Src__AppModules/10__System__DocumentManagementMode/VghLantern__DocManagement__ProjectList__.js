@@ -23,6 +23,13 @@
      the number, so the folder is what tells them apart (15-Oct-2026)
    - Edit appears for Employee and up; Delete for the design's creator and for
      Management and up (the API decides; the buttons only follow it)
+   - Ownership and edits (15-Oct-2026): Created By and Last Modified By columns
+     (sortable and searchable; the full time on hover) come from the API's own
+     stamp, never from the app; a prototype design, started before sign-in, shows
+     "Prototype" as its creator. Date Created and Last Modified use the API's
+     times too when it has them, so a date and its name describe the same save.
+     History, for everyone signed in, opens the design's sessions and changes
+     (ProjectActions)
 
    -----------------------------------------------------------------------------
 
@@ -49,7 +56,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
     const TABLE_CONTAINER_ID   =  'VghLantern__DocManagement__TableContainer';    // <-- Table injection point
     const SEARCH_WRAPPER_ID    =  'VghLantern__DocManagement__SearchWrapper';     // <-- Search field injection point
     const SEARCH_INPUT_ID      =  'VghLantern__DocManagement__SearchInput';       // <-- Generated search input
-    const COLUMN_COUNT         =  8;                                              // <-- Used for the no-match spanning row
+    const COLUMN_COUNT         =  10;                                             // <-- Used for the no-match spanning row
+    const BY_COLUMN_CLASS      =  'VghLantern__DocManagement__ByColumn';          // <-- Created By / Last Modified By: folded under the dates on narrower screens (CSS)
     // ------------------------------------------------------------
 
 
@@ -74,6 +82,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
     const SORT_FIELD_STATUS         =  'status';                                  // <-- Workflow status
     const SORT_FIELD_DATE_CREATED   =  'dateCreated';                             // <-- Creation timestamp
     const SORT_FIELD_DATE_MODIFIED  =  'dateModified';                            // <-- Last save timestamp
+    const SORT_FIELD_CREATED_BY     =  'createdByName';                           // <-- Who started the design (its owner)
+    const SORT_FIELD_MODIFIED_BY    =  'modifiedByName';                          // <-- Who saved it last
     const DEFAULT_SORT_FIELD        =  SORT_FIELD_DATE_MODIFIED;
     const DEFAULT_SORT_DIRECTION    =  'desc';
 
@@ -234,6 +244,41 @@ const VghLantern__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | The Date a Date Column Shows and Sorts By
+    // ------------------------------------------------------------
+    // The API's own time of the last save (or of the start) when it has one, so
+    // Last Modified and Last Modified By always describe the same save; the
+    // design's metadata date otherwise (a prototype design not saved since the move).
+    function VghLantern__ProjectList__ColumnDate(project, fieldName) {
+        var p  =  project || {};
+        if (fieldName === SORT_FIELD_DATE_MODIFIED) return p.modifiedUtc || p.dateModified;
+        if (fieldName === SORT_FIELD_DATE_CREATED)  return p.createdUtc  || p.dateCreated;
+        return p[fieldName];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build a Created By / Last Modified By Cell
+    // ------------------------------------------------------------
+    // The name from the API's stamp, with the full time on hover. A prototype
+    // design has no creator (it predates sign-in), so it says so rather than
+    // leaving the owner blank.
+    function VghLantern__ProjectList__BuildPersonCell(personName, utcText, verb, isPrototype) {
+        if (personName) {
+            var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
+            var when  =  (utcText && DateFormatter) ? DateFormatter.VghLantern__DateFormatter__FormatShortTime(utcText) : '';
+            var tip   =  when ? ' title="' + VghLantern__ProjectList__Escape(verb + ' ' + when) + '"' : '';
+            return '<span class="VghLantern__DocManagement__Person"' + tip + '>' + VghLantern__ProjectList__Escape(personName) + '</span>';
+        }
+        if (isPrototype) {
+            return '<span class="VghLantern__DocManagement__Person VghLantern__DocManagement__Person--prototype"' +
+                   ' title="Started in the prototype app before sign-in, then moved into the Master Library (15-Oct-2026)">Prototype</span>';
+        }
+        return '&mdash;';
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -251,7 +296,9 @@ const VghLantern__DocManagement__ProjectList = (function() {
             fieldName === SORT_FIELD_DOCUMENT_NAME ||
             fieldName === SORT_FIELD_STATUS        ||
             fieldName === SORT_FIELD_DATE_CREATED  ||
-            fieldName === SORT_FIELD_DATE_MODIFIED
+            fieldName === SORT_FIELD_DATE_MODIFIED ||
+            fieldName === SORT_FIELD_CREATED_BY    ||
+            fieldName === SORT_FIELD_MODIFIED_BY
         );
     }
     // ------------------------------------------------------------
@@ -315,7 +362,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var right  =  rightProject || {};
 
         if (fieldName === SORT_FIELD_DATE_CREATED || fieldName === SORT_FIELD_DATE_MODIFIED) {
-            return VghLantern__ProjectList__CompareDates(left[fieldName], right[fieldName]);
+            return VghLantern__ProjectList__CompareDates(
+                VghLantern__ProjectList__ColumnDate(left, fieldName), VghLantern__ProjectList__ColumnDate(right, fieldName));
         }
         if (fieldName === SORT_FIELD_STATUS) {
             return VghLantern__ProjectList__CompareStatus(left[fieldName], right[fieldName]);
@@ -339,7 +387,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var config       =  VghLantern__ProjectList__TableConfig();
         var searchFields =  Array.isArray(config.SearchFields) && config.SearchFields.length
             ? config.SearchFields
-            : [SORT_FIELD_PROJECT_CODE, SORT_FIELD_PROJECT_NAME, SORT_FIELD_CLIENT_NAME, SORT_FIELD_DOCUMENT_NAME, SORT_FIELD_STATUS];
+            : [SORT_FIELD_PROJECT_CODE, SORT_FIELD_PROJECT_NAME, SORT_FIELD_CLIENT_NAME, SORT_FIELD_DOCUMENT_NAME, SORT_FIELD_STATUS,
+               SORT_FIELD_CREATED_BY, SORT_FIELD_MODIFIED_BY];
 
         var query  =  VghLantern__ProjectList__SearchQuery.toLowerCase();
 
@@ -390,9 +439,9 @@ const VghLantern__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Build Sortable Header Cell HTML
     // ------------------------------------------------------------
-    function VghLantern__ProjectList__BuildSortableHeaderCell(labelText, fieldName) {
+    function VghLantern__ProjectList__BuildSortableHeaderCell(labelText, fieldName, extraClass) {
         var isActive     =  (VghLantern__ProjectList__SortField === fieldName);
-        var headerClass  =  'VghLantern__DocManagement__SortableHeader';
+        var headerClass  =  'VghLantern__DocManagement__SortableHeader' + (extraClass ? ' ' + extraClass : '');
         var arrowGlyph   =  '';
 
         if (isActive) {
@@ -416,7 +465,9 @@ const VghLantern__DocManagement__ProjectList = (function() {
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Document Name', SORT_FIELD_DOCUMENT_NAME);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Status',        SORT_FIELD_STATUS);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Date Created',  SORT_FIELD_DATE_CREATED);
+        html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Created By',    SORT_FIELD_CREATED_BY, BY_COLUMN_CLASS);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Last Modified', SORT_FIELD_DATE_MODIFIED);
+        html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Last Modified By', SORT_FIELD_MODIFIED_BY, BY_COLUMN_CLASS);
         html     +=  '<th>Actions</th>';
         html     +=  '</tr></thead>';
         return html;
@@ -436,8 +487,16 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var clientName    =  VghLantern__ProjectList__Escape(clientRaw);
         var docName       =  VghLantern__ProjectList__Escape(docNameRaw);
         var status        =  project.status || 'Draft';
-        var dateCreated   =  VghLantern__ProjectList__FormatDate(project.dateCreated);
-        var dateModified  =  VghLantern__ProjectList__FormatDate(project.dateModified);
+        var dateCreated   =  VghLantern__ProjectList__FormatDate(VghLantern__ProjectList__ColumnDate(project, SORT_FIELD_DATE_CREATED));
+        var dateModified  =  VghLantern__ProjectList__FormatDate(VghLantern__ProjectList__ColumnDate(project, SORT_FIELD_DATE_MODIFIED));
+        var createdBy     =  VghLantern__ProjectList__BuildPersonCell(project.createdByName, project.createdUtc, 'Started', !!project.migrated);
+        var modifiedBy    =  VghLantern__ProjectList__BuildPersonCell(project.modifiedByName, project.modifiedUtc, 'Saved', false);
+        var byOpen        =  '<td class="' + BY_COLUMN_CLASS + '">';
+        var underDate     =  function(personHtml) {                                // <-- Shown instead of the By columns on narrower screens
+            return personHtml === '&mdash;' ? '' : '<span class="VghLantern__DocManagement__DateBy">' + personHtml + '</span>';
+        };
+        dateCreated       =  dateCreated  + underDate(createdBy);
+        dateModified      =  dateModified + underDate(modifiedBy);
         var lanternCount  =  Number(project.lanternCount || 0);                   // <-- Optional manifest hint
         var isEditing     =  (VghLantern__ProjectList__EditingCode === (project.libraryId || ''));
         var FileManager   =  window.VghLantern__AppData__ProjectFileManager;
@@ -455,7 +514,9 @@ const VghLantern__DocManagement__ProjectList = (function() {
             html  +=  '<td><input type="text" class="VghLantern__DocManagement__EditInput" data-field="documentName" value="' + docName + '"></td>';
             html  +=  '<td>' + VghLantern__ProjectList__BuildStatusSelect(status) + '</td>';
             html  +=  '<td>' + dateCreated  + '</td>';
+            html  +=  byOpen + createdBy    + '</td>';
             html  +=  '<td>' + dateModified + '</td>';
+            html  +=  byOpen + modifiedBy   + '</td>';
             html  +=  '<td>';
             html  +=      '<div class="VghLantern__DocManagement__RowActions">';
             html  +=          '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--save" data-action="save-edit" data-code="' + libraryId + '">Save</button>';
@@ -474,13 +535,16 @@ const VghLantern__DocManagement__ProjectList = (function() {
             html  +=  '<td>' + (docName || '&mdash;')      + '</td>';
             html  +=  '<td>' + VghLantern__ProjectList__BuildStatusBadge(status) + '</td>';
             html  +=  '<td>' + dateCreated  + '</td>';
+            html  +=  byOpen + createdBy    + '</td>';
             html  +=  '<td>' + dateModified + '</td>';
+            html  +=  byOpen + modifiedBy   + '</td>';
             html  +=  '<td>';
             html  +=      '<div class="VghLantern__DocManagement__RowActions">';
             html  +=          '<button class="VghLantern__DocManagement__RowBtn" data-action="open" data-code="' + libraryId + '">Open</button>';
             if (canEdit) {
                 html  +=      '<button class="VghLantern__DocManagement__RowBtn" data-action="edit" data-code="' + libraryId + '">Edit</button>';
             }
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn" data-action="history" data-code="' + libraryId + '" title="Who started this design, who has worked on it, and what changed">History</button>';
             if (canDelete) {
                 html  +=      '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--delete" data-action="delete" data-code="' + libraryId + '">Delete</button>';
             }

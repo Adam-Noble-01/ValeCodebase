@@ -611,3 +611,153 @@
 
 /* #endregion ------------------------------------------------------------------- */
 
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Ownership Columns and the History Panel (15-Oct-2026)
+ * ----------------------------------------------------------------------------- */
+
+    /* TABLE | Created By / Last Modified By Cell */
+    /* ------------------------------------------------------------ */
+    /* The full time is the cell's tooltip; a prototype design (started */
+    /* before sign-in) says "Prototype" in muted italics.               */
+    .VghLantern__DocManagement__Person {
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__DocManagement__Person--prototype {
+        color                              : var(--Vale_TextSecondary);
+        font-style                         : italic;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Narrower Screens: the Names Fold Under the Dates */
+    /* ------------------------------------------------------------ */
+    /* Ten columns need about 1,330 px. Below 1,440 px the two By      */
+    /* columns give way to a muted name under each date, so Actions    */
+    /* stays on screen; below 1,200 px the table scrolls, never clips. */
+    .VghLantern__DocManagement__DateBy {
+        display                            : none;
+        margin-top                         : 2px;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    @media (max-width: 1440px) {
+        .VghLantern__DocManagement__Table .VghLantern__DocManagement__ByColumn {
+            display                        : none;
+        }
+
+        .VghLantern__DocManagement__DateBy {
+            display                        : block;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        #VghLantern__DocManagement__TableContainer {
+            overflow-x                     : auto;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HISTORY | The Design, Its Facts, and the Muted Detail Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__History__Design {
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__History__Facts {
+        display                            : grid;
+        grid-template-columns              : max-content 1fr;
+        gap                                : 6px var(--Vale_Spacing_Medium);
+        margin                             : 0;
+        font-size                          : var(--Vale_FontSize_Standard);
+    }
+
+    .VghLantern__History__Facts dt {
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__History__Facts dd {
+        margin                             : 0;
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__History__Muted,
+    .VghLantern__History__Loading,
+    .VghLantern__History__Empty {
+        color                              : var(--Vale_TextSecondary);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HISTORY | Activity Timeline (scrolls inside the dialog) */
+    /* ------------------------------------------------------------ */
+    .VghLantern__History__Heading {
+        margin                             : var(--Vale_Spacing_Large) 0 var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__History__List {
+        list-style                         : none;
+        margin                             : 0;
+        padding                            : 0;
+        max-height                         : 45vh;
+        overflow-y                         : auto;
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__History__Item {
+        display                            : flex;
+        align-items                        : flex-start;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : var(--Vale_Spacing_Small) 0;
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__History__Avatar {
+        flex                               : 0 0 28px;
+        height                             : 28px;
+        border-radius                      : 50%;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : 11px;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.02em;
+    }
+
+    .VghLantern__History__Item--change .VghLantern__History__Avatar {
+        background                         : var(--VghLantern_AccentBlue);
+    }
+
+    .VghLantern__History__Item--system .VghLantern__History__Avatar {
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__History__What {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        line-height                        : 1.4;
+    }
+
+    .VghLantern__History__Meta {
+        margin-top                         : 2px;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

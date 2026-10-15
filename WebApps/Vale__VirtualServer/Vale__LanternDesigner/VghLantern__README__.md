@@ -10,7 +10,7 @@ ValeVision and ValeVision 3D.
 |---|---|
 | The app (no build step: classic scripts sharing one global scope, plus two ES module bootstraps for the 3D pipeline) | this folder; the entry page is `index.html` |
 | Designs | the Vale Projects Master Library, one per library project: `Vale__Projects__MasterLibrary\ValeProjects__<year>\<project>\LanternDesigner\UserData__LanternDesign\VghLantern__ProjectFile__<project>__.json` |
-| The API (designs, library search, per-user settings, the library indexes) | `Server__Api\Api__LanternDesigner\wsgi.py` (`vale@LanternDesigner`, port 8003), reached at `api/...` relative to this page |
+| The API (designs and their history, library search, per-user settings, the library indexes) | `Server__Api\Api__LanternDesigner\wsgi.py` (`vale@LanternDesigner`, port 8003), reached at `api/...` relative to this page |
 | Sign-in | the shared Vale sign-in: `Server__Api\Api__Shared` and `AppAssets__CommonApplicationAssets\Shared__UserLogin` |
 | Per-user settings | `Server__UserAccountData\UserData__UserAppConfigs\LanternDesigner\UserConfig__<USR code>__LanternDesigner__.json` |
 | Component and profile libraries | `05__Data__LanternComponentLibrary`, `06__Data__LanternProfileLibrary`, `VghLantern__AssetRegistry__.json` (rebuilt with the utilities in `60__Dev__WebBuildUtils`) |
@@ -34,6 +34,11 @@ ValeVision and ValeVision 3D.
 - **Saves:** autosave sends the whole design with the version it was loaded at. If someone saved it in the meantime,
   the app asks whose version wins. Revisions are kept in the project's `ProjectData__Revisions` (one per 10 minutes of
   editing, the last 20).
+- **Ownership and edits (v0.7.0):** the project list shows who created each design (its owner) and who last modified
+  it; **History** on each row shows everyone who has worked on it, each person's editing sessions (saves less than 30
+  minutes apart are one session) and every change of status, project, document or client name, newest first. The API
+  records all of it in the design's server stamp (`api/projects/<id>/history`); the app can never write it. The 20
+  prototype designs show *Prototype* as their creator: they predate sign-in.
 - **Printed drawing QR codes** still open the General Drawing Terms page at `/t/` on GitHub Pages
   (`Na__Terms__Config.json`, `TermsQrBaseUrl`); it moves when GitHub Pages is retired.
 

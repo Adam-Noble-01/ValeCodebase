@@ -17,7 +17,9 @@
      used for DateCreated / DateModified so same-day saves stay sort-distinct
    - Ordinal suffixes with superscript support (th, st, nd, rd)
    - Accepts Date objects, "DD-MMM-YYYY" strings, "DD-MMM-YYYY HH:mm:ss" strings,
-     or legacy ISO date strings
+     legacy ISO date strings, or the Lantern Designer API's UTC times
+     ("2026-10-15T14:32:07Z", read as that instant and shown in local time)
+   - "15 Oct 2026, 15:32" and "15:32" for who-did-what-when (15-Oct-2026)
 
    ============================================================================= */
 
@@ -40,6 +42,7 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     const PATTERN_DD_MMM_YYYY_HMS  =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/;  // <-- Vale timestamp format "30-Jul-2026 14:32:07"
     const PATTERN_DD_MMM_YYYY      =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/;      // <-- Vale storage format "30-Jul-2026"
     const PATTERN_ISO_DATE         =  /^(\d{4})-(\d{2})-(\d{2})$/;              // <-- Legacy stored format "2026-07-30"
+    const PATTERN_ISO_UTC          =  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;  // <-- API server stamp time "2026-10-15T14:32:07Z"
     // ------------------------------------------------------------
 
 
@@ -78,6 +81,8 @@ const VghLantern__AppUtils__DateFormatter = (function() {
                 return new Date(parseInt(valeMatch[3], 10), monthIndex, parseInt(valeMatch[1], 10));
             }
         }
+
+        if (PATTERN_ISO_UTC.test(trimmed)) return new Date(trimmed);        // <-- A UTC instant: the browser shows it in local time
 
         var isoMatch  =  PATTERN_ISO_DATE.exec(trimmed);                    // <-- Fall back to legacy ISO strings
         if (isoMatch) {
@@ -195,6 +200,23 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Format Time "15:32" (local)
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__FormatTime(input) {
+        var d  =  VghLantern__DateFormatter__ToDate(input);
+        return VghLantern__DateFormatter__PadTwoDigits(d.getHours()) + ':' + VghLantern__DateFormatter__PadTwoDigits(d.getMinutes());
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Format Date and Time "15 Oct 2026, 15:32" (local; who saved what, when)
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__FormatShortTime(input) {
+        return VghLantern__DateFormatter__FormatShort(input) + ', ' + VghLantern__DateFormatter__FormatTime(input);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Format ISO String "2026-07-30"
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__FormatIso(input) {
@@ -215,6 +237,8 @@ const VghLantern__AppUtils__DateFormatter = (function() {
         VghLantern__DateFormatter__FormatFullDayHtml  : VghLantern__DateFormatter__FormatFullDayHtml,
         VghLantern__DateFormatter__FormatDdMmmYyyy    : VghLantern__DateFormatter__FormatDdMmmYyyy,
         VghLantern__DateFormatter__FormatDdMmmYyyyHms : VghLantern__DateFormatter__FormatDdMmmYyyyHms,
+        VghLantern__DateFormatter__FormatTime         : VghLantern__DateFormatter__FormatTime,
+        VghLantern__DateFormatter__FormatShortTime    : VghLantern__DateFormatter__FormatShortTime,
         VghLantern__DateFormatter__FormatIso          : VghLantern__DateFormatter__FormatIso,
         VghLantern__DateFormatter__ToDate             : VghLantern__DateFormatter__ToDate
     };

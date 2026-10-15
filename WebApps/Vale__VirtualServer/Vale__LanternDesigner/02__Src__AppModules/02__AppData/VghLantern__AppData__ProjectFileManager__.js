@@ -34,6 +34,13 @@
    -----------------------------------------------------------------------------
 
    DEVELOPMENT LOG:
+   15-Oct-2026 - Version 2.1.0
+   - Ownership and edits: the list keeps who created and who last modified each
+     design (the API's stamp: modifiedByCode/Name, modifiedUtc, createdUtc, and
+     migrated for the prototype designs, which have no creator). A save marks the
+     signed-in person as the last modifier at once. New FetchHistory reads
+     api/projects/<id>/history for the History panel.
+
    15-Oct-2026 - Version 2.0.0 (the Vale app server)
    - Rewritten for app.valegardenhouses.com: the Master Library through the API
      replaces 07__LocalProjectData on the localhost server, and the in-memory
@@ -142,6 +149,27 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Signed-In Person as a List "By" Pair ({ createdByCode, createdByName } etc.)
+    // ------------------------------------------------------------
+    function VghLantern__ProjectFileManager__Me(role) {
+        var Login  =  window.ValeUserLogin;
+        var user   =  (Login && Login.User) ? Login.User() : null;
+        var pair   =  {};
+        pair[role + 'ByCode']  =  user ? (user.code || '') : '';
+        pair[role + 'ByName']  =  user ? (user.name || '') : '';
+        return pair;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Now as the API Writes It ("2026-10-15T14:32:07Z")
+    // ------------------------------------------------------------
+    function VghLantern__ProjectFileManager__UtcNow() {
+        return new Date().toISOString().slice(0, 19) + 'Z';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | May the Signed-In Person Create and Save? (Employee and up)
     // ------------------------------------------------------------
     function VghLantern__ProjectFileManager__CanWrite() {
@@ -195,8 +223,13 @@ const VghLantern__AppData__ProjectFileManager = (function() {
             dateCreated   : src.dateCreated   || '',
             dateModified  : src.dateModified  || src.dateCreated || '',
             lanternCount  : Number(src.lanternCount || 0),
-            createdByCode : src.createdByCode || '',
+            createdByCode : src.createdByCode || '',                         // <-- Who started the design (its owner: they may delete it)
             createdByName : src.createdByName || '',
+            createdUtc    : src.createdUtc    || '',
+            modifiedByCode: src.modifiedByCode || '',                        // <-- Who saved it last (the API's stamp)
+            modifiedByName: src.modifiedByName || '',
+            modifiedUtc   : src.modifiedUtc   || '',
+            migrated      : !!src.migrated,                                  // <-- A prototype design: started before sign-in, so no creator
             rev           : Number(src.rev || 0)
         };
     }
@@ -420,11 +453,12 @@ const VghLantern__AppData__ProjectFileManager = (function() {
             if (result.status === 200 && result.json && result.json.ok) {
                 var libraryId  =  result.json.libraryId;
                 var created    =  VghLantern__ProjectFileManager__Remember(libraryId, result.json.data, result.json.rev, 'createProject:server');
-                VghLantern__ProjectFileManager__UpsertManifestEntry(libraryId, created, {
-                    year          : result.json.year || '',
-                    createdByCode : (window.ValeUserLogin && window.ValeUserLogin.User()) ? window.ValeUserLogin.User().code : '',
-                    createdByName : (window.ValeUserLogin && window.ValeUserLogin.User()) ? window.ValeUserLogin.User().name : ''
-                });
+                var nowUtc     =  VghLantern__ProjectFileManager__UtcNow();
+                VghLantern__ProjectFileManager__UpsertManifestEntry(libraryId, created, Object.assign(
+                    { year: result.json.year || '', createdUtc: nowUtc, modifiedUtc: nowUtc },
+                    VghLantern__ProjectFileManager__Me('created'),
+                    VghLantern__ProjectFileManager__Me('modified')
+                ));
                 console.log('[VghLantern__ProjectFileManager] Design created in ' + libraryId);
                 return { ok: true, projectData: created, libraryId: libraryId, createdProject: !!result.json.createdProject };
             }
@@ -523,7 +557,10 @@ const VghLantern__AppData__ProjectFileManager = (function() {
         }).then(function(result) {
             if (result.status === 200 && result.json && result.json.ok) {
                 VghLantern__ProjectFileManager__Revs[libraryId]  =  Number(result.json.rev || 0);
-                VghLantern__ProjectFileManager__UpsertManifestEntry(libraryId, job.data);
+                VghLantern__ProjectFileManager__UpsertManifestEntry(libraryId, job.data, Object.assign(
+                    { modifiedUtc: VghLantern__ProjectFileManager__UtcNow() },
+                    VghLantern__ProjectFileManager__Me('modified')           // <-- The server stamped this person; the list shows it now
+                ));
                 console.log('[VghLantern__ProjectFileManager] Saved ' + libraryId + ' (rev ' + result.json.rev + ', ' + job.source + ')');
                 return { ok: true, rev: result.json.rev };
             }
@@ -649,6 +686,21 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Design's History: Who Created It, Who Saved It Last, Sessions and Changes
+    // ------------------------------------------------------------
+    // Resolves { ok, data: { createdBy, createdUtc, migrated, migratedUtc,
+    // prototypeDateCreated, modifiedBy, modifiedUtc, sessions, events, editors } }
+    // (lists newest first) or { ok: false, error }.
+    function VghLantern__ProjectFileManager__FetchHistory(libraryId) {
+        return VghLantern__ProjectFileManager__Call(API_BASE + '/' + encodeURIComponent(libraryId) + '/history')
+            .then(function(result) {
+                if (result.status === 200 && result.json && result.json.ok) return { ok: true, data: result.json.data || {} };
+                return { ok: false, error: VghLantern__ProjectFileManager__ErrorText(result) };
+            });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Library Projects a Design Can Go In
     // ------------------------------------------------------------
     // query: { code: '57079' } (every library project of that job number) and/or
@@ -703,6 +755,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
         VghLantern__ProjectFileManager__DeleteProject        : VghLantern__ProjectFileManager__DeleteProject,
         VghLantern__ProjectFileManager__SyncFromServer       : VghLantern__ProjectFileManager__SyncFromServer,
         VghLantern__ProjectFileManager__SearchLibrary        : VghLantern__ProjectFileManager__SearchLibrary,
+        VghLantern__ProjectFileManager__FetchHistory         : VghLantern__ProjectFileManager__FetchHistory,
         VghLantern__ProjectFileManager__CanWrite             : VghLantern__ProjectFileManager__CanWrite,
         VghLantern__ProjectFileManager__CanDelete            : VghLantern__ProjectFileManager__CanDelete,
         VghLantern__ProjectFileManager__LibraryIdOf          : VghLantern__ProjectFileManager__LibraryIdOf,

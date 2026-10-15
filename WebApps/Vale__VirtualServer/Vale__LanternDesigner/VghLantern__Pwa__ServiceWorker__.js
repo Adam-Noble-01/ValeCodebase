@@ -22,7 +22,7 @@
 
    ============================================================================= */
 
-var VGHLANTERN_SW_VERSION = '2026-10-15-1';
+var VGHLANTERN_SW_VERSION = '2026-10-15-2';
 var VGHLANTERN_SW_SHELL   = 'vghlantern-shell-' + VGHLANTERN_SW_VERSION;
 
 self.addEventListener('install', function() { self.skipWaiting(); });

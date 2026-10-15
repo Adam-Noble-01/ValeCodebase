@@ -582,6 +582,7 @@
                             <span class="structure-diagram__chip">Door</span>
                             <span class="structure-diagram__chip">Window</span>
                             <span class="structure-diagram__chip">Pilaster</span>
+                            <span class="structure-diagram__chip">Entablature</span>
                             <span class="structure-diagram__chip">Ridge</span>
                             <span class="structure-diagram__chip">Hip</span>
                             <span class="structure-diagram__chip">ETR Vent</span>
@@ -594,13 +595,16 @@
                         <span class="structure-diagram__label">Components</span>
                         <div class="structure-diagram__chips">
                             <span class="structure-diagram__chip">Cornice</span>
-                            <span class="structure-diagram__chip">Entablature</span>
+                            <span class="structure-diagram__chip">Frieze</span>
                             <span class="structure-diagram__chip">Glazing Bar</span>
                             <span class="structure-diagram__chip">Door Stile</span>
                             <span class="structure-diagram__chip">Fielded Panel</span>
                             <span class="structure-diagram__chip">Cill</span>
                             <span class="structure-diagram__chip">Mullion</span>
                             <span class="structure-diagram__chip">Pilaster Base</span>
+                            <span class="structure-diagram__chip">Pilaster Shaft</span>
+                            <span class="structure-diagram__chip">Pilaster Capital</span>
+                            <span class="structure-diagram__chip">Door Threshold</span>
                         </div>
                     </div>
                     <div id="node-products" class="structure-diagram__node structure-diagram__node--product">
@@ -612,6 +616,7 @@
                             <span class="structure-diagram__chip">Finial</span>
                             <span class="structure-diagram__chip">Cresting</span>
                             <span class="structure-diagram__chip">Lock</span>
+                            <span class="structure-diagram__chip">Shoot Bolt</span>
                             <span class="structure-diagram__chip">Vent</span>
                             <span class="structure-diagram__chip">Bracket</span>
                         </div>
@@ -707,7 +712,7 @@
 
             <h2>Assemblies And Construction Objects</h2>
             <p>Assemblies are objects constructed from multiple Components or Products. Assemblies can also contain other Assemblies where additional hierarchy is required.</p>
-            <p>Common examples include Door Assemblies, Window Assemblies, Pilaster Assemblies, Roof Rafter Assemblies, Ridge Assemblies, Hip Assemblies, ETR Vent Assemblies and Framework Assemblies.</p>
+            <p>Common examples include Door Assemblies, Window Assemblies, Pilaster Assemblies, Entablature Assemblies, Roof Rafter Assemblies, Ridge Assemblies, Hip Assemblies, ETR Vent Assemblies and Framework Assemblies.</p>
 
             <div class="interactive-tree">
                 <details>
@@ -719,26 +724,36 @@
                     </div>
                 </details>
                 <details>
+                    <summary>Entablature Assembly <span class="tag tag-assembly">Assembly</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Architrave Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Frieze Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Cornice Component <span class="tag tag-component">Component</span></div>
+                    </div>
+                </details>
+                <details>
                     <summary>Door Assembly <span class="tag tag-assembly">Assembly</span></summary>
                     <div class="details-content">
                         <div class="leaf-node">Door Stile Component <span class="tag tag-component">Component</span></div>
                         <div class="leaf-node">Door Rail Component <span class="tag tag-component">Component</span></div>
                         <div class="leaf-node">Fielded Panel Component <span class="tag tag-component">Component</span></div>
                         <div class="leaf-node">Glazing Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Door Threshold Component <span class="tag tag-component">Component</span></div>
                         <div class="leaf-node product-node">Handle Product <span class="tag tag-product">Product</span></div>
                         <div class="leaf-node product-node">Hinges Product <span class="tag tag-product">Product</span></div>
                         <div class="leaf-node product-node">Lock Product <span class="tag tag-product">Product</span></div>
+                        <div class="leaf-node product-node">Shoot Bolts Product <span class="tag tag-product">Product</span></div>
                     </div>
                 </details>
             </div>
 
             <h2>Configurable Fabricated Components</h2>
             <p>A Component is a fabricated or configurable element rather than a fixed purchased object. Components will commonly vary in length, width, depth or other parameters depending on the configuration of the Scheme.</p>
-            <p>Examples include Cornice, Entablature, Glazing Bar, Door Stile, Door Rail, Fielded Panel, Cill, Fascia, Frieze, Mullion, Pilaster Base, Pilaster Shaft, Pilaster Capital and Glazing Panel. Components may reference one or more Resources such as profiles, materials, finishes or specifications.</p>
+            <p>Examples include Architrave, Cornice, Glazing Bar, Door Stile, Door Rail, Door Threshold, Fielded Panel, Cill, Fascia, Frieze, Mullion, Pilaster Base, Pilaster Shaft, Pilaster Capital and Glazing Panel. Components may reference one or more Resources such as profiles, materials, finishes or specifications.</p>
 
             <div class="interactive-tree">
                 <details>
-                    <summary>Entablature Component <span class="tag tag-component">Component</span></summary>
+                    <summary>Cornice Component <span class="tag tag-component">Component</span></summary>
                     <div class="details-content">
                         <div class="leaf-node resource-node">Moulding Profile A <span class="tag tag-resource">Resource</span></div>
                         <div class="leaf-node resource-node">Moulding Profile B <span class="tag tag-resource">Resource</span></div>
@@ -749,7 +764,7 @@
             </div>
 
             <h2>Discrete Purchased Products</h2>
-            <p>A Product is a discrete and identifiable item which generally exists as a known object, casting, SKU or purchased product. Examples include Door Handles, Hinges, Finials, Cresting Sections, Locks, Espagnolettes, Vents, Brackets and Gutter Outlets.</p>
+            <p>A Product is a discrete and identifiable item which generally exists as a known object, casting, SKU or purchased product. Examples include Door Handles, Hinges, Finials, Cresting Sections, Locks, Shoot Bolts, Espagnolettes, Vents, Brackets and Gutter Outlets.</p>
             <p>Typical Product data includes Product Code, Supplier or Manufacturer, Fixed or Selectable Sizes, Material, Finish, Cost, Weight, CAD or 3D Asset and Availability or Status. Products can be referenced by Assemblies without needing to duplicate the underlying Product record.</p>
 
             <h2>Database Reusable Resources</h2>

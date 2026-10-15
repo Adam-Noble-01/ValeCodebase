@@ -1,5 +1,20 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.5.2, 15-Oct-2026: Lantern-Only Jobs Stay Out Until They Have 3D Work
+
+**For Lantern Designer's move onto the app server.** Lantern Designer now keeps every design in the
+Vale Projects Master Library, and can add a job the library does not have yet (Adam: the library is
+the single source of truth). Such a project is tagged `ProjectType: "LanternDesign"` and has no
+images or model.
+
+**Changes:**
+- The Whitecard Models list shows a LanternDesign project only once it has gallery images (a later
+  ValeVision Cloud Sync publish); the Max Models and Blockout lists never show it. Until then it was
+  already left out of every tab by its type.
+- The 3D Production KPI Report leaves LanternDesign projects out unless they have images or a model.
+- Files: `Na__Feature__ProjectGallery__Main.jsx` (`filterProjectsByGalleryMode`),
+  `Na__AppUtils__KpiProjectSource.js` 2.1.0.
+
 ## Version 1.5.0, 13-Oct-2026: My Projects for Designers and Concept Artists; Blockout Models Moves to the Menu
 
 **Asked by Adam.** Designers and Concept Artists should not be bombarded with every project: the

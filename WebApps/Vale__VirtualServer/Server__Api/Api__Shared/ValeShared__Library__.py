@@ -29,6 +29,11 @@ DESCRIPTION:
   (*.lock never syncs).
 - Content__* files are served straight by nginx; Na__Library__Url gives their
   public URL.
+- NEW PROJECTS (Na__Library__CreateProject) get every folder the schema project
+  has (NA__LIBRARY__SCAFFOLD, from ValeProjects__2026/12345__ExampleProject__Schema),
+  so ValeVision Cloud Sync, ValeVision 3D, the Gallery, Theia and Lantern Designer
+  all find their buckets waiting, and a first record in the shape ValeVision Cloud
+  Sync gives a new project (Na__Library__NewRecord).
 
 ENVIRONMENT:
   VALE_ROOT   the mirror / server root (default: two folders above this file)
@@ -36,6 +41,16 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+15-Oct-2026 - Version 1.2.0
+- New projects from an app (first used by Lantern Designer): NA__LIBRARY__SCAFFOLD,
+  Na__Library__Scaffold, Na__Library__NewProjectId ("1236", "The Brussels House" ->
+  "1236__TheBrusselsHouse"), Na__Library__NewRecord, Na__Library__CreateProject (one
+  creator at a time across processes: .ProjectCreate.lock in the library root).
+- Na__Library__WriteJson takes keep_revisions and revision_every_s, for documents
+  saved every few seconds (a Lantern design autosaves): at most one revision copy
+  per window, and fewer kept. Both default to the old behaviour, so the Gallery,
+  ValeVision 3D and Theia are unchanged.
+
 06-Oct-2026 - Version 1.1.0
 - Writes lock across processes (Na__Library__Locked: fcntl on the server, msvcrt on
   Windows). The old lock was per process, so with two workers and two apps two saves
@@ -72,6 +87,37 @@ NA__LIBRARY__CACHE                = {"at": 0.0, "index": {}}
 NA__LIBRARY__LOCK                 = threading.RLock()                          # <-- The index cache (this process)
 NA__LIBRARY__WRITE_LOCK           = threading.RLock()                          # <-- This process's threads queue here first
 NA__LIBRARY__HELD                 = {}                                         # <-- lock file -> [handle, depth]; only under WRITE_LOCK
+NA__LIBRARY__CODE                 = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,39}$") # <-- A job number: 57079, JN-2906, CC-62383
+NA__LIBRARY__SCAFFOLD             = (                                          # <-- Every folder of the schema project (12345__ExampleProject__Schema)
+    "LanternDesigner",
+    "LanternDesigner/UserData__LanternDesign",
+    "ValeVision3D/Content__3dModel__AppGenerated",
+    "ValeVision3D/Content__3dModel__GlbFiles",
+    "ValeVision3D/Content__AnimationScenes__Thumbnails",
+    "ValeVision3D/UserData__UserAppConfigs",
+    "ValeVision3D/UserData__UserGeneratedContent__Drawings",
+    "ValeVision3D/UserData__UserGeneratedContent__Images",
+    "ValeVision__TheiaVideo/AppData__VideoData",
+    "ValeVision__TheiaVideo/Content__VideoFiles/Videos__Scheme-01",
+    "ValeVision__TheiaVideo/Content__VideoFiles/Videos__Scheme-02",
+    "ValeVision__TheiaVideo/Content__VideoFiles/Videos__Scheme-03",
+    "ValeVision__TheiaVideo/Content__VideoThumbnails",
+    "ValeVision__TheiaVideo/UserData__UserAppConfigs",
+    "ValeVisionGallery/Content__GalleryImages__524p__VariantImages",
+    "ValeVisionGallery/Content__GalleryImages__FullQuality__VariantImages",
+    "ValeVisionGallery/Content__GalleryImages__Thumbnail__VariantImages",
+)
+NA__LIBRARY__NOT_YET_REVIEWED     = "NOT YET REVIEWED"                         # <-- As ValeVision Cloud Sync writes it
+NA__LIBRARY__DEFAULT_NOTES        = "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+NA__LIBRARY__CAMERA_DEFAULTS      = {                                          # <-- ValeVision Cloud Sync's NA__PUB__CAMERA_DEFAULTS, verbatim
+    "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+    "Camera__DefaultPos"     : {"Camera__DefaultPos__PosX": -5000, "Camera__DefaultPos__PosY": 2800, "Camera__DefaultPos__PosZ": 3250},
+    "Camera__DefaultTarget"  : {"Camera__DefaultTarget__TargetX": -1250, "Camera__DefaultTarget__TargetY": 2570,
+                                "Camera__DefaultTarget__TargetZ": -350},
+    "Camera__DefaultRotation": {"Camera__DefaultRotation__RotX": -0.073, "Camera__DefaultRotation__RotY": -0.8346,
+                                "Camera__DefaultRotation__RotZ": -0.0541},
+    "Camera__DefaultMisc"    : {"Camera__DefaultMisc__Fov": 29.8628}
+}
 
 # endregion ----------------------------------------------------
 
@@ -240,9 +286,12 @@ class Na__Library__Conflict(Exception):
 # FUNCTION | Write JSON Atomically: version check, _rev bump, previous copy kept as a revision
 # ------------------------------------------------------------
 def Na__Library__WriteJson(path: Path, data: dict, user_code: str = "", project_folder: Path | None = None,
-                           expected_rev: int | None = None) -> dict:
+                           expected_rev: int | None = None, keep_revisions: int | None = None,
+                           revision_every_s: int = 0) -> dict:
     """Every document carries "_rev" (missing = 0). With expected_rev (the _rev the client
     loaded), a newer document raises Na__Library__Conflict instead of being overwritten.
+    keep_revisions: how many revision copies to keep (default NA__LIBRARY__KEEP_REVISIONS).
+    revision_every_s: keep a revision only if the newest one is older than this (0 = every write).
     Returns {"rev": new _rev, "revision": path of the kept copy relative to the project, or ""}."""
     path = Path(path)
     with Na__Library__Locked(path):                                            # <-- The _rev check and the write are one step for every process
@@ -256,11 +305,13 @@ def Na__Library__WriteJson(path: Path, data: dict, user_code: str = "", project_
             rel = path.relative_to(folder).with_suffix("").as_posix()         # <-- Folder named after the file, minus ".json"
             rev_dir = folder / "ProjectData__Revisions" / rel
             rev_dir.mkdir(parents=True, exist_ok=True)
-            who = re.sub(r"[^A-Za-z0-9]", "", user_code) or "unknown"
-            rev = rev_dir / f"{time.strftime('%Y%m%d-%H%M%S')}__rev{current_rev}__{who}.json"
-            rev.write_bytes(path.read_bytes())
-            revision = rev.relative_to(folder).as_posix()
-            for old in sorted(rev_dir.glob("*.json"))[:-NA__LIBRARY__KEEP_REVISIONS]:
+            kept = sorted(rev_dir.glob("*.json"))
+            if not (revision_every_s and kept and time.time() - kept[-1].stat().st_mtime < revision_every_s):
+                who = re.sub(r"[^A-Za-z0-9]", "", user_code) or "unknown"
+                rev = rev_dir / f"{time.strftime('%Y%m%d-%H%M%S')}__rev{current_rev}__{who}.json"
+                rev.write_bytes(path.read_bytes())
+                revision = rev.relative_to(folder).as_posix()
+            for old in sorted(rev_dir.glob("*.json"))[:-(keep_revisions or NA__LIBRARY__KEEP_REVISIONS)]:
                 old.unlink()
         data = dict(data)
         data["_rev"] = current_rev + 1
@@ -269,6 +320,84 @@ def Na__Library__WriteJson(path: Path, data: dict, user_code: str = "", project_
         tmp.write_text(json.dumps(data, indent=4, ensure_ascii=False), encoding="utf-8")
         os.replace(tmp, path)
         return {"rev": data["_rev"], "revision": revision}
+# ---------------------------------------------------------------
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Creating Projects (an app adds a job the library does not have yet)
+# -----------------------------------------------------------------------------
+
+# FUNCTION | A New Project's Library Id From Its Job Number and Name ("1236", "The Brussels House" -> "1236__TheBrusselsHouse")
+# ------------------------------------------------------------
+def Na__Library__NewProjectId(code: str, name: str) -> str:
+    """Words are joined in capitals, as the library names them (PlumblyClegg, VanDenBorn); hyphens
+    inside a word stay (Hurst-Cox). Raises ValueError with a sentence a person can act on."""
+    code = str(code or "").strip()
+    if not NA__LIBRARY__CODE.match(code):
+        raise ValueError("A job number is digits (letters and hyphens allowed), up to 40 characters: 57079 or JN-2906.")
+    words = re.findall(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*", str(name or ""))
+    joined = "".join(w[:1].upper() + w[1:] for w in words)[:80].strip("-")
+    if not joined:
+        raise ValueError("The project name needs at least one letter or digit.")
+    project_id = f"{code}__{joined}"
+    if not NA__LIBRARY__ID.match(project_id):
+        raise ValueError(f"{project_id!r} cannot be a library folder name.")
+    return project_id
+# ---------------------------------------------------------------
+
+# FUNCTION | A New Project's First Record (the shape ValeVision Cloud Sync gives a new project)
+# ------------------------------------------------------------
+def Na__Library__NewRecord(code: str, name: str, project_type: str = "Whitecard") -> dict:
+    """Nothing has been delivered yet, so every schedule field is NOT YET REVIEWED (Cloud Sync
+    stamps dateFulfilled itself on its first publish). projectCode drops a letter prefix, as
+    Cloud Sync does (JN-2906 -> 2906)."""
+    return {
+        "projectName"   : str(name or "").strip(),
+        "projectCode"   : str(code or "").strip().split("-")[-1],
+        "productionData": {"input": NA__LIBRARY__NOT_YET_REVIEWED, "conceptArtist": NA__LIBRARY__NOT_YET_REVIEWED,
+                           "designer": NA__LIBRARY__NOT_YET_REVIEWED, "additionalNotes": NA__LIBRARY__DEFAULT_NOTES},
+        "scheduleData"  : {"dateReceived": NA__LIBRARY__NOT_YET_REVIEWED, "dateFulfilled": NA__LIBRARY__NOT_YET_REVIEWED,
+                           "timeTaken": NA__LIBRARY__NOT_YET_REVIEWED},
+        "images"        : [],
+        "ProjectType"   : project_type,
+        "valeVision_ModelUrls": [],
+        "valeVision_Camera__DefaultPosition": json.loads(json.dumps(NA__LIBRARY__CAMERA_DEFAULTS)),
+    }
+# ---------------------------------------------------------------
+
+# FUNCTION | Give a Project Folder Every Schema Folder It Lacks (returns the ones made)
+# ------------------------------------------------------------
+def Na__Library__Scaffold(folder: Path) -> list:
+    made = []
+    for rel in NA__LIBRARY__SCAFFOLD:
+        target = Path(folder) / rel
+        if not target.is_dir():
+            target.mkdir(parents=True, exist_ok=True)
+            made.append(rel)
+    return made
+# ---------------------------------------------------------------
+
+# FUNCTION | Create a Project: Its Folder in ValeProjects__<year>, the Whole Scaffold, Its First Record
+# ------------------------------------------------------------
+def Na__Library__CreateProject(project_id: str, record: dict, user_code: str = "", year: str | None = None) -> Path:
+    """Raises FileExistsError when the id is already in the library (in any year) and ValueError
+    for a bad id. One creator at a time across every app process. Returns the new folder."""
+    if not NA__LIBRARY__ID.match(str(project_id or "")):
+        raise ValueError(f"{project_id!r} cannot be a library folder name.")
+    year = str(year or time.strftime("%Y", time.gmtime()))
+    if not re.match(r"^\d{4}$", year):
+        raise ValueError(f"{year!r} is not a year.")
+    with Na__Library__Locked(NA__LIBRARY__DIR / "ProjectCreate"):             # <-- .ProjectCreate.lock: two apps cannot both make the same folder
+        if project_id in Na__Library__Index(force=True):
+            raise FileExistsError(project_id)
+        folder = NA__LIBRARY__DIR / f"ValeProjects__{year}" / project_id
+        folder.mkdir(parents=True, exist_ok=False)
+        Na__Library__Scaffold(folder)
+        Na__Library__WriteJson(folder / f"ProjectData__{project_id}__.json", record, user_code, folder)
+    Na__Library__Index(force=True)                                             # <-- Every reader in this process sees it at once
+    return folder
 # ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------

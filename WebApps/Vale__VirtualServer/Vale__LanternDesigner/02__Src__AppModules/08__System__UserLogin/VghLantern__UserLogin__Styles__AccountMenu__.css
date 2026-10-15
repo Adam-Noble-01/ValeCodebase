@@ -1,0 +1,38 @@
+/* =============================================================================
+ * VGHLANTERN - ACCOUNT MENU STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UserLogin__Styles__AccountMenu__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : User Login - Account Menu
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Where the shared sign-in's avatar sits in Lantern Designer's header
+ * CREATED    : 07-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Since 15-Oct-2026 the avatar, its menu and the sign-in card are drawn and
+ *   styled by the shared Vale sign-in
+ *   (/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css),
+ *   inline in this mount (.ValeUserLogin__Mount--Inline). Only the mount's place
+ *   in the header is set here.
+ * - The menu panel needs no z-index of its own against the app: the header is
+ *   already the top layer at --Vale_ZIndex_Header, so the panel paints over
+ *   the nav bar and the mode panels beneath it.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Avatar Mount
+ * ----------------------------------------------------------------------------- */
+
+    /* ACCOUNT MENU | Mount Wrapper (right of the header title) */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        margin-left                        : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

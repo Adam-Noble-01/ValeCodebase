@@ -1,0 +1,75 @@
+{
+    "VghLantern__DocManagement__Config__Description": "System configuration overlay for the Document Management Mode project table. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly.",
+
+    "VghLantern__DocManagement__Config__Table": {
+
+        "StatusOptions": [
+            "Draft",
+            "For Approval",
+            "Issued"
+        ],
+
+        "StatusColours": {
+            "Draft"         : "#d32f2f",
+            "For Approval"  : "#e6a817",
+            "Issued"        : "#2a7d4f"
+        },
+
+        "DefaultSortField"     : "dateModified",
+        "DefaultSortDirection" : "desc",
+
+        "SearchPlaceholder"    : "Search lantern projects...",
+        "SearchFields"         : ["projectCode", "libraryId", "projectName", "clientName", "documentName", "status"]
+    },
+
+    "VghLantern__DocManagement__Config__EmptyState": {
+        "Title"  : "No Lantern Designs Yet",
+        "Text"   : "Start a design for a project in the Vale Projects Master Library, or add a new job to the library.",
+        "Glyph"  : "&#128736;"
+    },
+
+    "VghLantern__DocManagement__Config__NewProject": {
+        "PlaceholderProjectCode"  : "e.g. 2601",
+        "PlaceholderProjectName"  : "e.g. Jones Residence",
+        "PlaceholderClientName"   : "e.g. Mr & Mrs Jones",
+        "PlaceholderDocumentName" : "e.g. Orangery Roof Lantern",
+        "ManualModalTitle"        : "New Lantern Design - Enter by Hand",
+        "ManualModalIntro"        : "The job is added to the Vale Projects Master Library as a new project (folder <job number>__<Name>), or the design goes into it if the library already has that folder.",
+        "LandingModeKey"          : "LanternEditor"
+    },
+
+    "VghLantern__DocManagement__Config__NewProjectDatabase": {
+        "SectionNote"              : "Copy for the new design modal. Since 15-Oct-2026 a design always lives in a project of the Vale Projects Master Library: the job number finds that job's library projects (and the client's details in the Vale database placeholder), and the user picks one, or adds the job to the library. The job number digit rules themselves live in Na__ValeDatabase__Config.json; the strings here only describe them to the user.",
+        "ModalTitle"               : "New Lantern Design",
+        "ConfirmTitle"             : "Choose the Project",
+        "JobNumberLabel"           : "Vale Job Number",
+        "JobNumberPlaceholder"     : "e.g. 1256 or 15134",
+        "JobNumberHint"            : "Enter the 4 or 5 digit Vale job number. The job is looked up in the Vale Projects Master Library, and the client's details in the Vale database.",
+        "FetchButtonLabel"         : "Find Project",
+        "FetchingLabel"            : "Looking up...",
+        "FetchingMessage"          : "Looking up the job in the Master Library...",
+        "LookupUnavailableMessage" : "The Master Library could not be searched: {Error}",
+        "LibraryIntro"             : "Projects in the Vale Projects Master Library for job {JobNumber}:",
+        "LibraryNoneIntro"         : "Job {JobNumber} is not in the Vale Projects Master Library yet.",
+        "LibraryTakenNote"         : "already has a Lantern design",
+        "LibraryModelNote"         : "3D model",
+        "LibraryImagesNote"        : "gallery images",
+        "LibraryNewOptionLabel"    : "Add job {JobNumber} to the library as a new project",
+        "LibraryNewNameLabel"      : "New project name",
+        "LibraryNewNamePlaceholder": "e.g. Jones",
+        "LibraryNewNameHint"       : "The library folder becomes {JobNumber}__{Name}, with every folder of the schema project, ready for ValeVision too.",
+        "ClientIntro"              : "Vale database record for job {JobNumber}:",
+        "ClientNotFoundNote"       : "No client record for this job in the Vale database: the client details can be filled in later.",
+        "PreviewQuestion"          : "Start the Lantern design in the project chosen above?",
+        "AcceptButtonLabel"        : "Create Lantern Design",
+        "CreatingLabel"            : "Creating...",
+        "BackButtonLabel"          : "Back",
+        "CancelButtonLabel"        : "Cancel",
+        "ManualEntryLinkText"      : "Not in the Database? Click Here",
+        "ErrorPickProject"         : "Choose a project, or add the job to the library.",
+        "ErrorNewName"             : "Give the new project a name.",
+        "ErrorNonNumeric"          : "Job numbers contain digits only.",
+        "ErrorLeadingZero"         : "Vale job numbers do not start with 0.",
+        "ErrorWrongLength"         : "Job numbers are 4 or 5 digits."
+    }
+}

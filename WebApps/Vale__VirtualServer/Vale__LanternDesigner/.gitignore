@@ -1,0 +1,17 @@
+# =============================================================================
+# VALE LANTERN DESIGNER - GIT IGNORE
+# =============================================================================
+# Designs live in the Vale Projects Master Library (Vale__Projects__MasterLibrary/
+# <year>/<project>/LanternDesigner/), and per-user settings in Server__UserAccountData,
+# so nothing in this folder is user data any more.
+
+# Node dependency install tree for the dev checks in 60__Dev__WebBuildUtils
+# (the lockfile is committed; install with npm ci)
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.npm/
+__pycache__/

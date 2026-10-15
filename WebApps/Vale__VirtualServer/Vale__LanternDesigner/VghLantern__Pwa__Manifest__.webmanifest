@@ -1,0 +1,28 @@
+{
+    "id": "/lantern-designer/",
+    "name": "Vale Lantern Designer",
+    "short_name": "Lantern Designer",
+    "description": "Parametric roof lantern configurator and specification workspace for Vale Garden Houses.",
+    "categories": ["productivity", "business", "utilities"],
+    "lang": "en-GB",
+    "dir": "ltr",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
+    "orientation": "any",
+    "theme_color": "#172b3a",
+    "background_color": "#172b3a",
+    "icons": [
+        { "src": "01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "01__AppAssets__VghLantern/Na__VghLanternApp__Icon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "01__AppAssets__VghLantern/Na__VghLanternApp__Icon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "related_applications": [
+        { "platform": "webapp", "url": "https://app.valegardenhouses.com/lantern-designer/VghLantern__Pwa__Manifest__.webmanifest" }
+    ],
+    "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+    "handle_links": "preferred",
+    "prefer_related_applications": false
+}

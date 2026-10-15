@@ -28,11 +28,13 @@ Vale__Projects__MasterLibrary\ValeProjects__<year>\<code>__<Name>\
 ├── ValeVision3D\        Content__3dModel__GlbFiles\  Content__3dModel__AppGenerated\  Content__AnimationScenes__Thumbnails\
 │                        UserData__UserAppConfigs\  UserData__UserGeneratedContent__Drawings\  UserData__UserGeneratedContent__Images\
 ├── ValeVisionGallery\   Content__GalleryImages__FullQuality__VariantImages\  …__524p__VariantImages\  …__Thumbnail__VariantImages\
-└── LanternDesigner\
+├── ValeVision__TheiaVideo\   AppData__VideoData\  Content__VideoFiles\  Content__VideoThumbnails\  UserData__UserAppConfigs\
+└── LanternDesigner\     UserData__LanternDesign\   the project's Lantern design (API only: it names the client)
 ```
 
 - Copy `ValeProjects__2026\12345__ExampleProject__Schema\` for a new project. Its JSON should be
-  renamed `ProjectData__12345__ExampleProject__Schema__.json`.
+  renamed `ProjectData__12345__ExampleProject__Schema__.json`. Lantern Designer can also add a job
+  itself (every folder of the schema, `ProjectType: "LanternDesign"`; since 15-Oct-2026).
 - A new app adds its own sub-folder in each project, with `Content__` and `UserData__` buckets.
 - `.example` files describe the schema here and never sync.
 

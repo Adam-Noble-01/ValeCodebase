@@ -215,7 +215,10 @@
         var Na__Apps = {
             //   Both open the gallery: /valevision/ on its own opens an empty project, so a project is chosen from the gallery
             valevision   : { name: 'ValeVision',    url: 'https://app.valegardenhouses.com/project-gallery/', icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
-            valevision3d : { name: 'ValeVision 3D', url: 'https://app.valegardenhouses.com/project-gallery/', icon:'/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' }
+            valevision3d : { name: 'ValeVision 3D', url: 'https://app.valegardenhouses.com/project-gallery/', icon:'/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
+            //   15-Oct-2026: no pictures of its own yet (snips: false shows the steps without them;
+            //   make them with Server__DeveloperTools/50__Help__InstallSnippets, then drop the flag)
+            lanterndesigner : { name: 'Lantern Designer', url: 'https://app.valegardenhouses.com/lantern-designer/', icon: '/lantern-designer/01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png', snips: false }
         };
         var Na__Share = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="Share"><path d="M8 7l4-4 4 4M12 3v13"/><path d="M7 10H5v11h14V10h-2"/></svg>';
         var Na__Dots  = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="menu"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>';
@@ -304,7 +307,7 @@
         // SUB FUNCTION | One Step (or the "No card?" block)
         // ------------------------------------------------------------
         function Na__StepHtml(s, n) {
-            var fig = s.snip
+            var fig = (s.snip && Na__App.snips !== false)
                 ? '<figure class="Help__Figure' + (s.phone ? ' is-phone' : '') + '"><img src="Help__Snippets/HelpSnippet__' +
                   Na__AppKey + '__' + s.snip + '__.webp" alt="' + Na__Fill(s.cap).replace(/"/g, '&quot;') + '">' +
                   '<figcaption>' + Na__Fill(s.cap) + '</figcaption></figure>'

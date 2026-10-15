@@ -17,7 +17,9 @@
 // - Supports gallery mode tabs (Whitecard Models, Max Models); Blockout Models
 //   is in the hamburger menu (barely used, so it gave up its tab, 13-Oct-2026)
 // - Filters projects by ProjectType field in project.json:
-//     Whitecard Models (the main list): Whitecard, MaxModel and untagged projects
+//     Whitecard Models (the main list): Whitecard, MaxModel and untagged projects,
+//       and LanternDesign projects once they have gallery images (15-Oct-2026: a job
+//       Lantern Designer added to the library has none until its 3D work is published)
 //     Blockout Models: Blockout only (behind its warning banner)
 //     Max Models: MaxModel only
 // - Shows warning banner when in Blockout mode
@@ -40,7 +42,8 @@
         if (galleryMode === 'blockout') {
             return projects.filter(p => p.ProjectType === 'Blockout');        // <-- Show only Blockout projects
         }
-        return projects.filter(p => p.ProjectType === 'Whitecard' || p.ProjectType === 'MaxModel' || !p.ProjectType);  // <-- Whitecard, Max and untagged: Max models mix in (Adam, 07-Oct-2026); blockouts keep their own tab
+        return projects.filter(p => p.ProjectType === 'Whitecard' || p.ProjectType === 'MaxModel' || !p.ProjectType  // <-- Whitecard, Max and untagged: Max models mix in (Adam, 07-Oct-2026); blockouts keep their own tab
+            || (p.ProjectType === 'LanternDesign' && (p.images || []).length > 0));                                     // <-- A lantern-only job joins once its 3D images are published
     }
     // ---------------------------------------------------------------
 

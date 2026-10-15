@@ -22,6 +22,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Oct-2026 - Version 2.1.0
+// - Lantern-only jobs (ProjectType "LanternDesign", added to the library by Lantern
+//   Designer) are left out until they have 3D work (gallery images or a model):
+//   they are not 3D production jobs.
+//
 // 06-Oct-2026 - Version 2.0.0
 // - App server: the Gallery API replaces the dev-server discovery, the R2 /
 //   GitHub Pages master index and the per-project fetches.
@@ -48,6 +53,7 @@
         report('Loading projects from the library…');
         const projects = (await loadAllProjectsIncludingDisabled())
             .filter(p => !NA_KPI_SOURCE_EXCLUDED.some(token => String(p.folderId).includes(token)))
+            .filter(p => p.ProjectType !== 'LanternDesign' || (p.images || []).length > 0 || p.hasGlb)   // <-- Lantern-only: no 3D work yet
             .map(p => Object.assign(p, { __folderPath: `${p.year}/${p.folderId}` }));
         report(`${projects.length} projects loaded.`);
         return projects;

@@ -239,3 +239,16 @@ WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/**/UserData__*/
 # Theia uploads in progress.
 **/UserData__ShareLinks/
 **/UserData__UploadStaging/
+
+# LANTERN DESIGNER DESIGNS (15-Oct-2026). Each library project's LanternDesigner/ folder holds
+# that project's Lantern design (LanternDesigner/UserData__LanternDesign/), which names the
+# client and gives their address, and this repository is public. Designs are made on the server
+# through the Lantern Designer API and collected to this PC by the Vale Virtual Server Manager;
+# they never go in git. The pattern also covers their copies in
+# ProjectData__Revisions/LanternDesigner/. The schema project's .example stays tracked.
+WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/**/LanternDesigner/
+!WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/ValeProjects__2026/12345__ExampleProject__Schema/LanternDesigner/
+
+# Lock files the Vale API library writer keeps beside the documents it writes (.<document>.lock,
+# .ProjectCreate.lock). Never synced either (the Server Manager's NeverSync has *.lock).
+WebApps/Vale__VirtualServer/**/.*.lock

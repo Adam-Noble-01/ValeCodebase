@@ -34,9 +34,9 @@
             "Target": "Vale__LanternDesigner",
             "Entry": "index.html",
             "ExampleQuery": "",
-            "Api": false,
+            "Api": true,
             "ApiPort": 8003,
-            "Note": "Lantern Designer (URL from the email to Shane)"
+            "Note": "Lantern Designer (URL from the email to Shane); API vale@LanternDesigner on 8003 since 15-Oct-2026"
         },
         {
             "Id": "gallery",
@@ -86,13 +86,13 @@
         }
     ],
     "Applied": {
-        "Hash": "154e2f5eada6",
-        "Utc": "2026-10-07T11:14:45Z",
+        "Hash": "623ec7af6153",
+        "Utc": "2026-10-15T13:49:31Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
             "/valespec/": "404",
-            "/lantern-designer/": "404",
+            "/lantern-designer/": "200",
             "/project-gallery/": "200",
             "/help/": "200",
             "/theia/": "200",

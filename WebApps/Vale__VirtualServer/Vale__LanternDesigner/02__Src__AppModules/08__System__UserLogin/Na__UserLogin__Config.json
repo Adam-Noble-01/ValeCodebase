@@ -1,0 +1,23 @@
+{
+    "VghLantern__UserLogin__Config__Description": "System configuration overlay for signing in. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly. Since 15-Oct-2026 Lantern Designer signs in with the shared Vale sign-in (/AppAssets__CommonApplicationAssets/Shared__UserLogin/, the same account and password as ValeVision and ValeVision 3D, one session for every Vale app). The prototype's test accounts, cookie and sign-in copy are retired; the shared card owns its own wording. This file keeps the Lantern logo for the card and the labels of the app's own items in the avatar menu.",
+
+    "VghLantern__UserLogin__Config__Content": {
+        "LogoPath"     : "01__AppAssets__VghLantern/Graphics__Logo__ValeLanternDesigner__.png",
+        "LogoAltText"  : "Vale Lantern Designer",
+        "LogoPathNote" : "Shown at the top of the shared sign-in card, so Lantern Designer's card keeps its own artwork."
+    },
+
+    "VghLantern__UserLogin__Config__AccountMenu": {
+        "AccountMenuNote"          : "The avatar, the identity block, Change password and Sign out are drawn by the shared sign-in. These are the items Lantern Designer adds to that menu.",
+
+        "HomeScreenLabel"          : "Home Screen",
+        "HomeScreenNote"           : "Returns to the landing card from any mode. The loaded project is left untouched, so leaving the landing screen again lands back on the same drawing.",
+
+        "DeveloperMenuLabel"       : "Developer Tools",
+        "DeveloperMenuNote"        : "Shown to AppAdmin accounts only (the shared sign-in's adminOnly), as ValeVision 3D's Dev Tools are. Was the Developer role of the prototype's test accounts.",
+        "DeveloperSketchUpLabel"   : "Download SketchUp File",
+        "DeveloperSketchUpNote"    : "Writes the current lantern as a millimetre build payload for the Vale Lantern Importer in SketchUp. The lantern exported is always the one on screen.",
+        "DeveloperCadLabel"        : "Download CAD Files",
+        "DeveloperCadNote"         : "Writes the current lantern's plan and elevations as one layered DXF. Not yet built - the menu item reports that rather than failing silently."
+    }
+}

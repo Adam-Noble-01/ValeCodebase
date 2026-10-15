@@ -839,6 +839,20 @@
             stroke-width                        : 1.25;
         }
 
+        /* Network: with a selection, everything else fades right back */
+        .chart.is-network.has-focus .node:not(.is-related):not(.is-twin):not(.is-match):not(.is-match-inside) .node__body,
+        .chart.is-network.has-focus .res:not(.is-related):not(.is-match) .res__body {
+            opacity                             : 0.1;
+        }
+
+        .chart.is-network.has-focus .link:not(.is-path) {
+            stroke-opacity                      : 0.1;
+        }
+
+        .float-labels.is-network .float-label.is-dim {
+            opacity                             : 0.18;
+        }
+
         .chart.is-network .ref {
             stroke-opacity                      : 0.22;
         }
@@ -3377,7 +3391,7 @@
 
         const Force = { sim: null, nodes: new Map(), signature: '', pendingFit: null, fitTimer: null };
         const ForceRadius = { library: 44, category: 20, assembly: 13, component: 8, product: 8, resource: 10 };
-        const ForceCharge = { library: -1600, category: -620, assembly: -220, component: -90, product: -90, resource: -320 };   // <-- How hard each kind of node pushes the others away
+        const ForceCharge = { library: -1600, category: -620, assembly: -220, component: -90, product: -90, resource: -140 };   // <-- How hard each kind of node pushes the others away
 
         function ValeObjectLibrary_IsForce() {
             return State.view === 'library';
@@ -3400,8 +3414,76 @@
                 .force('collide', d3.forceCollide().radius(function (n) { return n.r + 12; }).iterations(2))
                 .force('x', d3.forceX(0).strength(0.008))                       // <-- A light pull to the middle keeps the network round
                 .force('y', d3.forceY(0).strength(0.008))
+                .force('branches', ValeObjectLibrary_ForceBranches())
                 .on('tick', ValeObjectLibrary_ForceTick)
                 .stop();
+        }
+
+        // FUNCTION | A custom force - what is inside an opened box lines up in a column
+        // ------------------------------------------------------------
+        // Mind-map style: below the shelves, the records inside an opened box
+        // are pulled into an evenly spaced column on its outer side (away
+        // from the box it hangs from), so every label sits beside its own dot
+        // and nothing lands on a neighbour. A column that would run back
+        // towards the centre is slid outwards. The shelves themselves float
+        // freely around Vale Object Library.
+        function ValeObjectLibrary_ForceBranches() {
+            let nodes = [];
+            function force(alpha) {
+                nodes.forEach(function (node) {
+                    const placement = node.placement;
+                    if (!placement || !placement.parent || !placement.parent.parent) {
+                        return;                                                  // <-- The centre and its shelves move freely
+                    }
+                    const parent = Force.nodes.get(placement.parent.uid);
+                    const grand  = Force.nodes.get(placement.parent.parent.uid);
+                    if (!parent || !grand) {
+                        return;
+                    }
+                    const siblings = placement.parent.children;
+                    const count    = siblings.length;
+                    const index    = siblings.indexOf(placement);
+                    let ux = parent.x - grand.x;
+                    let uy = parent.y - grand.y;
+                    const length = Math.hypot(ux, uy) || 1;
+                    ux /= length;
+                    uy /= length;
+                    // A long list wraps into balanced columns of up to eight, side by side,
+                    // each far enough from the last to leave room for its labels
+                    const columns = Math.ceil(count / 8);
+                    const perCol  = Math.ceil(count / columns);
+                    const column  = Math.floor(index / perCol);
+                    const row     = index % perCol;
+                    const rows    = column === columns - 1 ? count - column * perCol : perCol;
+                    const side    = ux >= 0 ? 1 : -1;
+                    const gap     = Math.max(46, node.r * 2 + 14);
+                    const reach   = parent.r + 110 + node.r + column * 210;
+                    const shift   = Math.abs(uy) * (perCol - 1) * gap * 0.35;    // <-- Above or below its parent: slide the columns part-way outwards
+                    const tx      = parent.x + side * reach;
+                    const ty      = parent.y + Math.sign(uy || 1) * shift + (row - (rows - 1) / 2) * gap;
+                    node.labelSide = side > 0 ? 'right' : 'left';
+                    node.vx += (tx - node.x) * 0.4 * alpha;
+                    node.vy += (ty - node.y) * 0.4 * alpha;
+                });
+            }
+            force.initialize = function (simNodes) { nodes = simNodes; };
+            return force;
+        }
+
+        // SUB FUNCTION | How hard a node pushes - an open shelf pushes harder the more it holds
+        function ValeObjectLibrary_ForceChargeOf(node) {
+            if (node.kind === 'resource') {
+                return ForceCharge.resource;
+            }
+            const placement = node.placement;
+            const open      = State.expanded.has(placement.uid) ? placement.children.length : 0;
+            if (placement.tier === 'library') {
+                return ForceCharge.library;
+            }
+            if (placement.tier === 'category') {
+                return ForceCharge.category - open * 170;
+            }
+            return -40 - open * 60;                                              // <-- In a column: gentle, so the column stays neat
         }
 
         function ValeObjectLibrary_ForceStop() {
@@ -3479,14 +3561,24 @@
             ValeObjectLibrary_ComputeFocus();
             const pairs       = ValeObjectLibrary_RefPairs();
             const resourceIds = new Set(pairs.map(function (pair) { return pair.to; }));
+            let resourcesMoved = false;
             resourceIds.forEach(function (id) {
-                const key = 'res:' + id;
-                if (Force.nodes.has(key)) {
-                    return;
-                }
+                const key        = 'res:' + id;
                 const anchorPair = pairs.find(function (pair) { return pair.to === id; });
                 const anchor     = anchorPair && Force.nodes.get(anchorPair.from);
                 const angle      = Math.random() * Math.PI * 2;
+                const existing   = Force.nodes.get(key);
+                if (existing) {
+                    if (anchor && existing.anchor !== anchor.key) {
+                        existing.anchor = anchor.key;                             // <-- A new selection uses it: jump beside the new one
+                        existing.x  = anchor.x + Math.cos(angle) * 80;
+                        existing.y  = anchor.y + Math.sin(angle) * 80;
+                        existing.vx = 0;
+                        existing.vy = 0;
+                        resourcesMoved = true;
+                    }
+                    return;
+                }
                 Force.nodes.set(key, {
                     key      : key,
                     kind     : 'resource',
@@ -3494,8 +3586,9 @@
                     tier     : 'resource',
                     r        : ForceRadius.resource,
                     charge   : ForceCharge.resource,
-                    x        : (anchor ? anchor.x : 0) + Math.cos(angle) * 70,
-                    y        : (anchor ? anchor.y : 0) + Math.sin(angle) * 70
+                    anchor   : anchor ? anchor.key : null,
+                    x        : (anchor ? anchor.x : 0) + Math.cos(angle) * 80,
+                    y        : (anchor ? anchor.y : 0) + Math.sin(angle) * 80
                 });
             });
             Force.nodes.forEach(function (node, key) {
@@ -3517,17 +3610,21 @@
                 return { source: Force.nodes.get(pair.from), target: Force.nodes.get('res:' + pair.to), kind: 'ref' };
             })).filter(function (link) { return link.source && link.target; });
 
-            const signature = Array.from(Force.nodes.keys()).join(',') + '#' + simLinks.length;
-            if (signature !== Force.signature) {
+            const signature = Array.from(Force.nodes.keys()).join(',') + '#' + simLinks.map(function (link) { return link.source.key + '>' + link.target.key; }).join(',');
+            if (signature !== Force.signature || resourcesMoved) {
                 Force.signature = signature;
                 Force.sim.nodes(Array.from(Force.nodes.values()));
                 Force.sim.force('link').links(simLinks)
                     .distance(function (link) {
-                        if (link.kind === 'ref') { return 260; }
-                        return link.source.r + link.target.r + ({ library: 170, category: 70, assembly: 38 }[link.source.tier] || 32);
+                        if (link.kind === 'ref') { return 95; }                  // <-- A selection's Resources sit close beside it
+                        const open = link.target.placement && State.expanded.has(link.target.uid) ? link.target.placement.children.length : 0;
+                        return link.source.r + link.target.r + 170 + open * 8;   // <-- Only the centre-to-shelf springs remain; a full shelf sits further out
                     })
-                    .strength(function (link) { return link.kind === 'ref' ? 0.02 : 0.85; });
-                Force.sim.force('charge').strength(function (node) { return node.charge; });
+                    .strength(function (link) {
+                        if (link.kind === 'ref') { return 0.35; }
+                        return link.target.placement && link.target.placement.parent && link.target.placement.parent.parent ? 0 : 0.85;   // <-- Columns are placed by the branches force
+                    });
+                Force.sim.force('charge').strength(ValeObjectLibrary_ForceChargeOf);
                 Force.sim.alpha(Math.max(Force.sim.alpha(), placementsChanged ? 0.75 : 0.3)).restart();
             }
 
@@ -3789,24 +3886,6 @@
                     });
                 }
 
-                // Network: diving into an Assembly shows the Resources of every part open inside it
-                if (ValeObjectLibrary_IsForce() && anchor === placement && placement.tier === 'assembly') {
-                    (function walkParts(node) {
-                        if (!State.expanded.has(node.uid)) {
-                            return;
-                        }
-                        node.children.forEach(function (child) {
-                            if (ValeObjectLibrary_IsPart(child.tier)) {
-                                child.def.uses.forEach(function (id) {
-                                    focus.res.add(id);
-                                    focus.refPairs.push([child.uid, id]);
-                                });
-                            }
-                            walkParts(child);
-                        });
-                    })(placement);
-                }
-
                 placement.def.placements.forEach(function (twin) {
                     if (twin === placement) {
                         return;
@@ -3893,6 +3972,12 @@
                 ValeObjectLibrary_AfterSettle(function () {
                     if (State.selection === target) {
                         ValeObjectLibrary_EnsureVisible(ValeObjectLibrary_TargetBox(target));
+                    }
+                });
+            } else if (target && target.type === 'node' && ValeObjectLibrary_IsForce() && State.focus && State.focus.res.size) {
+                ValeObjectLibrary_AfterSettle(function () {                      // <-- Network: keep a part and the Resources it brought in on screen
+                    if (State.selection === target && State.focus) {
+                        ValeObjectLibrary_EnsureVisible(ValeObjectLibrary_BoxOf([target.uid], Array.from(State.focus.res)));
                     }
                 });
             }
@@ -4628,7 +4713,11 @@
                     ? Math.max(ValeObjectLibrary_TextWidth(candidate.name, ValeObjectLibrary_Font(11.5, 600)), captionWidth) + 14
                     : ValeObjectLibrary_TextWidth(candidate.name, ValeObjectLibrary_Font(12, 600)) + 32;
                 const height = force ? 30 : 22;
-                const outside = candidate.box.x + candidate.box.w / 2 < centre
+                const simNode = force ? Force.nodes.get(candidate.key) : null;
+                const toLeft  = simNode && simNode.labelSide
+                    ? simNode.labelSide === 'left'                               // <-- In a column, every label sits on the column's outer side
+                    : candidate.box.x + candidate.box.w / 2 < centre;
+                const outside = toLeft
                     ? transform.applyX(candidate.box.x) - 4 - width                  // <-- Network: on the outer side, away from the centre
                     : transform.applyX(candidate.box.x + candidate.box.w) + 4;
                 const left   = force ? outside : transform.applyX(candidate.box.x) - 2;
@@ -5688,7 +5777,7 @@
                 scheme  : { scheme: null,                                           library: ['Start',         'Back to the start: Vale Object Library on its own'] },
                 family  : { scheme: ['Families',   'Open the chart to the Families'],  library: ['Shelves',       'Open the centre to its category shelves'] },
                 assembly: { scheme: ['Assemblies', 'Open the chart to the Assemblies'], library: ['Records',       'Open every shelf to show every record'] },
-                parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Whole network', 'Open everything - select a record to see the Resources it uses'] },
+                parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Whole network', 'Open everything - select a component or product to see the Resources it uses'] },
                 all     : { scheme: ['All',        'Open every box and draw every link to the shared Resources'], library: null }
             };
             Elements.detailButtons.forEach(function (button) {

@@ -225,6 +225,9 @@
         }
 
         .view-switch__btn {
+            display                             : inline-flex;
+            align-items                         : center;
+            gap                                 : 7px;
             height                              : 32px;
             padding                             : 0 14px;
             border                              : none;
@@ -239,6 +242,19 @@
 
         .view-switch__btn:hover {
             color                               : var(--Vale_PrimaryBrand);
+        }
+
+        /* The Vale graphics: the orangery for the Scheme, the box for the library */
+        .view-switch__icon {
+            flex                                : none;
+            width                               : 20px;
+            height                              : 20px;
+            opacity                             : 0.75;
+        }
+
+        .view-switch__btn:hover .view-switch__icon,
+        .view-switch__btn.is-on .view-switch__icon {
+            opacity                             : 1;
         }
 
         .view-switch__short {
@@ -772,6 +788,55 @@
             stroke-width                        : 3;
         }
 
+        /* The centre and the categories are white bubbles in a Vale navy ring, each
+           holding its Vale graphic: the orangery at the centre, the box on every
+           category. A closed category shows what it holds on a small navy badge. */
+        .fnode.tier-library .node__card,
+        .fnode.tier-category .node__card,
+        .fnode.tier-category.is-expanded .node__card {
+            fill                                : #ffffff;
+            stroke                              : var(--Vale_PrimaryBrand);
+        }
+
+        .fnode.tier-library .node__card {
+            stroke-width                        : 5;
+        }
+
+        .fnode.tier-category .node__card {
+            stroke-width                        : 2.5;
+        }
+
+        .fnode.tier-category.is-expanded .node__card {
+            stroke-width                        : 3.5;
+        }
+
+        .chart .fnode.tier-library.is-selected .node__card,
+        .chart .fnode.tier-category.is-selected .node__card {
+            fill                                : var(--Vale_HoverColour);
+        }
+
+        .chart .fnode.tier-library.is-selected .node__card {
+            stroke-width                        : 7;
+        }
+
+        .chart .fnode.tier-category.is-selected .node__card {
+            stroke-width                        : 4.5;
+        }
+
+        .fnode__graphic {
+            pointer-events                      : none;
+        }
+
+        .fnode__badge rect {
+            fill                                : var(--Vale_PrimaryBrand);
+            stroke                              : #ffffff;
+            stroke-width                        : 1.5;
+        }
+
+        .fnode.tier-category .fnode__badge .fnode__count {
+            font-size                           : 9.5px;
+        }
+
         .chart .fnode.is-selected .node__card,
         .chart .fres.is-selected .res__card {
             stroke                              : var(--Vale_PrimaryBrand);
@@ -921,6 +986,12 @@
             display                             : inline-flex;
             align-items                         : center;
             gap                                 : 6px;
+        }
+
+        .strip-legend__graphic {
+            flex                                : none;
+            width                               : 18px;
+            height                              : 18px;
         }
 
         .strip-legend__hint {
@@ -2049,8 +2120,8 @@
         </div>
 
         <div class="view-switch" role="group" aria-label="What to show">
-            <button class="view-switch__btn js-view is-on" type="button" data-view="scheme" aria-pressed="true" title="One configured project, and only what it uses">Scheme</button>
-            <button class="view-switch__btn js-view" type="button" data-view="library" aria-pressed="false" title="Every record in the Object Library, on its category shelf"><span class="view-switch__long">Whole library</span><span class="view-switch__short">Library</span></button>
+            <button class="view-switch__btn js-view is-on" type="button" data-view="scheme" aria-pressed="true" title="One configured project, and only what it uses"><img class="view-switch__icon" src="01_Assets/Icon__ObjectLibrary__SchemeView__.svg" alt="">Scheme</button>
+            <button class="view-switch__btn js-view" type="button" data-view="library" aria-pressed="false" title="Every record in the Object Library, on its category shelf"><img class="view-switch__icon" src="01_Assets/Icon__ObjectLibrary__WholeLibrary__.svg" alt=""><span class="view-switch__long">Whole library</span><span class="view-switch__short">Library</span></button>
         </div>
 
         <div class="app-header__spacer"></div>
@@ -2463,6 +2534,15 @@
             return tier === 'component' || tier === 'product';
         }
 
+        // SUB FUNCTION | What a library category holds, e.g. "Assemblies" or "Components + Products"
+        // A category is a browsing group, not an object - its caption says what is in it
+        function ValeObjectLibrary_GroupCaption(placement) {
+            const kinds = ['assembly', 'component', 'product'].filter(function (tier) {
+                return placement.children.some(function (child) { return child.tier === tier; });
+            });
+            return kinds.map(function (tier) { return Data.tiers[tier].plural; }).join(' + ') || 'Category';
+        }
+
         function ValeObjectLibrary_IsStructural(tier) {
             return tier === 'library' || tier === 'category';
         }
@@ -2708,7 +2788,7 @@
             // Tree 2 - the whole library: every record with a category sits on that
             // shelf; records without one appear inside the assemblies that use them
             const libraryTree = ValeObjectLibrary_NewTree('library');
-            const libraryDef  = ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, on its category shelf.' }, 'library');
+            const libraryDef  = ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, grouped by category.' }, 'library');
             libraryTree.root  = ValeObjectLibrary_MakePlacement(libraryTree, libraryDef, null, 1, 0);
             const shelves = new Map();
             (Data.categories || []).forEach(function (category) {
@@ -3186,7 +3266,7 @@
                 badge.append('rect').attr('x', 0.5).attr('y', 3.5).attr('width', 7).attr('height', 7).attr('rx', 1.5);
                 badge.append('text').attr('x', 14).attr('y', 9.5).text(label);
                 badge.append('title').text(placement.tree === 'library'
-                    ? 'One library record, shown in ' + copies + ' places on the library shelves'
+                    ? 'One library record, shown in ' + copies + ' places in the library'
                     : 'One library record, used in ' + copies + ' places in this scheme');
             }
 
@@ -3255,7 +3335,7 @@
 
         function ValeObjectLibrary_LibraryStats() {
             const counts = ValeObjectLibrary_LibraryCounts();
-            return ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'shelf', 'shelves') + ' · '
+            return ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'category', 'categories') + ' · '
                  + ValeObjectLibrary_Plural(counts.records, 'record', 'records');
         }
         // ------------------------------------------------------------
@@ -3681,6 +3761,13 @@
             ValeObjectLibrary_ForceTick();                                       // <-- Put everything where it is now, straight away
         }
 
+        // The Vale graphics in the network's white bubbles: the orangery at the
+        // centre, the box on every category (sized to sit inside the navy ring)
+        const ForceGraphic = {
+            library : { src: '01_Assets/Icon__ObjectLibrary__SchemeView__.svg',   size: 64 },
+            category: { src: '01_Assets/Icon__ObjectLibrary__WholeLibrary__.svg', size: 40 }
+        };
+
         function ValeObjectLibrary_BuildForceNode(group, placement) {
             const r    = ForceRadius[placement.tier] || 8;
             const body = group.style('--node-colour', ValeObjectLibrary_TierColour(placement.tier)).append('g').attr('class', 'node__body');
@@ -3688,12 +3775,20 @@
                 body.append('circle').attr('class', 'fnode__pulse').attr('r', r);
             }
             body.append('circle').attr('class', 'node__card').attr('r', r);
-            if (placement.tier === 'library') {
-                const label = body.append('text').attr('class', 'fnode__root').attr('text-anchor', 'middle');
-                label.append('tspan').attr('x', 0).attr('y', -3).text('Vale Object');
-                label.append('tspan').attr('x', 0).attr('y', 12).text('Library');
+            const graphic = ForceGraphic[placement.tier];
+            if (graphic) {
+                body.append('image').attr('class', 'fnode__graphic').attr('href', graphic.src)
+                    .attr('x', -graphic.size / 2).attr('y', -graphic.size / 2)
+                    .attr('width', graphic.size).attr('height', graphic.size);
             }
-            body.append('text').attr('class', 'fnode__count').attr('dy', '0.35em').attr('text-anchor', 'middle');
+            if (placement.tier === 'category') {
+                const badge = body.append('g').attr('class', 'fnode__badge')                // <-- What a closed category holds, on its rim
+                    .attr('transform', 'translate(' + (r * 0.74) + ',' + (r * 0.74) + ')');
+                badge.append('rect').attr('y', -7).attr('height', 14).attr('rx', 7);
+                badge.append('text').attr('class', 'fnode__count').attr('dy', '0.35em').attr('text-anchor', 'middle');
+            } else {
+                body.append('text').attr('class', 'fnode__count').attr('dy', '0.35em').attr('text-anchor', 'middle');
+            }
             if (ValeObjectLibrary_IsUnavailable(placement.def)) {
                 group.classed('is-unavailable', true);
             }
@@ -3706,6 +3801,13 @@
             group.classed('is-expanded', open)
                  .classed('is-start', placement.tier === 'library' && !open);       // <-- The closed centre pulses: click me
             group.select('.fnode__count').text(!open && placement.children.length && placement.tier !== 'library' ? '+' + placement.children.length : '');
+            const badge = group.select('.fnode__badge');
+            if (!badge.empty()) {
+                const count = group.select('.fnode__count').text();
+                const width = 8 + count.length * 6;
+                badge.style('display', count ? null : 'none');                   // <-- An open category shows its contents instead
+                badge.select('rect').attr('x', -width / 2).attr('width', width);
+            }
         }
         // ------------------------------------------------------------
 
@@ -4560,8 +4662,10 @@
                 Elements.tierStrip.appendChild(ValeObjectLibrary_El('div', { class: 'strip-legend' },
                     keys.map(function (key) {
                         return ValeObjectLibrary_El('span', { class: 'strip-legend__item' },
-                            ValeObjectLibrary_El('span', { class: 'tier-head__dot', style: 'background:' + ValeObjectLibrary_TierColour(key) }),
-                            key === 'category' ? 'Shelf' : Data.tiers[key].label);
+                            ForceGraphic[key]                                    // <-- The centre and the categories are drawn with their Vale graphics
+                                ? ValeObjectLibrary_El('img', { class: 'strip-legend__graphic', src: ForceGraphic[key].src, alt: '' })
+                                : ValeObjectLibrary_El('span', { class: 'tier-head__dot', style: 'background:' + ValeObjectLibrary_TierColour(key) }),
+                            key === 'category' ? 'Category' : Data.tiers[key].label);
                     }),
                     ValeObjectLibrary_El('span', { class: 'strip-legend__hint', text: ValeObjectLibrary_Plural(counts.records, 'record', 'records') + ' · filled = closed, ring = open' })));
                 return;
@@ -4589,9 +4693,9 @@
                     dots  = [ValeObjectLibrary_TierColour('library')];
                     level = 'scheme';
                 } else if (header.key === 'category') {
-                    meta  = ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'shelf', 'shelves');
-                    label = 'Category shelves';
-                    short = 'Shelves';
+                    meta  = ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'category', 'categories');
+                    label = 'Categories';
+                    short = 'Categories';
                     dots  = [ValeObjectLibrary_TierColour('category')];
                     level = 'family';
                 } else {
@@ -4678,16 +4782,13 @@
             const dimming    = !!focus && !State.softFocus;
 
             Layout.visible.forEach(function (placement) {
-                if (force && placement.tier === 'library') {
-                    return;                                                      // <-- Labelled inside its own circle
-                }
-                let rank = priority[placement.tier];
+                let rank = priority[placement.tier];                             // <-- The network's centre holds the orangery, so it is labelled beside it like the rest
                 if (placement.tier === 'assembly' && placement.nest > 0) { rank = 3.5; }
                 if (!force && rank >= 4 && transform.k < 0.2) { return; }
                 if (focus && focus.selectedUid === placement.uid) { rank = -2; }      // <-- The selection's label always wins
                 else if (focus && (focus.nodes.has(placement.uid) || focus.twins.has(placement.uid))) { rank = Math.min(rank, 0.5); }
                 candidates.push({ key: placement.uid, rank: rank, box: Layout.pos.get(placement.uid), name: ValeObjectLibrary_ShortName(placement.def), colour: ValeObjectLibrary_TierColour(placement.tier),
-                    caption: placement.tier === 'category' ? 'Shelf' : ValeObjectLibrary_TierLabel(placement) });
+                    caption: placement.tier === 'category' ? ValeObjectLibrary_GroupCaption(placement) : ValeObjectLibrary_TierLabel(placement) });
             });
             if (force) {
                 Layout.res.forEach(function (box, id) {
@@ -4976,7 +5077,7 @@
                 E('h2', { class: 'insp-title', text: (meta.title || 'Object Library') + ': how it is built' }),
                 E('p', { class: 'insp-lead', text: 'One shared library of objects, from whole Families down to single profiles, materials and finishes. Every Scheme is configured from it, so each object is defined once and reused everywhere.' }),
                 E('div', { class: 'tiles tiles--2' },
-                    ValeObjectLibrary_Tile(counts.records, 'records in the library, on ' + shelves + ' shelves'),
+                    ValeObjectLibrary_Tile(counts.records, 'records in the library, in ' + shelves + ' categories'),
                     ValeObjectLibrary_Tile(scheme.placements.length, 'places they are used in ' + scheme.root.def.name),
                     ValeObjectLibrary_Tile(pieces, 'pieces to make or buy, counted automatically'),
                     top ? ValeObjectLibrary_Tile(top.users.length, 'objects use ' + top.name + ', the most shared resource') : null)
@@ -4989,7 +5090,7 @@
                     } }, label);
             };
             ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Two ways to look', null,
-                E('p', { class: 'body-text', text: 'Scheme shows one configured project, ' + scheme.root.def.name + ', and only what it uses, as a tree. Whole library shows every record we hold as a network around Vale Object Library: start at the centre and open it out shelf by shelf, or show the whole network at once.' }),
+                E('p', { class: 'body-text', text: 'Scheme shows one configured project, ' + scheme.root.def.name + ', and only what it uses, as a tree. Whole library shows every record we hold as a network around Vale Object Library: start at the centre and open it out category by category, or show the whole network at once.' }),
                 E('div', { class: 'view-buttons' }, viewButton('scheme', 'Show the scheme'), viewButton('library', 'Show the whole library'))));
 
             // The tiers - also the colour legend; a click opens the chart to that level
@@ -5179,7 +5280,7 @@
                             return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(other.parent.tier), name: ValeObjectLibrary_RouteText(other) || schemeName,
                                 sub: '×' + other.qty + ' here · ' + other.total + ' in the scheme', onClick: function () { ValeObjectLibrary_GoTo(other); } });
                         }))
-                        : E('p', { class: 'body-text muted', text: 'Not used in ' + schemeName + ' - on the shelf, ready for the next scheme.' })), 'in-scheme'));
+                        : E('p', { class: 'body-text muted', text: 'Not used in ' + schemeName + ' - in the library, ready for the next scheme.' })), 'in-scheme'));
                 return;
             }
 
@@ -5221,15 +5322,15 @@
                 def.summary ? E('p', { class: 'insp-lead', text: def.summary }) : null,
                 E('div', { class: 'tiles' },
                     placement.tier === 'library'
-                        ? ValeObjectLibrary_Tile(placement.children.length, 'shelves')
-                        : ValeObjectLibrary_Tile(records.length, records.length === 1 ? 'record on this shelf' : 'records on this shelf'),
+                        ? ValeObjectLibrary_Tile(placement.children.length, 'categories')
+                        : ValeObjectLibrary_Tile(records.length, records.length === 1 ? 'record in this category' : 'records in this category'),
                     ValeObjectLibrary_Tile(used, 'used in ' + schemeName),
                     ValeObjectLibrary_Tile(records.length - used, 'ready for the next scheme')),
                 ValeObjectLibrary_Section('What is ' + (placement.tier === 'library' ? 'the Object Library' : 'a Category') + '?', null,
                     E('p', { class: 'callout', style: '--tier-colour:' + tier.colour, text: tier.definition }))
             );
 
-            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section(placement.tier === 'library' ? 'Shelves' : 'On this shelf', ValeObjectLibrary_Plural(placement.children.length, 'item', 'items'),
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section(placement.tier === 'library' ? 'Categories' : 'In this category', ValeObjectLibrary_Plural(placement.children.length, 'item', 'items'),
                 E('div', { class: 'rows' }, placement.children.map(function (child) {
                     const code   = child.def.data['Product Code'];
                     const inside = child.children.length ? ValeObjectLibrary_Plural(child.children.length, 'item', 'items') + ' inside' : '';
@@ -5409,7 +5510,7 @@
                 return ValeObjectLibrary_Plural(def.users.length, 'object uses', 'objects use') + ' it';
             }
             if (def.tier === 'category') {
-                return 'Library shelf · ' + ValeObjectLibrary_Plural((def.placementsIn.library || [])[0].children.length, 'record', 'records');
+                return 'Library category · ' + ValeObjectLibrary_Plural((def.placementsIn.library || [])[0].children.length, 'record', 'records');
             }
             const code    = def.data['Product Code'] ? def.data['Product Code'] + ' · ' : '';
             const status  = ValeObjectLibrary_IsUnavailable(def) ? ' · unavailable' : '';
@@ -5775,8 +5876,8 @@
             // The same four steps, named for each view - the network starts from its centre
             const labels = {
                 scheme  : { scheme: null,                                           library: ['Start',         'Back to the start: Vale Object Library on its own'] },
-                family  : { scheme: ['Families',   'Open the chart to the Families'],  library: ['Shelves',       'Open the centre to its category shelves'] },
-                assembly: { scheme: ['Assemblies', 'Open the chart to the Assemblies'], library: ['Records',       'Open every shelf to show every record'] },
+                family  : { scheme: ['Families',   'Open the chart to the Families'],  library: ['Categories',    'Open the centre to its categories'] },
+                assembly: { scheme: ['Assemblies', 'Open the chart to the Assemblies'], library: ['Records',       'Open every category to show every record'] },
                 parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Whole network', 'Open everything - select a component or product to see the Resources it uses'] },
                 all     : { scheme: ['All',        'Open every box and draw every link to the shared Resources'], library: null }
             };

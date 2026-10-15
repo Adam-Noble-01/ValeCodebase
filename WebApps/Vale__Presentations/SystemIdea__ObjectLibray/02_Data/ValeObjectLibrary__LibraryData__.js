@@ -147,7 +147,7 @@ window.ValeObjectLibrary_LibraryData = {
             plural     : 'Object Library',
             colour     : '#172b3a',
             structural : true,
-            summary    : 'Every record we hold, on its category shelf.',
+            summary    : 'Every record we hold, grouped by category.',
             definition : 'The Object Library is the one shared store of every definition: Assemblies, Components, Products and Resources. Every Scheme is configured from it, so nothing in a Scheme is drawn from scratch and a record is only ever kept once.',
             dataPoints : []
         },
@@ -157,8 +157,8 @@ window.ValeObjectLibrary_LibraryData = {
             plural     : 'Categories',
             colour     : '#7b8794',
             structural : true,
-            summary    : 'A shelf in the library, for finding things.',
-            definition : 'Categories are the shelves of the library - columns, finials, crestings and so on - so a record is quick to find. They are for browsing only: a Scheme is built from the records themselves, not from categories.',
+            summary    : 'A group in the library for browsing - not an object itself.',
+            definition : 'Categories group the library for browsing - columns, finials, crestings and so on - so a record is quick to find. A category is not an object in the hierarchy (not an Assembly, Component or Product); it is labelled by what it holds, and a Scheme is built from the records themselves.',
             dataPoints : []
         }
     },
@@ -907,10 +907,10 @@ window.ValeObjectLibrary_LibraryData = {
           text  : 'The Configuration Engine keeps every option buildable. These door rules are ValeSpec\'s own: a wide panel needs the Senior Technical Manager\'s approval, a very tall door a Senior Architect\'s. Any object can also carry its CAD, SketchUp models, data sheets and photographs.',
           show  : 'assembly', select: 'ASM-DOOR', focus: 'selection', panel: 'rules' },
         { title : 'The library behind every scheme',
-          text  : 'Behind every Scheme sits the whole Object Library: {records} records on {categories} shelves, from classical columns to cabin hooks, finials and crestings. A Scheme simply picks from it.',
+          text  : 'Behind every Scheme sits the whole Object Library: {records} records in {categories} categories, from classical columns to cabin hooks, finials and crestings. A Scheme simply picks from it.',
           view  : 'library', show: 'family', select: 'LIBRARY', focus: 'all', dim: false },
         { title : 'Every record, ready for the next scheme',
-          text  : '{name} ({code}) is one of {siblings} roof finials on the shelf. Orangery Option 01 uses {schemeTotal}; the rest are ready for the next scheme, with their codes and data already in place.',
+          text  : '{name} ({code}) is one of {siblings} roof finials in the library. Orangery Option 01 uses {schemeTotal}; the rest are ready for the next scheme, with their codes and data already in place.',
           view  : 'library', show: 'family', reveal: ['PRD-VG726'], select: 'PRD-VG726', focus: 'parent' },
         { title : 'The whole system on one canvas',
           text  : 'Every object and every link, on one canvas. Scroll to zoom, drag to pan, click any box to see what it holds, switch between the Scheme and the whole Library at the top, or press F to fit everything back on screen.',

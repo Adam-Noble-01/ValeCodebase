@@ -754,6 +754,174 @@
 
 
         /* #region ---------------------------------------------------------------
+         * CHART | Library Network (force-directed whole-library view)
+         * -------------------------------------------------------------------
+         * Filled circle = closed (the number is what is inside), white ring in
+         * the tier colour = open. A 2px white ring keeps touching nodes apart.
+         * ------------------------------------------------------------------- */
+        .fnode .node__card,
+        .fres .res__card {
+            fill                                : var(--node-colour);
+            stroke                              : #ffffff;
+            stroke-width                        : 2;
+        }
+
+        .fnode.is-expanded:not(.tier-library) .node__card {
+            fill                                : #ffffff;
+            stroke                              : var(--node-colour);
+            stroke-width                        : 3;
+        }
+
+        .chart .fnode.is-selected .node__card,
+        .chart .fres.is-selected .res__card {
+            stroke                              : var(--Vale_PrimaryBrand);
+            stroke-width                        : 3.5;
+            stroke-dasharray                    : none;
+        }
+
+        .chart .fnode.is-twin .node__card {
+            stroke                              : var(--Vale_PrimaryBrand);
+            stroke-width                        : 2.5;
+            stroke-dasharray                    : 4 3;
+        }
+
+        .chart .fnode.is-match .node__card,
+        .chart .fres.is-match .res__card,
+        .chart .fnode.is-match-inside .node__card {
+            stroke                              : #b87800;
+            stroke-width                        : 3.5;
+        }
+
+        .fnode__count {
+            font-size                           : 9.5px;
+            font-weight                         : 700;
+            fill                                : #ffffff;
+            pointer-events                      : none;
+        }
+
+        .fnode.tier-category .fnode__count {
+            font-size                           : 11.5px;
+        }
+
+        .fnode__root {
+            font-size                           : 12px;
+            font-weight                         : 700;
+            fill                                : #ffffff;
+            pointer-events                      : none;
+        }
+
+        .fnode__pulse {
+            fill                                : none;
+            stroke                              : var(--node-colour);
+            stroke-width                        : 2;
+            opacity                             : 0;
+            transform-box                       : fill-box;
+            transform-origin                    : center;
+            pointer-events                      : none;
+        }
+
+        .fnode.is-start .fnode__pulse {
+            animation                           : ValeObjectLibrary_Pulse 2.4s ease-out infinite;
+        }
+
+        @keyframes ValeObjectLibrary_Pulse {
+            0%   { transform: scale(1);   opacity: 0.55; }
+            100% { transform: scale(1.9); opacity: 0;    }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .fnode.is-start .fnode__pulse {
+                animation                       : none;
+            }
+        }
+
+        .chart.is-network .link {
+            stroke-width                        : 1.25;
+        }
+
+        .chart.is-network .ref {
+            stroke-opacity                      : 0.22;
+        }
+
+        .chart.is-network .ref.is-strong {
+            stroke-opacity                      : 0.85;
+        }
+
+        .float-labels.is-network .float-label {
+            height                              : 20px;
+            padding                             : 0 6px;
+            border-color                        : transparent;
+            background                          : rgba(255, 255, 255, 0.82);
+            box-shadow                          : none;
+            font-size                           : 11.5px;
+        }
+
+        .float-labels.is-network .float-label__dot {
+            display                             : none;
+        }
+
+        /* Two lines: a small, quiet tier caption over the name */
+        .float-labels.is-network .float-label--two {
+            flex-direction                      : column;
+            align-items                         : flex-start;
+            justify-content                     : center;
+            gap                                 : 0;
+            height                              : 30px;
+            line-height                         : 1.15;
+        }
+
+        .float-labels.is-network .float-label--two.is-left {
+            align-items                         : flex-end;
+        }
+
+        .float-label__caption {
+            font-size                           : 8.5px;
+            font-weight                         : 700;
+            letter-spacing                      : 0.08em;
+            text-transform                      : uppercase;
+            color                               : var(--Vale_TextMuted);
+            opacity                             : 0.85;
+        }
+
+        .float-label__name {
+            font-size                           : 11.5px;
+            font-weight                         : 600;
+            color                               : var(--Vale_TextPrimary);
+        }
+
+        .strip-legend {
+            position                            : absolute;
+            inset                               : 0;
+            display                             : flex;
+            align-items                         : center;
+            gap                                 : 18px;
+            padding                             : 0 18px;
+            font-size                           : 12px;
+            font-weight                         : 600;
+            color                               : var(--Vale_TextSecondary);
+            white-space                         : nowrap;
+            overflow                            : hidden;
+        }
+
+        .strip-legend__item {
+            display                             : inline-flex;
+            align-items                         : center;
+            gap                                 : 6px;
+        }
+
+        .strip-legend__hint {
+            margin-left                         : auto;
+            font-weight                         : 400;
+            color                               : var(--Vale_TextMuted);
+        }
+
+        .tool[hidden] {
+            display                             : none;
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
          * CHART | Shared Resource Library Column
          * ------------------------------------------------------------------- */
         .lane__frame {
@@ -1973,6 +2141,7 @@
                 <span class="toolbar__group">
                     <span class="toolbar__label" aria-hidden="true">Show</span>
                     <span class="segmented" role="group" aria-label="How far to open the chart">
+                        <button class="tool js-detail" type="button" data-detail="scheme"   title="Back to the start" hidden>Start</button>
                         <button class="tool js-detail" type="button" data-detail="family"   title="Open the chart to the Families">Families</button>
                         <button class="tool js-detail" type="button" data-detail="assembly" title="Open the chart to the Assemblies">Assemblies</button>
                         <button class="tool js-detail" type="button" data-detail="parts"    title="Open every box, down to the Components and Products">Parts</button>
@@ -2058,6 +2227,7 @@
             laneGroupTitle : 30,
             laneGroupGap   : 16,
             laneItemGap    : 6,
+            laneGap        : 220,                                                    // <-- Extra clear space before the Resources column, setting it apart
             zoomMin        : 0.05,
             zoomMax        : 2.5,
             lodFull        : 0.62,                                                   // <-- Below this, boxes show a larger short name only
@@ -2655,6 +2825,9 @@
 
             let x = 0;
             columns.forEach(function (column, index) {
+                if (column.key === 'resource') {
+                    x += Settings.laneGap;
+                }
                 column.index = index;
                 column.w     = Settings.tierWidth[column.tier];
                 column.x     = x;
@@ -2769,7 +2942,7 @@
         // FUNCTION | Bounding boxes in chart space
         // ------------------------------------------------------------
         function ValeObjectLibrary_ContentBounds() {
-            const box = ValeObjectLibrary_BoxOf(Array.from(Layout.pos.keys()), []);
+            const box = ValeObjectLibrary_BoxOf(Array.from(Layout.pos.keys()), ValeObjectLibrary_IsForce() ? Array.from(Layout.res.keys()) : []);
             const lane = Layout.lane;
             if (!lane) {
                 return box;
@@ -3140,7 +3313,7 @@
         // All links: every box that shows the end of a branch (a part, or a
         // closed box) links to every Resource used anywhere inside it. With a
         // selection, the selection's own links are drawn strongly on top.
-        function ValeObjectLibrary_RenderRefs(fadeIn) {
+        function ValeObjectLibrary_RefPairs() {
             const pairs = new Map();
             if (State.allLinks) {
                 Layout.visible.forEach(function (placement) {
@@ -3156,9 +3329,12 @@
                     pairs.set(pair[0] + '|' + pair[1], { from: pair[0], to: pair[1], strong: true });
                 });
             }
-            const data = Array.from(pairs.values()).filter(function (pair) {
-                return Layout.pos.has(pair.from) && Layout.res.has(pair.to);
-            });
+            return Array.from(pairs.values()).filter(function (pair) { return Layout.pos.has(pair.from); });
+        }
+
+        function ValeObjectLibrary_RenderRefs(fadeIn) {
+            const force = ValeObjectLibrary_IsForce();
+            const data  = ValeObjectLibrary_RefPairs().filter(function (pair) { return Layout.res.has(pair.to); });
             Layers.svg.classed('has-many-refs', data.length > 600);
 
             Layers.refs.selectAll('path.ref')
@@ -3167,6 +3343,9 @@
                 .attr('class', 'ref')
                 .classed('is-strong', function (pair) { return pair.strong; })
                 .attr('d', function (pair) {
+                    if (force) {
+                        return ValeObjectLibrary_ForceRefPath(pair);                 // <-- The network draws straight lines, moved every tick
+                    }
                     const placement = Model.byUid.get(pair.from);
                     const offset    = placement.children.length ? 13 : 0;             // <-- Start past the open / close pill
                     return ValeObjectLibrary_RefPath(Layout.pos.get(pair.from), Layout.res.get(pair.to), offset);
@@ -3177,6 +3356,372 @@
                 Layers.refs.style('opacity', 0).transition().delay(Settings.duration * 0.75).duration(250).style('opacity', 1);
             } else {
                 Layers.refs.style('opacity', 1);
+            }
+        }
+        // ------------------------------------------------------------
+
+        // endregion -----------------------------------------------------------
+
+
+        // =====================================================================
+        // REGION | Library Network - Force-Directed View of the Whole Library
+        // =====================================================================
+        // The whole-library view is a network rather than a tree. Vale Object
+        // Library sits pinned in the middle; open a node and its contents
+        // spring out around it (d3-force, as in Observable's force-directed
+        // graph). Shared Resources join as nodes of their own when links are
+        // shown, so reuse shows up as hubs. Layout.pos and Layout.res are
+        // refreshed every tick, so selection, camera, labels, navigator and
+        // the panel all work exactly as they do in the scheme view.
+        // =====================================================================
+
+        const Force = { sim: null, nodes: new Map(), signature: '', pendingFit: null, fitTimer: null };
+        const ForceRadius = { library: 44, category: 20, assembly: 13, component: 8, product: 8, resource: 10 };
+        const ForceCharge = { library: -1600, category: -620, assembly: -220, component: -90, product: -90, resource: -320 };   // <-- How hard each kind of node pushes the others away
+
+        function ValeObjectLibrary_IsForce() {
+            return State.view === 'library';
+        }
+
+        function ValeObjectLibrary_ForceBox(node) {
+            return { x: node.x - node.r, y: node.y, w: node.r * 2, h: node.r * 2 };
+        }
+
+        // FUNCTION | Create the simulation once
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ForceInit() {
+            if (Force.sim) {
+                return;
+            }
+            Force.sim = d3.forceSimulation()
+                .velocityDecay(0.35)
+                .force('link', d3.forceLink())
+                .force('charge', d3.forceManyBody().distanceMax(1400))
+                .force('collide', d3.forceCollide().radius(function (n) { return n.r + 12; }).iterations(2))
+                .force('x', d3.forceX(0).strength(0.008))                       // <-- A light pull to the middle keeps the network round
+                .force('y', d3.forceY(0).strength(0.008))
+                .on('tick', ValeObjectLibrary_ForceTick)
+                .stop();
+        }
+
+        function ValeObjectLibrary_ForceStop() {
+            if (Force.sim) {
+                Force.sim.stop();
+            }
+            Force.nodes.clear();
+            Force.signature  = '';
+            Force.pendingFit = null;
+            window.clearTimeout(Force.fitTimer);
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Rebuild the network after anything opens, closes or is selected
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ForceRefresh() {
+            ValeObjectLibrary_ForceInit();
+
+            // What is open decides what is on show
+            const visible = [];
+            const links   = [];
+            (function walk(placement) {
+                visible.push(placement);
+                if (State.expanded.has(placement.uid)) {
+                    placement.children.forEach(function (child) {
+                        links.push({ parent: placement, child: child });
+                        walk(child);
+                    });
+                }
+            })(Model.root);
+            Layout.visible = visible;
+            Layout.links   = links;
+
+            // Nodes for the boxes - a new one starts on its parent, then springs out
+            let placementsChanged = false;
+            const keep = new Set();
+            visible.forEach(function (placement) {
+                keep.add(placement.uid);
+                if (Force.nodes.has(placement.uid)) {
+                    return;
+                }
+                const parent = placement.parent && Force.nodes.get(placement.parent.uid);
+                const angle  = Math.random() * Math.PI * 2;
+                const node   = {
+                    key       : placement.uid,
+                    kind      : 'placement',
+                    placement : placement,
+                    tier      : placement.tier,
+                    r         : ForceRadius[placement.tier] || 8,
+                    charge    : ForceCharge[placement.tier] || -45,
+                    x         : parent ? parent.x + Math.cos(angle) * 14 : 0,
+                    y         : parent ? parent.y + Math.sin(angle) * 14 : 0
+                };
+                if (!placement.parent) {
+                    node.fx = 0;                                                 // <-- Vale Object Library stays pinned in the middle
+                    node.fy = 0;
+                }
+                Force.nodes.set(node.key, node);
+                placementsChanged = true;
+            });
+            Force.nodes.forEach(function (node, key) {
+                if (node.kind === 'placement' && !keep.has(key)) {
+                    Force.nodes.delete(key);
+                    placementsChanged = true;
+                }
+            });
+            Layout.pos = new Map();
+            Force.nodes.forEach(function (node) {
+                if (node.kind === 'placement') {
+                    Layout.pos.set(node.key, ValeObjectLibrary_ForceBox(node));
+                }
+            });
+
+            // Resource nodes - every one in use when links are on, else just the selection's
+            ValeObjectLibrary_ComputeFocus();
+            const pairs       = ValeObjectLibrary_RefPairs();
+            const resourceIds = new Set(pairs.map(function (pair) { return pair.to; }));
+            resourceIds.forEach(function (id) {
+                const key = 'res:' + id;
+                if (Force.nodes.has(key)) {
+                    return;
+                }
+                const anchorPair = pairs.find(function (pair) { return pair.to === id; });
+                const anchor     = anchorPair && Force.nodes.get(anchorPair.from);
+                const angle      = Math.random() * Math.PI * 2;
+                Force.nodes.set(key, {
+                    key      : key,
+                    kind     : 'resource',
+                    resource : Model.defs.get(id),
+                    tier     : 'resource',
+                    r        : ForceRadius.resource,
+                    charge   : ForceCharge.resource,
+                    x        : (anchor ? anchor.x : 0) + Math.cos(angle) * 70,
+                    y        : (anchor ? anchor.y : 0) + Math.sin(angle) * 70
+                });
+            });
+            Force.nodes.forEach(function (node, key) {
+                if (node.kind === 'resource' && !resourceIds.has(node.resource.id)) {
+                    Force.nodes.delete(key);
+                }
+            });
+            Layout.res = new Map();
+            Force.nodes.forEach(function (node) {
+                if (node.kind === 'resource') {
+                    Layout.res.set(node.resource.id, ValeObjectLibrary_ForceBox(node));
+                }
+            });
+
+            // Springs - firm for "contains", weak for "uses a Resource"
+            const simLinks = links.map(function (link) {
+                return { source: Force.nodes.get(link.parent.uid), target: Force.nodes.get(link.child.uid), kind: 'contains' };
+            }).concat(pairs.map(function (pair) {
+                return { source: Force.nodes.get(pair.from), target: Force.nodes.get('res:' + pair.to), kind: 'ref' };
+            })).filter(function (link) { return link.source && link.target; });
+
+            const signature = Array.from(Force.nodes.keys()).join(',') + '#' + simLinks.length;
+            if (signature !== Force.signature) {
+                Force.signature = signature;
+                Force.sim.nodes(Array.from(Force.nodes.values()));
+                Force.sim.force('link').links(simLinks)
+                    .distance(function (link) {
+                        if (link.kind === 'ref') { return 260; }
+                        return link.source.r + link.target.r + ({ library: 170, category: 70, assembly: 38 }[link.source.tier] || 32);
+                    })
+                    .strength(function (link) { return link.kind === 'ref' ? 0.02 : 0.85; });
+                Force.sim.force('charge').strength(function (node) { return node.charge; });
+                Force.sim.alpha(Math.max(Force.sim.alpha(), placementsChanged ? 0.75 : 0.3)).restart();
+            }
+
+            ValeObjectLibrary_ForceRender(links);
+            ValeObjectLibrary_ApplyStateClasses();
+            ValeObjectLibrary_RenderRefs(false);
+            ValeObjectLibrary_UpdateControls();
+            ValeObjectLibrary_QueueFrame();
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Draw the network's nodes and lines (positions come from the tick)
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ForceRender(links) {
+            Layers.links.selectAll('path.link')
+                .data(links, function (link) { return link.child.uid; })
+                .join('path')
+                .attr('class', 'link');
+
+            const nodes = Layers.nodes.selectAll('g.node').data(Layout.visible, function (placement) { return placement.uid; });
+            nodes.exit().remove();
+            const entering = nodes.enter().append('g')
+                .attr('class', function (placement) { return 'node fnode tier-' + placement.tier; })
+                .on('click', ValeObjectLibrary_OnNodeClick)
+                .on('dblclick', ValeObjectLibrary_OnNodeDoubleClick)
+                .call(ValeObjectLibrary_ForceDrag(false));
+            entering.each(function (placement) { ValeObjectLibrary_BuildForceNode(d3.select(this), placement); });
+            entering.merge(nodes).each(function (placement) { ValeObjectLibrary_UpdateForceNode(d3.select(this), placement); });
+
+            const resources = [];
+            Force.nodes.forEach(function (node) {
+                if (node.kind === 'resource') {
+                    resources.push(node.resource);
+                }
+            });
+            const resourceNodes = Layers.lane.selectAll('g.res').data(resources, function (resource) { return resource.id; });
+            resourceNodes.exit().remove();
+            resourceNodes.enter().append('g')
+                .attr('class', 'res fres')
+                .style('--node-colour', function (resource) { return resource.data.Swatch || ValeObjectLibrary_TierColour('resource'); })
+                .on('click', function (event, resource) {
+                    event.stopPropagation();
+                    ValeObjectLibrary_HideHint();
+                    ValeObjectLibrary_Select({ type: 'resource', id: resource.id });
+                })
+                .on('dblclick', function (event) { event.stopPropagation(); })
+                .call(ValeObjectLibrary_ForceDrag(true))
+                .each(function (resource) {
+                    const group = d3.select(this);
+                    group.append('g').attr('class', 'res__body').append('circle').attr('class', 'res__card').attr('r', ForceRadius.resource);
+                    group.append('title').text(resource.name + ' - shared resource, used by ' + ValeObjectLibrary_Plural(resource.users.length, 'object', 'objects'));
+                });
+
+            ValeObjectLibrary_ForceTick();                                       // <-- Put everything where it is now, straight away
+        }
+
+        function ValeObjectLibrary_BuildForceNode(group, placement) {
+            const r    = ForceRadius[placement.tier] || 8;
+            const body = group.style('--node-colour', ValeObjectLibrary_TierColour(placement.tier)).append('g').attr('class', 'node__body');
+            if (placement.tier === 'library') {
+                body.append('circle').attr('class', 'fnode__pulse').attr('r', r);
+            }
+            body.append('circle').attr('class', 'node__card').attr('r', r);
+            if (placement.tier === 'library') {
+                const label = body.append('text').attr('class', 'fnode__root').attr('text-anchor', 'middle');
+                label.append('tspan').attr('x', 0).attr('y', -3).text('Vale Object');
+                label.append('tspan').attr('x', 0).attr('y', 12).text('Library');
+            }
+            body.append('text').attr('class', 'fnode__count').attr('dy', '0.35em').attr('text-anchor', 'middle');
+            if (ValeObjectLibrary_IsUnavailable(placement.def)) {
+                group.classed('is-unavailable', true);
+            }
+            group.append('title').text(placement.def.name + ' - ' + ValeObjectLibrary_TierLabel(placement)
+                + (placement.def.data['Product Code'] ? ' ' + placement.def.data['Product Code'] : ''));
+        }
+
+        function ValeObjectLibrary_UpdateForceNode(group, placement) {
+            const open = State.expanded.has(placement.uid) && placement.children.length > 0;
+            group.classed('is-expanded', open)
+                 .classed('is-start', placement.tier === 'library' && !open);       // <-- The closed centre pulses: click me
+            group.select('.fnode__count').text(!open && placement.children.length && placement.tier !== 'library' ? '+' + placement.children.length : '');
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Drag a node to rearrange the network (it springs back when let go)
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ForceDrag(isResource) {
+            function nodeOf(datum) {
+                return Force.nodes.get(isResource ? 'res:' + datum.id : datum.uid);
+            }
+            return d3.drag()
+                .clickDistance(4)
+                .subject(function (event, datum) {
+                    const node = nodeOf(datum);
+                    return node ? { x: node.x, y: node.y } : { x: event.x, y: event.y };
+                })
+                .on('start', function (event, datum) {
+                    const node = nodeOf(datum);
+                    if (!node) { return; }
+                    if (!event.active) { Force.sim.alphaTarget(0.25).restart(); }
+                    node.fx = node.x;
+                    node.fy = node.y;
+                    ValeObjectLibrary_HideHint();
+                })
+                .on('drag', function (event, datum) {
+                    const node = nodeOf(datum);
+                    if (!node) { return; }
+                    node.fx = event.x;
+                    node.fy = event.y;
+                })
+                .on('end', function (event, datum) {
+                    const node = nodeOf(datum);
+                    if (!node) { return; }
+                    if (!event.active) { Force.sim.alphaTarget(0); }
+                    if (!(node.placement && !node.placement.parent)) {
+                        node.fx = null;                                          // <-- Let go; the centre stays where it is dropped
+                        node.fy = null;
+                    }
+                });
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Every tick - move the drawing, keep the shared position maps current
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ForceTick() {
+            if (!ValeObjectLibrary_IsForce()) {
+                return;
+            }
+            const round = function (v) { return Math.round(v * 10) / 10; };
+            Force.nodes.forEach(function (node) {
+                const box = ValeObjectLibrary_ForceBox(node);
+                if (node.kind === 'placement') {
+                    Layout.pos.set(node.key, box);
+                } else {
+                    Layout.res.set(node.resource.id, box);
+                }
+            });
+            Layers.nodes.selectAll('g.node').attr('transform', function (placement) {
+                const node = Force.nodes.get(placement.uid);
+                return node ? 'translate(' + round(node.x) + ',' + round(node.y) + ')' : null;
+            });
+            Layers.lane.selectAll('g.res').attr('transform', function (resource) {
+                const node = Force.nodes.get('res:' + resource.id);
+                return node ? 'translate(' + round(node.x) + ',' + round(node.y) + ')' : null;
+            });
+            Layers.links.selectAll('path.link').attr('d', function (link) {
+                const a = Force.nodes.get(link.parent.uid);
+                const b = Force.nodes.get(link.child.uid);
+                return a && b ? 'M' + round(a.x) + ',' + round(a.y) + 'L' + round(b.x) + ',' + round(b.y) : null;
+            });
+            Layers.refs.selectAll('path.ref').attr('d', ValeObjectLibrary_ForceRefPath);
+            Layout.bounds = ValeObjectLibrary_ContentBounds();
+            ValeObjectLibrary_QueueFrame();
+            if (Force.pendingFit && Force.sim && Force.sim.alpha() < 0.3) {
+                ValeObjectLibrary_RunPendingFit(false);
+            }
+        }
+
+        function ValeObjectLibrary_ForceRefPath(pair) {
+            const a = Force.nodes.get(pair.from);
+            const b = Force.nodes.get('res:' + pair.to);
+            if (!a || !b) {
+                return null;
+            }
+            return 'M' + Math.round(a.x * 10) / 10 + ',' + Math.round(a.y * 10) / 10 + 'L' + Math.round(b.x * 10) / 10 + ',' + Math.round(b.y * 10) / 10;
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Move the camera once the network has sprung into place
+        // ------------------------------------------------------------
+        // In the scheme view (or once the network is still) it runs at once.
+        function ValeObjectLibrary_AfterSettle(callback) {
+            if (ValeObjectLibrary_IsForce() && Force.sim && Force.nodes.size > 1 && Force.sim.alpha() >= 0.3) {
+                Force.pendingFit = callback;
+                window.clearTimeout(Force.fitTimer);
+                Force.fitTimer = window.setTimeout(function () { ValeObjectLibrary_RunPendingFit(true); }, 1600);   // <-- Never wait for ever
+                return;
+            }
+            callback();
+        }
+
+        function ValeObjectLibrary_RunPendingFit(late) {
+            window.clearTimeout(Force.fitTimer);
+            if (late && Force.pendingFit && Force.sim && Force.sim.alpha() >= 0.3) {
+                // The browser is throttling the animation (a background tab) - finish the
+                // settling in one go, so the camera frames where the nodes really end up
+                const ticks = Math.ceil(Math.log(0.3 / Force.sim.alpha()) / Math.log(1 - Force.sim.alphaDecay()));
+                Force.sim.tick(Math.max(1, ticks));
+                ValeObjectLibrary_ForceTick();
+            }
+            const callback = Force.pendingFit;
+            Force.pendingFit = null;
+            if (callback) {
+                callback();
             }
         }
         // ------------------------------------------------------------
@@ -3242,6 +3787,24 @@
                         focus.res.add(id);
                         focus.refPairs.push([placement.uid, id]);
                     });
+                }
+
+                // Network: diving into an Assembly shows the Resources of every part open inside it
+                if (ValeObjectLibrary_IsForce() && anchor === placement && placement.tier === 'assembly') {
+                    (function walkParts(node) {
+                        if (!State.expanded.has(node.uid)) {
+                            return;
+                        }
+                        node.children.forEach(function (child) {
+                            if (ValeObjectLibrary_IsPart(child.tier)) {
+                                child.def.uses.forEach(function (id) {
+                                    focus.res.add(id);
+                                    focus.refPairs.push([child.uid, id]);
+                                });
+                            }
+                            walkParts(child);
+                        });
+                    })(placement);
                 }
 
                 placement.def.placements.forEach(function (twin) {
@@ -3317,8 +3880,8 @@
             const opts = options || {};
             State.selection = target || null;
             State.softFocus = false;
-            if (opts.refresh) {
-                ValeObjectLibrary_Refresh();
+            if (opts.refresh || ValeObjectLibrary_IsForce()) {
+                ValeObjectLibrary_Refresh();                                     // <-- In the network a selection can bring its Resources in as nodes
             } else {
                 ValeObjectLibrary_ComputeFocus();
                 ValeObjectLibrary_ApplyStateClasses();
@@ -3327,10 +3890,23 @@
             ValeObjectLibrary_RenderInspector();
             ValeObjectLibrary_UpdateHash();
             if (target && opts.fly) {
-                ValeObjectLibrary_EnsureVisible(ValeObjectLibrary_TargetBox(target));
+                ValeObjectLibrary_AfterSettle(function () {
+                    if (State.selection === target) {
+                        ValeObjectLibrary_EnsureVisible(ValeObjectLibrary_TargetBox(target));
+                    }
+                });
             }
             if (target && !State.inspectorDismissed && Elements.workspace.classList.contains('is-inspector-closed')) {
                 ValeObjectLibrary_SetInspectorOpen(true, State.booting);             // <-- Opens itself until it has been closed by hand
+                if (!State.booting && !opts.fly) {
+                    window.setTimeout(function () {                              // <-- The panel took canvas width - keep the selection in sight
+                        if (State.selection === target) {
+                            ValeObjectLibrary_EnsureVisible(target.type === 'node' && ValeObjectLibrary_IsForce()
+                                ? ValeObjectLibrary_SubtreeBox(Model.byUid.get(target.uid))   // <-- In the network, keep what just sprang out in sight too
+                                : ValeObjectLibrary_TargetBox(target));
+                        }
+                    }, 320);
+                }
             }
         }
 
@@ -3426,10 +4002,16 @@
             State.focus     = null;
             State.softFocus = false;
             State.matches   = new Set();
+            ValeObjectLibrary_ForceStop();
             ValeObjectLibrary_BuildColumns();
-            ValeObjectLibrary_LayoutLane();
+            if (view === 'library') {
+                Layout.lane = null;                                              // <-- In the network, Resources are nodes, not a column
+                Layout.res  = new Map();
+            } else {
+                ValeObjectLibrary_LayoutLane();
+            }
 
-            [Layers.nodes, Layers.links, Layers.refs, Layers.bands].forEach(function (layer) {
+            [Layers.nodes, Layers.links, Layers.refs, Layers.bands, Layers.lane].forEach(function (layer) {
                 layer.selectAll('*').interrupt('layout').remove();               // <-- Nothing animates across from the other view
             });
             Layout.pos     = new Map();
@@ -3437,15 +4019,24 @@
             LabelCache.forEach(function (label) { label.remove(); });
             LabelCache.clear();
             Elements.tierStrip.textContent = '';
-            ValeObjectLibrary_RenderLane();
+            Layers.svg.classed('is-network', view === 'library');
+            if (view !== 'library') {
+                ValeObjectLibrary_RenderLane();
+            }
             ValeObjectLibrary_BuildTierStrip();
 
-            ValeObjectLibrary_ApplyDetail(opts.detail || (view === 'library' ? 'family' : 'assembly'));
+            ValeObjectLibrary_ApplyDetail(opts.detail || (view === 'library' ? 'scheme' : 'assembly'));
             ValeObjectLibrary_Refresh();
             ValeObjectLibrary_RenderInspector();
             ValeObjectLibrary_UpdateHash();
+            Elements.hint.textContent = view === 'library'
+                ? 'Click Vale Object Library to open it · click a node to open it, again to close · drag to move'
+                : 'Scroll to zoom · drag to pan · click any box';
+            if (!State.booting && State.tourIndex < 0) {
+                ValeObjectLibrary_ShowHint();
+            }
             if (opts.fit !== false) {
-                ValeObjectLibrary_FitBox(Layout.bounds, { maxK: 1 });
+                ValeObjectLibrary_FitAll();
             }
         }
         // ------------------------------------------------------------
@@ -3515,7 +4106,7 @@
                     State.expanded.add(placement.uid);
                 }
             });
-            State.allLinks = level === 'all';
+            State.allLinks = level === 'all' && !ValeObjectLibrary_IsForce();     // <-- The network never draws every link: too slow, and not the point there
             State.detail   = level;
         }
 
@@ -3528,6 +4119,10 @@
         // FUNCTION | Re-lay out and redraw after anything opens or closes
         // ------------------------------------------------------------
         function ValeObjectLibrary_Refresh() {
+            if (ValeObjectLibrary_IsForce()) {
+                ValeObjectLibrary_ForceRefresh();                                // <-- The whole-library view is a network, not a tree
+                return;
+            }
             ValeObjectLibrary_ComputeLayout();
             ValeObjectLibrary_UpdateZoomExtent();
             ValeObjectLibrary_RenderBands();
@@ -3548,6 +4143,13 @@
         function ValeObjectLibrary_OnNodeClick(event, placement) {
             event.stopPropagation();
             ValeObjectLibrary_HideHint();
+            if (ValeObjectLibrary_IsForce() && placement.children.length && State.expanded.has(placement.uid)
+                && State.selection && State.selection.uid === placement.uid) {
+                State.expanded.delete(placement.uid);                            // <-- Network: click an open, selected node again to close it
+                State.detail = 'custom';
+                ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { refresh: true });
+                return;
+            }
             const opening = placement.children.length > 0 && !State.expanded.has(placement.uid);
             if (opening) {
                 State.expanded.add(placement.uid);
@@ -3798,7 +4400,9 @@
         // FUNCTION | Camera shortcuts
         // ------------------------------------------------------------
         function ValeObjectLibrary_FitAll() {
-            ValeObjectLibrary_FitBox(Layout.bounds, { maxK: 1 });
+            ValeObjectLibrary_AfterSettle(function () {
+                ValeObjectLibrary_FitBox(ValeObjectLibrary_ContentBounds(), { maxK: 1 });
+            });
         }
 
         function ValeObjectLibrary_FitSelection() {
@@ -3864,6 +4468,19 @@
             const counts    = ValeObjectLibrary_LibraryCounts();
             const inLibrary = function (count) { return count + ' in library'; };
             Layout.headers  = [];
+
+            // The network has no columns - the strip becomes its colour legend
+            if (ValeObjectLibrary_IsForce()) {
+                const keys = ['library', 'category', 'assembly', 'component', 'product', 'resource'];
+                Elements.tierStrip.appendChild(ValeObjectLibrary_El('div', { class: 'strip-legend' },
+                    keys.map(function (key) {
+                        return ValeObjectLibrary_El('span', { class: 'strip-legend__item' },
+                            ValeObjectLibrary_El('span', { class: 'tier-head__dot', style: 'background:' + ValeObjectLibrary_TierColour(key) }),
+                            key === 'category' ? 'Shelf' : Data.tiers[key].label);
+                    }),
+                    ValeObjectLibrary_El('span', { class: 'strip-legend__hint', text: ValeObjectLibrary_Plural(counts.records, 'record', 'records') + ' · filled = closed, ring = open' })));
+                return;
+            }
             Layout.columns.forEach(function (column) {
                 if (column.key === 'subassembly') {
                     Layout.headers[Layout.headers.length - 1].x2 = column.x + column.w;
@@ -3959,36 +4576,64 @@
         // place names on a map.
         function ValeObjectLibrary_UpdateFloatingLabels(transform) {
             const layer = Elements.labels;
-            if (State.lod !== 'low') {
+            const force = ValeObjectLibrary_IsForce();
+            if (!force && State.lod !== 'low') {                                 // <-- The network is labelled this way at every zoom
                 if (!layer.hidden) {
                     layer.hidden = true;
                 }
                 return;
             }
             layer.hidden = false;
+            layer.classList.toggle('is-network', force);
             const viewWidth  = Elements.canvas.clientWidth;
             const viewHeight = Elements.canvas.clientHeight;
             const priority   = { scheme: 0, library: 0, family: 1, category: 1, assembly: 3, component: 4, product: 4 };
             const candidates = [];
+            const focus      = State.focus;
+            const dimming    = !!focus && !State.softFocus;
 
             Layout.visible.forEach(function (placement) {
+                if (force && placement.tier === 'library') {
+                    return;                                                      // <-- Labelled inside its own circle
+                }
                 let rank = priority[placement.tier];
                 if (placement.tier === 'assembly' && placement.nest > 0) { rank = 3.5; }
-                if (rank >= 4 && transform.k < 0.2) { return; }
-                candidates.push({ key: placement.uid, rank: rank, box: Layout.pos.get(placement.uid), name: ValeObjectLibrary_ShortName(placement.def), colour: ValeObjectLibrary_TierColour(placement.tier) });
+                if (!force && rank >= 4 && transform.k < 0.2) { return; }
+                if (focus && focus.selectedUid === placement.uid) { rank = -2; }      // <-- The selection's label always wins
+                else if (focus && (focus.nodes.has(placement.uid) || focus.twins.has(placement.uid))) { rank = Math.min(rank, 0.5); }
+                candidates.push({ key: placement.uid, rank: rank, box: Layout.pos.get(placement.uid), name: ValeObjectLibrary_ShortName(placement.def), colour: ValeObjectLibrary_TierColour(placement.tier),
+                    caption: placement.tier === 'category' ? 'Shelf' : ValeObjectLibrary_TierLabel(placement) });
             });
-            Layout.lane.groups.forEach(function (group) {
-                candidates.push({ key: 'group:' + group.key, rank: 2, box: { x: Layout.lane.x + Settings.lanePadding, y: group.y + 14, w: 0, h: 0 }, name: group.key, colour: ValeObjectLibrary_TierColour('resource') });
-            });
+            if (force) {
+                Layout.res.forEach(function (box, id) {
+                    const resource = Model.defs.get(id);
+                    const rank = focus && focus.selectedRes === id ? -2 : 2.5;
+                    candidates.push({ key: 'res:' + id, rank: rank, box: box, name: resource.name, colour: resource.data.Swatch || ValeObjectLibrary_TierColour('resource'),
+                        caption: 'Resource · ' + ((Model.groups.get(resource.group) || {}).singular || resource.group) });
+                });
+            } else if (Layout.lane) {
+                Layout.lane.groups.forEach(function (group) {
+                    candidates.push({ key: 'group:' + group.key, rank: 2, box: { x: Layout.lane.x + Settings.lanePadding, y: group.y + 14, w: 0, h: 0 }, name: group.key, colour: ValeObjectLibrary_TierColour('resource') });
+                });
+            }
             candidates.sort(function (a, b) { return a.rank - b.rank || a.box.y - b.box.y; });
 
             const placed  = [];
             const used    = new Set();
-            const focus   = State.focus;
-            const dimming = !!focus && !State.softFocus;
+            const centre  = force ? (Force.nodes.get(Model.root.uid) || { x: 0 }).x : 0;
             candidates.forEach(function (candidate) {
-                const width  = ValeObjectLibrary_TextWidth(candidate.name, ValeObjectLibrary_Font(12, 600)) + 32;
-                const rect   = { x: transform.applyX(candidate.box.x) - 2, y: transform.applyY(candidate.box.y) - 11, w: width, h: 22 };
+                // Network labels read in two lines: a small, quiet tier caption over the name
+                const captionWidth = force ? ValeObjectLibrary_TextWidth(candidate.caption.toUpperCase(), ValeObjectLibrary_Font(8.5, 700)) + candidate.caption.length * 0.7 : 0;
+                const width  = force
+                    ? Math.max(ValeObjectLibrary_TextWidth(candidate.name, ValeObjectLibrary_Font(11.5, 600)), captionWidth) + 14
+                    : ValeObjectLibrary_TextWidth(candidate.name, ValeObjectLibrary_Font(12, 600)) + 32;
+                const height = force ? 30 : 22;
+                const outside = candidate.box.x + candidate.box.w / 2 < centre
+                    ? transform.applyX(candidate.box.x) - 4 - width                  // <-- Network: on the outer side, away from the centre
+                    : transform.applyX(candidate.box.x + candidate.box.w) + 4;
+                const left   = force ? outside : transform.applyX(candidate.box.x) - 2;
+                const rect   = { x: left, y: transform.applyY(candidate.box.y) - height / 2, w: width, h: height };
+                const onLeft = force && left < transform.applyX(candidate.box.x);
                 if (rect.x > viewWidth || rect.x + rect.w < 0 || rect.y > viewHeight || rect.y + rect.h < Settings.stripHeight) {
                     return;
                 }
@@ -4002,15 +4647,23 @@
                 used.add(candidate.key);
                 let label = LabelCache.get(candidate.key);
                 if (!label) {
-                    label = ValeObjectLibrary_El('div', { class: 'float-label' },
-                        ValeObjectLibrary_El('span', { class: 'float-label__dot', style: 'background:' + candidate.colour }),
-                        ValeObjectLibrary_El('span', { text: candidate.name }));
+                    label = force
+                        ? ValeObjectLibrary_El('div', { class: 'float-label float-label--two' },
+                            ValeObjectLibrary_El('span', { class: 'float-label__caption', text: candidate.caption }),
+                            ValeObjectLibrary_El('span', { class: 'float-label__name', text: candidate.name }))
+                        : ValeObjectLibrary_El('div', { class: 'float-label' },
+                            ValeObjectLibrary_El('span', { class: 'float-label__dot', style: 'background:' + candidate.colour }),
+                            ValeObjectLibrary_El('span', { text: candidate.name }));
                     layer.appendChild(label);
                     LabelCache.set(candidate.key, label);
                 }
                 label.hidden = false;
                 label.style.transform = 'translate(' + Math.round(rect.x) + 'px,' + Math.round(rect.y) + 'px)';
-                label.classList.toggle('is-dim', dimming && !(focus.nodes.has(candidate.key) || focus.twins.has(candidate.key)));
+                label.classList.toggle('is-left', onLeft);                       // <-- Left of its node: line the text up against the node
+                const lit = candidate.key.indexOf('res:') === 0
+                    ? focus && focus.res.has(candidate.key.slice(4))
+                    : focus && (focus.nodes.has(candidate.key) || focus.twins.has(candidate.key));
+                label.classList.toggle('is-dim', dimming && !lit);
             });
             LabelCache.forEach(function (label, key) {
                 if (!used.has(key) && !label.hidden) {
@@ -4050,8 +4703,10 @@
             NavMapping  = { s: scale, ox: ox, oy: oy };
 
             const lane = Layout.lane;
-            context.fillStyle = 'rgba(0, 131, 0, 0.07)';
-            context.fillRect(ox + lane.x * scale, oy + lane.y * scale, lane.w * scale, lane.h * scale);
+            if (lane) {
+                context.fillStyle = 'rgba(0, 131, 0, 0.07)';
+                context.fillRect(ox + lane.x * scale, oy + lane.y * scale, lane.w * scale, lane.h * scale);
+            }
 
             Layout.pos.forEach(function (box, uid) {
                 context.fillStyle = ValeObjectLibrary_TierColour(Model.byUid.get(uid).tier);
@@ -4245,7 +4900,7 @@
                     } }, label);
             };
             ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Two ways to look', null,
-                E('p', { class: 'body-text', text: 'Scheme shows one configured project, ' + scheme.root.def.name + ', and only what it uses. Whole library shows every record we hold, on its category shelf, ready for the next scheme.' }),
+                E('p', { class: 'body-text', text: 'Scheme shows one configured project, ' + scheme.root.def.name + ', and only what it uses, as a tree. Whole library shows every record we hold as a network around Vale Object Library: start at the centre and open it out shelf by shelf, or show the whole network at once.' }),
                 E('div', { class: 'view-buttons' }, viewButton('scheme', 'Show the scheme'), viewButton('library', 'Show the whole library'))));
 
             // The tiers - also the colour legend; a click opens the chart to that level
@@ -4844,7 +5499,7 @@
             (step.reveal || []).forEach(function (id) {
                 ValeObjectLibrary_RevealDef(id);
             });
-            State.allLinks = !!step.links || step.show === 'all';
+            State.allLinks = !ValeObjectLibrary_IsForce() && (!!step.links || step.show === 'all');
 
             let target = null;
             const def = step.select ? Model.defs.get(step.select) : null;
@@ -4883,7 +5538,11 @@
             Elements.tourNext.textContent     = index === steps.length - 1 ? 'Finish' : 'Next';
             Elements.tour.style.bottom        = (Elements.toolbar.offsetHeight + 28) + 'px';
 
-            ValeObjectLibrary_FitBox(ValeObjectLibrary_TourFocusBox(step, target), { maxK: 1 });
+            ValeObjectLibrary_AfterSettle(function () {
+                if (State.tourIndex === index) {
+                    ValeObjectLibrary_FitBox(ValeObjectLibrary_TourFocusBox(step, target), { maxK: 1 });
+                }
+            });
         }
 
         // SUB FUNCTION | Fill in the {tokens} in a step's text
@@ -4977,7 +5636,11 @@
 
             Elements.links.addEventListener('click', function () {
                 State.allLinks = !State.allLinks;
-                ValeObjectLibrary_RenderRefs(false);
+                if (ValeObjectLibrary_IsForce()) {
+                    ValeObjectLibrary_Refresh();                                 // <-- Links bring the Resources into the network as nodes
+                } else {
+                    ValeObjectLibrary_RenderRefs(false);
+                }
                 ValeObjectLibrary_UpdateControls();
             });
 
@@ -5020,18 +5683,30 @@
         }
 
         function ValeObjectLibrary_UpdateControls() {
+            // The same four steps, named for each view - the network starts from its centre
+            const labels = {
+                scheme  : { scheme: null,                                           library: ['Start',         'Back to the start: Vale Object Library on its own'] },
+                family  : { scheme: ['Families',   'Open the chart to the Families'],  library: ['Shelves',       'Open the centre to its category shelves'] },
+                assembly: { scheme: ['Assemblies', 'Open the chart to the Assemblies'], library: ['Records',       'Open every shelf to show every record'] },
+                parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Whole network', 'Open everything - select a record to see the Resources it uses'] },
+                all     : { scheme: ['All',        'Open every box and draw every link to the shared Resources'], library: null }
+            };
             Elements.detailButtons.forEach(function (button) {
-                button.classList.toggle('is-on', button.getAttribute('data-detail') === State.detail);
-                if (button.getAttribute('data-detail') === 'family') {
-                    button.textContent = State.view === 'library' ? 'Shelves' : 'Families';   // <-- The library view's second column is its shelves
-                    button.title       = State.view === 'library' ? 'Open the library to its category shelves' : 'Open the chart to the Families';
+                const detail = button.getAttribute('data-detail');
+                const label  = labels[detail][State.view === 'library' ? 'library' : 'scheme'];
+                button.hidden = !label;
+                if (label) {
+                    button.textContent = label[0];
+                    button.title       = label[1];
                 }
+                button.classList.toggle('is-on', detail === State.detail);
             });
             Elements.viewButtons.forEach(function (button) {
                 const on = button.getAttribute('data-view') === State.view;
                 button.classList.toggle('is-on', on);
                 button.setAttribute('aria-pressed', on ? 'true' : 'false');
             });
+            Elements.links.hidden = ValeObjectLibrary_IsForce();                 // <-- Network: Resource links come with the selection instead
             Elements.links.classList.toggle('is-on', State.allLinks);
             Elements.links.setAttribute('aria-pressed', State.allLinks ? 'true' : 'false');
             Elements.navigatorToggle.classList.toggle('is-on', State.navigatorOn);
@@ -5289,9 +5964,14 @@
 
             State.booting = true;
             if (linked && ValeObjectLibrary_SelectById(linked, { reveal: true, revealUses: true })) {
-                ValeObjectLibrary_FitBox(State.selection.type === 'resource'
-                    ? ValeObjectLibrary_BoxOf(State.focus.refPairs.map(function (pair) { return pair[0]; }), [State.selection.id])
-                    : ValeObjectLibrary_SubtreeBox(Model.byUid.get(State.selection.uid)), { maxK: 1, duration: 0 });
+                const linkedSelection = State.selection;
+                ValeObjectLibrary_AfterSettle(function () {
+                    ValeObjectLibrary_FitBox(linkedSelection.type === 'resource'
+                        ? ValeObjectLibrary_BoxOf(State.focus.refPairs.map(function (pair) { return pair[0]; }), [linkedSelection.id])
+                        : ValeObjectLibrary_SubtreeBox(Model.byUid.get(linkedSelection.uid)), { maxK: 1, duration: ValeObjectLibrary_IsForce() ? Settings.flyDuration : 0 });
+                });
+            } else if (ValeObjectLibrary_IsForce()) {
+                ValeObjectLibrary_FitAll();
             } else {
                 ValeObjectLibrary_FitBox(Layout.bounds, { maxK: 1, duration: 0 });
             }

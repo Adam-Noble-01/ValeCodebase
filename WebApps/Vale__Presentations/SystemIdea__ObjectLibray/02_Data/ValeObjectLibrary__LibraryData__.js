@@ -16,10 +16,16 @@
      and the inspector panel.
    - The chart has two views of the same records:
        Scheme view  - one configured project (scheme, below) and only what it uses
-       Library view - every record in the library, on its category shelf
+       Library view - every record in the library, as a network around one
+                      central node (Vale Object Library), opened shelf by shelf
    - A plain script rather than JSON or a module, so the demo still opens
      straight from disk (file://) as well as from the local server (port 8011)
      and GitHub Pages. Comments are allowed, unlike JSON.
+   - Roof lantern systems, parts, finials, cresting and the lantern finish
+     palettes come from the Lantern Designer asset library
+     (WebApps/Vale__VirtualServer/Vale__LanternDesigner - its asset registry,
+     system indexes and PBR materials config). "Lantern Asset ID" on a record
+     is its id there.
    - Door handles, hinges and ironmongery finishes come from ValeSpec
      (WebApps/ValeSpec/03__Data__HardwareDataLibrary and its app config),
      including its real rules for hinges and door sizes.
@@ -163,7 +169,8 @@ window.ValeObjectLibrary_LibraryData = {
     // REGION | Categories - The Shelves of the Library View, in Order
     // -------------------------------------------------------------------------
     categories: [
-        { name: 'Roof Lantern',          summary: 'The ridge, hips, rafters and vents of a glazed roof lantern.' },
+        { name: 'Roof Lantern',          summary: 'The ridge, hip, glaze bar, base frame and interior joinery systems of a Vale roof lantern - from the Lantern Designer.' },
+        { name: 'Roof Lantern Options',  summary: 'Parts the Lantern Designer can swap in: the deeper glaze bar trims, the Classic cornice and the pyramid apex end cap.' },
         { name: 'Columns',               summary: 'Free-standing columns, each built from a base, a shaft and a capital.' },
         { name: 'Pilasters',             summary: 'Pilasters - built from the same bases, shafts and capitals as the matching columns.' },
         { name: 'Internal Columns',      summary: 'Internal column types, each with its own base, capital and shaft.' },
@@ -225,6 +232,10 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'RES-PRF-CORNICE',       group: 'Profiles',       name: 'Cornice Profile',              summary: 'The projecting crown moulding along the top of the entablature.' },
         { id: 'RES-PRF-TIMBER',        group: 'Profiles',       name: 'Timber Section',               summary: 'Standard planed sections for stiles, rails, cills and beams.' },
         { id: 'RES-PRF-ALU-EXTRUSION', group: 'Profiles',       name: 'Aluminium Extrusion',          summary: 'Extruded sections for the roof lantern bars, caps and vents.' },
+        { id: 'RES-PRF-LTN-RIDGE-90',  group: 'Profiles',       name: 'Ridge Section - Capped 90mm',  summary: 'The Lantern Designer\'s earlier single-section ridge (90mm face, 110mm deep), still its default for the 2D ridge trace. The six-part ridge system replaces it in 3D.',
+          data: { 'Specification / Standard': 'Lantern Designer profile PRF_RDG0001', 'Notes': 'Provisional - representative dimensions, awaiting a traced Vale section' } },
+        { id: 'RES-PRF-LTN-HIP-75',    group: 'Profiles',       name: 'Hip Section - Standard 75mm',  summary: 'The Lantern Designer\'s earlier single-section hip, also the verge on a gabled lantern. The four-part hip system replaces it in 3D.',
+          data: { 'Specification / Standard': 'Lantern Designer profile PRF_HIP0001', 'Notes': 'Provisional - representative dimensions, awaiting a traced Vale section' } },
 
         // Materials
         { id: 'RES-MAT-ACCOYA',        group: 'Materials',      name: 'Accoya',                       summary: 'Modified, highly durable timber for external joinery.' },
@@ -233,6 +244,9 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'RES-MAT-LEAD',          group: 'Materials',      name: 'Lead',                         summary: 'For flashings and weatherings.' },
         { id: 'RES-MAT-SHEET',         group: 'Materials',      name: 'Sheet Materials',              summary: 'Sheet goods for friezes, soffits and linings.' },
         { id: 'RES-MAT-BOARD',         group: 'Materials',      name: 'Board Materials',              summary: 'Boards for panels and pilaster faces.' },
+        { id: 'RES-MAT-SAPELE',        group: 'Materials',      name: 'Sapele Hardwood',              summary: 'The hardwood of the lantern head beam, ridge and hip beams, blocks and cornices.' },
+        { id: 'RES-MAT-DOUGLAS-FIR',   group: 'Materials',      name: 'Douglas Fir',                  summary: 'The timber of the glaze bar internal trims.' },
+        { id: 'RES-MAT-PLYWOOD',       group: 'Materials',      name: '12mm Plywood',                 summary: 'For packers behind the lantern cornice.' },
 
         // Finishes - the three ironmongery finishes are ValeSpec's
         { id: 'RES-FIN-RAL',           group: 'Finishes',       name: 'RAL Colours',                  summary: 'The colour reference for painted and powder-coated finishes.' },
@@ -245,6 +259,31 @@ window.ValeObjectLibrary_LibraryData = {
           data: { 'Specification / Standard': 'Material MAT614__Metal__Ironmongery__SatinNickle', 'Swatch': '#aaacb0', 'Notes': 'From the ValeSpec app config' } },
         { id: 'RES-FIN-BRONZE',        group: 'Finishes',       name: 'Bronze',                       summary: 'Ironmongery finish - one of the three offered in ValeSpec.',
           data: { 'Specification / Standard': 'Material MAT613__Metal__Ironmongery__Bronze', 'Swatch': '#433d37', 'Notes': 'From the ValeSpec app config' } },
+
+        // Specifications
+        // Finishes - the Lantern Designer palettes (Na__PbrMaterials__Config.json):
+        // exterior and capping finishes, mill aluminium, and the joinery paints
+        { id: 'RES-FIN-MILL',               group: 'Finishes', name: 'Mill Finish',              summary: 'Bare mill finish aluminium, for the structural cores and extrusions.' },
+        { id: 'RES-FIN-ANTHRACITE',         group: 'Finishes', name: 'Anthracite Grey',          summary: 'Vale\'s standard contemporary exterior and capping finish: satin polyester powder coat over marine grade aluminium, RAL 7016.',
+          data: { 'Specification / Standard': 'Material MAT620__Metal__Aluminium__PowderCoated__RAL7016', 'Swatch': '#383E42', 'Notes': 'Lantern Designer default exterior and capping finish' } },
+        { id: 'RES-FIN-WHITE-PAINTED',      group: 'Finishes', name: 'White Painted',            summary: 'A warm off white powder coat rather than a stark brilliant white, so roof lines read soft against the sky.',
+          data: { 'Specification / Standard': 'Material MAT621__Metal__Aluminium__PowderCoated__OffWhite', 'Swatch': '#EDEAE2', 'Notes': 'Lantern Designer exterior and capping finish' } },
+        { id: 'RES-FIN-LEAD-WEATHERED',     group: 'Finishes', name: 'Weathered Lead',           summary: 'Natural weathered lead rather than a coating, matching the lead flashing on the outside of the roof.',
+          data: { 'Specification / Standard': 'Material MAT640__Metal__Lead__Weathered', 'Swatch': '#7C8085', 'Notes': 'Lantern Designer exterior and capping finish' } },
+        { id: 'RES-FIN-NEUTRAL-WHITE',      group: 'Finishes', name: 'Neutral White',            summary: 'House neutral white joinery eggshell - the safe choice where the joinery is meant to disappear.',
+          data: { 'Specification / Standard': 'Material MAT330__Paint__Joinery__Eggshell__NeutralWhite', 'Swatch': '#F2F0E9', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-WEVET',           group: 'Finishes', name: 'Farrow and Ball Wevet',    summary: 'A soft grey-white joinery eggshell, cleaner than Neutral White without going brilliant.',
+          data: { 'Specification / Standard': 'Material MAT335__Paint__Joinery__Eggshell__FbWevet', 'Swatch': '#ECEBE9', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-AMMONITE',        group: 'Finishes', name: 'Farrow and Ball Ammonite', summary: 'A quiet light grey joinery eggshell, easy beside stone or painted walls.',
+          data: { 'Specification / Standard': 'Material MAT336__Paint__Joinery__Eggshell__FbAmmonite', 'Swatch': '#D8D6CF', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-FRENCH-GRAY',     group: 'Finishes', name: 'Farrow and Ball French Gray', summary: 'A warm putty grey joinery eggshell that reads soft green-grey in full sun.',
+          data: { 'Specification / Standard': 'Material MAT331__Paint__Joinery__Eggshell__FbFrenchGray', 'Swatch': '#B6B3A0', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-CARD-ROOM-GREEN', group: 'Finishes', name: 'Farrow and Ball Card Room Green', summary: 'The traditional garden room green joinery eggshell.',
+          data: { 'Specification / Standard': 'Material MAT332__Paint__Joinery__Eggshell__FbCardRoomGreen', 'Swatch': '#787C6C', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-PIGEON',          group: 'Finishes', name: 'Farrow and Ball Pigeon',   summary: 'A quiet, slightly cool joinery eggshell for rooms that already have a strong wall colour.',
+          data: { 'Specification / Standard': 'Material MAT333__Paint__Joinery__Eggshell__FbPigeon', 'Swatch': '#97A09B', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
+        { id: 'RES-FIN-FB-RAILINGS',        group: 'Finishes', name: 'Farrow and Ball Railings', summary: 'The contemporary dark joinery eggshell - draws the bar set as a graphic grid against the sky.',
+          data: { 'Specification / Standard': 'Material MAT334__Paint__Joinery__Eggshell__FbRailings', 'Swatch': '#3F4348', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
 
         // Specifications
         { id: 'RES-SPC-GLASS',         group: 'Specifications', name: 'Glass Specification',          summary: 'The glass make-up for each glazed unit.' },
@@ -264,14 +303,43 @@ window.ValeObjectLibrary_LibraryData = {
         // ASSEMBLIES
         // =====================================================================
 
-        // Roof Lantern -------------------------------------------------------
-        { id: 'ASM-RIDGE',             tier: 'assembly', category: 'Roof Lantern', name: 'Ridge Assembly',    summary: 'The ridge of the roof lantern.',
-          contains: [{ ref: 'CMP-RIDGE-BEAM', qty: 1 }, { ref: 'CMP-RIDGE-CAP', qty: 1 }] },
-        { id: 'ASM-HIP',               tier: 'assembly', category: 'Roof Lantern', name: 'Hip Assembly',      summary: 'One hip of the roof lantern.',
-          contains: [{ ref: 'CMP-HIP-BAR', qty: 1 }, { ref: 'CMP-HIP-CAP', qty: 1 }] },
-        { id: 'ASM-RAFTER',            tier: 'assembly', category: 'Roof Lantern', name: 'Rafter Assembly',   summary: 'One glazed bay of the lantern roof.',
-          contains: [{ ref: 'CMP-RAFTER-BAR', qty: 1 }, { ref: 'CMP-GLAZING-PANEL', qty: 1 }],
+        // Roof Lantern - the five Lantern Designer systems ------------------
+        // Built from the system indexes in Vale__LanternDesigner/06__Data__
+        // LanternProfileLibrary: which asset fills which slot, and the rules.
+        { id: 'ASM-RIDGE',             tier: 'assembly', category: 'Roof Lantern', name: 'Aluminium Capped Ridge Assembly', summary: 'The Vale ridge as built: an aluminium core spine, a Sapele ridge beam beneath it, a flashing block, lead flashing, and a second block carrying the decorative aluminium capping. The default ridge type.',
+          contains: [{ ref: 'CMP-LTN-RIDGE-CORE', qty: 1 }, { ref: 'CMP-LTN-RIDGE-BEAM', qty: 1 }, { ref: 'CMP-LTN-RIDGE-BLOCKING', qty: 1 },
+                     { ref: 'CMP-LTN-RIDGE-FLASHING', qty: 1 }, { ref: 'CMP-LTN-RIDGE-CAPPING-BLOCK', qty: 1 }, { ref: 'CMP-LTN-RIDGE-CAPPING', qty: 1 },
+                     { ref: 'CMP-LTN-RIDGE-BLOCK', qty: 2 }, { ref: 'CMP-LTN-RIDGE-END-CAP', qty: 2 }],
+          data: { 'Assembly Type': 'Aluminium Capped Ridge (Lantern Designer default)' },
+          rules: [{ type: 'Compatibility Rules', text: 'Can carry finials and cresting, which are welded to its capping.' },
+                  { type: 'Design Constraints',  text: 'Sections are the 22.5 degree CAD standard; other pitches are reached by transforming them, not by a library per pitch.' }],
+          assets: ['CAD', '3D Models'] },
+        { id: 'ASM-RIDGE-LEADED',      tier: 'assembly', category: 'Roof Lantern', name: 'Leaded Only Ridge Assembly', summary: 'The plainer ridge: core, beam, blocking and lead flashing, with no aluminium capping. Shares four parts with the capped ridge.',
+          contains: [{ ref: 'CMP-LTN-RIDGE-CORE', qty: 1 }, { ref: 'CMP-LTN-RIDGE-BEAM', qty: 1 }, { ref: 'CMP-LTN-RIDGE-BLOCKING', qty: 1 },
+                     { ref: 'CMP-LTN-RIDGE-FLASHING', qty: 1 }, { ref: 'CMP-LTN-RIDGE-BLOCK', qty: 2 }],
+          data: { 'Assembly Type': 'Leaded Only Ridge' },
+          rules: [{ type: 'Compatibility Rules', text: 'No capping, so it carries no finials, no cresting and no end caps.' }],
+          assets: ['CAD', '3D Models'] },
+        { id: 'ASM-HIP',               tier: 'assembly', category: 'Roof Lantern', name: 'Hip Beam Assembly', summary: 'One hip as built: an aluminium core spine welded between the eaves extrusion and the ridge core, a Sapele hip beam beneath it, a flashing fillet and lead flashing.',
+          contains: [{ ref: 'CMP-LTN-HIP-CORE', qty: 1 }, { ref: 'CMP-LTN-HIP-BEAM', qty: 1 }, { ref: 'CMP-LTN-HIP-BLOCKING', qty: 1 }, { ref: 'CMP-LTN-HIP-FLASHING', qty: 1 }],
+          data: { 'Assembly Type': 'Hip Beam (Lantern Designer default)' },
+          rules: [{ type: 'Design Constraints', text: 'Glaze bar hips are not built yet in the Lantern Designer - lanterns are drawn with hip beams until they are.' }],
+          assets: ['CAD', '3D Models'] },
+        { id: 'ASM-GLAZE-BAR',         tier: 'assembly', category: 'Roof Lantern', name: 'Glaze Bar Assembly', summary: 'The Vale roof glaze bar as built: a cap, a core and a trim sharing one section datum, with a decorative end cap.',
+          contains: [{ ref: 'CMP-LTN-GLAZE-BAR-CORE', qty: 1 }, { ref: 'CMP-LTN-GLAZE-BAR-CAP', qty: 1 }, { ref: 'CMP-LTN-GLAZE-BAR-TRIM-45', qty: 1 }, { ref: 'CMP-LTN-GLAZE-BAR-END-CAP', qty: 1 }],
+          rules: [{ type: 'Product Selection Rules', text: 'Cap and core are fixed; only the trim depth is chosen - 45mm (standard), 70mm or 90mm.' }],
+          assets: ['CAD'] },
+        { id: 'ASM-RAFTER',            tier: 'assembly', category: 'Roof Lantern', name: 'Rafter Assembly',   summary: 'One glazed bay of the lantern roof: a glaze bar and its glazing.',
+          contains: [{ ref: 'ASM-GLAZE-BAR', qty: 1 }, { ref: 'CMP-GLAZING-PANEL', qty: 1 }],
           rules: [{ type: 'Dimensional Rules', text: 'Rafter count and spacing follow the lantern length and roof pitch.' }] },
+        { id: 'ASM-BASE-FRAME',        tier: 'assembly', category: 'Roof Lantern', name: 'Base Frame Assembly', summary: 'The Vale base frame as built: a Sapele head beam on the builder\'s upstand, a mill aluminium eaves extrusion the glaze bar cores weld to, and a lead cover flashing rebated into the timber.',
+          contains: [{ ref: 'CMP-LTN-HEAD-BEAM', qty: 1 }, { ref: 'CMP-LTN-EAVES-EXTRUSION', qty: 1 }, { ref: 'CMP-LTN-LEAD-COVER-FLASHING', qty: 1 }],
+          rules: [{ type: 'Dimensional Rules', text: 'The eaves datum sits 100mm above the head beam underside and one head beam width (125mm) in from each outside face.' }],
+          assets: ['CAD'] },
+        { id: 'ASM-INTERIOR-JOINERY',  tier: 'assembly', category: 'Roof Lantern', name: 'Interior Joinery Assembly', summary: 'The joinery inside the lantern upstand: a cornice, a 12mm ply packer behind it and an eaves trim that follows the roof pitch.',
+          contains: [{ ref: 'CMP-LTN-CORNICE-WALES', qty: 1 }, { ref: 'CMP-LTN-CORNICE-PACKER', qty: 1 }, { ref: 'CMP-LTN-EAVES-TRIM', qty: 1 }],
+          rules: [{ type: 'Product Selection Rules', text: 'The cornice is chosen - Wales (standard), Classic VG103, or none; the ply packer only goes in with a cornice.' }],
+          assets: ['CAD'] },
         { id: 'ASM-ETR-VENT',          tier: 'assembly', category: 'Roof Lantern', name: 'ETR Vent Assembly', summary: 'The opening vent in the lantern roof.',
           contains: [{ ref: 'CMP-VENT-FRAME', qty: 1 }, { ref: 'CMP-GLAZING-PANEL', qty: 1 }, { ref: 'PRD-VENT-ACTUATOR', qty: 1 }] },
 
@@ -355,8 +423,8 @@ window.ValeObjectLibrary_LibraryData = {
         // Tie Bars and Lighting ----------------------------------------------
         { id: 'ASM-TIE-BAR',           tier: 'assembly', category: 'Tie Bars and Lighting', name: 'Tie Bar Assembly', summary: 'A decorative tie bar with its junction piece and soffit termination blocks.',
           contains: [{ ref: 'CMP-TIE-BAR-16', qty: 1 }, { ref: 'PRD-TIE-BAR-QUATREFOIL', qty: 1 }, { ref: 'CMP-TIE-BAR-SOFFIT-BLOCK', qty: 2 }] },
-        { id: 'ASM-LIGHTING-BLOCK',    tier: 'assembly', category: 'Tie Bars and Lighting', name: 'Lighting Block Assembly', summary: 'An octagonal lighting block with its decorative turning and lighting hook.',
-          contains: [{ ref: 'CMP-LIGHTING-BLOCK-OCTAGONAL', qty: 1 }, { ref: 'CMP-LIGHTING-BLOCK-TURNING', qty: 1 }, { ref: 'CMP-LIGHTING-BLOCK-HOOK', qty: 1 }] },
+        { id: 'ASM-LIGHTING-BLOCK',    tier: 'assembly', category: 'Tie Bars and Lighting', name: 'Lighting Block Assembly', summary: 'The octagonal ridge block with its decorative turning and lighting hook. The block is the same record the ridges use.',
+          contains: [{ ref: 'CMP-LTN-RIDGE-BLOCK', qty: 1 }, { ref: 'CMP-LIGHTING-BLOCK-TURNING', qty: 1 }, { ref: 'CMP-LIGHTING-BLOCK-HOOK', qty: 1 }] },
 
 
         // =====================================================================
@@ -403,17 +471,132 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'CMP-MULLION',          tier: 'component', name: 'Mullion',           summary: 'The vertical member dividing a window.',
           uses: ['RES-PRF-TIMBER', 'RES-PRF-OGEE', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],   params: ['Length'] },
 
-        // Roof Lantern -------------------------------------------------------
-        { id: 'CMP-RIDGE-BEAM',       tier: 'component', name: 'Ridge Beam',        summary: 'The spine of the roof lantern.',
-          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-METAL'],                        params: ['Length'] },
-        { id: 'CMP-RIDGE-CAP',        tier: 'component', name: 'Ridge Cap',         summary: 'The cover capping the ridge.',
-          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-RAL'],                          params: ['Length'] },
-        { id: 'CMP-HIP-BAR',          tier: 'component', name: 'Hip Bar',           summary: 'The bar running down each hip of the lantern.',
-          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-METAL'],                        params: ['Length'] },
-        { id: 'CMP-HIP-CAP',          tier: 'component', name: 'Hip Cap',           summary: 'The cover capping each hip bar.',
-          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-RAL'],                          params: ['Length'] },
-        { id: 'CMP-RAFTER-BAR',       tier: 'component', name: 'Rafter Bar',        summary: 'The glazing bar running from ridge to eaves.',
-          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-METAL', 'RES-FIN-RAL'],         params: ['Length'] },
+        // Roof Lantern - from the Lantern Designer asset library ------------
+        // Every part below is a real Lantern Designer asset (05/06__Data__
+        // Lantern...Library, resolved through VghLantern__AssetRegistry__.json).
+        // "Lantern Asset ID" is its id there; the 2D sections and 3D meshes live
+        // in that app. Ridge and hip sections are the 22.5 degree CAD standard.
+
+        // Glaze bar - a cap, a core and a trim sharing one section datum
+        { id: 'CMP-LTN-GLAZE-BAR-CORE', tier: 'component', name: 'Glaze Bar Core', summary: 'The standard aluminium extrusion at the heart of every glaze bar - the structural part, welded to the eaves extrusion and the ridge and hip cores.',
+          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-MILL'], params: ['Length'],
+          data: { 'Lantern Asset ID': '45_2011', 'Element Type': 'Structural', 'Section Area': '571.6 sq mm', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-GLAZE-BAR-CAP', tier: 'component', name: 'Glaze Bar Cap', summary: 'The powder coated decorative aluminium cap over the glaze bar - the widest part, 40.6mm across.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], params: ['Length'],
+          data: { 'Lantern Asset ID': '45_2021', 'Element Type': 'Trim', 'Width': '40.6mm', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-GLAZE-BAR-TRIM-45', tier: 'component', name: 'Glaze Bar Trim 45mm', summary: 'The Douglas Fir internal trim under the glaze bar, 45mm deep - the standard depth.',
+          uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'],
+          data: { 'Lantern Asset ID': '45_2031', 'Element Type': 'Trim', 'Depth': '45mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-GLAZE-BAR-TRIM-70', tier: 'component', category: 'Roof Lantern Options', name: 'Glaze Bar Trim 70mm', summary: 'The deeper 70mm Douglas Fir glaze bar trim - an option in place of the standard 45mm.',
+          uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'], worksWith: ['ASM-GLAZE-BAR'],
+          data: { 'Lantern Asset ID': '45_2032', 'Element Type': 'Trim', 'Depth': '70mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-GLAZE-BAR-TRIM-90', tier: 'component', category: 'Roof Lantern Options', name: 'Glaze Bar Trim 90mm', summary: 'The deepest 90mm Douglas Fir glaze bar trim - an option in place of the standard 45mm.',
+          uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'], worksWith: ['ASM-GLAZE-BAR'],
+          data: { 'Lantern Asset ID': '45_2033', 'Element Type': 'Trim', 'Depth': '90mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-GLAZE-BAR-END-CAP', tier: 'component', name: 'Glaze Bar End Cap', summary: 'The decorative end cap seated on the glaze bar cap. It takes its finish from the cap.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'],
+          data: { 'Lantern Asset ID': '45_1001', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD', '3D Models'] },
+
+        // Base frame - head beam, eaves extrusion and lead cover flashing
+        { id: 'CMP-LTN-HEAD-BEAM', tier: 'component', name: 'Head Beam', summary: 'The Sapele head beam seated on the builder\'s upstand, its outer face flush with the upstand.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE'], params: ['Length'],
+          data: { 'Lantern Asset ID': '46_1001', 'Element Type': 'Structural', 'Width': '125mm', 'Depth': '96mm', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-EAVES-EXTRUSION', tier: 'component', name: 'Eaves Extrusion', summary: 'The mill aluminium eaves extrusion the glaze bar cores weld to.',
+          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-MILL'], params: ['Length'],
+          data: { 'Lantern Asset ID': '46_1002', 'Element Type': 'Structural', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-LEAD-COVER-FLASHING', tier: 'component', name: 'Lead Cover Flashing', summary: 'The lead flashing rebated into the head beam timber.',
+          uses: ['RES-MAT-LEAD'], params: ['Length'],
+          data: { 'Lantern Asset ID': '46_1003', 'Element Type': 'Flashing', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+
+        // Ridge - six parts, plus the octagonal block and end caps
+        { id: 'CMP-LTN-RIDGE-CORE', tier: 'component', name: 'Ridge Core', summary: 'The main structural ridge: an aluminium extrusion welded to the hip and glaze bar cores, forming the aluminium spine the rest of the ridge builds on.',
+          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-MILL'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2001', 'Element Type': 'Structural', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-BEAM', tier: 'component', name: 'Ridge Beam', summary: 'The decorative Sapele beam seen from inside, hung beneath the aluminium core - half structure, half trim. Cut flush against the octagonal ridge block at each end.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2021', 'Element Type': 'Structural', 'Element Role': 'Timber Substructure', 'Depth': '230mm at 22.5 degrees', 'Depth by roof pitch': '17.5° 230 · 20° 235 · 22.5° 230 · 25° 230 · 27.5° 235 · 30° 235 · 35° 235 · 37.5° 240 · 40° 250 · 45° 250 mm', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Dimensional Rules', text: 'Beam depth comes from the Vale timber depth table: the roof pitch snaps to the nearest row, never interpolated, because these are stock joinery sections. Below 17.5 degrees it clamps to the 17.5 row.' }],
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-BLOCKING', tier: 'component', name: 'Ridge Blocking', summary: 'The first Sapele block, seated on the aluminium core - the substrate the ridge lead flashing is dressed over.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2101', 'Element Type': 'Trim', 'Element Role': 'Timber Packer', 'Finish': 'Bare timber', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-FLASHING', tier: 'component', name: 'Ridge Lead Flashing', summary: 'The lead flashing that weathers the ridge - used whether or not the aluminium capping is fitted.',
+          uses: ['RES-MAT-LEAD'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2121', 'Element Type': 'Flashing', 'Finish': 'Patination oiled lead', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-CAPPING-BLOCK', tier: 'component', name: 'Ridge Capping Block', summary: 'The second Sapele block, making a small upstand for the ridge capping to seat on.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2202', 'Element Type': 'Trim', 'Element Role': 'Timber Packer', 'Finish': 'Bare timber', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-CAPPING', tier: 'component', name: 'Ridge Capping', summary: 'The decorative aluminium capping that closes the top of the ridge over the lead. Finials and cresting are welded to it.',
+          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], params: ['Length'],
+          data: { 'Lantern Asset ID': '47_2201', 'Element Type': 'Trim', 'Element Role': 'Decoration', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Compatibility Rules', text: 'Finials and cresting are welded to the capping, so a ridge without it can carry neither.' }],
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-RIDGE-BLOCK', tier: 'component', name: 'Ridge Block (Octagonal)', summary: 'The octagonal Sapele block where the ridge and hip beams meet; the beams are cut flush with its faceted sides. It carries a decorative turning, which can be swapped for a hook and wiring conduit to hang a light.',
+          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'],
+          data: { 'Lantern Asset ID': '47_1001', 'Element Type': 'Trim', 'Width': '135mm across flats', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD', '3D Models'] },
+        { id: 'CMP-LTN-RIDGE-END-CAP', tier: 'component', name: 'Ridge End Cap', summary: 'Closes the end of the aluminium ridge capping, seats the ball finial and weathers the ridge end.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'],
+          data: { 'Lantern Asset ID': '47_1011', 'Element Type': 'Trim', 'Element Role': 'Decoration', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Compatibility Rules', text: 'Needs the aluminium ridge capping - so only the Aluminium Capped Ridge has end caps.' }],
+          assets: ['CAD', '3D Models'] },
+        { id: 'CMP-LTN-RIDGE-END-CAP-PYRAMID', tier: 'component', category: 'Roof Lantern Options', name: 'Ridge End Cap - Pyramid', summary: 'A full octagon end cap with no ridge return, for the apex of a pyramid roof where four hips meet.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'],
+          data: { 'Lantern Asset ID': '47_1012', 'Element Type': 'Trim', 'Element Role': 'Decoration', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD', '3D Models'] },
+
+        // Hip - four parts
+        { id: 'CMP-LTN-HIP-CORE', tier: 'component', name: 'Hip Core', summary: 'The main structural hip: an aluminium extrusion welded to the eaves extrusion, the ridge core and the glaze bar cores.',
+          uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-MILL'], params: ['Length'],
+          data: { 'Lantern Asset ID': '48_2001', 'Element Type': 'Structural', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-HIP-BEAM', tier: 'component', name: 'Hip Beam', summary: 'The decorative Sapele hip beam seen from inside. Its high end is cut flush against the octagonal ridge block; its low end takes a plumb cut 18mm inboard of the eaves corner.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          data: { 'Lantern Asset ID': '48_2021', 'Element Type': 'Structural', 'Element Role': 'Timber Substructure', 'Depth': '205mm at 22.5 degrees', 'Depth by roof pitch': '17.5° 210 · 20° 210 · 22.5° 205 · 25° 200 · 27.5° 200 · 30° 195 · 35° 185 · 37.5° 185 · 40° 185 · 45° 180 mm', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Dimensional Rules', text: 'Chosen with the ridge beam from one table, so the two beam undersides finish level where they meet the octagonal block (241.0mm and 241.7mm below the ridge datum at 22.5 degrees).' }],
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-HIP-BLOCKING', tier: 'component', name: 'Hip Blocking', summary: 'The Sapele fillet on the hip core - the substrate the hip leadwork is dressed over.',
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE'], params: ['Length'],
+          data: { 'Lantern Asset ID': '48_2101', 'Element Type': 'Trim', 'Element Role': 'Timber Packer', 'Finish': 'Bare timber', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-HIP-FLASHING', tier: 'component', name: 'Hip Lead Flashing', summary: 'The lead flashing that weathers the hip. Hips always have it.',
+          uses: ['RES-MAT-LEAD'], params: ['Length'],
+          data: { 'Lantern Asset ID': '48_2121', 'Element Type': 'Flashing', 'Finish': 'Patination oiled lead', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+
+        // Interior joinery - cornice, packer and eaves trim
+        { id: 'CMP-LTN-CORNICE-WALES', tier: 'component', name: 'Wales Cornice', summary: 'The standard interior cornice around the lantern upstand.',
+          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          data: { 'Lantern Asset ID': '49_1001', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-CORNICE-CLASSIC-VG103', tier: 'component', category: 'Roof Lantern Options', name: 'Classic Interior Cornice VG103', summary: 'The larger Classic cornice - an option in place of the Wales cornice.',
+          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          worksWith: ['ASM-INTERIOR-JOINERY'],
+          data: { 'Lantern Asset ID': '49_1002', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-CORNICE-PACKER', tier: 'component', name: '12mm Ply Cornice Packer', summary: 'The plywood packer fixed behind the cornice.',
+          uses: ['RES-MAT-PLYWOOD'], params: ['Length'],
+          data: { 'Lantern Asset ID': '49_1021', 'Element Type': 'Packer', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+        { id: 'CMP-LTN-EAVES-TRIM', tier: 'component', name: 'Eaves Trim', summary: 'The 18mm painted timber trim inside the eaves; its top edge follows the roof pitch.',
+          uses: ['RES-PRF-TIMBER', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          data: { 'Lantern Asset ID': '49_1011', 'Element Type': 'Trim', 'Depth': '18mm', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD'] },
+
+        // Roof vent (not in the Lantern Designer yet)
         { id: 'CMP-VENT-FRAME',       tier: 'component', name: 'Vent Frame',        summary: 'The opening frame of the roof vent.',
           uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-RAL'],                          params: ['Length', 'Width'] },
 
@@ -423,7 +606,6 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'CMP-TIE-BAR-16',       tier: 'component', name: '16mm Tie Bar',      summary: 'The 16mm tie bar, cut to the span.',
           uses: ['RES-FIN-METAL', 'RES-SPC-FIXING'],                                                    params: ['Length'] },
         { id: 'CMP-TIE-BAR-SOFFIT-BLOCK', tier: 'component', name: 'Tie Bar Soffit Termination Block', summary: 'The block that ends the tie bar at the soffit.' },
-        { id: 'CMP-LIGHTING-BLOCK-OCTAGONAL', tier: 'component', name: 'Octagonal Lighting Block', summary: 'The octagonal block of the lighting block assembly.' },
         { id: 'CMP-LIGHTING-BLOCK-TURNING',   tier: 'component', name: 'Lighting Block Decorative Turning', summary: 'The decorative turning below the lighting block.' },
         { id: 'CMP-LIGHTING-BLOCK-HOOK',      tier: 'component', name: 'Lighting Hook', summary: 'The hook a light fitting hangs from.',
           uses: ['RES-FIN-METAL'] },
@@ -572,6 +754,15 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'PRD-CABIN-HOOK-18IN',  tier: 'product', category: 'Cabin Hooks', name: '18" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '18 inch' } },
 
         // Roof Finials -------------------------------------------------------
+        { id: 'PRD-LTN-BALL-FINIAL',  tier: 'product', category: 'Roof Finials', name: 'Ball Finial', summary: 'Decorative aluminium ball finial. Seats on the ridge end cap at each ridge end, or on the pyramid end cap at an apex.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], worksWith: ['CMP-LTN-RIDGE-END-CAP', 'CMP-LTN-RIDGE-END-CAP-PYRAMID'],
+          data: { 'Product Code': '50_1001', 'Material': 'Powder Coated Aluminium', 'Lantern Asset ID': '50_1001', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Product Selection Rules', text: 'Follows the ridge capping finish: Anthracite Grey by default, or White Painted or Lead.' }],
+          assets: ['CAD', '3D Models'] },
+        { id: 'PRD-LTN-SPIRE-FINIAL', tier: 'product', category: 'Roof Finials', name: 'Spire Finial', summary: 'Spire finial from the Lantern Designer library.',
+          worksWith: ['CMP-LTN-RIDGE-END-CAP'],
+          data: { 'Product Code': '50_2001', 'Lantern Asset ID': '50_2001', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
+          assets: ['CAD', '3D Models'] },
         { id: 'PRD-VG739A',          tier: 'product', category: 'Roof Finials', name: 'Finial',                               data: { 'Product Code': 'VG739A' }, uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG590',           tier: 'product', category: 'Roof Finials', name: 'Finial Wings',                         data: { 'Product Code': 'VG590' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-HARDWICK-FINIAL', tier: 'product', category: 'Roof Finials', name: 'Hardwick Finial',                      uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
@@ -595,6 +786,11 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'PRD-VG391',           tier: 'product', category: 'Roof Finials', name: 'Cone Finial',                          data: { 'Product Code': 'VG391' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
 
         // Roof Crestings -----------------------------------------------------
+        { id: 'PRD-LTN-FLEUR-CRESTING', tier: 'product', category: 'Roof Crestings', name: 'Fleur Cresting (150mm pitch)', summary: 'Decorative fleur cresting repeating at 150mm along the ridge. Supplied in lengths and cut to the ridge run.',
+          uses: ['RES-SPC-CASTING', 'RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], worksWith: ['ASM-RIDGE'],
+          data: { 'Product Code': 'VGH_CRS0001', 'Material': 'Cast aluminium, powder coated', 'Lantern Asset ID': 'VGH_CRS0001', 'Data Status': 'Provisional - representative dimensions, awaiting a measured Vale component', 'Source': 'Lantern Designer asset library' },
+          rules: [{ type: 'Quantity Rules', text: 'Scheduled by linear metre as well as by unit count, because it is cut to the ridge run.' }],
+          assets: ['CAD'] },
         { id: 'PRD-VG515', tier: 'product', category: 'Roof Crestings', name: 'Belton Ridge Cresting',         data: { 'Product Code': 'VG515' }, uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG331', tier: 'product', category: 'Roof Crestings', name: 'Castle Cresting',               data: { 'Product Code': 'VG331' }, uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG337', tier: 'product', category: 'Roof Crestings', name: 'Gothic Cresting',               data: { 'Product Code': 'VG337' }, uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
@@ -649,7 +845,7 @@ window.ValeObjectLibrary_LibraryData = {
             { id: 'FAM-ROOF-LANTERN',    name: 'Roof Lantern',    summary: 'The glazed roof lantern.',
               data: { 'Family Type': 'Roof' },
               contains: [{ ref: 'ASM-RIDGE', qty: 1 }, { ref: 'ASM-HIP', qty: 4 }, { ref: 'ASM-RAFTER', qty: 8 },
-                         { ref: 'ASM-ETR-VENT', qty: 1 }, { ref: 'ASM-LIGHTING-BLOCK', qty: 1 },
+                         { ref: 'ASM-ETR-VENT', qty: 1 }, { ref: 'ASM-BASE-FRAME', qty: 1 }, { ref: 'ASM-INTERIOR-JOINERY', qty: 1 },
                          { ref: 'PRD-VG726', qty: 2 }, { ref: 'PRD-VG515', qty: 4 }] },
             { id: 'FAM-FRAMEWORK',       name: 'Framework',       summary: 'The pilasters, entablatures and structure that frame the building.',
               data: { 'Family Type': 'Structure' },

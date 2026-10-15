@@ -24,7 +24,8 @@
 //     Max Models: MaxModel only
 // - Shows warning banner when in Blockout mode
 // - Designers and Concept Artists open on My Projects, with a My Projects /
-//   All Projects button (Na__Feature__ProjectGallery__MyProjects.js)
+//   All Projects button (Na__Feature__ProjectGallery__MyProjects.js), once a
+//   project names them; until then they see every project, with no button
 // - Supports filtering by concept artist and designer via productionData fields
 //
 // =============================================================================
@@ -81,7 +82,13 @@
         const [designerOptions, setDesignerOptions] = React.useState([]); // <-- Designer names from master config
         const [nameByUserCode, setNameByUserCode] = React.useState(null);  // <-- My Projects names by USR code (master config); null until it answers
         const [projectScope, setProjectScope] = React.useState(() => loadProjectScope(getMyProjectsViewer(null)));  // <-- 'mine' or 'all', kept until the app is closed
-        const myProjectsViewer = React.useMemo(() => getMyProjectsViewer(nameByUserCode), [nameByUserCode]);   // <-- Designers and Concept Artists; null for everyone else
+        const myProjectsPerson = React.useMemo(() => getMyProjectsViewer(nameByUserCode), [nameByUserCode]);   // <-- Designers and Concept Artists; null for everyone else
+        const moreProjectsToCome = loadProgress.total > 0 && loadProgress.loaded < loadProgress.total;        // <-- Batches still arriving (same test as the "Loading more projects..." line)
+        const myProjectsJobState = React.useMemo(
+            () => getMyProjectsJobState(myProjectsPerson, projects, moreProjectsToCome),
+            [myProjectsPerson, projects, moreProjectsToCome]
+        );                                                               // <-- 'yes' once a project names them, 'no' when none does, 'unknown' while loading
+        const myProjectsViewer = myProjectsJobState === 'yes' ? myProjectsPerson : null;   // <-- No job attributed to them yet: every project, no button
 
         // EFFECT | Load Projects Progressively in Batches
         // ---------------------------------------------------------------
@@ -182,7 +189,7 @@
         };
         // ---------------------------------------------------------------
 
-        if (loading || (myProjectsViewer && nameByUserCode === null)) {  // <-- Designers and artists also wait for their name, so all projects never flash up
+        if (loading || (myProjectsPerson && (nameByUserCode === null || myProjectsJobState === 'unknown'))) {  // <-- Designers and artists also wait for their name, and for a job of theirs (or the last batch), so the wrong list never flashes up
             return (
                 <div className="project-gallery">
                     <p style={{ textAlign: 'center', fontSize: '18px' }}>Loading projects...</p>

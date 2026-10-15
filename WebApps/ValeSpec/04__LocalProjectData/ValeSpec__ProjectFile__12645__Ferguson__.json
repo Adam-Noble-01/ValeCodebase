@@ -6,7 +6,7 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery Project",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Pending Approval",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-24",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-10-14",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble",
         "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-17"
@@ -14,7 +14,7 @@
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
         "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Newton Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Client owns an evil dog, it will bark at you, it will bite you. But worse of all, it will judge you! "
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -29,11 +29,11 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1608,
-                "Assembly__Dimensions__Config__HeightMm": 2303
+                "Assembly__Dimensions__Config__WidthMm": 1532,
+                "Assembly__Dimensions__Config__HeightMm": 2330
             },
             "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Plain Lever Handle",
+                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Assembly__Miscellaneous__Config": {
@@ -81,7 +81,7 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "finish"
+                "Assembly__ProgressState__Config__ActiveStepId": "misc"
             }
         },
         {

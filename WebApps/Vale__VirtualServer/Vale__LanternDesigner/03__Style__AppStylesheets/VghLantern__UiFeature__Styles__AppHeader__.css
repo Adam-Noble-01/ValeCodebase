@@ -15,6 +15,8 @@
  * - Features Lantern Designer title text on right
  * - White background with subtle shadow and Vale blue bottom border
  * - Fixed positioning at top of viewport
+ * - Phone width (≤480px, 15-Oct-2026): a smaller logo and title, the title
+ *   wrapping onto two lines before it can touch the logo; desktop unchanged
  *
  * ============================================================================= */
 
@@ -88,5 +90,69 @@
         padding                            : 0;
     }
     /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESPONSIVE | Phone Width (≤480px)
+ * -----------------------------------------------------------------------------
+ * At 390px the 42px logo (189px wide) and the 21.6px title need more than the
+ * bar's 347px, so they ran into each other. Here the logo keeps its width and
+ * the title gives way: the logo drops to 80% as in ValeVision 3D, the title to
+ * sub-heading size, and below about 375px (or beside the avatar) the title
+ * wraps onto two lines rather than reaching the logo. The bar keeps its height,
+ * so the nav bar and the mode panels below it do not move.
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 480px) {
+
+        /* HEADER | Tighter Bar With a Fixed Gap Between the Two Sides */
+        /* ------------------------------------------------------------ */
+        .app-header {
+            padding                        : 0 12px;
+            gap                            : 12px;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* HEADER | Logo Never Shrinks; the Right Side Gives Way */
+        /* ------------------------------------------------------------ */
+        .app-header__logo-container--left {
+            flex-shrink                    : 0;
+        }
+
+        .app-header__logo-container--right {
+            min-width                      : 0;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* HEADER | Vale Logo at 80% */
+        /* ------------------------------------------------------------ */
+        .app-header__logo-left {
+            height                         : 33.6px;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* HEADER | Smaller Title, Wrapping Onto Two Lines When Short of Room */
+        /* ------------------------------------------------------------ */
+        .app-header__title {
+            font-size                      : var(--Vale_FontSize_SubHeading);
+            line-height                    : 1.15;
+            text-align                     : right;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* HEADER | Avatar Closer to the Title */
+        /* ------------------------------------------------------------ */
+        .app-header .VghLantern__AccountMenu {
+            margin-left                    : var(--Vale_Spacing_Small);
+            flex-shrink                    : 0;
+        }
+        /* ------------------------------------------------------------ */
+    }
 
 /* #endregion ------------------------------------------------------------------- */

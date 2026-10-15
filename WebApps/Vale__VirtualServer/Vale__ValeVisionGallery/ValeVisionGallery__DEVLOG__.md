@@ -15,6 +15,46 @@ images or model.
 - Files: `Na__Feature__ProjectGallery__Main.jsx` (`filterProjectsByGalleryMode`),
   `Na__AppUtils__KpiProjectSource.js` 2.1.0.
 
+## Version 1.5.1, 15-Oct-2026: My Projects Only Applies Once a Job Is Attributed
+
+**Asked by Adam.** Diane (Concept Artist) takes ad hoc jobs, so no project names her, and My Projects
+opened on "None of Dianne's projects are in the gallery yet." with just a View All Projects button.
+Adam's rule: someone with no jobs attributed to them always sees every job; My Projects starts once
+one or more jobs name them. Done for everyone rather than for Diane alone, so a new starter is
+covered the same way.
+
+**Changes:**
+- A Designer or Concept Artist gets My Projects (the filter and the button) only when at least one
+  project in the library names them as designer or concept artist. With none, they see every
+  project and have no button, exactly like everyone else.
+- The check covers the whole library (Whitecard, Max and Blockout together), not the open list, so
+  the button does not come and go as the tabs change. Hidden projects are not in the list the
+  gallery receives, so they do not count.
+- The first project that names them turns it on: from their next visit the gallery opens on My
+  Projects, with the button, as in 1.5.0.
+- While the list is still arriving, a Designer or Concept Artist with nothing of theirs found yet
+  sees "Loading projects..." (the API hands over the whole list in one call, so this is instant),
+  so neither the empty message nor the wrong list flashes up.
+- `?viewAs=<name>` follows the same rule: `?ViewAs=Dianne` opens the gallery as Diane gets it, every
+  project and no button.
+- Files: `Na__Feature__ProjectGallery__MyProjects.js` 1.1.0 (`getMyProjectsJobState`) and
+  `Na__Feature__ProjectGallery__Main.jsx`.
+
+**Who it changes today** (the library on 15-Oct-2026): the three Designer and Concept Artist accounts
+no project names, Andy Moth, Sharon and Diane Brittain. Everyone else keeps My Projects.
+
+**To attribute jobs to Diane later:** her name has to be in the Concept Artists list
+(`Na__AppData__ValeConceptArtistsList__Main.json`, where she is not yet) and match her account's
+first name in the user register, which spells it **Diane**. If the projects will carry another
+spelling, list it in the master config's `vale__MyProjects__GalleryNameByUserCode`
+(`"USR00000032": "<spelling>"`), as Edward is Ted.
+
+**Checked:**
+- The new logic ran against every account in the register and the library's real names: only
+  Andy, Sharon and Diane have no jobs.
+- Every edited script parses (Babel parser, JSX), and the pushed scripts compile in the live
+  page's in-browser Babel with no console errors (pushed 10:24 UTC, stamp `20261015-102457`).
+
 ## Version 1.5.0, 13-Oct-2026: My Projects for Designers and Concept Artists; Blockout Models Moves to the Menu
 
 **Asked by Adam.** Designers and Concept Artists should not be bombarded with every project: the

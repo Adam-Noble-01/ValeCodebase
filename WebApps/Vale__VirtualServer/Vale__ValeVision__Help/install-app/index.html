@@ -6,13 +6,13 @@
      FILE       : install-app/index.html
      AUTHOR     : Adam Noble - Noble Architecture
      PURPOSE    : Show a colleague, step by step with pictures, how to install
-                  ValeVision or ValeVision 3D on their own device
+                  ValeVision, ValeVision 3D or Lantern Designer on their own device
      CREATED    : 07-Oct-2026
 
      DESCRIPTION:
      - Served at https://app.valegardenhouses.com/help/install-app/
        (route /help/ -> Vale__ValeVision__Help, Server Manager tab 03).
-     - ?app=valevision (default) | valevision3d   which app, its name and link
+     - ?app=valevision (default) | valevision3d | lanterndesigner   which app, its name and link
        ?device=windows | ios | android | mac       which steps; detected if absent
        The apps' install card (ValeShared__AppInstall__) links here with both.
      - Pictures: Help__Snippets/HelpSnippet__<app>__<Step>__.webp, made by
@@ -216,9 +216,9 @@
             //   Both open the gallery: /valevision/ on its own opens an empty project, so a project is chosen from the gallery
             valevision   : { name: 'ValeVision',    url: 'https://app.valegardenhouses.com/project-gallery/', icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
             valevision3d : { name: 'ValeVision 3D', url: 'https://app.valegardenhouses.com/project-gallery/', icon:'/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
-            //   15-Oct-2026: no pictures of its own yet (snips: false shows the steps without them;
-            //   make them with Server__DeveloperTools/50__Help__InstallSnippets, then drop the flag)
-            lanterndesigner : { name: 'Lantern Designer', url: 'https://app.valegardenhouses.com/lantern-designer/', icon: '/lantern-designer/01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png', snips: false }
+            lanterndesigner : { name: 'Lantern Designer', url: 'https://app.valegardenhouses.com/lantern-designer/', icon: '/lantern-designer/01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png' }
+            //   A new app before its pictures exist: snips: false shows its steps without them. Make them with
+            //   Server__DeveloperTools/50__Help__InstallSnippets (node HelpSnippets__Capture__.mjs <app key>), then drop the flag
         };
         var Na__Share = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="Share"><path d="M8 7l4-4 4 4M12 3v13"/><path d="M7 10H5v11h14V10h-2"/></svg>';
         var Na__Dots  = '<svg class="Help__Glyph" viewBox="0 0 24 24" aria-label="menu"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>';

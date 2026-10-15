@@ -2,6 +2,59 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "vale-dev-server",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\Vale__VirtualServer\\Server__DeveloperTools\\ValeDev__LocalServer__.py",
+        "--port", "8030"
+      ],
+      "port": 8030
+    },
+    {
+      "name": "valeplanner",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-u",
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValePlanner\\server.py",
+        "--host", "127.0.0.1",
+        "--port", "8001"
+      ],
+      "port": 8001
+    },
+    {
+      "name": "valespec",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\ValeSpec\\ValeSpec__FlaskServer__Localhost__.py",
+        "--port", "8002"
+      ],
+      "port": 8002
+    },
+    {
+      "name": "photomeasurepro",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\PhotoMeasurePro\\PhotoMeasurePro__FlaskServer__Localhost__.py"
+      ],
+      "port": 8003
+    },
+    {
+      "name": "whitecardvision",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\WhitecardVision\\WhitecardVision__LaunchFlaskServer__Localhost__.py"
+      ],
+      "port": 8004
+    },
+    {
+      "name": "nobleimagetools",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\NobleImageTools\\NobleImageTools__LaunchServer__Localhost__8005__.py"
+      ],
+      "port": 8005
+    },
+    {
       "name": "NobleCadAuditTools",
       "runtimeExecutable": "python",
       "runtimeArgs": [
@@ -9,6 +62,34 @@
         "--silent"
       ],
       "port": 8007
+    },
+    {
+      "name": "naaudio-audiospace",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\NaAudio__AudioSpace\\NaAudio__LocalServer__Localhost__.py",
+        "--port", "8010"
+      ],
+      "port": 8010
+    },
+    {
+      "name": "vale-presentations",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\Vale__Presentations\\ValePresentations__LocalServer__Localhost__.py",
+        "--port", "8011"
+      ],
+      "port": 8011
+    },
+    {
+      "name": "vale-virtual-server-manager",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\10_CoreLib__ValeCodebase\\WebApps\\Vale__VirtualServerManager\\VirtualServerManager__LocalServer__.py",
+        "--port", "8020",
+        "--no-browser"
+      ],
+      "port": 8020
     },
     {
       "name": "webapps-static",

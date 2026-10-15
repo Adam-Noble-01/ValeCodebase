@@ -12,15 +12,29 @@
 
      DESCRIPTION:
      - Opened by HelpSnippets__Capture__.mjs at /__studio/HelpSnippets__Studio__.html
-       ?snip=<id>&app=<valevision|valevision3d>. The capture server proxies every
-       other path to the Vale dev server, so the app iframes are same-origin and
-       the rings land exactly on the app's own install card.
+       ?snip=<id>&app=<key in APPS: valevision | valevision3d | lanterndesigner>.
+       The capture server proxies every other path to the Vale dev server, so the
+       app iframes are same-origin and the rings land exactly on the app's own
+       install card.
      - Each picture is #Snip; window.__snipReady turns true when it is drawn.
+       window.__snipList and window.__snipApps tell the capture script what to make.
      - Frames (Edge, Windows taskbar, iPhone Safari, Android Chrome) are drawn
        here and are deliberately plain: they show where to press, not every
        pixel of a given version. The apps inside are the real pages.
+     - A new app: one line in APPS (name, route, the icon its install card shows).
      - Open it by hand to tweak a picture:
        http://127.0.0.1:8031/__studio/HelpSnippets__Studio__.html?snip=Ios-04-AddScreen&app=valevision
+
+     -----------------------------------------------------------------------------
+
+     DEVELOPMENT LOG:
+     15-Oct-2026 - Version 1.1.0
+     - Lantern Designer (/lantern-designer/), with its own icon: each app in APPS
+       now names its icon, used on every frame (tab, title bar, boxes, Home Screen).
+     - window.__snipApps: the capture script takes its app list from APPS.
+
+     07-Oct-2026 - Version 1.0.0
+     - Initial build (ValeVision and ValeVision 3D).
 
      =============================================================================
 -->
@@ -147,13 +161,14 @@
     // MODULE CONSTANTS | The App, Shared Bits
     // ------------------------------------------------------------
     var Q = new URLSearchParams(location.search);
-    var APPS = {
-        valevision   : { name: 'ValeVision',    route: '/project-gallery/' },
-        valevision3d : { name: 'ValeVision 3D', route: '/valevision/' }
+    var APPS = {                                                                // <-- The capture script makes pictures for each of these
+        valevision      : { name: 'ValeVision',       route: '/project-gallery/',  icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
+        valevision3d    : { name: 'ValeVision 3D',    route: '/valevision/',       icon: '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png' },
+        lanterndesigner : { name: 'Lantern Designer', route: '/lantern-designer/', icon: '/lantern-designer/01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png' }
     };
     var APP = APPS[Q.get('app')] || APPS.valevision;
     var NAME = APP.name, HOST = 'app.valegardenhouses.com';
-    var ICON = '/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png';
+    var ICON = APP.icon;                                                        // <-- The same icon as the app's install card and manifest
     var I = {                                                                   // <-- Plain stroke icons
         back: '<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
         fwd: '<svg class="i" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
@@ -449,6 +464,7 @@
     // ------------------------------------------------------------
     var snip = SNIPS[Q.get('snip')];
     window.__snipList = Object.keys(SNIPS);
+    window.__snipApps = Object.keys(APPS);
     if (!snip) { document.getElementById('Snip').innerHTML = '<p>Pictures: ' + window.__snipList.join(', ') + '</p>'; window.__snipReady = true; return; }
     document.getElementById('Snip').innerHTML = snip.html();
     var started = Date.now();

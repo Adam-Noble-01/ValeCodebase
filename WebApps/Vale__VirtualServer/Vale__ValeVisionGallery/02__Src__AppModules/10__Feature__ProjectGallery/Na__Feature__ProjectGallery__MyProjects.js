@@ -15,6 +15,11 @@
 //   concept artist (Dan also sees the Martin jobs he drew the concept for).
 //   The My Projects / All Projects button flicks between the two. Everyone
 //   else sees every project and has no button.
+// - Only once a job is attributed to them. A Designer or Concept Artist whom
+//   no project names (Diane, who takes ad hoc jobs; a new starter) has nothing
+//   to filter to, so they are treated like everyone else: every project, no
+//   button. The first project that names them switches My Projects on. The
+//   check covers the whole library (Whitecard, Max and Blockout together).
 // - A person's name on the projects is their first name (Dan, Rachael). An
 //   account whose projects carry another name is listed by USR code in the
 //   master config, vale__MyProjects__GalleryNameByUserCode (Edward is Ted).
@@ -29,6 +34,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Oct-2026 - Version 1.1.0
+// - My Projects only applies once a job names the person: with none, they see
+//   every project and no button (was an empty My Projects for Diane, Andy and
+//   Sharon). getMyProjectsJobState() added.
+//
 // 13-Oct-2026 - Version 1.0.0
 // - Initial release.
 //
@@ -114,6 +124,24 @@
         const wanted = normaliseMyProjectsName(galleryName);
         const data   = project.productionData || {};
         return !!wanted && (normaliseMyProjectsName(data.designer) === wanted || normaliseMyProjectsName(data.conceptArtist) === wanted);
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Does a Job Name Them Yet ('yes', 'no', or 'unknown' while projects arrive)
+    // ------------------------------------------------------------
+    // My Projects only means something once a project names the person. With
+    // none, it could only ever be empty, so the gallery treats them like
+    // everyone else (every project, no button) until one does. The whole
+    // library counts, not the open list, so the button does not come and go
+    // as the tabs change.
+    // 'unknown' = nothing of theirs among the projects loaded so far, and more
+    // are still arriving: the gallery waits rather than flash the wrong list.
+    // ------------------------------------------------------------
+    function getMyProjectsJobState(viewer, projects, moreProjectsToCome) {
+        if (!viewer) return 'no';                                            // <-- Nobody to filter for
+        if (projects.some(p => isMyProject(p, viewer.galleryName))) return 'yes';   // <-- At least one job is theirs
+        return moreProjectsToCome ? 'unknown' : 'no';                        // <-- None, and every project has loaded
     }
     // ---------------------------------------------------------------
 

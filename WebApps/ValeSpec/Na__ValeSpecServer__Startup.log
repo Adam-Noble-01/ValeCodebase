@@ -410,3 +410,251 @@
  LAN URL        : http://192.168.9.112:8002/ValeSpec__App__.html
  Press Ctrl+C to stop server
 =============================================================================
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /ValeSpec__App__.html HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__CoreUi__Styles__Index__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__DateFormatter__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__AutofillGuard__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__ProjectSchemaValidator__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__HotkeyHandler__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/04__MathUtils/ValeSpec__MathUtils__HingeCalculator__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__CoordHelpers__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__CoreUi__Styles__Fonts__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__CoreUi__Styles__Variables__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__CoreUi__Styles__BaseLayout__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__UiFeature__Styles__AppHeader__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__UiFeature__Styles__NavigationBar__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Style__AppStylesheets/ValeSpec__UiFeature__Styles__ModalsAndToasts__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/04__MathUtils/ValeSpec__MathUtils__LockingCalculator__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__Styles__ServerConnectionBanner__.css HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorFrameRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorPanelRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__OpeningSymbolRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__IronmongeryRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DimensionRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__PanelRoleLabelRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppData__HardwareIndexLoader__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppData__ProjectFileManager__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/01__AppCore/ValeSpec__AppCore__ModeManager__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/01__AppCore/ValeSpec__AppCore__ConfigLoader__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectList__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/01__AppCore/ValeSpec__AppCore__StateManager__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectActions__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__GlobalSettings__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__StepManager__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__ProgressState__Load__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Handles__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__Layout__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__SvgPreview__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__DocumentHeader__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__JobNotes__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__SectionManager__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__SpecTableRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__MenuDataHandler__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Hinges__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentModel__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocIssueHandler__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfMetadataResolver__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfExporter__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__ProgressState__Save__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__Main__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionMonitor__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionBanner__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/01__AppCore/ValeSpec__AppCore__Init__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__DetailView__.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/41__SystemHelper__PdfExportLibrary__VersionLocked/jspdf.umd.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppData__UserMenuConfig__Defaults__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/40__System__DocumentPreviewMode/Na__DocPreview__Config.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/user-menu-config/AdamW HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/ValeSpec__HardwareDataIndex__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0002__DoorHandle__PlainLeverHandle__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0101__Hinge__StandardHinge__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0900__Ironmongery__Misc/VG_IRN999__DoorHandle__GhostGuy__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/05__SvgDrawing__RenderPipeline/Na__SvgDrawing__Config.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppData__Hotkeys__Main__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /Na__ServiceWorker__ValeSpec.js HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppData__UserMenuConfig__Defaults__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/user-menu-config/AdamW HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /Na__ServiceWorker__ValeSpec.js HTTP/1.1" 304 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/ValeSpec__HardwareDataIndex__.json?t=1791983129751 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0002__DoorHandle__PlainLeverHandle__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0101__Hinge__StandardHinge__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0900__Ironmongery__Misc/VG_IRN999__DoorHandle__GhostGuy__.json?t=1791983129761 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json?t=1791983132264 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0002__DoorHandle__PlainLeverHandle__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0900__Ironmongery__Misc/VG_IRN999__DoorHandle__GhostGuy__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0101__Hinge__StandardHinge__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json?t=1791983141242 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__ConfigAndConditions__.json HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2562 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2614 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2661 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/2601 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:05 | 127.0.0.1 | "GET /api/projects/26985 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13759 changedKeys=2
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="finish" new="doorType"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Metadata.ValeSpec__ProjectFile__Metadata__DateModified change=updated old="2026-04-24" new="2026-10-14"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=14436 changedKeys=4
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Dimensions__Config.Assembly__Dimensions__Config__HeightMm change=updated old=2303 new=2466
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="doorType" new="dimensions"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Warnings__Config.Assembly__Warnings__Config__ActiveWarnings[0] change=added old=null new={"RuleId":"WARN_DOOR_HEIGHT_OVER_2400","Severity":"Warning","WarningMessage":"Doors above 2400 mm height require non-standard hinge specification.","DocumentWarning":{"Title":"Door Height Warning","Message":"Doors above 2400 mm height require non-standard hinge specification."},"TriggeredAtValue":2466,"Acknowledged":false}
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Warnings__Config.Assembly__Warnings__Config__ActiveWarnings[1] change=added old=null new={"RuleId":"WARN_LEVER_MISMATCH","Severity":"Warning","WarningMessage":"The Handle Type for this assembly is different to the others on the project.","DocumentWarning":{"Title":"Handle Type Mismatch","Message":"The Handle Type for this assembly is different to the others on the project."},"TriggeredAtValue":"Plain Lever Handle","Acknowledged":false}
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13759 changedKeys=5
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Dimensions__Config.Assembly__Dimensions__Config__HeightMm change=updated old=2466 new=2330
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Lever__Config.Assembly__Lever__Config__Type change=updated old="Plain Lever Handle" new="Newton Lever Handle"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="dimensions" new="handles"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Warnings__Config.Assembly__Warnings__Config__ActiveWarnings[0] change=removed old={"RuleId":"WARN_DOOR_HEIGHT_OVER_2400","Severity":"Warning","WarningMessage":"Doors above 2400 mm height require non-standard hinge specification.","DocumentWarning":{"Title":"Door Height Warning","Message":"Doors above 2400 mm height require non-standard hinge specification."},"TriggeredAtValue":2466,"Acknowledged":false} new=null
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Warnings__Config.Assembly__Warnings__Config__ActiveWarnings[1] change=removed old={"RuleId":"WARN_LEVER_MISMATCH","Severity":"Warning","WarningMessage":"The Handle Type for this assembly is different to the others on the project.","DocumentWarning":{"Title":"Handle Type Mismatch","Message":"The Handle Type for this assembly is different to the others on the project."},"TriggeredAtValue":"Plain Lever Handle","Acknowledged":false} new=null
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13758 changedKeys=3
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Lever__Config.Assembly__Lever__Config__Type change=updated old="Newton Lever Handle" new="Scroll Lever Handle"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="handles" new="hinges"
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__GlobalSettings.ValeSpec__ProjectFile__GlobalSettings__LeverType change=updated old="Newton Lever Handle" new="Scroll Lever Handle"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13756 changedKeys=1
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="hinges" new="misc"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13759 changedKeys=1
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="misc" new="handles"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:06 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13759 changedKeys=0
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated no key/value updates detected.
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13760 changedKeys=1
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="handles" new="doorType"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13758 changedKeys=2
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__Dimensions__Config.Assembly__Dimensions__Config__WidthMm change=updated old=1608 new=1532
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="doorType" new="hinges"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13759 changedKeys=1
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="hinges" new="handles"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[PROJECT_SAVE] code=12645 source=autosave:assemblyUpdated payloadBytes=13756 changedKeys=1
+[PROJECT_CHANGE] code=12645 source=autosave:assemblyUpdated path=ValeSpec__ProjectFile__Assemblies[0].Assembly__ProgressState__Config.Assembly__ProgressState__Config__ActiveStepId change=updated old="handles" new="misc"
+[PROJECT] Saved: ValeSpec__ProjectFile__12645__Ferguson__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/projects/12645 HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__540p__.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ExportImage__540p__.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__540p__.png HTTP/1.1" 200 -
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ViewModelLayers__540p__.png HTTP/1.1" 200 -
+[USER_MENU] Saved: ValeSpec__AppData__UserMenuConfig__AdamW__.json
+[USER_MENU] Synced AdamW defaults into ValeSpec__AppConfig__Main__.json
+[REQUEST] 14-Oct-2026 - 14:07 | 127.0.0.1 | "POST /api/user-menu-config/AdamW HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.112:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================
+[REQUEST] 15-Oct-2026 - 15:59 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 15-Oct-2026 - 15:59 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.112:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================

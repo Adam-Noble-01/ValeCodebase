@@ -19,9 +19,25 @@
      built-in WebSocket): nothing to install. 2x pixels, WebP quality 90.
 
    USAGE:
-     node HelpSnippets__Capture__.mjs                    every picture, both apps
-     node HelpSnippets__Capture__.mjs Ios-04-AddScreen   pictures whose id contains this
+     node HelpSnippets__Capture__.mjs                    every picture, every app
+     node HelpSnippets__Capture__.mjs lanterndesigner    one app's 14 pictures
+     node HelpSnippets__Capture__.mjs Ios-04-AddScreen   that picture for every app
+     node HelpSnippets__Capture__.mjs valevision__Ios-04 one picture of one app
+       (the filter is matched against "<app>__<picture>"; "valevision__" is
+       ValeVision alone, "valevision" also matches valevision3d)
      set VALE_DEV_PORT=8030 / VALE_EDGE=<path to msedge.exe> to override
+   - The apps are the studio's APPS list (window.__snipApps): add an app there.
+
+   -----------------------------------------------------------------------------
+
+   DEVELOPMENT LOG:
+   15-Oct-2026 - Version 1.1.0
+   - The app list comes from the studio (Lantern Designer added there), and the
+     filter matches "<app>__<picture>", so one app's pictures can be remade
+     without touching the others.
+
+   07-Oct-2026 - Version 1.0.0
+   - Initial build (ValeVision and ValeVision 3D).
 
    ============================================================================= */
 
@@ -43,8 +59,7 @@ const DEV_PORT     = Number(process.env.VALE_DEV_PORT || 8030);
 const STUDIO_PORT  = 8031;
 const CDP_PORT     = 9333;
 const EDGE         = process.env.VALE_EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-const APPS         = ['valevision', 'valevision3d'];
-const FILTER       = process.argv[2] || '';
+const FILTER       = process.argv[2] || '';                                    // <-- Matched against "<app>__<picture>"
 const MARGIN       = 14;                                                       // <-- Room round #Snip for the rings
 
 // endregion -------------------------------------------------------------------
@@ -147,9 +162,10 @@ async function Na__Main() {
         const studio = `http://127.0.0.1:${STUDIO_PORT}/__studio/HelpSnippets__Studio__.html`;
         await cdp.send('Page.navigate', { url: studio });
         await Na__Sleep(800);
-        const ids = (await Na__Eval(cdp, 'window.__snipList')).filter((s) => s.includes(FILTER));
-        for (const app of APPS) {
-            for (const snip of ids) {
+        const ids  = await Na__Eval(cdp, 'window.__snipList');
+        const apps = await Na__Eval(cdp, 'window.__snipApps');                 // <-- The studio's APPS: one place to add an app
+        for (const app of apps) {
+            for (const snip of ids.filter((s) => `${app}__${s}`.includes(FILTER))) {
                 await cdp.send('Page.navigate', { url: `${studio}?snip=${snip}&app=${app}` });
                 let ready = false;
                 for (let i = 0; i < 160 && !ready; i++) { await Na__Sleep(250); ready = await Na__Eval(cdp, 'window.__snipReady === true'); }

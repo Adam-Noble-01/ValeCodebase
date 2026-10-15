@@ -64,6 +64,43 @@ lock, from the file on disk: the app's copy of the stamp is never trusted, so no
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.6.1 - 15-Oct-2026
+### UI | The header and the tab bar at phone width
+
+The install guide's iPhone and Android pictures showed the problem: at 390px the Vale logo and the "Lantern Designer"
+title ran into each other, and the right-hand tabs ran off the screen. The 42px logo is 189px wide and the 21.6px title
+about 175px, and the bar had only 347px between its paddings. Neither stylesheet had a phone rule.
+
+---
+
+#### THE HEADER (≤480px)
+
+The logo keeps its width and the title gives way, as in ValeVision 3D's phone header: the logo at 80% (33.6px), the
+title at sub-heading size (16.2px), the bar's side padding 12px with a fixed 12px gap between the two sides, and the
+avatar closer to the title. Below about 375px, or beside the avatar on a narrow phone, the title wraps onto two lines
+("Lantern" over "Designer") instead of reaching the logo. The bar keeps its 54px, so the tab bar and the mode panels
+below it do not move.
+
+| Width | Signed out | Signed in (avatar) |
+|---|---|---|
+| 390px | one line, 72px clear of the logo | one line, 37px clear |
+| 360px, 320px | one line | two lines, 12px clear |
+| 481px (desktop rules) | one line | one line, 11px clear |
+
+---
+
+#### THE TAB BAR (≤480px)
+
+The eight tabs need about 910px. The bar now scrolls sideways under a finger, with tighter tabs, and draws no
+scrollbar: the tab cut off at the right edge shows there is more. The page itself never scrolls sideways.
+
+Desktop is unchanged: both rules sit in `@media (max-width: 480px)` regions at the end of
+`VghLantern__UiFeature__Styles__AppHeader__.css` and `VghLantern__UiFeature__Styles__NavigationBar__.css`. The guide's
+Windows pictures, remade after the change, are pixel-identical to the ones before it. CSS only; pushed on its own, so the
+app version in the config is left to the work after it.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.6.0 - 15-Oct-2026
 ### SERVER | Onto app.valegardenhouses.com, with the Master Library as the only home of a design
 

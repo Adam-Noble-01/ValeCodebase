@@ -25,6 +25,11 @@
        floating labels take over when the boxes get too small to read
      - Shared Resources sit in their own library column on the right; dashed
        lines show which objects use them
+     - Two views of the same records, switched at the top: Scheme (one
+       configured project and only what it uses) and Whole library (every
+       record on its category shelf, ready for the next scheme). A link such
+       as page.html#library/PRD-VG726 opens the library view on one record
+     - Door handles, hinges and ironmongery finishes come from ValeSpec
      - The panel on the right explains whatever is selected: its tier, its data
        points, what it is built from, its bill of materials, its rules, its
        linked assets and everywhere it is used
@@ -171,9 +176,9 @@
 
         .app-header__titles {
             display                             : flex;
+            flex                                : none;
             flex-direction                      : column;
             line-height                         : 1.2;
-            min-width                           : 0;
         }
 
         .app-header__title {
@@ -209,6 +214,41 @@
         .app-header > .btn,
         .app-header__logo {
             flex                                : none;
+        }
+
+        .view-switch {
+            display                             : inline-flex;
+            flex                                : none;
+            padding                             : 3px;
+            border-radius                       : 10px;
+            background                          : var(--Vale_HoverColour);
+        }
+
+        .view-switch__btn {
+            height                              : 32px;
+            padding                             : 0 14px;
+            border                              : none;
+            border-radius                       : 8px;
+            background                          : transparent;
+            color                               : var(--Vale_TextSecondary);
+            font-size                           : 13.5px;
+            font-weight                         : 600;
+            white-space                         : nowrap;
+            cursor                              : pointer;
+        }
+
+        .view-switch__btn:hover {
+            color                               : var(--Vale_PrimaryBrand);
+        }
+
+        .view-switch__short {
+            display                             : none;
+        }
+
+        .view-switch__btn.is-on {
+            background                          : var(--Vale_BackgroundWhite);
+            color                               : var(--Vale_PrimaryBrand);
+            box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.16);
         }
         /* #endregion --------------------------------------------------------- */
 
@@ -288,7 +328,8 @@
          * ------------------------------------------------------------------- */
         .search {
             position                            : relative;
-            width                               : min(340px, 30vw);
+            flex                                : 0 1 340px;                     /* <-- The search box gives way first when the header is tight */
+            min-width                           : 150px;
         }
 
         .search__icon {
@@ -664,6 +705,20 @@
             stroke                              : #b87800;
             stroke-width                        : 2.5;
             stroke-dasharray                    : none;
+        }
+
+        .node.is-unavailable .node__card {
+            stroke-dasharray                    : 4 3;
+        }
+
+        .node.is-unavailable .node__name,
+        .node.is-unavailable .node__name-large {
+            fill                                : var(--Vale_TextMuted);
+        }
+
+        .res__swatch {
+            stroke                              : rgba(23, 43, 58, 0.25);
+            stroke-width                        : 1;
         }
 
         .node.is-match-inside .node__card {
@@ -1554,6 +1609,36 @@
             border-color                        : #b7dbb7;
         }
 
+        .swatch {
+            display                             : inline-block;
+            width                               : 14px;
+            height                              : 12px;
+            border-radius                       : 3px;
+            border                              : 1px solid rgba(23, 43, 58, 0.25);
+            vertical-align                      : -2px;
+        }
+
+        .view-buttons {
+            display                             : flex;
+            flex-wrap                           : wrap;
+            gap                                 : 8px;
+        }
+
+        .view-buttons .btn {
+            height                              : 34px;
+            font-size                           : 13px;
+        }
+
+        .view-buttons .btn.is-current {
+            background                          : var(--Vale_PrimaryBrand);
+            border-color                        : var(--Vale_PrimaryBrand);
+            color                               : #ffffff;
+        }
+
+        .dp__extra th {
+            color                               : var(--Vale_TextMuted);
+        }
+
         .chip--linked .icon {
             width                               : 13px;
             height                              : 13px;
@@ -1711,6 +1796,18 @@
             .toolbar {
                 max-width                       : calc(100% - 32px);
             }
+
+            .view-switch__btn {
+                padding                         : 0 10px;
+            }
+
+            .view-switch__long {
+                display                         : none;
+            }
+
+            .view-switch__short {
+                display                         : inline;
+            }
         }
 
         @media (max-width: 560px) {
@@ -1720,7 +1817,11 @@
             }
 
             .app-header__logo {
-                height                          : 28px;
+                display                         : none;
+            }
+
+            .search {
+                min-width                       : 0;
             }
 
             .search__kbd,
@@ -1763,6 +1864,11 @@
         <div class="app-header__titles">
             <h1 class="app-header__title">Object Library</h1>
             <span class="app-header__subtitle">System architecture <span class="version-chip">Demo 2.0.0</span></span>
+        </div>
+
+        <div class="view-switch" role="group" aria-label="What to show">
+            <button class="view-switch__btn js-view is-on" type="button" data-view="scheme" aria-pressed="true" title="One configured project, and only what it uses">Scheme</button>
+            <button class="view-switch__btn js-view" type="button" data-view="library" aria-pressed="false" title="Every record in the Object Library, on its category shelf"><span class="view-switch__long">Whole library</span><span class="view-switch__short">Library</span></button>
         </div>
 
         <div class="app-header__spacer"></div>
@@ -1940,10 +2046,10 @@
 
         const Settings = {
             columnGap      : 100,                                                    // <-- Clear space between columns, holds the connector spine
-            tierWidth      : { scheme: 284, family: 240, assembly: 240, component: 228, product: 228, resource: 252 },
-            tierHeight     : { scheme: 104, family: 62,  assembly: 54,  component: 44,  product: 44,  resource: 40  },
-            nameFont       : { scheme: [20, 700], family: [16, 600], assembly: [14.5, 600], component: [13.5, 600], product: [13.5, 600], resource: [13, 600] },
-            largeFont      : { scheme: 32, family: 26, assembly: 22, component: 20, product: 20, resource: 19 },
+            tierWidth      : { scheme: 284, family: 240, assembly: 240, component: 228, product: 228, resource: 252, library: 284, category: 240 },
+            tierHeight     : { scheme: 104, family: 62,  assembly: 54,  component: 44,  product: 44,  resource: 40,  library: 104, category: 62  },
+            nameFont       : { scheme: [20, 700], family: [16, 600], assembly: [14.5, 600], component: [13.5, 600], product: [13.5, 600], resource: [13, 600], library: [20, 700], category: [16, 600] },
+            largeFont      : { scheme: 32, family: 26, assembly: 22, component: 20, product: 20, resource: 19, library: 32, category: 26 },
             gapSibling     : 10,                                                     // <-- Vertical gaps: same parent / same grandparent / further apart
             gapCousin      : 20,
             gapDistant     : 40,
@@ -1962,14 +2068,16 @@
             fontFamily     : "'Segoe UI', 'Open Sans', system-ui, -apple-system, sans-serif"
         };
 
-        const TierRank = { scheme: 0, family: 1, assembly: 2, component: 3, product: 3, resource: 4 };
+        // The library root and its category shelves lay out like a Scheme and its Families
+        const TierRank = { scheme: 0, library: 0, family: 1, category: 1, assembly: 2, component: 3, product: 3, resource: 4 };
 
         const Model = {
-            defs        : new Map(),                                                 // <-- id -> definition (scheme, families, library, resources)
+            defs        : new Map(),                                                 // <-- id -> definition (scheme, families, library, categories, resources)
             groups      : new Map(),                                                 // <-- resource group key -> group with its items
             resources   : [],
-            root        : null,                                                      // <-- the scheme placement, root of the tree
-            placements  : [],                                                        // <-- every box the scheme can show, in tree order
+            trees       : {},                                                        // <-- 'scheme' and 'library': each { key, root, placements, byUid, maxNest }
+            root        : null,                                                      // <-- The tree on show (see SetView) - root, every box, lookup, depth
+            placements  : [],
             byUid       : new Map(),
             maxNest     : 0,                                                         // <-- deepest sub-assembly level, sets the column count
             issues      : [],
@@ -1991,6 +2099,7 @@
         };
 
         const State = {
+            view          : 'scheme',                                                // <-- 'scheme' (one configured project) or 'library' (every record)
             expanded      : new Set(),
             detail        : 'assembly',
             selection     : null,                                                    // <-- { type: 'node', uid } or { type: 'resource', id }
@@ -2101,6 +2210,16 @@
         }
         // ------------------------------------------------------------
 
+        // FUNCTION | Add children to an element, skipping blanks
+        // ------------------------------------------------------------
+        // Element.append() would write a skipped item out as the word "null".
+        function ValeObjectLibrary_Put(parent) {
+            for (let i = 1; i < arguments.length; i++) {
+                ValeObjectLibrary_Append(parent, arguments[i]);
+            }
+        }
+        // ------------------------------------------------------------
+
         // SUB FUNCTION | Append children, flattening arrays and skipping blanks
         // ------------------------------------------------------------
         function ValeObjectLibrary_Append(element, child) {
@@ -2160,6 +2279,18 @@
             return tier === 'component' || tier === 'product';
         }
 
+        function ValeObjectLibrary_IsStructural(tier) {
+            return tier === 'library' || tier === 'category';
+        }
+
+        function ValeObjectLibrary_IsUnavailable(def) {
+            return /unavailable|discontinued|withdrawn/i.test(String(def.data['Availability / Status'] || ''));
+        }
+
+        function ValeObjectLibrary_SchemeName() {
+            return Model.trees.scheme ? Model.trees.scheme.root.def.name : 'the scheme';
+        }
+
         function ValeObjectLibrary_ShortName(def) {
             if (def.tier === 'assembly') {
                 return def.name.replace(/\s+Assembly$/i, '');                     // <-- Zoomed out, the column already says "Assembly"
@@ -2172,13 +2303,17 @@
 
 
         // =====================================================================
-        // REGION | Data Model - Library Records and the Scheme's Placement Tree
+        // REGION | Data Model - Library Records and Two Placement Trees
         // =====================================================================
         // A definition is one library record (a Door Assembly, a Hinge). A
-        // placement is that record at one position in the scheme, with its
+        // placement is that record at one position in a tree, with its
         // quantity. The chart draws placements; the panel explains definitions.
         // The same Door Assembly placed in the North and South Elevations is one
         // definition with two placements - that is the reuse the chart shows.
+        // Two trees are built from the same definitions:
+        //   scheme  - Scheme > Families > what the example project uses
+        //   library - Object Library > Category shelves > every record, with
+        //             assemblies opening up to what they are made of
         // =====================================================================
 
         // FUNCTION | Report a data problem without stopping the chart
@@ -2201,37 +2336,44 @@
                 return null;
             }
             const def = {
-                id         : record.id,
-                tier       : tier,
-                name       : record.name || record.id,
-                summary    : record.summary || '',
-                group      : record.group || null,
-                data       : record.data || {},
-                params     : record.params || [],
-                uses       : (record.uses || []).slice(),
-                contains   : record.contains || [],
-                rules      : record.rules || [],
-                assets     : record.assets || [],
-                placements : [],
-                users      : [],
-                totalQty   : 0
+                id          : record.id,
+                tier        : tier,
+                name        : record.name || record.id,
+                summary     : record.summary || '',
+                group       : record.group || null,
+                category    : record.category || null,
+                data        : record.data || {},
+                params      : record.params || [],
+                uses        : (record.uses || []).slice(),
+                contains    : record.contains || [],
+                rules       : record.rules || [],
+                assets      : record.assets || [],
+                worksWith   : record.worksWith || [],
+                compatible  : new Set(),                                         // <-- worksWith, both ways round
+                containedBy : new Set(),                                         // <-- assemblies whose "contains" list this record
+                placementsIn: {},                                                // <-- per tree: every placement of this record
+                totalIn     : {},                                                // <-- per tree: quantity, all multiplied up
+                placements  : [],                                                // <-- the tree on show (see SetView)
+                users       : [],
+                totalQty    : 0
             };
             Model.defs.set(def.id, def);
             return def;
         }
         // ------------------------------------------------------------
 
-        // FUNCTION | Create one placement of a definition under a parent
+        // FUNCTION | Create one placement of a definition under a parent, in one tree
         // ------------------------------------------------------------
-        function ValeObjectLibrary_MakePlacement(def, parent, qty, nest) {
-            const base = parent ? parent.uid + '/' + def.id : def.id;
+        function ValeObjectLibrary_MakePlacement(tree, def, parent, qty, nest) {
+            const base = parent ? parent.uid + '/' + def.id : tree.key + ':' + def.id;
             let uid = base;
             let copy = 2;
-            while (Model.byUid.has(uid)) {
+            while (tree.byUid.has(uid)) {
                 uid = base + '~' + (copy++);                                     // <-- Same record twice under one parent
             }
             const placement = {
                 uid      : uid,
+                tree     : tree.key,
                 def      : def,
                 tier     : def.tier,
                 qty      : qty,
@@ -2243,20 +2385,22 @@
             if (parent) {
                 parent.children.push(placement);
             }
-            Model.byUid.set(uid, placement);
-            Model.placements.push(placement);
-            def.placements.push(placement);
+            tree.byUid.set(uid, placement);
+            tree.placements.push(placement);
+            (def.placementsIn[tree.key] = def.placementsIn[tree.key] || []).push(placement);
             return placement;
         }
         // ------------------------------------------------------------
 
         // FUNCTION | Place one { ref, qty } entry, recursing into assemblies
         // ------------------------------------------------------------
-        function ValeObjectLibrary_PlaceEntry(entry, parent, nest, chain) {
+        function ValeObjectLibrary_PlaceEntry(tree, entry, parent, nest, chain) {
             const ref = entry && entry.ref;
             const def = Model.defs.get(ref);
             if (!def) {
-                ValeObjectLibrary_Issue(parent.def.name + ' (' + parent.def.id + ') contains "' + ref + '", which is not in the library.');
+                if (tree.key === 'scheme') {                                     // <-- Report once, not once per tree
+                    ValeObjectLibrary_Issue(parent.def.name + ' (' + parent.def.id + ') contains "' + ref + '", which is not in the library.');
+                }
                 return;
             }
             if (def.tier !== 'assembly' && !ValeObjectLibrary_IsPart(def.tier)) {
@@ -2268,15 +2412,34 @@
                 return;
             }
             const qty = Number(entry.qty) > 0 ? Number(entry.qty) : 1;
-            const placement = ValeObjectLibrary_MakePlacement(def, parent, qty, def.tier === 'assembly' ? nest : 0);
+            const placement = ValeObjectLibrary_MakePlacement(tree, def, parent, qty, def.tier === 'assembly' ? nest : 0);
             if (def.tier === 'assembly') {
-                Model.maxNest = Math.max(Model.maxNest, nest);
+                tree.maxNest = Math.max(tree.maxNest, nest);
                 const nextChain = new Set(chain);
                 nextChain.add(def.id);
                 def.contains.forEach(function (child) {
-                    ValeObjectLibrary_PlaceEntry(child, placement, nest + 1, nextChain);
+                    ValeObjectLibrary_PlaceEntry(tree, child, placement, nest + 1, nextChain);
                 });
             }
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Finish a tree - what is inside each box, and the quantity totals
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_FinishTree(tree) {
+            (function collectInside(placement) {
+                placement.subtreeUses = new Set(placement.def.uses);
+                placement.subtreeDefs = new Set();
+                placement.children.forEach(function (child) {
+                    collectInside(child);
+                    placement.subtreeDefs.add(child.def.id);
+                    child.subtreeUses.forEach(function (id) { placement.subtreeUses.add(id); });
+                    child.subtreeDefs.forEach(function (id) { placement.subtreeDefs.add(id); });
+                });
+            })(tree.root);
+            tree.placements.forEach(function (placement) {
+                placement.def.totalIn[tree.key] = (placement.def.totalIn[tree.key] || 0) + placement.total;
+            });
         }
         // ------------------------------------------------------------
 
@@ -2322,53 +2485,108 @@
                 });
             });
 
-            const scheme    = Data.scheme || {};
-            const schemeDef = ValeObjectLibrary_AddDefinition(Object.assign({ id: 'SCHEME', name: 'Scheme' }, scheme), 'scheme');
-            Model.root      = ValeObjectLibrary_MakePlacement(schemeDef, null, 1, 0);
+            // Which assemblies contain each record, and what works with what (both ways round)
+            Model.defs.forEach(function (def) {
+                def.contains.forEach(function (entry) {
+                    const part = Model.defs.get(entry && entry.ref);
+                    if (part) {
+                        part.containedBy.add(def);
+                    }
+                });
+                def.worksWith.forEach(function (id) {
+                    const other = Model.defs.get(id);
+                    if (!other || other.tier === 'resource') {
+                        ValeObjectLibrary_Issue(def.name + ' (' + def.id + ') works with "' + id + '", which is not in the library.');
+                        return;
+                    }
+                    def.compatible.add(other.id);
+                    other.compatible.add(def.id);
+                });
+            });
 
+            // Tree 1 - the example Scheme and only what it uses
+            const scheme     = Data.scheme || {};
+            const schemeTree = ValeObjectLibrary_NewTree('scheme');
+            const schemeDef  = ValeObjectLibrary_AddDefinition(Object.assign({ id: 'SCHEME', name: 'Scheme' }, scheme), 'scheme');
+            schemeTree.root  = ValeObjectLibrary_MakePlacement(schemeTree, schemeDef, null, 1, 0);
             (scheme.families || []).forEach(function (record) {
                 const familyDef = ValeObjectLibrary_AddDefinition(record, 'family');
                 if (!familyDef) {
                     return;
                 }
-                const family = ValeObjectLibrary_MakePlacement(familyDef, Model.root, 1, 0);
+                const family = ValeObjectLibrary_MakePlacement(schemeTree, familyDef, schemeTree.root, 1, 0);
                 familyDef.contains.forEach(function (entry) {
-                    ValeObjectLibrary_PlaceEntry(entry, family, 0, new Set());
+                    ValeObjectLibrary_PlaceEntry(schemeTree, entry, family, 0, new Set());
                 });
             });
+            ValeObjectLibrary_FinishTree(schemeTree);
 
-            // Every resource used, and every record placed, anywhere below each placement
-            (function collectInside(placement) {
-                placement.subtreeUses = new Set(placement.def.uses);
-                placement.subtreeDefs = new Set();
-                placement.children.forEach(function (child) {
-                    collectInside(child);
-                    placement.subtreeDefs.add(child.def.id);
-                    child.subtreeUses.forEach(function (id) { placement.subtreeUses.add(id); });
-                    child.subtreeDefs.forEach(function (id) { placement.subtreeDefs.add(id); });
-                });
-            })(Model.root);
-
-            Model.placements.forEach(function (placement) {
-                placement.def.totalQty += placement.total;
+            // Tree 2 - the whole library: every record with a category sits on that
+            // shelf; records without one appear inside the assemblies that use them
+            const libraryTree = ValeObjectLibrary_NewTree('library');
+            const libraryDef  = ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, on its category shelf.' }, 'library');
+            libraryTree.root  = ValeObjectLibrary_MakePlacement(libraryTree, libraryDef, null, 1, 0);
+            const shelves = new Map();
+            (Data.categories || []).forEach(function (category) {
+                shelves.set(category.name, { name: category.name, summary: category.summary || '', records: [] });
             });
+            const libraryRecords = Array.from(Model.defs.values()).filter(function (def) {
+                return def.tier === 'assembly' || ValeObjectLibrary_IsPart(def.tier);
+            });
+            libraryRecords.forEach(function (def) {
+                let shelf = def.category;
+                if (!shelf && !def.containedBy.size) {
+                    shelf = 'Other';                                             // <-- Nothing is ever left off the library view
+                }
+                if (!shelf) {
+                    return;
+                }
+                if (!shelves.has(shelf)) {
+                    shelves.set(shelf, { name: shelf, summary: '', records: [] });
+                }
+                shelves.get(shelf).records.push(def);
+            });
+            shelves.forEach(function (shelf) {
+                if (!shelf.records.length) {
+                    return;
+                }
+                const slug        = shelf.name.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+                const categoryDef = ValeObjectLibrary_AddDefinition({ id: 'CAT-' + slug, name: shelf.name, summary: shelf.summary }, 'category');
+                if (!categoryDef) {
+                    return;
+                }
+                const placement = ValeObjectLibrary_MakePlacement(libraryTree, categoryDef, libraryTree.root, 1, 0);
+                shelf.records.forEach(function (def) {
+                    ValeObjectLibrary_PlaceEntry(libraryTree, { ref: def.id, qty: 1 }, placement, 0, new Set());
+                });
+            });
+            ValeObjectLibrary_FinishTree(libraryTree);
+
+            // Resource reach, counted in the Scheme
             Model.resources.forEach(function (resource) {
-                resource.placementCount = resource.users.reduce(function (sum, user) { return sum + user.placements.length; }, 0);
-                resource.pieceCount     = resource.users.reduce(function (sum, user) { return sum + user.totalQty; }, 0);
+                resource.placementCount = resource.users.reduce(function (sum, user) { return sum + (user.placementsIn.scheme || []).length; }, 0);
+                resource.pieceCount     = resource.users.reduce(function (sum, user) { return sum + (user.totalIn.scheme || 0); }, 0);
             });
+        }
+
+        function ValeObjectLibrary_NewTree(key) {
+            const tree = { key: key, root: null, placements: [], byUid: new Map(), maxNest: 0 };
+            Model.trees[key] = tree;
+            return tree;
         }
         // ------------------------------------------------------------
 
-        // FUNCTION | Counts the panel and the column headers quote
+        // FUNCTION | Counts the panel and the column headers quote (whole library)
         // ------------------------------------------------------------
         function ValeObjectLibrary_LibraryCounts() {
-            const counts = { scheme: 0, family: 0, assembly: 0, component: 0, product: 0, resource: 0, subassembly: 0 };
+            const counts = { scheme: 0, family: 0, assembly: 0, component: 0, product: 0, resource: 0, library: 0, category: 0, subassembly: 0 };
             Model.defs.forEach(function (def) {
                 counts[def.tier] += 1;
-                if (def.tier === 'assembly' && def.placements.some(function (p) { return p.nest > 0; })) {
+                if (def.tier === 'assembly' && def.containedBy.size) {
                     counts.subassembly += 1;
                 }
             });
+            counts.records = counts.assembly + counts.component + counts.product + counts.resource;
             return counts;
         }
 
@@ -2426,8 +2644,9 @@
         // ------------------------------------------------------------
         function ValeObjectLibrary_BuildColumns() {
             const columns = [];
-            columns.push({ key: 'scheme', tier: 'scheme' });
-            columns.push({ key: 'family', tier: 'family' });
+            const library = State.view === 'library';
+            columns.push({ key: library ? 'library' : 'scheme', tier: library ? 'library' : 'scheme' });
+            columns.push({ key: library ? 'category' : 'family', tier: library ? 'category' : 'family' });
             for (let nest = 0; nest <= Model.maxNest; nest++) {
                 columns.push({ key: nest === 0 ? 'assembly' : 'subassembly', tier: 'assembly', nest: nest });
             }
@@ -2447,8 +2666,8 @@
         }
 
         function ValeObjectLibrary_ColumnOf(placement) {
-            if (placement.tier === 'scheme') { return 0; }
-            if (placement.tier === 'family') { return 1; }
+            if (placement.tier === 'scheme' || placement.tier === 'library') { return 0; }
+            if (placement.tier === 'family' || placement.tier === 'category') { return 1; }
             if (placement.tier === 'assembly') { return 2 + placement.nest; }
             return Layout.partsColumn;
         }
@@ -2752,6 +2971,13 @@
             if (placement.tier === 'scheme' && def.data.Version) {
                 caption += ' · ' + def.data.Version;
             }
+            if (placement.tier === 'product' && def.data['Product Code']) {
+                caption += ' · ' + def.data['Product Code'];                       // <-- The catalogue code tells two "Finial"s apart
+            }
+            if (ValeObjectLibrary_IsUnavailable(def)) {
+                caption += ' · UNAVAILABLE';
+                group.classed('is-unavailable', true);
+            }
             text.append('text').attr('class', 'node__caption').attr('x', 24).attr('y', captionY).text(caption);
 
             let right = width - 14;
@@ -2772,15 +2998,18 @@
                 badge.append('rect').attr('x', 3.5).attr('y', 0.5).attr('width', 7).attr('height', 7).attr('rx', 1.5);
                 badge.append('rect').attr('x', 0.5).attr('y', 3.5).attr('width', 7).attr('height', 7).attr('rx', 1.5);
                 badge.append('text').attr('x', 14).attr('y', 9.5).text(label);
-                badge.append('title').text('One library record, used in ' + copies + ' places in this scheme');
+                badge.append('title').text(placement.tree === 'library'
+                    ? 'One library record, shown in ' + copies + ' places on the library shelves'
+                    : 'One library record, used in ' + copies + ' places in this scheme');
             }
 
             const nameText = ValeObjectLibrary_FitText(def.name, ValeObjectLibrary_Font(nameFont[0], nameFont[1]), width - 24 - 20);
             text.append('text').attr('class', 'node__name').attr('x', 24).attr('y', nameY)
                 .attr('font-size', nameFont[0]).attr('font-weight', nameFont[1]).text(nameText);
-            if (placement.tier === 'scheme') {
+            if (placement.tier === 'scheme' || placement.tier === 'library') {
+                const stats = placement.tier === 'scheme' ? ValeObjectLibrary_SchemeStats() : ValeObjectLibrary_LibraryStats();
                 text.append('text').attr('class', 'node__stats').attr('x', 24).attr('y', nameY + 24)
-                    .text(ValeObjectLibrary_FitText(ValeObjectLibrary_SchemeStats(), ValeObjectLibrary_Font(12, 400), width - 44));
+                    .text(ValeObjectLibrary_FitText(stats, ValeObjectLibrary_Font(12, 400), width - 44));
             }
 
             // Zoomed out - a larger short name only
@@ -2836,6 +3065,12 @@
                  + ValeObjectLibrary_Plural(used.assembly.size, 'assembly', 'assemblies') + ' · '
                  + ValeObjectLibrary_Plural(used.part.size, 'part', 'parts');
         }
+
+        function ValeObjectLibrary_LibraryStats() {
+            const counts = ValeObjectLibrary_LibraryCounts();
+            return ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'shelf', 'shelves') + ' · '
+                 + ValeObjectLibrary_Plural(counts.records, 'record', 'records');
+        }
         // ------------------------------------------------------------
 
         // FUNCTION | Draw the shared Resource library column (once - it never folds)
@@ -2883,15 +3118,19 @@
                     .attr('fill', ValeObjectLibrary_TierColour('resource'));
                 const text = body.append('g').attr('class', 'res__text');
                 text.append('text').attr('class', 'res__caption').attr('x', 22).attr('y', 16).text(singular.toUpperCase());
-                const usesLabel = ValeObjectLibrary_Plural(resource.placementCount, 'use', 'uses');
+                const usesLabel = ValeObjectLibrary_Plural(resource.users.length, 'object', 'objects');   // <-- Library-wide, so true in both views
                 text.append('text').attr('class', 'res__count').attr('x', box.w - 12).attr('y', 16).attr('text-anchor', 'end').text(usesLabel);
                 text.append('text').attr('class', 'res__name').attr('x', 22).attr('y', 31).attr('font-size', font[0]).attr('font-weight', font[1])
-                    .text(ValeObjectLibrary_FitText(resource.name, ValeObjectLibrary_Font(font[0], font[1]), box.w - 34));
+                    .text(ValeObjectLibrary_FitText(resource.name, ValeObjectLibrary_Font(font[0], font[1]), box.w - 52));
+                if (resource.data.Swatch) {
+                    body.append('rect').attr('class', 'res__swatch').attr('x', box.w - 26).attr('y', 21).attr('width', 14).attr('height', 12).attr('rx', 3)
+                        .attr('fill', resource.data.Swatch);
+                }
                 const large = ValeObjectLibrary_FitLarge(resource.name, Settings.largeFont.resource, box.w - 32);
                 body.append('text').attr('class', 'res__name-large').attr('x', 22).attr('y', box.h / 2).attr('dy', '0.36em')
                     .attr('font-size', large.size).attr('font-weight', 700)
                     .text(large.text);
-                group.append('title').text(resource.name + ' - used in ' + usesLabel.replace(/uses?$/, '') + 'places');
+                group.append('title').text(resource.name + ' - used by ' + usesLabel + ' in the library');
             });
         }
         // ------------------------------------------------------------
@@ -3129,8 +3368,85 @@
         // FUNCTION | Go to one placement from the panel - open its route, select it, fly to it
         // ------------------------------------------------------------
         function ValeObjectLibrary_GoTo(placement) {
+            if (placement.tree !== State.view) {
+                ValeObjectLibrary_SetView(placement.tree, { fit: false });           // <-- A link into the other view switches to it first
+            }
             const opened = ValeObjectLibrary_RevealPlacement(placement);
             ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { fly: true, refresh: opened });
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Go to a record wherever it can be shown - this view first, else the other
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_JumpTo(def) {
+            if (def.tier === 'resource') {
+                ValeObjectLibrary_Select({ type: 'resource', id: def.id }, { fly: true });
+                return;
+            }
+            let view = State.view;
+            if (!(def.placementsIn[view] || []).length) {
+                view = view === 'scheme' ? 'library' : 'scheme';
+                if (!(def.placementsIn[view] || []).length) {
+                    return;
+                }
+                ValeObjectLibrary_SetView(view, { fit: false });
+            }
+            ValeObjectLibrary_SelectById(def.id, { reveal: true, fly: true });
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Switch between the Scheme view and the whole Library view
+        // ------------------------------------------------------------
+        // Both views are built from the same records at start-up; switching
+        // swaps which tree is on show, rebuilds the columns and redraws.
+        // options.fit    : false keeps the camera (the caller will move it)
+        // options.detail : how far to open the new view
+        // options.force  : redraw even if this view is already on show
+        function ValeObjectLibrary_SetView(view, options) {
+            const opts = options || {};
+            const tree = Model.trees[view];
+            if (!tree) {
+                return;
+            }
+            const changed = State.view !== view || opts.force;
+            State.view       = view;
+            Model.root       = tree.root;
+            Model.placements = tree.placements;
+            Model.byUid      = tree.byUid;
+            Model.maxNest    = tree.maxNest;
+            Model.defs.forEach(function (def) {
+                def.placements = def.placementsIn[view] || [];
+                def.totalQty   = def.totalIn[view] || 0;
+            });
+            if (!changed) {
+                return;
+            }
+
+            State.selection = null;
+            State.focus     = null;
+            State.softFocus = false;
+            State.matches   = new Set();
+            ValeObjectLibrary_BuildColumns();
+            ValeObjectLibrary_LayoutLane();
+
+            [Layers.nodes, Layers.links, Layers.refs, Layers.bands].forEach(function (layer) {
+                layer.selectAll('*').interrupt('layout').remove();               // <-- Nothing animates across from the other view
+            });
+            Layout.pos     = new Map();
+            Layout.prevPos = new Map();
+            LabelCache.forEach(function (label) { label.remove(); });
+            LabelCache.clear();
+            Elements.tierStrip.textContent = '';
+            ValeObjectLibrary_RenderLane();
+            ValeObjectLibrary_BuildTierStrip();
+
+            ValeObjectLibrary_ApplyDetail(opts.detail || (view === 'library' ? 'family' : 'assembly'));
+            ValeObjectLibrary_Refresh();
+            ValeObjectLibrary_RenderInspector();
+            ValeObjectLibrary_UpdateHash();
+            if (opts.fit !== false) {
+                ValeObjectLibrary_FitBox(Layout.bounds, { maxK: 1 });
+            }
         }
         // ------------------------------------------------------------
 
@@ -3564,6 +3880,18 @@
                     short = 'Parts';
                     dots  = [ValeObjectLibrary_TierColour('component'), ValeObjectLibrary_TierColour('product')];
                     level = 'parts';
+                } else if (header.key === 'library') {
+                    meta  = ValeObjectLibrary_Plural(counts.records, 'record', 'records') + ' in all';
+                    label = 'Object Library';
+                    short = 'Library';
+                    dots  = [ValeObjectLibrary_TierColour('library')];
+                    level = 'scheme';
+                } else if (header.key === 'category') {
+                    meta  = ValeObjectLibrary_Plural(Model.trees.library.root.children.length, 'shelf', 'shelves');
+                    label = 'Category shelves';
+                    short = 'Shelves';
+                    dots  = [ValeObjectLibrary_TierColour('category')];
+                    level = 'family';
                 } else {
                     const tier = Data.tiers[header.tier];
                     meta  = tier.code + '   ' + inLibrary(counts[header.tier]);
@@ -3640,7 +3968,7 @@
             layer.hidden = false;
             const viewWidth  = Elements.canvas.clientWidth;
             const viewHeight = Elements.canvas.clientHeight;
-            const priority   = { scheme: 0, family: 1, assembly: 3, component: 4, product: 4 };
+            const priority   = { scheme: 0, library: 0, family: 1, category: 1, assembly: 3, component: 4, product: 4 };
             const candidates = [];
 
             Layout.visible.forEach(function (placement) {
@@ -3865,7 +4193,18 @@
             return ValeObjectLibrary_El('button', { type: 'button', class: 'chip', onclick: function () {
                     ValeObjectLibrary_Select({ type: 'resource', id: resource.id }, { fly: true });
                 } },
-                ValeObjectLibrary_Dot(ValeObjectLibrary_TierColour('resource')), resource.name);
+                ValeObjectLibrary_Dot(ValeObjectLibrary_TierColour('resource')), resource.name,
+                resource.data.Swatch ? ValeObjectLibrary_Swatch(resource.data.Swatch) : null);
+        }
+
+        // SUB FUNCTION | A chip for any library record - goes to it, switching view if it has to
+        function ValeObjectLibrary_RecordChip(def) {
+            return ValeObjectLibrary_El('button', { type: 'button', class: 'chip', onclick: function () { ValeObjectLibrary_JumpTo(def); } },
+                ValeObjectLibrary_Dot(ValeObjectLibrary_TierColour(def.tier)), def.name);
+        }
+
+        function ValeObjectLibrary_Swatch(colour) {
+            return ValeObjectLibrary_El('span', { class: 'swatch', style: 'background:' + colour, 'aria-hidden': 'true' });
         }
 
         function ValeObjectLibrary_RouteText(placement) {
@@ -3882,21 +4221,32 @@
         function ValeObjectLibrary_RenderOverview(body) {
             const E       = ValeObjectLibrary_El;
             const counts  = ValeObjectLibrary_LibraryCounts();
-            const records = counts.assembly + counts.component + counts.product + counts.resource;
-            const pieces  = ValeObjectLibrary_PieceCount(Model.root);
-            const top     = Model.resources.slice().sort(function (a, b) { return b.placementCount - a.placementCount; })[0];
+            const scheme  = Model.trees.scheme;
+            const shelves = Model.trees.library.root.children.length;
+            const pieces  = ValeObjectLibrary_PieceCount(scheme.root);
+            const top     = Model.resources.slice().sort(function (a, b) { return b.users.length - a.users.length; })[0];
             const meta    = Data.meta || {};
 
-            body.append(
+            ValeObjectLibrary_Put(body, 
                 E('div', { class: 'insp-kicker', text: 'Vale Garden Houses' }),
                 E('h2', { class: 'insp-title', text: (meta.title || 'Object Library') + ': how it is built' }),
                 E('p', { class: 'insp-lead', text: 'One shared library of objects, from whole Families down to single profiles, materials and finishes. Every Scheme is configured from it, so each object is defined once and reused everywhere.' }),
                 E('div', { class: 'tiles tiles--2' },
-                    ValeObjectLibrary_Tile(records, 'records in the library'),
-                    ValeObjectLibrary_Tile(Model.placements.length, 'places they are used in ' + Model.root.def.name),
+                    ValeObjectLibrary_Tile(counts.records, 'records in the library, on ' + shelves + ' shelves'),
+                    ValeObjectLibrary_Tile(scheme.placements.length, 'places they are used in ' + scheme.root.def.name),
                     ValeObjectLibrary_Tile(pieces, 'pieces to make or buy, counted automatically'),
-                    top ? ValeObjectLibrary_Tile(top.placementCount, 'places use ' + top.name + ', the most shared resource') : null)
+                    top ? ValeObjectLibrary_Tile(top.users.length, 'objects use ' + top.name + ', the most shared resource') : null)
             );
+
+            // The two views of the same records
+            const viewButton = function (view, label) {
+                return E('button', { type: 'button', class: 'btn btn--quiet' + (State.view === view ? ' is-current' : ''), onclick: function () {
+                        ValeObjectLibrary_SetView(view);
+                    } }, label);
+            };
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Two ways to look', null,
+                E('p', { class: 'body-text', text: 'Scheme shows one configured project, ' + scheme.root.def.name + ', and only what it uses. Whole library shows every record we hold, on its category shelf, ready for the next scheme.' }),
+                E('div', { class: 'view-buttons' }, viewButton('scheme', 'Show the scheme'), viewButton('library', 'Show the whole library'))));
 
             // The tiers - also the colour legend; a click opens the chart to that level
             const tierRows = ['scheme', 'family', 'assembly', 'component', 'product', 'resource'].map(function (key) {
@@ -3912,19 +4262,19 @@
                         E('span', { class: 'row__sub', text: tier.summary })),
                     E('span', { class: 'row__count', text: counts[key] }));
             });
-            body.append(ValeObjectLibrary_Section('Six kinds of object', 'records', E('div', { class: 'rows' }, tierRows)));
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Six kinds of object', 'records', E('div', { class: 'rows' }, tierRows)));
 
-            body.append(ValeObjectLibrary_Section('Reading the chart', null, ValeObjectLibrary_ReadingKey()));
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Reading the chart', null, ValeObjectLibrary_ReadingKey()));
 
-            body.append(ValeObjectLibrary_Section('Configuration engine', null,
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Configuration engine', null,
                 E('p', { class: 'body-text', text: 'Rules, parameters and constraints decide how objects can be selected, sized and combined, so every option stays buildable. Each Scheme stores its own sizes and quantities; the library keeps the definitions.' }),
                 E('div', { class: 'chips' }, (Data.ruleTypes || []).map(function (rule) { return E('span', { class: 'chip chip--static', text: rule }); }))));
 
-            body.append(ValeObjectLibrary_Section('Linked assets', null,
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Linked assets', null,
                 E('p', { class: 'body-text', text: 'Any object can link to the files behind it:' }),
                 E('div', { class: 'chips' }, (Data.assetTypes || []).map(function (asset) { return E('span', { class: 'chip chip--static', text: asset }); }))));
 
-            body.append(ValeObjectLibrary_Section('Getting around', null,
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Getting around', null,
                 E('div', { class: 'controls-list' },
                     E('span', null, E('kbd', { text: 'Scroll' })), E('span', { text: 'Zoom at the pointer' }),
                     E('span', null, E('kbd', { text: 'Drag' })), E('span', { text: 'Pan (left or middle button)' }),
@@ -3932,7 +4282,7 @@
                     E('span', null, E('kbd', { text: 'F' })), E('span', { text: 'Fit everything on screen' }),
                     E('span', null, E('kbd', { text: '/' })), E('span', { text: 'Find an object' }))));
 
-            body.append(E('div', { class: 'insp-foot' },
+            ValeObjectLibrary_Put(body, E('div', { class: 'insp-foot' },
                 'Every box is generated from ', E('code', { class: 'code', text: '02_Data/ValeObjectLibrary__LibraryData__.js' }),
                 (meta.updated ? ', updated ' + meta.updated : '') + '. Example values are illustrative. ',
                 E('a', { href: 'ValeObjectLibrary__Demo__.html', text: 'Demo 1' }), ' is the earlier static page.'));
@@ -3963,37 +4313,49 @@
         // FUNCTION | Details for one placed object
         // ------------------------------------------------------------
         function ValeObjectLibrary_RenderPlacement(body, placement) {
-            const E      = ValeObjectLibrary_El;
-            const def    = placement.def;
-            const tier   = Data.tiers[placement.tier];
-            const colour = tier.colour;
+            const E          = ValeObjectLibrary_El;
+            const def        = placement.def;
+            const tier       = Data.tiers[placement.tier];
+            const colour     = tier.colour;
+            const inLibrary  = placement.tree === 'library';
+            const schemeName = ValeObjectLibrary_SchemeName();
+            const inScheme   = def.placementsIn.scheme || [];
 
-            body.append(ValeObjectLibrary_BackButton());
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_BackButton());
 
             const route = [];
             for (let node = placement.parent; node; node = node.parent) {
                 route.unshift(node);
             }
             if (route.length) {
-                const crumbs = E('nav', { class: 'insp-crumbs', 'aria-label': 'Where it sits in the scheme' });
+                const crumbs = E('nav', { class: 'insp-crumbs', 'aria-label': inLibrary ? 'Where it sits in the library' : 'Where it sits in the scheme' });
                 route.forEach(function (node, index) {
                     if (index) {
                         crumbs.append(E('span', { text: '›', 'aria-hidden': 'true' }));
                     }
                     crumbs.append(E('button', { type: 'button', text: node.def.name, onclick: function () { ValeObjectLibrary_GoTo(node); } }));
                 });
-                body.append(crumbs);
+                ValeObjectLibrary_Put(body, crumbs);
             }
 
-            body.append(
+            if (ValeObjectLibrary_IsStructural(placement.tier)) {
+                ValeObjectLibrary_RenderShelf(body, placement);
+                return;
+            }
+
+            ValeObjectLibrary_Put(body, 
                 E('div', { class: 'insp-tier' }, ValeObjectLibrary_Dot(colour), E('span', { text: tier.code + ' · ' + ValeObjectLibrary_TierLabel(placement) }), E('span', { class: 'insp-id', text: def.id })),
                 E('h2', { class: 'insp-title', text: def.name }),
                 def.summary ? E('p', { class: 'insp-lead', text: def.summary }) : null
             );
 
-            // Headline numbers
+            // Headline numbers - the library view counts across the library and the example scheme
             let tiles;
-            if (placement.tier === 'scheme') {
+            if (inLibrary) {
+                tiles = [ValeObjectLibrary_Tile(def.containedBy.size, def.containedBy.size === 1 ? 'assembly is built with it' : 'assemblies are built with it'),
+                         ValeObjectLibrary_Tile(inScheme.length, (inScheme.length === 1 ? 'place in ' : 'places in ') + schemeName),
+                         ValeObjectLibrary_Tile(def.totalIn.scheme || 0, 'in ' + schemeName + ', multiplied up')];
+            } else if (placement.tier === 'scheme') {
                 tiles = [ValeObjectLibrary_Tile(placement.children.length, 'families'),
                          ValeObjectLibrary_Tile(Model.placements.length - 1, 'objects placed'),
                          ValeObjectLibrary_Tile(ValeObjectLibrary_PieceCount(placement), 'pieces to make or buy')];
@@ -4006,14 +4368,14 @@
                          ValeObjectLibrary_Tile(def.placements.length, def.placements.length === 1 ? 'place in the scheme' : 'places in the scheme'),
                          ValeObjectLibrary_Tile(def.totalQty, 'in total, all multiplied up')];
             }
-            body.append(E('div', { class: 'tiles' }, tiles));
+            ValeObjectLibrary_Put(body, E('div', { class: 'tiles' }, tiles));
 
-            body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('What is ' + ValeObjectLibrary_Article(tier.label) + ' ' + tier.label + '?', null,
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('What is ' + ValeObjectLibrary_Article(tier.label) + ' ' + tier.label + '?', null,
                 E('p', { class: 'callout', style: '--tier-colour:' + colour, text: tier.definition })), 'definition'));
 
             // What it is made of, one level down
             if (placement.children.length) {
-                body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Built from', ValeObjectLibrary_Plural(placement.children.length, 'item', 'items'),
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Built from', ValeObjectLibrary_Plural(placement.children.length, 'item', 'items'),
                     E('div', { class: 'rows' }, placement.children.map(function (child) {
                         const inside = child.children.length ? ' · ' + ValeObjectLibrary_Plural(child.children.length, 'item', 'items') + ' inside' : '';
                         return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(child.tier), name: child.def.name, sub: ValeObjectLibrary_TierLabel(child) + inside,
@@ -4027,7 +4389,7 @@
                             : placement.tier === 'family' ? 'Everything in the ' + def.name
                             : 'Everything in one ' + def.name;
                 if (bill.length) {
-                    body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section(title, total + ' pieces',
+                    ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section(title, total + ' pieces',
                         E('div', { class: 'rows' }, bill.map(function (line) {
                             return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(line.def.tier), name: line.def.name, sub: Data.tiers[line.def.tier].label,
                                 qty: line.qty, onClick: function () { ValeObjectLibrary_GoTo(line.first); } });
@@ -4037,26 +4399,49 @@
 
             // Shared resources it draws on (a part), or that are drawn on anywhere inside it
             if (def.uses.length) {
-                body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Uses shared resources', ValeObjectLibrary_Plural(def.uses.length, 'resource', 'resources'),
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Uses shared resources', ValeObjectLibrary_Plural(def.uses.length, 'resource', 'resources'),
                     ValeObjectLibrary_ResourceGroups(def.uses)), 'uses'));
             } else if (placement.subtreeUses.size) {
-                body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Shared resources used inside', ValeObjectLibrary_Plural(placement.subtreeUses.size, 'resource', 'resources'),
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Shared resources used inside', ValeObjectLibrary_Plural(placement.subtreeUses.size, 'resource', 'resources'),
                     ValeObjectLibrary_ResourceGroups(placement.subtreeUses)), 'uses'));
             }
 
-            body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_DataPointsSection(def), 'data'));
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_DataPointsSection(def), 'data'));
 
             if (def.rules.length) {
-                body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Rules', 'configuration engine', def.rules.map(function (rule) {
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Rules', 'configuration engine', def.rules.map(function (rule) {
                     return E('div', { class: 'rule' }, E('div', { class: 'rule__type', text: rule.type }), E('div', { class: 'rule__text', text: rule.text }));
                 })), 'rules'));
             }
 
-            body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_AssetsSection(def), 'assets'));
+            // Compatibility - what it is made to work with, both ways round
+            if (def.compatible.size) {
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Works with', 'compatibility',
+                    def.data['For use with'] ? E('p', { class: 'body-text', text: 'For use with ' + def.data['For use with'] + '.' }) : null,
+                    E('div', { class: 'chips' }, Array.from(def.compatible).map(function (id) { return ValeObjectLibrary_RecordChip(Model.defs.get(id)); }))), 'works-with'));
+            }
+
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_AssetsSection(def), 'assets'));
+
+            // Library view - what it is part of, and where the example scheme uses it
+            if (inLibrary) {
+                if (def.containedBy.size) {
+                    ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Part of', ValeObjectLibrary_Plural(def.containedBy.size, 'assembly', 'assemblies'),
+                        E('div', { class: 'chips' }, Array.from(def.containedBy).map(ValeObjectLibrary_RecordChip))));
+                }
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('In ' + schemeName, inScheme.length ? ValeObjectLibrary_Plural(inScheme.length, 'place', 'places') : 'not used',
+                    inScheme.length
+                        ? E('div', { class: 'rows' }, inScheme.map(function (other) {
+                            return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(other.parent.tier), name: ValeObjectLibrary_RouteText(other) || schemeName,
+                                sub: '×' + other.qty + ' here · ' + other.total + ' in the scheme', onClick: function () { ValeObjectLibrary_GoTo(other); } });
+                        }))
+                        : E('p', { class: 'body-text muted', text: 'Not used in ' + schemeName + ' - on the shelf, ready for the next scheme.' })), 'in-scheme'));
+                return;
+            }
 
             // Every place the same record is used
             if (def.placements.length > 1) {
-                body.append(ValeObjectLibrary_Section('Used in ' + def.placements.length + ' places', 'same record',
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Used in ' + def.placements.length + ' places', 'same record',
                     E('div', { class: 'rows' }, def.placements.map(function (other) {
                         return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(other.parent.tier), name: ValeObjectLibrary_RouteText(other),
                             sub: '×' + other.qty + ' here · ' + other.total + ' in the scheme', current: other === placement,
@@ -4074,6 +4459,45 @@
         }
         // ------------------------------------------------------------
 
+        // FUNCTION | The library root and its category shelves
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_RenderShelf(body, placement) {
+            const E          = ValeObjectLibrary_El;
+            const def        = placement.def;
+            const tier       = Data.tiers[placement.tier];
+            const schemeName = ValeObjectLibrary_SchemeName();
+            const records    = placement.tier === 'library'
+                ? Model.trees.library.placements.filter(function (p) { return p.parent && p.parent.tier === 'category'; })
+                : placement.children;
+            const used       = records.filter(function (p) { return (p.def.placementsIn.scheme || []).length; }).length;
+
+            ValeObjectLibrary_Put(body, 
+                E('div', { class: 'insp-tier' }, ValeObjectLibrary_Dot(tier.colour), E('span', { text: tier.label })),
+                E('h2', { class: 'insp-title', text: def.name }),
+                def.summary ? E('p', { class: 'insp-lead', text: def.summary }) : null,
+                E('div', { class: 'tiles' },
+                    placement.tier === 'library'
+                        ? ValeObjectLibrary_Tile(placement.children.length, 'shelves')
+                        : ValeObjectLibrary_Tile(records.length, records.length === 1 ? 'record on this shelf' : 'records on this shelf'),
+                    ValeObjectLibrary_Tile(used, 'used in ' + schemeName),
+                    ValeObjectLibrary_Tile(records.length - used, 'ready for the next scheme')),
+                ValeObjectLibrary_Section('What is ' + (placement.tier === 'library' ? 'the Object Library' : 'a Category') + '?', null,
+                    E('p', { class: 'callout', style: '--tier-colour:' + tier.colour, text: tier.definition }))
+            );
+
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section(placement.tier === 'library' ? 'Shelves' : 'On this shelf', ValeObjectLibrary_Plural(placement.children.length, 'item', 'items'),
+                E('div', { class: 'rows' }, placement.children.map(function (child) {
+                    const code   = child.def.data['Product Code'];
+                    const inside = child.children.length ? ValeObjectLibrary_Plural(child.children.length, 'item', 'items') + ' inside' : '';
+                    const sub    = child.tier === 'category'
+                        ? (child.def.summary || '')
+                        : [ValeObjectLibrary_TierLabel(child), code, inside, ValeObjectLibrary_IsUnavailable(child.def) ? 'unavailable' : ''].filter(Boolean).join(' · ');
+                    return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(child.tier), name: child.def.name, sub: sub,
+                        qty: child.tier === 'category' ? child.children.length : undefined, onClick: function () { ValeObjectLibrary_GoTo(child); } });
+                }))), 'built'));
+        }
+        // ------------------------------------------------------------
+
         // FUNCTION | Data points - the fields every object of this tier holds
         // ------------------------------------------------------------
         // A value comes from the record's own data, from the Resources it uses
@@ -4088,28 +4512,43 @@
                     fields.set(group.field, group);
                 }
             });
-            let examples = false;
-            const rows = (tier.dataPoints || []).map(function (field) {
+            let filled = 0;
+            const fieldList = tier.dataPoints || [];
+            const rows = fieldList.map(function (field) {
                 let cell;
                 const own = def.data[field];
                 if (own !== undefined && own !== null && own !== '') {
-                    examples = true;
                     cell = E('td', { text: own });
                 } else if (fields.has(field) && def.tier !== 'resource') {
                     const used = def.uses.map(function (id) { return Model.defs.get(id); }).filter(function (r) { return r.group === fields.get(field).key; });
-                    cell = used.length ? E('td', null, E('div', { class: 'chips' }, used.map(ValeObjectLibrary_ResourceChip))) : E('td', { class: 'muted', text: '—' });
-                } else if (/ Code$/.test(field) || field === 'Scheme Reference') {
-                    cell = E('td', null, E('span', { class: 'code', text: def.id }));
+                    cell = used.length ? E('td', null, E('div', { class: 'chips' }, used.map(ValeObjectLibrary_ResourceChip))) : null;
+                } else if ((/ Code$/.test(field) && def.tier !== 'product') || field === 'Scheme Reference') {
+                    cell = E('td', null, E('span', { class: 'code', text: def.id }));   // <-- A product's code is its catalogue code, so no stand-in
                 } else if (field === 'Category' && def.tier === 'resource') {
                     cell = E('td', { text: def.group });
                 } else if (def.params.indexOf(field) !== -1) {
                     cell = E('td', null, E('span', { class: 'pill', text: 'Set by the scheme' }));
+                }
+                if (cell) {
+                    filled += 1;
                 } else {
                     cell = E('td', { class: 'muted', text: '—' });
                 }
                 return E('tr', null, E('th', { scope: 'row', text: field }), cell);
             });
-            return ValeObjectLibrary_Section('Data points', examples ? 'example values' : (tier.dataPoints || []).length + ' fields',
+
+            // Anything else the record holds, e.g. "For use with", "Hinge Style", a colour swatch
+            Object.keys(def.data).forEach(function (field) {
+                if (fieldList.indexOf(field) !== -1) {
+                    return;
+                }
+                const value = def.data[field];
+                const cell  = field === 'Swatch'
+                    ? E('td', null, ValeObjectLibrary_Swatch(value), ' ', E('span', { class: 'code', text: value }))
+                    : E('td', { text: value });
+                rows.push(E('tr', { class: 'dp__extra' }, E('th', { scope: 'row', text: field === 'Swatch' ? 'Colour' : field }), cell));
+            });
+            return ValeObjectLibrary_Section('Data points', fieldList.length ? filled + ' of ' + fieldList.length + ' filled' : null,
                 E('table', { class: 'dp' }, E('tbody', null, rows)));
         }
         // ------------------------------------------------------------
@@ -4136,7 +4575,7 @@
             const tier   = Data.tiers.resource;
             const group  = Model.groups.get(resource.group) || { singular: resource.group };
 
-            body.append(
+            ValeObjectLibrary_Put(body, 
                 ValeObjectLibrary_BackButton(),
                 E('div', { class: 'insp-tier' }, ValeObjectLibrary_Dot(tier.colour), E('span', { text: tier.code + ' · Resource · ' + group.singular }), E('span', { class: 'insp-id', text: resource.id })),
                 E('h2', { class: 'insp-title', text: resource.name }),
@@ -4152,11 +4591,12 @@
                 return TierRank[a.tier] - TierRank[b.tier] || a.name.localeCompare(b.name);
             });
             if (users.length) {
-                body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Used by', ValeObjectLibrary_Plural(users.length, 'object', 'objects'),
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_Section('Used by', ValeObjectLibrary_Plural(users.length, 'object', 'objects'),
                     E('div', { class: 'rows' }, users.map(function (user) {
+                        const places = (user.placementsIn.scheme || []).length;
                         return ValeObjectLibrary_Row({ colour: ValeObjectLibrary_TierColour(user.tier), name: user.name,
-                            sub: Data.tiers[user.tier].label + ' · ' + ValeObjectLibrary_Plural(user.placements.length, 'place', 'places'),
-                            qty: user.totalQty, onClick: function () { if (user.placements[0]) { ValeObjectLibrary_GoTo(user.placements[0]); } } });
+                            sub: Data.tiers[user.tier].label + ' · ' + (places ? ValeObjectLibrary_Plural(places, 'place', 'places') + ' in the scheme' : 'library only'),
+                            qty: user.totalIn.scheme || 0, onClick: function () { ValeObjectLibrary_JumpTo(user); } });
                     })),
                     E('button', { type: 'button', class: 'btn btn--quiet btn--block', onclick: function () {
                             const opened = ValeObjectLibrary_RevealDef(resource.id);
@@ -4165,10 +4605,10 @@
                         } },
                         ValeObjectLibrary_Icon('target'), 'Show every use on the chart')), 'used-by'));
             } else {
-                body.append(ValeObjectLibrary_Section('Used by', null, E('p', { class: 'body-text muted', text: 'Nothing in the library uses this yet.' })));
+                ValeObjectLibrary_Put(body, ValeObjectLibrary_Section('Used by', null, E('p', { class: 'body-text muted', text: 'Nothing in the library uses this yet.' })));
             }
 
-            body.append(ValeObjectLibrary_Keyed(ValeObjectLibrary_DataPointsSection(resource), 'data'));
+            ValeObjectLibrary_Put(body, ValeObjectLibrary_Keyed(ValeObjectLibrary_DataPointsSection(resource), 'data'));
         }
         // ------------------------------------------------------------
 
@@ -4206,15 +4646,37 @@
         function ValeObjectLibrary_BuildSearchIndex() {
             Model.searchIndex = [];
             Model.defs.forEach(function (def) {
-                if (def.tier !== 'resource' && !def.placements.length) {
+                const shown = def.tier === 'resource' || (def.placementsIn.scheme || []).length || (def.placementsIn.library || []).length;
+                if (!shown || def.tier === 'library') {
                     return;
                 }
+                const values = Object.keys(def.data).map(function (key) { return def.data[key]; }).join(' ');   // <-- Codes such as VG726 or VG_IRN0001
                 Model.searchIndex.push({
                     def  : def,
                     name : def.name.toLowerCase(),
-                    text : (def.name + ' ' + def.id + ' ' + Data.tiers[def.tier].label + ' ' + (def.group || '')).toLowerCase()
+                    text : (def.name + ' ' + def.id + ' ' + Data.tiers[def.tier].label + ' ' + (def.group || '') + ' ' + (def.category || '') + ' ' + values).toLowerCase()
                 });
             });
+        }
+
+        // SUB FUNCTION | One line on where a search result lives
+        function ValeObjectLibrary_SearchWhere(def) {
+            if (def.tier === 'resource') {
+                return ValeObjectLibrary_Plural(def.users.length, 'object uses', 'objects use') + ' it';
+            }
+            if (def.tier === 'category') {
+                return 'Library shelf · ' + ValeObjectLibrary_Plural((def.placementsIn.library || [])[0].children.length, 'record', 'records');
+            }
+            const code    = def.data['Product Code'] ? def.data['Product Code'] + ' · ' : '';
+            const status  = ValeObjectLibrary_IsUnavailable(def) ? ' · unavailable' : '';
+            const inView  = def.placementsIn[State.view] || [];
+            if (!inView.length) {
+                return code + (State.view === 'scheme' ? 'In the library only' : 'In ' + ValeObjectLibrary_SchemeName() + ' only') + status;
+            }
+            if (inView.length > 1) {
+                return code + 'In ' + inView.length + ' places' + status;
+            }
+            return code + (ValeObjectLibrary_RouteText(inView[0]) || inView[0].parent && inView[0].parent.def.name || '') + status;
         }
 
         function ValeObjectLibrary_Search(query) {
@@ -4264,9 +4726,7 @@
                 }
                 results.slice(0, 12).forEach(function (result, index) {
                     const def   = result.def;
-                    const where = def.tier === 'resource'
-                        ? ValeObjectLibrary_Plural(def.users.length, 'object uses', 'objects use') + ' it'
-                        : def.placements.length > 1 ? 'Used in ' + def.placements.length + ' places' : (ValeObjectLibrary_RouteText(def.placements[0]) || 'The scheme');
+                    const where = ValeObjectLibrary_SearchWhere(def);
                     list.append(ValeObjectLibrary_El('li', {
                             class : 'search__result' + (index === active ? ' is-active' : ''),
                             role  : 'option',
@@ -4290,7 +4750,7 @@
                 open(false);
                 input.blur();
                 ValeObjectLibrary_ApplyStateClasses();
-                ValeObjectLibrary_SelectById(def.id, { reveal: true, fly: true });
+                ValeObjectLibrary_JumpTo(def);                                       // <-- Switches to the other view if that is the only place it shows
             }
 
             input.addEventListener('input', function () {
@@ -4379,6 +4839,7 @@
             const index = State.tourIndex;
             const step  = steps[index];
 
+            ValeObjectLibrary_SetView(step.view || 'scheme', { fit: false });
             ValeObjectLibrary_ApplyDetail(step.show || 'assembly');
             (step.reveal || []).forEach(function (id) {
                 ValeObjectLibrary_RevealDef(id);
@@ -4427,9 +4888,12 @@
 
         // SUB FUNCTION | Fill in the {tokens} in a step's text
         function ValeObjectLibrary_TourText(step, def) {
-            let name = '', placements = 0, total = 0, definitions = 0;
+            const counts = ValeObjectLibrary_LibraryCounts();
+            let name = '', code = '', placements = 0, total = 0, definitions = 0, siblings = 0, schemeTotal = 0;
             if (def) {
-                name = def.name;
+                name        = def.name;
+                code        = def.data['Product Code'] || def.id;
+                schemeTotal = def.totalIn.scheme || 0;
                 if (def.tier === 'resource') {
                     placements  = def.placementCount;
                     definitions = def.users.length;
@@ -4437,13 +4901,20 @@
                 } else {
                     placements = def.placements.length;
                     total      = def.totalQty;
+                    const shelf = (def.placementsIn.library || []).find(function (p) { return p.parent && p.parent.tier === 'category'; });
+                    siblings    = shelf ? shelf.parent.children.length : 0;
                 }
             }
             return String(step.text || '')
                 .replace(/\{name\}/g, name)
+                .replace(/\{code\}/g, code)
                 .replace(/\{placements\}/g, placements)
                 .replace(/\{total\}/g, total)
-                .replace(/\{definitions\}/g, definitions);
+                .replace(/\{definitions\}/g, definitions)
+                .replace(/\{records\}/g, counts.records)
+                .replace(/\{categories\}/g, Model.trees.library.root.children.length)
+                .replace(/\{siblings\}/g, siblings)
+                .replace(/\{schemeTotal\}/g, schemeTotal);
         }
 
         // SUB FUNCTION | What the camera frames for a step
@@ -4497,6 +4968,13 @@
                 });
             });
 
+            Elements.viewButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    ValeObjectLibrary_HideHint();
+                    ValeObjectLibrary_SetView(button.getAttribute('data-view'));
+                });
+            });
+
             Elements.links.addEventListener('click', function () {
                 State.allLinks = !State.allLinks;
                 ValeObjectLibrary_RenderRefs(false);
@@ -4544,6 +5022,15 @@
         function ValeObjectLibrary_UpdateControls() {
             Elements.detailButtons.forEach(function (button) {
                 button.classList.toggle('is-on', button.getAttribute('data-detail') === State.detail);
+                if (button.getAttribute('data-detail') === 'family') {
+                    button.textContent = State.view === 'library' ? 'Shelves' : 'Families';   // <-- The library view's second column is its shelves
+                    button.title       = State.view === 'library' ? 'Open the library to its category shelves' : 'Open the chart to the Families';
+                }
+            });
+            Elements.viewButtons.forEach(function (button) {
+                const on = button.getAttribute('data-view') === State.view;
+                button.classList.toggle('is-on', on);
+                button.setAttribute('aria-pressed', on ? 'true' : 'false');
             });
             Elements.links.classList.toggle('is-on', State.allLinks);
             Elements.links.setAttribute('aria-pressed', State.allLinks ? 'true' : 'false');
@@ -4652,8 +5139,12 @@
             if (selection) {
                 id = selection.type === 'resource' ? selection.id : Model.byUid.get(selection.uid).def.id;
             }
+            let hash = id ? '#' + encodeURIComponent(id) : '';
+            if (State.view === 'library') {
+                hash = '#library' + (id ? '/' + encodeURIComponent(id) : '');           // <-- page.html#library/PRD-VG726 opens the library view on it
+            }
             try {
-                history.replaceState(null, '', location.pathname + location.search + (id ? '#' + encodeURIComponent(id) : ''));
+                history.replaceState(null, '', location.pathname + location.search + hash);
             } catch (error) {
                 // Some browsers refuse replaceState on file:// - the chart works without it
             }
@@ -4669,7 +5160,7 @@
             }
             const box = Elements.issues;
             box.textContent = '';
-            box.append(
+            ValeObjectLibrary_Put(box, 
                 ValeObjectLibrary_El('strong', { text: ValeObjectLibrary_Plural(issues.length, 'problem', 'problems') + ' in the library data file' }),
                 ValeObjectLibrary_El('ul', null, issues.slice(0, 6).map(function (message) { return ValeObjectLibrary_El('li', { text: message }); })),
                 issues.length > 6 ? ValeObjectLibrary_El('div', { text: 'And ' + (issues.length - 6) + ' more in the browser console.' }) : null,
@@ -4713,6 +5204,7 @@
                 fitAll          : byId('FitAll'),
                 fitSelection    : byId('FitSelection'),
                 detailButtons   : Array.from(document.querySelectorAll('.js-detail')),
+                viewButtons     : Array.from(document.querySelectorAll('.js-view')),
                 links           : byId('Links'),
                 navigatorToggle : byId('NavigatorToggle'),
                 navigator       : byId('Navigator'),
@@ -4757,8 +5249,6 @@
             });
 
             ValeObjectLibrary_BuildModel();
-            ValeObjectLibrary_BuildColumns();
-            ValeObjectLibrary_LayoutLane();
             ValeObjectLibrary_BuildSearchIndex();
 
             Layers.svg      = d3.select(Elements.chart);
@@ -4769,8 +5259,6 @@
             Layers.nodes    = Layers.viewport.select('.layer-nodes');
             Layers.lane     = Layers.viewport.select('.layer-lane');
 
-            ValeObjectLibrary_RenderLane();
-            ValeObjectLibrary_BuildTierStrip();
             ValeObjectLibrary_InitZoom();
             ValeObjectLibrary_InitControls();
             ValeObjectLibrary_InitSearch();
@@ -4781,15 +5269,25 @@
                 ValeObjectLibrary_SetInspectorOpen(false, true);
             }
 
+            // A link to an object opens on it: page.html#CMP-DOOR-STILE (scheme
+            // view), page.html#library or page.html#library/PRD-VG726
+            let linked = decodeURIComponent(location.hash.slice(1));
+            let view   = 'scheme';
+            if (linked === 'library' || linked.indexOf('library/') === 0) {
+                view   = 'library';
+                linked = linked.slice(8);
+            } else if (linked) {
+                const def = Model.defs.get(linked);
+                if (def && !(def.placementsIn.scheme || []).length && (def.placementsIn.library || []).length) {
+                    view = 'library';                                            // <-- Only on the library shelves
+                }
+            }
+
             State.transform = d3.zoomIdentity;
-            ValeObjectLibrary_ApplyDetail('assembly');
-            ValeObjectLibrary_Refresh();
-            ValeObjectLibrary_RenderInspector();
+            ValeObjectLibrary_SetView(view, { force: true, fit: false });
             ValeObjectLibrary_ShowIssues();
 
-            // A link to an object (page.html#CMP-DOOR-STILE) opens on that object
             State.booting = true;
-            const linked = decodeURIComponent(location.hash.slice(1));
             if (linked && ValeObjectLibrary_SelectById(linked, { reveal: true, revealUses: true })) {
                 ValeObjectLibrary_FitBox(State.selection.type === 'resource'
                     ? ValeObjectLibrary_BoxOf(State.focus.refPairs.map(function (pair) { return pair[0]; }), [State.selection.id])
@@ -4808,7 +5306,7 @@
             // Handle for testing from the browser console
             window.ValeObjectLibrary_App = {
                 Model: Model, Layout: Layout, State: State, Settings: Settings,
-                select: ValeObjectLibrary_SelectById, setDetail: ValeObjectLibrary_SetDetail,
+                select: ValeObjectLibrary_SelectById, setDetail: ValeObjectLibrary_SetDetail, setView: ValeObjectLibrary_SetView,
                 fitAll: ValeObjectLibrary_FitAll, tour: ValeObjectLibrary_TourStart
             };
         }

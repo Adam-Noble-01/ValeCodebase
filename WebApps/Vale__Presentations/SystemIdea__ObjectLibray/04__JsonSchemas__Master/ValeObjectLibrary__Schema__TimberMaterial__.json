@@ -1,0 +1,186 @@
+{
+    "Vale__TimberLibrary" : {
+        "Library__Name"                      : "Vale timber, bought by volume",
+        "Library__Purpose"                   : "Hardwood and softwood bought by the cubic metre. Vale machines it, and costing prices the finished linear metre from the yield and the section.",
+        "Library__PriceBasis"                : "Illustrative figures for the costing department, reviewed 01-Oct-2026. Not a live price book.",
+        "Library__Formula"                   : "Price per linear metre = (price per m3 / yield) x finished width in metres x finished depth in metres.",
+        "Resource__TimberMaterial__Skeleton" : {
+            "Resource__Code"       : "ValeTimber__Name__",
+            "Resource__Type"       : "TimberMaterial",
+            "Resource__Name"       : "",
+            "Resource__Attributes" : {
+                "Resource__SpeciesData"     : {
+                    "Species__BotanicalName" : "",
+                    "Species__Grade"         : "",
+                    "Species__BoughtAs"      : ""
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit"          : "m3",
+                    "Purchase__Price__Per-m3" : "",
+                    "Purchase__Grade"         : "",
+                    "Purchase__Form"          : ""
+                },
+                "Resource__ProcessingData"  : {
+                    "Processing__Yield"                    : "",
+                    "Processing__FinishedSection__Example" : "",
+                    "Processing__Price__Processed__Per-m3" : "",
+                    "Processing__Price__Per-LinearMetre"   : "",
+                    "Processing__Formula"                  : "Price per linear metre = (price per m3 / yield) x finished width in metres x finished depth in metres."
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m3"                : "",
+                    "Price__Processed__Per-m3"               : "",
+                    "Price__Per-LinearMetre__ExampleSection" : "",
+                    "Price__DateAdded"                       : "",
+                    "Price__DateReviewed"                    : ""
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "",
+                    "Procurement__Manufacturer"    : "",
+                    "Procurement__AverageLeadTime" : ""
+                }
+            }
+        },
+        "Resource__Timber__Sapele"           : {
+            "Resource__Code"       : "ValeTimber__Sapele__",
+            "Resource__Type"       : "TimberMaterial",
+            "Resource__LibraryId"  : "RES-MAT-SAPELE",
+            "Resource__Name"       : "Sapele Hardwood",
+            "Resource__Attributes" : {
+                "Resource__SpeciesData"     : {
+                    "Species__BotanicalName" : "Entandrophragma cylindricum",
+                    "Species__Grade"         : "FAS, kiln dried, 10 to 12 percent moisture",
+                    "Species__BoughtAs"      : "Rough sawn, random widths and lengths"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit"          : "m3",
+                    "Purchase__Price__Per-m3" : "£2150.00",
+                    "Purchase__Grade"         : "FAS, kiln dried, 10 to 12 percent moisture",
+                    "Purchase__Form"          : "Rough sawn, random widths and lengths"
+                },
+                "Resource__ProcessingData"  : {
+                    "Processing__Yield"                     : 0.62,
+                    "Processing__Yield__Note"               : "Share of the bought cubic metre that remains as finished section after planing and waste.",
+                    "Processing__FinishedSection__Example"  : "Lantern head beam, finished 125 mm x 96 mm",
+                    "Processing__SectionWidth__mm"          : 125,
+                    "Processing__SectionDepth__mm"          : 96,
+                    "Processing__SectionArea__m2"           : "0.012000",
+                    "Processing__Price__Processed__Per-m3"  : "£3467.74",
+                    "Processing__Rough-m3__Per-LinearMetre" : "0.019355",
+                    "Processing__Price__Per-LinearMetre"    : "£41.61",
+                    "Processing__Formula"                   : "Price per linear metre = (price per m3 / yield) x finished width in metres x finished depth in metres. For any other section, use the processed price per m3 and that section's area."
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m3"                : "£2150.00",
+                    "Price__Processed__Per-m3"               : "£3467.74",
+                    "Price__Per-LinearMetre__ExampleSection" : "£41.61",
+                    "Price__ExampleSection"                  : "Lantern head beam, finished 125 mm x 96 mm",
+                    "Price__Currency"                        : "GBP",
+                    "Price__DateAdded"                       : "04-Jun-2025",
+                    "Price__DateReviewed"                    : "01-Oct-2026",
+                    "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "West African sawmill, FAS sapele",
+                    "Procurement__AverageLeadTime" : "3 weeks, ex-stock in common thicknesses",
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                }
+            }
+        },
+        "Resource__Timber__DouglasFir"       : {
+            "Resource__Code"       : "ValeTimber__DouglasFir__",
+            "Resource__Type"       : "TimberMaterial",
+            "Resource__LibraryId"  : "RES-MAT-DOUGLAS-FIR",
+            "Resource__Name"       : "Douglas Fir",
+            "Resource__Attributes" : {
+                "Resource__SpeciesData"     : {
+                    "Species__BotanicalName" : "Pseudotsuga menziesii",
+                    "Species__Grade"         : "Joinery grade, kiln dried",
+                    "Species__BoughtAs"      : "Rough sawn boards"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit"          : "m3",
+                    "Purchase__Price__Per-m3" : "£780.00",
+                    "Purchase__Grade"         : "Joinery grade, kiln dried",
+                    "Purchase__Form"          : "Rough sawn boards"
+                },
+                "Resource__ProcessingData"  : {
+                    "Processing__Yield"                     : 0.7,
+                    "Processing__Yield__Note"               : "Share of the bought cubic metre that remains as finished section after planing and waste.",
+                    "Processing__FinishedSection__Example"  : "Glaze bar trim, finished 32 mm x 45 mm",
+                    "Processing__SectionWidth__mm"          : 32,
+                    "Processing__SectionDepth__mm"          : 45,
+                    "Processing__SectionArea__m2"           : "0.001440",
+                    "Processing__Price__Processed__Per-m3"  : "£1114.29",
+                    "Processing__Rough-m3__Per-LinearMetre" : "0.002057",
+                    "Processing__Price__Per-LinearMetre"    : "£1.60",
+                    "Processing__Formula"                   : "Price per linear metre = (price per m3 / yield) x finished width in metres x finished depth in metres. For any other section, use the processed price per m3 and that section's area."
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m3"                : "£780.00",
+                    "Price__Processed__Per-m3"               : "£1114.29",
+                    "Price__Per-LinearMetre__ExampleSection" : "£1.60",
+                    "Price__ExampleSection"                  : "Glaze bar trim, finished 32 mm x 45 mm",
+                    "Price__Currency"                        : "GBP",
+                    "Price__DateAdded"                       : "18-Nov-2025",
+                    "Price__DateReviewed"                    : "01-Oct-2026",
+                    "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "James Jones & Sons, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "British sawmill, Douglas fir",
+                    "Procurement__AverageLeadTime" : "2 weeks",
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                }
+            }
+        },
+        "Resource__Timber__Tulipwood"        : {
+            "Resource__Code"       : "ValeTimber__Tulipwood__",
+            "Resource__Type"       : "TimberMaterial",
+            "Resource__LibraryId"  : "RES-MAT-TULIPWOOD",
+            "Resource__Name"       : "Tulipwood",
+            "Resource__Attributes" : {
+                "Resource__SpeciesData"     : {
+                    "Species__BotanicalName" : "Liriodendron tulipifera",
+                    "Species__Grade"         : "FAS, kiln dried, paint grade",
+                    "Species__BoughtAs"      : "Rough sawn, random widths"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit"          : "m3",
+                    "Purchase__Price__Per-m3" : "£940.00",
+                    "Purchase__Grade"         : "FAS, kiln dried, paint grade",
+                    "Purchase__Form"          : "Rough sawn, random widths"
+                },
+                "Resource__ProcessingData"  : {
+                    "Processing__Yield"                     : 0.65,
+                    "Processing__Yield__Note"               : "Share of the bought cubic metre that remains as finished section after planing and waste.",
+                    "Processing__FinishedSection__Example"  : "Eaves lining and staff bead, finished 94 mm x 18 mm",
+                    "Processing__SectionWidth__mm"          : 94,
+                    "Processing__SectionDepth__mm"          : 18,
+                    "Processing__SectionArea__m2"           : "0.001692",
+                    "Processing__Price__Processed__Per-m3"  : "£1446.15",
+                    "Processing__Rough-m3__Per-LinearMetre" : "0.002603",
+                    "Processing__Price__Per-LinearMetre"    : "£2.45",
+                    "Processing__Formula"                   : "Price per linear metre = (price per m3 / yield) x finished width in metres x finished depth in metres. For any other section, use the processed price per m3 and that section's area."
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m3"                : "£940.00",
+                    "Price__Processed__Per-m3"               : "£1446.15",
+                    "Price__Per-LinearMetre__ExampleSection" : "£2.45",
+                    "Price__ExampleSection"                  : "Eaves lining and staff bead, finished 94 mm x 18 mm",
+                    "Price__Currency"                        : "GBP",
+                    "Price__DateAdded"                       : "09-Jan-2026",
+                    "Price__DateReviewed"                    : "01-Oct-2026",
+                    "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "American mill, tulipwood (yellow poplar)",
+                    "Procurement__AverageLeadTime" : "2 weeks",
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                }
+            }
+        }
+    }
+}

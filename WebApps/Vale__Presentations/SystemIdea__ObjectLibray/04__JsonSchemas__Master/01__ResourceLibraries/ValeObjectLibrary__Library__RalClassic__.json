@@ -1,0 +1,886 @@
+{
+    "Vale__RalLibrary" : {
+        "Library__Name"            : "RAL Classic reference",
+        "Library__Purpose"         : "Screen stand-ins for RAL Classic, used only to name the nearest RAL to a Vale paint. Not a Vale colour specification.",
+        "Resource__RalColour-1000" : {
+            "Resource__Code"       : "RAL 1000",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Green beige",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "190, 186, 167"
+                }
+            }
+        },
+        "Resource__RalColour-1001" : {
+            "Resource__Code"       : "RAL 1001",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Beige",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "194, 176, 146"
+                }
+            }
+        },
+        "Resource__RalColour-1002" : {
+            "Resource__Code"       : "RAL 1002",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Sand yellow",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "198, 166, 100"
+                }
+            }
+        },
+        "Resource__RalColour-1011" : {
+            "Resource__Code"       : "RAL 1011",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Brown beige",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "138, 102, 66"
+                }
+            }
+        },
+        "Resource__RalColour-1013" : {
+            "Resource__Code"       : "RAL 1013",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Oyster white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "227, 217, 198"
+                }
+            }
+        },
+        "Resource__RalColour-1014" : {
+            "Resource__Code"       : "RAL 1014",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Ivory",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "221, 196, 154"
+                }
+            }
+        },
+        "Resource__RalColour-1015" : {
+            "Resource__Code"       : "RAL 1015",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Light ivory",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "230, 214, 188"
+                }
+            }
+        },
+        "Resource__RalColour-1019" : {
+            "Resource__Code"       : "RAL 1019",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grey beige",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "158, 142, 120"
+                }
+            }
+        },
+        "Resource__RalColour-6010" : {
+            "Resource__Code"       : "RAL 6010",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grass green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "76, 145, 65"
+                }
+            }
+        },
+        "Resource__RalColour-6011" : {
+            "Resource__Code"       : "RAL 6011",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Reseda green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "106, 124, 89"
+                }
+            }
+        },
+        "Resource__RalColour-6012" : {
+            "Resource__Code"       : "RAL 6012",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Black green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "41, 50, 45"
+                }
+            }
+        },
+        "Resource__RalColour-6013" : {
+            "Resource__Code"       : "RAL 6013",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Reed green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "108, 113, 86"
+                }
+            }
+        },
+        "Resource__RalColour-6014" : {
+            "Resource__Code"       : "RAL 6014",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Yellow olive",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "71, 65, 53"
+                }
+            }
+        },
+        "Resource__RalColour-6015" : {
+            "Resource__Code"       : "RAL 6015",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Black olive",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "59, 60, 54"
+                }
+            }
+        },
+        "Resource__RalColour-6016" : {
+            "Resource__Code"       : "RAL 6016",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Turquoise green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "0, 105, 76"
+                }
+            }
+        },
+        "Resource__RalColour-6017" : {
+            "Resource__Code"       : "RAL 6017",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "May green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "88, 127, 64"
+                }
+            }
+        },
+        "Resource__RalColour-6018" : {
+            "Resource__Code"       : "RAL 6018",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Yellow green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "97, 153, 59"
+                }
+            }
+        },
+        "Resource__RalColour-6019" : {
+            "Resource__Code"       : "RAL 6019",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pastel green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "185, 206, 172"
+                }
+            }
+        },
+        "Resource__RalColour-6020" : {
+            "Resource__Code"       : "RAL 6020",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Chrome green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "55, 66, 47"
+                }
+            }
+        },
+        "Resource__RalColour-6021" : {
+            "Resource__Code"       : "RAL 6021",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pale green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "137, 152, 118"
+                }
+            }
+        },
+        "Resource__RalColour-6022" : {
+            "Resource__Code"       : "RAL 6022",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Olive drab",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "63, 62, 44"
+                }
+            }
+        },
+        "Resource__RalColour-6024" : {
+            "Resource__Code"       : "RAL 6024",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Traffic green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "0, 131, 81"
+                }
+            }
+        },
+        "Resource__RalColour-6025" : {
+            "Resource__Code"       : "RAL 6025",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Fern green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "94, 110, 59"
+                }
+            }
+        },
+        "Resource__RalColour-6027" : {
+            "Resource__Code"       : "RAL 6027",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Light green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "126, 186, 181"
+                }
+            }
+        },
+        "Resource__RalColour-6028" : {
+            "Resource__Code"       : "RAL 6028",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pine green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "44, 85, 69"
+                }
+            }
+        },
+        "Resource__RalColour-6029" : {
+            "Resource__Code"       : "RAL 6029",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Mint green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "0, 111, 61"
+                }
+            }
+        },
+        "Resource__RalColour-6034" : {
+            "Resource__Code"       : "RAL 6034",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pastel turquoise",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "127, 181, 181"
+                }
+            }
+        },
+        "Resource__RalColour-6000" : {
+            "Resource__Code"       : "RAL 6000",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Patina green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "49, 102, 80"
+                }
+            }
+        },
+        "Resource__RalColour-6003" : {
+            "Resource__Code"       : "RAL 6003",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Olive green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "73, 83, 57"
+                }
+            }
+        },
+        "Resource__RalColour-6004" : {
+            "Resource__Code"       : "RAL 6004",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Blue green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "2, 68, 66"
+                }
+            }
+        },
+        "Resource__RalColour-6005" : {
+            "Resource__Code"       : "RAL 6005",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Moss green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "14, 68, 56"
+                }
+            }
+        },
+        "Resource__RalColour-6006" : {
+            "Resource__Code"       : "RAL 6006",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grey olive",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "60, 57, 46"
+                }
+            }
+        },
+        "Resource__RalColour-6007" : {
+            "Resource__Code"       : "RAL 6007",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Bottle green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "52, 59, 41"
+                }
+            }
+        },
+        "Resource__RalColour-6008" : {
+            "Resource__Code"       : "RAL 6008",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Brown green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "49, 54, 43"
+                }
+            }
+        },
+        "Resource__RalColour-6009" : {
+            "Resource__Code"       : "RAL 6009",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Fir green",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "39, 53, 42"
+                }
+            }
+        },
+        "Resource__RalColour-7000" : {
+            "Resource__Code"       : "RAL 7000",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Squirrel grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "120, 133, 139"
+                }
+            }
+        },
+        "Resource__RalColour-7001" : {
+            "Resource__Code"       : "RAL 7001",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Silver grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "138, 149, 151"
+                }
+            }
+        },
+        "Resource__RalColour-7002" : {
+            "Resource__Code"       : "RAL 7002",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Olive grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "126, 123, 82"
+                }
+            }
+        },
+        "Resource__RalColour-7003" : {
+            "Resource__Code"       : "RAL 7003",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Moss grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "122, 118, 102"
+                }
+            }
+        },
+        "Resource__RalColour-7004" : {
+            "Resource__Code"       : "RAL 7004",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Signal grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "150, 153, 146"
+                }
+            }
+        },
+        "Resource__RalColour-7005" : {
+            "Resource__Code"       : "RAL 7005",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Mouse grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "108, 110, 107"
+                }
+            }
+        },
+        "Resource__RalColour-7006" : {
+            "Resource__Code"       : "RAL 7006",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Beige grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "109, 101, 82"
+                }
+            }
+        },
+        "Resource__RalColour-7008" : {
+            "Resource__Code"       : "RAL 7008",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Khaki grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "116, 94, 61"
+                }
+            }
+        },
+        "Resource__RalColour-7009" : {
+            "Resource__Code"       : "RAL 7009",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Green grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "93, 96, 88"
+                }
+            }
+        },
+        "Resource__RalColour-7010" : {
+            "Resource__Code"       : "RAL 7010",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Tarpaulin grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "76, 81, 74"
+                }
+            }
+        },
+        "Resource__RalColour-7011" : {
+            "Resource__Code"       : "RAL 7011",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Iron grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "67, 75, 77"
+                }
+            }
+        },
+        "Resource__RalColour-7012" : {
+            "Resource__Code"       : "RAL 7012",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Basalt grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "87, 93, 94"
+                }
+            }
+        },
+        "Resource__RalColour-7013" : {
+            "Resource__Code"       : "RAL 7013",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Brown grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "87, 80, 68"
+                }
+            }
+        },
+        "Resource__RalColour-7015" : {
+            "Resource__Code"       : "RAL 7015",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Slate grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "79, 83, 88"
+                }
+            }
+        },
+        "Resource__RalColour-7016" : {
+            "Resource__Code"       : "RAL 7016",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Anthracite grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "54, 58, 62"
+                }
+            }
+        },
+        "Resource__RalColour-7021" : {
+            "Resource__Code"       : "RAL 7021",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Black grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "35, 40, 43"
+                }
+            }
+        },
+        "Resource__RalColour-7022" : {
+            "Resource__Code"       : "RAL 7022",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Umbra grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "76, 74, 68"
+                }
+            }
+        },
+        "Resource__RalColour-7023" : {
+            "Resource__Code"       : "RAL 7023",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Concrete grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "128, 128, 118"
+                }
+            }
+        },
+        "Resource__RalColour-7024" : {
+            "Resource__Code"       : "RAL 7024",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Graphite grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "69, 73, 78"
+                }
+            }
+        },
+        "Resource__RalColour-7026" : {
+            "Resource__Code"       : "RAL 7026",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Granite grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "55, 67, 69"
+                }
+            }
+        },
+        "Resource__RalColour-7030" : {
+            "Resource__Code"       : "RAL 7030",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Stone grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "139, 140, 122"
+                }
+            }
+        },
+        "Resource__RalColour-7031" : {
+            "Resource__Code"       : "RAL 7031",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Blue grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "72, 82, 86"
+                }
+            }
+        },
+        "Resource__RalColour-7032" : {
+            "Resource__Code"       : "RAL 7032",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pebble grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "181, 176, 161"
+                }
+            }
+        },
+        "Resource__RalColour-7033" : {
+            "Resource__Code"       : "RAL 7033",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Cement grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "125, 132, 113"
+                }
+            }
+        },
+        "Resource__RalColour-7034" : {
+            "Resource__Code"       : "RAL 7034",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Yellow grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "143, 135, 107"
+                }
+            }
+        },
+        "Resource__RalColour-7035" : {
+            "Resource__Code"       : "RAL 7035",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Light grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "197, 199, 196"
+                }
+            }
+        },
+        "Resource__RalColour-7036" : {
+            "Resource__Code"       : "RAL 7036",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Platinum grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "151, 147, 146"
+                }
+            }
+        },
+        "Resource__RalColour-7037" : {
+            "Resource__Code"       : "RAL 7037",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Dusty grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "122, 123, 122"
+                }
+            }
+        },
+        "Resource__RalColour-7038" : {
+            "Resource__Code"       : "RAL 7038",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Agate grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "176, 176, 169"
+                }
+            }
+        },
+        "Resource__RalColour-7039" : {
+            "Resource__Code"       : "RAL 7039",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Quartz grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "108, 105, 96"
+                }
+            }
+        },
+        "Resource__RalColour-7040" : {
+            "Resource__Code"       : "RAL 7040",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Window grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "152, 158, 161"
+                }
+            }
+        },
+        "Resource__RalColour-7042" : {
+            "Resource__Code"       : "RAL 7042",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Traffic grey A",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "141, 148, 141"
+                }
+            }
+        },
+        "Resource__RalColour-7043" : {
+            "Resource__Code"       : "RAL 7043",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Traffic grey B",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "79, 82, 80"
+                }
+            }
+        },
+        "Resource__RalColour-7044" : {
+            "Resource__Code"       : "RAL 7044",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Silk grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "183, 179, 168"
+                }
+            }
+        },
+        "Resource__RalColour-7045" : {
+            "Resource__Code"       : "RAL 7045",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Telegrey 1",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "144, 144, 140"
+                }
+            }
+        },
+        "Resource__RalColour-7046" : {
+            "Resource__Code"       : "RAL 7046",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Telegrey 2",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "130, 137, 143"
+                }
+            }
+        },
+        "Resource__RalColour-7047" : {
+            "Resource__Code"       : "RAL 7047",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Telegrey 4",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "200, 200, 200"
+                }
+            }
+        },
+        "Resource__RalColour-7048" : {
+            "Resource__Code"       : "RAL 7048",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pearl mouse grey",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "129, 123, 115"
+                }
+            }
+        },
+        "Resource__RalColour-8001" : {
+            "Resource__Code"       : "RAL 8001",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Ochre brown",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "157, 98, 43"
+                }
+            }
+        },
+        "Resource__RalColour-8019" : {
+            "Resource__Code"       : "RAL 8019",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grey brown",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "64, 58, 58"
+                }
+            }
+        },
+        "Resource__RalColour-8022" : {
+            "Resource__Code"       : "RAL 8022",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Black brown",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "26, 23, 24"
+                }
+            }
+        },
+        "Resource__RalColour-9001" : {
+            "Resource__Code"       : "RAL 9001",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Cream",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "233, 224, 210"
+                }
+            }
+        },
+        "Resource__RalColour-9002" : {
+            "Resource__Code"       : "RAL 9002",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grey white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "215, 213, 204"
+                }
+            }
+        },
+        "Resource__RalColour-9003" : {
+            "Resource__Code"       : "RAL 9003",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Signal white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "236, 235, 228"
+                }
+            }
+        },
+        "Resource__RalColour-9004" : {
+            "Resource__Code"       : "RAL 9004",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Signal black",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "40, 40, 40"
+                }
+            }
+        },
+        "Resource__RalColour-9005" : {
+            "Resource__Code"       : "RAL 9005",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Jet black",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "14, 14, 16"
+                }
+            }
+        },
+        "Resource__RalColour-9006" : {
+            "Resource__Code"       : "RAL 9006",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "White aluminium",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "161, 161, 160"
+                }
+            }
+        },
+        "Resource__RalColour-9007" : {
+            "Resource__Code"       : "RAL 9007",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Grey aluminium",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "135, 133, 129"
+                }
+            }
+        },
+        "Resource__RalColour-9010" : {
+            "Resource__Code"       : "RAL 9010",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Pure white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "241, 236, 225"
+                }
+            }
+        },
+        "Resource__RalColour-9011" : {
+            "Resource__Code"       : "RAL 9011",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Graphite black",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "28, 30, 28"
+                }
+            }
+        },
+        "Resource__RalColour-9016" : {
+            "Resource__Code"       : "RAL 9016",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Traffic white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "241, 240, 234"
+                }
+            }
+        },
+        "Resource__RalColour-9017" : {
+            "Resource__Code"       : "RAL 9017",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Traffic black",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "28, 30, 30"
+                }
+            }
+        },
+        "Resource__RalColour-9018" : {
+            "Resource__Code"       : "RAL 9018",
+            "Resource__Type"       : "RalColour",
+            "Resource__Name"       : "Papyrus white",
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "200, 203, 196"
+                }
+            }
+        }
+    }
+}

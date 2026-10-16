@@ -1,0 +1,1354 @@
+{
+    "Vale__PaintLibrary" : {
+        "Library__Name"            : "Vale Garden Houses paint finishes",
+        "Library__Purpose"         : "Single source of truth for the joinery paint card. A Component or Product names ValePaintFinish__no01-ValeWhite__ and does not repeat the colour or the price.",
+        "Library__PriceBasis"      : "Illustrative figures for the costing department, reviewed 01-Oct-2026. Not a live price book.",
+        "Library__CardOrder"       : [
+            "ValePaintFinish__no21-Lighthouse__",
+            "ValePaintFinish__no01-ValeWhite__",
+            "ValePaintFinish__no22-RicePaper__",
+            "ValePaintFinish__no03-TaylorCream__",
+            "ValePaintFinish__no46-Leaden__",
+            "ValePaintFinish__no10-Mudpie__",
+            "ValePaintFinish__no11-Flagstone__",
+            "ValePaintFinish__no02-Gardenia__",
+            "ValePaintFinish__no04-Limewash__",
+            "ValePaintFinish__no06-Sheepskin__",
+            "ValePaintFinish__no07-Vellum__",
+            "ValePaintFinish__no23-Olivine__",
+            "ValePaintFinish__no05-WildMink__",
+            "ValePaintFinish__no08-Putty__",
+            "ValePaintFinish__no51-Alabaster__",
+            "ValePaintFinish__no41-Conch__",
+            "ValePaintFinish__no25-SugarBeet__",
+            "ValePaintFinish__no43-Portland__",
+            "ValePaintFinish__no28-Porcini__",
+            "ValePaintFinish__no29-Ermine__",
+            "ValePaintFinish__no30-Earth__",
+            "ValePaintFinish__no47-DirtyWhite__",
+            "ValePaintFinish__no45-Dismal__",
+            "ValePaintFinish__no26-Pavement__",
+            "ValePaintFinish__no44-Parker__",
+            "ValePaintFinish__no34-Quail__",
+            "ValePaintFinish__no27-EngineRoom__",
+            "ValePaintFinish__no35-GreyGoblin__",
+            "ValePaintFinish__no42-Nimbus__",
+            "ValePaintFinish__no48-Thumper__",
+            "ValePaintFinish__no49-SilverBirch__",
+            "ValePaintFinish__no50-Pinafore__",
+            "ValePaintFinish__no31-BurntAsh__",
+            "ValePaintFinish__no32-Tempest__",
+            "ValePaintFinish__no33-Carbon__",
+            "ValePaintFinish__no14-Mothwing__",
+            "ValePaintFinish__no09-Catkin__",
+            "ValePaintFinish__no17-OldSage__",
+            "ValePaintFinish__no19-PoachersGreen__",
+            "ValePaintFinish__no15-PikesBelly__",
+            "ValePaintFinish__no16-Eucalyptus__",
+            "ValePaintFinish__no36-Atlantis__"
+        ],
+        "Library__Count"           : 42,
+        "Resource__PaintFinish-01" : {
+            "Resource__Code"       : "ValePaintFinish__no01-ValeWhite__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Vale White",
+            "Resource__Number"     : "01",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "244, 239, 226",
+                    "Paint__RAL"        : "RAL 9010",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Pure white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#F4EFE2"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.64",
+                    "Price__Applied__Per-m2"  : "£21.10",
+                    "Price__PerTin"           : "£48.01",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.2 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-02" : {
+            "Resource__Code"       : "ValePaintFinish__no02-Gardenia__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Gardenia",
+            "Resource__Number"     : "02",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "241, 232, 203",
+                    "Paint__RAL"        : "RAL 9001",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Cream), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#F1E8CB"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.75",
+                    "Price__Applied__Per-m2"  : "£21.38",
+                    "Price__PerTin"           : "£48.96",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.1 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-03" : {
+            "Resource__Code"       : "ValePaintFinish__no03-TaylorCream__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Taylor Cream",
+            "Resource__Number"     : "03",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "239, 232, 215",
+                    "Paint__RAL"        : "RAL 9010",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Pure white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#EFE8D7"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.74",
+                    "Price__Applied__Per-m2"  : "£21.35",
+                    "Price__PerTin"           : "£48.87",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.1 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-04" : {
+            "Resource__Code"       : "ValePaintFinish__no04-Limewash__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Limewash",
+            "Resource__Number"     : "04",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "224, 220, 193",
+                    "Paint__RAL"        : "RAL 1013",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Oyster white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#E0DCC1"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.95",
+                    "Price__Applied__Per-m2"  : "£21.87",
+                    "Price__PerTin"           : "£50.63",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.9 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-05" : {
+            "Resource__Code"       : "ValePaintFinish__no05-WildMink__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Wild Mink",
+            "Resource__Number"     : "05",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "204, 198, 179",
+                    "Paint__RAL"        : "RAL 9018",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Papyrus white), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#CCC6B3"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.25",
+                    "Price__Applied__Per-m2"  : "£22.64",
+                    "Price__PerTin"           : "£53.20",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-06" : {
+            "Resource__Code"       : "ValePaintFinish__no06-Sheepskin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Sheepskin",
+            "Resource__Number"     : "06",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "223, 216, 181",
+                    "Paint__RAL"        : "RAL 1015",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Light ivory), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#DFD8B5"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.01",
+                    "Price__Applied__Per-m2"  : "£22.02",
+                    "Price__PerTin"           : "£51.13",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.9 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-07" : {
+            "Resource__Code"       : "ValePaintFinish__no07-Vellum__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Vellum",
+            "Resource__Number"     : "07",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "212, 200, 166",
+                    "Paint__RAL"        : "RAL 1014",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Ivory), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#D4C8A6"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.22",
+                    "Price__Applied__Per-m2"  : "£22.56",
+                    "Price__PerTin"           : "£52.94",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-08" : {
+            "Resource__Code"       : "ValePaintFinish__no08-Putty__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Putty",
+            "Resource__Number"     : "08",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "199, 189, 163",
+                    "Paint__RAL"        : "RAL 1000",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Green beige), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C7BDA3"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.38",
+                    "Price__Applied__Per-m2"  : "£22.96",
+                    "Price__PerTin"           : "£54.28",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.5 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-09" : {
+            "Resource__Code"       : "ValePaintFinish__no09-Catkin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Catkin",
+            "Resource__Number"     : "09",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "193, 201, 169",
+                    "Paint__RAL"        : "RAL 6019",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Pastel green), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C1C9A9"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.29",
+                    "Price__Applied__Per-m2"  : "£22.74",
+                    "Price__PerTin"           : "£53.53",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-10" : {
+            "Resource__Code"       : "ValePaintFinish__no10-Mudpie__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Mudpie",
+            "Resource__Number"     : "10",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "188, 187, 156",
+                    "Paint__RAL"        : "RAL 1000",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Green beige), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#BCBB9C"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.46",
+                    "Price__Applied__Per-m2"  : "£23.15",
+                    "Price__PerTin"           : "£54.94",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.4 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-11" : {
+            "Resource__Code"       : "ValePaintFinish__no11-Flagstone__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Flagstone",
+            "Resource__Number"     : "11",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "166, 162, 116",
+                    "Paint__RAL"        : "RAL 1019",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Grey beige), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#A6A274"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.85",
+                    "Price__Applied__Per-m2"  : "£24.12",
+                    "Price__PerTin"           : "£58.18",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-14" : {
+            "Resource__Code"       : "ValePaintFinish__no14-Mothwing__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Mothwing",
+            "Resource__Number"     : "14",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "186, 196, 176",
+                    "Paint__RAL"        : "RAL 6019",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Pastel green), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#BAC4B0"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.36",
+                    "Price__Applied__Per-m2"  : "£22.89",
+                    "Price__PerTin"           : "£54.07",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.5 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-15" : {
+            "Resource__Code"       : "ValePaintFinish__no15-PikesBelly__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pikes Belly",
+            "Resource__Number"     : "15",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "195, 212, 204",
+                    "Paint__RAL"        : "RAL 9018",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Papyrus white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C3D4CC"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.13",
+                    "Price__Applied__Per-m2"  : "£22.33",
+                    "Price__PerTin"           : "£52.15",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.7 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-16" : {
+            "Resource__Code"       : "ValePaintFinish__no16-Eucalyptus__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Eucalyptus",
+            "Resource__Number"     : "16",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "124, 163, 154",
+                    "Paint__RAL"        : "RAL 7001",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Silver grey), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#7CA39A"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.96",
+                    "Price__Applied__Per-m2"  : "£24.40",
+                    "Price__PerTin"           : "£59.14",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.9 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-17" : {
+            "Resource__Code"       : "ValePaintFinish__no17-OldSage__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Old Sage",
+            "Resource__Number"     : "17",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "158, 164, 119",
+                    "Paint__RAL"        : "RAL 1019",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Grey beige), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#9EA477"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.86",
+                    "Price__Applied__Per-m2"  : "£24.15",
+                    "Price__PerTin"           : "£58.29",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-19" : {
+            "Resource__Code"       : "ValePaintFinish__no19-PoachersGreen__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Poachers Green",
+            "Resource__Number"     : "19",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "100, 124, 101",
+                    "Paint__RAL"        : "RAL 6011",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Reseda green), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#647C65"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.50",
+                    "Price__Applied__Per-m2"  : "£25.75",
+                    "Price__PerTin"           : "£63.67",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.3 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-21" : {
+            "Resource__Code"       : "ValePaintFinish__no21-Lighthouse__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Light House",
+            "Resource__Number"     : "21",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "251, 248, 230",
+                    "Paint__RAL"        : "RAL 9016",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Traffic white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#FBF8E6"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.52",
+                    "Price__Applied__Per-m2"  : "£20.80",
+                    "Price__PerTin"           : "£47.02",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.4 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-22" : {
+            "Resource__Code"       : "ValePaintFinish__no22-RicePaper__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Rice Paper",
+            "Resource__Number"     : "22",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "254, 248, 230",
+                    "Paint__RAL"        : "RAL 9016",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Traffic white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#FEF8E6"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.51",
+                    "Price__Applied__Per-m2"  : "£20.77",
+                    "Price__PerTin"           : "£46.91",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.4 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-23" : {
+            "Resource__Code"       : "ValePaintFinish__no23-Olivine__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Olivine",
+            "Resource__Number"     : "23",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "217, 210, 187",
+                    "Paint__RAL"        : "RAL 1015",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Light ivory), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#D9D2BB"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.08",
+                    "Price__Applied__Per-m2"  : "£22.20",
+                    "Price__PerTin"           : "£51.71",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.8 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-25" : {
+            "Resource__Code"       : "ValePaintFinish__no25-SugarBeet__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Sugar Beet",
+            "Resource__Number"     : "25",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "201, 198, 186",
+                    "Paint__RAL"        : "RAL 7035",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Light grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C9C6BA"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.26",
+                    "Price__Applied__Per-m2"  : "£22.64",
+                    "Price__PerTin"           : "£53.21",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-26" : {
+            "Resource__Code"       : "ValePaintFinish__no26-Pavement__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pavement",
+            "Resource__Number"     : "26",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "173, 177, 167",
+                    "Paint__RAL"        : "RAL 7038",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Agate grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#ADB1A7"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.60",
+                    "Price__Applied__Per-m2"  : "£23.49",
+                    "Price__PerTin"           : "£56.08",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.2 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-27" : {
+            "Resource__Code"       : "ValePaintFinish__no27-EngineRoom__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Engine Room",
+            "Resource__Number"     : "27",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "146, 150, 138",
+                    "Paint__RAL"        : "RAL 7042",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Traffic grey A), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#92968A"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.00",
+                    "Price__Applied__Per-m2"  : "£24.51",
+                    "Price__PerTin"           : "£59.50",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.8 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-28" : {
+            "Resource__Code"       : "ValePaintFinish__no28-Porcini__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Porcini",
+            "Resource__Number"     : "28",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "196, 188, 175",
+                    "Paint__RAL"        : "RAL 1000",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Green beige), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C4BCAF"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.38",
+                    "Price__Applied__Per-m2"  : "£22.96",
+                    "Price__PerTin"           : "£54.29",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.5 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-29" : {
+            "Resource__Code"       : "ValePaintFinish__no29-Ermine__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Ermine",
+            "Resource__Number"     : "29",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "138, 135, 123",
+                    "Paint__RAL"        : "RAL 7030",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Stone grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#8A877B"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.20",
+                    "Price__Applied__Per-m2"  : "£24.99",
+                    "Price__PerTin"           : "£61.12",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-30" : {
+            "Resource__Code"       : "ValePaintFinish__no30-Earth__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Earth",
+            "Resource__Number"     : "30",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "120, 120, 104",
+                    "Paint__RAL"        : "RAL 7003",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Moss grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#787868"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.44",
+                    "Price__Applied__Per-m2"  : "£25.60",
+                    "Price__PerTin"           : "£63.17",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.4 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-31" : {
+            "Resource__Code"       : "ValePaintFinish__no31-BurntAsh__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Burnt Ash",
+            "Resource__Number"     : "31",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "152, 165, 158",
+                    "Paint__RAL"        : "RAL 7040",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Window grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#98A59E"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.81",
+                    "Price__Applied__Per-m2"  : "£24.03",
+                    "Price__PerTin"           : "£57.88",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-32" : {
+            "Resource__Code"       : "ValePaintFinish__no32-Tempest__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Tempest",
+            "Resource__Number"     : "32",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "78, 93, 86",
+                    "Paint__RAL"        : "RAL 7015",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Slate grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#4E5D56"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.89",
+                    "Price__Applied__Per-m2"  : "£26.73",
+                    "Price__PerTin"           : "£66.99",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "15.9 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "8 working days, tinted to order"
+                }
+            }
+        },
+        "Resource__PaintFinish-33" : {
+            "Resource__Code"       : "ValePaintFinish__no33-Carbon__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Carbon",
+            "Resource__Number"     : "33",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "41, 55, 55",
+                    "Paint__RAL"        : "RAL 6012",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Black green), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#293737"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£8.44",
+                    "Price__Applied__Per-m2"  : "£28.11",
+                    "Price__PerTin"           : "£71.62",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "15.3 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "8 working days, tinted to order"
+                }
+            }
+        },
+        "Resource__PaintFinish-34" : {
+            "Resource__Code"       : "ValePaintFinish__no34-Quail__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Quail",
+            "Resource__Number"     : "34",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "151, 162, 136",
+                    "Paint__RAL"        : "RAL 7004",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Signal grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#97A288"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.88",
+                    "Price__Applied__Per-m2"  : "£24.20",
+                    "Price__PerTin"           : "£58.46",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.9 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-35" : {
+            "Resource__Code"       : "ValePaintFinish__no35-GreyGoblin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Grey Goblin",
+            "Resource__Number"     : "35",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "120, 131, 109",
+                    "Paint__RAL"        : "RAL 7033",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Cement grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#78836D"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.33",
+                    "Price__Applied__Per-m2"  : "£25.34",
+                    "Price__PerTin"           : "£62.29",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.5 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-36" : {
+            "Resource__Code"       : "ValePaintFinish__no36-Atlantis__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Atlantis",
+            "Resource__Number"     : "36",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "79, 105, 106",
+                    "Paint__RAL"        : "RAL 7012",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Basalt grey), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#4F696A"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£7.75",
+                    "Price__Applied__Per-m2"  : "£26.37",
+                    "Price__PerTin"           : "£65.78",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "16.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-41" : {
+            "Resource__Code"       : "ValePaintFinish__no41-Conch__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Conch",
+            "Resource__Number"     : "41",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "200, 200, 198",
+                    "Paint__RAL"        : "RAL 7047",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Telegrey 4), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#C8C8C6"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.22",
+                    "Price__Applied__Per-m2"  : "£22.56",
+                    "Price__PerTin"           : "£52.93",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.6 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-42" : {
+            "Resource__Code"       : "ValePaintFinish__no42-Nimbus__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Nimbus",
+            "Resource__Number"     : "42",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "227, 231, 230",
+                    "Paint__RAL"        : "RAL 9003",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Signal white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#E3E7E6"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.78",
+                    "Price__Applied__Per-m2"  : "£21.44",
+                    "Price__PerTin"           : "£49.18",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.1 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-43" : {
+            "Resource__Code"       : "ValePaintFinish__no43-Portland__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Portland",
+            "Resource__Number"     : "43",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "203, 203, 191",
+                    "Paint__RAL"        : "RAL 9018",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Papyrus white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#CBCBBF"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.20",
+                    "Price__Applied__Per-m2"  : "£22.49",
+                    "Price__PerTin"           : "£52.70",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.7 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-44" : {
+            "Resource__Code"       : "ValePaintFinish__no44-Parker__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Parker",
+            "Resource__Number"     : "44",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "158, 164, 150",
+                    "Paint__RAL"        : "RAL 9006",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (White aluminium), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#9EA496"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.81",
+                    "Price__Applied__Per-m2"  : "£24.02",
+                    "Price__PerTin"           : "£57.85",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-45" : {
+            "Resource__Code"       : "ValePaintFinish__no45-Dismal__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Dismal",
+            "Resource__Number"     : "45",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "187, 190, 183",
+                    "Paint__RAL"        : "RAL 1000",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Green beige), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#BBBEB7"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.39",
+                    "Price__Applied__Per-m2"  : "£22.98",
+                    "Price__PerTin"           : "£54.37",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.5 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-46" : {
+            "Resource__Code"       : "ValePaintFinish__no46-Leaden__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Leaden",
+            "Resource__Number"     : "46",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "158, 161, 152",
+                    "Paint__RAL"        : "RAL 9006",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (White aluminium), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#9EA198"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.83",
+                    "Price__Applied__Per-m2"  : "£24.07",
+                    "Price__PerTin"           : "£58.04",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-47" : {
+            "Resource__Code"       : "ValePaintFinish__no47-DirtyWhite__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Dirty White",
+            "Resource__Number"     : "47",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "212, 215, 208",
+                    "Paint__RAL"        : "RAL 9002",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Grey white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#D4D7D0"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.02",
+                    "Price__Applied__Per-m2"  : "£22.05",
+                    "Price__PerTin"           : "£51.23",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.8 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-48" : {
+            "Resource__Code"       : "ValePaintFinish__no48-Thumper__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Thumper",
+            "Resource__Number"     : "48",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "185, 190, 186",
+                    "Paint__RAL"        : "RAL 7035",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Light grey), derived from the RGB. A loose match: check a physical card before specifying it as a RAL. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#B9BEBA"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.40",
+                    "Price__Applied__Per-m2"  : "£22.99",
+                    "Price__PerTin"           : "£54.40",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.4 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-49" : {
+            "Resource__Code"       : "ValePaintFinish__no49-SilverBirch__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Silver Birch",
+            "Resource__Number"     : "49",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "171, 182, 184",
+                    "Paint__RAL"        : "RAL 7038",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Agate grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#ABB6B8"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.53",
+                    "Price__Applied__Per-m2"  : "£23.33",
+                    "Price__PerTin"           : "£55.54",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.3 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-50" : {
+            "Resource__Code"       : "ValePaintFinish__no50-Pinafore__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pinafore",
+            "Resource__Number"     : "50",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "150, 162, 162",
+                    "Paint__RAL"        : "RAL 7040",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Window grey), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#96A2A2"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£6.84",
+                    "Price__Applied__Per-m2"  : "£24.10",
+                    "Price__PerTin"           : "£58.12",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "17.0 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        },
+        "Resource__PaintFinish-51" : {
+            "Resource__Code"       : "ValePaintFinish__no51-Alabaster__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Alabaster",
+            "Resource__Number"     : "51",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "227, 227, 225",
+                    "Paint__RAL"        : "RAL 9003",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic (Signal white), derived from the RGB. The Vale colour is not specified as a RAL.",
+                    "Paint__Hex"        : "#E3E3E1"
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "£5.82",
+                    "Price__Applied__Per-m2"  : "£21.55",
+                    "Price__PerTin"           : "£49.54",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "18.1 m2 per tin, two coats",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "14-Feb-2024",
+                    "Price__DateReviewed"     : "01-Oct-2026",
+                    "Price__Basis"            : "Illustrative factory cost for the costing department. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Vale Garden Houses Paint Store, Spalding",
+                    "Procurement__Manufacturer"    : "Teknos (UK) Ltd",
+                    "Procurement__ProductLine"     : "Factory opaque joinery eggshell",
+                    "Procurement__AverageLeadTime" : "5 working days"
+                }
+            }
+        }
+    }
+}

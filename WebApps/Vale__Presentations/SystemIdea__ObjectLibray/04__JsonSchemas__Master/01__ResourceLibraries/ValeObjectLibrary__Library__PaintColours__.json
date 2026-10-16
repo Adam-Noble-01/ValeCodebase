@@ -1,0 +1,510 @@
+{
+    "Vale__PaintLibrary" : {
+        "Library__Name"            : "Vale Garden Houses paint colours",
+        "Library__Purpose"         : "The colour card, in card order. Number, name and RGB are the authored values. Hex, the nearest RAL and the prices are derived when this library is built.",
+        "Resource__PaintFinish-21" : {
+            "Resource__Code"       : "ValePaintFinish__no21-Lighthouse__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Light House",
+            "Resource__Number"     : 21,
+            "Resource__CardOrder"  : 1,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "251, 248, 230"
+                }
+            }
+        },
+        "Resource__PaintFinish-01" : {
+            "Resource__Code"       : "ValePaintFinish__no01-ValeWhite__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Vale White",
+            "Resource__Number"     : 1,
+            "Resource__CardOrder"  : 2,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "244, 239, 226"
+                }
+            }
+        },
+        "Resource__PaintFinish-22" : {
+            "Resource__Code"       : "ValePaintFinish__no22-RicePaper__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Rice Paper",
+            "Resource__Number"     : 22,
+            "Resource__CardOrder"  : 3,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "254, 248, 230"
+                }
+            }
+        },
+        "Resource__PaintFinish-03" : {
+            "Resource__Code"       : "ValePaintFinish__no03-TaylorCream__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Taylor Cream",
+            "Resource__Number"     : 3,
+            "Resource__CardOrder"  : 4,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "239, 232, 215"
+                }
+            }
+        },
+        "Resource__PaintFinish-46" : {
+            "Resource__Code"       : "ValePaintFinish__no46-Leaden__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Leaden",
+            "Resource__Number"     : 46,
+            "Resource__CardOrder"  : 5,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "158, 161, 152"
+                }
+            }
+        },
+        "Resource__PaintFinish-10" : {
+            "Resource__Code"       : "ValePaintFinish__no10-Mudpie__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Mudpie",
+            "Resource__Number"     : 10,
+            "Resource__CardOrder"  : 6,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "188, 187, 156"
+                }
+            }
+        },
+        "Resource__PaintFinish-11" : {
+            "Resource__Code"       : "ValePaintFinish__no11-Flagstone__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Flagstone",
+            "Resource__Number"     : 11,
+            "Resource__CardOrder"  : 7,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "166, 162, 116"
+                }
+            }
+        },
+        "Resource__PaintFinish-02" : {
+            "Resource__Code"       : "ValePaintFinish__no02-Gardenia__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Gardenia",
+            "Resource__Number"     : 2,
+            "Resource__CardOrder"  : 8,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "241, 232, 203"
+                }
+            }
+        },
+        "Resource__PaintFinish-04" : {
+            "Resource__Code"       : "ValePaintFinish__no04-Limewash__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Limewash",
+            "Resource__Number"     : 4,
+            "Resource__CardOrder"  : 9,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "224, 220, 193"
+                }
+            }
+        },
+        "Resource__PaintFinish-06" : {
+            "Resource__Code"       : "ValePaintFinish__no06-Sheepskin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Sheepskin",
+            "Resource__Number"     : 6,
+            "Resource__CardOrder"  : 10,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "223, 216, 181"
+                }
+            }
+        },
+        "Resource__PaintFinish-07" : {
+            "Resource__Code"       : "ValePaintFinish__no07-Vellum__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Vellum",
+            "Resource__Number"     : 7,
+            "Resource__CardOrder"  : 11,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "212, 200, 166"
+                }
+            }
+        },
+        "Resource__PaintFinish-23" : {
+            "Resource__Code"       : "ValePaintFinish__no23-Olivine__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Olivine",
+            "Resource__Number"     : 23,
+            "Resource__CardOrder"  : 12,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "217, 210, 187"
+                }
+            }
+        },
+        "Resource__PaintFinish-05" : {
+            "Resource__Code"       : "ValePaintFinish__no05-WildMink__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Wild Mink",
+            "Resource__Number"     : 5,
+            "Resource__CardOrder"  : 13,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "204, 198, 179"
+                }
+            }
+        },
+        "Resource__PaintFinish-08" : {
+            "Resource__Code"       : "ValePaintFinish__no08-Putty__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Putty",
+            "Resource__Number"     : 8,
+            "Resource__CardOrder"  : 14,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "199, 189, 163"
+                }
+            }
+        },
+        "Resource__PaintFinish-51" : {
+            "Resource__Code"       : "ValePaintFinish__no51-Alabaster__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Alabaster",
+            "Resource__Number"     : 51,
+            "Resource__CardOrder"  : 15,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "227, 227, 225"
+                }
+            }
+        },
+        "Resource__PaintFinish-41" : {
+            "Resource__Code"       : "ValePaintFinish__no41-Conch__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Conch",
+            "Resource__Number"     : 41,
+            "Resource__CardOrder"  : 16,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "200, 200, 198"
+                }
+            }
+        },
+        "Resource__PaintFinish-25" : {
+            "Resource__Code"       : "ValePaintFinish__no25-SugarBeet__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Sugar Beet",
+            "Resource__Number"     : 25,
+            "Resource__CardOrder"  : 17,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "201, 198, 186"
+                }
+            }
+        },
+        "Resource__PaintFinish-43" : {
+            "Resource__Code"       : "ValePaintFinish__no43-Portland__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Portland",
+            "Resource__Number"     : 43,
+            "Resource__CardOrder"  : 18,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "203, 203, 191"
+                }
+            }
+        },
+        "Resource__PaintFinish-28" : {
+            "Resource__Code"       : "ValePaintFinish__no28-Porcini__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Porcini",
+            "Resource__Number"     : 28,
+            "Resource__CardOrder"  : 19,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "196, 188, 175"
+                }
+            }
+        },
+        "Resource__PaintFinish-29" : {
+            "Resource__Code"       : "ValePaintFinish__no29-Ermine__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Ermine",
+            "Resource__Number"     : 29,
+            "Resource__CardOrder"  : 20,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "138, 135, 123"
+                }
+            }
+        },
+        "Resource__PaintFinish-30" : {
+            "Resource__Code"       : "ValePaintFinish__no30-Earth__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Earth",
+            "Resource__Number"     : 30,
+            "Resource__CardOrder"  : 21,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "120, 120, 104"
+                }
+            }
+        },
+        "Resource__PaintFinish-47" : {
+            "Resource__Code"       : "ValePaintFinish__no47-DirtyWhite__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Dirty White",
+            "Resource__Number"     : 47,
+            "Resource__CardOrder"  : 22,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "212, 215, 208"
+                }
+            }
+        },
+        "Resource__PaintFinish-45" : {
+            "Resource__Code"       : "ValePaintFinish__no45-Dismal__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Dismal",
+            "Resource__Number"     : 45,
+            "Resource__CardOrder"  : 23,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "187, 190, 183"
+                }
+            }
+        },
+        "Resource__PaintFinish-26" : {
+            "Resource__Code"       : "ValePaintFinish__no26-Pavement__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pavement",
+            "Resource__Number"     : 26,
+            "Resource__CardOrder"  : 24,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "173, 177, 167"
+                }
+            }
+        },
+        "Resource__PaintFinish-44" : {
+            "Resource__Code"       : "ValePaintFinish__no44-Parker__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Parker",
+            "Resource__Number"     : 44,
+            "Resource__CardOrder"  : 25,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "158, 164, 150"
+                }
+            }
+        },
+        "Resource__PaintFinish-34" : {
+            "Resource__Code"       : "ValePaintFinish__no34-Quail__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Quail",
+            "Resource__Number"     : 34,
+            "Resource__CardOrder"  : 26,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "151, 162, 136"
+                }
+            }
+        },
+        "Resource__PaintFinish-27" : {
+            "Resource__Code"       : "ValePaintFinish__no27-EngineRoom__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Engine Room",
+            "Resource__Number"     : 27,
+            "Resource__CardOrder"  : 27,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "146, 150, 138"
+                }
+            }
+        },
+        "Resource__PaintFinish-35" : {
+            "Resource__Code"       : "ValePaintFinish__no35-GreyGoblin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Grey Goblin",
+            "Resource__Number"     : 35,
+            "Resource__CardOrder"  : 28,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "120, 131, 109"
+                }
+            }
+        },
+        "Resource__PaintFinish-42" : {
+            "Resource__Code"       : "ValePaintFinish__no42-Nimbus__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Nimbus",
+            "Resource__Number"     : 42,
+            "Resource__CardOrder"  : 29,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "227, 231, 230"
+                }
+            }
+        },
+        "Resource__PaintFinish-48" : {
+            "Resource__Code"       : "ValePaintFinish__no48-Thumper__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Thumper",
+            "Resource__Number"     : 48,
+            "Resource__CardOrder"  : 30,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "185, 190, 186"
+                }
+            }
+        },
+        "Resource__PaintFinish-49" : {
+            "Resource__Code"       : "ValePaintFinish__no49-SilverBirch__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Silver Birch",
+            "Resource__Number"     : 49,
+            "Resource__CardOrder"  : 31,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "171, 182, 184"
+                }
+            }
+        },
+        "Resource__PaintFinish-50" : {
+            "Resource__Code"       : "ValePaintFinish__no50-Pinafore__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pinafore",
+            "Resource__Number"     : 50,
+            "Resource__CardOrder"  : 32,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "150, 162, 162"
+                }
+            }
+        },
+        "Resource__PaintFinish-31" : {
+            "Resource__Code"       : "ValePaintFinish__no31-BurntAsh__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Burnt Ash",
+            "Resource__Number"     : 31,
+            "Resource__CardOrder"  : 33,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "152, 165, 158"
+                }
+            }
+        },
+        "Resource__PaintFinish-32" : {
+            "Resource__Code"       : "ValePaintFinish__no32-Tempest__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Tempest",
+            "Resource__Number"     : 32,
+            "Resource__CardOrder"  : 34,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "78, 93, 86"
+                }
+            }
+        },
+        "Resource__PaintFinish-33" : {
+            "Resource__Code"       : "ValePaintFinish__no33-Carbon__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Carbon",
+            "Resource__Number"     : 33,
+            "Resource__CardOrder"  : 35,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "41, 55, 55"
+                }
+            }
+        },
+        "Resource__PaintFinish-14" : {
+            "Resource__Code"       : "ValePaintFinish__no14-Mothwing__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Mothwing",
+            "Resource__Number"     : 14,
+            "Resource__CardOrder"  : 36,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "186, 196, 176"
+                }
+            }
+        },
+        "Resource__PaintFinish-09" : {
+            "Resource__Code"       : "ValePaintFinish__no09-Catkin__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Catkin",
+            "Resource__Number"     : 9,
+            "Resource__CardOrder"  : 37,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "193, 201, 169"
+                }
+            }
+        },
+        "Resource__PaintFinish-17" : {
+            "Resource__Code"       : "ValePaintFinish__no17-OldSage__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Old Sage",
+            "Resource__Number"     : 17,
+            "Resource__CardOrder"  : 38,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "158, 164, 119"
+                }
+            }
+        },
+        "Resource__PaintFinish-19" : {
+            "Resource__Code"       : "ValePaintFinish__no19-PoachersGreen__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Poachers Green",
+            "Resource__Number"     : 19,
+            "Resource__CardOrder"  : 39,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "100, 124, 101"
+                }
+            }
+        },
+        "Resource__PaintFinish-15" : {
+            "Resource__Code"       : "ValePaintFinish__no15-PikesBelly__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Pikes Belly",
+            "Resource__Number"     : 15,
+            "Resource__CardOrder"  : 40,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "195, 212, 204"
+                }
+            }
+        },
+        "Resource__PaintFinish-16" : {
+            "Resource__Code"       : "ValePaintFinish__no16-Eucalyptus__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Eucalyptus",
+            "Resource__Number"     : 16,
+            "Resource__CardOrder"  : 41,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "124, 163, 154"
+                }
+            }
+        },
+        "Resource__PaintFinish-36" : {
+            "Resource__Code"       : "ValePaintFinish__no36-Atlantis__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "Atlantis",
+            "Resource__Number"     : 36,
+            "Resource__CardOrder"  : 42,
+            "Resource__Attributes" : {
+                "Resource__ColourData" : {
+                    "Paint__RGB" : "79, 105, 106"
+                }
+            }
+        }
+    }
+}

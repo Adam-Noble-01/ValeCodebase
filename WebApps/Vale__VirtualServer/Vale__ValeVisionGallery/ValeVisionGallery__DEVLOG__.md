@@ -1,5 +1,18 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.5.3, 16-Oct-2026: My Projects Is for Employees Only
+
+**Asked by Adam.** James Watchorn (head of sales, Management level) opened the gallery on My
+Projects because his register Role read Designer. The initial filter is for Employee-level
+Designers and Concept Artists; managers oversee every job.
+
+**Changes:**
+- Management and App Admins always see every project, with no My Projects button, whatever their
+  Role says. App Admins can still preview anyone's view with `?viewAs=<name>`.
+- James's register Role corrected from Designer to Manager (Sales), so the account panel no longer
+  calls him a designer.
+- Files: `Na__Feature__ProjectGallery__MyProjects.js` 1.2.0 (`getMyProjectsViewer`).
+
 ## Version 1.5.2, 15-Oct-2026: Lantern-Only Jobs Stay Out Until They Have 3D Work
 
 **For Lantern Designer's move onto the app server.** Lantern Designer now keeps every design in the

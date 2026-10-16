@@ -13,7 +13,7 @@
 // - One button showing the current view: "My Projects" (one person, on a
 //   dark Vale blue fill, so it is clear a filter is on) or "All Projects"
 //   (two people, on white like Project Filters). A click flicks to the other.
-//   Only Designers and Concept Artists get it (Na__Feature__ProjectGallery__MyProjects.js).
+//   Only Employee-level Designers and Concept Artists get it (Na__Feature__ProjectGallery__MyProjects.js).
 // - Sits between the search box and Project Filters; on phones it takes the
 //   old Blockout Models tab's place on the first row, beside the mode tabs.
 // - Icons are SVG files (04__Assets__AppGraphics) drawn at the funnel icon's

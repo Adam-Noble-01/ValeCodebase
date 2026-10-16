@@ -18,7 +18,8 @@ Whitecard and blockout massing-model images for every Vale Garden Houses project
   `?id=<project code>` links still open.
 - **Who can do what:**
   - everyone signed in browses, and finds Blockout Models in the hamburger menu;
-  - **Designers and Concept Artists** (the account's Role) open on **My Projects**, the projects
+  - **Employee-level Designers and Concept Artists** (the account's Role) open on **My Projects**
+    (Management and App Admins never do, whatever their Role), the projects
     naming them as designer or concept artist, once at least one project does. A My Projects / All
     Projects button flicks between the two. Until a job names them (ad hoc staff, new starters)
     they see every project and have no button. Their name on the projects is their first name,

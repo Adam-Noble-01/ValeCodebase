@@ -29,14 +29,26 @@
    - Door handles, hinges and ironmongery finishes come from ValeSpec
      (WebApps/ValeSpec/03__Data__HardwareDataLibrary and its app config),
      including its real rules for hinges and door sizes.
-   - Other example values (quantities, sizes, the example scheme) are
-     illustrative, for the presentation only.
+   - Other example values (quantities, sizes, the example scheme, and the
+     paint and timber prices) are illustrative, for the presentation only.
+   - Joinery paint is the Vale paint card. A Component names Vale__PaintLibrary
+     and the loader expands that to every ValePaintFinish__no00-Name__ code.
+     The colour, the nearest RAL, the hex and the prices live once, in
+     04__JsonSchemas__Master. Sapele, Douglas fir and tulipwood carry purchase
+     (per m3) and processing (per finished linear metre) as attributes of the
+     one timber resource.
+   - Updated 16-Oct-2026.
 
    HOW TO ADD THINGS:
    - A Resource          -> add to "resources", with its group (Profiles,
-                            Materials, Finishes or Specifications).
+                            Materials, Finishes, Paint Finishes or Specifications).
+                            Give it "attributes": blocks such as colour, costing
+                            and procurement. One resource can carry several.
    - A Component/Product -> add to "library" with tier "component" or "product"
-                            and list the resource ids it "uses".
+                            and list the resource ids it "uses". Vale__PaintLibrary
+                            means the whole paint card. Name one finish, such as
+                            ValePaintFinish__no01-ValeWhite__, when only that
+                            colour applies.
    - An Assembly         -> add to "library" with tier "assembly" and list what
                             it "contains" as { ref, qty }. An Assembly may
                             contain other Assemblies (sub-assemblies) as well
@@ -73,7 +85,7 @@ window.ValeObjectLibrary_LibraryData = {
         title    : 'Object Library',
         subtitle : 'System architecture',
         version  : '2.0.0',
-        updated  : '15-Oct-2026'
+        updated  : '16-Oct-2026'
     },
     // endregion ---------------------------------------------------------------
 
@@ -120,8 +132,8 @@ window.ValeObjectLibrary_LibraryData = {
             plural     : 'Components',
             colour     : '#eda100',
             summary    : 'A fabricated element, made to measure for each scheme.',
-            definition : 'A Component is a fabricated or configurable element rather than a fixed purchased object. Its length, width, depth or other parameters are set by each Scheme, and it draws its profiles, materials, finishes and specifications from the shared Resources.',
-            dataPoints : ['Component Code', 'Profile', 'Material', 'Finish', 'Specification', 'Length', 'Width', 'Depth', 'Manufacturing Method']
+            definition : 'A Component is a fabricated or configurable element rather than a fixed purchased object. Its length, width, depth or other parameters are set by each Scheme, and it draws its profiles, materials, finishes and specifications from the shared Resources. The resources it names are its own: they are not repeated on the Assembly that contains it.',
+            dataPoints : ['Component Code', 'Profile', 'Material', 'Paint Finish', 'Finish', 'Specification', 'Length', 'Width', 'Depth', 'Manufacturing Method']
         },
         product: {
             code       : '03.02',
@@ -137,8 +149,8 @@ window.ValeObjectLibrary_LibraryData = {
             label      : 'Resource',
             plural     : 'Resources',
             colour     : '#008300',
-            summary    : 'A reusable definition: a profile, material, finish or specification.',
-            definition : 'The lowest level: reusable definitions rather than physical objects. Resources define the profiles, materials, finishes and specifications that Components and Products draw on. One Resource is reused by many objects, so a change made once flows everywhere it is used.',
+            summary    : 'A reusable definition, with the attributes costing needs.',
+            definition : 'The lowest level: reusable definitions rather than physical objects. A Resource carries one or more attribute blocks — colour, purchase, processing, costing, procurement — and is named by its code from many Components and Products. The attributes stay here. A change made once flows everywhere the code is used. On the chart, a Resource is shown only when you open the Component, Product or Assembly that names it.',
             dataPoints : ['Resource Code', 'Category', 'Specification / Standard', 'Supplier', 'Notes']
         },
         library: {
@@ -147,18 +159,28 @@ window.ValeObjectLibrary_LibraryData = {
             plural     : 'Object Library',
             colour     : '#172b3a',
             structural : true,
-            summary    : 'Every record we hold, grouped by category.',
+            summary    : 'Every record we hold, grouped by collection.',
             definition : 'The Object Library is the one shared store of every definition: Assemblies, Components, Products and Resources. Every Scheme is configured from it, so nothing in a Scheme is drawn from scratch and a record is only ever kept once.',
             dataPoints : []
         },
         category: {
             code       : '00',
-            label      : 'Category',
-            plural     : 'Categories',
+            label      : 'Collection',
+            plural     : 'Collections',
             colour     : '#7b8794',
             structural : true,
             summary    : 'A group in the library for browsing - not an object itself.',
-            definition : 'Categories group the library for browsing - columns, finials, crestings and so on - so a record is quick to find. A category is not an object in the hierarchy (not an Assembly, Component or Product); it is labelled by what it holds, and a Scheme is built from the records themselves.',
+            definition : 'A Collection is a category: the first shelf of the library, such as columns, finials or crestings, so a record is quick to find. It is not an object in the hierarchy (not an Assembly, Component or Product). It is labelled by what it holds, and a Scheme is built from the records themselves.',
+            dataPoints : []
+        },
+        range: {
+            code       : '00.01',
+            label      : 'Range',
+            plural     : 'Ranges',
+            colour     : '#3e5c78',
+            structural : true,
+            summary    : 'A similar set of items inside a Collection.',
+            definition : 'A Range sits inside a Collection: a similar set of items, such as Classical Columns, the Belton Range, door handles or hinges. The Collection stays one bubble. Open a Range to see the sizes and types in that set.',
             dataPoints : []
         }
     },
@@ -170,20 +192,20 @@ window.ValeObjectLibrary_LibraryData = {
     // -------------------------------------------------------------------------
     categories: [
         { name: 'Roof Lantern',          summary: 'The ridge, hip, glaze bar, base frame and interior joinery systems of a Vale roof lantern - from the Lantern Designer.' },
-        { name: 'Roof Lantern Options',  summary: 'Parts the Lantern Designer can swap in: the deeper glaze bar trims, the Classic cornice and the pyramid apex end cap.' },
-        { name: 'Columns',               summary: 'Free-standing columns, each built from a base, a shaft and a capital.' },
+        { name: 'Columns',               summary: 'Free-standing columns, each built from a base, a shaft and a capital.',
+          ranges: ['Classical Columns', 'Belton Range', 'Stop Chamfer Range', 'Hardwick Range', 'Cragside Range', 'Gothic Range'] },
         { name: 'Pilasters',             summary: 'Pilasters - built from the same bases, shafts and capitals as the matching columns.' },
         { name: 'Internal Columns',      summary: 'Internal column types, each with its own base, capital and shaft.' },
-        { name: 'Framework',             summary: 'Entablatures, ring beams and the structure that frames the building.' },
+        { name: 'Entablatures',          summary: 'The band carried on the pilasters: architrave, frieze and cornice.' },
         { name: 'Doors and Windows',     summary: 'Door and window assemblies, down to their rails, panels and ironmongery.' },
-        { name: 'Rainwater',             summary: 'Hoppers, downpipes and their fittings.' },
+        { name: 'Rainwater Goods',       summary: 'Hoppers, downpipes and their fittings.' },
         { name: 'Tie Bars and Lighting', summary: 'Decorative tie bars and lighting blocks.' },
-        { name: 'Framework Sections',    summary: 'The main sections the framework is built from.' },
-        { name: 'Cill Nosings',          summary: 'Cill nosings, each sized for the columns it is used with.' },
-        { name: 'Joinery',               summary: 'Internal joinery: window boards, skirtings and staff beads.' },
+        { name: 'Framework',             summary: 'The timber frame: upright sections, and the cill nosings sized for each column.',
+          ranges: ['Frame Timber Sections', 'Cill Nosings'] },
+        { name: 'Misc Internal Joinery',         summary: 'Internal joinery: window boards, skirtings and staff beads.' },
         { name: 'Eaves and Gutters',     summary: 'Gutters and eaves details.' },
-        { name: 'Ironmongery',           summary: 'Lever handles, hinges, locks and bolts. Handles and hinges come from ValeSpec.' },
-        { name: 'Cabin Hooks',           summary: 'Cabin hooks in every size, including those no longer available.' },
+        { name: 'Ironmongery',           summary: 'Door handles, hinges, locks, bolts, window gear and cabin hooks. Handles and hinges come from ValeSpec.',
+          ranges: ['Door Handles', 'Hinges', 'Locks', 'Shoot Bolts', 'Window Gear', 'Cabin Hooks'] },
         { name: 'Roof Finials',          summary: 'Cast and timber finials for ridges and lantern ends.' },
         { name: 'Roof Crestings',        summary: 'Cast ridge crestings and decorative strips.' }
     ],
@@ -191,13 +213,14 @@ window.ValeObjectLibrary_LibraryData = {
 
 
     // -------------------------------------------------------------------------
-    // REGION | Resource Groups - The Four Shelves of the Shared Library
+    // REGION | Resource Groups - The Shelves of the Shared Library
     // -------------------------------------------------------------------------
     // field : the tier data point this group fills in, e.g. a Component that
     //         uses "Accoya" shows Material: Accoya without typing it twice.
     resourceGroups: [
         { key: 'Profiles',       singular: 'Profile',       field: 'Profile'       },
         { key: 'Materials',      singular: 'Material',      field: 'Material'      },
+        { key: 'Paint Finishes', singular: 'Paint Finish',  field: 'Paint Finish'  },
         { key: 'Finishes',       singular: 'Finish',        field: 'Finish'        },
         { key: 'Specifications', singular: 'Specification', field: 'Specification' }
     ],
@@ -248,9 +271,9 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'RES-MAT-DOUGLAS-FIR',   group: 'Materials',      name: 'Douglas Fir',                  summary: 'The timber of the glaze bar internal trims.' },
         { id: 'RES-MAT-PLYWOOD',       group: 'Materials',      name: '12mm Plywood',                 summary: 'For packers behind the lantern cornice.' },
 
-        // Finishes - the three ironmongery finishes are ValeSpec's
-        { id: 'RES-FIN-RAL',           group: 'Finishes',       name: 'RAL Colours',                  summary: 'The colour reference for painted and powder-coated finishes.' },
-        { id: 'RES-FIN-PAINT',         group: 'Finishes',       name: 'Paint Systems',                summary: 'Factory-applied paint systems for joinery.' },
+        // Finishes - ironmongery, and powder coat. Joinery paint is the Vale paint
+        // card (Vale__PaintLibrary), loaded from the resource-libraries script.
+        { id: 'RES-FIN-RAL',           group: 'Finishes',       name: 'RAL Colours',                  summary: 'Powder-coat colour slot for aluminium and cast metal, quoted as a RAL. Joinery paint is the Vale paint card, not this record.' },
         { id: 'RES-FIN-STAINS',        group: 'Finishes',       name: 'Stains',                       summary: 'Stain finishes for hardwood details.' },
         { id: 'RES-FIN-METAL',         group: 'Finishes',       name: 'Metal Finishes',               summary: 'Finishes for metalwork other than the ironmongery range.' },
         { id: 'RES-FIN-UNLACQUERED-BRASS', group: 'Finishes',   name: 'Unlacquered Brass',            summary: 'Ironmongery finish - one of the three offered in ValeSpec.',
@@ -260,9 +283,8 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'RES-FIN-BRONZE',        group: 'Finishes',       name: 'Bronze',                       summary: 'Ironmongery finish - one of the three offered in ValeSpec.',
           data: { 'Specification / Standard': 'Material MAT613__Metal__Ironmongery__Bronze', 'Swatch': '#433d37', 'Notes': 'From the ValeSpec app config' } },
 
-        // Specifications
-        // Finishes - the Lantern Designer palettes (Na__PbrMaterials__Config.json):
-        // exterior and capping finishes, mill aluminium, and the joinery paints
+        // Exterior and capping finishes from the Lantern Designer. Joinery colour is
+        // the Vale paint card, not these powder coats.
         { id: 'RES-FIN-MILL',               group: 'Finishes', name: 'Mill Finish',              summary: 'Bare mill finish aluminium, for the structural cores and extrusions.' },
         { id: 'RES-FIN-ANTHRACITE',         group: 'Finishes', name: 'Anthracite Grey',          summary: 'Vale\'s standard contemporary exterior and capping finish: satin polyester powder coat over marine grade aluminium, RAL 7016.',
           data: { 'Specification / Standard': 'Material MAT620__Metal__Aluminium__PowderCoated__RAL7016', 'Swatch': '#383E42', 'Notes': 'Lantern Designer default exterior and capping finish' } },
@@ -270,20 +292,6 @@ window.ValeObjectLibrary_LibraryData = {
           data: { 'Specification / Standard': 'Material MAT621__Metal__Aluminium__PowderCoated__OffWhite', 'Swatch': '#EDEAE2', 'Notes': 'Lantern Designer exterior and capping finish' } },
         { id: 'RES-FIN-LEAD-WEATHERED',     group: 'Finishes', name: 'Weathered Lead',           summary: 'Natural weathered lead rather than a coating, matching the lead flashing on the outside of the roof.',
           data: { 'Specification / Standard': 'Material MAT640__Metal__Lead__Weathered', 'Swatch': '#7C8085', 'Notes': 'Lantern Designer exterior and capping finish' } },
-        { id: 'RES-FIN-NEUTRAL-WHITE',      group: 'Finishes', name: 'Neutral White',            summary: 'House neutral white joinery eggshell - the safe choice where the joinery is meant to disappear.',
-          data: { 'Specification / Standard': 'Material MAT330__Paint__Joinery__Eggshell__NeutralWhite', 'Swatch': '#F2F0E9', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-WEVET',           group: 'Finishes', name: 'Farrow and Ball Wevet',    summary: 'A soft grey-white joinery eggshell, cleaner than Neutral White without going brilliant.',
-          data: { 'Specification / Standard': 'Material MAT335__Paint__Joinery__Eggshell__FbWevet', 'Swatch': '#ECEBE9', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-AMMONITE',        group: 'Finishes', name: 'Farrow and Ball Ammonite', summary: 'A quiet light grey joinery eggshell, easy beside stone or painted walls.',
-          data: { 'Specification / Standard': 'Material MAT336__Paint__Joinery__Eggshell__FbAmmonite', 'Swatch': '#D8D6CF', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-FRENCH-GRAY',     group: 'Finishes', name: 'Farrow and Ball French Gray', summary: 'A warm putty grey joinery eggshell that reads soft green-grey in full sun.',
-          data: { 'Specification / Standard': 'Material MAT331__Paint__Joinery__Eggshell__FbFrenchGray', 'Swatch': '#B6B3A0', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-CARD-ROOM-GREEN', group: 'Finishes', name: 'Farrow and Ball Card Room Green', summary: 'The traditional garden room green joinery eggshell.',
-          data: { 'Specification / Standard': 'Material MAT332__Paint__Joinery__Eggshell__FbCardRoomGreen', 'Swatch': '#787C6C', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-PIGEON',          group: 'Finishes', name: 'Farrow and Ball Pigeon',   summary: 'A quiet, slightly cool joinery eggshell for rooms that already have a strong wall colour.',
-          data: { 'Specification / Standard': 'Material MAT333__Paint__Joinery__Eggshell__FbPigeon', 'Swatch': '#97A09B', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
-        { id: 'RES-FIN-FB-RAILINGS',        group: 'Finishes', name: 'Farrow and Ball Railings', summary: 'The contemporary dark joinery eggshell - draws the bar set as a graphic grid against the sky.',
-          data: { 'Specification / Standard': 'Material MAT334__Paint__Joinery__Eggshell__FbRailings', 'Swatch': '#3F4348', 'Supplier': 'Farrow and Ball', 'Notes': 'Lantern Designer joinery finish' } },
 
         // Specifications
         { id: 'RES-SPC-GLASS',         group: 'Specifications', name: 'Glass Specification',          summary: 'The glass make-up for each glazed unit.' },
@@ -344,27 +352,27 @@ window.ValeObjectLibrary_LibraryData = {
           contains: [{ ref: 'CMP-VENT-FRAME', qty: 1 }, { ref: 'CMP-GLAZING-PANEL', qty: 1 }, { ref: 'PRD-VENT-ACTUATOR', qty: 1 }] },
 
         // Columns - each built from a base, a shaft and a capital ------------
-        { id: 'ASM-COL-CLASSICAL-300', tier: 'assembly', category: 'Columns', name: 'Classical 300mm Columns', summary: 'A 300mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-300', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 300mm Columns', summary: 'A 300mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-300-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-300-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-300-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CLASSICAL-250', tier: 'assembly', category: 'Columns', name: 'Classical 250mm Columns', summary: 'A 250mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-250', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 250mm Columns', summary: 'A 250mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-250-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-250-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-250-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CLASSICAL-200', tier: 'assembly', category: 'Columns', name: 'Classical 200mm Columns', summary: 'A 200mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-200', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 200mm Columns', summary: 'A 200mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-200-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-200-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-200-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CLASSICAL-175', tier: 'assembly', category: 'Columns', name: 'Classical 175mm Columns', summary: 'A 175mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-175', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 175mm Columns', summary: 'A 175mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-175-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-175-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-175-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CLASSICAL-150', tier: 'assembly', category: 'Columns', name: 'Classical 150mm Columns', summary: 'A 150mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-150', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 150mm Columns', summary: 'A 150mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-150-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-150-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-150-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CLASSICAL-102', tier: 'assembly', category: 'Columns', name: 'Classical 102mm Columns', summary: 'A 102mm classical aluminium column.',
+        { id: 'ASM-COL-CLASSICAL-102', tier: 'assembly', category: 'Columns', range: 'Classical Columns', name: 'Classical 102mm Columns', summary: 'A 102mm classical aluminium column.',
           contains: [{ ref: 'CMP-CLASSICAL-102-BASE', qty: 1 }, { ref: 'CMP-CLASSICAL-102-SHAFT', qty: 1 }, { ref: 'CMP-CLASSICAL-102-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-BELTON',        tier: 'assembly', category: 'Columns', name: 'Belton Column',           summary: 'The Belton column - the same base, shaft and capital as the Belton Pilasters.',
+        { id: 'ASM-COL-BELTON',        tier: 'assembly', category: 'Columns', range: 'Belton Range', name: 'Belton Column',           summary: 'The Belton column - the same base, shaft and capital as the Belton Pilasters.',
           contains: [{ ref: 'CMP-BELTON-COLUMN-BASE', qty: 1 }, { ref: 'CMP-BELTON-COLUMN-SHAFT', qty: 1 }, { ref: 'CMP-BELTON-COLUMN-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-STOP-CHAMFER',  tier: 'assembly', category: 'Columns', name: 'Stop Chamfer Column',     summary: 'The Stop Chamfer column.',
+        { id: 'ASM-COL-STOP-CHAMFER',  tier: 'assembly', category: 'Columns', range: 'Stop Chamfer Range', name: 'Stop Chamfer Column',     summary: 'The Stop Chamfer column.',
           contains: [{ ref: 'CMP-STOP-CHAMFER-BASE', qty: 1 }, { ref: 'CMP-STOP-CHAMFER-SHAFT', qty: 1 }, { ref: 'CMP-STOP-CHAMFER-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-HARDWICK',      tier: 'assembly', category: 'Columns', name: 'Hardwick Column',         summary: 'The Hardwick column.',
+        { id: 'ASM-COL-HARDWICK',      tier: 'assembly', category: 'Columns', range: 'Hardwick Range', name: 'Hardwick Column',         summary: 'The Hardwick column.',
           contains: [{ ref: 'CMP-HARDWICK-BASE', qty: 1 }, { ref: 'CMP-HARDWICK-SHAFT', qty: 1 }, { ref: 'CMP-HARDWICK-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-CRAGSIDE',      tier: 'assembly', category: 'Columns', name: 'Cragside Column',         summary: 'The Cragside column.',
+        { id: 'ASM-COL-CRAGSIDE',      tier: 'assembly', category: 'Columns', range: 'Cragside Range', name: 'Cragside Column',         summary: 'The Cragside column.',
           contains: [{ ref: 'CMP-CRAGSIDE-BASE', qty: 1 }, { ref: 'CMP-CRAGSIDE-SHAFT', qty: 1 }, { ref: 'CMP-CRAGSIDE-CAPITAL', qty: 1 }] },
-        { id: 'ASM-COL-GOTHIC',        tier: 'assembly', category: 'Columns', name: 'Gothic Column',           summary: 'The Gothic octagonal column.',
+        { id: 'ASM-COL-GOTHIC',        tier: 'assembly', category: 'Columns', range: 'Gothic Range', name: 'Gothic Column',           summary: 'The Gothic octagonal column.',
           contains: [{ ref: 'CMP-GOTHIC-BASE', qty: 1 }, { ref: 'CMP-GOTHIC-SHAFT', qty: 1 }, { ref: 'CMP-GOTHIC-CAPITAL', qty: 1 }] },
 
         // Pilasters - column components become a pilaster when assembled ----
@@ -391,11 +399,8 @@ window.ValeObjectLibrary_LibraryData = {
           contains: [{ ref: 'CMP-INTERNAL-D-BASE', qty: 1 }, { ref: 'CMP-INTERNAL-D-SHAFT', qty: 1 }, { ref: 'CMP-INTERNAL-D-CAPITAL', qty: 1 }] },
 
         // Framework ----------------------------------------------------------
-        { id: 'ASM-ENTABLATURE',       tier: 'assembly', category: 'Framework', name: 'Entablature Assembly', summary: 'The band carried on the pilasters: architrave, frieze and cornice.',
+        { id: 'ASM-ENTABLATURE',       tier: 'assembly', category: 'Entablatures', name: 'Entablature Assembly', summary: 'The band carried on the pilasters: architrave, frieze and cornice.',
           contains: [{ ref: 'CMP-ARCHITRAVE', qty: 1 }, { ref: 'CMP-FRIEZE', qty: 1 }, { ref: 'CMP-CORNICE', qty: 1 }] },
-        { id: 'ASM-RING-BEAM',         tier: 'assembly', category: 'Framework', name: 'Ring Beam Assembly',   summary: 'The structural ring beam with its fascia, flashing and outlets.',
-          contains: [{ ref: 'CMP-RING-BEAM', qty: 1 }, { ref: 'CMP-FASCIA', qty: 1 }, { ref: 'CMP-UPSTAND-FLASHING', qty: 1 },
-                     { ref: 'PRD-BRACKET', qty: 6 }, { ref: 'PRD-GUTTER-OUTLET', qty: 2 }] },
 
         // Doors and Windows (the door holds a sub-assembly) ------------------
         // Rules on the door and its hinges are ValeSpec's own warning rules.
@@ -417,7 +422,7 @@ window.ValeObjectLibrary_LibraryData = {
           params: ['Overall Size'] },
 
         // Rainwater ----------------------------------------------------------
-        { id: 'ASM-RAINWATER',         tier: 'assembly', category: 'Rainwater', name: 'Rainwater Hopper & Downpipe', summary: 'A hopper head and its downpipe, with elbows and wall brackets.',
+        { id: 'ASM-RAINWATER',         tier: 'assembly', category: 'Rainwater Goods', name: 'Rainwater Hopper & Downpipe', summary: 'A hopper head and its downpipe, with elbows and wall brackets.',
           contains: [{ ref: 'PRD-RW-HOPPER', qty: 1 }, { ref: 'CMP-RW-PIPE-SECTION', qty: 1 }, { ref: 'PRD-RW-ELBOW', qty: 2 }, { ref: 'PRD-RW-WALL-BRACKET', qty: 2 }] },
 
         // Tie Bars and Lighting ----------------------------------------------
@@ -433,43 +438,37 @@ window.ValeObjectLibrary_LibraryData = {
 
         // Framework ----------------------------------------------------------
         { id: 'CMP-ARCHITRAVE',       tier: 'component', name: 'Architrave',        summary: 'The lowest band of the entablature, spanning between the pilasters.',
-          uses: ['RES-PRF-OGEE', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                     params: ['Length'] },
+          uses: ['RES-PRF-OGEE', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                     params: ['Length'] },
         { id: 'CMP-FRIEZE',           tier: 'component', name: 'Frieze',            summary: 'The flat middle band of the entablature.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-SHEET', 'RES-SPC-BOARD', 'RES-FIN-PAINT', 'RES-FIN-RAL'],   params: ['Length', 'Depth'] },
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SHEET', 'RES-SPC-BOARD', 'Vale__PaintLibrary'],   params: ['Length', 'Depth'] },
         { id: 'CMP-CORNICE',          tier: 'component', name: 'Cornice',           summary: 'The projecting top band of the entablature.',
-          uses: ['RES-PRF-CORNICE', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                  params: ['Length'] },
-        { id: 'CMP-RING-BEAM',        tier: 'component', name: 'Ring Beam',         summary: 'The structural beam the roof lantern sits on.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-SPC-FIXING'],                                 params: ['Length', 'Width', 'Depth'] },
-        { id: 'CMP-FASCIA',           tier: 'component', name: 'Fascia',            summary: 'The board finishing the face of the ring beam.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length', 'Depth'] },
-        { id: 'CMP-UPSTAND-FLASHING', tier: 'component', name: 'Upstand Flashing',  summary: 'Lead weathering where the lantern upstand meets the roof.',
-          uses: ['RES-MAT-LEAD', 'RES-SPC-FIXING'],                                                     params: ['Length'] },
+          uses: ['RES-PRF-CORNICE', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                  params: ['Length'] },
 
         // Doors and Windows --------------------------------------------------
         { id: 'CMP-DOOR-STILE',       tier: 'component', name: 'Door Stile',        summary: 'The vertical member of a door leaf.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length'],
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                   params: ['Length'],
           assets: ['CAD', 'Manufacturing Data'] },
         { id: 'CMP-DOOR-HEAD-RAIL',   tier: 'component', name: 'Door Head Rail',    summary: 'The top rail of a door leaf.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length'] },
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                   params: ['Length'] },
         { id: 'CMP-DOOR-MID-RAIL',    tier: 'component', name: 'Door Mid Rail',     summary: 'The middle rail of a door leaf, between the glazing and the panel.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length'] },
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                   params: ['Length'] },
         { id: 'CMP-DOOR-LOWER-RAIL',  tier: 'component', name: 'Door Lower Rail',   summary: 'The bottom rail of a door leaf.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length'] },
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                   params: ['Length'] },
         { id: 'CMP-FIELDED-PANEL',    tier: 'component', name: 'Fielded Panel',     summary: 'The raised panel in the lower part of a door leaf.',
-          uses: ['RES-PRF-BOLECTION', 'RES-MAT-BOARD', 'RES-SPC-BOARD', 'RES-FIN-PAINT', 'RES-FIN-RAL'], params: ['Length', 'Width'] },
+          uses: ['RES-PRF-BOLECTION', 'RES-MAT-BOARD', 'RES-SPC-BOARD', 'Vale__PaintLibrary'], params: ['Length', 'Width'] },
         { id: 'CMP-GLAZING-PANEL',    tier: 'component', name: 'Glazing Panel',     summary: 'A sealed glass unit, sized to its opening.',
           uses: ['RES-SPC-GLASS'],                                                                      params: ['Length', 'Width'],
           rules: [{ type: 'Design Constraints', text: 'Glass make-up follows the Glass Specification for its location.' }] },
         { id: 'CMP-GLAZING-BAR',      tier: 'component', name: 'Glazing Bar',       summary: 'The bar dividing the glazing into panes.',
-          uses: ['RES-PRF-ASTRAGAL', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                 params: ['Length'],
+          uses: ['RES-PRF-ASTRAGAL', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                 params: ['Length'],
           rules: [{ type: 'Spacing Rules', text: 'Bar positions are set from the opening width and the chosen pane pattern.' }],
           assets: ['CAD', 'Manufacturing Data', 'Technical Specifications'] },
         { id: 'CMP-DOOR-THRESHOLD',   tier: 'component', name: 'Door Threshold',    summary: 'The sill at the foot of the door opening.',
           uses: ['RES-PRF-TIMBER', 'RES-MAT-OAK', 'RES-FIN-STAINS'],                                    params: ['Length'] },
         { id: 'CMP-CILL',             tier: 'component', name: 'Cill',              summary: 'The sill at the foot of a window.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],                   params: ['Length'] },
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],                   params: ['Length'] },
         { id: 'CMP-MULLION',          tier: 'component', name: 'Mullion',           summary: 'The vertical member dividing a window.',
-          uses: ['RES-PRF-TIMBER', 'RES-PRF-OGEE', 'RES-MAT-ACCOYA', 'RES-FIN-PAINT', 'RES-FIN-RAL'],   params: ['Length'] },
+          uses: ['RES-PRF-TIMBER', 'RES-PRF-OGEE', 'RES-MAT-ACCOYA', 'Vale__PaintLibrary'],   params: ['Length'] },
 
         // Roof Lantern - from the Lantern Designer asset library ------------
         // Every part below is a real Lantern Designer asset (05/06__Data__
@@ -489,14 +488,6 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'CMP-LTN-GLAZE-BAR-TRIM-45', tier: 'component', name: 'Glaze Bar Trim 45mm', summary: 'The Douglas Fir internal trim under the glaze bar, 45mm deep - the standard depth.',
           uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'],
           data: { 'Lantern Asset ID': '45_2031', 'Element Type': 'Trim', 'Depth': '45mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
-          assets: ['CAD'] },
-        { id: 'CMP-LTN-GLAZE-BAR-TRIM-70', tier: 'component', category: 'Roof Lantern Options', name: 'Glaze Bar Trim 70mm', summary: 'The deeper 70mm Douglas Fir glaze bar trim - an option in place of the standard 45mm.',
-          uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'], worksWith: ['ASM-GLAZE-BAR'],
-          data: { 'Lantern Asset ID': '45_2032', 'Element Type': 'Trim', 'Depth': '70mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
-          assets: ['CAD'] },
-        { id: 'CMP-LTN-GLAZE-BAR-TRIM-90', tier: 'component', category: 'Roof Lantern Options', name: 'Glaze Bar Trim 90mm', summary: 'The deepest 90mm Douglas Fir glaze bar trim - an option in place of the standard 45mm.',
-          uses: ['RES-MAT-DOUGLAS-FIR'], params: ['Length'], worksWith: ['ASM-GLAZE-BAR'],
-          data: { 'Lantern Asset ID': '45_2033', 'Element Type': 'Trim', 'Depth': '90mm', 'Finish': 'Factory finished', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-GLAZE-BAR-END-CAP', tier: 'component', name: 'Glaze Bar End Cap', summary: 'The decorative end cap seated on the glaze bar cap. It takes its finish from the cap.',
           uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'],
@@ -523,7 +514,7 @@ window.ValeObjectLibrary_LibraryData = {
           data: { 'Lantern Asset ID': '47_2001', 'Element Type': 'Structural', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-RIDGE-BEAM', tier: 'component', name: 'Ridge Beam', summary: 'The decorative Sapele beam seen from inside, hung beneath the aluminium core - half structure, half trim. Cut flush against the octagonal ridge block at each end.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'Vale__PaintLibrary'], params: ['Length'],
           data: { 'Lantern Asset ID': '47_2021', 'Element Type': 'Structural', 'Element Role': 'Timber Substructure', 'Depth': '230mm at 22.5 degrees', 'Depth by roof pitch': '17.5° 230 · 20° 235 · 22.5° 230 · 25° 230 · 27.5° 235 · 30° 235 · 35° 235 · 37.5° 240 · 40° 250 · 45° 250 mm', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
           rules: [{ type: 'Dimensional Rules', text: 'Beam depth comes from the Vale timber depth table: the roof pitch snaps to the nearest row, never interpolated, because these are stock joinery sections. Below 17.5 degrees it clamps to the 17.5 row.' }],
           assets: ['CAD'] },
@@ -545,7 +536,7 @@ window.ValeObjectLibrary_LibraryData = {
           rules: [{ type: 'Compatibility Rules', text: 'Finials and cresting are welded to the capping, so a ridge without it can carry neither.' }],
           assets: ['CAD'] },
         { id: 'CMP-LTN-RIDGE-BLOCK', tier: 'component', name: 'Ridge Block (Octagonal)', summary: 'The octagonal Sapele block where the ridge and hip beams meet; the beams are cut flush with its faceted sides. It carries a decorative turning, which can be swapped for a hook and wiring conduit to hang a light.',
-          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'],
+          uses: ['RES-MAT-SAPELE', 'Vale__PaintLibrary'],
           data: { 'Lantern Asset ID': '47_1001', 'Element Type': 'Trim', 'Width': '135mm across flats', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD', '3D Models'] },
         { id: 'CMP-LTN-RIDGE-END-CAP', tier: 'component', name: 'Ridge End Cap', summary: 'Closes the end of the aluminium ridge capping, seats the ball finial and weathers the ridge end.',
@@ -553,18 +544,13 @@ window.ValeObjectLibrary_LibraryData = {
           data: { 'Lantern Asset ID': '47_1011', 'Element Type': 'Trim', 'Element Role': 'Decoration', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           rules: [{ type: 'Compatibility Rules', text: 'Needs the aluminium ridge capping - so only the Aluminium Capped Ridge has end caps.' }],
           assets: ['CAD', '3D Models'] },
-        { id: 'CMP-LTN-RIDGE-END-CAP-PYRAMID', tier: 'component', category: 'Roof Lantern Options', name: 'Ridge End Cap - Pyramid', summary: 'A full octagon end cap with no ridge return, for the apex of a pyramid roof where four hips meet.',
-          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'],
-          data: { 'Lantern Asset ID': '47_1012', 'Element Type': 'Trim', 'Element Role': 'Decoration', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
-          assets: ['CAD', '3D Models'] },
-
         // Hip - four parts
         { id: 'CMP-LTN-HIP-CORE', tier: 'component', name: 'Hip Core', summary: 'The main structural hip: an aluminium extrusion welded to the eaves extrusion, the ridge core and the glaze bar cores.',
           uses: ['RES-PRF-ALU-EXTRUSION', 'RES-MAT-ALUMINIUM', 'RES-FIN-MILL'], params: ['Length'],
           data: { 'Lantern Asset ID': '48_2001', 'Element Type': 'Structural', 'Supplier': 'Vale Garden Houses', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-HIP-BEAM', tier: 'component', name: 'Hip Beam', summary: 'The decorative Sapele hip beam seen from inside. Its high end is cut flush against the octagonal ridge block; its low end takes a plumb cut 18mm inboard of the eaves corner.',
-          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-SAPELE', 'Vale__PaintLibrary'], params: ['Length'],
           data: { 'Lantern Asset ID': '48_2021', 'Element Type': 'Structural', 'Element Role': 'Timber Substructure', 'Depth': '205mm at 22.5 degrees', 'Depth by roof pitch': '17.5° 210 · 20° 210 · 22.5° 205 · 25° 200 · 27.5° 200 · 30° 195 · 35° 185 · 37.5° 185 · 40° 185 · 45° 180 mm', 'Data Status': 'Published - 22.5 degree CAD standard', 'Source': 'Lantern Designer asset library' },
           rules: [{ type: 'Dimensional Rules', text: 'Chosen with the ridge beam from one table, so the two beam undersides finish level where they meet the octagonal block (241.0mm and 241.7mm below the ridge datum at 22.5 degrees).' }],
           assets: ['CAD'] },
@@ -579,20 +565,15 @@ window.ValeObjectLibrary_LibraryData = {
 
         // Interior joinery - cornice, packer and eaves trim
         { id: 'CMP-LTN-CORNICE-WALES', tier: 'component', name: 'Wales Cornice', summary: 'The standard interior cornice around the lantern upstand.',
-          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          uses: ['RES-MAT-SAPELE', 'Vale__PaintLibrary'], params: ['Length'],
           data: { 'Lantern Asset ID': '49_1001', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
-          assets: ['CAD'] },
-        { id: 'CMP-LTN-CORNICE-CLASSIC-VG103', tier: 'component', category: 'Roof Lantern Options', name: 'Classic Interior Cornice VG103', summary: 'The larger Classic cornice - an option in place of the Wales cornice.',
-          uses: ['RES-MAT-SAPELE', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
-          worksWith: ['ASM-INTERIOR-JOINERY'],
-          data: { 'Lantern Asset ID': '49_1002', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-CORNICE-PACKER', tier: 'component', name: '12mm Ply Cornice Packer', summary: 'The plywood packer fixed behind the cornice.',
           uses: ['RES-MAT-PLYWOOD'], params: ['Length'],
           data: { 'Lantern Asset ID': '49_1021', 'Element Type': 'Packer', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-EAVES-TRIM', tier: 'component', name: 'Eaves Trim', summary: 'The 18mm painted timber trim inside the eaves; its top edge follows the roof pitch.',
-          uses: ['RES-PRF-TIMBER', 'RES-FIN-NEUTRAL-WHITE', 'RES-FIN-FB-WEVET', 'RES-FIN-FB-AMMONITE', 'RES-FIN-FB-FRENCH-GRAY', 'RES-FIN-FB-CARD-ROOM-GREEN', 'RES-FIN-FB-PIGEON', 'RES-FIN-FB-RAILINGS'], params: ['Length'],
+          uses: ['RES-PRF-TIMBER', 'RES-MAT-TULIPWOOD', 'Vale__PaintLibrary'], params: ['Length'],
           data: { 'Lantern Asset ID': '49_1011', 'Element Type': 'Trim', 'Depth': '18mm', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
 
@@ -674,31 +655,31 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'CMP-INTERNAL-D-CAPITAL',       tier: 'component', name: 'Type D Internal Column Capital' },
 
         // Framework Sections -------------------------------------------------
-        { id: 'CMP-UPRIGHT-44X94',       tier: 'component', category: 'Framework Sections', name: '44 x 94mm Upright Section',       uses: ['RES-PRF-TIMBER'], data: { 'Width': '44mm', 'Depth': '94mm' },  params: ['Length'] },
-        { id: 'CMP-UPRIGHT-56X94',       tier: 'component', category: 'Framework Sections', name: '56 x 94mm Upright Section',       uses: ['RES-PRF-TIMBER'], data: { 'Width': '56mm', 'Depth': '94mm' },  params: ['Length'] },
-        { id: 'CMP-UPRIGHT-56X138',      tier: 'component', category: 'Framework Sections', name: '56 x 138mm Upright Section',      uses: ['RES-PRF-TIMBER'], data: { 'Width': '56mm', 'Depth': '138mm' }, params: ['Length'] },
-        { id: 'CMP-UPRIGHT-SPLIT-44X94', tier: 'component', category: 'Framework Sections', name: '44 x 94mm Split Upright Section', uses: ['RES-PRF-TIMBER'], data: { 'Width': '44mm', 'Depth': '94mm' },  params: ['Length'] },
+        { id: 'CMP-UPRIGHT-44X94',       tier: 'component', category: 'Framework', range: 'Frame Timber Sections', name: '44 x 94mm Upright Section',       uses: ['RES-PRF-TIMBER'], data: { 'Width': '44mm', 'Depth': '94mm' },  params: ['Length'] },
+        { id: 'CMP-UPRIGHT-56X94',       tier: 'component', category: 'Framework', range: 'Frame Timber Sections', name: '56 x 94mm Upright Section',       uses: ['RES-PRF-TIMBER'], data: { 'Width': '56mm', 'Depth': '94mm' },  params: ['Length'] },
+        { id: 'CMP-UPRIGHT-56X138',      tier: 'component', category: 'Framework', range: 'Frame Timber Sections', name: '56 x 138mm Upright Section',      uses: ['RES-PRF-TIMBER'], data: { 'Width': '56mm', 'Depth': '138mm' }, params: ['Length'] },
+        { id: 'CMP-UPRIGHT-SPLIT-44X94', tier: 'component', category: 'Framework', range: 'Frame Timber Sections', name: '44 x 94mm Split Upright Section', uses: ['RES-PRF-TIMBER'], data: { 'Width': '44mm', 'Depth': '94mm' },  params: ['Length'] },
 
         // Cill Nosings - "worksWith" links each to the columns it fits ------
-        { id: 'CMP-CILL-NOSING-180', tier: 'component', category: 'Cill Nosings', name: '180mm Cill Nosing', data: { 'For use with': 'Gothic Octagonal Columns' },                    worksWith: ['ASM-COL-GOTHIC'] },
-        { id: 'CMP-CILL-NOSING-166', tier: 'component', category: 'Cill Nosings', name: '166mm Cill Nosing', data: { 'For use with': '300mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-300'] },
-        { id: 'CMP-CILL-NOSING-132', tier: 'component', category: 'Cill Nosings', name: '132mm Cill Nosing', data: { 'For use with': '250mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-250'] },
-        { id: 'CMP-CILL-NOSING-124', tier: 'component', category: 'Cill Nosings', name: '124mm Cill Nosing', data: { 'For use with': '200mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-200'] },
-        { id: 'CMP-CILL-NOSING-122', tier: 'component', category: 'Cill Nosings', name: '122mm Cill Nosing', data: { 'For use with': '175mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-175'] },
-        { id: 'CMP-CILL-NOSING-119', tier: 'component', category: 'Cill Nosings', name: '119mm Cill Nosing', data: { 'For use with': '152mm Aluminium Columns / 44mm Timber Columns' }, worksWith: ['ASM-COL-CLASSICAL-150'] },
-        { id: 'CMP-CILL-NOSING-98',  tier: 'component', category: 'Cill Nosings', name: '98mm Cill Nosing',  data: { 'For use with': 'Belton Bases' },                                worksWith: ['CMP-BELTON-COLUMN-BASE'] },
-        { id: 'CMP-CILL-NOSING-95',  tier: 'component', category: 'Cill Nosings', name: '95mm Cill Nosing',  data: { 'For use with': 'Corbel Bases' } },
-        { id: 'CMP-CILL-NOSING-85',  tier: 'component', category: 'Cill Nosings', name: '85mm Cill Nosing',  data: { 'For use with': '102mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-102'] },
-        { id: 'CMP-CILL-NOSING-75',  tier: 'component', category: 'Cill Nosings', name: '75mm Cill Nosing',  data: { 'For use with': 'Cragside Columns' },                            worksWith: ['ASM-COL-CRAGSIDE'] },
-        { id: 'CMP-CILL-NOSING-72',  tier: 'component', category: 'Cill Nosings', name: '72mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
-        { id: 'CMP-CILL-NOSING-70',  tier: 'component', category: 'Cill Nosings', name: '70mm Cill Nosing',  data: { 'For use with': 'Hardwick Columns' },                            worksWith: ['ASM-COL-HARDWICK'] },
-        { id: 'CMP-CILL-NOSING-65',  tier: 'component', category: 'Cill Nosings', name: '65mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
-        { id: 'CMP-CILL-NOSING-60',  tier: 'component', category: 'Cill Nosings', name: '60mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
+        { id: 'CMP-CILL-NOSING-180', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '180mm Cill Nosing', data: { 'For use with': 'Gothic Octagonal Columns' },                    worksWith: ['ASM-COL-GOTHIC'] },
+        { id: 'CMP-CILL-NOSING-166', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '166mm Cill Nosing', data: { 'For use with': '300mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-300'] },
+        { id: 'CMP-CILL-NOSING-132', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '132mm Cill Nosing', data: { 'For use with': '250mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-250'] },
+        { id: 'CMP-CILL-NOSING-124', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '124mm Cill Nosing', data: { 'For use with': '200mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-200'] },
+        { id: 'CMP-CILL-NOSING-122', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '122mm Cill Nosing', data: { 'For use with': '175mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-175'] },
+        { id: 'CMP-CILL-NOSING-119', tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '119mm Cill Nosing', data: { 'For use with': '152mm Aluminium Columns / 44mm Timber Columns' }, worksWith: ['ASM-COL-CLASSICAL-150'] },
+        { id: 'CMP-CILL-NOSING-98',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '98mm Cill Nosing',  data: { 'For use with': 'Belton Bases' },                                worksWith: ['CMP-BELTON-COLUMN-BASE'] },
+        { id: 'CMP-CILL-NOSING-95',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '95mm Cill Nosing',  data: { 'For use with': 'Corbel Bases' } },
+        { id: 'CMP-CILL-NOSING-85',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '85mm Cill Nosing',  data: { 'For use with': '102mm Aluminium Columns' },                     worksWith: ['ASM-COL-CLASSICAL-102'] },
+        { id: 'CMP-CILL-NOSING-75',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '75mm Cill Nosing',  data: { 'For use with': 'Cragside Columns' },                            worksWith: ['ASM-COL-CRAGSIDE'] },
+        { id: 'CMP-CILL-NOSING-72',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '72mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
+        { id: 'CMP-CILL-NOSING-70',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '70mm Cill Nosing',  data: { 'For use with': 'Hardwick Columns' },                            worksWith: ['ASM-COL-HARDWICK'] },
+        { id: 'CMP-CILL-NOSING-65',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '65mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
+        { id: 'CMP-CILL-NOSING-60',  tier: 'component', category: 'Framework', range: 'Cill Nosings', name: '60mm Cill Nosing',  data: { 'For use with': 'Stop Chamfer Columns' },                        worksWith: ['ASM-COL-STOP-CHAMFER'] },
 
         // Joinery, Eaves and Gutters -----------------------------------------
-        { id: 'CMP-WINDOW-BOARD',        tier: 'component', category: 'Joinery',           name: 'Window Board',        uses: ['RES-PRF-TIMBER'], params: ['Length', 'Depth'] },
-        { id: 'CMP-SKIRTING-BOARDS',     tier: 'component', category: 'Joinery',           name: 'Skirting Boards',     uses: ['RES-PRF-TIMBER'], params: ['Length'] },
-        { id: 'CMP-STAFF-BEADS',         tier: 'component', category: 'Joinery',           name: 'Staff Beads',         uses: ['RES-PRF-TIMBER'], params: ['Length'] },
+        { id: 'CMP-WINDOW-BOARD',        tier: 'component', category: 'Misc Internal Joinery',           name: 'Window Board',        uses: ['RES-PRF-TIMBER', 'RES-MAT-TULIPWOOD', 'Vale__PaintLibrary'], params: ['Length', 'Depth'] },
+        { id: 'CMP-SKIRTING-BOARDS',     tier: 'component', category: 'Misc Internal Joinery',           name: 'Skirting Boards',     uses: ['RES-PRF-TIMBER', 'RES-MAT-TULIPWOOD', 'Vale__PaintLibrary'], params: ['Length'] },
+        { id: 'CMP-STAFF-BEADS',         tier: 'component', category: 'Misc Internal Joinery',           name: 'Staff Beads',         uses: ['RES-PRF-TIMBER', 'RES-MAT-TULIPWOOD', 'Vale__PaintLibrary'], params: ['Length'] },
         { id: 'CMP-BELTON-EAVES-GUTTER', tier: 'component', category: 'Eaves and Gutters', name: 'Belton Eaves Gutter', params: ['Length'] },
 
 
@@ -707,55 +688,55 @@ window.ValeObjectLibrary_LibraryData = {
         // =====================================================================
 
         // Ironmongery - lever handles and hinges from ValeSpec ---------------
-        { id: 'PRD-VG-IRN0001', tier: 'product', category: 'Ironmongery', name: 'Scroll Lever Handle', summary: 'Traditional lever handle.',
+        { id: 'PRD-VG-IRN0001', tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Scroll Lever Handle', summary: 'Traditional lever handle.',
           uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'],
           data: { 'Product Code': 'VG_IRN0001', 'Supplier / Manufacturer': 'Croft', 'Fixed or Selectable Sizes': 'Fixed', 'Lever Height': '1000 mm from the floor (ValeSpec default)', 'Complementary': 'Yes', 'Source': 'ValeSpec hardware library' },
           rules: [{ type: 'Product Selection Rules', text: 'One lever type and one finish apply to every door in a ValeSpec project; a door that differs is flagged.' }],
           assets: ['CAD', 'Supplier Information'] },
-        { id: 'PRD-VG-IRN0002', tier: 'product', category: 'Ironmongery', name: 'Plain Lever Handle', summary: 'Simple form lever handle.',
+        { id: 'PRD-VG-IRN0002', tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Plain Lever Handle', summary: 'Simple form lever handle.',
           uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'],
           data: { 'Product Code': 'VG_IRN0002', 'Supplier / Manufacturer': 'Croft', 'Fixed or Selectable Sizes': 'Fixed', 'Lever Height': '1000 mm from the floor (ValeSpec default)', 'Complementary': 'Yes', 'Source': 'ValeSpec hardware library' },
           assets: ['CAD', 'Supplier Information'] },
-        { id: 'PRD-VG-IRN0003', tier: 'product', category: 'Ironmongery', name: 'Newton Lever Handle', summary: 'Contemporary styled lever handle.',
+        { id: 'PRD-VG-IRN0003', tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Newton Lever Handle', summary: 'Contemporary styled lever handle.',
           data: { 'Product Code': 'VG_IRN0003', 'Supplier / Manufacturer': 'Croft', 'Fixed or Selectable Sizes': 'Fixed', 'Finish': 'None listed in ValeSpec yet', 'Lever Height': '1000 mm from the floor (ValeSpec default)', 'Complementary': 'Yes', 'Source': 'ValeSpec hardware library' },
           assets: ['CAD'] },
-        { id: 'PRD-LEVER-FITZROY',  tier: 'product', category: 'Ironmongery', name: 'Fitzroy Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-LEVER-EMPIRE',   tier: 'product', category: 'Ironmongery', name: 'Empire Lever Handle',  summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-LEVER-LINDUM',   tier: 'product', category: 'Ironmongery', name: 'Lindum Lever Handle',  summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-LEVER-GRIFFIN',  tier: 'product', category: 'Ironmongery', name: 'Griffin Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-LEVER-ASPEN',    tier: 'product', category: 'Ironmongery', name: 'Aspen Lever Handle',   summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-LEVER-LIPSHAM',  tier: 'product', category: 'Ironmongery', name: 'Lipsham Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
-        { id: 'PRD-VG-IRN0101', tier: 'product', category: 'Ironmongery', name: 'Standard Hinge', summary: 'A standard hinge for a door or window.',
+        { id: 'PRD-LEVER-FITZROY',  tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Fitzroy Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-LEVER-EMPIRE',   tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Empire Lever Handle',  summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-LEVER-LINDUM',   tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Lindum Lever Handle',  summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-LEVER-GRIFFIN',  tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Griffin Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-LEVER-ASPEN',    tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Aspen Lever Handle',   summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-LEVER-LIPSHAM',  tier: 'product', category: 'Ironmongery', range: 'Door Handles', name: 'Lipsham Lever Handle', summary: 'A lever type offered in ValeSpec, with no hardware record yet.', data: { 'Availability / Status': 'Lever type only - no ValeSpec hardware record yet' } },
+        { id: 'PRD-VG-IRN0101', tier: 'product', category: 'Ironmongery', range: 'Hinges', name: 'Standard Hinge', summary: 'A standard hinge for a door or window.',
           uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'],
           data: { 'Product Code': 'VG_IRN0101', 'Supplier / Manufacturer': 'TBC', 'Fixed or Selectable Sizes': 'Projection: 4, 5, 6 or 8 inch', 'Hinge Style': 'Decorative or Basic', 'Complementary': 'Yes', 'Source': 'ValeSpec hardware library' },
           rules: [{ type: 'Quantity Rules', text: 'Hinges per leaf come from the ValeSpec hinge calculator: 3 as standard; 4 for a door 2200 mm or taller; 4 hung Double Top for a wide door (single 1000 mm or more, double 1800 mm or more overall).' },
                   { type: 'Design Constraints', text: 'An 8-inch projection is non-standard and needs senior architect approval (ValeSpec).' }] },
-        { id: 'PRD-VG-IRN0102', tier: 'product', category: 'Ironmongery', name: 'Standard Hinge with Urns', summary: 'A standard hinge for a door or window, with urn finials.',
+        { id: 'PRD-VG-IRN0102', tier: 'product', category: 'Ironmongery', range: 'Hinges', name: 'Standard Hinge with Urns', summary: 'A standard hinge for a door or window, with urn finials.',
           uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'],
           data: { 'Product Code': 'VG_IRN0102', 'Supplier / Manufacturer': 'TBC', 'Fixed or Selectable Sizes': 'Projection: 4, 5, 6 or 8 inch', 'Hinge Style': 'Decorative or Basic', 'Complementary': 'Yes', 'Source': 'ValeSpec hardware library' },
           rules: [{ type: 'Quantity Rules', text: 'Hinges per leaf come from the ValeSpec hinge calculator: 3 as standard; 4 for a door 2200 mm or taller; 4 hung Double Top for a wide door (single 1000 mm or more, double 1800 mm or more overall).' },
                   { type: 'Design Constraints', text: 'An 8-inch projection is non-standard and needs senior architect approval (ValeSpec).' }] },
-        { id: 'PRD-LOCK',           tier: 'product', category: 'Ironmongery', name: 'Lock',          summary: 'The lock for the active door leaf.',
+        { id: 'PRD-LOCK',           tier: 'product', category: 'Ironmongery', range: 'Locks', name: 'Lock',          summary: 'The lock for the active door leaf.',
           uses: ['RES-SPC-FIXING'],
           rules: [{ type: 'Compatibility Rules', text: 'Must suit the leaf thickness and the chosen lever handle.' }] },
-        { id: 'PRD-SHOOT-BOLT',     tier: 'product', category: 'Ironmongery', name: 'Shoot Bolt',    summary: 'The bolt securing the second leaf at head and foot.',
+        { id: 'PRD-SHOOT-BOLT',     tier: 'product', category: 'Ironmongery', range: 'Shoot Bolts', name: 'Shoot Bolt',    summary: 'The bolt securing the second leaf at head and foot.',
           uses: ['RES-FIN-METAL', 'RES-SPC-FIXING'] },
-        { id: 'PRD-ESPAGNOLETTE',   tier: 'product', category: 'Ironmongery', name: 'Espagnolette',  summary: 'Multi-point locking gear for a casement.',
+        { id: 'PRD-ESPAGNOLETTE',   tier: 'product', category: 'Ironmongery', range: 'Window Gear', name: 'Espagnolette',  summary: 'Multi-point locking gear for a casement.',
           uses: ['RES-FIN-METAL', 'RES-SPC-FIXING'] },
 
         // Cabin Hooks - sizes as ValeSpec offers them, plus two unavailable --
-        { id: 'PRD-CABIN-HOOK-4IN',   tier: 'product', category: 'Cabin Hooks', name: '4" Cabin Hook',   uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '4 inch' },
+        { id: 'PRD-CABIN-HOOK-4IN',   tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '4" Cabin Hook',   uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '4 inch' },
           rules: [{ type: 'Quantity Rules', text: 'Hooks and eyes follow the door type in ValeSpec: a single door 1 + 1, a double or bifold door 2 + 2.' }] },
-        { id: 'PRD-CABIN-HOOK-6IN',   tier: 'product', category: 'Cabin Hooks', name: '6" Cabin Hook',   uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '6 inch' } },
-        { id: 'PRD-CABIN-HOOK-10IN',  tier: 'product', category: 'Cabin Hooks', name: '10" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '10 inch' } },
-        { id: 'PRD-CABIN-HOOK-12IN',  tier: 'product', category: 'Cabin Hooks', name: '12" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '12 inch' } },
-        { id: 'PRD-CABIN-HOOK-350MM', tier: 'product', category: 'Cabin Hooks', name: '350mm Cabin Hook', data: { 'Fixed or Selectable Sizes': '350mm', 'Availability / Status': 'Unavailable' } },
-        { id: 'PRD-CABIN-HOOK-400MM', tier: 'product', category: 'Cabin Hooks', name: '400mm Cabin Hook', data: { 'Fixed or Selectable Sizes': '400mm', 'Availability / Status': 'Unavailable' } },
-        { id: 'PRD-CABIN-HOOK-18IN',  tier: 'product', category: 'Cabin Hooks', name: '18" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '18 inch' } },
+        { id: 'PRD-CABIN-HOOK-6IN',   tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '6" Cabin Hook',   uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '6 inch' } },
+        { id: 'PRD-CABIN-HOOK-10IN',  tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '10" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '10 inch' } },
+        { id: 'PRD-CABIN-HOOK-12IN',  tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '12" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '12 inch' } },
+        { id: 'PRD-CABIN-HOOK-350MM', tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '350mm Cabin Hook', data: { 'Fixed or Selectable Sizes': '350mm', 'Availability / Status': 'Unavailable' } },
+        { id: 'PRD-CABIN-HOOK-400MM', tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '400mm Cabin Hook', data: { 'Fixed or Selectable Sizes': '400mm', 'Availability / Status': 'Unavailable' } },
+        { id: 'PRD-CABIN-HOOK-18IN',  tier: 'product', category: 'Ironmongery', range: 'Cabin Hooks', name: '18" Cabin Hook',  uses: ['RES-FIN-UNLACQUERED-BRASS', 'RES-FIN-SATIN-NICKEL', 'RES-FIN-BRONZE'], data: { 'Fixed or Selectable Sizes': '18 inch' } },
 
         // Roof Finials -------------------------------------------------------
-        { id: 'PRD-LTN-BALL-FINIAL',  tier: 'product', category: 'Roof Finials', name: 'Ball Finial', summary: 'Decorative aluminium ball finial. Seats on the ridge end cap at each ridge end, or on the pyramid end cap at an apex.',
-          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], worksWith: ['CMP-LTN-RIDGE-END-CAP', 'CMP-LTN-RIDGE-END-CAP-PYRAMID'],
+        { id: 'PRD-LTN-BALL-FINIAL',  tier: 'product', category: 'Roof Finials', name: 'Ball Finial', summary: 'Decorative aluminium ball finial. Seats on the ridge end cap at each ridge end.',
+          uses: ['RES-MAT-ALUMINIUM', 'RES-FIN-ANTHRACITE', 'RES-FIN-WHITE-PAINTED', 'RES-FIN-LEAD-WEATHERED'], worksWith: ['CMP-LTN-RIDGE-END-CAP'],
           data: { 'Product Code': '50_1001', 'Material': 'Powder Coated Aluminium', 'Lantern Asset ID': '50_1001', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           rules: [{ type: 'Product Selection Rules', text: 'Follows the ridge capping finish: Anthracite Grey by default, or White Painted or Lead.' }],
           assets: ['CAD', '3D Models'] },
@@ -767,7 +748,7 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'PRD-VG590',           tier: 'product', category: 'Roof Finials', name: 'Finial Wings',                         data: { 'Product Code': 'VG590' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-HARDWICK-FINIAL', tier: 'product', category: 'Roof Finials', name: 'Hardwick Finial',                      uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG724',           tier: 'product', category: 'Roof Finials', name: 'Belton Post and Urn',                  data: { 'Product Code': 'VG724' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
-        { id: 'PRD-VGRJ28',          tier: 'product', category: 'Roof Finials', name: 'Turner Pinnacle (Timber)',             data: { 'Product Code': 'VGRJ28' }, uses: ['RES-FIN-PAINT'] },
+        { id: 'PRD-VGRJ28',          tier: 'product', category: 'Roof Finials', name: 'Turner Pinnacle (Timber)',             data: { 'Product Code': 'VGRJ28' }, uses: ['Vale__PaintLibrary'] },
         { id: 'PRD-VG715',           tier: 'product', category: 'Roof Finials', name: 'Cragside (Large) Spire Finial',        data: { 'Product Code': 'VG715' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG717',           tier: 'product', category: 'Roof Finials', name: 'Cragside Spire Finial',                data: { 'Product Code': 'VG717' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
         { id: 'PRD-VG726',           tier: 'product', category: 'Roof Finials', name: 'Belton Urn Finial',                    data: { 'Product Code': 'VG726' },  uses: ['RES-SPC-CASTING', 'RES-FIN-RAL'] },
@@ -837,7 +818,7 @@ window.ValeObjectLibrary_LibraryData = {
             'Eaves Height'          : '2.6 m',
             'Roof Pitch'            : '25°',
             'Glazing Specification' : 'Glass Specification',
-            'Finish Selection'      : 'Paint system, RAL to client choice; ironmongery in Satin Nickel'
+            'Finish Selection'      : 'Vale White (ValePaintFinish__no01-ValeWhite__); ironmongery in Satin Nickel'
         },
         assets  : ['SketchUp Models', 'PDF Drawings', 'Cost Data', 'Historical or Revision Data'],
 
@@ -849,7 +830,7 @@ window.ValeObjectLibrary_LibraryData = {
                          { ref: 'PRD-VG726', qty: 2 }, { ref: 'PRD-VG515', qty: 4 }] },
             { id: 'FAM-FRAMEWORK',       name: 'Framework',       summary: 'The pilasters, entablatures and structure that frame the building.',
               data: { 'Family Type': 'Structure' },
-              contains: [{ ref: 'ASM-PILASTER-BELTON', qty: 6 }, { ref: 'ASM-ENTABLATURE', qty: 3 }, { ref: 'ASM-RING-BEAM', qty: 1 },
+              contains: [{ ref: 'ASM-PILASTER-BELTON', qty: 6 }, { ref: 'ASM-ENTABLATURE', qty: 3 },
                          { ref: 'ASM-TIE-BAR', qty: 2 }, { ref: 'ASM-RAINWATER', qty: 2 }] },
             { id: 'FAM-NORTH-ELEVATION', name: 'North Elevation', summary: 'The doors and windows on the north face.',
               data: { 'Family Type': 'Elevation', 'Location / Orientation': 'North' },
@@ -897,9 +878,9 @@ window.ValeObjectLibrary_LibraryData = {
         { title : 'Products: bought in, recorded once',
           text  : 'A Product is bought in or standard: a handle, a hinge, a finial. The {name} comes straight from ValeSpec, code {code}, with its supplier and the three finishes it comes in, and every door simply points at it.',
           show  : 'assembly', reveal: ['PRD-VG-IRN0001'], select: 'PRD-VG-IRN0001', focus: 'twins', panel: 'data' },
-        { title : 'Resources: define once, use everywhere',
-          text  : '{name} is defined once and used by {definitions} different objects in {placements} places. Change it here and every one of them follows.',
-          show  : 'assembly', select: 'RES-MAT-ACCOYA', reveal: ['RES-MAT-ACCOYA'], focus: 'uses' },
+        { title : 'Resources sit on the part that uses them',
+          text  : 'Open the Door Stile and its own resources appear: the profile, the timber, and the Vale paint card. The Door Assembly does not repeat them. Each resource keeps its attributes — colour, cost, supplier — and every part that needs Vale White names ValePaintFinish__no01-ValeWhite__.',
+          show  : 'assembly', reveal: ['ASM-DOOR-LEAF'], select: 'CMP-DOOR-STILE', focus: 'selection', panel: 'uses' },
         { title : 'Totals roll up on their own',
           text  : 'Quantities multiply down the tree, so the Scheme always knows its totals: {total} hinges across every door leaf and window, ready for costing, ordering and manufacture.',
           show  : 'assembly', reveal: ['PRD-VG-IRN0101'], select: 'PRD-VG-IRN0101', focus: 'twins' },
@@ -907,14 +888,14 @@ window.ValeObjectLibrary_LibraryData = {
           text  : 'The Configuration Engine keeps every option buildable. These door rules are ValeSpec\'s own: a wide panel needs the Senior Technical Manager\'s approval, a very tall door a Senior Architect\'s. Any object can also carry its CAD, SketchUp models, data sheets and photographs.',
           show  : 'assembly', select: 'ASM-DOOR', focus: 'selection', panel: 'rules' },
         { title : 'The library behind every scheme',
-          text  : 'Behind every Scheme sits the whole Object Library: {records} records in {categories} categories, from classical columns to cabin hooks, finials and crestings. A Scheme simply picks from it.',
+          text  : 'Behind every Scheme sits the whole Object Library: {records} records in {categories} collections, from classical columns to cabin hooks, finials and crestings. A Scheme simply picks from it.',
           view  : 'library', show: 'family', select: 'LIBRARY', focus: 'all', dim: false },
         { title : 'Every record, ready for the next scheme',
           text  : '{name} ({code}) is one of {siblings} roof finials in the library. Orangery Option 01 uses {schemeTotal}; the rest are ready for the next scheme, with their codes and data already in place.',
           view  : 'library', show: 'family', reveal: ['PRD-VG726'], select: 'PRD-VG726', focus: 'parent' },
         { title : 'The whole system on one canvas',
-          text  : 'Every object and every link, on one canvas. Scroll to zoom, drag to pan, click any box to see what it holds, switch between the Scheme and the whole Library at the top, or press F to fit everything back on screen.',
-          show  : 'all', links: true, focus: 'all' }
+          text  : 'Every object on one canvas. Scroll to zoom, drag to pan, click a Component, Product or Assembly to see the resources attached to that level, or open Resource schemes for the costing blocks. Press F to fit everything back on screen.',
+          show  : 'all', focus: 'all' }
     ]
     // endregion ---------------------------------------------------------------
 };

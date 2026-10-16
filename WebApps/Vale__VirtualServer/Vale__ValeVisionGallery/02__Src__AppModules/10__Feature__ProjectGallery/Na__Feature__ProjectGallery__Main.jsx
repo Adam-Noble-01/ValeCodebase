@@ -23,7 +23,7 @@
 //     Blockout Models: Blockout only (behind its warning banner)
 //     Max Models: MaxModel only
 // - Shows warning banner when in Blockout mode
-// - Designers and Concept Artists open on My Projects, with a My Projects /
+// - Employee-level Designers and Concept Artists open on My Projects, with a My Projects /
 //   All Projects button (Na__Feature__ProjectGallery__MyProjects.js), once a
 //   project names them; until then they see every project, with no button
 // - Supports filtering by concept artist and designer via productionData fields

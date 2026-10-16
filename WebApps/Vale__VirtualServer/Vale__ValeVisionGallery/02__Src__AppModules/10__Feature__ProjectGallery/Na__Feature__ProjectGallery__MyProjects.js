@@ -10,11 +10,13 @@
 // CREATED    : 13-Oct-2026
 //
 // DESCRIPTION:
-// - Designers and Concept Artists (the account's Role in the user register)
-//   open the gallery on My Projects: the projects naming them as designer OR
-//   concept artist (Dan also sees the Martin jobs he drew the concept for).
-//   The My Projects / All Projects button flicks between the two. Everyone
-//   else sees every project and has no button.
+// - Employee-level Designers and Concept Artists (the account's Role in the
+//   user register) open the gallery on My Projects: the projects naming them
+//   as designer OR concept artist (Dan also sees the Martin jobs he drew the
+//   concept for). The My Projects / All Projects button flicks between the
+//   two. Everyone else sees every project and has no button.
+// - Management and App Admins never get it, whatever their Role says: they
+//   oversee every job.
 // - Only once a job is attributed to them. A Designer or Concept Artist whom
 //   no project names (Diane, who takes ad hoc jobs; a new starter) has nothing
 //   to filter to, so they are treated like everyone else: every project, no
@@ -34,6 +36,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Oct-2026 - Version 1.2.0
+// - Management and App Admins always see every project, with no button: the
+//   filter is for Employee-level Designers and Concept Artists only (James, a
+//   manager whose register Role read Designer, was opening on My Projects).
+//
 // 15-Oct-2026 - Version 1.1.0
 // - My Projects only applies once a job names the person: with none, they see
 //   every project and no button (was an empty My Projects for Diane, Andy and
@@ -108,6 +115,7 @@
             };
         }
 
+        if (login.HasLevel('Management')) return null;                       // <-- Management and App Admins: all projects, whatever their role
         if (!MY_PROJECTS_CONFIG.roles.includes(normaliseMyProjectsName(user.role))) return null;   // <-- Everyone else: all projects
 
         const listedName  = nameByUserCode ? nameByUserCode[user.code] : '';

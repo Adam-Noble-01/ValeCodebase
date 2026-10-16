@@ -1,0 +1,2533 @@
+/* =============================================================================
+ * VALE OBJECT LIBRARY - DEMO STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : ValeObjectLibrary__DemoStylesheet__.css
+ * NAMESPACE  : ValeObjectLibrary
+ * MODULE     : Presentation - Object Library System Architecture
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for the Vale Object Library system architecture canvas
+ * CREATED    : 16-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Vale brand tokens, full-screen canvas, inspector, tour and responsive layout
+ * - Loaded by ValeObjectLibrary__Demo__2.0.0__.html
+ * - Colours, type and spacing come from the :root tokens in this file
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 16-Oct-2026 - Version 2.0.0
+ * - Stylesheet separated from ValeObjectLibrary__Demo__2.0.0__.html
+ *
+ * ============================================================================= */
+
+/* #region ---------------------------------------------------------------
+ * VARIABLES | Vale Brand Tokens (matches Lantern Designer / ValeVision3D)
+ * ------------------------------------------------------------------- */
+:root {
+    --Vale_PrimaryBrand                 : #172b3a;
+    --Vale_PrimaryBrand_Dark            : #0f1e28;
+    --Vale_PrimaryBrand_Hover           : #24425a;
+    --Vale_AccentBlue                   : #3498db;
+    --Vale_BackgroundPage               : #f8f9fa;
+    --Vale_BackgroundWhite              : #ffffff;
+    --Vale_BorderColour                 : #e2e8f0;
+    --Vale_HoverColour                  : #edf2f7;
+    --Vale_TextPrimary                  : #172b3a;
+    --Vale_TextSecondary                : #34495e;
+    --Vale_TextMuted                    : #5d6d7c;
+
+    --Vale_HeaderHeight                 : 60px;
+    --Vale_FontFamily                   : 'Segoe UI', 'Open Sans', system-ui, -apple-system, sans-serif;
+    --Vale_FontWeight_SemiBold          : 600;
+
+    --Canvas_Background                 : #f3f6f8;
+    --Canvas_GridMinor                  : #e6ebf0;
+    --Canvas_GridMajor                  : #d6dee6;
+    --Canvas_Link                       : #b2bfcb;
+    --Canvas_CardBorder                 : #d2dbe4;
+    --Canvas_CardHover                  : #8c9eb0;
+    --Canvas_Strip                      : rgba(255, 255, 255, 0.94);
+
+    --Inspector_Width                   : 384px;
+    --Strip_Height                      : 46px;
+
+    /* Tier colours - overwritten at start-up from the data file */
+    --Tier_scheme                       : #4a3aa7;
+    --Tier_family                       : #2a78d6;
+    --Tier_assembly                     : #1baf7a;
+    --Tier_component                    : #eda100;
+    --Tier_product                      : #e34948;
+    --Tier_resource                     : #008300;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * BASE | Page
+ * ------------------------------------------------------------------- */
+* {
+    box-sizing                          : border-box;
+}
+
+html, body {
+    height                              : 100%;
+    margin                              : 0;
+}
+
+body {
+    font-family                         : var(--Vale_FontFamily);
+    color                               : var(--Vale_TextPrimary);
+    background                          : var(--Vale_BackgroundPage);
+    overflow                            : hidden;
+    -webkit-font-smoothing              : antialiased;
+}
+
+button {
+    font-family                         : inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline                             : 2px solid var(--Vale_AccentBlue);
+    outline-offset                      : 2px;
+}
+
+.icon {
+    width                               : 16px;
+    height                              : 16px;
+    flex                                : none;
+    fill                                : none;
+    stroke                              : currentColor;
+    stroke-width                        : 2;
+    stroke-linecap                      : round;
+    stroke-linejoin                     : round;
+}
+
+kbd {
+    display                             : inline-block;
+    font                                : 600 11px/18px var(--Vale_FontFamily);
+    padding                             : 0 6px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-bottom-width                 : 2px;
+    border-radius                       : 5px;
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_TextPrimary);
+    white-space                         : nowrap;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * COMPONENT | Vale App Header (matches VghLantern__UiFeature__Styles__AppHeader__)
+ * ------------------------------------------------------------------- */
+.app-header {
+    position                            : fixed;
+    top                                 : 0;
+    left                                : 0;
+    right                               : 0;
+    height                              : var(--Vale_HeaderHeight);
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 16px;
+    padding                             : 0 18px 0 20px;
+    background                          : var(--Vale_BackgroundWhite);
+    border-bottom                       : 2px solid var(--Vale_PrimaryBrand);
+    box-shadow                          : 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index                             : 100;
+}
+
+.app-header__logo {
+    height                              : 40px;
+    width                               : auto;
+    display                             : block;
+}
+
+.app-header__divider {
+    width                               : 1px;
+    height                              : 30px;
+    background                          : var(--Vale_BorderColour);
+    flex                                : none;
+}
+
+.app-header__titles {
+    display                             : flex;
+    flex                                : none;
+    flex-direction                      : column;
+    line-height                         : 1.2;
+}
+
+.app-header__title {
+    margin                              : 0;
+    font-size                           : 20px;
+    font-weight                         : var(--Vale_FontWeight_SemiBold);
+    color                               : var(--Vale_PrimaryBrand);
+    white-space                         : nowrap;
+}
+
+.app-header__subtitle {
+    font-size                           : 12.5px;
+    color                               : var(--Vale_TextMuted);
+    white-space                         : nowrap;
+}
+
+.version-chip {
+    display                             : inline-block;
+    margin-left                         : 4px;
+    padding                             : 0 7px;
+    border-radius                       : 999px;
+    background                          : var(--Vale_HoverColour);
+    color                               : var(--Vale_TextSecondary);
+    font-size                           : 11px;
+    font-weight                         : 600;
+    line-height                         : 18px;
+}
+
+.app-header__spacer {
+    flex                                : 1 1 auto;
+}
+
+.app-header > .btn,
+.app-header__logo {
+    flex                                : none;
+}
+
+.view-switch {
+    display                             : inline-flex;
+    flex                                : none;
+    padding                             : 3px;
+    border-radius                       : 10px;
+    background                          : var(--Vale_HoverColour);
+}
+
+.view-switch__btn {
+    display                             : inline-flex;
+    align-items                         : center;
+    gap                                 : 7px;
+    height                              : 32px;
+    padding                             : 0 14px;
+    border                              : none;
+    border-radius                       : 8px;
+    background                          : transparent;
+    color                               : var(--Vale_TextSecondary);
+    font-size                           : 13.5px;
+    font-weight                         : 600;
+    white-space                         : nowrap;
+    cursor                              : pointer;
+}
+
+.view-switch__btn:hover {
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+/* The Vale graphics: the pavilion mark for the Scheme, the box for the library */
+.view-switch__icon {
+    flex                                : none;
+    width                               : 20px;
+    height                              : 20px;
+    opacity                             : 0.75;
+}
+
+.view-switch__btn:hover .view-switch__icon,
+.view-switch__btn.is-on .view-switch__icon {
+    opacity                             : 1;
+}
+
+.view-switch__short {
+    display                             : none;
+}
+
+.view-switch__btn.is-on {
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_PrimaryBrand);
+    box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.16);
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * COMPONENT | Buttons
+ * ------------------------------------------------------------------- */
+.btn {
+    display                             : inline-flex;
+    align-items                         : center;
+    gap                                 : 8px;
+    height                              : 38px;
+    padding                             : 0 14px;
+    border                              : 1px solid transparent;
+    border-radius                       : 10px;
+    font-size                           : 14px;
+    font-weight                         : 600;
+    white-space                         : nowrap;
+    cursor                              : pointer;
+    transition                          : background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn--primary {
+    background                          : var(--Vale_PrimaryBrand);
+    color                               : #ffffff;
+}
+
+.btn--primary:hover {
+    background                          : var(--Vale_PrimaryBrand_Hover);
+}
+
+.btn--quiet {
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_PrimaryBrand);
+    border-color                        : var(--Vale_BorderColour);
+}
+
+.btn--quiet:hover {
+    background                          : var(--Vale_HoverColour);
+}
+
+.btn--icon {
+    width                               : 38px;
+    padding                             : 0;
+    justify-content                     : center;
+}
+
+.btn--light {
+    background                          : #ffffff;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.btn--light:hover {
+    background                          : #e8eef4;
+}
+
+.btn--ghost-light {
+    background                          : transparent;
+    color                               : #ffffff;
+    border-color                        : rgba(255, 255, 255, 0.35);
+}
+
+.btn--ghost-light:hover {
+    background                          : rgba(255, 255, 255, 0.1);
+}
+
+.btn--block {
+    width                               : 100%;
+    justify-content                     : center;
+    margin-top                          : 10px;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * COMPONENT | Search
+ * ------------------------------------------------------------------- */
+.search {
+    position                            : relative;
+    flex                                : 0 1 340px;                     /* <-- The search box gives way first when the header is tight */
+    min-width                           : 150px;
+}
+
+.search__icon {
+    position                            : absolute;
+    left                                : 11px;
+    top                                 : 50%;
+    transform                           : translateY(-50%);
+    color                               : var(--Vale_TextMuted);
+    pointer-events                      : none;
+}
+
+.search__input {
+    width                               : 100%;
+    height                              : 38px;
+    padding                             : 0 36px 0 34px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 10px;
+    background                          : #f7f9fb;
+    color                               : var(--Vale_TextPrimary);
+    font                                : 14px var(--Vale_FontFamily);
+    outline                             : none;
+    transition                          : border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.search__input::-webkit-search-cancel-button {
+    display                             : none;
+}
+
+.search__input:focus {
+    background                          : var(--Vale_BackgroundWhite);
+    border-color                        : var(--Vale_AccentBlue);
+    box-shadow                          : 0 0 0 3px rgba(52, 152, 219, 0.18);
+}
+
+.search__kbd {
+    position                            : absolute;
+    right                               : 9px;
+    top                                 : 50%;
+    transform                           : translateY(-50%);
+    color                               : var(--Vale_TextMuted);
+    pointer-events                      : none;
+}
+
+.search__results {
+    position                            : absolute;
+    top                                 : calc(100% + 6px);
+    left                                : 0;
+    right                               : 0;
+    margin                              : 0;
+    padding                             : 6px;
+    list-style                          : none;
+    background                          : var(--Vale_BackgroundWhite);
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 12px;
+    box-shadow                          : 0 12px 32px rgba(15, 30, 40, 0.16);
+    max-height                          : 60vh;
+    overflow-y                          : auto;
+    z-index                             : 120;
+}
+
+.search__result {
+    display                             : grid;
+    grid-template-columns               : 10px 1fr auto;
+    align-items                         : center;
+    gap                                 : 10px;
+    padding                             : 8px 10px;
+    border-radius                       : 8px;
+    cursor                              : pointer;
+}
+
+.search__result.is-active,
+.search__result:hover {
+    background                          : var(--Vale_HoverColour);
+}
+
+.search__result-name {
+    display                             : block;
+    font-size                           : 14px;
+    font-weight                         : 600;
+}
+
+.search__result-meta {
+    display                             : block;
+    font-size                           : 12px;
+    color                               : var(--Vale_TextMuted);
+}
+
+.search__result-tier {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.06em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.search__empty {
+    padding                             : 10px;
+    font-size                           : 13px;
+    color                               : var(--Vale_TextMuted);
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * LAYOUT | Workspace - Canvas Beside the Inspector Panel
+ * ------------------------------------------------------------------- */
+.workspace {
+    position                            : fixed;
+    top                                 : var(--Vale_HeaderHeight);
+    left                                : 0;
+    right                               : 0;
+    bottom                              : 0;
+    display                             : flex;
+    overflow                            : hidden;
+}
+
+.canvas {
+    position                            : relative;
+    flex                                : 1 1 auto;
+    min-width                           : 0;
+    overflow                            : hidden;
+    background                          : var(--Canvas_Background);
+    user-select                         : none;
+    -webkit-user-select                 : none;
+    touch-action                        : none;
+}
+
+.chart {
+    position                            : absolute;
+    inset                               : 0;
+    width                               : 100%;
+    height                              : 100%;
+    display                             : block;
+    cursor                              : grab;
+    font-family                         : var(--Vale_FontFamily);
+}
+
+.chart.is-panning {
+    cursor                              : grabbing;
+}
+
+.fatal {
+    position                            : absolute;
+    inset                               : 0;
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : center;
+    padding                             : 40px;
+    text-align                          : center;
+    font-size                           : 16px;
+    color                               : var(--Vale_TextSecondary);
+    background                          : var(--Canvas_Background);
+    z-index                             : 50;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * CHART | Grid, Column Bands and Connectors
+ * -------------------------------------------------------------------
+ * Strokes use non-scaling-stroke so lines stay one crisp width at every
+ * zoom, the way CAD linework does.
+ * ------------------------------------------------------------------- */
+.grid-minor {
+    fill                                : none;
+    stroke                              : var(--Canvas_GridMinor);
+    stroke-width                        : 1;
+    shape-rendering                     : crispEdges;
+}
+
+.grid-major {
+    fill                                : none;
+    stroke                              : var(--Canvas_GridMajor);
+    stroke-width                        : 1;
+    shape-rendering                     : crispEdges;
+}
+
+.band {
+    opacity                             : 0.045;
+}
+
+.link {
+    fill                                : none;
+    stroke                              : var(--Canvas_Link);
+    stroke-width                        : 1.5;
+    vector-effect                       : non-scaling-stroke;
+    transition                          : stroke 0.2s, stroke-opacity 0.2s;
+}
+
+.link.is-path {
+    stroke                              : var(--Vale_PrimaryBrand);
+    stroke-width                        : 2;
+}
+
+.chart.has-focus .link:not(.is-path) {
+    stroke-opacity                      : 0.3;
+}
+
+.ref {
+    fill                                : none;
+    stroke                              : var(--Tier_resource);
+    stroke-width                        : 1.25;
+    stroke-dasharray                    : 5 4;
+    stroke-opacity                      : 0.3;
+    vector-effect                       : non-scaling-stroke;
+}
+
+.ref.is-strong {
+    stroke-width                        : 1.75;
+    stroke-opacity                      : 0.9;
+}
+
+.chart.has-focus .ref:not(.is-strong) {
+    stroke-opacity                      : 0.1;
+}
+
+/* Hundreds of dashed lines are slow to repaint: solid when zoomed far
+   out, and hidden for the moment the view is moving */
+.chart[data-lod="low"] .ref {
+    stroke-dasharray                    : none;
+}
+
+.chart.is-moving.has-many-refs .layer-refs {
+    display                             : none;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * TIERS | Ring Colours and Graphic Bubbles
+ * -------------------------------------------------------------------
+ * Each kind of thing has a Vale graphic (01_Assets), navy on white. The
+ * ring round it, in the tier's colour, is drawn HERE in CSS - never in
+ * the graphic file. --ring is set by the .tier-* class (on a chart box,
+ * a network bubble or a panel bubble) and read by whatever draws the ring.
+ * The colours themselves are the --Tier_* values above (the data's, set
+ * again from the library data at start-up).
+ * ------------------------------------------------------------------- */
+.tier-scheme    { --ring : var(--Tier_scheme); }
+.tier-family    { --ring : var(--Tier_family); }
+.tier-assembly  { --ring : var(--Tier_assembly); }
+.tier-component { --ring : var(--Tier_component); }
+.tier-product   { --ring : var(--Tier_product); }
+.tier-resource  { --ring : var(--Tier_resource); }
+.tier-library   { --ring : var(--Tier_library, var(--Vale_PrimaryBrand)); }
+.tier-category  { --ring : var(--Tier_category, #7b8794); }
+.tier-range     { --ring : var(--Tier_range, #3e5c78); }
+
+/* A graphic in a round white bubble - the strip, the panel, rows and chips */
+.glyph-bubble {
+    --bubble                            : 22px;
+    flex                                : none;
+    box-sizing                          : border-box;
+    display                             : inline-flex;
+    align-items                         : center;
+    justify-content                     : center;
+    width                               : var(--bubble);
+    height                              : var(--bubble);
+    border                              : 2px solid var(--ring, var(--Vale_PrimaryBrand));
+    border-radius                       : 50%;
+    background                          : #ffffff;
+}
+
+.glyph-bubble__img {
+    width                               : 86%;
+    height                              : 86%;
+}
+
+.chip .glyph-bubble {
+    --bubble                            : 20px;
+    border-width                        : 1.75px;
+}
+
+.tier-head .glyph-bubble {
+    --bubble                            : 24px;
+}
+
+.strip-legend .glyph-bubble {
+    --bubble                            : 26px;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * CHART | Object Boxes (Nodes)
+ * ------------------------------------------------------------------- */
+.node,
+.res {
+    cursor                              : pointer;
+}
+
+.node__body,
+.res__body {
+    transition                          : opacity 0.25s;
+}
+
+.node__card,
+.res__card {
+    fill                                : #ffffff;
+    stroke                              : var(--Canvas_CardBorder);
+    stroke-width                        : 1;
+    vector-effect                       : non-scaling-stroke;
+    transition                          : stroke 0.15s;
+}
+
+.node:hover .node__card,
+.res:hover .res__card {
+    stroke                              : var(--Canvas_CardHover);
+}
+
+.node__stack {
+    display                             : none;
+    fill                                : #ffffff;
+    stroke                              : var(--Canvas_CardBorder);
+    vector-effect                       : non-scaling-stroke;
+}
+
+.node.has-hidden .node__stack {
+    display                             : block;
+}
+
+/* The kind of thing on a box: its Vale graphic in a white bubble, ringed in the tier colour (--ring) */
+.node__bubble {
+    fill                                : #ffffff;
+    stroke                              : var(--ring, var(--Canvas_CardBorder));
+    stroke-width                        : 3;
+}
+
+.node__glyph,
+.res__attr-glyph {
+    pointer-events                      : none;
+}
+
+.node__caption,
+.res__caption {
+    font-size                           : 10px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.08em;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.res__attrs {
+    font-size                           : 10px;
+    font-weight                         : 600;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.node__name,
+.node__name-large,
+.res__name,
+.res__name-large {
+    fill                                : var(--Vale_TextPrimary);
+}
+
+.node__name-large,
+.res__name-large {
+    display                             : none;
+}
+
+.node__stats {
+    font-size                           : 12px;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.node__qty rect {
+    fill                                : #e9eef3;
+}
+
+.node__qty text {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    fill                                : var(--Vale_TextPrimary);
+}
+
+.node__copies rect {
+    fill                                : #ffffff;
+    stroke                              : var(--Vale_TextMuted);
+    stroke-width                        : 1.2;
+}
+
+.node__copies text,
+.res__count {
+    font-size                           : 10.5px;
+    font-weight                         : 700;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.node__toggle rect {
+    fill                                : var(--Vale_PrimaryBrand);
+    stroke                              : #ffffff;
+    stroke-width                        : 2;
+}
+
+.node__toggle text {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    fill                                : #ffffff;
+}
+
+.node.is-open .node__toggle rect {
+    fill                                : #ffffff;
+    stroke                              : var(--Canvas_CardHover);
+    stroke-width                        : 1;
+}
+
+.node.is-open .node__toggle text {
+    fill                                : var(--Vale_TextPrimary);
+}
+
+.node__toggle:hover rect,
+.node.is-open .node__toggle:hover rect {
+    fill                                : var(--Vale_AccentBlue);
+    stroke                              : #ffffff;
+}
+
+.node__toggle:hover text,
+.node.is-open .node__toggle:hover text {
+    fill                                : #ffffff;
+}
+
+/* Selection, reuse and search states */
+.node.is-selected .node__card,
+.res.is-selected .res__card {
+    stroke                              : var(--Vale_PrimaryBrand);
+    stroke-width                        : 2.5;
+}
+
+.node.is-selected .node__body,
+.res.is-selected .res__body {
+    filter                              : drop-shadow(0 6px 14px rgba(23, 43, 58, 0.2));
+}
+
+.node.is-twin .node__card {
+    stroke                              : var(--Vale_PrimaryBrand);
+    stroke-width                        : 1.75;
+    stroke-dasharray                    : 6 4;
+}
+
+.res.is-related .res__card {
+    stroke                              : var(--Tier_resource);
+    stroke-width                        : 1.75;
+}
+
+.node.is-match .node__card,
+.res.is-match .res__card {
+    stroke                              : #b87800;
+    stroke-width                        : 2.5;
+    stroke-dasharray                    : none;
+}
+
+.node.is-unavailable .node__card {
+    stroke-dasharray                    : 4 3;
+}
+
+.node.is-unavailable .node__name,
+.node.is-unavailable .node__name-large {
+    fill                                : var(--Vale_TextMuted);
+}
+
+.res__swatch {
+    stroke                              : rgba(23, 43, 58, 0.25);
+    stroke-width                        : 1;
+}
+
+.node.is-match-inside .node__card {
+    stroke                              : #b87800;
+    stroke-width                        : 1.75;
+    stroke-dasharray                    : 4 3;
+}
+
+.chart.has-focus .node:not(.is-related):not(.is-twin):not(.is-match):not(.is-match-inside) .node__body,
+.chart.has-focus .res:not(.is-related):not(.is-match) .res__body {
+    opacity                             : 0.24;
+}
+
+/* Level of detail - full text, a larger short name, then shapes only */
+.chart[data-lod="mid"] .node__text,
+.chart[data-lod="mid"] .res__text,
+.chart[data-lod="low"] .node__text,
+.chart[data-lod="low"] .res__text,
+.chart[data-lod="mid"] .node__toggle text,
+.chart[data-lod="low"] .node__toggle text {
+    display                             : none;
+}
+
+.chart[data-lod="mid"] .node__name-large,
+.chart[data-lod="mid"] .res__name-large {
+    display                             : block;
+}
+
+.chart[data-lod="low"] .node__stack {
+    display                             : none;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * CHART | Library Network (force-directed whole-library view)
+ * -------------------------------------------------------------------
+ * Every bubble is white with its Vale graphic inside and a ring in the
+ * tier colour. The ring is drawn here: --ring comes from the .tier-*
+ * class on the bubble (a Resource takes its swatch colour instead), the
+ * graphic files carry no colour. A closed bubble has a small navy "+N"
+ * badge on its rim; an open one has a heavier ring and no badge.
+ * ------------------------------------------------------------------- */
+.fnode .node__card {
+    fill                                : #ffffff;
+    stroke                              : var(--ring, var(--node-colour));
+    stroke-width                        : 3.5;
+}
+
+.fres .res__card {
+    fill                                : #ffffff;
+    stroke                              : var(--node-colour);
+    stroke-width                        : 3.5;
+}
+
+.fnode.is-expanded .node__card,
+.fnode.tier-library .node__card {
+    stroke-width                        : 5;
+}
+
+.fnode.tier-category .node__card,
+.fnode.tier-range .node__card {
+    stroke-width                        : 3;
+}
+
+.fnode.tier-category.is-expanded .node__card,
+.fnode.tier-range.is-expanded .node__card {
+    stroke-width                        : 4;
+}
+
+.fnode:hover .node__card {
+    stroke                              : var(--ring, var(--node-colour));
+    stroke-width                        : 5;
+}
+
+.fres:hover .res__card {
+    stroke                              : var(--node-colour);
+    stroke-width                        : 5;
+}
+
+.chart .fnode.tier-library.is-selected .node__card,
+.chart .fnode.tier-category.is-selected .node__card,
+.chart .fnode.tier-range.is-selected .node__card {
+    fill                                : var(--Vale_HoverColour);
+}
+
+.chart .fnode.tier-library.is-selected .node__card {
+    stroke-width                        : 7;
+}
+
+.fnode__graphic {
+    pointer-events                      : none;
+}
+
+/* A category's ring is coloured by what it holds - Assemblies green, Components amber, Products red - so the
+   categories can be told apart at a glance. One that holds more than one kind keeps the slate ring and draws
+   one arc per kind over it (.node__seg, each coloured by its own .tier-* class). */
+.fnode.tier-category.holds-assembly,
+.fnode.tier-range.holds-assembly  { --ring : var(--Tier_assembly); }
+.fnode.tier-category.holds-component,
+.fnode.tier-range.holds-component { --ring : var(--Tier_component); }
+.fnode.tier-category.holds-product,
+.fnode.tier-range.holds-product   { --ring : var(--Tier_product); }
+
+.fnode .node__seg {
+    fill                                : none;
+    stroke                              : var(--ring);
+    stroke-width                        : 3;
+    transform                           : rotate(-90deg);
+    transform-box                       : fill-box;
+    transform-origin                    : center;
+    pointer-events                      : none;
+}
+
+.fnode.is-expanded .node__seg {
+    stroke-width                        : 4;
+}
+
+.fnode:hover .node__seg {
+    stroke-width                        : 5;
+}
+
+.chart .fnode.is-selected .node__seg {
+    stroke-width                        : 6.5;
+}
+
+/* Network labels carry the same colour on their near edge, so a name matches its bubble */
+.float-labels.is-network .float-label--two {
+    padding-left                        : 9px;
+    box-shadow                          : inset 3px 0 0 var(--label-ring, transparent);
+}
+
+.float-labels.is-network .float-label--two.is-left {
+    padding-left                        : 6px;
+    padding-right                       : 9px;
+    box-shadow                          : inset -3px 0 0 var(--label-ring, transparent);
+}
+
+.fnode__badge rect {
+    fill                                : var(--Vale_PrimaryBrand);
+    stroke                              : #ffffff;
+    stroke-width                        : 1.5;
+}
+
+.fnode .fnode__badge .fnode__count {
+    font-size                           : 9.5px;
+}
+
+/* Selected: the ring keeps its tier colour and goes heavier (the shadow on the body lifts it off the page) */
+.chart .fnode.is-selected .node__card {
+    stroke                              : var(--ring, var(--node-colour));
+    stroke-width                        : 6.5;
+    stroke-dasharray                    : none;
+}
+
+.chart .fres.is-selected .res__card,
+.chart .fres.is-related .res__card {
+    stroke                              : var(--node-colour);
+    stroke-width                        : 4.5;
+    stroke-dasharray                    : none;
+}
+
+.chart .fnode.is-twin .node__card {
+    stroke                              : var(--ring, var(--node-colour));
+    stroke-width                        : 3.5;
+    stroke-dasharray                    : 4 3;
+}
+
+.chart .fnode.is-match .node__card,
+.chart .fres.is-match .res__card,
+.chart .fnode.is-match-inside .node__card {
+    stroke                              : #b87800;
+    stroke-width                        : 3.5;
+}
+
+.fnode__count {
+    font-size                           : 9.5px;
+    font-weight                         : 700;
+    fill                                : #ffffff;
+    pointer-events                      : none;
+}
+
+.fnode.tier-category .fnode__count,
+.fnode.tier-range .fnode__count {
+    font-size                           : 11.5px;
+}
+
+.fnode__root {
+    font-size                           : 12px;
+    font-weight                         : 700;
+    fill                                : #ffffff;
+    pointer-events                      : none;
+}
+
+.fnode__pulse {
+    fill                                : none;
+    stroke                              : var(--node-colour);
+    stroke-width                        : 2;
+    opacity                             : 0;
+    transform-box                       : fill-box;
+    transform-origin                    : center;
+    pointer-events                      : none;
+}
+
+.fnode.is-start .fnode__pulse {
+    animation                           : ValeObjectLibrary_Pulse 2.4s ease-out infinite;
+}
+
+@keyframes ValeObjectLibrary_Pulse {
+    0%   { transform: scale(1);   opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0;    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fnode.is-start .fnode__pulse {
+        animation                       : none;
+    }
+}
+
+.chart.is-network .link {
+    stroke-width                        : 1.25;
+}
+
+/* Network: with a selection, everything else fades right back */
+.chart.is-network.has-focus .node:not(.is-related):not(.is-twin):not(.is-match):not(.is-match-inside) .node__body,
+.chart.is-network.has-focus .res:not(.is-related):not(.is-match) .res__body {
+    opacity                             : 0.1;
+}
+
+.chart.is-network.has-focus .link:not(.is-path) {
+    stroke-opacity                      : 0.1;
+}
+
+.float-labels.is-network .float-label.is-dim {
+    opacity                             : 0.18;
+}
+
+.chart.is-network .ref {
+    stroke-opacity                      : 0.22;
+}
+
+.chart.is-network .ref.is-strong {
+    stroke-opacity                      : 0.85;
+}
+
+.float-labels.is-network .float-label {
+    height                              : 20px;
+    padding                             : 0 6px;
+    border-color                        : transparent;
+    background                          : rgba(255, 255, 255, 0.82);
+    box-shadow                          : none;
+    font-size                           : 11.5px;
+}
+
+.float-labels.is-network .float-label__dot {
+    display                             : none;
+}
+
+/* Two lines: a small, quiet tier caption over the name */
+.float-labels.is-network .float-label--two {
+    flex-direction                      : column;
+    align-items                         : flex-start;
+    justify-content                     : center;
+    gap                                 : 0;
+    height                              : 30px;
+    line-height                         : 1.15;
+}
+
+.float-labels.is-network .float-label--two.is-left {
+    align-items                         : flex-end;
+}
+
+.float-label__caption {
+    font-size                           : 8.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.08em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+    opacity                             : 0.85;
+}
+
+.float-label__name {
+    font-size                           : 11.5px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextPrimary);
+}
+
+.strip-legend {
+    position                            : absolute;
+    inset                               : 0;
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 18px;
+    padding                             : 0 18px;
+    font-size                           : 12px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextSecondary);
+    white-space                         : nowrap;
+    overflow                            : hidden;
+}
+
+.strip-legend__item {
+    display                             : inline-flex;
+    align-items                         : center;
+    gap                                 : 6px;
+    margin                              : 0;
+    padding                             : 4px 8px;
+    border                              : 0;
+    border-radius                       : 8px;
+    background                          : transparent;
+    color                               : inherit;
+    font                                : inherit;
+    cursor                              : pointer;
+}
+
+.strip-legend__item:hover {
+    background                          : rgba(23, 43, 58, 0.06);
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.strip-legend__item.is-on {
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_PrimaryBrand);
+    box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.16);
+}
+
+.strip-legend__graphic {
+    flex                                : none;
+    width                               : 18px;
+    height                              : 18px;
+}
+
+.strip-legend__hint {
+    margin-left                         : auto;
+    font-weight                         : 400;
+    color                               : var(--Vale_TextMuted);
+}
+
+.tool[hidden] {
+    display                             : none;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * CHART | Shared Resource Library Column
+ * ------------------------------------------------------------------- */
+.lane__frame {
+    fill                                : rgba(255, 255, 255, 0.7);
+    stroke                              : #c5d0da;
+    stroke-width                        : 1;
+    vector-effect                       : non-scaling-stroke;
+}
+
+.lane__kicker {
+    font-size                           : 10.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.1em;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.lane__title {
+    font-size                           : 18px;
+    font-weight                         : 700;
+    fill                                : var(--Vale_TextPrimary);
+}
+
+.lane__subtitle {
+    font-size                           : 12px;
+    fill                                : var(--Vale_TextMuted);
+}
+
+.lane__group {
+    font-size                           : 10.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.1em;
+    fill                                : var(--Vale_TextSecondary);
+}
+
+.chart[data-lod="mid"] .lane__kicker,
+.chart[data-lod="mid"] .lane__subtitle,
+.chart[data-lod="low"] .lane__titles {
+    display                             : none;
+}
+
+.chart[data-lod="mid"] .lane__title {
+    font-size                           : 30px;
+}
+
+.chart[data-lod="mid"] .lane__group {
+    font-size                           : 17px;
+    letter-spacing                      : 0.06em;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * OVERLAY | Tier Header Strip, Floating Labels, Hint, Issues
+ * ------------------------------------------------------------------- */
+.tier-strip {
+    position                            : absolute;
+    top                                 : 0;
+    left                                : 0;
+    right                               : 0;
+    height                              : var(--Strip_Height);
+    background                          : var(--Canvas_Strip);
+    border-bottom                       : 1px solid var(--Vale_BorderColour);
+    backdrop-filter                     : blur(6px);
+    overflow                            : hidden;
+    z-index                             : 5;
+}
+
+.tier-head {
+    position                            : absolute;
+    top                                 : 7px;
+    left                                : 0;
+    height                              : 32px;
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 7px;
+    padding                             : 0 10px;
+    border                              : 1px solid transparent;
+    border-radius                       : 9px;
+    background                          : transparent;
+    color                               : var(--Vale_TextPrimary);
+    white-space                         : nowrap;
+    overflow                            : hidden;
+    cursor                              : pointer;
+    text-align                          : left;
+}
+
+.tier-head:hover {
+    background                          : var(--Vale_BackgroundWhite);
+    border-color                        : var(--Vale_BorderColour);
+}
+
+.tier-head.is-hidden {
+    visibility                          : hidden;
+}
+
+.tier-head__dots {
+    display                             : inline-flex;
+    gap                                 : 3px;
+    flex                                : none;
+}
+
+.tier-head__dot {
+    width                               : 9px;
+    height                              : 9px;
+    border-radius                       : 50%;
+}
+
+.tier-head__text {
+    display                             : flex;
+    flex-direction                      : column;
+    min-width                           : 0;
+    line-height                         : 1.2;
+}
+
+.tier-head__meta {
+    font-size                           : 10.5px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextMuted);
+    white-space                         : pre;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+}
+
+.tier-head__label,
+.tier-head__short {
+    font-size                           : 12px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.05em;
+    text-transform                      : uppercase;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+}
+
+.tier-head__short,
+.tier-head.is-compact .tier-head__text,
+.tier-head.is-tiny .tier-head__text {
+    display                             : none;
+}
+
+.tier-head.is-compact {
+    padding                             : 0 8px;
+}
+
+.tier-head.is-compact .tier-head__short {
+    display                             : block;
+    font-size                           : 11px;
+    letter-spacing                      : 0.03em;
+}
+
+.tier-head.is-tiny {
+    padding                             : 0 6px;
+}
+
+.float-labels {
+    position                            : absolute;
+    inset                               : 0;
+    overflow                            : hidden;
+    pointer-events                      : none;
+    z-index                             : 3;
+}
+
+.float-label {
+    position                            : absolute;
+    left                                : 0;
+    top                                 : 0;
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 6px;
+    height                              : 22px;
+    padding                             : 0 8px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 6px;
+    background                          : rgba(255, 255, 255, 0.95);
+    box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.1);
+    font-size                           : 12px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextPrimary);
+    white-space                         : nowrap;
+    will-change                         : transform;
+}
+
+.float-label[hidden] {
+    display                             : none;
+}
+
+.float-label.is-dim {
+    opacity                             : 0.35;
+}
+
+.float-label__dot {
+    width                               : 8px;
+    height                              : 8px;
+    border-radius                       : 50%;
+}
+
+.hint {
+    position                            : absolute;
+    left                                : 0;
+    top                                 : 0;
+    z-index                             : 7;
+    display                             : flex;
+    flex-direction                      : column;
+    align-items                         : center;
+    width                               : 240px;
+    margin-left                         : -120px;
+    pointer-events                      : none;
+    transition                          : opacity 0.4s;
+}
+
+.hint__text {
+    margin                              : 0;
+    padding                             : 8px 12px;
+    border-radius                       : 10px;
+    background                          : rgba(23, 43, 58, 0.92);
+    color                               : #ffffff;
+    font-size                           : 13px;
+    line-height                         : 1.35;
+    text-align                          : center;
+}
+
+.hint__stem {
+    width                               : 1.5px;
+    height                              : 36px;
+    background                          : #172b3a;
+    position                            : relative;
+}
+
+.hint__stem::after {
+    content                             : '';
+    position                            : absolute;
+    left                                : 50%;
+    bottom                              : -3px;
+    width                               : 7px;
+    height                              : 7px;
+    border-radius                       : 50%;
+    background                          : #172b3a;
+    transform                           : translateX(-50%);
+}
+
+.hint.is-gone {
+    opacity                             : 0;
+    pointer-events                      : none;
+}
+
+.issues {
+    position                            : absolute;
+    left                                : 16px;
+    top                                 : calc(var(--Strip_Height) + 12px);
+    max-width                           : 440px;
+    padding                             : 10px 14px;
+    border                              : 1px solid #f0c36d;
+    border-radius                       : 10px;
+    background                          : #fff8e8;
+    color                               : #5c4000;
+    font-size                           : 12.5px;
+    line-height                         : 1.45;
+    z-index                             : 7;
+}
+
+.issues ul {
+    margin                              : 6px 0;
+    padding-left                        : 18px;
+}
+
+.issues__close {
+    border                              : none;
+    background                          : none;
+    padding                             : 0;
+    color                               : #5c4000;
+    font-weight                         : 700;
+    text-decoration                     : underline;
+    cursor                              : pointer;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * OVERLAY | View Toolbar and Navigator (CAD-style)
+ * ------------------------------------------------------------------- */
+.toolbar {
+    position                            : absolute;
+    left                                : 16px;
+    bottom                              : 16px;
+    display                             : flex;
+    flex-wrap                           : wrap;
+    align-items                         : center;
+    gap                                 : 2px;
+    max-width                           : calc(100% - 254px);
+    padding                             : 5px;
+    background                          : var(--Vale_BackgroundWhite);
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 12px;
+    box-shadow                          : 0 6px 20px rgba(15, 30, 40, 0.1);
+    z-index                             : 6;
+}
+
+.tool {
+    display                             : inline-flex;
+    align-items                         : center;
+    justify-content                     : center;
+    gap                                 : 6px;
+    height                              : 34px;
+    min-width                           : 34px;
+    padding                             : 0 7px;
+    border                              : none;
+    border-radius                       : 8px;
+    background                          : transparent;
+    color                               : var(--Vale_TextPrimary);
+    font-size                           : 13px;
+    font-weight                         : 600;
+    cursor                              : pointer;
+}
+
+.tool:hover {
+    background                          : var(--Vale_HoverColour);
+}
+
+.tool .icon {
+    width                               : 17px;
+    height                              : 17px;
+}
+
+.tool.is-on {
+    background                          : var(--Vale_PrimaryBrand);
+    color                               : #ffffff;
+}
+
+.tool--readout {
+    min-width                           : 56px;
+    font-variant-numeric                : tabular-nums;
+}
+
+.toolbar__sep {
+    width                               : 1px;
+    height                              : 22px;
+    margin                              : 0 3px;
+    background                          : var(--Vale_BorderColour);
+}
+
+.toolbar__group {
+    display                             : inline-flex;
+    align-items                         : center;
+}
+
+.toolbar__label {
+    margin                              : 0 6px 0 4px;
+    font-size                           : 12px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextMuted);
+}
+
+.segmented {
+    display                             : inline-flex;
+    padding                             : 2px;
+    border-radius                       : 9px;
+    background                          : var(--Vale_HoverColour);
+}
+
+.segmented .tool {
+    height                              : 30px;
+    font-size                           : 12.5px;
+}
+
+.segmented .tool.is-on {
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_PrimaryBrand);
+    box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.16);
+}
+
+.navigator {
+    position                            : absolute;
+    right                               : 16px;
+    bottom                              : 16px;
+    width                               : 214px;
+    padding                             : 4px 6px 6px;
+    background                          : var(--Vale_BackgroundWhite);
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 12px;
+    box-shadow                          : 0 6px 20px rgba(15, 30, 40, 0.1);
+    z-index                             : 6;
+}
+
+.navigator[hidden] {
+    display                             : none;
+}
+
+.navigator__label {
+    display                             : flex;
+    justify-content                     : space-between;
+    padding                             : 2px 3px 4px;
+    font-size                           : 10.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.08em;
+    color                               : var(--Vale_TextMuted);
+}
+
+.navigator canvas {
+    display                             : block;
+    width                               : 200px;
+    height                              : 128px;
+    border-radius                       : 7px;
+    background                          : var(--Canvas_Background);
+    cursor                              : crosshair;
+    touch-action                        : none;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * OVERLAY | Guided Tour Card
+ * ------------------------------------------------------------------- */
+.tour {
+    position                            : absolute;
+    left                                : 50%;
+    bottom                              : 80px;
+    transform                           : translateX(-50%);
+    width                               : min(600px, calc(100% - 32px));
+    padding                             : 16px 20px 16px;
+    border-radius                       : 16px;
+    background                          : var(--Vale_PrimaryBrand);
+    color                               : #ffffff;
+    box-shadow                          : 0 18px 50px rgba(15, 30, 40, 0.35);
+    z-index                             : 8;
+}
+
+.tour[hidden] {
+    display                             : none;
+}
+
+.tour__top {
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : space-between;
+    font-size                           : 11.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.08em;
+    text-transform                      : uppercase;
+    color                               : rgba(255, 255, 255, 0.72);
+}
+
+.tour__close {
+    display                             : inline-flex;
+    align-items                         : center;
+    justify-content                     : center;
+    width                               : 30px;
+    height                              : 30px;
+    border                              : none;
+    border-radius                       : 8px;
+    background                          : transparent;
+    color                               : rgba(255, 255, 255, 0.85);
+    cursor                              : pointer;
+}
+
+.tour__close:hover {
+    background                          : rgba(255, 255, 255, 0.12);
+}
+
+.tour__title {
+    margin                              : 4px 0 6px;
+    font-size                           : 20px;
+    font-weight                         : 700;
+    color                               : #ffffff;
+}
+
+.tour__text {
+    margin                              : 0;
+    font-size                           : 15px;
+    line-height                         : 1.55;
+    color                               : rgba(255, 255, 255, 0.92);
+}
+
+.tour__bottom {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 10px;
+    margin-top                          : 14px;
+}
+
+.tour__progress {
+    flex                                : 1 1 auto;
+    height                              : 4px;
+    border-radius                       : 2px;
+    background                          : rgba(255, 255, 255, 0.18);
+    overflow                            : hidden;
+}
+
+.tour__progress span {
+    display                             : block;
+    height                              : 100%;
+    border-radius                       : 2px;
+    background                          : #ffffff;
+    transition                          : width 0.3s;
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * COLUMN | Attributes - JSON for the Open Level
+ * ------------------------------------------------------------------- */
+.attributes {
+    position                            : relative;
+    flex                                : 0 0 auto;
+    width                               : 460px;
+    min-width                           : 320px;
+    max-width                           : min(860px, calc(100vw - 420px));
+    display                             : flex;
+    flex-direction                      : column;
+    min-height                          : 0;
+    background                          : var(--Canvas_Background);
+    border-left                         : 1px solid var(--Vale_BorderColour);
+    z-index                             : 4;
+}
+
+.attributes__grip {
+    position                            : absolute;
+    left                                : -4px;
+    top                                 : 0;
+    bottom                              : 0;
+    width                               : 8px;
+    padding                             : 0;
+    border                              : none;
+    background                          : transparent;
+    cursor                              : ew-resize;
+    z-index                             : 6;
+}
+
+.attributes__grip::after {
+    content                             : '';
+    position                            : absolute;
+    left                                : 3px;
+    top                                 : 0;
+    bottom                              : 0;
+    width                               : 2px;
+    background                          : transparent;
+}
+
+.attributes__grip:hover::after,
+.attributes.is-resizing .attributes__grip::after {
+    background                          : var(--Tier_resource);
+}
+
+.attributes.is-resizing,
+.attributes.is-resizing * {
+    cursor                              : ew-resize;
+    user-select                         : none;
+}
+
+.attributes__bar {
+    display                             : flex;
+    align-items                         : baseline;
+    gap                                 : 12px;
+    height                              : var(--Strip_Height);
+    padding                             : 0 16px;
+    border-bottom                       : 1px solid var(--Vale_BorderColour);
+    background                          : var(--Canvas_Strip);
+}
+
+.attributes__kicker {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.12em;
+    text-transform                      : uppercase;
+    color                               : var(--Tier_resource, #008300);
+}
+
+.attributes__title {
+    min-width                           : 0;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+    white-space                         : nowrap;
+    font-size                           : 14px;
+    font-weight                         : 600;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attributes__note {
+    margin                              : 0 0 14px;
+    padding                             : 10px 12px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-left                         : 3px solid var(--Tier_resource);
+    border-radius                       : 8px;
+    background                          : var(--Vale_BackgroundWhite);
+    font-family                         : var(--Vale_FontFamily);
+    font-size                           : 12.5px;
+    line-height                         : 1.45;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.attributes__note p {
+    margin                              : 0 0 8px;
+}
+
+.attributes__note p:last-child {
+    margin-bottom                       : 0;
+}
+
+.attributes__note-title {
+    font-weight                         : 700;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attributes__body {
+    flex                                : 1 1 auto;
+    min-height                          : 0;
+    overflow                            : auto;
+    padding                             : 16px 18px 28px;
+    font                                : 12.5px/1.55 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attr-json__obj,
+.attr-json__row {
+    white-space                         : pre;
+}
+
+.attributes.is-capped .attr-json__row {
+    white-space                         : pre-wrap;
+}
+
+.attr-json__key {
+    color                               : #1d4e89;
+}
+
+button.attr-json__key {
+    padding                             : 0;
+    border                              : none;
+    background                          : transparent;
+    font                                : inherit;
+    white-space                         : pre;
+    cursor                              : pointer;
+    text-align                          : left;
+}
+
+.attr-json__arrow {
+    display                             : inline-block;
+    width                               : 1em;
+    color                               : var(--Tier_resource);
+}
+
+button.attr-json__key:hover {
+    color                               : var(--Tier_resource, #008300);
+}
+
+button.attr-json__key:hover .attr-json__arrow {
+    color                               : var(--Tier_resource, #008300);
+}
+
+.attr-json__val {
+    color                               : #172b3a;
+}
+
+.attr-json__colon {
+    color                               : var(--Vale_TextMuted);
+}
+/* #endregion --------------------------------------------------------- */
+
+.inspector {
+    position                            : relative;
+    flex                                : 0 0 var(--Inspector_Width);
+    width                               : var(--Inspector_Width);
+    display                             : flex;
+    flex-direction                      : column;
+    min-height                          : 0;
+    background                          : var(--Vale_BackgroundWhite);
+    border-left                         : 1px solid var(--Vale_BorderColour);
+    z-index                             : 9;
+    transition                          : margin-right 0.25s ease, transform 0.25s ease;
+}
+
+.workspace.is-inspector-closed .inspector {
+    margin-right                        : calc(-1 * var(--Inspector_Width));
+}
+
+.inspector__bar {
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : space-between;
+    flex                                : none;
+    height                              : var(--Strip_Height);
+    padding                             : 0 8px 0 20px;
+    border-bottom                       : 1px solid var(--Vale_BorderColour);
+}
+
+.inspector__bar-title {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.1em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.inspector__body {
+    flex                                : 1 1 auto;
+    overflow-y                          : auto;
+    padding                             : 16px 20px 32px;
+    overscroll-behavior                 : contain;
+}
+
+.inspector__open {
+    position                            : absolute;
+    top                                 : calc(var(--Strip_Height) + 10px);
+    right                               : 12px;
+    display                             : none;
+    z-index                             : 7;
+}
+
+.workspace.is-inspector-closed .inspector__open {
+    display                             : inline-flex;
+}
+
+.insp-back {
+    display                             : inline-flex;
+    align-items                         : center;
+    gap                                 : 4px;
+    margin                              : 0 0 10px -4px;
+    padding                             : 4px 6px;
+    border                              : none;
+    border-radius                       : 6px;
+    background                          : none;
+    color                               : var(--Vale_TextSecondary);
+    font-size                           : 13px;
+    font-weight                         : 600;
+    cursor                              : pointer;
+}
+
+.insp-back:hover {
+    background                          : var(--Vale_HoverColour);
+}
+
+.insp-crumbs {
+    display                             : flex;
+    flex-wrap                           : wrap;
+    gap                                 : 2px 5px;
+    margin-bottom                       : 12px;
+    font-size                           : 12px;
+    color                               : var(--Vale_TextMuted);
+}
+
+.insp-crumbs button {
+    padding                             : 0;
+    border                              : none;
+    background                          : none;
+    color                               : var(--Vale_TextSecondary);
+    font-size                           : 12px;
+    text-decoration                     : underline;
+    text-decoration-color               : rgba(52, 73, 94, 0.3);
+    text-underline-offset               : 2px;
+    cursor                              : pointer;
+}
+
+.insp-kicker {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.1em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.insp-tier {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 8px;
+    font-size                           : 11.5px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.08em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.insp-id,
+.code {
+    font                                : 600 11.5px ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    letter-spacing                      : 0;
+    text-transform                      : none;
+    color                               : var(--Vale_TextSecondary);
+    background                          : var(--Vale_HoverColour);
+    border-radius                       : 6px;
+    padding                             : 2px 6px;
+}
+
+.insp-id {
+    margin-left                         : auto;
+}
+
+.insp-title {
+    margin                              : 6px 0 4px;
+    font-size                           : 24px;
+    line-height                         : 1.2;
+    font-weight                         : 700;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.insp-lead {
+    margin                              : 0 0 8px;
+    font-size                           : 14px;
+    line-height                         : 1.55;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.dot {
+    display                             : inline-block;
+    width                               : 10px;
+    height                              : 10px;
+    border-radius                       : 50%;
+    flex                                : none;
+}
+
+.tiles {
+    display                             : grid;
+    grid-template-columns               : repeat(3, minmax(0, 1fr));
+    gap                                 : 8px;
+    margin                              : 14px 0 4px;
+}
+
+.tiles--2 {
+    grid-template-columns               : repeat(2, minmax(0, 1fr));
+}
+
+.tile {
+    min-width                           : 0;
+    padding                             : 10px 11px 9px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 10px;
+    background                          : #fbfcfd;
+}
+
+.tile__value {
+    font-size                           : 22px;
+    font-weight                         : 700;
+    line-height                         : 1.1;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.tile__label {
+    margin-top                          : 3px;
+    font-size                           : 11.5px;
+    line-height                         : 1.3;
+    color                               : var(--Vale_TextMuted);
+}
+
+.section {
+    margin-top                          : 22px;
+}
+
+.section__title {
+    display                             : flex;
+    align-items                         : baseline;
+    justify-content                     : space-between;
+    gap                                 : 8px;
+    margin                              : 0 0 8px;
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.1em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.section__note {
+    font-size                           : 11px;
+    font-weight                         : 600;
+    letter-spacing                      : 0;
+    text-transform                      : none;
+    color                               : var(--Vale_TextMuted);
+}
+
+.callout {
+    margin                              : 0;
+    padding                             : 10px 12px;
+    border-left                         : 3px solid var(--tier-colour, var(--Vale_PrimaryBrand));
+    border-radius                       : 0 8px 8px 0;
+    background                          : #f6f8fa;
+    font-size                           : 13.5px;
+    line-height                         : 1.55;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.body-text {
+    margin                              : 0 0 8px;
+    font-size                           : 13.5px;
+    line-height                         : 1.55;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.rows {
+    display                             : flex;
+    flex-direction                      : column;
+    gap                                 : 1px;
+}
+
+.row {
+    display                             : grid;
+    grid-template-columns               : 22px minmax(0, 1fr) auto;                    /* the first column holds a graphic bubble (or a plain dot) */
+    align-items                         : center;
+    gap                                 : 10px;
+    width                               : 100%;
+    padding                             : 7px 8px;
+    border                              : none;
+    border-radius                       : 8px;
+    background                          : transparent;
+    color                               : var(--Vale_TextPrimary);
+    text-align                          : left;
+    cursor                              : pointer;
+}
+
+.row:hover {
+    background                          : var(--Vale_HoverColour);
+}
+
+.row.is-current {
+    background                          : #e8f0f7;
+}
+
+.row__main {
+    min-width                           : 0;
+}
+
+.row__name {
+    display                             : block;
+    font-size                           : 13.5px;
+    font-weight                         : 600;
+    white-space                         : nowrap;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+}
+
+.row__sub {
+    display                             : block;
+    font-size                           : 11.5px;
+    color                               : var(--Vale_TextMuted);
+    white-space                         : nowrap;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+}
+
+.row__qty {
+    font-size                           : 13px;
+    font-weight                         : 700;
+    font-variant-numeric                : tabular-nums;
+}
+
+.row--legend {
+    grid-template-columns               : 22px minmax(0, 1fr) auto;
+    align-items                         : start;
+    padding                             : 8px;
+}
+
+.row--legend .dot {
+    margin-top                          : 5px;
+}
+
+.row--legend .glyph-bubble {
+    margin-top                          : 1px;
+}
+
+.row .dot {
+    justify-self                        : center;
+}
+
+.row__count {
+    padding                             : 0 8px;
+    border-radius                       : 999px;
+    background                          : var(--Vale_HoverColour);
+    font-size                           : 12px;
+    font-weight                         : 700;
+    line-height                         : 20px;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.dp {
+    width                               : 100%;
+    border-collapse                     : collapse;
+    font-size                           : 13px;
+}
+
+.dp th {
+    width                               : 44%;
+    padding                             : 7px 10px 7px 0;
+    border-top                          : 1px solid var(--Vale_BorderColour);
+    color                               : var(--Vale_TextSecondary);
+    font-weight                         : 600;
+    text-align                          : left;
+    vertical-align                      : top;
+}
+
+.dp td {
+    padding                             : 6px 0;
+    border-top                          : 1px solid var(--Vale_BorderColour);
+    color                               : var(--Vale_TextPrimary);
+    vertical-align                      : top;
+}
+
+.muted {
+    color                               : var(--Vale_TextMuted);
+}
+
+.pill {
+    display                             : inline-flex;
+    align-items                         : center;
+    padding                             : 1px 8px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 999px;
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_TextSecondary);
+    font-size                           : 12px;
+    font-weight                         : 600;
+}
+
+.chips {
+    display                             : flex;
+    flex-wrap                           : wrap;
+    gap                                 : 6px;
+}
+
+.chip {
+    display                             : inline-flex;
+    align-items                         : center;
+    gap                                 : 6px;
+    padding                             : 4px 10px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 999px;
+    background                          : var(--Vale_BackgroundWhite);
+    color                               : var(--Vale_TextPrimary);
+    font-size                           : 12.5px;
+    font-weight                         : 600;
+    cursor                              : pointer;
+}
+
+.chip:hover {
+    border-color                        : var(--Canvas_CardHover);
+}
+
+.chip .dot {
+    width                               : 8px;
+    height                              : 8px;
+}
+
+.chip--static {
+    cursor                              : default;
+}
+
+.chip--static:hover {
+    border-color                        : var(--Vale_BorderColour);
+}
+
+.chip--linked {
+    background                          : #edf7ed;
+    border-color                        : #b7dbb7;
+}
+
+.swatch {
+    display                             : inline-block;
+    width                               : 14px;
+    height                              : 12px;
+    border-radius                       : 3px;
+    border                              : 1px solid rgba(23, 43, 58, 0.25);
+    vertical-align                      : -2px;
+}
+
+.view-buttons {
+    display                             : flex;
+    flex-wrap                           : wrap;
+    gap                                 : 8px;
+}
+
+.view-buttons .btn {
+    height                              : 34px;
+    font-size                           : 13px;
+}
+
+.view-buttons .btn.is-current {
+    background                          : var(--Vale_PrimaryBrand);
+    border-color                        : var(--Vale_PrimaryBrand);
+    color                               : #ffffff;
+}
+
+.dp__extra th {
+    color                               : var(--Vale_TextMuted);
+}
+
+.chip--linked .icon {
+    width                               : 13px;
+    height                              : 13px;
+    color                               : #1d6b1d;
+}
+
+.chip-group + .chip-group {
+    margin-top                          : 10px;
+}
+
+.chip-group__label {
+    margin-bottom                       : 5px;
+    font-size                           : 12px;
+    font-weight                         : 600;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.rule {
+    margin-bottom                       : 6px;
+    padding                             : 9px 11px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 10px;
+}
+
+.rule__type {
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.06em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.rule__text {
+    margin-top                          : 2px;
+    font-size                           : 13.5px;
+    color                               : var(--Vale_TextPrimary);
+}
+
+.key-row {
+    display                             : grid;
+    grid-template-columns               : 56px minmax(0, 1fr);
+    align-items                         : center;
+    gap                                 : 10px;
+    padding                             : 5px 0;
+    font-size                           : 13px;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.key-row svg {
+    display                             : block;
+}
+
+.controls-list {
+    display                             : grid;
+    grid-template-columns               : auto minmax(0, 1fr);
+    gap                                 : 7px 12px;
+    align-items                         : center;
+    font-size                           : 13px;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.insp-foot {
+    margin-top                          : 26px;
+    padding-top                         : 12px;
+    border-top                          : 1px solid var(--Vale_BorderColour);
+    font-size                           : 12px;
+    line-height                         : 1.5;
+    color                               : var(--Vale_TextMuted);
+}
+
+.insp-foot a,
+.popover a {
+    color                               : var(--Vale_TextSecondary);
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * OVERLAY | Help Popover
+ * ------------------------------------------------------------------- */
+.popover {
+    position                            : fixed;
+    top                                 : calc(var(--Vale_HeaderHeight) + 8px);
+    right                               : 16px;
+    width                               : min(380px, calc(100vw - 32px));
+    padding                             : 16px 18px;
+    background                          : var(--Vale_BackgroundWhite);
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 14px;
+    box-shadow                          : 0 18px 50px rgba(15, 30, 40, 0.2);
+    z-index                             : 130;
+}
+
+.popover[hidden] {
+    display                             : none;
+}
+
+.popover__title {
+    margin                              : 0 0 12px;
+    font-size                           : 15px;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.popover__foot {
+    margin                              : 14px 0 0;
+    padding-top                         : 10px;
+    border-top                          : 1px solid var(--Vale_BorderColour);
+    font-size                           : 12.5px;
+    color                               : var(--Vale_TextMuted);
+}
+/* #endregion --------------------------------------------------------- */
+
+
+/* #region ---------------------------------------------------------------
+ * RESPONSIVE | Laptop, Tablet and Phone
+ * ------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+    :root {
+        --Inspector_Width               : 340px;
+    }
+
+    .app-header__subtitle {
+        display                         : none;
+    }
+}
+
+@media (max-width: 900px) {
+    .inspector {
+        position                        : absolute;
+        top                             : 0;
+        right                           : 0;
+        bottom                          : 0;
+        width                           : min(380px, 92vw);
+        box-shadow                      : -12px 0 30px rgba(15, 30, 40, 0.18);
+    }
+
+    .workspace.is-inspector-closed .inspector {
+        margin-right                    : 0;
+        transform                       : translateX(105%);
+    }
+
+    .app-header__titles,
+    .app-header__divider,
+    .navigator,
+    .tool__text,
+    .btn__text {
+        display                         : none;
+    }
+
+    .search {
+        flex                            : 1 1 auto;
+        width                           : auto;
+    }
+
+    .toolbar {
+        max-width                       : calc(100% - 32px);
+    }
+
+    .view-switch__btn {
+        padding                         : 0 10px;
+    }
+
+    .view-switch__long {
+        display                         : none;
+    }
+
+    .view-switch__short {
+        display                         : inline;
+    }
+}
+
+@media (max-width: 560px) {
+    .app-header {
+        gap                             : 8px;
+        padding                         : 0 10px;
+    }
+
+    .app-header__logo {
+        display                         : none;
+    }
+
+    .search {
+        min-width                       : 0;
+    }
+
+    .search__kbd,
+    .toolbar__label {
+        display                         : none;
+    }
+
+    .segmented .tool {
+        padding                         : 0 7px;
+    }
+
+    .hint {
+        width                           : 200px;
+        margin-left                     : -100px;
+    }
+}
+
+.workspace.is-schemes .canvas,
+.workspace.is-schemes .attributes {
+    display                             : none;
+}
+
+.schemes {
+    display                             : none;
+    flex                                : 1 1 auto;
+    min-width                           : 0;
+    overflow                            : auto;
+    background                          : var(--Canvas_Background);
+}
+
+.workspace.is-schemes .schemes {
+    display                             : block;
+}
+
+.schemes__body {
+    max-width                           : 920px;
+    margin                              : 0 auto;
+    padding                             : 36px 40px 80px;
+}
+
+.schemes__kicker {
+    margin                              : 0 0 8px;
+    font-size                           : 11px;
+    font-weight                         : 700;
+    letter-spacing                      : 0.12em;
+    text-transform                      : uppercase;
+    color                               : var(--Vale_TextMuted);
+}
+
+.schemes__title {
+    margin                              : 0 0 10px;
+    font-size                           : 28px;
+    line-height                         : 1.2;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.schemes__heading {
+    margin                              : 32px 0 8px;
+    font-size                           : 18px;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.schemes__lead {
+    margin                              : 0 0 12px;
+    font-size                           : 15px;
+    line-height                         : 1.5;
+    color                               : var(--Vale_TextSecondary);
+}
+
+.schemes__file {
+    margin                              : 0 0 8px;
+    font                                : 600 12px ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    color                               : var(--Vale_TextMuted);
+}
+
+.schemes__code {
+    margin                              : 0;
+    padding                             : 16px 18px;
+    overflow                            : auto;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 12px;
+    background                          : #ffffff;
+    font                                : 12.5px/1.55 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    color                               : var(--Vale_PrimaryBrand);
+    white-space                         : pre;
+}
+
+.paint-grid {
+    display                             : grid;
+    grid-template-columns               : repeat(auto-fill, minmax(148px, 1fr));
+    gap                                 : 8px;
+}
+
+.paint-grid--board {
+    margin-bottom                       : 8px;
+}
+
+.paint-swatch {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 8px;
+    min-width                           : 0;
+    padding                             : 6px 8px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 8px;
+    background                          : #ffffff;
+    color                               : var(--Vale_TextPrimary);
+    font                                : 600 12.5px/1.2 var(--Vale_FontFamily);
+    text-align                          : left;
+    cursor                              : pointer;
+}
+
+.paint-swatch:hover {
+    border-color                        : var(--Canvas_CardHover);
+}
+
+.paint-swatch__chip {
+    flex                                : none;
+    width                               : 18px;
+    height                              : 18px;
+    border                              : 1px solid rgba(23, 43, 58, 0.18);
+    border-radius                       : 4px;
+}
+
+.paint-swatch__no {
+    flex                                : none;
+    width                               : 18px;
+    font                                : 700 11px/1 ui-monospace, Consolas, monospace;
+    color                               : var(--Vale_TextMuted);
+}
+
+.paint-swatch__name {
+    min-width                           : 0;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+    white-space                         : nowrap;
+}
+/* #endregion --------------------------------------------------------- */

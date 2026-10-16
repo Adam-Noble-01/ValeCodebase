@@ -1,0 +1,38 @@
+{
+    "Schema__Name"         : "Paint finish",
+    "Schema__ResourceType" : "PaintFinish",
+    "Schema__Purpose"      : "One colour on the Vale Garden Houses paint card. Copy this block for a new colour. Leave the values blank until costing fills them.",
+    "Vale__PaintLibrary"   : {
+        "Resource__PaintFinish-00" : {
+            "Resource__Code"       : "ValePaintFinish__no00-Name__",
+            "Resource__Type"       : "PaintFinish",
+            "Resource__Name"       : "",
+            "Resource__Number"     : "",
+            "Resource__Attributes" : {
+                "Resource__ColourData"      : {
+                    "Paint__RGB"        : "",
+                    "Paint__RAL"        : "",
+                    "Paint__RAL__Basis" : "Nearest RAL Classic, derived from the RGB. Not a Vale specification.",
+                    "Paint__Hex"        : ""
+                },
+                "Resource__CostingData"     : {
+                    "Price__Material__Per-m2" : "",
+                    "Price__Applied__Per-m2"  : "",
+                    "Price__PerTin"           : "",
+                    "Price__TinSize"          : "2.5 L",
+                    "Price__TinCoverage"      : "",
+                    "Price__Currency"         : "GBP",
+                    "Price__DateAdded"        : "",
+                    "Price__DateReviewed"     : "",
+                    "Price__Basis"            : "Illustrative figures for the costing department, reviewed 01-Oct-2026. Not a live price book."
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "",
+                    "Procurement__Manufacturer"    : "",
+                    "Procurement__ProductLine"     : "",
+                    "Procurement__AverageLeadTime" : ""
+                }
+            }
+        }
+    }
+}

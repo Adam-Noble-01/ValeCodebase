@@ -1,0 +1,402 @@
+/* =============================================================================
+ * VALE OBJECT LIBRARY - LIBRARY RECORDS AND THE SCHEME AND LIBRARY TREES
+ * =============================================================================
+ *
+ * FILE       : ValeObjectLibrary__Model__.js
+ * NAMESPACE  : ValeObjectLibrary
+ * MODULE     : Data Model
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Library records and the scheme and library trees
+ * CREATED    : 16-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Part of the Object Library demo
+ * - Loaded by ValeObjectLibrary__Demo__2.0.0__.html
+ * - Shares state through window.ValeObjectLibrary__Modules
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 16-Oct-2026 - Version 2.0.0
+ * - Separated from ValeObjectLibrary__Demo__2.0.0__.html
+ *
+ * ============================================================================= */
+
+(function (App) {
+    'use strict';
+
+    const Data  = App.Data;
+    const Model = App.Model;
+
+    // =====================================================================
+    // REGION | Data Model - Library Records and Two Placement Trees
+    // =====================================================================
+    // A definition is one library record (a Door Assembly, a Hinge). A
+    // placement is that record at one position in a tree, with its
+    // quantity. The chart draws placements; the panel explains definitions.
+    // The same Door Assembly placed in the North and South Elevations is one
+    // definition with two placements - that is the reuse the chart shows.
+    // Two trees are built from the same definitions:
+    //   scheme  - Scheme > Families > what the example project uses
+    //   library - Object Library > Category shelves > every record, with
+    //             assemblies opening up to what they are made of
+    // =====================================================================
+
+    // FUNCTION | Report a data problem without stopping the chart
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_Issue = function (message) {
+        Model.issues.push(message);
+        console.warn('[ValeObjectLibrary] ' + message);
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Register one record from the data file as a definition
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_AddDefinition = function (record, tier) {
+        if (!record || !record.id) {
+            App.ValeObjectLibrary_Issue('A ' + tier + ' record has no id and was skipped.');
+            return null;
+        }
+        if (Model.defs.has(record.id)) {
+            App.ValeObjectLibrary_Issue('The id ' + record.id + ' is used twice - the second record was skipped.');
+            return null;
+        }
+        const def = {
+            id          : record.id,
+            tier        : tier,
+            name        : record.name || record.id,
+            summary     : record.summary || '',
+            group       : record.group || null,
+            category    : record.category || null,
+            range       : record.range || null,
+            data        : record.data || {},
+            attributes  : (record.attributes || []).map(function (attribute) {
+                return { key: attribute.key, label: attribute.label, data: Object.assign({}, attribute.data || {}) };
+            }),
+            cardOrder   : record.cardOrder || 0,
+            paintNumber : record.paintNumber || 0,
+            resourceType: record.resourceType || '',
+            params      : record.params || [],
+            uses        : (record.uses || []).slice(),
+            contains    : record.contains || [],
+            rules       : record.rules || [],
+            assets      : record.assets || [],
+            worksWith   : record.worksWith || [],
+            compatible  : new Set(),                                         // <-- worksWith, both ways round
+            containedBy : new Set(),                                         // <-- assemblies whose "contains" list this record
+            placementsIn: {},                                                // <-- per tree: every placement of this record
+            totalIn     : {},                                                // <-- per tree: quantity, all multiplied up
+            placements  : [],                                                // <-- the tree on show (see SetView)
+            users       : [],
+            totalQty    : 0
+        };
+        Model.defs.set(def.id, def);
+        return def;
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Create one placement of a definition under a parent, in one tree
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_MakePlacement = function (tree, def, parent, qty, nest) {
+        const base = parent ? parent.uid + '/' + def.id : tree.key + ':' + def.id;
+        let uid = base;
+        let copy = 2;
+        while (tree.byUid.has(uid)) {
+            uid = base + '~' + (copy++);                                     // <-- Same record twice under one parent
+        }
+        const placement = {
+            uid      : uid,
+            tree     : tree.key,
+            def      : def,
+            tier     : def.tier,
+            qty      : qty,
+            total    : (parent ? parent.total : 1) * qty,                    // <-- Quantities multiply down the tree
+            nest     : nest,
+            parent   : parent,
+            children : []
+        };
+        if (parent) {
+            parent.children.push(placement);
+        }
+        tree.byUid.set(uid, placement);
+        tree.placements.push(placement);
+        (def.placementsIn[tree.key] = def.placementsIn[tree.key] || []).push(placement);
+        return placement;
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Place one { ref, qty } entry, recursing into assemblies
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_PlaceEntry = function (tree, entry, parent, nest, chain) {
+        const ref = entry && entry.ref;
+        const def = Model.defs.get(ref);
+        if (!def) {
+            if (tree.key === 'scheme') {                                     // <-- Report once, not once per tree
+                App.ValeObjectLibrary_Issue(parent.def.name + ' (' + parent.def.id + ') contains "' + ref + '", which is not in the library.');
+            }
+            return;
+        }
+        if (def.tier !== 'assembly' && !App.ValeObjectLibrary_IsPart(def.tier)) {
+            App.ValeObjectLibrary_Issue(parent.def.name + ' contains ' + def.id + ', a ' + def.tier + ' - only Assemblies, Components and Products can be placed.');
+            return;
+        }
+        if (chain.has(def.id)) {
+            App.ValeObjectLibrary_Issue(def.id + ' ends up containing itself - the loop was cut.');
+            return;
+        }
+        const qty = Number(entry.qty) > 0 ? Number(entry.qty) : 1;
+        const placement = App.ValeObjectLibrary_MakePlacement(tree, def, parent, qty, def.tier === 'assembly' ? nest : 0);
+        if (def.tier === 'assembly') {
+            tree.maxNest = Math.max(tree.maxNest, nest);
+            const nextChain = new Set(chain);
+            nextChain.add(def.id);
+            def.contains.forEach(function (child) {
+                App.ValeObjectLibrary_PlaceEntry(tree, child, placement, nest + 1, nextChain);
+            });
+        }
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Finish a tree - what is inside each box, and the quantity totals
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_FinishTree = function (tree) {
+        (function collectInside(placement) {
+            placement.subtreeUses = new Set(placement.def.uses);
+            placement.subtreeDefs = new Set();
+            placement.children.forEach(function (child) {
+                collectInside(child);
+                placement.subtreeDefs.add(child.def.id);
+                child.subtreeUses.forEach(function (id) { placement.subtreeUses.add(id); });
+                child.subtreeDefs.forEach(function (id) { placement.subtreeDefs.add(id); });
+            });
+        })(tree.root);
+        tree.placements.forEach(function (placement) {
+            placement.def.totalIn[tree.key] = (placement.def.totalIn[tree.key] || 0) + placement.total;
+        });
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Build every definition and the placement tree from the data file
+    // ------------------------------------------------------------
+    // A Range sits between a category and its records, in whole-library
+    // view only, so one shelf does not fan every size out at once.
+    App.ValeObjectLibrary_PlaceShelfRecords = function (tree, parent, shelf) {
+        const groups = new Map();
+        const loose  = [];
+        shelf.records.forEach(function (def) {
+            if (!def.range) {
+                loose.push(def);
+                return;
+            }
+            if (!groups.has(def.range)) {
+                groups.set(def.range, []);
+            }
+            groups.get(def.range).push(def);
+        });
+        const order = shelf.ranges || [];
+        Array.from(groups.keys()).sort(function (a, b) {
+            const ia = order.indexOf(a);
+            const ib = order.indexOf(b);
+            return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib) || a.localeCompare(b);
+        }).forEach(function (name) {
+            const list = groups.get(name);
+            const slug = (parent.def.id + '-' + name).toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const rangeDef = App.ValeObjectLibrary_AddDefinition({
+                id      : 'RNG-' + slug,
+                name    : name,
+                summary : name + ' in ' + parent.def.name + '.'
+            }, 'range');
+            if (!rangeDef) {
+                return;
+            }
+            const rangePlacement = App.ValeObjectLibrary_MakePlacement(tree, rangeDef, parent, 1, 0);
+            list.forEach(function (def) {
+                App.ValeObjectLibrary_PlaceEntry(tree, { ref: def.id, qty: 1 }, rangePlacement, 0, new Set());
+            });
+        });
+        loose.forEach(function (def) {
+            App.ValeObjectLibrary_PlaceEntry(tree, { ref: def.id, qty: 1 }, parent, 0, new Set());
+        });
+    };
+
+    App.ValeObjectLibrary_BuildModel = function () {
+        (Data.resourceGroups || []).forEach(function (group) {
+            Model.groups.set(group.key, { key: group.key, singular: group.singular || group.key, field: group.field || null, items: [] });
+        });
+
+        (Data.resources || []).forEach(function (record) {
+            const def = App.ValeObjectLibrary_AddDefinition(record, 'resource');
+            if (!def) {
+                return;
+            }
+            if (!Model.groups.has(def.group)) {
+                App.ValeObjectLibrary_Issue('Resource ' + def.id + ' names the group "' + def.group + '", which is not in resourceGroups.');
+                Model.groups.set(def.group, { key: def.group, singular: def.group, field: null, items: [] });
+            }
+            Model.groups.get(def.group).items.push(def);
+        });
+        Model.groups.forEach(function (group) {
+            group.items.forEach(function (def) { Model.resources.push(def); });   // <-- Library order: group by group
+        });
+
+        (Data.library || []).forEach(function (record) {
+            if (!record || (record.tier !== 'assembly' && !App.ValeObjectLibrary_IsPart(record.tier))) {
+                App.ValeObjectLibrary_Issue('Library record ' + (record && record.id) + ' has the tier "' + (record && record.tier) + '" - use assembly, component or product.');
+                return;
+            }
+            App.ValeObjectLibrary_AddDefinition(record, record.tier);
+        });
+
+        Model.defs.forEach(function (def) {
+            def.uses = def.uses.filter(function (resourceId) {
+                const resource = Model.defs.get(resourceId);
+                if (!resource || resource.tier !== 'resource') {
+                    App.ValeObjectLibrary_Issue(def.name + ' (' + def.id + ') uses "' + resourceId + '", which is not a Resource.');
+                    return false;
+                }
+                resource.users.push(def);
+                return true;
+            });
+        });
+
+        // Which assemblies contain each record, and what works with what (both ways round)
+        Model.defs.forEach(function (def) {
+            def.contains.forEach(function (entry) {
+                const part = Model.defs.get(entry && entry.ref);
+                if (part) {
+                    part.containedBy.add(def);
+                }
+            });
+            def.worksWith.forEach(function (id) {
+                const other = Model.defs.get(id);
+                if (!other || other.tier === 'resource') {
+                    App.ValeObjectLibrary_Issue(def.name + ' (' + def.id + ') works with "' + id + '", which is not in the library.');
+                    return;
+                }
+                def.compatible.add(other.id);
+                other.compatible.add(def.id);
+            });
+        });
+
+        // Tree 1 - the example Scheme and only what it uses
+        const scheme     = Data.scheme || {};
+        const schemeTree = App.ValeObjectLibrary_NewTree('scheme');
+        const schemeDef  = App.ValeObjectLibrary_AddDefinition(Object.assign({ id: 'SCHEME', name: 'Scheme' }, scheme), 'scheme');
+        schemeTree.root  = App.ValeObjectLibrary_MakePlacement(schemeTree, schemeDef, null, 1, 0);
+        (scheme.families || []).forEach(function (record) {
+            const familyDef = App.ValeObjectLibrary_AddDefinition(record, 'family');
+            if (!familyDef) {
+                return;
+            }
+            const family = App.ValeObjectLibrary_MakePlacement(schemeTree, familyDef, schemeTree.root, 1, 0);
+            familyDef.contains.forEach(function (entry) {
+                App.ValeObjectLibrary_PlaceEntry(schemeTree, entry, family, 0, new Set());
+            });
+        });
+        App.ValeObjectLibrary_FinishTree(schemeTree);
+
+        // Tree 2 - the whole library: every record with a category sits on that
+        // shelf; records without one appear inside the assemblies that use them
+        const libraryTree = App.ValeObjectLibrary_NewTree('library');
+        const libraryDef  = App.ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, grouped by collection.' }, 'library');
+        libraryTree.root  = App.ValeObjectLibrary_MakePlacement(libraryTree, libraryDef, null, 1, 0);
+        const shelves = new Map();
+        (Data.categories || []).forEach(function (category) {
+            shelves.set(category.name, { name: category.name, summary: category.summary || '', ranges: category.ranges || [], records: [] });
+        });
+        const libraryRecords = Array.from(Model.defs.values()).filter(function (def) {
+            return def.tier === 'assembly' || App.ValeObjectLibrary_IsPart(def.tier);
+        });
+        libraryRecords.forEach(function (def) {
+            let shelf = def.category;
+            if (!shelf && !def.containedBy.size) {
+                shelf = 'Other';                                             // <-- Nothing is ever left off the library view
+            }
+            if (!shelf) {
+                return;
+            }
+            if (!shelves.has(shelf)) {
+                shelves.set(shelf, { name: shelf, summary: '', ranges: [], records: [] });
+            }
+            shelves.get(shelf).records.push(def);
+        });
+        shelves.forEach(function (shelf) {
+            if (!shelf.records.length) {
+                return;
+            }
+            const slug        = shelf.name.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const categoryDef = App.ValeObjectLibrary_AddDefinition({ id: 'CAT-' + slug, name: shelf.name, summary: shelf.summary }, 'category');
+            if (!categoryDef) {
+                return;
+            }
+            const placement = App.ValeObjectLibrary_MakePlacement(libraryTree, categoryDef, libraryTree.root, 1, 0);
+            App.ValeObjectLibrary_PlaceShelfRecords(libraryTree, placement, shelf);
+        });
+        App.ValeObjectLibrary_FinishTree(libraryTree);
+
+        // Resource reach, counted in the Scheme
+        Model.resources.forEach(function (resource) {
+            resource.placementCount = resource.users.reduce(function (sum, user) { return sum + (user.placementsIn.scheme || []).length; }, 0);
+            resource.pieceCount     = resource.users.reduce(function (sum, user) { return sum + (user.totalIn.scheme || 0); }, 0);
+        });
+    };
+
+    App.ValeObjectLibrary_NewTree = function (key) {
+        const tree = { key: key, root: null, placements: [], byUid: new Map(), maxNest: 0 };
+        Model.trees[key] = tree;
+        return tree;
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Counts the panel and the column headers quote (whole library)
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_LibraryCounts = function () {
+        const counts = { scheme: 0, family: 0, assembly: 0, component: 0, product: 0, resource: 0, library: 0, category: 0, range: 0, subassembly: 0 };
+        Model.defs.forEach(function (def) {
+            counts[def.tier] += 1;
+            if (def.tier === 'assembly' && def.containedBy.size) {
+                counts.subassembly += 1;
+            }
+        });
+        counts.records = counts.assembly + counts.component + counts.product + counts.resource;
+        return counts;
+    };
+
+    App.ValeObjectLibrary_PieceCount = function (placement) {
+        let pieces = 0;
+        (function walk(node, multiplier) {
+            node.children.forEach(function (child) {
+                const qty = multiplier * child.qty;
+                if (App.ValeObjectLibrary_IsPart(child.tier)) {
+                    pieces += qty;
+                }
+                walk(child, qty);
+            });
+        })(placement, 1);
+        return pieces;
+    };
+    // ------------------------------------------------------------
+
+    // FUNCTION | Bill of materials for one unit of a placement
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_RollUp = function (placement) {
+        const totals = new Map();
+        (function walk(node, multiplier) {
+            node.children.forEach(function (child) {
+                const qty = multiplier * child.qty;
+                if (App.ValeObjectLibrary_IsPart(child.tier)) {
+                    const entry = totals.get(child.def.id) || { def: child.def, qty: 0, first: child };
+                    entry.qty += qty;
+                    totals.set(child.def.id, entry);
+                }
+                walk(child, qty);
+            });
+        })(placement, 1);
+        return Array.from(totals.values()).sort(function (a, b) {
+            return (a.def.tier === b.def.tier ? 0 : a.def.tier === 'component' ? -1 : 1) || a.def.name.localeCompare(b.def.name);
+        });
+    };
+    // ------------------------------------------------------------
+
+    // endregion -----------------------------------------------------------
+})(window.ValeObjectLibrary__Modules);

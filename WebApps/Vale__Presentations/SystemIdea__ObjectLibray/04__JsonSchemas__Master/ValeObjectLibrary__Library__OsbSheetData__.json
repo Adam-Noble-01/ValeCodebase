@@ -23,8 +23,7 @@
                     "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__Supplier"        : "Strand Board PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }
@@ -50,8 +49,7 @@
                     "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__Supplier"        : "Strand Board PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }
@@ -77,8 +75,7 @@
                     "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__Supplier"        : "Strand Board PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }
@@ -104,8 +101,7 @@
                     "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__Supplier"        : "Strand Board PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }

@@ -5,337 +5,715 @@
         "Library__Series" : "21",
         "Resource__21_1001" : {
             "Resource__Code" : "21_1001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Scroll Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-VG-IRN0001",
             "Resource__Summary" : "Traditional lever handle.",
-            "Resource__ValeSpec" : "VG_IRN0001",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1001",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : "VG_IRN0001"
+                    "Product Code" : "VG_IRN0001",
+                    "Fixed or Selectable Sizes" : "Fixed",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD, Supplier Information"
                 }
             }
         },
         "Resource__21_1002" : {
             "Resource__Code" : "21_1002",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Plain Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-VG-IRN0002",
             "Resource__Summary" : "Simple form lever handle.",
-            "Resource__ValeSpec" : "VG_IRN0002",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1002",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : "VG_IRN0002"
+                    "Product Code" : "VG_IRN0002",
+                    "Fixed or Selectable Sizes" : "Fixed",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD, Supplier Information"
                 }
             }
         },
         "Resource__21_1003" : {
             "Resource__Code" : "21_1003",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Newton Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-VG-IRN0003",
             "Resource__Summary" : "Contemporary styled lever handle.",
-            "Resource__ValeSpec" : "VG_IRN0003",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1003",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : "VG_IRN0003"
+                    "Product Code" : "VG_IRN0003",
+                    "Fixed or Selectable Sizes" : "Fixed",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD"
                 }
             }
         },
         "Resource__21_1004" : {
             "Resource__Code" : "21_1004",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Fitzroy Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-FITZROY",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1004",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_1005" : {
             "Resource__Code" : "21_1005",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Empire Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-EMPIRE",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1005",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_1006" : {
             "Resource__Code" : "21_1006",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Lindum Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-LINDUM",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1006",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_1007" : {
             "Resource__Code" : "21_1007",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Griffin Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-GRIFFIN",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1007",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_1008" : {
             "Resource__Code" : "21_1008",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Aspen Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-ASPEN",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1008",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_1009" : {
             "Resource__Code" : "21_1009",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Lipsham Lever Handle",
             "Resource__Range" : "Door Handles",
             "Resource__LibraryId" : "PRD-LEVER-LIPSHAM",
             "Resource__Summary" : "A lever type offered in ValeSpec, with no hardware record yet.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_1009",
                     "Range" : "Door Handles",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Lever type only - no ValeSpec hardware record yet"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_2001" : {
             "Resource__Code" : "21_2001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Standard Hinge",
             "Resource__Range" : "Hinges",
             "Resource__LibraryId" : "PRD-VG-IRN0101",
             "Resource__Summary" : "A standard hinge for a door or window.",
-            "Resource__ValeSpec" : "VG_IRN0101",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_2001",
                     "Range" : "Hinges",
-                    "ValeSpec Code" : "VG_IRN0101"
+                    "Product Code" : "VG_IRN0101",
+                    "Fixed or Selectable Sizes" : "Projection: 4, 5, 6 or 8 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_2002" : {
             "Resource__Code" : "21_2002",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Standard Hinge with Urns",
             "Resource__Range" : "Hinges",
             "Resource__LibraryId" : "PRD-VG-IRN0102",
             "Resource__Summary" : "A standard hinge for a door or window, with urn finials.",
-            "Resource__ValeSpec" : "VG_IRN0102",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_2002",
                     "Range" : "Hinges",
-                    "ValeSpec Code" : "VG_IRN0102"
+                    "Product Code" : "VG_IRN0102",
+                    "Fixed or Selectable Sizes" : "Projection: 4, 5, 6 or 8 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_3001" : {
             "Resource__Code" : "21_3001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Lock",
             "Resource__Range" : "Locks",
             "Resource__LibraryId" : "PRD-LOCK",
             "Resource__Summary" : "The lock for the active door leaf.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_3001",
                     "Range" : "Locks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_4001" : {
             "Resource__Code" : "21_4001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Shoot Bolt",
             "Resource__Range" : "Shoot Bolts",
             "Resource__LibraryId" : "PRD-SHOOT-BOLT",
             "Resource__Summary" : "The bolt securing the second leaf at head and foot.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_4001",
                     "Range" : "Shoot Bolts",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Metal Finishes"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_5001" : {
             "Resource__Code" : "21_5001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "Espagnolette",
             "Resource__Range" : "Window Gear",
             "Resource__LibraryId" : "PRD-ESPAGNOLETTE",
             "Resource__Summary" : "Multi-point locking gear for a casement.",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_5001",
                     "Range" : "Window Gear",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Metal Finishes"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6001" : {
             "Resource__Code" : "21_6001",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "4\" Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-4IN",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6001",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "4 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6002" : {
             "Resource__Code" : "21_6002",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "6\" Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-6IN",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6002",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "6 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6003" : {
             "Resource__Code" : "21_6003",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "10\" Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-10IN",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6003",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "10 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6004" : {
             "Resource__Code" : "21_6004",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "12\" Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-12IN",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6004",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "12 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6005" : {
             "Resource__Code" : "21_6005",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "350mm Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-350MM",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6005",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "350mm",
+                    "Availability / Status" : "Unavailable"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6006" : {
             "Resource__Code" : "21_6006",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "400mm Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-400MM",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6006",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "400mm",
+                    "Availability / Status" : "Unavailable"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         },
         "Resource__21_6007" : {
             "Resource__Code" : "21_6007",
-            "Resource__Type" : "IronmongeryProduct",
+            "Resource__Type" : "Product",
             "Resource__Name" : "18\" Cabin Hook",
             "Resource__Range" : "Cabin Hooks",
             "Resource__LibraryId" : "PRD-CABIN-HOOK-18IN",
             "Resource__Summary" : "",
-            "Resource__ValeSpec" : "",
             "Resource__Attributes" : {
                 "Resource__ProductData" : {
                     "Vale ID" : "21_6007",
                     "Range" : "Cabin Hooks",
-                    "ValeSpec Code" : ""
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "18 inch",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Knob & Knock PLC",
+                    "Procurement__Manufacturer" : "Lever & Latch Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Unlacquered Brass, Satin Nickel, Bronze"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
                 }
             }
         }

@@ -1,0 +1,4446 @@
+{
+    "Vale__ComponentLibrary" : {
+        "Library__Name" : "Vale components",
+        "Library__Purpose" : "Every component, with procurement, profile, material, finishes, specification and size.",
+        "Resource__11_1001" : {
+            "Resource__Code" : "11_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 300mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-300-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1001",
+                    "Component Code" : "CMP-CLASSICAL-300-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1002" : {
+            "Resource__Code" : "11_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 300mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-300-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1002",
+                    "Component Code" : "CMP-CLASSICAL-300-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1003" : {
+            "Resource__Code" : "11_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 300mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-300-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1003",
+                    "Component Code" : "CMP-CLASSICAL-300-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1004" : {
+            "Resource__Code" : "11_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 250mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-250-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1004",
+                    "Component Code" : "CMP-CLASSICAL-250-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1005" : {
+            "Resource__Code" : "11_1005",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 250mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-250-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1005",
+                    "Component Code" : "CMP-CLASSICAL-250-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1006" : {
+            "Resource__Code" : "11_1006",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 250mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-250-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1006",
+                    "Component Code" : "CMP-CLASSICAL-250-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1007" : {
+            "Resource__Code" : "11_1007",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 200mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-200-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1007",
+                    "Component Code" : "CMP-CLASSICAL-200-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1008" : {
+            "Resource__Code" : "11_1008",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 200mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-200-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1008",
+                    "Component Code" : "CMP-CLASSICAL-200-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1009" : {
+            "Resource__Code" : "11_1009",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 200mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-200-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1009",
+                    "Component Code" : "CMP-CLASSICAL-200-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1010" : {
+            "Resource__Code" : "11_1010",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 175mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-175-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1010",
+                    "Component Code" : "CMP-CLASSICAL-175-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1011" : {
+            "Resource__Code" : "11_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 175mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-175-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1011",
+                    "Component Code" : "CMP-CLASSICAL-175-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1012" : {
+            "Resource__Code" : "11_1012",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 175mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-175-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1012",
+                    "Component Code" : "CMP-CLASSICAL-175-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1013" : {
+            "Resource__Code" : "11_1013",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 150mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-150-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1013",
+                    "Component Code" : "CMP-CLASSICAL-150-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1014" : {
+            "Resource__Code" : "11_1014",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 150mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-150-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1014",
+                    "Component Code" : "CMP-CLASSICAL-150-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1015" : {
+            "Resource__Code" : "11_1015",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 150mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-150-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1015",
+                    "Component Code" : "CMP-CLASSICAL-150-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1016" : {
+            "Resource__Code" : "11_1016",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 102mm Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-102-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1016",
+                    "Component Code" : "CMP-CLASSICAL-102-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1017" : {
+            "Resource__Code" : "11_1017",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 102mm Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-102-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1017",
+                    "Component Code" : "CMP-CLASSICAL-102-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1018" : {
+            "Resource__Code" : "11_1018",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Classical 102mm Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CLASSICAL-102-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1018",
+                    "Component Code" : "CMP-CLASSICAL-102-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1019" : {
+            "Resource__Code" : "11_1019",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Belton Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-BELTON-COLUMN-BASE",
+            "Resource__Summary" : "Used by both the Belton Column and the Belton Pilasters.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1019",
+                    "Component Code" : "CMP-BELTON-COLUMN-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1020" : {
+            "Resource__Code" : "11_1020",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Belton Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-BELTON-COLUMN-SHAFT",
+            "Resource__Summary" : "Used by both the Belton Column and the Belton Pilasters.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1020",
+                    "Component Code" : "CMP-BELTON-COLUMN-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1021" : {
+            "Resource__Code" : "11_1021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Belton Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-BELTON-COLUMN-CAPITAL",
+            "Resource__Summary" : "Used by both the Belton Column and the Belton Pilasters.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1021",
+                    "Component Code" : "CMP-BELTON-COLUMN-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1022" : {
+            "Resource__Code" : "11_1022",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Argory Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-ARGORY-COLUMN-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1022",
+                    "Component Code" : "CMP-ARGORY-COLUMN-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1023" : {
+            "Resource__Code" : "11_1023",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Argory Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-ARGORY-COLUMN-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1023",
+                    "Component Code" : "CMP-ARGORY-COLUMN-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1024" : {
+            "Resource__Code" : "11_1024",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Argory Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-ARGORY-COLUMN-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1024",
+                    "Component Code" : "CMP-ARGORY-COLUMN-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1025" : {
+            "Resource__Code" : "11_1025",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Stop Chamfer Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-STOP-CHAMFER-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1025",
+                    "Component Code" : "CMP-STOP-CHAMFER-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1026" : {
+            "Resource__Code" : "11_1026",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Stop Chamfer Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-STOP-CHAMFER-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1026",
+                    "Component Code" : "CMP-STOP-CHAMFER-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1027" : {
+            "Resource__Code" : "11_1027",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Stop Chamfer Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-STOP-CHAMFER-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1027",
+                    "Component Code" : "CMP-STOP-CHAMFER-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1028" : {
+            "Resource__Code" : "11_1028",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hardwick Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-HARDWICK-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1028",
+                    "Component Code" : "CMP-HARDWICK-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1029" : {
+            "Resource__Code" : "11_1029",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hardwick Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-HARDWICK-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1029",
+                    "Component Code" : "CMP-HARDWICK-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1030" : {
+            "Resource__Code" : "11_1030",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hardwick Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-HARDWICK-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1030",
+                    "Component Code" : "CMP-HARDWICK-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1031" : {
+            "Resource__Code" : "11_1031",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Cragside Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CRAGSIDE-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1031",
+                    "Component Code" : "CMP-CRAGSIDE-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1032" : {
+            "Resource__Code" : "11_1032",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Cragside Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CRAGSIDE-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1032",
+                    "Component Code" : "CMP-CRAGSIDE-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1033" : {
+            "Resource__Code" : "11_1033",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Cragside Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CRAGSIDE-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1033",
+                    "Component Code" : "CMP-CRAGSIDE-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1034" : {
+            "Resource__Code" : "11_1034",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Gothic Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-GOTHIC-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1034",
+                    "Component Code" : "CMP-GOTHIC-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1035" : {
+            "Resource__Code" : "11_1035",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Gothic Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-GOTHIC-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1035",
+                    "Component Code" : "CMP-GOTHIC-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__11_1036" : {
+            "Resource__Code" : "11_1036",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Gothic Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-GOTHIC-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "11_1036",
+                    "Component Code" : "CMP-GOTHIC-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1008" : {
+            "Resource__Code" : "13_1008",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-A-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1008",
+                    "Component Code" : "CMP-INTERNAL-A-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1009" : {
+            "Resource__Code" : "13_1009",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-A-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1009",
+                    "Component Code" : "CMP-INTERNAL-A-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1010" : {
+            "Resource__Code" : "13_1010",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-A-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1010",
+                    "Component Code" : "CMP-INTERNAL-A-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1011" : {
+            "Resource__Code" : "13_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A/B Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-AB-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1011",
+                    "Component Code" : "CMP-INTERNAL-AB-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1012" : {
+            "Resource__Code" : "13_1012",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A/B Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-AB-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1012",
+                    "Component Code" : "CMP-INTERNAL-AB-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1013" : {
+            "Resource__Code" : "13_1013",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type A/B Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-AB-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1013",
+                    "Component Code" : "CMP-INTERNAL-AB-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1014" : {
+            "Resource__Code" : "13_1014",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type 175 Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-175-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1014",
+                    "Component Code" : "CMP-INTERNAL-175-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1015" : {
+            "Resource__Code" : "13_1015",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type 175 Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-175-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1015",
+                    "Component Code" : "CMP-INTERNAL-175-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1016" : {
+            "Resource__Code" : "13_1016",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type 175 Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-175-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1016",
+                    "Component Code" : "CMP-INTERNAL-175-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1017" : {
+            "Resource__Code" : "13_1017",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type B Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-B-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1017",
+                    "Component Code" : "CMP-INTERNAL-B-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1018" : {
+            "Resource__Code" : "13_1018",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type B Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-B-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1018",
+                    "Component Code" : "CMP-INTERNAL-B-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1019" : {
+            "Resource__Code" : "13_1019",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type B Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-B-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1019",
+                    "Component Code" : "CMP-INTERNAL-B-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1020" : {
+            "Resource__Code" : "13_1020",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type C Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-C-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1020",
+                    "Component Code" : "CMP-INTERNAL-C-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1021" : {
+            "Resource__Code" : "13_1021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type C Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-C-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1021",
+                    "Component Code" : "CMP-INTERNAL-C-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1022" : {
+            "Resource__Code" : "13_1022",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type C Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-C-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1022",
+                    "Component Code" : "CMP-INTERNAL-C-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1023" : {
+            "Resource__Code" : "13_1023",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type Wrigley Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-WRIGLEY-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1023",
+                    "Component Code" : "CMP-INTERNAL-WRIGLEY-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1024" : {
+            "Resource__Code" : "13_1024",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type Wrigley Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-WRIGLEY-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1024",
+                    "Component Code" : "CMP-INTERNAL-WRIGLEY-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1025" : {
+            "Resource__Code" : "13_1025",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type Wrigley Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-WRIGLEY-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1025",
+                    "Component Code" : "CMP-INTERNAL-WRIGLEY-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1026" : {
+            "Resource__Code" : "13_1026",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type D Internal Column Base",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-D-BASE",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1026",
+                    "Component Code" : "CMP-INTERNAL-D-BASE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1027" : {
+            "Resource__Code" : "13_1027",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type D Internal Column Shaft",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-D-SHAFT",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1027",
+                    "Component Code" : "CMP-INTERNAL-D-SHAFT",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__13_1028" : {
+            "Resource__Code" : "13_1028",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Type D Internal Column Capital",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-INTERNAL-D-CAPITAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "13_1028",
+                    "Component Code" : "CMP-INTERNAL-D-CAPITAL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__14_1002" : {
+            "Resource__Code" : "14_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Architrave",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-ARCHITRAVE",
+            "Resource__Summary" : "The lowest band of the entablature, spanning between the pilasters.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "14_1002",
+                    "Component Code" : "CMP-ARCHITRAVE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Ogee"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__14_1003" : {
+            "Resource__Code" : "14_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Frieze",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-FRIEZE",
+            "Resource__Summary" : "The flat middle band of the entablature.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "14_1003",
+                    "Component Code" : "CMP-FRIEZE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sheet Materials"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "Board or Sheet Specification"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Set by the scheme"
+                }
+            }
+        },
+        "Resource__14_1004" : {
+            "Resource__Code" : "14_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Cornice",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CORNICE",
+            "Resource__Summary" : "The projecting top band of the entablature.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "14_1004",
+                    "Component Code" : "CMP-CORNICE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Cornice Profile"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1004" : {
+            "Resource__Code" : "15_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Door Stile",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-DOOR-STILE",
+            "Resource__Summary" : "The vertical member of a door leaf.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1004",
+                    "Component Code" : "CMP-DOOR-STILE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1005" : {
+            "Resource__Code" : "15_1005",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Door Head Rail",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-DOOR-HEAD-RAIL",
+            "Resource__Summary" : "The top rail of a door leaf.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1005",
+                    "Component Code" : "CMP-DOOR-HEAD-RAIL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1006" : {
+            "Resource__Code" : "15_1006",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Door Mid Rail",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-DOOR-MID-RAIL",
+            "Resource__Summary" : "The middle rail of a door leaf, between the glazing and the panel.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1006",
+                    "Component Code" : "CMP-DOOR-MID-RAIL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1007" : {
+            "Resource__Code" : "15_1007",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Door Lower Rail",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-DOOR-LOWER-RAIL",
+            "Resource__Summary" : "The bottom rail of a door leaf.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1007",
+                    "Component Code" : "CMP-DOOR-LOWER-RAIL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1008" : {
+            "Resource__Code" : "15_1008",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glazing Panel",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-GLAZING-PANEL",
+            "Resource__Summary" : "A sealed glass unit, sized to its opening.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1008",
+                    "Component Code" : "CMP-GLAZING-PANEL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "Glass Specification"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Set by the scheme",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1009" : {
+            "Resource__Code" : "15_1009",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glazing Bar",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-GLAZING-BAR",
+            "Resource__Summary" : "The bar dividing the glazing into panes.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1009",
+                    "Component Code" : "CMP-GLAZING-BAR",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Astragal"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1010" : {
+            "Resource__Code" : "15_1010",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Door Threshold",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-DOOR-THRESHOLD",
+            "Resource__Summary" : "The sill at the foot of the door opening.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1010",
+                    "Component Code" : "CMP-DOOR-THRESHOLD",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Oak"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Stains",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1011" : {
+            "Resource__Code" : "15_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Cill",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-CILL",
+            "Resource__Summary" : "The sill at the foot of a window.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1011",
+                    "Component Code" : "CMP-CILL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1012" : {
+            "Resource__Code" : "15_1012",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Mullion",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-MULLION",
+            "Resource__Summary" : "The vertical member dividing a window.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1012",
+                    "Component Code" : "CMP-MULLION",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section, Ogee"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Accoya"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__15_1013" : {
+            "Resource__Code" : "15_1013",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Window Board",
+            "Resource__Range" : "Misc Internal Joinery",
+            "Resource__LibraryId" : "CMP-WINDOW-BOARD",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "15_1013",
+                    "Component Code" : "CMP-WINDOW-BOARD",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Skirting & Bead Ltd",
+                    "Procurement__Manufacturer" : "Joinery Bits PLC"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Tulipwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Set by the scheme"
+                }
+            }
+        },
+        "Resource__16_1002" : {
+            "Resource__Code" : "16_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Rainwater Pipe Section",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-RW-PIPE-SECTION",
+            "Resource__Summary" : "A length of downpipe, cut to suit.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "16_1002",
+                    "Component Code" : "CMP-RW-PIPE-SECTION",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__17_1003" : {
+            "Resource__Code" : "17_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "16mm Tie Bar",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-TIE-BAR-16",
+            "Resource__Summary" : "The 16mm tie bar, cut to the span.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "17_1003",
+                    "Component Code" : "CMP-TIE-BAR-16",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Metal Finishes",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "Fixing Specification"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__17_1004" : {
+            "Resource__Code" : "17_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Tie Bar Soffit Termination Block",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-TIE-BAR-SOFFIT-BLOCK",
+            "Resource__Summary" : "The block that ends the tie bar at the soffit.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "17_1004",
+                    "Component Code" : "CMP-TIE-BAR-SOFFIT-BLOCK",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__17_1005" : {
+            "Resource__Code" : "17_1005",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Lighting Block Decorative Turning",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LIGHTING-BLOCK-TURNING",
+            "Resource__Summary" : "The decorative turning below the lighting block.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "17_1005",
+                    "Component Code" : "CMP-LIGHTING-BLOCK-TURNING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__17_1006" : {
+            "Resource__Code" : "17_1006",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Lighting Hook",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LIGHTING-BLOCK-HOOK",
+            "Resource__Summary" : "The hook a light fitting hangs from.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "17_1006",
+                    "Component Code" : "CMP-LIGHTING-BLOCK-HOOK",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Metal Finishes",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__18_1001" : {
+            "Resource__Code" : "18_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "44 x 94mm Upright Section",
+            "Resource__Range" : "Frame Timber Sections",
+            "Resource__LibraryId" : "CMP-UPRIGHT-44X94",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "18_1001",
+                    "Component Code" : "CMP-UPRIGHT-44X94",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "44mm",
+                    "Depth" : "94mm"
+                }
+            }
+        },
+        "Resource__18_1002" : {
+            "Resource__Code" : "18_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "56 x 94mm Upright Section",
+            "Resource__Range" : "Frame Timber Sections",
+            "Resource__LibraryId" : "CMP-UPRIGHT-56X94",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "18_1002",
+                    "Component Code" : "CMP-UPRIGHT-56X94",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "56mm",
+                    "Depth" : "94mm"
+                }
+            }
+        },
+        "Resource__18_1003" : {
+            "Resource__Code" : "18_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "56 x 138mm Upright Section",
+            "Resource__Range" : "Frame Timber Sections",
+            "Resource__LibraryId" : "CMP-UPRIGHT-56X138",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "18_1003",
+                    "Component Code" : "CMP-UPRIGHT-56X138",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "56mm",
+                    "Depth" : "138mm"
+                }
+            }
+        },
+        "Resource__18_1004" : {
+            "Resource__Code" : "18_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "44 x 94mm Split Upright Section",
+            "Resource__Range" : "Frame Timber Sections",
+            "Resource__LibraryId" : "CMP-UPRIGHT-SPLIT-44X94",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "18_1004",
+                    "Component Code" : "CMP-UPRIGHT-SPLIT-44X94",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "44mm",
+                    "Depth" : "94mm"
+                }
+            }
+        },
+        "Resource__19_1001" : {
+            "Resource__Code" : "19_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "180mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-180",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1001",
+                    "Component Code" : "CMP-CILL-NOSING-180",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1002" : {
+            "Resource__Code" : "19_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "166mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-166",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1002",
+                    "Component Code" : "CMP-CILL-NOSING-166",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1003" : {
+            "Resource__Code" : "19_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "132mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-132",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1003",
+                    "Component Code" : "CMP-CILL-NOSING-132",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1004" : {
+            "Resource__Code" : "19_1004",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "124mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-124",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1004",
+                    "Component Code" : "CMP-CILL-NOSING-124",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1005" : {
+            "Resource__Code" : "19_1005",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "122mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-122",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1005",
+                    "Component Code" : "CMP-CILL-NOSING-122",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1006" : {
+            "Resource__Code" : "19_1006",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "119mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-119",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1006",
+                    "Component Code" : "CMP-CILL-NOSING-119",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1007" : {
+            "Resource__Code" : "19_1007",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "98mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-98",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1007",
+                    "Component Code" : "CMP-CILL-NOSING-98",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1008" : {
+            "Resource__Code" : "19_1008",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "95mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-95",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1008",
+                    "Component Code" : "CMP-CILL-NOSING-95",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1009" : {
+            "Resource__Code" : "19_1009",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "85mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-85",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1009",
+                    "Component Code" : "CMP-CILL-NOSING-85",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1010" : {
+            "Resource__Code" : "19_1010",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "75mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-75",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1010",
+                    "Component Code" : "CMP-CILL-NOSING-75",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1011" : {
+            "Resource__Code" : "19_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "72mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-72",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1011",
+                    "Component Code" : "CMP-CILL-NOSING-72",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1012" : {
+            "Resource__Code" : "19_1012",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "70mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-70",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1012",
+                    "Component Code" : "CMP-CILL-NOSING-70",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1013" : {
+            "Resource__Code" : "19_1013",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "65mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-65",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1013",
+                    "Component Code" : "CMP-CILL-NOSING-65",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__19_1014" : {
+            "Resource__Code" : "19_1014",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "60mm Cill Nosing",
+            "Resource__Range" : "Cill Nosings",
+            "Resource__LibraryId" : "CMP-CILL-NOSING-60",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "19_1014",
+                    "Component Code" : "CMP-CILL-NOSING-60",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Upright Timber PLC",
+                    "Procurement__Manufacturer" : "Section Shop Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__20_1001" : {
+            "Resource__Code" : "20_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Skirting Boards",
+            "Resource__Range" : "Misc Internal Joinery",
+            "Resource__LibraryId" : "CMP-SKIRTING-BOARDS",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "20_1001",
+                    "Component Code" : "CMP-SKIRTING-BOARDS",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Skirting & Bead Ltd",
+                    "Procurement__Manufacturer" : "Joinery Bits PLC"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Tulipwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__20_1002" : {
+            "Resource__Code" : "20_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Staff Beads",
+            "Resource__Range" : "Misc Internal Joinery",
+            "Resource__LibraryId" : "CMP-STAFF-BEADS",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "20_1002",
+                    "Component Code" : "CMP-STAFF-BEADS",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Skirting & Bead Ltd",
+                    "Procurement__Manufacturer" : "Joinery Bits PLC"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Tulipwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__20_1003" : {
+            "Resource__Code" : "20_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Belton Eaves Gutter",
+            "Resource__Range" : "Eaves and Gutters",
+            "Resource__LibraryId" : "CMP-BELTON-EAVES-GUTTER",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "20_1003",
+                    "Component Code" : "CMP-BELTON-EAVES-GUTTER",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Gutter & Eaves Ltd",
+                    "Procurement__Manufacturer" : "Belton Gutter Works"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__31_1001" : {
+            "Resource__Code" : "31_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Fielded Panel",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-FIELDED-PANEL",
+            "Resource__Summary" : "The raised panel in the lower part of a door leaf.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "31_1001",
+                    "Component Code" : "CMP-FIELDED-PANEL",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Bolection"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Board Materials"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "Board or Sheet Specification"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Set by the scheme",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__31_1002" : {
+            "Resource__Code" : "31_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Vent Frame",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-VENT-FRAME",
+            "Resource__Summary" : "The opening frame of the roof vent.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "31_1002",
+                    "Component Code" : "CMP-VENT-FRAME",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Set by the scheme",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__45_1001" : {
+            "Resource__Code" : "45_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glaze Bar End Cap",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-GLAZE-BAR-END-CAP",
+            "Resource__Summary" : "The decorative end cap seated on the glaze bar cap. It takes its finish from the cap.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "45_1001",
+                    "Component Code" : "CMP-LTN-GLAZE-BAR-END-CAP",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__45_2011" : {
+            "Resource__Code" : "45_2011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glaze Bar Core",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-GLAZE-BAR-CORE",
+            "Resource__Summary" : "The standard aluminium extrusion at the heart of every glaze bar - the structural part, welded to the eaves extrusion and the ridge and hip cores.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "45_2011",
+                    "Component Code" : "CMP-LTN-GLAZE-BAR-CORE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Mill Finish",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__45_2021" : {
+            "Resource__Code" : "45_2021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glaze Bar Cap",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-GLAZE-BAR-CAP",
+            "Resource__Summary" : "The powder coated decorative aluminium cap over the glaze bar - the widest part, 40.6mm across.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "45_2021",
+                    "Component Code" : "CMP-LTN-GLAZE-BAR-CAP",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "40.6mm",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__45_2031" : {
+            "Resource__Code" : "45_2031",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Glaze Bar Trim 45mm",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-GLAZE-BAR-TRIM-45",
+            "Resource__Summary" : "The Douglas Fir internal trim under the glaze bar, 45mm deep - the standard depth.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "45_2031",
+                    "Component Code" : "CMP-LTN-GLAZE-BAR-TRIM-45",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Douglas Fir"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "45mm"
+                }
+            }
+        },
+        "Resource__46_1001" : {
+            "Resource__Code" : "46_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Head Beam",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-HEAD-BEAM",
+            "Resource__Summary" : "The Sapele head beam seated on the builder's upstand, its outer face flush with the upstand.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "46_1001",
+                    "Component Code" : "CMP-LTN-HEAD-BEAM",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "125mm",
+                    "Depth" : "96mm"
+                }
+            }
+        },
+        "Resource__46_1002" : {
+            "Resource__Code" : "46_1002",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Eaves Extrusion",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-EAVES-EXTRUSION",
+            "Resource__Summary" : "The mill aluminium eaves extrusion the glaze bar cores weld to.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "46_1002",
+                    "Component Code" : "CMP-LTN-EAVES-EXTRUSION",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Mill Finish",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__46_1003" : {
+            "Resource__Code" : "46_1003",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Lead Cover Flashing",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-LEAD-COVER-FLASHING",
+            "Resource__Summary" : "The lead flashing rebated into the head beam timber.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "46_1003",
+                    "Component Code" : "CMP-LTN-LEAD-COVER-FLASHING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Lead"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_1001" : {
+            "Resource__Code" : "47_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Block (Octagonal)",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-BLOCK",
+            "Resource__Summary" : "The octagonal Sapele block where the ridge and hip beams meet; the beams are cut flush with its faceted sides. It carries a decorative turning, which can be swapped for a hook and wiring conduit to hang a light.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_1001",
+                    "Component Code" : "CMP-LTN-RIDGE-BLOCK",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "135mm across flats",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_1011" : {
+            "Resource__Code" : "47_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge End Cap",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-END-CAP",
+            "Resource__Summary" : "Closes the end of the aluminium ridge capping, seats the ball finial and weathers the ridge end.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_1011",
+                    "Component Code" : "CMP-LTN-RIDGE-END-CAP",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Not recorded",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_2001" : {
+            "Resource__Code" : "47_2001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Core",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-CORE",
+            "Resource__Summary" : "The main structural ridge: an aluminium extrusion welded to the hip and glaze bar cores, forming the aluminium spine the rest of the ridge builds on.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2001",
+                    "Component Code" : "CMP-LTN-RIDGE-CORE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Mill Finish",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_2021" : {
+            "Resource__Code" : "47_2021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Beam",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-BEAM",
+            "Resource__Summary" : "The decorative Sapele beam seen from inside, hung beneath the aluminium core - half structure, half trim. Cut flush against the octagonal ridge block at each end.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2021",
+                    "Component Code" : "CMP-LTN-RIDGE-BEAM",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "230mm at 22.5 degrees"
+                }
+            }
+        },
+        "Resource__47_2101" : {
+            "Resource__Code" : "47_2101",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Blocking",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-BLOCKING",
+            "Resource__Summary" : "The first Sapele block, seated on the aluminium core - the substrate the ridge lead flashing is dressed over.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2101",
+                    "Component Code" : "CMP-LTN-RIDGE-BLOCKING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_2121" : {
+            "Resource__Code" : "47_2121",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Lead Flashing",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-FLASHING",
+            "Resource__Summary" : "The lead flashing that weathers the ridge - used whether or not the aluminium capping is fitted.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2121",
+                    "Component Code" : "CMP-LTN-RIDGE-FLASHING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Lead"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_2201" : {
+            "Resource__Code" : "47_2201",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Capping",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-CAPPING",
+            "Resource__Summary" : "The decorative aluminium capping that closes the top of the ridge over the lead. Finials and cresting are welded to it.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2201",
+                    "Component Code" : "CMP-LTN-RIDGE-CAPPING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__47_2202" : {
+            "Resource__Code" : "47_2202",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Ridge Capping Block",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-RIDGE-CAPPING-BLOCK",
+            "Resource__Summary" : "The second Sapele block, making a small upstand for the ridge capping to seat on.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "47_2202",
+                    "Component Code" : "CMP-LTN-RIDGE-CAPPING-BLOCK",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__48_2001" : {
+            "Resource__Code" : "48_2001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hip Core",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-HIP-CORE",
+            "Resource__Summary" : "The main structural hip: an aluminium extrusion welded to the eaves extrusion, the ridge core and the glaze bar cores.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "48_2001",
+                    "Component Code" : "CMP-LTN-HIP-CORE",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Aluminium Extrusion"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Mill Finish",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__48_2021" : {
+            "Resource__Code" : "48_2021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hip Beam",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-HIP-BEAM",
+            "Resource__Summary" : "The decorative Sapele hip beam seen from inside. Its high end is cut flush against the octagonal ridge block; its low end takes a plumb cut 18mm inboard of the eaves corner.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "48_2021",
+                    "Component Code" : "CMP-LTN-HIP-BEAM",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "205mm at 22.5 degrees"
+                }
+            }
+        },
+        "Resource__48_2101" : {
+            "Resource__Code" : "48_2101",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hip Blocking",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-HIP-BLOCKING",
+            "Resource__Summary" : "The Sapele fillet on the hip core - the substrate the hip leadwork is dressed over.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "48_2101",
+                    "Component Code" : "CMP-LTN-HIP-BLOCKING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__48_2121" : {
+            "Resource__Code" : "48_2121",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Hip Lead Flashing",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-HIP-FLASHING",
+            "Resource__Summary" : "The lead flashing that weathers the hip. Hips always have it.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "48_2121",
+                    "Component Code" : "CMP-LTN-HIP-FLASHING",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Lead"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__49_1001" : {
+            "Resource__Code" : "49_1001",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Wales Cornice",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-CORNICE-WALES",
+            "Resource__Summary" : "The standard interior cornice around the lantern upstand.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "49_1001",
+                    "Component Code" : "CMP-LTN-CORNICE-WALES",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Sapele Hardwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        },
+        "Resource__49_1011" : {
+            "Resource__Code" : "49_1011",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "Eaves Trim",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-EAVES-TRIM",
+            "Resource__Summary" : "The 18mm painted timber trim inside the eaves; its top edge follows the roof pitch.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "49_1011",
+                    "Component Code" : "CMP-LTN-EAVES-TRIM",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "Timber Section"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Tulipwood"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "18mm"
+                }
+            }
+        },
+        "Resource__49_1021" : {
+            "Resource__Code" : "49_1021",
+            "Resource__Type" : "Component",
+            "Resource__Name" : "12mm Ply Cornice Packer",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "CMP-LTN-CORNICE-PACKER",
+            "Resource__Summary" : "The plywood packer fixed behind the cornice.",
+            "Resource__Attributes" : {
+                "Resource__ComponentData" : {
+                    "Vale ID" : "49_1021",
+                    "Component Code" : "CMP-LTN-CORNICE-PACKER",
+                    "Manufacturing Method" : "Not recorded"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__ProfileData" : {
+                    "Profile" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Plywood 2440 x 1220 x 12 mm"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named",
+                    "Paint Finish" : "None named"
+                },
+                "Resource__SpecificationData" : {
+                    "Specification" : "None named"
+                },
+                "Resource__SizeData" : {
+                    "Length" : "Set by the scheme",
+                    "Width" : "Not recorded",
+                    "Depth" : "Not recorded"
+                }
+            }
+        }
+    }
+}

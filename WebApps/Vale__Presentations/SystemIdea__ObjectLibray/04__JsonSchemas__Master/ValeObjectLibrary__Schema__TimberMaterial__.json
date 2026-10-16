@@ -36,7 +36,6 @@
                 },
                 "Resource__ProcurementData" : {
                     "Procurement__Supplier"        : "",
-                    "Procurement__Manufacturer"    : "",
                     "Procurement__AverageLeadTime" : ""
                 }
             }
@@ -81,10 +80,9 @@
                     "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "West African sawmill, FAS sapele",
+                    "Procurement__Supplier"        : "Sapele Sawmills PLC",
                     "Procurement__AverageLeadTime" : "3 weeks, ex-stock in common thicknesses",
-                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Grantham"
                 }
             }
         },
@@ -128,10 +126,9 @@
                     "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "James Jones & Sons, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "British sawmill, Douglas fir",
+                    "Procurement__Supplier"        : "Fir Tree Timber PLC",
                     "Procurement__AverageLeadTime" : "2 weeks",
-                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Grantham"
                 }
             }
         },
@@ -175,10 +172,9 @@
                     "Price__Basis"                           : "Illustrative bought and machined cost for the costing department. Not a live price book."
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "American mill, tulipwood (yellow poplar)",
+                    "Procurement__Supplier"        : "Tulipwood Traders Ltd",
                     "Procurement__AverageLeadTime" : "2 weeks",
-                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Spalding"
+                    "Procurement__ProcessedAt"     : "Vale Garden Houses joinery shop, Grantham"
                 }
             }
         }

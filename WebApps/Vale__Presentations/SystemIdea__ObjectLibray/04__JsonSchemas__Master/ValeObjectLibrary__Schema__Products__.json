@@ -1,0 +1,1638 @@
+{
+    "Vale__ProductLibrary" : {
+        "Library__Name" : "Vale products",
+        "Library__Purpose" : "Every product outside the ironmongery series, with procurement, finishes, material, costing and assets.",
+        "Resource__16_1003" : {
+            "Resource__Code" : "16_1003",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Bracket",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-BRACKET",
+            "Resource__Summary" : "A bracket fixing the ring beam to the structure.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "16_1003",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Metal Finishes"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__16_1004" : {
+            "Resource__Code" : "16_1004",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Gutter Outlet",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-GUTTER-OUTLET",
+            "Resource__Summary" : "The outlet draining the gutter behind the entablature.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "16_1004",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__16_1005" : {
+            "Resource__Code" : "16_1005",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Rainwater Hopper",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-RW-HOPPER",
+            "Resource__Summary" : "The hopper head collecting water from the gutter.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "16_1005",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__16_1006" : {
+            "Resource__Code" : "16_1006",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Rainwater Pipe Elbow",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-RW-ELBOW",
+            "Resource__Summary" : "A bend in the downpipe.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "16_1006",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__16_1007" : {
+            "Resource__Code" : "16_1007",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Rainwater Pipe Wall Bracket",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-RW-WALL-BRACKET",
+            "Resource__Summary" : "Fixes the downpipe to the wall.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "16_1007",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__17_1007" : {
+            "Resource__Code" : "17_1007",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Tie Bar Quatrefoil Junction Piece",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-TIE-BAR-QUATREFOIL",
+            "Resource__Summary" : "The decorative quatrefoil piece where tie bars meet.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "17_1007",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1001" : {
+            "Resource__Code" : "22_1001",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG739A",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1001",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG739A",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1002" : {
+            "Resource__Code" : "22_1002",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Finial Wings",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG590",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1002",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG590",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1003" : {
+            "Resource__Code" : "22_1003",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Hardwick Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-HARDWICK-FINIAL",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1003",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1004" : {
+            "Resource__Code" : "22_1004",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Belton Post and Urn",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG724",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1004",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG724",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1005" : {
+            "Resource__Code" : "22_1005",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Turner Pinnacle (Timber)",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VGRJ28",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1005",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VGRJ28",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Light House, Vale White, Rice Paper, Taylor Cream, Leaden, Mudpie, Flagstone, Gardenia, Limewash, Sheepskin, Vellum, Olivine, Wild Mink, Putty, Alabaster, Conch, Sugar Beet, Portland, Porcini, Ermine, Earth, Dirty White, Dismal, Pavement, Parker, Quail, Engine Room, Grey Goblin, Nimbus, Thumper, Silver Birch, Pinafore, Burnt Ash, Tempest, Carbon, Mothwing, Catkin, Old Sage, Poachers Green, Pikes Belly, Eucalyptus, Atlantis"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1006" : {
+            "Resource__Code" : "22_1006",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Cragside (Large) Spire Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG715",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1006",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG715",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1007" : {
+            "Resource__Code" : "22_1007",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Cragside Spire Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG717",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1007",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG717",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1008" : {
+            "Resource__Code" : "22_1008",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Belton Urn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG726",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1008",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG726",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1009" : {
+            "Resource__Code" : "22_1009",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Belton Ball Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG714",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1009",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG714",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1010" : {
+            "Resource__Code" : "22_1010",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Small Ball Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG398",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1010",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG398",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1011" : {
+            "Resource__Code" : "22_1011",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG403",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1011",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG403",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1012" : {
+            "Resource__Code" : "22_1012",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Medium Acorn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG506",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1012",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG506",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1013" : {
+            "Resource__Code" : "22_1013",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Medium Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG413",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1013",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG413",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1014" : {
+            "Resource__Code" : "22_1014",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Spire Finial with VG739B Scrolls",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG401",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1014",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG401",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1015" : {
+            "Resource__Code" : "22_1015",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Small Urn",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG395",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1015",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG395",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1016" : {
+            "Resource__Code" : "22_1016",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Small Urn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG514",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1016",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG514",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1017" : {
+            "Resource__Code" : "22_1017",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Large Urn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG599",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1017",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG599",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1018" : {
+            "Resource__Code" : "22_1018",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Medium Urn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG600",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1018",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG600",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1019" : {
+            "Resource__Code" : "22_1019",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Large Acorn Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG605",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1019",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG605",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1020" : {
+            "Resource__Code" : "22_1020",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Large Ball Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG390",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1020",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG390",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__22_1021" : {
+            "Resource__Code" : "22_1021",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Cone Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-VG391",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "22_1021",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "VG391",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1001" : {
+            "Resource__Code" : "23_1001",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Belton Ridge Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG515",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1001",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG515",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1002" : {
+            "Resource__Code" : "23_1002",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Castle Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG331",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1002",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG331",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1003" : {
+            "Resource__Code" : "23_1003",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Gothic Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG337",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1003",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG337",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1004" : {
+            "Resource__Code" : "23_1004",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Double Trefoil Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG381",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1004",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG381",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1005" : {
+            "Resource__Code" : "23_1005",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Small Square Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG382",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1005",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG382",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1006" : {
+            "Resource__Code" : "23_1006",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Argyll Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG384",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1006",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG384",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1007" : {
+            "Resource__Code" : "23_1007",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Newett Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG389",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1007",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG389",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1008" : {
+            "Resource__Code" : "23_1008",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Fletcher Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG405",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1008",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG405",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1009" : {
+            "Resource__Code" : "23_1009",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Van Maurick Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG532",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1009",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG532",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1010" : {
+            "Resource__Code" : "23_1010",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Castellated Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG556",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1010",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG556",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1011" : {
+            "Resource__Code" : "23_1011",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Ridge Cresting",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG716",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1011",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG716",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1012" : {
+            "Resource__Code" : "23_1012",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Split Pattern",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG589",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1012",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG589",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1013" : {
+            "Resource__Code" : "23_1013",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Castellated Decor Strip",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG656",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1013",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG656",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1014" : {
+            "Resource__Code" : "23_1014",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "A Circled Trefoil Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG696",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1014",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG696",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1015" : {
+            "Resource__Code" : "23_1015",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Small Audi Crest",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG722",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1015",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG722",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1016" : {
+            "Resource__Code" : "23_1016",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Two Patterns Rounded",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG725",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1016",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG725",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__23_1017" : {
+            "Resource__Code" : "23_1017",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Medieval Decorative Lampshade",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-VG559",
+            "Resource__Summary" : "",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "23_1017",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VG559",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "RAL Colours"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__31_1003" : {
+            "Resource__Code" : "31_1003",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Vent Actuator",
+            "Resource__Range" : "",
+            "Resource__LibraryId" : "PRD-VENT-ACTUATOR",
+            "Resource__Summary" : "The electric opener for the roof vent.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "31_1003",
+                    "Range" : "",
+                    "Product Code" : "Not recorded",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "General Goods PLC",
+                    "Procurement__Manufacturer" : "Made Up Manufacturing Ltd"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "Nothing linked yet"
+                }
+            }
+        },
+        "Resource__50_1001" : {
+            "Resource__Code" : "50_1001",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Ball Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-LTN-BALL-FINIAL",
+            "Resource__Summary" : "Decorative aluminium ball finial. Seats on the ridge end cap at each ridge end.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "50_1001",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "50_1001",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD, 3D Models"
+                }
+            }
+        },
+        "Resource__50_2001" : {
+            "Resource__Code" : "50_2001",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Spire Finial",
+            "Resource__Range" : "Roof Finials",
+            "Resource__LibraryId" : "PRD-LTN-SPIRE-FINIAL",
+            "Resource__Summary" : "Spire finial from the Lantern Designer library.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "50_2001",
+                    "Range" : "Roof Finials",
+                    "Product Code" : "50_2001",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Urn & Acorn Ltd",
+                    "Procurement__Manufacturer" : "Finial Foundry"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "None named"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "None named"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD, 3D Models"
+                }
+            }
+        },
+        "Resource__VGH_CRS0001" : {
+            "Resource__Code" : "VGH_CRS0001",
+            "Resource__Type" : "Product",
+            "Resource__Name" : "Fleur Cresting (150mm pitch)",
+            "Resource__Range" : "Roof Crestings",
+            "Resource__LibraryId" : "PRD-LTN-FLEUR-CRESTING",
+            "Resource__Summary" : "Decorative fleur cresting repeating at 150mm along the ridge. Supplied in lengths and cut to the ridge run.",
+            "Resource__Attributes" : {
+                "Resource__ProductData" : {
+                    "Vale ID" : "VGH_CRS0001",
+                    "Range" : "Roof Crestings",
+                    "Product Code" : "VGH_CRS0001",
+                    "Fixed or Selectable Sizes" : "Not recorded",
+                    "Availability / Status" : "Available"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier" : "Crest & Trefoil Ltd",
+                    "Procurement__Manufacturer" : "Ridge Castings PLC"
+                },
+                "Resource__FinishData" : {
+                    "Finish" : "Anthracite Grey, White Painted, Weathered Lead"
+                },
+                "Resource__MaterialData" : {
+                    "Material" : "Aluminium"
+                },
+                "Resource__CostingData" : {
+                    "Cost" : "Not recorded",
+                    "Weight" : "Not recorded"
+                },
+                "Resource__AssetData" : {
+                    "CAD / 3D Asset" : "CAD"
+                }
+            }
+        }
+    }
+}

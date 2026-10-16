@@ -187,6 +187,10 @@
             body['Rule__' + String(index + 1).padStart(2, '0')] = (rule.type ? rule.type + '. ' : '') + rule.text;
             count += 1;
         });
+        (def.attributes || []).forEach(function (attribute) {
+            body[attribute.key] = attribute.data;
+            count += 1;
+        });
         if (!count && def.tier !== 'resource') {
             body.Dictionary__Values = 'None. This ' + tierName + ' has no values of its own.';
         }
@@ -715,7 +719,7 @@
     };
     // ------------------------------------------------------------
 
-    // FUNCTION | Resource schemes - the costing blocks, one resource type at a time
+    // FUNCTION | Resource schemes - grouped libraries, one colour each
     // ------------------------------------------------------------
     App.ValeObjectLibrary_RenderSchemes = function () {
         const body = Elements.schemesBody;
@@ -724,19 +728,20 @@
         }
         const E = App.ValeObjectLibrary_El;
         body.textContent = '';
+        const schemes = Data.resourceSchemes || [];
+        const byId    = {};
+        const used    = {};
+        schemes.forEach(function (scheme) { byId[scheme.id] = scheme; });
+
         const paints = Model.resources.filter(function (resource) { return resource.group === 'Paint Finishes'; })
             .sort(function (a, b) { return (a.cardOrder || 0) - (b.cardOrder || 0); });
 
-        App.ValeObjectLibrary_Put(body,
-            E('p', { class: 'schemes__kicker', text: 'Costing department' }),
-            E('h2', { class: 'schemes__title', text: 'How a resource is written' }),
-            E('p', { class: 'schemes__lead', text: 'A resource is one record with several attribute blocks. Colour, cost and procurement stay on the resource. A component stores only the code, such as ValePaintFinish__no01-ValeWhite__. Open that component to see its resources. Open the assembly around it and those resources stay with the component.' })
-        );
-        if (paints.length) {
-            body.appendChild(App.ValeObjectLibrary_SchemeSection('Vale paint card', paints.length + ' finishes', null,
-                E('div', { class: 'paint-grid paint-grid--board' }, paints.map(App.ValeObjectLibrary_PaintSwatch))));
+        function take(id) {
+            used[id] = true;
+            return byId[id];
         }
-        (Data.resourceSchemes || []).forEach(function (scheme) {
+
+        function schemeParts(scheme) {
             const parts = [
                 scheme.lead ? E('p', { class: 'schemes__lead', text: scheme.lead }) : null,
                 scheme.file ? E('p', { class: 'schemes__file', text: scheme.file }) : null
@@ -749,14 +754,118 @@
             } else if (scheme.code) {
                 parts.push(E('pre', { class: 'schemes__code' }, E('code', { text: scheme.code })));
             }
-            body.appendChild(App.ValeObjectLibrary_SchemeSection(scheme.title, scheme.sections ? scheme.sections.length + ' boards' : '', null, parts));
+            return parts;
+        }
+
+        function schemeFold(id, tone) {
+            const scheme = take(id);
+            if (!scheme) {
+                return null;
+            }
+            if (!scheme.countNoun && id === 'components') { scheme.countNoun = 'components'; }
+            if (!scheme.countNoun && id === 'products') { scheme.countNoun = 'products'; }
+            return App.ValeObjectLibrary_SchemeSection(scheme.title, App.ValeObjectLibrary_SchemeCount(scheme), null, schemeParts(scheme), tone);
+        }
+
+        const ironRanges = [
+            { band: '1', title: 'Door Handles' },
+            { band: '2', title: 'Hinges' },
+            { band: '3', title: 'Locks' },
+            { band: '4', title: 'Shoot Bolts' },
+            { band: '5', title: 'Window Gear' },
+            { band: '6', title: 'Cabin Hooks' }
+        ];
+        const iron = take('ironmongery');
+        let ironFold = null;
+        if (iron) {
+            const grouped = ironRanges.map(function (range) {
+                const sections = (iron.sections || []).filter(function (section) {
+                    return section.code && section.code.charAt(3) === range.band;   // <-- 21_1001 is a handle, 21_2001 a hinge
+                });
+                if (!sections.length) {
+                    return null;
+                }
+                return App.ValeObjectLibrary_SchemeSection(range.title, App.ValeObjectLibrary_Plural(sections.length, 'product', 'products'), null,
+                    sections.map(function (section) {
+                        return App.ValeObjectLibrary_SchemeSection(section.title, section.code, null,
+                            E('pre', { class: 'schemes__code' }, E('code', { text: section.body || section.code })));
+                    }));
+            }).filter(Boolean);
+            ironFold = App.ValeObjectLibrary_SchemeSection('Ironmongery', App.ValeObjectLibrary_SchemeCount(iron), null, [
+                iron.lead ? E('p', { class: 'schemes__lead', text: iron.lead }) : null,
+                iron.file ? E('p', { class: 'schemes__file', text: iron.file }) : null
+            ].concat(grouped), 'iron');
+        }
+
+        const paintChildren = [];
+        if (paints.length) {
+            paintChildren.push(App.ValeObjectLibrary_SchemeSection('Vale paint card', paints.length + ' finishes', null,
+                E('div', { class: 'paint-grid paint-grid--board' }, paints.map(App.ValeObjectLibrary_PaintSwatch))));
+        }
+        ['paint-skeleton', 'paint-example'].forEach(function (id) {
+            const fold = schemeFold(id);
+            if (fold) {
+                paintChildren.push(fold);
+            }
+        });
+        const paintFold = paintChildren.length
+            ? App.ValeObjectLibrary_SchemeSection('Paint finishes', paints.length ? paints.length + ' finishes' : '', null, paintChildren, 'paint')
+            : null;
+
+        const sheetIds = ['Vale__PlywoodSheetLibrary', 'Vale__AluminiumSheetLibrary', 'Vale__OsbSheetLibrary'];
+        const sheetFolds = sheetIds.map(function (id) { return schemeFold(id); }).filter(Boolean);
+        const sheetTotal = sheetIds.reduce(function (sum, id) {
+            const scheme = byId[id];
+            return sum + (scheme && scheme.sections ? scheme.sections.length : 0);
+        }, 0);
+        const sheetFold = sheetFolds.length
+            ? App.ValeObjectLibrary_SchemeSection('Sheet materials', sheetTotal ? sheetTotal + ' boards' : '', null, sheetFolds, 'sheet')
+            : null;
+        const timberFold = schemeFold('timber');
+        const materialChildren = [sheetFold, timberFold].filter(Boolean);
+        const materialsFold = materialChildren.length
+            ? App.ValeObjectLibrary_SchemeSection('Materials', '', null, materialChildren, 'material')
+            : null;
+
+        App.ValeObjectLibrary_Put(body,
+            E('p', { class: 'schemes__kicker', text: 'Costing department' }),
+            E('h2', { class: 'schemes__title', text: 'How a resource is written' }),
+            E('p', { class: 'schemes__lead', text: 'A resource is one record with several attribute blocks. Colour, cost and procurement stay on the resource. A component stores only the code, such as ValePaintFinish__no01-ValeWhite__. Open that component to see its resources. Open the assembly around it and those resources stay with the component.' }),
+            schemeFold('vale-id-series', 'ids'),
+            ironFold,
+            paintFold,
+            materialsFold,
+            schemeFold('components', 'component'),
+            schemeFold('products', 'product'),
+            schemeFold('attributes')
+        );
+        schemes.forEach(function (scheme) {
+            if (!used[scheme.id]) {
+                body.appendChild(schemeFold(scheme.id));
+            }
         });
     };
 
-    App.ValeObjectLibrary_SchemeSection = function (title, note, file, content) {
+    // SUB FUNCTION | The count on a scheme row - boards, products or series
+    App.ValeObjectLibrary_SchemeCount = function (scheme) {
+        if (!scheme.sections || !scheme.sections.length) {
+            return '';
+        }
+        const nouns = {
+            boards     : ['board', 'boards'],
+            products   : ['product', 'products'],
+            components : ['component', 'components'],
+            series     : ['series', 'series']
+        };
+        const pair = nouns[scheme.countNoun] || nouns.boards;               // <-- Sheet libraries are boards; the others name themselves
+        return App.ValeObjectLibrary_Plural(scheme.sections.length, pair[0], pair[1]);
+    };
+
+    App.ValeObjectLibrary_SchemeSection = function (title, note, file, content, tone) {
         const E = App.ValeObjectLibrary_El;
-        return E('details', { class: 'scheme-fold' },
+        return E('details', { class: 'scheme-fold' + (tone ? ' scheme-fold--' + tone : '') },
             E('summary', { class: 'scheme-fold__summary' },
+                tone ? E('span', { class: 'scheme-fold__swatch', 'aria-hidden': 'true' }) : null,
                 E('span', { class: 'scheme-fold__title', text: title }),
                 note ? E('span', { class: 'scheme-fold__note', text: note }) : null),
             E('div', { class: 'scheme-fold__body' }, content));

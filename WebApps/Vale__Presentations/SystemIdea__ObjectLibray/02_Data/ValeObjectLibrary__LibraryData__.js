@@ -192,24 +192,34 @@ window.ValeObjectLibrary_LibraryData = {
     // -------------------------------------------------------------------------
     // REGION | Categories - The Shelves of the Library View, in Order
     // -------------------------------------------------------------------------
+    // collectionFamilies groups related shelves. The library network sits
+    // each family on one arc and washes that arc in colour, so columns sit
+    // with columns and the roof sits with the roof.
+    collectionFamilies: [
+        { name: 'Columns',  colour: '#d5e4f3' },
+        { name: 'Interior', colour: '#e6e1f2' },
+        { name: 'Openings', colour: '#f6edd9' },
+        { name: 'Roof',     colour: '#dcecde' },
+        { name: 'Other',    colour: '#e4eaef' }
+    ],
     categories: [
-        { name: 'Roof Lantern',          summary: 'The ridge, hip, glaze bar, base frame and interior joinery systems of a Vale roof lantern - from the Lantern Designer.' },
-        { name: 'Columns',               summary: 'Free-standing columns, each built from a base, a shaft and a capital.',
+        { name: 'Columns',               family: 'Columns',  summary: 'Free-standing columns, each built from a base, a shaft and a capital.',
           ranges: ['Classical Columns', 'Belton Range', 'Stop Chamfer Range', 'Hardwick Range', 'Cragside Range', 'Gothic Range'] },
-        { name: 'Pilasters',             summary: 'Pilasters - built from the same bases, shafts and capitals as the matching columns.' },
-        { name: 'Internal Columns',      summary: 'Internal column types, each with its own base, capital and shaft.' },
-        { name: 'Entablatures',          summary: 'The band carried on the pilasters: architrave, frieze and cornice.' },
-        { name: 'Doors and Windows',     summary: 'Door and window assemblies, down to their rails, panels and ironmongery.' },
-        { name: 'Rainwater Goods',       summary: 'Hoppers, downpipes and their fittings.' },
-        { name: 'Tie Bars and Lighting', summary: 'Decorative tie bars and lighting blocks.' },
-        { name: 'Framework',             summary: 'The timber frame: upright sections, and the cill nosings sized for each column.',
+        { name: 'Internal Columns',      family: 'Columns',  summary: 'Internal column types, each with its own base, capital and shaft.' },
+        { name: 'Pilasters',             family: 'Columns',  summary: 'Pilasters - built from the same bases, shafts and capitals as the matching columns.' },
+        { name: 'Entablatures',          family: 'Columns',  summary: 'The band carried on the pilasters: architrave, frieze and cornice.' },
+        { name: 'Framework',             family: 'Interior', summary: 'The timber frame: upright sections, and the cill nosings sized for each column.',
           ranges: ['Frame Timber Sections', 'Cill Nosings'] },
-        { name: 'Misc Internal Joinery',         summary: 'Internal joinery: window boards, skirtings and staff beads.' },
-        { name: 'Eaves and Gutters',     summary: 'Gutters and eaves details.' },
-        { name: 'Ironmongery',           summary: 'Door handles, hinges, locks, bolts, window gear and cabin hooks. Handles and hinges come from ValeSpec.',
+        { name: 'Misc Internal Joinery', family: 'Interior', summary: 'Internal joinery: window boards, skirtings and staff beads.' },
+        { name: 'Tie Bars and Lighting', family: 'Interior', summary: 'Decorative tie bars and lighting blocks.' },
+        { name: 'Doors and Windows',     family: 'Openings', summary: 'Door and window assemblies, down to their rails, panels and ironmongery.' },
+        { name: 'Ironmongery',           family: 'Openings', summary: 'Door handles, hinges, locks, bolts, window gear and cabin hooks. Handles and hinges come from ValeSpec.',
           ranges: ['Door Handles', 'Hinges', 'Locks', 'Shoot Bolts', 'Window Gear', 'Cabin Hooks'] },
-        { name: 'Roof Finials',          summary: 'Cast and timber finials for ridges and lantern ends.' },
-        { name: 'Roof Crestings',        summary: 'Cast ridge crestings and decorative strips.' }
+        { name: 'Roof Lantern',          family: 'Roof',     summary: 'The ridge, hip, glaze bar, base frame and interior joinery systems of a Vale roof lantern - from the Lantern Designer.' },
+        { name: 'Roof Finials',          family: 'Roof',     summary: 'Cast and timber finials for ridges and lantern ends.' },
+        { name: 'Roof Crestings',        family: 'Roof',     summary: 'Cast ridge crestings and decorative strips.' },
+        { name: 'Eaves and Gutters',     family: 'Roof',     summary: 'Gutters and eaves details.' },
+        { name: 'Rainwater Goods',       family: 'Roof',     summary: 'Hoppers, downpipes and their fittings.' }
     ],
     // endregion ---------------------------------------------------------------
 

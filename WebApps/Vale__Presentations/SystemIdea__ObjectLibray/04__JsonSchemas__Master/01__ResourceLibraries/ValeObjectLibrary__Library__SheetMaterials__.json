@@ -37,8 +37,7 @@
                     "Purchase__Form" : "Standard blank, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__Supplier"        : "Blank Metal PLC",
                     "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
                 }
             }
@@ -77,8 +76,7 @@
                     "Purchase__Form" : "Standard board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__Supplier"        : "Plywood PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }
@@ -112,8 +110,7 @@
                     "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__Supplier"        : "Strand Board PLC",
                     "Procurement__AverageLeadTime" : "1 week"
                 }
             }

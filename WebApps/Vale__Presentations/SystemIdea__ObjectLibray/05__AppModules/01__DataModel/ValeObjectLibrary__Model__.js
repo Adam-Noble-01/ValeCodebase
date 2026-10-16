@@ -20,6 +20,9 @@
  * 16-Oct-2026 - Version 2.0.0
  * - Separated from ValeObjectLibrary__Demo__2.0.0__.html
  *
+ * 16-Oct-2026 - Version 2.0.3
+ * - A collection keeps the family it belongs to, so the network can sit related shelves together
+ *
  * ============================================================================= */
 
 (function (App) {
@@ -52,6 +55,185 @@
 
     // FUNCTION | Register one record from the data file as a definition
     // ------------------------------------------------------------
+    // Primary materials are bought, not made, so they name a supplier only.
+    App.ValeObjectLibrary_ProcurementNames = function (def) {
+        const byId = {
+            'RES-MAT-SAPELE'      : { supplier: 'Sapele Sawmills PLC' },
+            'RES-MAT-DOUGLAS-FIR' : { supplier: 'Fir Tree Timber PLC' },
+            'RES-MAT-TULIPWOOD'   : { supplier: 'Tulipwood Traders Ltd' },
+            'RES-MAT-ACCOYA'      : { supplier: 'Accoya Agency Ltd' },
+            'RES-MAT-OAK'         : { supplier: 'Acorn Oak Ltd' },
+            'RES-MAT-ALUMINIUM'   : { supplier: 'Ingot & Bar PLC' },
+            'RES-MAT-LEAD'        : { supplier: 'Heavy Metal Ltd' },
+            'RES-MAT-SHEET'       : { supplier: 'Sheet Goods PLC' },
+            'RES-MAT-BOARD'       : { supplier: 'Board & Batten Ltd' }
+        };
+        const byGroup = {
+            'Plywood Sheets'    : { supplier: 'Plywood PLC' },
+            'Aluminium Sheets'  : { supplier: 'Blank Metal PLC' },
+            'OSB'               : { supplier: 'Strand Board PLC' },
+            'Paint Finishes'    : { supplier: 'Paint Pot PLC', manufacturer: 'Eggshell Works Ltd' },
+            'Profiles'          : { supplier: 'Section Sellers Ltd', manufacturer: 'Profile Pressings Ltd' },
+            'Finishes'          : { supplier: 'Swatch & Co', manufacturer: 'Powder Coat Palace' },
+            'Specifications'    : { supplier: 'Spec Sheet Ltd', manufacturer: 'Standard & Co' },
+            'Ironmongery'       : { supplier: 'Knob & Knock PLC', manufacturer: 'Lever & Latch Ltd' },
+            'Roof Finials'      : { supplier: 'Urn & Acorn Ltd', manufacturer: 'Finial Foundry' },
+            'Roof Crestings'    : { supplier: 'Crest & Trefoil Ltd', manufacturer: 'Ridge Castings PLC' },
+            'Columns'           : { supplier: 'Capital & Base Ltd', manufacturer: 'Column & Co' },
+            'Pilasters'         : { supplier: 'Capital & Base Ltd', manufacturer: 'Column & Co' },
+            'Internal Columns'  : { supplier: 'Capital & Base Ltd', manufacturer: 'Column & Co' },
+            'Doors and Windows' : { supplier: 'Stile & Rail Ltd', manufacturer: 'Door Leaf Works' },
+            'Rainwater Goods'   : { supplier: 'Hopper & Pipe PLC', manufacturer: 'Downpipe Foundry' },
+            'Roof Lantern'      : { supplier: 'Lantern Bits Ltd', manufacturer: 'Glaze Bar Works' },
+            'Entablatures'      : { supplier: 'Frieze & Cornice Ltd', manufacturer: 'Entablature Works' },
+            'Tie Bars and Lighting' : { supplier: 'Tie & Hook Ltd', manufacturer: 'Quatrefoil Castings' },
+            'Framework'         : { supplier: 'Upright Timber PLC', manufacturer: 'Section Shop Ltd' },
+            'Misc Internal Joinery' : { supplier: 'Skirting & Bead Ltd', manufacturer: 'Joinery Bits PLC' },
+            'Eaves and Gutters' : { supplier: 'Gutter & Eaves Ltd', manufacturer: 'Belton Gutter Works' }
+        };
+        const primary = def.resourceType === 'TimberMaterial' || def.resourceType === 'SheetMaterial' || def.group === 'Materials';
+        const named   = byId[def.id] || byGroup[def.group] || byGroup[def.category] || byGroup[def.range];
+        const house   = named || { supplier: 'General Goods PLC', manufacturer: 'Made Up Manufacturing Ltd' };
+        if (primary) {
+            return { supplier: house.supplier };
+        }
+        return {
+            supplier     : house.supplier,
+            manufacturer : house.manufacturer || 'Made Up Manufacturing Ltd'
+        };
+    };
+
+    App.ValeObjectLibrary_NamedUses = function (def, groups) {
+        const wanted = {};
+        groups.forEach(function (group) { wanted[group] = true; });
+        const names = [];
+        (def.uses || []).forEach(function (id) {
+            const resource = Model.defs.get(id);
+            if (resource && wanted[resource.group] && names.indexOf(resource.name) === -1) {
+                names.push(resource.name);
+            }
+        });
+        return names.length ? names.join(', ') : 'None named';
+    };
+
+    App.ValeObjectLibrary_SizeNote = function (def, field) {
+        if (def.data[field]) {
+            return def.data[field];
+        }
+        if ((def.params || []).indexOf(field) !== -1) {
+            return 'Set by the scheme';
+        }
+        return 'Not recorded';
+    };
+
+    App.ValeObjectLibrary_ApplyStandardSections = function (def) {
+        if (def.tier !== 'component' && def.tier !== 'product') {
+            return;
+        }
+        const names = App.ValeObjectLibrary_ProcurementNames(def);
+        const procurement = { Procurement__Supplier: names.supplier };
+        if (names.manufacturer) {
+            procurement.Procurement__Manufacturer = names.manufacturer;
+        }
+        const finishes = App.ValeObjectLibrary_NamedUses(def, ['Finishes', 'Paint Finishes']);
+        const materials = App.ValeObjectLibrary_NamedUses(def, ['Materials', 'Plywood Sheets', 'Aluminium Sheets', 'OSB']);
+        const sections = def.tier === 'product'
+            ? [
+                { key: 'Resource__ProductData', label: 'Product', data: {
+                    'Vale ID'                  : def.data['Vale ID'] || '',
+                    'Range'                    : def.range || def.category || '',
+                    'Product Code'             : def.data['Product Code'] || def.data['ValeSpec Code'] || 'Not recorded',
+                    'Fixed or Selectable Sizes': def.data['Fixed or Selectable Sizes'] || 'Not recorded',
+                    'Availability / Status'    : def.data['Availability / Status'] || 'Available'
+                } },
+                { key: 'Resource__ProcurementData', label: 'Procurement', data: procurement },
+                { key: 'Resource__FinishData', label: 'Finishes', data: { Finish: finishes } },
+                { key: 'Resource__MaterialData', label: 'Material', data: { Material: materials } },
+                { key: 'Resource__CostingData', label: 'Costing', data: {
+                    Cost   : def.data.Cost || 'Not recorded',
+                    Weight : def.data.Weight || 'Not recorded'
+                } },
+                { key: 'Resource__AssetData', label: 'Assets', data: {
+                    'CAD / 3D Asset': (def.assets && def.assets.length) ? def.assets.join(', ') : 'Nothing linked yet'
+                } }
+            ]
+            : [
+                { key: 'Resource__ComponentData', label: 'Component', data: {
+                    'Vale ID'               : def.data['Vale ID'] || '',
+                    'Component Code'        : def.id,
+                    'Manufacturing Method'  : def.data['Manufacturing Method'] || 'Not recorded'
+                } },
+                { key: 'Resource__ProcurementData', label: 'Procurement', data: procurement },
+                { key: 'Resource__ProfileData', label: 'Profile', data: {
+                    Profile: App.ValeObjectLibrary_NamedUses(def, ['Profiles'])
+                } },
+                { key: 'Resource__MaterialData', label: 'Material', data: { Material: materials } },
+                { key: 'Resource__FinishData', label: 'Finishes', data: {
+                    'Finish'       : App.ValeObjectLibrary_NamedUses(def, ['Finishes']),
+                    'Paint Finish' : App.ValeObjectLibrary_NamedUses(def, ['Paint Finishes'])
+                } },
+                { key: 'Resource__SpecificationData', label: 'Specification', data: {
+                    Specification: App.ValeObjectLibrary_NamedUses(def, ['Specifications'])
+                } },
+                { key: 'Resource__SizeData', label: 'Size', data: {
+                    Length : App.ValeObjectLibrary_SizeNote(def, 'Length'),
+                    Width  : App.ValeObjectLibrary_SizeNote(def, 'Width'),
+                    Depth  : App.ValeObjectLibrary_SizeNote(def, 'Depth')
+                } }
+            ];
+        sections.forEach(function (section) {
+            let existing = null;
+            def.attributes.forEach(function (attribute) {
+                if (attribute.key === section.key) {
+                    existing = attribute;
+                }
+            });
+            if (existing) {
+                Object.keys(section.data).forEach(function (key) {
+                    if (existing.data[key] === undefined || existing.data[key] === '') {
+                        existing.data[key] = section.data[key];
+                    }
+                });
+            } else {
+                def.attributes.push(section);
+            }
+        });
+        def.data.Supplier = names.supplier;
+        if (names.manufacturer) {
+            def.data.Manufacturer = names.manufacturer;
+        }
+        delete def.data['Supplier / Manufacturer'];
+    };
+
+    App.ValeObjectLibrary_ApplyProcurement = function (def) {
+        const names = App.ValeObjectLibrary_ProcurementNames(def);
+        let block = null;
+        def.attributes.forEach(function (attribute) {
+            if (attribute.key === 'Resource__ProcurementData') {
+                block = attribute;
+            }
+        });
+        if (block) {
+            block.data.Procurement__Supplier = names.supplier;
+            if (names.manufacturer) {
+                block.data.Procurement__Manufacturer = names.manufacturer;
+            } else {
+                delete block.data.Procurement__Manufacturer;
+            }
+        } else if (def.tier === 'resource' || def.tier === 'component' || def.tier === 'product' || def.tier === 'assembly') {
+            const data = { Procurement__Supplier: names.supplier };
+            if (names.manufacturer) {
+                data.Procurement__Manufacturer = names.manufacturer;
+            }
+            def.attributes.push({ key: 'Resource__ProcurementData', label: 'Procurement', data: data });
+        }
+        def.data.Supplier = names.supplier;
+        if (names.manufacturer) {
+            def.data.Manufacturer = names.manufacturer;
+        }
+        delete def.data['Supplier / Manufacturer'];
+    };
+
     App.ValeObjectLibrary_AddDefinition = function (record, tier) {
         if (!record || !record.id) {
             App.ValeObjectLibrary_Issue('A ' + tier + ' record has no id and was skipped.');
@@ -96,6 +278,8 @@
         if (valeId) {
             def.data['Vale ID'] = valeId;                                   // <-- Lantern style, one code per record
         }
+        App.ValeObjectLibrary_ApplyProcurement(def);
+        App.ValeObjectLibrary_ApplyStandardSections(def);
         Model.defs.set(def.id, def);
         return def;
     };
@@ -335,9 +519,17 @@
         const libraryTree = App.ValeObjectLibrary_NewTree('library');
         const libraryDef  = App.ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, listed by collection so it can be found. A Scheme is where those records are assembled into a project.' }, 'library');
         libraryTree.root  = App.ValeObjectLibrary_MakePlacement(libraryTree, libraryDef, null, 1, 0);
+        const familyByName = new Map();
+        (Data.collectionFamilies || []).forEach(function (family, index) {
+            familyByName.set(family.name, { name: family.name, colour: family.colour || '#e4eaef', index: index });
+        });
+        const familyOf = function (name) {
+            return familyByName.get(name) || familyByName.get('Other') || { name: 'Other', colour: '#e4eaef', index: 99 };
+        };
         const shelves = new Map();
         (Data.categories || []).forEach(function (category) {
-            shelves.set(category.name, { name: category.name, summary: category.summary || '', ranges: category.ranges || [], records: [] });
+            const family = familyOf(category.family);
+            shelves.set(category.name, { name: category.name, summary: category.summary || '', ranges: category.ranges || [], records: [], family: family });
         });
         const libraryRecords = Array.from(Model.defs.values()).filter(function (def) {
             return def.tier === 'assembly' || App.ValeObjectLibrary_IsPart(def.tier);
@@ -346,7 +538,7 @@
             const home = App.ValeObjectLibrary_LibraryShelf(def);
             const shelf = home.category;
             if (!shelves.has(shelf)) {
-                shelves.set(shelf, { name: shelf, summary: '', ranges: [], records: [] });
+                shelves.set(shelf, { name: shelf, summary: '', ranges: [], records: [], family: familyOf('Other') });
             }
             shelves.get(shelf).records.push({ def: def, range: home.range });
         });
@@ -359,6 +551,9 @@
             if (!categoryDef) {
                 return;
             }
+            categoryDef.shelfFamily = shelf.family.name;                     // <-- Which shaded arc this collection sits on
+            categoryDef.shelfWash   = shelf.family.colour;
+            categoryDef.shelfOrder  = shelf.family.index;
             const placement = App.ValeObjectLibrary_MakePlacement(libraryTree, categoryDef, libraryTree.root, 1, 0);
             App.ValeObjectLibrary_PlaceShelfRecords(libraryTree, placement, shelf);
         });

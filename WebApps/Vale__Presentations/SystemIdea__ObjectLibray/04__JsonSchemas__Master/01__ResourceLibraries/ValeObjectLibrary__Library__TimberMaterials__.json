@@ -28,8 +28,7 @@
                     "Price__DateAdded"                     : "04-Jun-2025"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "West African sawmill, FAS sapele",
+                    "Procurement__Supplier"        : "Sapele Sawmills PLC",
                     "Procurement__AverageLeadTime" : "3 weeks, ex-stock in common thicknesses"
                 }
             }
@@ -60,8 +59,7 @@
                     "Price__DateAdded"                     : "18-Nov-2025"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "James Jones & Sons, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "British sawmill, Douglas fir",
+                    "Procurement__Supplier"        : "Fir Tree Timber PLC",
                     "Procurement__AverageLeadTime" : "2 weeks"
                 }
             }
@@ -92,8 +90,7 @@
                     "Price__DateAdded"                     : "09-Jan-2026"
                 },
                 "Resource__ProcurementData" : {
-                    "Procurement__Supplier"        : "Timbmet, delivered to Spalding",
-                    "Procurement__Manufacturer"    : "American mill, tulipwood (yellow poplar)",
+                    "Procurement__Supplier"        : "Tulipwood Traders Ltd",
                     "Procurement__AverageLeadTime" : "2 weeks"
                 }
             }

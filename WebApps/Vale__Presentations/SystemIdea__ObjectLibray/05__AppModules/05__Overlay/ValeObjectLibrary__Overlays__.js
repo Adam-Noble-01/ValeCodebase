@@ -20,6 +20,9 @@
  * 16-Oct-2026 - Version 2.0.0
  * - Separated from ValeObjectLibrary__Demo__2.0.0__.html
  *
+ * 16-Oct-2026 - Version 2.0.3
+ * - Each family of collections has a small name, kept at reading size as the chart zooms
+ *
  * ============================================================================= */
 
 (function (App) {
@@ -217,6 +220,42 @@
                 candidates.push({ key: 'res:' + id, rank: rank, box: box, name: resource.name, colour: resource.data.Swatch || App.ValeObjectLibrary_TierColour('resource'), ring: resource.data.Swatch || App.ValeObjectLibrary_TierColour('resource'),
                     caption: 'Resource · ' + ((Model.groups.get(resource.group) || {}).singular || resource.group) });
             });
+            const plan = Force.shelfPlan;
+            if (plan && plan.families.length) {
+                let shelvesOnShow = 0;
+                plan.families.forEach(function (family) {
+                    family.shelves.forEach(function (shelf) {
+                        if (Force.nodes.has(shelf.uid)) {
+                            shelvesOnShow += 1;
+                        }
+                    });
+                });
+                if (shelvesOnShow >= 2) {
+                    plan.families.forEach(function (family) {
+                        const visible = family.shelves.filter(function (shelf) { return Force.nodes.has(shelf.uid); });
+                        if (!visible.length) {
+                            return;
+                        }
+                        let reach = Infinity;
+                        visible.forEach(function (shelf) {
+                            const node = Force.nodes.get(shelf.uid);
+                            reach = Math.min(reach, Math.hypot(node.x, node.y) - node.r);
+                        });
+                        const a0 = plan.byUid.get(visible[0].uid).angle;
+                        const a1 = plan.byUid.get(visible[visible.length - 1].uid).angle;
+                        const mid = (a0 + a1) / 2;
+                        const radius = Math.max(118, reach - 52);           // <-- In the clear band between the centre and the wash
+                        candidates.push({
+                            key     : 'family:' + family.name,
+                            rank    : 0.4,
+                            centred : true,
+                            box     : { x: Math.cos(mid) * radius, y: Math.sin(mid) * radius, w: 0, h: 0 },
+                            name    : family.name,
+                            colour  : family.colour
+                        });
+                    });
+                }
+            }
         } else if (Layout.lane) {
             Layout.lane.groups.forEach(function (group) {
                 candidates.push({ key: 'group:' + group.key, rank: 2, box: { x: Layout.lane.x + Settings.lanePadding, y: group.y + 14, w: 0, h: 0 }, name: group.key, colour: App.ValeObjectLibrary_TierColour('resource') });
@@ -231,9 +270,9 @@
             // Network labels read in two lines: a small, quiet tier caption over the name
             const captionWidth = force && candidate.caption ? App.ValeObjectLibrary_TextWidth(candidate.caption.toUpperCase(), App.ValeObjectLibrary_Font(8.5, 700)) + candidate.caption.length * 0.7 : 0;
             const width  = force
-                ? Math.max(App.ValeObjectLibrary_TextWidth(candidate.name, App.ValeObjectLibrary_Font(11.5, 600)), captionWidth) + 14
+                ? Math.max(App.ValeObjectLibrary_TextWidth(candidate.name, App.ValeObjectLibrary_Font(candidate.centred ? 10 : 11.5, candidate.centred ? 700 : 600)), captionWidth) + (candidate.centred ? candidate.name.length * 1.1 + 8 : 14)
                 : App.ValeObjectLibrary_TextWidth(candidate.name, App.ValeObjectLibrary_Font(12, 600)) + 32;
-            const height = force && candidate.caption ? 30 : 22;
+            const height = force && candidate.caption ? 30 : candidate.centred ? 16 : 22;
             const simNode = force ? Force.nodes.get(candidate.key) : null;
             const toLeft  = simNode && simNode.labelSide
                 ? simNode.labelSide === 'left'                               // <-- In a column, every label sits on the column's outer side
@@ -241,7 +280,9 @@
             const outside = toLeft
                 ? transform.applyX(candidate.box.x) - 4 - width                  // <-- Network: on the outer side, away from the centre
                 : transform.applyX(candidate.box.x + candidate.box.w) + 4;
-            const left   = force ? outside : transform.applyX(candidate.box.x) - 2;
+            const left   = candidate.centred
+                ? transform.applyX(candidate.box.x + candidate.box.w / 2) - width / 2
+                : force ? outside : transform.applyX(candidate.box.x) - 2;
             const rect   = { x: left, y: transform.applyY(candidate.box.y) - height / 2, w: width, h: height };
             const onLeft = force && left < transform.applyX(candidate.box.x);
             if (rect.x > viewWidth || rect.x + rect.w < 0 || rect.y > viewHeight || rect.y + rect.h < Settings.stripHeight) {
@@ -257,7 +298,10 @@
             used.add(candidate.key);
             let label = LabelCache.get(candidate.key);
             if (!label) {
-                label = force && candidate.caption
+                label = candidate.centred
+                    ? App.ValeObjectLibrary_El('div', { class: 'float-label float-label--family' },
+                        App.ValeObjectLibrary_El('span', { text: candidate.name }))
+                    : force && candidate.caption
                     ? App.ValeObjectLibrary_El('div', { class: 'float-label float-label--two' },
                         App.ValeObjectLibrary_El('span', { class: 'float-label__caption', text: candidate.caption }),
                         App.ValeObjectLibrary_El('span', { class: 'float-label__name', text: candidate.name }))
@@ -276,10 +320,12 @@
             label.hidden = false;
             label.style.transform = 'translate(' + Math.round(rect.x) + 'px,' + Math.round(rect.y) + 'px)';
             label.classList.toggle('is-left', onLeft);                       // <-- Left of its node: line the text up against the node
-            const lit = candidate.key.indexOf('res:') === 0
+            const lit = candidate.centred
+                ? false
+                : candidate.key.indexOf('res:') === 0
                 ? focus && focus.res.has(candidate.key.slice(4))
                 : focus && (focus.nodes.has(candidate.key) || focus.twins.has(candidate.key));
-            label.classList.toggle('is-dim', dimming && !lit);
+            label.classList.toggle('is-dim', !candidate.centred && dimming && !lit);
         });
         LabelCache.forEach(function (label, key) {
             if (!used.has(key) && !label.hidden) {

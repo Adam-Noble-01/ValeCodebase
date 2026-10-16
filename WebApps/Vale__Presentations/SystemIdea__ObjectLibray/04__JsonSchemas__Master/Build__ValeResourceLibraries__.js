@@ -309,8 +309,8 @@ function paintRecord(row, cardOrder) {
             Price__Basis              : 'Illustrative factory cost for the costing department. Not a live price book.'
         },
         Resource__ProcurementData : {
-            Procurement__Supplier         : 'Vale Garden Houses Paint Store, Spalding',
-            Procurement__Manufacturer     : 'Teknos (UK) Ltd',
+            Procurement__Supplier         : 'Paint Pot PLC',
+            Procurement__Manufacturer     : 'Eggshell Works Ltd',
             Procurement__ProductLine      : 'Factory opaque joinery eggshell',
             Procurement__AverageLeadTime  : price.lead
         }
@@ -394,9 +394,8 @@ function timberAttributes(timber) {
         },
         Resource__ProcurementData : {
             Procurement__Supplier          : timber.supplier,
-            Procurement__Manufacturer      : timber.manufacturer,
             Procurement__AverageLeadTime   : timber.lead,
-            Procurement__ProcessedAt       : 'Vale Garden Houses joinery shop, Spalding'
+            Procurement__ProcessedAt       : 'Vale Garden Houses joinery shop, Grantham'
         }
     };
 }
@@ -638,7 +637,6 @@ function timberDocument() {
                 },
                 Resource__ProcurementData : {
                     Procurement__Supplier         : '',
-                    Procurement__Manufacturer     : '',
                     Procurement__AverageLeadTime  : ''
                 }
             }

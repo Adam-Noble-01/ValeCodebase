@@ -26,6 +26,9 @@
  * 16-Oct-2026 - Version 2.0.2
  * - Following one branch hides the shelves outside that group, so the ring is not drawn over them
  *
+ * 16-Oct-2026 - Version 2.0.3
+ * - Related collections sit on one arc (columns together, the roof together) with a pale wash behind each family
+ *
  * ============================================================================= */
 
 (function (App) {
@@ -49,7 +52,7 @@
     // work exactly as they do in the scheme view.
     // =====================================================================
 
-    const Force = { sim: null, nodes: new Map(), signature: '', pendingFit: null, fitTimer: null };
+    const Force = { sim: null, nodes: new Map(), signature: '', pendingFit: null, fitTimer: null, shelfPlan: null };
     App.Force = Force;                                                           // <-- Shared: the floating labels (Overlays) read each bubble's label side from it
     const ForceRadius = { library: 44, category: 20, range: 18, assembly: 22, component: 17, product: 17, resource: 15 };   // <-- Every bubble now holds its graphic, so even the small ones are big enough to read
     const ForceCharge = { library: -1600, category: -620, range: -420, assembly: -300, component: -140, product: -140, resource: -190 };
@@ -77,6 +80,7 @@
             .force('x', d3.forceX(0).strength(0.008))                       // <-- A light pull to the middle keeps the network round
             .force('y', d3.forceY(0).strength(0.008))
             .force('branches', App.ValeObjectLibrary_ForceBranches())
+            .force('shelves', App.ValeObjectLibrary_ForceShelves())          // <-- Related collections stay on their family's arc
             .on('tick', App.ValeObjectLibrary_ForceTick)
             .stop();
     };
@@ -109,18 +113,139 @@
         };
     };
 
+    // FUNCTION | How far a collection sits from the centre
+    // ------------------------------------------------------------
+    // A closed shelf stays on the family arc. An open one steps outward so
+    // its own ring clears the shelves beside it.
+    App.ValeObjectLibrary_ShelfRadius = function (placement) {
+        const childR  = ForceRadius[placement.tier] || 20;
+        const open    = State.expanded.has(placement.uid) ? placement.children.length : 0;
+        const libraryR = ForceRadius.library;
+        if (open > 1) {
+            const ring    = Math.max(childR + 17 + 100, ((open - 1) * 72) / ForceRingSpread);
+            const inward  = ring * Math.max(0, -Math.cos(ForceRingSpread / 2));
+            return libraryR + inward + 260;
+        }
+        return libraryR + childR + 200;
+    };
+
+    // FUNCTION | Where each collection sits - related ones share an arc
+    // ------------------------------------------------------------
+    // Columns, the roof, the openings and the interior each take a run of
+    // the circle, with a wider gap between families than between siblings.
+    // The fullest family takes the upper right. The gap beside it faces
+    // right, so the centre's own caption is not written across a wash.
+    App.ValeObjectLibrary_ShelfPlan = function () {
+        const root = Model.root && Model.root.tier === 'library' ? Model.root : null;
+        const empty = { families: [], byUid: new Map(), withinStep: 0, betweenStep: 0 };
+        if (!root || !root.children.length) {
+            return empty;
+        }
+        const shelves = root.children.slice().sort(function (a, b) {
+            const orderA = a.def.shelfOrder === undefined ? 99 : a.def.shelfOrder;
+            const orderB = b.def.shelfOrder === undefined ? 99 : b.def.shelfOrder;
+            return orderA - orderB || root.children.indexOf(a) - root.children.indexOf(b);
+        });
+        const families = [];
+        shelves.forEach(function (shelf) {
+            const name = shelf.def.shelfFamily || 'Other';
+            let family = families[families.length - 1];
+            if (!family || family.name !== name) {
+                family = { name: name, colour: shelf.def.shelfWash || '#e4eaef', shelves: [] };
+                families.push(family);
+            }
+            family.shelves.push(shelf);
+        });
+        const within  = 1;
+        const between = 1.85;                                               // <-- A clear gap between one family and the next
+        let units = 0;
+        families.forEach(function (family) {
+            units += Math.max(family.shelves.length - 1, 0) * within + between;
+        });
+        const step        = (Math.PI * 2) / units;
+        const withinStep  = step * within;
+        const betweenStep = step * between;
+        const angles  = new Map();
+        let cursor    = 0;
+        let largest   = families[0];
+        families.forEach(function (family) {
+            family.a0 = cursor;
+            family.shelves.forEach(function (shelf, index) {
+                angles.set(shelf.uid, cursor + index * withinStep);
+            });
+            family.a1 = cursor + Math.max(family.shelves.length - 1, 0) * withinStep;
+            cursor   += (family.a1 - family.a0) + betweenStep;
+            if (family.shelves.length > largest.shelves.length) {
+                largest = family;
+            }
+        });
+        const centerShift = -((largest.a0 + largest.a1) / 2);              // <-- Fullest family centred on the right, for a moment
+        const gapMid      = ((largest.a1 - largest.a0) / 2) + betweenStep / 2;
+        const shift       = centerShift - gapMid;                           // <-- Then turn so the gap beside it faces right, clear of the centre's caption
+        const byUid = new Map();
+        families.forEach(function (family) {
+            family.a0 += shift;
+            family.a1 += shift;
+            family.pad = betweenStep * 0.28;                                // <-- The wash stops short of the next family
+            family.shelves.forEach(function (shelf) {
+                byUid.set(shelf.uid, { angle: angles.get(shelf.uid) + shift, family: family.name });
+            });
+        });
+        return { families: families, byUid: byUid, withinStep: withinStep, betweenStep: betweenStep };
+    };
+
+    // FUNCTION | The point a collection is held to
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_ShelfSpot = function (placement) {
+        const plan  = Force.shelfPlan;
+        const entry = plan && plan.byUid.get(placement.uid);
+        if (!entry) {
+            return null;
+        }
+        const radius = App.ValeObjectLibrary_ShelfRadius(placement);
+        return {
+            x         : Math.cos(entry.angle) * radius,
+            y         : Math.sin(entry.angle) * radius,
+            angle     : entry.angle,
+            labelSide : Math.cos(entry.angle) >= 0 ? 'right' : 'left'       // <-- The name sits on the outside of the wheel
+        };
+    };
+
+    // FUNCTION | A custom force - related collections stay on their arc
+    // ------------------------------------------------------------
+    App.ValeObjectLibrary_ForceShelves = function () {
+        let nodes = [];
+        function force() {
+            nodes.forEach(function (node) {
+                const placement = node.placement;
+                if (!placement || !placement.parent || placement.parent.parent) {
+                    return;                                                  // <-- Only the collections around the centre
+                }
+                const spot = App.ValeObjectLibrary_ShelfSpot(placement);
+                if (!spot) {
+                    return;
+                }
+                node.labelSide = spot.labelSide;
+                node.vx += (spot.x - node.x) * 0.72;
+                node.vy += (spot.y - node.y) * 0.72;
+            });
+        }
+        force.initialize = function (simNodes) { nodes = simNodes; };
+        return force;
+    };
+
     // FUNCTION | A custom force - an opened box's children sit on a circle around it
     // ------------------------------------------------------------
-    // The shelves around Vale Object Library still float freely. Anything
-    // opened further is held on a ring, evenly spaced, instead of fanning
-    // into a pile.
+    // The collections around Vale Object Library are held on family arcs.
+    // Anything opened further is held on a ring, evenly spaced, instead of
+    // fanning into a pile.
     App.ValeObjectLibrary_ForceBranches = function () {
         let nodes = [];
         function force() {
             nodes.forEach(function (node) {
                 const placement = node.placement;
                 if (!placement || !placement.parent || !placement.parent.parent) {
-                    return;                                                  // <-- The centre and its shelves move freely
+                    return;                                                  // <-- The centre is pinned; collections are held on the family arc
                 }
                 const parent = Force.nodes.get(placement.parent.uid);
                 const grand  = Force.nodes.get(placement.parent.parent.uid);
@@ -163,6 +288,7 @@
         }
         Force.nodes.clear();
         Force.signature  = '';
+        Force.shelfPlan  = null;
         Force.pendingFit = null;
         window.clearTimeout(Force.fitTimer);
     };
@@ -172,6 +298,7 @@
     // ------------------------------------------------------------
     App.ValeObjectLibrary_ForceRefresh = function () {
         App.ValeObjectLibrary_ForceInit();
+        Force.shelfPlan = App.ValeObjectLibrary_ShelfPlan();                 // <-- Related collections share an arc; rebuilt as shelves open and close
 
         // What is open decides what is on show
         const visible = [];
@@ -203,22 +330,25 @@
             if (Force.nodes.has(placement.uid)) {
                 return;
             }
-            const parent = placement.parent && Force.nodes.get(placement.parent.uid);
-            const grand  = placement.parent && placement.parent.parent && Force.nodes.get(placement.parent.parent.uid);
-            const ring   = parent && placement.parent.parent
+            const parent    = placement.parent && Force.nodes.get(placement.parent.uid);
+            const grand     = placement.parent && placement.parent.parent && Force.nodes.get(placement.parent.parent.uid);
+            const ring      = parent && placement.parent.parent
                 ? App.ValeObjectLibrary_ForceRing(parent, grand, placement.parent.children.indexOf(placement), placement.parent.children.length, ForceRadius[placement.tier] || 8)
                 : null;
-            const angle  = Math.random() * Math.PI * 2;
-            const node   = {
+            const shelfSpot = parent && placement.parent && !placement.parent.parent
+                ? App.ValeObjectLibrary_ShelfSpot(placement)
+                : null;
+            const angle     = Math.random() * Math.PI * 2;
+            const node      = {
                 key       : placement.uid,
                 kind      : 'placement',
                 placement : placement,
                 tier      : placement.tier,
                 r         : ForceRadius[placement.tier] || 8,
                 charge    : ForceCharge[placement.tier] || -45,
-                x         : ring ? ring.x : parent ? parent.x + Math.cos(angle) * 14 : 0,
-                y         : ring ? ring.y : parent ? parent.y + Math.sin(angle) * 14 : 0,
-                labelSide : ring ? ring.labelSide : null
+                x         : ring ? ring.x : shelfSpot ? shelfSpot.x : parent ? parent.x + Math.cos(angle) * 14 : 0,
+                y         : ring ? ring.y : shelfSpot ? shelfSpot.y : parent ? parent.y + Math.sin(angle) * 14 : 0,
+                labelSide : ring ? ring.labelSide : shelfSpot ? shelfSpot.labelSide : null
             };
             if (!placement.parent) {
                 node.fx = 0;                                                 // <-- Vale Object Library stays pinned in the middle
@@ -263,6 +393,9 @@
                     const open = link.target.placement && State.expanded.has(link.target.uid) ? link.target.placement.children.length : 0;
                     if (link.target.placement && link.target.placement.parent && link.target.placement.parent.parent) {
                         return App.ValeObjectLibrary_ForceRing(link.source, null, 0, link.source.placement.children.length, link.target.r).radius;
+                    }
+                    if (link.target.placement && link.target.placement.parent && !link.target.placement.parent.parent) {
+                        return App.ValeObjectLibrary_ShelfRadius(link.target.placement);   // <-- Same distance the family arc holds it to
                     }
                     if (open > 1) {                                          // <-- An opened shelf moves out so its ring clears the others
                         const ring = Math.max(link.target.r + 17 + 100, ((open - 1) * 72) / ForceRingSpread);
@@ -335,6 +468,79 @@
 
         App.ValeObjectLibrary_ForceTick();                                       // <-- Put everything where it is now, straight away
     };
+
+    // FUNCTION | A pale wash behind each family of collections
+    // ------------------------------------------------------------
+    // The wash follows the arc those collections share. It is drawn only
+    // while the shelves are on show together; opening one collection hides
+    // the others, and the wash goes with them.
+    App.ValeObjectLibrary_FamilySector = function (a0, a1, r0, r1) {
+        const large = (a1 - a0) > Math.PI ? 1 : 0;
+        const at = function (angle, radius) {
+            return Math.cos(angle) * radius + ',' + Math.sin(angle) * radius;
+        };
+        return 'M' + at(a0, r1)
+            + 'A' + r1 + ',' + r1 + ' 0 ' + large + ' 1 ' + at(a1, r1)
+            + 'L' + at(a1, r0)
+            + 'A' + r0 + ',' + r0 + ' 0 ' + large + ' 0 ' + at(a0, r0)
+            + 'Z';
+    };
+
+    App.ValeObjectLibrary_RenderFamilyShades = function () {
+        const plan = Force.shelfPlan;
+        if (!Layers.bands) {
+            return;
+        }
+        if (!plan || !App.ValeObjectLibrary_IsForce()) {
+            Layers.bands.selectAll('g.family-shade').remove();
+            return;
+        }
+        let showing = 0;
+        plan.families.forEach(function (family) {
+            family.shelves.forEach(function (shelf) {
+                if (Force.nodes.has(shelf.uid)) {
+                    showing += 1;
+                }
+            });
+        });
+        const drawn = showing < 2 ? [] : plan.families.map(function (family) {
+            const visible = family.shelves.filter(function (shelf) { return Force.nodes.has(shelf.uid); });
+            if (!visible.length) {
+                return null;
+            }
+            let inner = Infinity;
+            let outer = 0;
+            visible.forEach(function (shelf) {
+                const node = Force.nodes.get(shelf.uid);
+                const reach = Math.hypot(node.x, node.y);
+                inner = Math.min(inner, reach - node.r);
+                outer = Math.max(outer, reach + node.r);
+            });
+            const a0 = plan.byUid.get(visible[0].uid).angle;
+            const a1 = plan.byUid.get(visible[visible.length - 1].uid).angle;
+            return {
+                key    : family.name,
+                colour : family.colour,
+                a0     : a0 - family.pad,
+                a1     : a1 + family.pad,
+                r0     : Math.max(78, inner - 36),
+                r1     : outer + 28,
+                label  : family.name.toUpperCase(),
+                mid    : (a0 + a1) / 2
+            };
+        }).filter(function (family) { return family; });
+
+        const groups = Layers.bands.selectAll('g.family-shade').data(drawn, function (family) { return family.key; });
+        groups.exit().remove();
+        const entering = groups.enter().append('g').attr('class', 'family-shade');
+        entering.append('path').attr('class', 'family-shade__wash');
+        const all = entering.merge(groups);
+        all.select('path.family-shade__wash')
+            .attr('d', function (family) { return App.ValeObjectLibrary_FamilySector(family.a0, family.a1, family.r0, family.r1); })
+            .attr('fill', function (family) { return family.colour; });
+        all.select('text.family-shade__label').remove();                     // <-- The name is an HTML label, so it stays readable as you zoom
+    };
+    // ------------------------------------------------------------
 
     // The Vale graphics in the network's white bubbles - the pavilion mark at the centre, the box on every
     // category, and each kind of thing's own graphic - sized to sit inside the ring (the ring itself is CSS)
@@ -470,6 +676,7 @@
             return a && b ? 'M' + round(a.x) + ',' + round(a.y) + 'L' + round(b.x) + ',' + round(b.y) : null;
         });
         Layers.refs.selectAll('path.ref').attr('d', App.ValeObjectLibrary_ForceRefPath);
+        App.ValeObjectLibrary_RenderFamilyShades();
         Layout.bounds = App.ValeObjectLibrary_ContentBounds();
         App.ValeObjectLibrary_QueueFrame();
         if (Force.pendingFit && Force.sim && Force.sim.alpha() < 0.3) {

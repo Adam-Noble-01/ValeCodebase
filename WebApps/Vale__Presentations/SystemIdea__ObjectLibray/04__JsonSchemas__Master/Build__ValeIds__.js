@@ -153,26 +153,115 @@ const seriesOut = Series.map(function (series) {
     };
 });
 
-const ironmongery = Object.keys(byId).filter(function (id) { return byId[id].series === '21'; })
-    .map(function (id) {
-        const record = records.filter(function (item) { return item.id === id; })[0];
+function namesFor(record, groups) {
+    const wanted = {};
+    groups.forEach(function (group) { wanted[group] = true; });
+    const names = [];
+    (record.uses || []).forEach(function (id) {
+        const resource = (Data.resources || []).filter(function (item) { return item.id === id; })[0];
+        if (resource && wanted[resource.group] && names.indexOf(resource.name) === -1) {
+            names.push(resource.name);
+        }
+    });
+    return names.length ? names.join(', ') : 'None named';
+}
+
+function sizeNote(record, field) {
+    if (record.data && record.data[field]) {
+        return record.data[field];
+    }
+    if ((record.params || []).indexOf(field) !== -1) {
+        return 'Set by the scheme';
+    }
+    return 'Not recorded';
+}
+
+function recordSections(record, valeId) {
+    const houses = {
+        'Ironmongery'           : ['Knob & Knock PLC', 'Lever & Latch Ltd'],
+        'Roof Finials'          : ['Urn & Acorn Ltd', 'Finial Foundry'],
+        'Roof Crestings'        : ['Crest & Trefoil Ltd', 'Ridge Castings PLC'],
+        'Columns'               : ['Capital & Base Ltd', 'Column & Co'],
+        'Pilasters'             : ['Capital & Base Ltd', 'Column & Co'],
+        'Internal Columns'      : ['Capital & Base Ltd', 'Column & Co'],
+        'Doors and Windows'     : ['Stile & Rail Ltd', 'Door Leaf Works'],
+        'Rainwater Goods'       : ['Hopper & Pipe PLC', 'Downpipe Foundry'],
+        'Roof Lantern'          : ['Lantern Bits Ltd', 'Glaze Bar Works'],
+        'Entablatures'          : ['Frieze & Cornice Ltd', 'Entablature Works'],
+        'Tie Bars and Lighting' : ['Tie & Hook Ltd', 'Quatrefoil Castings'],
+        'Framework'             : ['Upright Timber PLC', 'Section Shop Ltd'],
+        'Misc Internal Joinery' : ['Skirting & Bead Ltd', 'Joinery Bits PLC'],
+        'Eaves and Gutters'     : ['Gutter & Eaves Ltd', 'Belton Gutter Works']
+    };
+    const house = houses[record.category] || ['General Goods PLC', 'Made Up Manufacturing Ltd'];
+    const supplier = { Procurement__Supplier: house[0], Procurement__Manufacturer: house[1] };
+    if (record.tier === 'component') {
         return {
-            Resource__Code     : byId[id].valeId,
-            Resource__Type     : 'IronmongeryProduct',
-            Resource__Name     : record.name,
-            Resource__Range    : record.range || '',
-            Resource__LibraryId: record.id,
-            Resource__Summary  : record.summary || '',
-            Resource__ValeSpec : (record.data && record.data['Product Code']) || '',
-            Resource__Attributes : {
-                Resource__ProductData : {
-                    'Vale ID'      : byId[id].valeId,
-                    'Range'        : record.range || '',
-                    'ValeSpec Code': (record.data && record.data['Product Code']) || ''
-                }
+            Resource__ComponentData : {
+                'Vale ID'              : valeId,
+                'Component Code'       : record.id,
+                'Manufacturing Method' : (record.data && record.data['Manufacturing Method']) || 'Not recorded'
+            },
+            Resource__ProcurementData : supplier,
+            Resource__ProfileData : { Profile: namesFor(record, ['Profiles']) },
+            Resource__MaterialData : { Material: namesFor(record, ['Materials', 'Plywood Sheets', 'Aluminium Sheets', 'OSB']) },
+            Resource__FinishData : {
+                Finish        : namesFor(record, ['Finishes']),
+                'Paint Finish': namesFor(record, ['Paint Finishes'])
+            },
+            Resource__SpecificationData : { Specification: namesFor(record, ['Specifications']) },
+            Resource__SizeData : {
+                Length : sizeNote(record, 'Length'),
+                Width  : sizeNote(record, 'Width'),
+                Depth  : sizeNote(record, 'Depth')
             }
         };
-    })
+    }
+    return {
+        Resource__ProductData : {
+            'Vale ID'                   : valeId,
+            Range                       : record.range || record.category || '',
+            'Product Code'              : (record.data && (record.data['Product Code'] || record.data['ValeSpec Code'])) || 'Not recorded',
+            'Fixed or Selectable Sizes' : (record.data && record.data['Fixed or Selectable Sizes']) || 'Not recorded',
+            'Availability / Status'     : (record.data && record.data['Availability / Status']) || 'Available'
+        },
+        Resource__ProcurementData : supplier,
+        Resource__FinishData : { Finish: namesFor(record, ['Finishes', 'Paint Finishes']) },
+        Resource__MaterialData : { Material: namesFor(record, ['Materials', 'Plywood Sheets', 'Aluminium Sheets', 'OSB']) },
+        Resource__CostingData : {
+            Cost   : (record.data && record.data.Cost) || 'Not recorded',
+            Weight : (record.data && record.data.Weight) || 'Not recorded'
+        },
+        Resource__AssetData : {
+            'CAD / 3D Asset': (record.assets && record.assets.length) ? record.assets.join(', ') : 'Nothing linked yet'
+        }
+    };
+}
+
+function schemaRecord(record) {
+    return {
+        Resource__Code      : byId[record.id].valeId,
+        Resource__Type      : record.tier === 'component' ? 'Component' : 'Product',
+        Resource__Name      : record.name,
+        Resource__Range     : record.range || record.category || '',
+        Resource__LibraryId : record.id,
+        Resource__Summary   : record.summary || '',
+        Resource__Attributes: recordSections(record, byId[record.id].valeId)
+    };
+}
+
+const ironmongery = Object.keys(byId).filter(function (id) { return byId[id].series === '21'; })
+    .map(function (id) { return records.filter(function (item) { return item.id === id; })[0]; })
+    .filter(Boolean)
+    .map(schemaRecord)
+    .sort(function (a, b) { return a.Resource__Code.localeCompare(b.Resource__Code); });
+
+const components = records.filter(function (record) { return record.tier === 'component' && byId[record.id]; })
+    .map(schemaRecord)
+    .sort(function (a, b) { return a.Resource__Code.localeCompare(b.Resource__Code); });
+
+const products = records.filter(function (record) { return record.tier === 'product' && byId[record.id] && byId[record.id].series !== '21'; })
+    .map(schemaRecord)
     .sort(function (a, b) { return a.Resource__Code.localeCompare(b.Resource__Code); });
 
 const ironmongeryDoc = {
@@ -212,15 +301,30 @@ function formatJson(value, indent) {
     }).join(',\n') + '\n' + pad + '}';
 }
 
+function libraryDocument(key, title, purpose, list) {
+    const library = { Library__Name: title, Library__Purpose: purpose };
+    list.forEach(function (record) {
+        library['Resource__' + record.Resource__Code] = record;
+    });
+    return library;
+}
+
 fs.writeFileSync(path.join(Here, 'ValeObjectLibrary__Schema__Ironmongery__.json'), formatJson(ironmongeryDoc) + '\n');
+fs.writeFileSync(path.join(Here, 'ValeObjectLibrary__Schema__Components__.json'), formatJson({
+    Vale__ComponentLibrary: libraryDocument('components', 'Vale components', 'Every component, with procurement, profile, material, finishes, specification and size.', components)
+}) + '\n');
+fs.writeFileSync(path.join(Here, 'ValeObjectLibrary__Schema__Products__.json'), formatJson({
+    Vale__ProductLibrary: libraryDocument('products', 'Vale products', 'Every product outside the ironmongery series, with procurement, finishes, material, costing and assets.', products)
+}) + '\n');
 fs.writeFileSync(path.join(Here, 'ValeObjectLibrary__Schema__ValeIdSeries__.json'), formatJson(seriesDoc) + '\n');
 
 const idMap = {};
 Object.keys(byId).forEach(function (id) { idMap[id] = byId[id].valeId; });
 
 const seriesScheme = {
-    id       : 'vale-id-series',
-    title    : 'Vale ID series',
+    id        : 'vale-id-series',
+    title     : 'Vale ID series',
+    countNoun : 'series',
     file     : '04__JsonSchemas__Master/ValeObjectLibrary__Schema__ValeIdSeries__.json',
     lead     : 'The numbered series. A Vale ID is a two-digit series, an underscore, then four digits, the same form as a lantern asset id such as 45_2011. Open a series to see every record in it.',
     sections : seriesOut.filter(function (series) { return series.Series__Count; }).map(function (series) {
@@ -234,9 +338,26 @@ const seriesScheme = {
     })
 };
 
+function recordScheme(id, title, file, lead, list) {
+    return {
+        id       : id,
+        title    : title,
+        file     : file,
+        lead     : lead,
+        sections : list.map(function (record) {
+            return {
+                title : record.Resource__Name,
+                code  : record.Resource__Code,
+                body  : formatJson(record)
+            };
+        })
+    };
+}
+
 const ironScheme = {
-    id       : 'ironmongery',
-    title    : 'Ironmongery products',
+    id        : 'ironmongery',
+    title     : 'Ironmongery products',
+    countNoun : 'products',
     file     : '04__JsonSchemas__Master/ValeObjectLibrary__Schema__Ironmongery__.json',
     lead     : 'Series 21. Door handles start at 21_1001, hinges at 21_2001, locks at 21_3001, shoot bolts at 21_4001, window gear at 21_5001 and cabin hooks at 21_6001.',
     sections : ironmongery.map(function (product) {
@@ -266,7 +387,12 @@ const runtime = [
     '    var data = window.ValeObjectLibrary_LibraryData;',
     '    if (!data) { return; }',
     '    data.valeIds = ' + JSON.stringify(idMap) + ';',
-    '    data.resourceSchemes = (data.resourceSchemes || []).concat(' + JSON.stringify([seriesScheme, ironScheme]) + ');',
+    '    data.resourceSchemes = (data.resourceSchemes || []).concat(' + JSON.stringify([
+        seriesScheme,
+        ironScheme,
+        recordScheme('components', 'Components', '04__JsonSchemas__Master/ValeObjectLibrary__Schema__Components__.json', 'Every component carries procurement, profile, material, finishes, specification and size. A blank is written as None named or Not recorded.', components),
+        recordScheme('products', 'Products', '04__JsonSchemas__Master/ValeObjectLibrary__Schema__Products__.json', 'Every product outside series 21. Ironmongery is the section above. Each record has procurement, finishes, material, costing and assets.', products)
+    ]) + ');',
     '})();',
     ''
 ].join('\n');

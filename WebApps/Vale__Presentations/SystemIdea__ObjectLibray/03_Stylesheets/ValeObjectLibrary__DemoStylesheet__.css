@@ -1408,7 +1408,7 @@ kbd {
 
 
 /* #region ---------------------------------------------------------------
- * OVERLAY | View Toolbar and Navigator (CAD-style)
+ * OVERLAY | View Toolbar (CAD-style)
  * ------------------------------------------------------------------- */
 .toolbar {
     position                            : absolute;
@@ -1418,7 +1418,7 @@ kbd {
     flex-wrap                           : wrap;
     align-items                         : center;
     gap                                 : 2px;
-    max-width                           : calc(100% - 254px);
+    max-width                           : calc(100% - 32px);
     padding                             : 5px;
     background                          : var(--Vale_BackgroundWhite);
     border                              : 1px solid var(--Vale_BorderColour);
@@ -1498,43 +1498,6 @@ kbd {
     background                          : var(--Vale_BackgroundWhite);
     color                               : var(--Vale_PrimaryBrand);
     box-shadow                          : 0 1px 3px rgba(15, 30, 40, 0.16);
-}
-
-.navigator {
-    position                            : absolute;
-    right                               : 16px;
-    bottom                              : 16px;
-    width                               : 214px;
-    padding                             : 4px 6px 6px;
-    background                          : var(--Vale_BackgroundWhite);
-    border                              : 1px solid var(--Vale_BorderColour);
-    border-radius                       : 12px;
-    box-shadow                          : 0 6px 20px rgba(15, 30, 40, 0.1);
-    z-index                             : 6;
-}
-
-.navigator[hidden] {
-    display                             : none;
-}
-
-.navigator__label {
-    display                             : flex;
-    justify-content                     : space-between;
-    padding                             : 2px 3px 4px;
-    font-size                           : 10.5px;
-    font-weight                         : 700;
-    letter-spacing                      : 0.08em;
-    color                               : var(--Vale_TextMuted);
-}
-
-.navigator canvas {
-    display                             : block;
-    width                               : 200px;
-    height                              : 128px;
-    border-radius                       : 7px;
-    background                          : var(--Canvas_Background);
-    cursor                              : crosshair;
-    touch-action                        : none;
 }
 /* #endregion --------------------------------------------------------- */
 
@@ -1689,11 +1652,180 @@ kbd {
 }
 
 .attributes__kicker {
+    flex                                : none;
+    font-size                           : 13px;
+    font-weight                         : 700;
+    letter-spacing                      : 0;
+    text-transform                      : none;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attributes__tabs {
+    display                             : flex;
+    align-items                         : flex-end;
+    gap                                 : 0;
+    flex                                : none;
+    padding                             : 0 12px;
+    border-bottom                       : 1px solid var(--Vale_BorderColour);
+    background                          : var(--Canvas_Strip);
+}
+
+.attributes__tab {
+    margin                              : 0 0 -1px;
+    padding                             : 8px 16px;
+    border                              : 1px solid transparent;
+    border-bottom                       : none;
+    border-radius                       : 8px 8px 0 0;
+    background                          : transparent;
+    color                               : var(--Vale_TextMuted);
+    font                                : 600 13px/1.2 var(--Vale_FontFamily);
+    cursor                              : pointer;
+}
+
+.attributes__tab.is-on {
+    border-color                        : var(--Vale_BorderColour);
+    background                          : var(--Canvas_Background);
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attributes__groups {
+    font                                : 13px/1.45 var(--Vale_FontFamily);
+    color                               : var(--Vale_TextPrimary);
+}
+
+.attr-card {
+    margin                              : 0 0 16px;
+    padding                             : 12px 12px 4px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 10px;
+    background                          : var(--Vale_BackgroundWhite);
+}
+
+.attr-card__kind {
+    display                             : inline-block;
+    margin-bottom                       : 4px;
     font-size                           : 11px;
     font-weight                         : 700;
-    letter-spacing                      : 0.12em;
+    letter-spacing                      : 0.04em;
     text-transform                      : uppercase;
-    color                               : var(--Tier_resource, #008300);
+    color                               : var(--Tier_resource);
+}
+
+.attr-card__kind--own {
+    color                               : var(--Vale_TextMuted);
+}
+
+.attr-card__head {
+    display                             : flex;
+    flex-direction                      : column;
+    align-items                         : flex-start;
+    min-width                           : 0;
+    gap                                 : 2px;
+}
+
+.attr-card__title {
+    margin                              : 0;
+    font-size                           : 15px;
+    font-weight                         : 700;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attr-card__meta {
+    margin                              : 0;
+    font-size                           : 12px;
+    font-weight                         : 500;
+    color                               : var(--Vale_TextMuted);
+}
+
+.attr-record {
+    margin                              : 0 0 12px;
+    padding-top                         : 8px;
+    border-top                          : 1px solid var(--Vale_BorderColour);
+}
+
+.attr-card__toggle,
+.attr-record__toggle {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 8px;
+    width                               : 100%;
+    margin                              : 0;
+    padding                             : 4px 0 8px;
+    border                              : none;
+    background                          : transparent;
+    color                               : inherit;
+    font                                : inherit;
+    text-align                          : left;
+    cursor                              : pointer;
+}
+
+.attr-card__toggle {
+    padding-bottom                      : 10px;
+}
+
+.attr-record__toggle {
+    padding                             : 8px 0;
+    font-weight                         : 700;
+}
+
+.attr-fold {
+    flex                                : none;
+    width                               : 1em;
+    color                               : var(--Tier_resource);
+    font-weight                         : 700;
+}
+
+.attr-record__code {
+    font                                : 11px/1.2 ui-monospace, Consolas, monospace;
+    font-weight                         : 500;
+    color                               : var(--Vale_TextMuted);
+}
+
+.attr-record__swatch {
+    flex                                : none;
+    width                               : 14px;
+    height                              : 14px;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 3px;
+}
+
+.attr-block {
+    margin                              : 0 0 10px;
+}
+
+.attr-block__title {
+    margin                              : 0 0 4px;
+    font-size                           : 12px;
+    font-weight                         : 700;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.attr-fields {
+    margin                              : 0;
+}
+
+.attr-fields__row {
+    display                             : grid;
+    grid-template-columns               : minmax(120px, 38%) 1fr;
+    gap                                 : 8px;
+    padding                             : 3px 0;
+    border-bottom                       : 1px solid var(--Vale_HoverColour);
+}
+
+.attr-fields__row dt {
+    margin                              : 0;
+    font                                : 11.5px/1.35 ui-monospace, Consolas, monospace;
+    color                               : #1d4e89;
+}
+
+.attr-fields__row dd {
+    margin                              : 0;
+    color                               : var(--Vale_TextPrimary);
+}
+
+.attr-group__empty {
+    margin                              : 0;
+    color                               : var(--Vale_TextMuted);
 }
 
 .attributes__title {
@@ -1701,35 +1833,9 @@ kbd {
     overflow                            : hidden;
     text-overflow                       : ellipsis;
     white-space                         : nowrap;
-    font-size                           : 14px;
+    font-size                           : 13px;
     font-weight                         : 600;
-    color                               : var(--Vale_PrimaryBrand);
-}
-
-.attributes__note {
-    margin                              : 0 0 14px;
-    padding                             : 10px 12px;
-    border                              : 1px solid var(--Vale_BorderColour);
-    border-left                         : 3px solid var(--Tier_resource);
-    border-radius                       : 8px;
-    background                          : var(--Vale_BackgroundWhite);
-    font-family                         : var(--Vale_FontFamily);
-    font-size                           : 12.5px;
-    line-height                         : 1.45;
     color                               : var(--Vale_TextSecondary);
-}
-
-.attributes__note p {
-    margin                              : 0 0 8px;
-}
-
-.attributes__note p:last-child {
-    margin-bottom                       : 0;
-}
-
-.attributes__note-title {
-    font-weight                         : 700;
-    color                               : var(--Vale_PrimaryBrand);
 }
 
 .attributes__body {
@@ -2353,7 +2459,6 @@ button.attr-json__key:hover .attr-json__arrow {
 
     .app-header__titles,
     .app-header__divider,
-    .navigator,
     .tool__text,
     .btn__text {
         display                         : none;
@@ -2478,6 +2583,60 @@ button.attr-json__key:hover .attr-json__arrow {
     font                                : 12.5px/1.55 ui-monospace, 'Cascadia Mono', Consolas, monospace;
     color                               : var(--Vale_PrimaryBrand);
     white-space                         : pre;
+}
+
+.scheme-fold {
+    margin                              : 14px 0 0;
+    border                              : 1px solid var(--Vale_BorderColour);
+    border-radius                       : 12px;
+    background                          : #ffffff;
+}
+
+.scheme-fold__summary {
+    display                             : flex;
+    align-items                         : baseline;
+    gap                                 : 12px;
+    padding                             : 12px 16px;
+    cursor                              : pointer;
+    list-style                          : none;
+}
+
+.scheme-fold__summary::-webkit-details-marker {
+    display                             : none;
+}
+
+.scheme-fold__summary::before {
+    content                             : '▸';
+    flex                                : none;
+    color                               : var(--Vale_TextMuted);
+}
+
+.scheme-fold[open] > .scheme-fold__summary::before {
+    content                             : '▾';
+}
+
+.scheme-fold__title {
+    font-size                           : 16px;
+    font-weight                         : 650;
+    color                               : var(--Vale_PrimaryBrand);
+}
+
+.scheme-fold__note {
+    margin-left                         : auto;
+    font                                : 600 12px ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    color                               : var(--Vale_TextMuted);
+}
+
+.scheme-fold__body {
+    padding                             : 0 16px 16px;
+}
+
+.scheme-fold .scheme-fold {
+    background                          : var(--Canvas_Background);
+}
+
+.scheme-fold .schemes__lead {
+    margin-top                          : 0;
 }
 
 .paint-grid {

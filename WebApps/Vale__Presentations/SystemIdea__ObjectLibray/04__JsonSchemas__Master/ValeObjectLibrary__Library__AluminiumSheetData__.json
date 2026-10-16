@@ -1,0 +1,654 @@
+{
+    "Vale__AluminiumSheetLibrary" : {
+        "Library__Name"                                 : "Aluminium sheet",
+        "Library__Purpose"                              : "One resource for each standard blank and thickness. A component names one code, such as AluminiumSheet__l2000xw1000__t1.2mm. Naming Vale__AluminiumSheetLibrary means every aluminium sheet.",
+        "Resource__AluminiumSheet__l2000xw1000__t0.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t0.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 0.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "0.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t0.7mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t0.7mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 0.7 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "0.7"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t0.9mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t0.9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 0.9 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "0.9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t1mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t1mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 1 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "1"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t1.2mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t1.2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 1.2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "1.2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t1.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t1.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 1.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "1.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t2mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2000xw1000__t3mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2000xw1000__t3mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2000 x 1000 x 3 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2000,
+                    "Board__Width__mm"     : 1000,
+                    "Board__Thickness__mm" : "3"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t0.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t0.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 0.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "0.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t0.7mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t0.7mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 0.7 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "0.7"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t0.9mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t0.9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 0.9 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "0.9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t1mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t1mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 1 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "1"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t1.2mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t1.2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 1.2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "1.2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t1.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t1.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 1.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "1.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t2mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l2500xw1250__t3mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l2500xw1250__t3mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 2500 x 1250 x 3 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2500,
+                    "Board__Width__mm"     : 1250,
+                    "Board__Thickness__mm" : "3"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t0.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t0.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 0.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "0.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t0.7mm" : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t0.7mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 0.7 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "0.7"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t0.9mm" : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t0.9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 0.9 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "0.9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t1mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t1mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 1 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "1"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t1.2mm" : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t1.2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 1.2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "1.2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t1.5mm" : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t1.5mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 1.5 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "1.5"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t2mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t2mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 2 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "2"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__AluminiumSheet__l3000xw1500__t3mm"   : {
+            "Resource__Code"       : "AluminiumSheet__l3000xw1500__t3mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Aluminium Sheet 3000 x 1500 x 3 mm",
+            "Resource__Library"    : "Vale__AluminiumSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3000,
+                    "Board__Width__mm"     : 1500,
+                    "Board__Thickness__mm" : "3"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        }
+    }
+}

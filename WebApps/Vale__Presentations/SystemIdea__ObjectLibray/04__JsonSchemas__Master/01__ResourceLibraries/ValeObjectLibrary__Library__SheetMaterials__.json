@@ -1,0 +1,122 @@
+{
+    "Vale__SheetLibrary" : {
+        "Library__Name"              : "Vale sheet materials, bought by the board",
+        "Library__Purpose"           : "One resource per sheet material. The standard board sizes and thicknesses live on that resource. A component stores the code only.",
+        "Resource__Sheet__Aluminium" : {
+            "Resource__CodePrefix"   : "AluminiumSheet",
+            "Resource__LibraryToken" : "Vale__AluminiumSheetLibrary",
+            "Resource__Type"         : "SheetMaterial",
+            "Resource__LibraryId"    : "RES-MAT-ALU-SHEET",
+            "Resource__Name"         : "Aluminium Sheet",
+            "Resource__Summary"      : "Mill finish aluminium sheet. Bought as a standard blank, then cut. Not the extruded bar used for lantern cores.",
+            "Resource__Attributes"   : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "1050A H14, mill finish",
+                    "Material__Standard" : "BS EN 485",
+                    "Material__BoughtAs" : "Standard sheet blanks"
+                },
+                "Resource__SizeData"        : {
+                    "Size__Boards"          : [
+                        "2000 x 1000 mm",
+                        "2500 x 1250 mm",
+                        "3000 x 1500 mm"
+                    ],
+                    "Size__Thicknesses__mm" : [
+                        0.5,
+                        0.7,
+                        0.9,
+                        1,
+                        1.2,
+                        1.5,
+                        2,
+                        3
+                    ]
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard blank, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Aluminium stockholder, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "European mill, 1050A sheet",
+                    "Procurement__AverageLeadTime" : "1 week, ex-stock in the standard blanks"
+                }
+            }
+        },
+        "Resource__Sheet__Plywood"   : {
+            "Resource__CodePrefix"   : "PlywoodSheet",
+            "Resource__LibraryToken" : "Vale__PlywoodSheetLibrary",
+            "Resource__Type"         : "SheetMaterial",
+            "Resource__LibraryId"    : "RES-MAT-PLYWOOD",
+            "Resource__Name"         : "Plywood",
+            "Resource__Summary"      : "Sheet plywood for packers, linings and panels. The standard board is 2440 x 1220 mm.",
+            "Resource__Attributes"   : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Size__Boards"          : [
+                        "2440 x 1220 mm",
+                        "1220 x 1220 mm",
+                        "3050 x 1525 mm"
+                    ],
+                    "Size__Thicknesses__mm" : [
+                        4,
+                        6,
+                        9,
+                        12,
+                        15,
+                        18,
+                        25
+                    ]
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__Sheet__Osb"       : {
+            "Resource__CodePrefix"   : "OsbSheet",
+            "Resource__LibraryToken" : "Vale__OsbSheetLibrary",
+            "Resource__Type"         : "SheetMaterial",
+            "Resource__LibraryId"    : "RES-MAT-OSB",
+            "Resource__Name"         : "OSB",
+            "Resource__Summary"      : "Oriented strand board. One board size, 2440 x 1220 mm, in four thicknesses.",
+            "Resource__Attributes"   : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "OSB/3, load-bearing, humid conditions",
+                    "Material__Standard" : "BS EN 300",
+                    "Material__BoughtAs" : "2440 x 1220 mm boards"
+                },
+                "Resource__SizeData"        : {
+                    "Size__Boards"          : [
+                        "2440 x 1220 mm"
+                    ],
+                    "Size__Thicknesses__mm" : [
+                        6,
+                        9,
+                        12,
+                        18
+                    ]
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        }
+    }
+}

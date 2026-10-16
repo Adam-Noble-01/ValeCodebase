@@ -108,6 +108,7 @@ window.ValeObjectLibrary__Modules = window.ValeObjectLibrary__Modules || {};
     const State = {
         view          : 'scheme',                                                // <-- 'scheme' (one configured project) or 'library' (every record)
         expanded      : new Set(),
+        branchFocus   : false,                                                   // <-- Library network: one open branch, the other shelves are hidden
         detail        : 'scheme',                                                // <-- Start collapsed: the user opens the first box themselves
         selection     : null,                                                    // <-- { type: 'node', uid } or { type: 'resource', id }
         resourceHost  : null,                                                    // <-- The part whose own resources are on show
@@ -117,9 +118,9 @@ window.ValeObjectLibrary__Modules = window.ValeObjectLibrary__Modules || {};
         lod           : 'full',
         matches       : new Set(),
         tourIndex     : -1,
-        navigatorOn   : true,
         inspectorDismissed : false,                                              // <-- Closed by hand, so a selection no longer reopens it
         attributesWidth    : null,                                               // <-- Dragged width of the attributes column; null fits the JSON
+        attributesTab      : 'groups',                                           // <-- Attributes tab first. JSON is the other tab
         softFocus     : false,                                                   // <-- Tour step: show the selection without dimming the rest
         booting       : false,
         frameQueued   : false,
@@ -132,8 +133,7 @@ window.ValeObjectLibrary__Modules = window.ValeObjectLibrary__Modules || {};
     const TextWidths  = new Map();
     const MeasureContext = document.createElement('canvas').getContext('2d');
     const Runtime = {
-        Zoom       : null,
-        NavMapping : { s: 1, ox: 0, oy: 0 }
+        Zoom : null
     };
 
     // endregion -----------------------------------------------------------

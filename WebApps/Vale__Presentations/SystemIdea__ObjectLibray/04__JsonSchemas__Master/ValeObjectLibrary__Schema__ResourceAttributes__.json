@@ -27,7 +27,7 @@
         }
     },
     "Schema__Notes"     : [
-        "Different resource types carry different attribute blocks. A paint finish has colour, costing and procurement. A timber has species, purchase, processing, costing and procurement.",
+        "Different resource types carry different attribute blocks. A paint finish has colour, costing and procurement. A timber has species, purchase, processing, costing and procurement. A sheet material lists its standard board sizes and thicknesses.",
         "Purchase and processing are attributes of the timber, not a second resource. One resource, several attributes.",
         "On the chart, resources are drawn only for the Component, Product or Assembly you have open, and only the resources that object names."
     ]

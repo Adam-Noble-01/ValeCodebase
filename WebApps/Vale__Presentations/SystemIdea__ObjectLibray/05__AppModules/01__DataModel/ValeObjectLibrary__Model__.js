@@ -69,7 +69,7 @@
             group       : record.group || null,
             category    : record.category || null,
             range       : record.range || null,
-            data        : record.data || {},
+            data        : Object.assign({}, record.data || {}),
             attributes  : (record.attributes || []).map(function (attribute) {
                 return { key: attribute.key, label: attribute.label, data: Object.assign({}, attribute.data || {}) };
             }),
@@ -90,6 +90,12 @@
             users       : [],
             totalQty    : 0
         };
+        const assigned = Data.valeIds && Data.valeIds[def.id];
+        const lantern  = def.data['Lantern Asset ID'];
+        const valeId   = def.data['Vale ID'] || assigned || lantern;
+        if (valeId) {
+            def.data['Vale ID'] = valeId;                                   // <-- Lantern style, one code per record
+        }
         Model.defs.set(def.id, def);
         return def;
     };
@@ -180,18 +186,46 @@
     // ------------------------------------------------------------
     // A Range sits between a category and its records, in whole-library
     // view only, so one shelf does not fan every size out at once.
+    // Each record is a leaf. Opening an Assembly to see what it contains
+    // is the Scheme view. The library is for finding the record.
+    App.ValeObjectLibrary_PlaceLibraryRecord = function (tree, def, parent) {
+        App.ValeObjectLibrary_MakePlacement(tree, def, parent, 1, 0);
+    };
+
+    App.ValeObjectLibrary_LibraryShelf = function (def) {
+        if (def.category) {
+            return { category: def.category, range: def.range || '' };
+        }
+        const counts = new Map();
+        def.containedBy.forEach(function (owner) {
+            if (owner.category) {
+                counts.set(owner.category, (counts.get(owner.category) || 0) + 1);
+            }
+        });
+        let category = '';
+        let best = 0;
+        counts.forEach(function (count, name) {
+            if (count > best) {
+                category = name;
+                best = count;
+            }
+        });
+        return { category: category || 'Other', range: '' };            // <-- A part with no collection of its own sits beside the assemblies that use it
+    };
+
     App.ValeObjectLibrary_PlaceShelfRecords = function (tree, parent, shelf) {
         const groups = new Map();
         const loose  = [];
-        shelf.records.forEach(function (def) {
-            if (!def.range) {
+        shelf.records.forEach(function (entry) {
+            const def = entry.def;
+            if (!entry.range) {
                 loose.push(def);
                 return;
             }
-            if (!groups.has(def.range)) {
-                groups.set(def.range, []);
+            if (!groups.has(entry.range)) {
+                groups.set(entry.range, []);
             }
-            groups.get(def.range).push(def);
+            groups.get(entry.range).push(def);
         });
         const order = shelf.ranges || [];
         Array.from(groups.keys()).sort(function (a, b) {
@@ -211,11 +245,11 @@
             }
             const rangePlacement = App.ValeObjectLibrary_MakePlacement(tree, rangeDef, parent, 1, 0);
             list.forEach(function (def) {
-                App.ValeObjectLibrary_PlaceEntry(tree, { ref: def.id, qty: 1 }, rangePlacement, 0, new Set());
+                App.ValeObjectLibrary_PlaceLibraryRecord(tree, def, rangePlacement);
             });
         });
         loose.forEach(function (def) {
-            App.ValeObjectLibrary_PlaceEntry(tree, { ref: def.id, qty: 1 }, parent, 0, new Set());
+            App.ValeObjectLibrary_PlaceLibraryRecord(tree, def, parent);
         });
     };
 
@@ -295,10 +329,11 @@
         });
         App.ValeObjectLibrary_FinishTree(schemeTree);
 
-        // Tree 2 - the whole library: every record with a category sits on that
-        // shelf; records without one appear inside the assemblies that use them
+        // Tree 2 - the whole library: every Assembly, Component and Product
+        // sits on a collection so it can be found. Nothing is nested inside
+        // an Assembly here. That composition is the Scheme.
         const libraryTree = App.ValeObjectLibrary_NewTree('library');
-        const libraryDef  = App.ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, grouped by collection.' }, 'library');
+        const libraryDef  = App.ValeObjectLibrary_AddDefinition({ id: 'LIBRARY', name: 'Vale Object Library', summary: 'Every record in the library, listed by collection so it can be found. A Scheme is where those records are assembled into a project.' }, 'library');
         libraryTree.root  = App.ValeObjectLibrary_MakePlacement(libraryTree, libraryDef, null, 1, 0);
         const shelves = new Map();
         (Data.categories || []).forEach(function (category) {
@@ -308,17 +343,12 @@
             return def.tier === 'assembly' || App.ValeObjectLibrary_IsPart(def.tier);
         });
         libraryRecords.forEach(function (def) {
-            let shelf = def.category;
-            if (!shelf && !def.containedBy.size) {
-                shelf = 'Other';                                             // <-- Nothing is ever left off the library view
-            }
-            if (!shelf) {
-                return;
-            }
+            const home = App.ValeObjectLibrary_LibraryShelf(def);
+            const shelf = home.category;
             if (!shelves.has(shelf)) {
                 shelves.set(shelf, { name: shelf, summary: '', ranges: [], records: [] });
             }
-            shelves.get(shelf).records.push(def);
+            shelves.get(shelf).records.push({ def: def, range: home.range });
         });
         shelves.forEach(function (shelf) {
             if (!shelf.records.length) {

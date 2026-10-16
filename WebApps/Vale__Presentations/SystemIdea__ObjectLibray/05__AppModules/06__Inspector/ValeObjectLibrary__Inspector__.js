@@ -39,7 +39,9 @@
     // ------------------------------------------------------------
     // FUNCTION | Attributes column - JSON for the open level only
     // ------------------------------------------------------------
-    const AttributeFolded = new Set();                                      // <-- A resource the user has closed. Everything else stays open
+    const AttributeFolded = new Set();                                      // <-- A JSON block the user has closed
+    const AttributeLibraryOpen = new Set();                                 // <-- A common library opened in the Attributes tab
+    const AttributeRecordOpen = new Set();                                  // <-- One shared record opened in the Attributes tab
 
     function ValeObjectLibrary_AttributeEntries(value) {
         if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -102,6 +104,16 @@
                 id   : 'Vale__PaintLibrary',
                 name : 'Vale Paint Library Attribute Dictionary',
                 role : 'Common library, and the single source of truth for joinery paint. Any assembly, component or product calls a finish by its code. The colour, the price and the supplier stay in this dictionary and are not copied onto the object.'
+            };
+        }
+        if (resource.resourceType === 'SheetMaterial' || /Sheet__l\d+xw\d+__t/.test(resource.id)) {
+            const family = resource.libraryToken || (resource.id.indexOf('Plywood') === 0 ? 'Vale__PlywoodSheetLibrary'
+                : resource.id.indexOf('Aluminium') === 0 ? 'Vale__AluminiumSheetLibrary' : 'Vale__OsbSheetLibrary');
+            const title = family.replace('Vale__', '').replace('Library', '');
+            return {
+                id   : family,
+                name : title + ' Attribute Dictionary',
+                role : 'Common library, one record per board size and thickness, called by code. ' + resource.id + ' is one board. Naming the library means every board in the family.'
             };
         }
         if (resource.resourceType === 'TimberMaterial') {
@@ -181,13 +193,125 @@
         return body;
     }
 
-    function ValeObjectLibrary_AttributeNote() {
+    function ValeObjectLibrary_FieldRows(data) {
         const E = App.ValeObjectLibrary_El;
-        return E('aside', { class: 'attributes__note' },
-            E('p', { class: 'attributes__note-title', text: 'Attribute dictionaries' }),
-            E('p', { text: 'An attribute dictionary stores the attributes of an assembly, a component, a product or a resource.' }),
-            E('p', { text: 'A common library is one dictionary kept once and called by code. The Vale Paint Library Attribute Dictionary is that kind of store: many objects name Vale__PaintLibrary, and the colour and the price live only there. That library is the single source of truth.' }),
-            E('p', { text: 'A bespoke dictionary belongs to one assembly, component or product. Those values are not in a shared library.' }));
+        const rows = Object.keys(data || {}).map(function (key) {
+            const value = data[key];
+            const text = value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value);
+            return E('div', { class: 'attr-fields__row' },
+                E('dt', { text: key }),
+                E('dd', { text: text }));
+        });
+        return E('dl', { class: 'attr-fields' }, rows);
+    }
+
+    function ValeObjectLibrary_RenderAttributeGroups(host, def, bespoke, libraries, libraryOrder) {
+        const E = App.ValeObjectLibrary_El;
+        host.textContent = '';
+        if (!def) {
+            host.appendChild(E('p', { class: 'attr-group__empty', text: 'Select a component, product or assembly.' }));
+            return;
+        }
+
+        const ownFields = {};
+        Object.keys(bespoke).forEach(function (key) {
+            if (key.indexOf('Dictionary__') !== 0) {
+                ownFields[key] = bespoke[key];
+            }
+        });
+        const ownRows = Object.keys(ownFields).length
+            ? ValeObjectLibrary_FieldRows(ownFields)
+            : E('p', { class: 'attr-group__empty', text: bespoke.Dictionary__Scope });
+        host.appendChild(E('section', { class: 'attr-card' },
+            E('span', { class: 'attr-card__kind attr-card__kind--own', text: 'Bespoke' }),
+            E('h3', { class: 'attr-card__title', text: bespoke.Dictionary__Owner }),
+            E('p', { class: 'attr-card__meta', text: 'Values stored on this object. Not a shared library.' }),
+            ownRows));
+
+        if (!libraryOrder.length) {
+            host.appendChild(E('p', { class: 'attr-group__empty', text: 'No common library is called at this level.' }));
+            return;
+        }
+
+        libraryOrder.forEach(function (id) {
+            const shelf = libraries[id];
+            const list = shelf.items.slice().sort(function (a, b) {
+                return (a.cardOrder || 0) - (b.cardOrder || 0) || a.name.localeCompare(b.name);
+            });
+            const libraryOpen = AttributeLibraryOpen.has(id);
+            const noun = list.length === 1 ? 'record' : 'records';
+            const records = libraryOpen ? list.map(function (resource) {
+                const swatch = resource.data && resource.data.Swatch
+                    ? E('span', { class: 'attr-record__swatch', style: 'background:' + resource.data.Swatch })
+                    : null;
+                const recordOpen = AttributeRecordOpen.has(resource.id);
+                const blocks = recordOpen ? (resource.attributes || []).map(function (attribute) {
+                    return E('div', { class: 'attr-block' },
+                        E('h5', { class: 'attr-block__title', text: attribute.label }),
+                        ValeObjectLibrary_FieldRows(attribute.data));
+                }) : [];
+                if (recordOpen && !blocks.length) {
+                    blocks.push(E('p', { class: 'attr-group__empty', text: resource.summary || resource.name }));
+                }
+                return E('article', { class: 'attr-record' },
+                    E('button', {
+                        type: 'button',
+                        class: 'attr-record__toggle' + (recordOpen ? ' is-open' : ''),
+                        'aria-expanded': recordOpen ? 'true' : 'false',
+                        onclick: function () {
+                            if (AttributeRecordOpen.has(resource.id)) {
+                                AttributeRecordOpen.delete(resource.id);
+                            } else {
+                                AttributeRecordOpen.add(resource.id);
+                            }
+                            App.ValeObjectLibrary_RenderInspector();
+                        }
+                    },
+                        E('span', { class: 'attr-fold', 'aria-hidden': 'true', text: recordOpen ? '▾' : '▸' }),
+                        swatch,
+                        E('span', { text: resource.name }),
+                        E('span', { class: 'attr-record__code', text: resource.id })),
+                    blocks);
+            }) : [];
+            host.appendChild(E('section', { class: 'attr-card' },
+                E('button', {
+                    type: 'button',
+                    class: 'attr-card__toggle' + (libraryOpen ? ' is-open' : ''),
+                    'aria-expanded': libraryOpen ? 'true' : 'false',
+                    onclick: function () {
+                        if (AttributeLibraryOpen.has(id)) {
+                            AttributeLibraryOpen.delete(id);
+                        } else {
+                            AttributeLibraryOpen.add(id);
+                        }
+                        App.ValeObjectLibrary_RenderInspector();
+                    }
+                },
+                    E('span', { class: 'attr-fold', 'aria-hidden': 'true', text: libraryOpen ? '▾' : '▸' }),
+                    E('span', { class: 'attr-card__head' },
+                        E('span', { class: 'attr-card__kind', text: 'Common library' }),
+                        E('span', { class: 'attr-card__title', text: shelf.dictionary.name }),
+                        E('span', { class: 'attr-card__meta', text: 'Called as ' + id + ' · ' + list.length + ' ' + noun }))),
+                records));
+        });
+    }
+
+    function ValeObjectLibrary_ApplyAttributesTab() {
+        const groups = State.attributesTab === 'groups';
+        if (Elements.attributesBody) {
+            Elements.attributesBody.hidden = groups;
+        }
+        if (Elements.attributesGroups) {
+            Elements.attributesGroups.hidden = !groups;
+        }
+        if (Elements.attributesTabJson) {
+            Elements.attributesTabJson.classList.toggle('is-on', !groups);
+            Elements.attributesTabJson.setAttribute('aria-selected', groups ? 'false' : 'true');
+        }
+        if (Elements.attributesTabGroups) {
+            Elements.attributesTabGroups.classList.toggle('is-on', groups);
+            Elements.attributesTabGroups.setAttribute('aria-selected', groups ? 'true' : 'false');
+        }
     }
     function ValeObjectLibrary_ResourceJson(resource) {
         const open = !AttributeFolded.has(resource.id);                      // <-- Open unless this level has been folded by hand
@@ -226,12 +350,16 @@
         body.textContent = '';
         const selection = State.selection;
         if (!selection) {
-            title.textContent = 'Nothing open';
-            body.appendChild(ValeObjectLibrary_AttributeNote());
+            title.textContent = 'Select an object';
+            if (Elements.attributesGroups) {
+                Elements.attributesGroups.textContent = '';
+                Elements.attributesGroups.appendChild(App.ValeObjectLibrary_El('p', { class: 'attr-group__empty', text: 'Select a component, product or assembly.' }));
+            }
             body.appendChild(ValeObjectLibrary_AttributeNode({
-                Attributes : 'Open a component, product or assembly'
+                Attributes : 'Select a component, product or assembly'
             }, 0));
             body.dataset.level = '';
+            ValeObjectLibrary_ApplyAttributesTab();
             App.ValeObjectLibrary_FitAttributesColumn();
             return;
         }
@@ -248,8 +376,11 @@
             return;
         }
         title.textContent = def.name;
-        if (body.dataset.level !== def.id) {
-            AttributeFolded.clear();                                         // <-- A new level opens every resource. Arrows fold it from there
+        const freshLevel = body.dataset.level !== def.id;
+        if (freshLevel) {
+            AttributeFolded.clear();                                         // <-- JSON libraries start folded again
+            AttributeLibraryOpen.clear();                                    // <-- Attributes tab: common libraries start closed
+            AttributeRecordOpen.clear();                                     // <-- And each shared record inside them starts closed
         }
 
         const documentJson = {
@@ -285,16 +416,18 @@
             }
             libraries[dictionary.id].items.push(resource);
         });
-        const preferred = ['Vale__PaintLibrary', 'Vale__TimberLibrary', 'Vale__ProfileLibrary', 'Vale__MaterialLibrary', 'Vale__FinishLibrary', 'Vale__SpecificationLibrary'];
         libraryOrder.sort(function (a, b) {
-            const ia = preferred.indexOf(a);
-            const ib = preferred.indexOf(b);
-            return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+            return a.localeCompare(b);                                       // <-- Shared libraries always listed A to Z
         });
 
         if (!libraryOrder.length) {
             documentJson.Dictionaries__CommonLibraries = 'None at this level. A common library is called by the component, product or assembly that uses it.';
         } else {
+            if (freshLevel) {
+                libraryOrder.forEach(function (id) {
+                    AttributeFolded.add('dict:' + id);                        // <-- The library list starts collapsed
+                });
+            }
             const common = {};
             libraryOrder.forEach(function (id) {
                 const shelf = libraries[id];
@@ -383,8 +516,15 @@
         }
 
         const keptScroll = body.dataset.level === def.id ? body.scrollTop : 0;
-        body.appendChild(ValeObjectLibrary_AttributeNote());
+        const groupsScroll = Elements.attributesGroups && Elements.attributesGroups.dataset.level === def.id
+            ? Elements.attributesGroups.scrollTop : 0;
         body.appendChild(draw(lifted, 0));
+        if (Elements.attributesGroups) {
+            ValeObjectLibrary_RenderAttributeGroups(Elements.attributesGroups, def, bespoke, libraries, libraryOrder);
+            Elements.attributesGroups.dataset.level = def.id;
+            Elements.attributesGroups.scrollTop = groupsScroll;
+        }
+        ValeObjectLibrary_ApplyAttributesTab();
         body.dataset.level = def.id;
         body.scrollTop = keptScroll;
         App.ValeObjectLibrary_FitAttributesColumn();
@@ -400,8 +540,8 @@
     App.ValeObjectLibrary_FitAttributesColumn = function () {
         const panel = Elements.attributesPanel;
         const body  = Elements.attributesBody;
-        if (!panel || !body) {
-            return;
+        if (!panel || !body || State.attributesTab === 'groups') {
+            return;                                                          // <-- The groups tab wraps. Width follows the JSON tab
         }
         const min = 320;
         const max = App.ValeObjectLibrary_AttributesMaxWidth();
@@ -452,6 +592,19 @@
             State.attributesWidth = null;                                     // <-- Back to fitting the JSON
             App.ValeObjectLibrary_FitAttributesColumn();
         });
+        function showTab(tab) {
+            State.attributesTab = tab;
+            ValeObjectLibrary_ApplyAttributesTab();
+            if (tab === 'json') {
+                App.ValeObjectLibrary_FitAttributesColumn();
+            }
+        }
+        if (Elements.attributesTabJson) {
+            Elements.attributesTabJson.addEventListener('click', function () { showTab('json'); });
+        }
+        if (Elements.attributesTabGroups) {
+            Elements.attributesTabGroups.addEventListener('click', function () { showTab('groups'); });
+        }
         window.addEventListener('resize', App.ValeObjectLibrary_FitAttributesColumn);
     };
     // ------------------------------------------------------------
@@ -580,19 +733,33 @@
             E('p', { class: 'schemes__lead', text: 'A resource is one record with several attribute blocks. Colour, cost and procurement stay on the resource. A component stores only the code, such as ValePaintFinish__no01-ValeWhite__. Open that component to see its resources. Open the assembly around it and those resources stay with the component.' })
         );
         if (paints.length) {
-            App.ValeObjectLibrary_Put(body,
-                E('h3', { class: 'schemes__heading', text: 'Vale paint card · ' + paints.length }),
-                E('div', { class: 'paint-grid paint-grid--board' }, paints.map(App.ValeObjectLibrary_PaintSwatch))
-            );
+            body.appendChild(App.ValeObjectLibrary_SchemeSection('Vale paint card', paints.length + ' finishes', null,
+                E('div', { class: 'paint-grid paint-grid--board' }, paints.map(App.ValeObjectLibrary_PaintSwatch))));
         }
         (Data.resourceSchemes || []).forEach(function (scheme) {
-            App.ValeObjectLibrary_Put(body,
-                E('h3', { class: 'schemes__heading', text: scheme.title }),
-                E('p', { class: 'schemes__lead', text: scheme.lead }),
-                scheme.file ? E('p', { class: 'schemes__file', text: scheme.file }) : null,
-                E('pre', { class: 'schemes__code' }, E('code', { text: scheme.code }))
-            );
+            const parts = [
+                scheme.lead ? E('p', { class: 'schemes__lead', text: scheme.lead }) : null,
+                scheme.file ? E('p', { class: 'schemes__file', text: scheme.file }) : null
+            ];
+            if (scheme.sections && scheme.sections.length) {
+                scheme.sections.forEach(function (section) {
+                    parts.push(App.ValeObjectLibrary_SchemeSection(section.title, section.code, null,
+                        E('pre', { class: 'schemes__code' }, E('code', { text: section.body || section.code }))));
+                });
+            } else if (scheme.code) {
+                parts.push(E('pre', { class: 'schemes__code' }, E('code', { text: scheme.code })));
+            }
+            body.appendChild(App.ValeObjectLibrary_SchemeSection(scheme.title, scheme.sections ? scheme.sections.length + ' boards' : '', null, parts));
         });
+    };
+
+    App.ValeObjectLibrary_SchemeSection = function (title, note, file, content) {
+        const E = App.ValeObjectLibrary_El;
+        return E('details', { class: 'scheme-fold' },
+            E('summary', { class: 'scheme-fold__summary' },
+                E('span', { class: 'scheme-fold__title', text: title }),
+                note ? E('span', { class: 'scheme-fold__note', text: note }) : null),
+            E('div', { class: 'scheme-fold__body' }, content));
     };
     // ------------------------------------------------------------
 
@@ -928,7 +1095,7 @@
             if (cell) {
                 filled += 1;
             } else {
-                cell = E('td', { class: 'muted', text: '—' });
+                cell = E('td', { class: 'muted', text: '-' });
             }
             return E('tr', null, E('th', { scope: 'row', text: field }), cell);
         });

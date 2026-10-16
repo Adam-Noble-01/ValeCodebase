@@ -74,7 +74,7 @@
         });
         Layers.svg.on('dblclick', function (event) {
             if (!event.target.closest('.node, .res')) {
-                App.ValeObjectLibrary_FitAll();
+                App.ValeObjectLibrary_CollapseToTop();                        // <-- Empty canvas: close every branch and return to the root
             }
         });
         Elements.canvas.addEventListener('mousedown', function (event) {
@@ -105,7 +105,6 @@
             App.ValeObjectLibrary_UpdateTierStrip(transform);
             App.ValeObjectLibrary_UpdateFloatingLabels(transform);
             App.ValeObjectLibrary_PlaceHint(transform);
-            App.ValeObjectLibrary_DrawNavigator();
             Elements.zoomReadout.textContent = Math.round(transform.k * 100) + '%';
         });
     };
@@ -176,13 +175,12 @@
         }
     };
 
-    // SUB FUNCTION | The part of the canvas not covered by the strip, toolbar, navigator or tour card
+    // SUB FUNCTION | The part of the canvas not covered by the strip, toolbar or tour card
     App.ValeObjectLibrary_ViewArea = function () {
-        const width     = Elements.canvas.clientWidth;
-        const height    = Elements.canvas.clientHeight;
-        const touring   = State.tourIndex >= 0 && !Elements.tour.hidden;
-        const navigator = Elements.navigator.offsetHeight;                     // <-- 0 when hidden or on a phone
-        let reserve = Math.max(Elements.toolbar.offsetHeight + 32, navigator ? navigator + 30 : 0);
+        const width   = Elements.canvas.clientWidth;
+        const height  = Elements.canvas.clientHeight;
+        const touring = State.tourIndex >= 0 && !Elements.tour.hidden;
+        let reserve = Elements.toolbar.offsetHeight + 32;
         if (touring) {
             reserve = Math.max(reserve, Elements.tour.offsetHeight + parseFloat(Elements.tour.style.bottom || 80) + 18);
         }

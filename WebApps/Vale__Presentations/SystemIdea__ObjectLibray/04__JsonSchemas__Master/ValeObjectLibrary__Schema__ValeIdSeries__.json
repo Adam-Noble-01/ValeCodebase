@@ -1,0 +1,1618 @@
+{
+    "Vale__IdSeries" : {
+        "Library__Name" : "Vale ID series",
+        "Library__Purpose" : "Every assembly, component and product has one Vale ID. The form is the lantern asset id: a two-digit series, an underscore, then four digits, as in 45_2011. A record that already has a lantern asset id keeps it.",
+        "Series" : [
+            {
+                "Series__Number" : "10",
+                "Series__Name" : "Column assemblies",
+                "Series__Holds" : "The column assemblies, one record per size and range.",
+                "Series__From" : "10_1001",
+                "Series__To" : "10_1011",
+                "Series__Count" : 11,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "10_1001",
+                        "Record__Name" : "Classical 300mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1002",
+                        "Record__Name" : "Classical 250mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1003",
+                        "Record__Name" : "Classical 200mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1004",
+                        "Record__Name" : "Classical 175mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1005",
+                        "Record__Name" : "Classical 150mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1006",
+                        "Record__Name" : "Classical 102mm Columns",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1007",
+                        "Record__Name" : "Belton Column",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1008",
+                        "Record__Name" : "Stop Chamfer Column",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1009",
+                        "Record__Name" : "Hardwick Column",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1010",
+                        "Record__Name" : "Cragside Column",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "10_1011",
+                        "Record__Name" : "Gothic Column",
+                        "Record__Tier" : "assembly"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "11",
+                "Series__Name" : "Column parts",
+                "Series__Holds" : "Bases, shafts and capitals.",
+                "Series__From" : "11_1001",
+                "Series__To" : "11_1036",
+                "Series__Count" : 36,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "11_1001",
+                        "Record__Name" : "Classical 300mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1002",
+                        "Record__Name" : "Classical 300mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1003",
+                        "Record__Name" : "Classical 300mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1004",
+                        "Record__Name" : "Classical 250mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1005",
+                        "Record__Name" : "Classical 250mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1006",
+                        "Record__Name" : "Classical 250mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1007",
+                        "Record__Name" : "Classical 200mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1008",
+                        "Record__Name" : "Classical 200mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1009",
+                        "Record__Name" : "Classical 200mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1010",
+                        "Record__Name" : "Classical 175mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1011",
+                        "Record__Name" : "Classical 175mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1012",
+                        "Record__Name" : "Classical 175mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1013",
+                        "Record__Name" : "Classical 150mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1014",
+                        "Record__Name" : "Classical 150mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1015",
+                        "Record__Name" : "Classical 150mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1016",
+                        "Record__Name" : "Classical 102mm Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1017",
+                        "Record__Name" : "Classical 102mm Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1018",
+                        "Record__Name" : "Classical 102mm Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1019",
+                        "Record__Name" : "Belton Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1020",
+                        "Record__Name" : "Belton Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1021",
+                        "Record__Name" : "Belton Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1022",
+                        "Record__Name" : "Argory Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1023",
+                        "Record__Name" : "Argory Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1024",
+                        "Record__Name" : "Argory Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1025",
+                        "Record__Name" : "Stop Chamfer Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1026",
+                        "Record__Name" : "Stop Chamfer Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1027",
+                        "Record__Name" : "Stop Chamfer Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1028",
+                        "Record__Name" : "Hardwick Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1029",
+                        "Record__Name" : "Hardwick Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1030",
+                        "Record__Name" : "Hardwick Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1031",
+                        "Record__Name" : "Cragside Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1032",
+                        "Record__Name" : "Cragside Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1033",
+                        "Record__Name" : "Cragside Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1034",
+                        "Record__Name" : "Gothic Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1035",
+                        "Record__Name" : "Gothic Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "11_1036",
+                        "Record__Name" : "Gothic Column Capital",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "12",
+                "Series__Name" : "Pilasters",
+                "Series__Holds" : "Pilaster assemblies.",
+                "Series__From" : "12_1001",
+                "Series__To" : "12_1002",
+                "Series__Count" : 2,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "12_1001",
+                        "Record__Name" : "Belton Pilasters",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "12_1002",
+                        "Record__Name" : "Argory Pilasters",
+                        "Record__Tier" : "assembly"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "13",
+                "Series__Name" : "Internal columns",
+                "Series__Holds" : "Internal column assemblies and their bases, shafts and capitals.",
+                "Series__From" : "13_1001",
+                "Series__To" : "13_1028",
+                "Series__Count" : 28,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "13_1001",
+                        "Record__Name" : "Internal Column Type A",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1002",
+                        "Record__Name" : "Internal Column Type A/B",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1003",
+                        "Record__Name" : "Internal Column Type 175",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1004",
+                        "Record__Name" : "Internal Column Type B",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1005",
+                        "Record__Name" : "Internal Column Type C",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1006",
+                        "Record__Name" : "Internal Column Type Wrigley",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1007",
+                        "Record__Name" : "Internal Column Type D",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "13_1008",
+                        "Record__Name" : "Type A Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1009",
+                        "Record__Name" : "Type A Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1010",
+                        "Record__Name" : "Type A Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1011",
+                        "Record__Name" : "Type A/B Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1012",
+                        "Record__Name" : "Type A/B Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1013",
+                        "Record__Name" : "Type A/B Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1014",
+                        "Record__Name" : "Type 175 Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1015",
+                        "Record__Name" : "Type 175 Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1016",
+                        "Record__Name" : "Type 175 Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1017",
+                        "Record__Name" : "Type B Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1018",
+                        "Record__Name" : "Type B Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1019",
+                        "Record__Name" : "Type B Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1020",
+                        "Record__Name" : "Type C Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1021",
+                        "Record__Name" : "Type C Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1022",
+                        "Record__Name" : "Type C Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1023",
+                        "Record__Name" : "Type Wrigley Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1024",
+                        "Record__Name" : "Type Wrigley Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1025",
+                        "Record__Name" : "Type Wrigley Internal Column Capital",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1026",
+                        "Record__Name" : "Type D Internal Column Base",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1027",
+                        "Record__Name" : "Type D Internal Column Shaft",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "13_1028",
+                        "Record__Name" : "Type D Internal Column Capital",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "14",
+                "Series__Name" : "Entablatures",
+                "Series__Holds" : "The entablature assembly, architrave, frieze and cornice.",
+                "Series__From" : "14_1001",
+                "Series__To" : "14_1004",
+                "Series__Count" : 4,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "14_1001",
+                        "Record__Name" : "Entablature Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "14_1002",
+                        "Record__Name" : "Architrave",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "14_1003",
+                        "Record__Name" : "Frieze",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "14_1004",
+                        "Record__Name" : "Cornice",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "15",
+                "Series__Name" : "Doors and windows",
+                "Series__Holds" : "Door and window assemblies, and the leaf, cill, mullion and glazing parts.",
+                "Series__From" : "15_1001",
+                "Series__To" : "15_1013",
+                "Series__Count" : 13,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "15_1001",
+                        "Record__Name" : "Door Leaf Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "15_1002",
+                        "Record__Name" : "Door Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "15_1003",
+                        "Record__Name" : "Window Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "15_1004",
+                        "Record__Name" : "Door Stile",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1005",
+                        "Record__Name" : "Door Head Rail",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1006",
+                        "Record__Name" : "Door Mid Rail",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1007",
+                        "Record__Name" : "Door Lower Rail",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1008",
+                        "Record__Name" : "Glazing Panel",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1009",
+                        "Record__Name" : "Glazing Bar",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1010",
+                        "Record__Name" : "Door Threshold",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1011",
+                        "Record__Name" : "Cill",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1012",
+                        "Record__Name" : "Mullion",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "15_1013",
+                        "Record__Name" : "Window Board",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "16",
+                "Series__Name" : "Rainwater goods",
+                "Series__Holds" : "Hoppers, pipes, elbows, outlets and brackets.",
+                "Series__From" : "16_1001",
+                "Series__To" : "16_1007",
+                "Series__Count" : 7,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "16_1001",
+                        "Record__Name" : "Rainwater Hopper & Downpipe",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "16_1002",
+                        "Record__Name" : "Rainwater Pipe Section",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "16_1003",
+                        "Record__Name" : "Bracket",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "16_1004",
+                        "Record__Name" : "Gutter Outlet",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "16_1005",
+                        "Record__Name" : "Rainwater Hopper",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "16_1006",
+                        "Record__Name" : "Rainwater Pipe Elbow",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "16_1007",
+                        "Record__Name" : "Rainwater Pipe Wall Bracket",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "17",
+                "Series__Name" : "Tie bars and lighting",
+                "Series__Holds" : "Tie bars, junction pieces, soffit blocks and lighting hooks.",
+                "Series__From" : "17_1001",
+                "Series__To" : "17_1007",
+                "Series__Count" : 7,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "17_1001",
+                        "Record__Name" : "Tie Bar Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "17_1002",
+                        "Record__Name" : "Lighting Block Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "17_1003",
+                        "Record__Name" : "16mm Tie Bar",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "17_1004",
+                        "Record__Name" : "Tie Bar Soffit Termination Block",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "17_1005",
+                        "Record__Name" : "Lighting Block Decorative Turning",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "17_1006",
+                        "Record__Name" : "Lighting Hook",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "17_1007",
+                        "Record__Name" : "Tie Bar Quatrefoil Junction Piece",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "18",
+                "Series__Name" : "Framework timber sections",
+                "Series__Holds" : "Upright sections.",
+                "Series__From" : "18_1001",
+                "Series__To" : "18_1004",
+                "Series__Count" : 4,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "18_1001",
+                        "Record__Name" : "44 x 94mm Upright Section",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "18_1002",
+                        "Record__Name" : "56 x 94mm Upright Section",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "18_1003",
+                        "Record__Name" : "56 x 138mm Upright Section",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "18_1004",
+                        "Record__Name" : "44 x 94mm Split Upright Section",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "19",
+                "Series__Name" : "Cill nosings",
+                "Series__Holds" : "One nosing per size.",
+                "Series__From" : "19_1001",
+                "Series__To" : "19_1014",
+                "Series__Count" : 14,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "19_1001",
+                        "Record__Name" : "180mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1002",
+                        "Record__Name" : "166mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1003",
+                        "Record__Name" : "132mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1004",
+                        "Record__Name" : "124mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1005",
+                        "Record__Name" : "122mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1006",
+                        "Record__Name" : "119mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1007",
+                        "Record__Name" : "98mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1008",
+                        "Record__Name" : "95mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1009",
+                        "Record__Name" : "85mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1010",
+                        "Record__Name" : "75mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1011",
+                        "Record__Name" : "72mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1012",
+                        "Record__Name" : "70mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1013",
+                        "Record__Name" : "65mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "19_1014",
+                        "Record__Name" : "60mm Cill Nosing",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "20",
+                "Series__Name" : "Internal joinery and eaves",
+                "Series__Holds" : "Window boards, skirtings, staff beads and eaves gutters.",
+                "Series__From" : "20_1001",
+                "Series__To" : "20_1003",
+                "Series__Count" : 3,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "20_1001",
+                        "Record__Name" : "Skirting Boards",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "20_1002",
+                        "Record__Name" : "Staff Beads",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "20_1003",
+                        "Record__Name" : "Belton Eaves Gutter",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "21",
+                "Series__Name" : "Ironmongery",
+                "Series__Holds" : "Door handles, hinges, locks, bolts, window gear and cabin hooks.",
+                "Series__From" : "21_1001",
+                "Series__To" : "21_6007",
+                "Series__Count" : 21,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "21_1001",
+                        "Record__Name" : "Scroll Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1002",
+                        "Record__Name" : "Plain Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1003",
+                        "Record__Name" : "Newton Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1004",
+                        "Record__Name" : "Fitzroy Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1005",
+                        "Record__Name" : "Empire Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1006",
+                        "Record__Name" : "Lindum Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1007",
+                        "Record__Name" : "Griffin Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1008",
+                        "Record__Name" : "Aspen Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_1009",
+                        "Record__Name" : "Lipsham Lever Handle",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_2001",
+                        "Record__Name" : "Standard Hinge",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_2002",
+                        "Record__Name" : "Standard Hinge with Urns",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_3001",
+                        "Record__Name" : "Lock",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_4001",
+                        "Record__Name" : "Shoot Bolt",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_5001",
+                        "Record__Name" : "Espagnolette",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6001",
+                        "Record__Name" : "4\" Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6002",
+                        "Record__Name" : "6\" Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6003",
+                        "Record__Name" : "10\" Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6004",
+                        "Record__Name" : "12\" Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6005",
+                        "Record__Name" : "350mm Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6006",
+                        "Record__Name" : "400mm Cabin Hook",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "21_6007",
+                        "Record__Name" : "18\" Cabin Hook",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "22",
+                "Series__Name" : "Roof finials",
+                "Series__Holds" : "Cast and timber finials. Lantern finials stay in series 50.",
+                "Series__From" : "22_1001",
+                "Series__To" : "22_1021",
+                "Series__Count" : 21,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "22_1001",
+                        "Record__Name" : "Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1002",
+                        "Record__Name" : "Finial Wings",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1003",
+                        "Record__Name" : "Hardwick Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1004",
+                        "Record__Name" : "Belton Post and Urn",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1005",
+                        "Record__Name" : "Turner Pinnacle (Timber)",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1006",
+                        "Record__Name" : "Cragside (Large) Spire Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1007",
+                        "Record__Name" : "Cragside Spire Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1008",
+                        "Record__Name" : "Belton Urn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1009",
+                        "Record__Name" : "Belton Ball Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1010",
+                        "Record__Name" : "Small Ball Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1011",
+                        "Record__Name" : "Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1012",
+                        "Record__Name" : "Medium Acorn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1013",
+                        "Record__Name" : "Medium Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1014",
+                        "Record__Name" : "Spire Finial with VG739B Scrolls",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1015",
+                        "Record__Name" : "Small Urn",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1016",
+                        "Record__Name" : "Small Urn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1017",
+                        "Record__Name" : "Large Urn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1018",
+                        "Record__Name" : "Medium Urn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1019",
+                        "Record__Name" : "Large Acorn Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1020",
+                        "Record__Name" : "Large Ball Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "22_1021",
+                        "Record__Name" : "Cone Finial",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "23",
+                "Series__Name" : "Roof crestings",
+                "Series__Holds" : "Ridge crestings and decorative strips.",
+                "Series__From" : "23_1001",
+                "Series__To" : "23_1017",
+                "Series__Count" : 17,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "23_1001",
+                        "Record__Name" : "Belton Ridge Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1002",
+                        "Record__Name" : "Castle Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1003",
+                        "Record__Name" : "Gothic Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1004",
+                        "Record__Name" : "Double Trefoil Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1005",
+                        "Record__Name" : "Small Square Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1006",
+                        "Record__Name" : "Argyll Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1007",
+                        "Record__Name" : "Newett Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1008",
+                        "Record__Name" : "Fletcher Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1009",
+                        "Record__Name" : "Van Maurick Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1010",
+                        "Record__Name" : "Castellated Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1011",
+                        "Record__Name" : "Ridge Cresting",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1012",
+                        "Record__Name" : "Split Pattern",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1013",
+                        "Record__Name" : "Castellated Decor Strip",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1014",
+                        "Record__Name" : "A Circled Trefoil Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1015",
+                        "Record__Name" : "Small Audi Crest",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1016",
+                        "Record__Name" : "Two Patterns Rounded",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "23_1017",
+                        "Record__Name" : "Medieval Decorative Lampshade",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "30",
+                "Series__Name" : "Roof lantern assemblies",
+                "Series__Holds" : "The built ridge, hip, glaze bar, base frame, vent and interior joinery.",
+                "Series__From" : "30_1001",
+                "Series__To" : "30_1008",
+                "Series__Count" : 8,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "30_1001",
+                        "Record__Name" : "Aluminium Capped Ridge Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1002",
+                        "Record__Name" : "Leaded Only Ridge Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1003",
+                        "Record__Name" : "Hip Beam Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1004",
+                        "Record__Name" : "Glaze Bar Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1005",
+                        "Record__Name" : "Rafter Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1006",
+                        "Record__Name" : "Base Frame Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1007",
+                        "Record__Name" : "Interior Joinery Assembly",
+                        "Record__Tier" : "assembly"
+                    },
+                    {
+                        "Vale__Id" : "30_1008",
+                        "Record__Name" : "ETR Vent Assembly",
+                        "Record__Tier" : "assembly"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "31",
+                "Series__Name" : "Other products",
+                "Series__Holds" : "Bought-in parts that do not sit in a series above.",
+                "Series__From" : "31_1001",
+                "Series__To" : "31_1003",
+                "Series__Count" : 3,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "31_1001",
+                        "Record__Name" : "Fielded Panel",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "31_1002",
+                        "Record__Name" : "Vent Frame",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "31_1003",
+                        "Record__Name" : "Vent Actuator",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "45",
+                "Series__Name" : "Glaze bar",
+                "Series__Holds" : "Lantern glaze bar parts. Existing lantern asset ids.",
+                "Series__From" : "45_1001",
+                "Series__To" : "45_2031",
+                "Series__Count" : 4,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "45_1001",
+                        "Record__Name" : "Glaze Bar End Cap",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "45_2011",
+                        "Record__Name" : "Glaze Bar Core",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "45_2021",
+                        "Record__Name" : "Glaze Bar Cap",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "45_2031",
+                        "Record__Name" : "Glaze Bar Trim 45mm",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "46",
+                "Series__Name" : "Base frame",
+                "Series__Holds" : "Lantern head beam, eaves extrusion and lead cover flashing.",
+                "Series__From" : "46_1001",
+                "Series__To" : "46_1003",
+                "Series__Count" : 3,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "46_1001",
+                        "Record__Name" : "Head Beam",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "46_1002",
+                        "Record__Name" : "Eaves Extrusion",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "46_1003",
+                        "Record__Name" : "Lead Cover Flashing",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "47",
+                "Series__Name" : "Ridge",
+                "Series__Holds" : "Lantern ridge parts.",
+                "Series__From" : "47_1001",
+                "Series__To" : "47_2202",
+                "Series__Count" : 8,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "47_1001",
+                        "Record__Name" : "Ridge Block (Octagonal)",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_1011",
+                        "Record__Name" : "Ridge End Cap",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2001",
+                        "Record__Name" : "Ridge Core",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2021",
+                        "Record__Name" : "Ridge Beam",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2101",
+                        "Record__Name" : "Ridge Blocking",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2121",
+                        "Record__Name" : "Ridge Lead Flashing",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2201",
+                        "Record__Name" : "Ridge Capping",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "47_2202",
+                        "Record__Name" : "Ridge Capping Block",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "48",
+                "Series__Name" : "Hip",
+                "Series__Holds" : "Lantern hip parts.",
+                "Series__From" : "48_2001",
+                "Series__To" : "48_2121",
+                "Series__Count" : 4,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "48_2001",
+                        "Record__Name" : "Hip Core",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "48_2021",
+                        "Record__Name" : "Hip Beam",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "48_2101",
+                        "Record__Name" : "Hip Blocking",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "48_2121",
+                        "Record__Name" : "Hip Lead Flashing",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "49",
+                "Series__Name" : "Lantern interior joinery",
+                "Series__Holds" : "Wales cornice, ply packer and eaves trim.",
+                "Series__From" : "49_1001",
+                "Series__To" : "49_1021",
+                "Series__Count" : 3,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "49_1001",
+                        "Record__Name" : "Wales Cornice",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "49_1011",
+                        "Record__Name" : "Eaves Trim",
+                        "Record__Tier" : "component"
+                    },
+                    {
+                        "Vale__Id" : "49_1021",
+                        "Record__Name" : "12mm Ply Cornice Packer",
+                        "Record__Tier" : "component"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "50",
+                "Series__Name" : "Lantern finials",
+                "Series__Holds" : "Ball finial and spire finial from the Lantern Designer.",
+                "Series__From" : "50_1001",
+                "Series__To" : "50_2001",
+                "Series__Count" : 2,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "50_1001",
+                        "Record__Name" : "Ball Finial",
+                        "Record__Tier" : "product"
+                    },
+                    {
+                        "Vale__Id" : "50_2001",
+                        "Record__Name" : "Spire Finial",
+                        "Record__Tier" : "product"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "60",
+                "Series__Name" : "Aluminium sheet",
+                "Series__Holds" : "One Vale ID for each aluminium blank and thickness.",
+                "Series__From" : "60_1001",
+                "Series__To" : "60_1024",
+                "Series__Count" : 24,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "60_1001",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 0.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1002",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 0.7 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1003",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 0.9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1004",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 1 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1005",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 1.2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1006",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 1.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1007",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1008",
+                        "Record__Name" : "Aluminium Sheet 2000 x 1000 x 3 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1009",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 0.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1010",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 0.7 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1011",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 0.9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1012",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 1 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1013",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 1.2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1014",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 1.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1015",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1016",
+                        "Record__Name" : "Aluminium Sheet 2500 x 1250 x 3 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1017",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 0.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1018",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 0.7 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1019",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 0.9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1020",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 1 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1021",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 1.2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1022",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 1.5 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1023",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 2 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "60_1024",
+                        "Record__Name" : "Aluminium Sheet 3000 x 1500 x 3 mm",
+                        "Record__Tier" : "resource"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "61",
+                "Series__Name" : "Plywood sheet",
+                "Series__Holds" : "One Vale ID for each plywood board and thickness.",
+                "Series__From" : "61_1001",
+                "Series__To" : "61_1021",
+                "Series__Count" : 21,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "61_1001",
+                        "Record__Name" : "Plywood 2440 x 1220 x 4 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1002",
+                        "Record__Name" : "Plywood 2440 x 1220 x 6 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1003",
+                        "Record__Name" : "Plywood 2440 x 1220 x 9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1004",
+                        "Record__Name" : "Plywood 2440 x 1220 x 12 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1005",
+                        "Record__Name" : "Plywood 2440 x 1220 x 15 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1006",
+                        "Record__Name" : "Plywood 2440 x 1220 x 18 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1007",
+                        "Record__Name" : "Plywood 2440 x 1220 x 25 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1008",
+                        "Record__Name" : "Plywood 1220 x 1220 x 4 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1009",
+                        "Record__Name" : "Plywood 1220 x 1220 x 6 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1010",
+                        "Record__Name" : "Plywood 1220 x 1220 x 9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1011",
+                        "Record__Name" : "Plywood 1220 x 1220 x 12 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1012",
+                        "Record__Name" : "Plywood 1220 x 1220 x 15 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1013",
+                        "Record__Name" : "Plywood 1220 x 1220 x 18 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1014",
+                        "Record__Name" : "Plywood 1220 x 1220 x 25 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1015",
+                        "Record__Name" : "Plywood 3050 x 1525 x 4 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1016",
+                        "Record__Name" : "Plywood 3050 x 1525 x 6 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1017",
+                        "Record__Name" : "Plywood 3050 x 1525 x 9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1018",
+                        "Record__Name" : "Plywood 3050 x 1525 x 12 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1019",
+                        "Record__Name" : "Plywood 3050 x 1525 x 15 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1020",
+                        "Record__Name" : "Plywood 3050 x 1525 x 18 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "61_1021",
+                        "Record__Name" : "Plywood 3050 x 1525 x 25 mm",
+                        "Record__Tier" : "resource"
+                    }
+                ]
+            },
+            {
+                "Series__Number" : "62",
+                "Series__Name" : "OSB sheet",
+                "Series__Holds" : "One Vale ID for each OSB thickness.",
+                "Series__From" : "62_1001",
+                "Series__To" : "62_1004",
+                "Series__Count" : 4,
+                "Series__Items" : [
+                    {
+                        "Vale__Id" : "62_1001",
+                        "Record__Name" : "OSB 2440 x 1220 x 6 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "62_1002",
+                        "Record__Name" : "OSB 2440 x 1220 x 9 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "62_1003",
+                        "Record__Name" : "OSB 2440 x 1220 x 12 mm",
+                        "Record__Tier" : "resource"
+                    },
+                    {
+                        "Vale__Id" : "62_1004",
+                        "Record__Name" : "OSB 2440 x 1220 x 18 mm",
+                        "Record__Tier" : "resource"
+                    }
+                ]
+            }
+        ]
+    }
+}

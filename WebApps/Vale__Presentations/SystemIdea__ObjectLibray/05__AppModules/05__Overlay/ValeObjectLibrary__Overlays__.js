@@ -1,12 +1,12 @@
 /* =============================================================================
- * VALE OBJECT LIBRARY - TIER STRIP, FLOATING LABELS AND THE NAVIGATOR
+ * VALE OBJECT LIBRARY - TIER STRIP AND FLOATING LABELS
  * =============================================================================
  *
  * FILE       : ValeObjectLibrary__Overlays__.js
  * NAMESPACE  : ValeObjectLibrary
  * MODULE     : Overlay
  * AUTHOR     : Adam Noble - Noble Architecture
- * PURPOSE    : Tier strip, floating labels and the navigator
+ * PURPOSE    : Tier strip and floating labels
  * CREATED    : 16-Oct-2026
  *
  * DESCRIPTION:
@@ -31,13 +31,11 @@
     const Layout     = App.Layout;
     const State      = App.State;
     const Elements   = App.Elements;
-    const Layers     = App.Layers;
     const LabelCache = App.LabelCache;
-    const Runtime    = App.Runtime;
     const Force      = App.Force;                                                // <-- The network's simulation nodes (set by RenderNetwork, loaded before this)
 
     // =====================================================================
-    // REGION | Overlays - Tier Strip, Floating Labels, Navigator
+    // REGION | Overlays - Tier Strip, Floating Labels
     // =====================================================================
 
     // FUNCTION | Build the tier header strip - also the legend, and a level control
@@ -61,10 +59,10 @@
                 library   : 'Back to the start: Vale Object Library on its own',
                 category  : 'Open the centre to its collections',
                 range     : 'Open each collection to its ranges',
-                assembly  : 'Open everything - select a component or product to see the Resources it uses',
-                component : 'Open everything - select a component or product to see the Resources it uses',
-                product   : 'Open everything - select a component or product to see the Resources it uses',
-                resource  : 'Open everything - select a component or product to see the Resources it uses'
+                assembly  : 'Open every collection so each object can be found',
+                component : 'Open every collection so each object can be found',
+                product   : 'Open every collection so each object can be found',
+                resource  : 'Open every collection so each object can be found'
             };
             Elements.tierStrip.appendChild(App.ValeObjectLibrary_El('div', { class: 'strip-legend', role: 'toolbar', 'aria-label': 'How far to open the chart' },
                 keys.map(function (key) {
@@ -87,7 +85,7 @@
                         App.ValeObjectLibrary_GlyphBubble(key),
                         Data.tiers[key].label);
                 }),
-                App.ValeObjectLibrary_El('span', { class: 'strip-legend__hint', text: App.ValeObjectLibrary_Plural(counts.records, 'record', 'records') + ' · collection ring = what it holds · +N = closed, heavy ring = open' })));
+                App.ValeObjectLibrary_El('span', { class: 'strip-legend__hint', text: App.ValeObjectLibrary_Plural(counts.records, 'record', 'records') + ' · a collection lists the objects in it · +N = closed, heavy ring = open' })));
             return;
         }
         Layout.columns.forEach(function (column) {
@@ -288,93 +286,6 @@
                 label.hidden = true;
             }
         });
-    };
-    // ------------------------------------------------------------
-
-    // FUNCTION | Draw the navigator - the whole chart in miniature, with the view on it
-    // ------------------------------------------------------------
-    App.ValeObjectLibrary_DrawNavigator = function () {
-        if (!State.navigatorOn) {
-            return;
-        }
-        const canvas = Elements.navCanvas;
-        const ratio  = window.devicePixelRatio || 1;
-        const width  = 200;
-        const height = 128;
-        if (canvas.width !== Math.round(width * ratio)) {
-            canvas.width  = Math.round(width * ratio);
-            canvas.height = Math.round(height * ratio);
-        }
-        const context = canvas.getContext('2d');
-        context.setTransform(ratio, 0, 0, ratio, 0, 0);
-        context.clearRect(0, 0, width, height);
-
-        const b     = Layout.bounds;
-        const pad   = 80;
-        const bx    = b.x - pad;
-        const by    = b.y - pad;
-        const bw    = b.w + pad * 2;
-        const bh    = b.h + pad * 2;
-        const scale = Math.min(width / bw, height / bh);
-        const ox    = (width - bw * scale) / 2 - bx * scale;
-        const oy    = (height - bh * scale) / 2 - by * scale;
-        Runtime.NavMapping  = { s: scale, ox: ox, oy: oy };
-
-        const lane = Layout.lane;
-        if (lane) {
-            context.fillStyle = 'rgba(0, 131, 0, 0.07)';
-            context.fillRect(ox + lane.x * scale, oy + lane.y * scale, lane.w * scale, lane.h * scale);
-        }
-
-        Layout.pos.forEach(function (box, uid) {
-            context.fillStyle = App.ValeObjectLibrary_TierColour(Model.byUid.get(uid).tier);
-            context.fillRect(ox + box.x * scale, oy + (box.y - box.h / 2) * scale, Math.max(1.5, box.w * scale), Math.max(1.5, box.h * scale));
-        });
-        context.fillStyle = App.ValeObjectLibrary_TierColour('resource');
-        Layout.res.forEach(function (box) {
-            context.fillRect(ox + box.x * scale, oy + (box.y - box.h / 2) * scale, Math.max(1.5, box.w * scale), Math.max(1.2, box.h * scale));
-        });
-
-        const t     = State.transform;
-        const view  = App.ValeObjectLibrary_ViewArea();
-        const left  = ox + t.invertX(0) * scale;
-        const top   = oy + t.invertY(Settings.stripHeight) * scale;
-        const right = ox + t.invertX(view.width) * scale;
-        const lower = oy + t.invertY(view.height) * scale;
-        context.fillStyle   = 'rgba(23, 43, 58, 0.08)';
-        context.strokeStyle = '#172b3a';
-        context.lineWidth   = 1.5;
-        context.fillRect(left, top, right - left, lower - top);
-        context.strokeRect(left, top, right - left, lower - top);
-
-        Elements.navZoom.textContent = Math.round(t.k * 100) + '%';
-    };
-    // ------------------------------------------------------------
-
-    // FUNCTION | Click or drag in the navigator to move the view
-    // ------------------------------------------------------------
-    App.ValeObjectLibrary_InitNavigator = function () {
-        let dragging = false;
-        const canvas = Elements.navCanvas;
-        function moveTo(event) {
-            const rect = canvas.getBoundingClientRect();
-            const x    = (event.clientX - rect.left - Runtime.NavMapping.ox) / Runtime.NavMapping.s;
-            const y    = (event.clientY - rect.top - Runtime.NavMapping.oy) / Runtime.NavMapping.s;
-            Layers.svg.interrupt('camera');
-            Layers.svg.call(Runtime.Zoom.translateTo, x, y, App.ValeObjectLibrary_ViewCentre());
-        }
-        canvas.addEventListener('pointerdown', function (event) {
-            dragging = true;
-            canvas.setPointerCapture(event.pointerId);
-            moveTo(event);
-        });
-        canvas.addEventListener('pointermove', function (event) {
-            if (dragging) {
-                moveTo(event);
-            }
-        });
-        canvas.addEventListener('pointerup', function () { dragging = false; });
-        canvas.addEventListener('pointercancel', function () { dragging = false; });
     };
     // ------------------------------------------------------------
 

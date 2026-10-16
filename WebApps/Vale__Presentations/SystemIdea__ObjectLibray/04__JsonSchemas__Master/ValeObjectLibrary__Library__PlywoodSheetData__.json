@@ -1,0 +1,573 @@
+{
+    "Vale__PlywoodSheetLibrary" : {
+        "Library__Name"                              : "Plywood sheet",
+        "Library__Purpose"                           : "One resource for each standard board and thickness. PlywoodSheet__l2440xw1220__t18mm is the 2440 x 1220 mm board at 18 mm. Naming Vale__PlywoodSheetLibrary means every plywood sheet.",
+        "Resource__PlywoodSheet__l2440xw1220__t4mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t4mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 4 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "4"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t6mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t6mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 6 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "6"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t9mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 9 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t12mm" : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t12mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 12 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "12"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t15mm" : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t15mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 15 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "15"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t18mm" : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t18mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 18 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "18"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l2440xw1220__t25mm" : {
+            "Resource__Code"       : "PlywoodSheet__l2440xw1220__t25mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 2440 x 1220 x 25 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "25"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t4mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t4mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 4 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "4"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t6mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t6mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 6 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "6"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t9mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 9 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t12mm" : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t12mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 12 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "12"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t15mm" : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t15mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 15 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "15"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t18mm" : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t18mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 18 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "18"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l1220xw1220__t25mm" : {
+            "Resource__Code"       : "PlywoodSheet__l1220xw1220__t25mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 1220 x 1220 x 25 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 1220,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "25"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t4mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t4mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 4 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "4"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t6mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t6mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 6 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "6"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t9mm"  : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 9 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t12mm" : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t12mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 12 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "12"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t15mm" : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t15mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 15 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "15"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t18mm" : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t18mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 18 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "18"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__PlywoodSheet__l3050xw1525__t25mm" : {
+            "Resource__Code"       : "PlywoodSheet__l3050xw1525__t25mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "Plywood 3050 x 1525 x 25 mm",
+            "Resource__Library"    : "Vale__PlywoodSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "Hardwood plywood, EN 636-2, exterior glue",
+                    "Material__Standard" : "BS EN 636",
+                    "Material__BoughtAs" : "Standard boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 3050,
+                    "Board__Width__mm"     : 1525,
+                    "Board__Thickness__mm" : "25"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "Standard board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "EN 636 plywood mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        }
+    }
+}

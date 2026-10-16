@@ -20,6 +20,9 @@
  * 16-Oct-2026 - Version 2.0.0
  * - Separated from ValeObjectLibrary__Demo__2.0.0__.html
  *
+ * 16-Oct-2026 - Version 2.0.1
+ * - Opening a branch in the library network collapses the shelves outside that group
+ *
  * ============================================================================= */
 
 (function (App) {
@@ -217,7 +220,10 @@
             return false;
         }
         const opened = opts.reveal ? App.ValeObjectLibrary_RevealPlacement(placement) : false;
-        App.ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { fly: opts.fly, refresh: opened });
+        if (opts.reveal && App.ValeObjectLibrary_IsForce()) {
+            App.ValeObjectLibrary_FocusBranch(placement.children.length ? placement : placement.parent);
+        }
+        App.ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { fly: opts.fly, refresh: opened || State.branchFocus });
         return true;
     };
     // ------------------------------------------------------------
@@ -229,7 +235,10 @@
             App.ValeObjectLibrary_SetView(placement.tree, { fit: false });           // <-- A link into the other view switches to it first
         }
         const opened = App.ValeObjectLibrary_RevealPlacement(placement);
-        App.ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { fly: true, refresh: opened });
+        if (App.ValeObjectLibrary_IsForce()) {
+            App.ValeObjectLibrary_FocusBranch(placement.children.length ? placement : placement.parent);
+        }
+        App.ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { fly: true, refresh: opened || State.branchFocus });
     };
     // ------------------------------------------------------------
 
@@ -333,7 +342,7 @@
         const firstName = Model.root && Model.root.def ? Model.root.def.name : 'the first box';
         const hintText  = Elements.hint.querySelector('.hint__text');
         hintText.textContent = view === 'library'
-            ? 'Click ' + firstName + ' to open the first shelf, then click each box to work down through the nesting'
+            ? 'Click ' + firstName + ' to open a collection and find the objects in it. A Scheme is where those objects are assembled.'
             : 'Click ' + firstName + ' to open it, then click each box to work down through the nesting';
         if (!State.booting && State.tourIndex < 0) {
             App.ValeObjectLibrary_ShowHint();
@@ -376,6 +385,34 @@
     };
     // ------------------------------------------------------------
 
+    // FUNCTION | Open one branch and collapse every shelf outside that group
+    // ------------------------------------------------------------
+    // Used by the library network. The route up to the opened box stays
+    // open. Its own children stay on show (that is the group). Every other
+    // open branch closes, and the walk then hides the shelves beside it.
+    App.ValeObjectLibrary_FocusBranch = function (placement) {
+        if (!placement || !App.ValeObjectLibrary_IsForce()) {
+            return;
+        }
+        const keep = new Set();
+        for (let node = placement; node; node = node.parent) {
+            keep.add(node.uid);
+        }
+        Array.from(State.expanded).forEach(function (uid) {
+            if (!keep.has(uid)) {
+                State.expanded.delete(uid);
+            }
+        });
+        for (let node = placement; node; node = node.parent) {
+            if (node.children.length) {
+                State.expanded.add(node.uid);
+            }
+        }
+        State.branchFocus = true;
+        State.detail      = 'custom';
+    };
+    // ------------------------------------------------------------
+
     // FUNCTION | Open or close one box
     // ------------------------------------------------------------
     App.ValeObjectLibrary_ToggleNode = function (placement, open) {
@@ -384,15 +421,18 @@
         }
         const isOpen = State.expanded.has(placement.uid);
         const want   = open === undefined ? !isOpen : open;
-        if (want === isOpen) {
-            return;
+        if (want === isOpen && !(want && App.ValeObjectLibrary_IsForce() && !State.branchFocus)) {
+            return;                                                          // <-- An already-open shelf in the network still collapses the others
         }
-        if (want) {
+        if (want && App.ValeObjectLibrary_IsForce()) {
+            App.ValeObjectLibrary_FocusBranch(placement);
+        } else if (want) {
             State.expanded.add(placement.uid);
+            State.detail = 'custom';
         } else {
             State.expanded.delete(placement.uid);
+            State.detail = 'custom';
         }
-        State.detail = 'custom';
         App.ValeObjectLibrary_Refresh();
     };
     // ------------------------------------------------------------
@@ -402,6 +442,7 @@
     // Levels: scheme, family, assembly, parts (everything open), all
     // (everything open and every Resource link drawn).
     App.ValeObjectLibrary_ApplyDetail = function (level) {
+        State.branchFocus = false;                                           // <-- A level button shows every shelf at that depth
         State.expanded.clear();
         const depth = { scheme: 0, family: 1, assembly: 2, parts: 9, all: 9 }[level];
         Model.placements.forEach(function (placement) {
@@ -416,6 +457,16 @@
     App.ValeObjectLibrary_SetDetail = function (level) {
         App.ValeObjectLibrary_ApplyDetail(level);
         App.ValeObjectLibrary_Refresh();
+    };
+
+    // FUNCTION | Close every open branch and return to the root
+    // ------------------------------------------------------------
+    // Double-click on empty canvas, and Escape, both come here.
+    App.ValeObjectLibrary_CollapseToTop = function () {
+        App.ValeObjectLibrary_HideHint();
+        App.ValeObjectLibrary_ApplyDetail('scheme');                         // <-- Only the root stays; every shelf below it closes
+        App.ValeObjectLibrary_Select(null, { refresh: true });
+        App.ValeObjectLibrary_FitAll();
     };
     // ------------------------------------------------------------
 
@@ -449,10 +500,14 @@
     App.ValeObjectLibrary_OnNodeClick = function (event, placement) {
         event.stopPropagation();
         App.ValeObjectLibrary_HideHint();
-        if (App.ValeObjectLibrary_IsForce() && placement.children.length && State.expanded.has(placement.uid)
-            && State.selection && State.selection.uid === placement.uid) {
-            State.expanded.delete(placement.uid);                            // <-- Network: click an open, selected node again to close it
-            State.detail = 'custom';
+        if (App.ValeObjectLibrary_IsForce() && placement.children.length) {
+            if (State.branchFocus && State.expanded.has(placement.uid)
+                && State.selection && State.selection.uid === placement.uid) {
+                State.expanded.delete(placement.uid);                        // <-- Click the open group again to close it and bring the other shelves back
+                State.detail = 'custom';
+            } else {
+                App.ValeObjectLibrary_FocusBranch(placement);                // <-- One group on show; the shelves outside it collapse
+            }
             App.ValeObjectLibrary_Select({ type: 'node', uid: placement.uid }, { refresh: true });
             return;
         }
@@ -501,11 +556,13 @@
         if (direction === 'right') {
             if (placement.children.length) {
                 const opening = !State.expanded.has(placement.uid);
-                if (opening) {
+                if (App.ValeObjectLibrary_IsForce()) {
+                    App.ValeObjectLibrary_FocusBranch(placement);
+                } else if (opening) {
                     State.expanded.add(placement.uid);
                     State.detail = 'custom';
                 }
-                App.ValeObjectLibrary_Select({ type: 'node', uid: placement.children[0].uid }, { fly: true, refresh: opening });
+                App.ValeObjectLibrary_Select({ type: 'node', uid: placement.children[0].uid }, { fly: true, refresh: opening || State.branchFocus });
             } else if (placement.def.uses.length) {
                 App.ValeObjectLibrary_Select({ type: 'resource', id: placement.def.uses[0] }, { fly: true });
             }

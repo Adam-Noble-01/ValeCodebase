@@ -1,0 +1,114 @@
+{
+    "Vale__OsbSheetLibrary" : {
+        "Library__Name"                          : "OSB sheet",
+        "Library__Purpose"                       : "OSB is one board size, 2440 x 1220 mm, in 6, 9, 12 and 18 mm. Each thickness is its own resource. Naming Vale__OsbSheetLibrary means every OSB sheet.",
+        "Resource__OsbSheet__l2440xw1220__t6mm"  : {
+            "Resource__Code"       : "OsbSheet__l2440xw1220__t6mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "OSB 2440 x 1220 x 6 mm",
+            "Resource__Library"    : "Vale__OsbSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "OSB/3, load-bearing, humid conditions",
+                    "Material__Standard" : "BS EN 300",
+                    "Material__BoughtAs" : "2440 x 1220 mm boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "6"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__OsbSheet__l2440xw1220__t9mm"  : {
+            "Resource__Code"       : "OsbSheet__l2440xw1220__t9mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "OSB 2440 x 1220 x 9 mm",
+            "Resource__Library"    : "Vale__OsbSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "OSB/3, load-bearing, humid conditions",
+                    "Material__Standard" : "BS EN 300",
+                    "Material__BoughtAs" : "2440 x 1220 mm boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "9"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__OsbSheet__l2440xw1220__t12mm" : {
+            "Resource__Code"       : "OsbSheet__l2440xw1220__t12mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "OSB 2440 x 1220 x 12 mm",
+            "Resource__Library"    : "Vale__OsbSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "OSB/3, load-bearing, humid conditions",
+                    "Material__Standard" : "BS EN 300",
+                    "Material__BoughtAs" : "2440 x 1220 mm boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "12"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        },
+        "Resource__OsbSheet__l2440xw1220__t18mm" : {
+            "Resource__Code"       : "OsbSheet__l2440xw1220__t18mm",
+            "Resource__Type"       : "SheetMaterial",
+            "Resource__Name"       : "OSB 2440 x 1220 x 18 mm",
+            "Resource__Library"    : "Vale__OsbSheetLibrary",
+            "Resource__Attributes" : {
+                "Resource__MaterialData"    : {
+                    "Material__Grade"    : "OSB/3, load-bearing, humid conditions",
+                    "Material__Standard" : "BS EN 300",
+                    "Material__BoughtAs" : "2440 x 1220 mm boards"
+                },
+                "Resource__SizeData"        : {
+                    "Board__Length__mm"    : 2440,
+                    "Board__Width__mm"     : 1220,
+                    "Board__Thickness__mm" : "18"
+                },
+                "Resource__PurchaseData"    : {
+                    "Purchase__Unit" : "sheet",
+                    "Purchase__Form" : "2440 x 1220 mm board, priced at the chosen thickness"
+                },
+                "Resource__ProcurementData" : {
+                    "Procurement__Supplier"        : "Sheet merchant, delivered to Spalding",
+                    "Procurement__Manufacturer"    : "OSB/3 mill",
+                    "Procurement__AverageLeadTime" : "1 week"
+                }
+            }
+        }
+    }
+}

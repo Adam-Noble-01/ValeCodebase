@@ -54,10 +54,12 @@
                             contain other Assemblies (sub-assemblies) as well
                             as Components and Products.
    - A library shelf     -> give the record a "category" (one of "categories"
-                            below). Records with a category sit on that shelf in
-                            the Library view; records without one (a column
-                            base, a door rail) only appear inside the
-                            assemblies that contain them.
+                            below). The Library view lists every Assembly,
+                            Component and Product on a shelf so it can be
+                            found. It does not open an Assembly into the parts
+                            it contains. That composition is the Scheme.
+                            A record without a category sits on the collection
+                            of the assemblies that use it, or on Other.
    - Place anything      -> add { ref, qty } to a Family's "contains" in
                             "scheme.families". A Family can hold Assemblies,
                             Components and Products directly.
@@ -150,7 +152,7 @@ window.ValeObjectLibrary_LibraryData = {
             plural     : 'Resources',
             colour     : '#008300',
             summary    : 'A reusable definition, with the attributes costing needs.',
-            definition : 'The lowest level: reusable definitions rather than physical objects. A Resource carries one or more attribute blocks — colour, purchase, processing, costing, procurement — and is named by its code from many Components and Products. The attributes stay here. A change made once flows everywhere the code is used. On the chart, a Resource is shown only when you open the Component, Product or Assembly that names it.',
+            definition : 'The lowest level: reusable definitions rather than physical objects. A Resource carries one or more attribute blocks: colour, purchase, processing, costing, procurement. It is named by its code from many Components and Products. The attributes stay here. A change made once flows everywhere the code is used. On the chart, a Resource is shown only when you open the Component, Product or Assembly that names it.',
             dataPoints : ['Resource Code', 'Category', 'Specification / Standard', 'Supplier', 'Notes']
         },
         library: {
@@ -221,6 +223,9 @@ window.ValeObjectLibrary_LibraryData = {
         { key: 'Profiles',       singular: 'Profile',       field: 'Profile'       },
         { key: 'Materials',      singular: 'Material',      field: 'Material'      },
         { key: 'Paint Finishes', singular: 'Paint Finish',  field: 'Paint Finish'  },
+        { key: 'Plywood Sheets', singular: 'Plywood Sheet', field: 'Sheet'         },
+        { key: 'Aluminium Sheets', singular: 'Aluminium Sheet', field: 'Sheet'     },
+        { key: 'OSB',            singular: 'OSB',           field: 'Sheet'         },
         { key: 'Finishes',       singular: 'Finish',        field: 'Finish'        },
         { key: 'Specifications', singular: 'Specification', field: 'Specification' }
     ],
@@ -269,7 +274,6 @@ window.ValeObjectLibrary_LibraryData = {
         { id: 'RES-MAT-BOARD',         group: 'Materials',      name: 'Board Materials',              summary: 'Boards for panels and pilaster faces.' },
         { id: 'RES-MAT-SAPELE',        group: 'Materials',      name: 'Sapele Hardwood',              summary: 'The hardwood of the lantern head beam, ridge and hip beams, blocks and cornices.' },
         { id: 'RES-MAT-DOUGLAS-FIR',   group: 'Materials',      name: 'Douglas Fir',                  summary: 'The timber of the glaze bar internal trims.' },
-        { id: 'RES-MAT-PLYWOOD',       group: 'Materials',      name: '12mm Plywood',                 summary: 'For packers behind the lantern cornice.' },
 
         // Finishes - ironmongery, and powder coat. Joinery paint is the Vale paint
         // card (Vale__PaintLibrary), loaded from the resource-libraries script.
@@ -569,7 +573,7 @@ window.ValeObjectLibrary_LibraryData = {
           data: { 'Lantern Asset ID': '49_1001', 'Element Type': 'Trim', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-CORNICE-PACKER', tier: 'component', name: '12mm Ply Cornice Packer', summary: 'The plywood packer fixed behind the cornice.',
-          uses: ['RES-MAT-PLYWOOD'], params: ['Length'],
+          uses: ['PlywoodSheet__l2440xw1220__t12mm'], params: ['Length'],
           data: { 'Lantern Asset ID': '49_1021', 'Element Type': 'Packer', 'Data Status': 'Draft - awaiting audit', 'Source': 'Lantern Designer asset library' },
           assets: ['CAD'] },
         { id: 'CMP-LTN-EAVES-TRIM', tier: 'component', name: 'Eaves Trim', summary: 'The 18mm painted timber trim inside the eaves; its top edge follows the roof pitch.',
@@ -879,7 +883,7 @@ window.ValeObjectLibrary_LibraryData = {
           text  : 'A Product is bought in or standard: a handle, a hinge, a finial. The {name} comes straight from ValeSpec, code {code}, with its supplier and the three finishes it comes in, and every door simply points at it.',
           show  : 'assembly', reveal: ['PRD-VG-IRN0001'], select: 'PRD-VG-IRN0001', focus: 'twins', panel: 'data' },
         { title : 'Resources sit on the part that uses them',
-          text  : 'Open the Door Stile and its own resources appear: the profile, the timber, and the Vale paint card. The Door Assembly does not repeat them. Each resource keeps its attributes — colour, cost, supplier — and every part that needs Vale White names ValePaintFinish__no01-ValeWhite__.',
+          text  : 'Open the Door Stile and its own resources appear: the profile, the timber, and the Vale paint card. The Door Assembly does not repeat them. Each resource keeps its attributes: colour, cost, supplier. Every part that needs Vale White names ValePaintFinish__no01-ValeWhite__.',
           show  : 'assembly', reveal: ['ASM-DOOR-LEAF'], select: 'CMP-DOOR-STILE', focus: 'selection', panel: 'uses' },
         { title : 'Totals roll up on their own',
           text  : 'Quantities multiply down the tree, so the Scheme always knows its totals: {total} hinges across every door leaf and window, ready for costing, ordering and manufacture.',

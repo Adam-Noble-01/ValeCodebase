@@ -66,6 +66,46 @@ const Ral = readLibrary('ValeObjectLibrary__Library__RalClassic__.json', 'Vale__
     return [resource.Resource__Code.replace('RAL ', ''), resource.Resource__Name, channels[0], channels[1], channels[2]];
 });
 
+function boardPair(label) {
+    const match = String(label).match(/(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)/i);
+    if (!match) {
+        throw new Error('Board size needs "length x width": ' + label);
+    }
+    return { length: Number(match[1]), width: Number(match[2]), label: match[1] + ' x ' + match[2] + ' mm' };
+}
+
+function thicknessLabel(mm) {
+    return String(mm).replace(/\.0$/, '');
+}
+
+const SheetFamilies = readLibrary('ValeObjectLibrary__Library__SheetMaterials__.json', 'Vale__SheetLibrary');
+const Sheets = [];
+SheetFamilies.forEach(function (family) {
+    const size = family.Resource__Attributes.Resource__SizeData;
+    size.Size__Boards.forEach(function (boardLabel) {
+        const board = boardPair(boardLabel);
+        size['Size__Thicknesses__mm'].forEach(function (thickness) {
+            const thick = thicknessLabel(thickness);
+            const code  = family.Resource__CodePrefix + '__l' + board.length + 'xw' + board.width + '__t' + thick + 'mm';
+            Sheets.push({
+                id         : code,
+                code       : code,
+                token      : family.Resource__LibraryToken,
+                prefix     : family.Resource__CodePrefix,
+                family     : family.Resource__Name,
+                name       : family.Resource__Name + ' ' + board.length + ' x ' + board.width + ' x ' + thick + ' mm',
+                length     : board.length,
+                width      : board.width,
+                thickness  : thick,
+                group      : family.Resource__Name === 'OSB' ? 'OSB' : family.Resource__Name.replace(' Sheet', '') + ' Sheets',
+                summary    : family.Resource__Summary,
+                attributes : family.Resource__Attributes,
+                cardOrder  : Sheets.length + 1
+            });
+        });
+    });
+});
+
 const Timbers = readLibrary('ValeObjectLibrary__Library__TimberMaterials__.json', 'Vale__TimberLibrary').map(function (resource) {
     const species     = resource.Resource__Attributes.Resource__SpeciesData;
     const purchase    = resource.Resource__Attributes.Resource__PurchaseData;
@@ -380,6 +420,83 @@ function timberRuntime(timber) {
     };
 }
 
+function sheetRuntime(sheet) {
+    const shared = sheet.attributes;
+    const size = {
+        'Board__Length__mm'     : sheet.length,
+        'Board__Width__mm'      : sheet.width,
+        'Board__Thickness__mm'  : sheet.thickness
+    };
+    return {
+        id           : sheet.id,
+        group        : sheet.group,
+        resourceType : 'SheetMaterial',
+        libraryToken : sheet.token,
+        name         : sheet.name,
+        cardOrder    : sheet.cardOrder,
+        summary      : sheet.family + ' board ' + sheet.length + ' x ' + sheet.width + ' mm, ' + sheet.thickness + ' mm thick. Objects name ' + sheet.code + '.',
+        attributes   : [
+            { key: 'Resource__MaterialData',    label: 'Material',    data: shared.Resource__MaterialData },
+            { key: 'Resource__SizeData',        label: 'This board',  data: size },
+            { key: 'Resource__PurchaseData',    label: 'Purchase',    data: shared.Resource__PurchaseData },
+            { key: 'Resource__ProcurementData', label: 'Procurement', data: shared.Resource__ProcurementData }
+        ],
+        data : { 'Resource Code': sheet.code, 'Board': sheet.length + ' x ' + sheet.width + ' x ' + sheet.thickness + ' mm' }
+    };
+}
+
+function sheetRecord(sheet) {
+    return {
+        Resource__Code       : sheet.code,
+        Resource__Type       : 'SheetMaterial',
+        Resource__Name       : sheet.name,
+        Resource__Library    : sheet.token,
+        Resource__Attributes : {
+            Resource__MaterialData : sheet.attributes.Resource__MaterialData,
+            Resource__SizeData : {
+                'Board__Length__mm'    : sheet.length,
+                'Board__Width__mm'     : sheet.width,
+                'Board__Thickness__mm' : sheet.thickness
+            },
+            Resource__PurchaseData    : sheet.attributes.Resource__PurchaseData,
+            Resource__ProcurementData : sheet.attributes.Resource__ProcurementData
+        }
+    };
+}
+
+function sheetLibraryDocument(token, title, purpose) {
+    const boards = Sheets.filter(function (sheet) { return sheet.token === token; });
+    const library = {
+        Library__Name    : title,
+        Library__Purpose : purpose
+    };
+    boards.forEach(function (sheet) {
+        library['Resource__' + sheet.code] = sheetRecord(sheet);
+    });
+    return { [token]: library };
+}
+
+const SheetLibraries = [
+    {
+        token   : 'Vale__AluminiumSheetLibrary',
+        title   : 'Aluminium sheet',
+        file    : 'ValeObjectLibrary__Library__AluminiumSheetData__.json',
+        purpose : 'One resource for each standard blank and thickness. A component names one code, such as AluminiumSheet__l2000xw1000__t1.2mm. Naming Vale__AluminiumSheetLibrary means every aluminium sheet.'
+    },
+    {
+        token   : 'Vale__PlywoodSheetLibrary',
+        title   : 'Plywood sheet',
+        file    : 'ValeObjectLibrary__Library__PlywoodSheetData__.json',
+        purpose : 'One resource for each standard board and thickness. PlywoodSheet__l2440xw1220__t18mm is the 2440 x 1220 mm board at 18 mm. Naming Vale__PlywoodSheetLibrary means every plywood sheet.'
+    },
+    {
+        token   : 'Vale__OsbSheetLibrary',
+        title   : 'OSB sheet',
+        file    : 'ValeObjectLibrary__Library__OsbSheetData__.json',
+        purpose : 'OSB is one board size, 2440 x 1220 mm, in 6, 9, 12 and 18 mm. Each thickness is its own resource. Naming Vale__OsbSheetLibrary means every OSB sheet.'
+    }
+];
+
 // endregion -------------------------------------------------------------------
 
 
@@ -418,7 +535,7 @@ const AttributesSchema = {
         }
     },
     Schema__Notes : [
-        'Different resource types carry different attribute blocks. A paint finish has colour, costing and procurement. A timber has species, purchase, processing, costing and procurement.',
+        'Different resource types carry different attribute blocks. A paint finish has colour, costing and procurement. A timber has species, purchase, processing, costing and procurement. A sheet material lists its standard board sizes and thicknesses.',
         'Purchase and processing are attributes of the timber, not a second resource. One resource, several attributes.',
         'On the chart, resources are drawn only for the Component, Product or Assembly you have open, and only the resources that object names.'
     ]
@@ -566,6 +683,9 @@ const Files = {
     'ValeObjectLibrary__Library__PaintFinishes__.json'     : paintLibraryDocument(),
     'ValeObjectLibrary__Schema__TimberMaterial__.json'     : timberDocument()
 };
+SheetLibraries.forEach(function (library) {
+    Files[library.file] = sheetLibraryDocument(library.token, library.title, library.purpose);
+});
 
 Object.keys(Files).forEach(function (name) {
     fs.writeFileSync(path.join(Here, name), formatJson(Files[name]) + '\n', 'utf8');
@@ -574,7 +694,8 @@ Object.keys(Files).forEach(function (name) {
 // The authored libraries are the source. Rewrite them in the same columns.
 ['ValeObjectLibrary__Library__PaintColours__.json',
  'ValeObjectLibrary__Library__RalClassic__.json',
- 'ValeObjectLibrary__Library__TimberMaterials__.json'].forEach(function (name) {
+ 'ValeObjectLibrary__Library__TimberMaterials__.json',
+ 'ValeObjectLibrary__Library__SheetMaterials__.json'].forEach(function (name) {
     const file = path.join(Libraries, name);
     fs.writeFileSync(file, formatJson(JSON.parse(fs.readFileSync(file, 'utf8'))) + '\n', 'utf8');
 });
@@ -589,32 +710,49 @@ const Schemes = [
     },
     {
         id    : 'paint-skeleton',
-        title : 'Paint finish — empty block',
+        title : 'Paint finish: empty block',
         file  : '04__JsonSchemas__Master/ValeObjectLibrary__Schema__PaintFinish__.json',
         lead  : 'The shape costing fills in for a paint. RGB, the nearest RAL, and the hex are three separate colour values.',
         code  : formatJson(PaintSkeleton)
     },
     {
         id    : 'paint-example',
-        title : 'Paint finish — Vale White, filled in',
+        title : 'Paint finish: Vale White, filled in',
         file  : '04__JsonSchemas__Master/ValeObjectLibrary__Library__PaintFinishes__.json',
         lead  : 'Vale White is ValePaintFinish__no01-ValeWhite__. The full card, ' + PaintRecords.length + ' finishes in colour-card order, is in the paint library file. The chart names that code. It does not copy this block.',
         code  : formatJson(ValeWhiteBlock)
     },
     {
         id    : 'timber',
-        title : 'Timber — bought by the cubic metre',
+        title : 'Timber: bought by the cubic metre',
         file  : '04__JsonSchemas__Master/ValeObjectLibrary__Schema__TimberMaterial__.json',
         lead  : 'Sapele, Douglas fir and tulipwood are bought in cubic metres. After Vale machines them, the price per linear metre is the bought price divided by the yield, times the finished section. The skeleton is first, then the three timbers.',
         code  : formatJson(timberDocument())
-    }
+    },
 ];
+SheetLibraries.forEach(function (library) {
+    const boards = Sheets.filter(function (sheet) { return sheet.token === library.token; });
+    Schemes.push({
+        id       : library.token,
+        title    : library.title,
+        file     : '04__JsonSchemas__Master/' + library.file,
+        lead     : library.purpose,
+        sections : boards.map(function (sheet) {
+            return {
+                title : sheet.length + ' x ' + sheet.width + ' mm, ' + sheet.thickness + ' mm thick',
+                code  : sheet.code,
+                body  : formatJson(sheetRecord(sheet))
+            };
+        })
+    });
+});
 
 const runtimePaints  = PaintRecords.map(function (paint) { return paint.runtime; });
 const runtimeTimbers = {};
 Timbers.forEach(function (timber) {
     runtimeTimbers[timber.id] = timberRuntime(timber);
 });
+const runtimeSheets = Sheets.map(sheetRuntime);
 
 const runtime = [
     '/* =============================================================================',
@@ -643,6 +781,12 @@ const runtime = [
     '',
     '    var paints = ' + JSON.stringify(runtimePaints) + ';',
     '    var timbers = ' + JSON.stringify(runtimeTimbers) + ';',
+    '    var sheets = ' + JSON.stringify(runtimeSheets) + ';',
+    '    var sheetTokens = {};',
+    '    sheets.forEach(function (sheet) {',
+    '        if (!sheetTokens[sheet.libraryToken]) { sheetTokens[sheet.libraryToken] = []; }',
+    '        sheetTokens[sheet.libraryToken].push(sheet.id);',
+    '    });',
     '    var drop = {',
     "        'RES-FIN-PAINT': 1, 'RES-FIN-NEUTRAL-WHITE': 1, 'RES-FIN-FB-WEVET': 1,",
     "        'RES-FIN-FB-AMMONITE': 1, 'RES-FIN-FB-FRENCH-GRAY': 1, 'RES-FIN-FB-CARD-ROOM-GREEN': 1,",
@@ -661,6 +805,7 @@ const runtime = [
     '        delete timbers[resource.id];',
     '    });',
     '    Object.keys(timbers).forEach(function (id) { data.resources.push(timbers[id]); });',
+    '    sheets.forEach(function (sheet) { data.resources.push(sheet); });',
     '    paints.forEach(function (paint) { data.resources.push(paint); });',
     '',
     '    function expand(list) {',
@@ -669,6 +814,8 @@ const runtime = [
     '        list.forEach(function (id) {',
     "            if (id === 'Vale__PaintLibrary') {",
     '                paintIds.forEach(function (paintId) { out.push(paintId); });',
+    '            } else if (sheetTokens[id]) {',
+    '                sheetTokens[id].forEach(function (sheetId) { out.push(sheetId); });',
     '            } else if (!drop[id]) {',
     '                out.push(id);',
     '            }',

@@ -18,7 +18,7 @@
        (ValeObjectLibrary__Demo__.html, left as it was) with one D3 tree chart
      - Full screen, left to right, one column per tier. Zooms and pans like a
        2D CAD drawing: scroll to zoom at the pointer, drag with the left or
-       middle button to pan, F for zoom extents, a navigator in the corner
+       middle button to pan, F for zoom extents
      - Every box is generated from 02_Data/ValeObjectLibrary__LibraryData__.js.
        Add objects there, never here. Built for hundreds of objects: boxes open
        and close, text swaps to a larger short name when zoomed out, and
@@ -53,6 +53,8 @@
     <script src="02_Data/ValeObjectLibrary__LibraryData__.js"></script>
     <!-- @delegate: 02_Data/ValeObjectLibrary__ResourceLibraries__.js -->
     <script src="02_Data/ValeObjectLibrary__ResourceLibraries__.js"></script>
+    <!-- @delegate: 02_Data/ValeObjectLibrary__ValeIds__.js -->
+    <script src="02_Data/ValeObjectLibrary__ValeIds__.js"></script>
 </head>
 <body>
 
@@ -71,7 +73,7 @@
 
         <div class="view-switch" role="group" aria-label="What to show">
             <button class="view-switch__btn js-view is-on" type="button" data-view="scheme" aria-pressed="true" title="One configured project, and only what it uses"><img class="view-switch__icon" src="01_Assets/Logo__ValeGardenHouses__PavilionMark__Navy__.svg" alt="">Scheme</button>
-            <button class="view-switch__btn js-view" type="button" data-view="library" aria-pressed="false" title="Every record in the Object Library, grouped by category"><img class="view-switch__icon" src="01_Assets/Icon__ObjectLibrary__WholeLibrary__.svg" alt=""><span class="view-switch__long">Whole library</span><span class="view-switch__short">Library</span></button>
+            <button class="view-switch__btn js-view" type="button" data-view="library" aria-pressed="false" title="Every record in the Object Library, listed by collection so it can be found"><img class="view-switch__icon" src="01_Assets/Icon__ObjectLibrary__WholeLibrary__.svg" alt=""><span class="view-switch__long">Whole library</span><span class="view-switch__short">Library</span></button>
             <button class="view-switch__btn js-view" type="button" data-view="schemes" aria-pressed="false" title="The costing blocks: how a paint finish and a timber are written"><svg class="icon view-switch__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg><span class="view-switch__long">Resource schemes</span><span class="view-switch__short">Schemes</span></button>
         </div>
 
@@ -108,14 +110,14 @@
             <span><kbd>Scroll</kbd></span>                        <span>Zoom in and out at the pointer</span>
             <span><kbd>Drag</kbd></span>                          <span>Pan, with the left or middle mouse button</span>
             <span><kbd>Click</kbd></span>                         <span>Select a box, open it and see its details</span>
-            <span><kbd>Double-click</kbd></span>                  <span>A box: zoom to it. Empty space: fit everything</span>
+            <span><kbd>Double-click</kbd></span>                  <span>A box: zoom to it. Empty space: collapse back to the top level</span>
             <span><kbd>F</kbd></span>                             <span>Fit everything on screen (zoom extents)</span>
             <span><kbd>Z</kbd></span>                             <span>Zoom to the selected box</span>
             <span><kbd>+</kbd> <kbd>&minus;</kbd> <kbd>0</kbd></span> <span>Zoom in, zoom out, 100%</span>
             <span><kbd>/</kbd></span>                             <span>Find an object</span>
             <span><kbd>&larr;</kbd> <kbd>&rarr;</kbd> <kbd>&uarr;</kbd> <kbd>&darr;</kbd></span> <span>Move between boxes</span>
             <span><kbd>Enter</kbd></span>                         <span>Open or close the selected box</span>
-            <span><kbd>Esc</kbd></span>                           <span>Clear the selection</span>
+            <span><kbd>Esc</kbd></span>                           <span>Collapse back to the top level</span>
         </div>
         <p class="popover__foot">In the guided tour, <kbd>&rarr;</kbd> or a presenter's clicker moves on. Previous version: <a href="ValeObjectLibrary__Demo__.html">Demo 1, the static page</a>.</p>
     </div>
@@ -182,19 +184,10 @@
                         <button class="tool js-detail" type="button" data-detail="all"      title="Open every box. Resources appear when you select a component, product or assembly">All</button>
                     </span>
                 </span>
-                <span class="toolbar__sep" aria-hidden="true"></span>
                 <button id="ValeObjectLibrary_Links" class="tool" type="button" aria-pressed="false" title="Resources are drawn for the selected part only" hidden>
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17C10 17 13 7 21 7" stroke-dasharray="3 3.2"/></svg>
                     <span class="tool__text">Links</span>
                 </button>
-                <button id="ValeObjectLibrary_NavigatorToggle" class="tool is-on" type="button" aria-pressed="true" title="Show or hide the navigator" aria-label="Navigator">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><rect x="12" y="10" width="6" height="5" rx="1"/></svg>
-                </button>
-            </div>
-
-            <div id="ValeObjectLibrary_Navigator" class="navigator">
-                <div class="navigator__label"><span>NAVIGATOR</span><span id="ValeObjectLibrary_NavigatorZoom"></span></div>
-                <canvas id="ValeObjectLibrary_NavigatorCanvas" width="200" height="128" aria-label="Navigator - click or drag to move the view"></canvas>
             </div>
 
             <div id="ValeObjectLibrary_Tour" class="tour" role="region" aria-label="Guided tour" aria-live="polite" hidden>
@@ -229,13 +222,18 @@
         <!-- ------------------------------------------------------------- -->
         <!-- REGION | Attributes Column - JSON for the Open Level           -->
         <!-- ------------------------------------------------------------- -->
-        <aside id="ValeObjectLibrary_Attributes" class="attributes" aria-label="Attributes">
-            <button id="ValeObjectLibrary_AttributesGrip" class="attributes__grip" type="button" aria-label="Drag to resize the attributes column. Double-click to fit the JSON."></button>
+        <aside id="ValeObjectLibrary_Attributes" class="attributes" aria-label="Attributes viewer">
+            <button id="ValeObjectLibrary_AttributesGrip" class="attributes__grip" type="button" aria-label="Drag to resize the attributes viewer. Double-click to fit the JSON."></button>
             <div class="attributes__bar">
-                <span class="attributes__kicker">Attributes</span>
-                <span id="ValeObjectLibrary_AttributesTitle" class="attributes__title">Nothing open</span>
+                <span class="attributes__kicker">Attributes viewer</span>
+                <span id="ValeObjectLibrary_AttributesTitle" class="attributes__title">Select an object</span>
             </div>
-            <div id="ValeObjectLibrary_AttributesBody" class="attributes__body"></div>
+            <div class="attributes__tabs" role="tablist" aria-label="How to read the attributes">
+                <button id="ValeObjectLibrary_AttributesTabGroups" class="attributes__tab is-on" type="button" role="tab" aria-selected="true" aria-controls="ValeObjectLibrary_AttributesGroups">Attributes</button>
+                <button id="ValeObjectLibrary_AttributesTabJson" class="attributes__tab" type="button" role="tab" aria-selected="false" aria-controls="ValeObjectLibrary_AttributesBody">JSON</button>
+            </div>
+            <div id="ValeObjectLibrary_AttributesBody" class="attributes__body" role="tabpanel" hidden></div>
+            <div id="ValeObjectLibrary_AttributesGroups" class="attributes__body attributes__groups" role="tabpanel"></div>
         </aside>
         <!-- endregion ------------------------------------------------------------- -->
 

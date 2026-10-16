@@ -62,10 +62,6 @@
             detailButtons   : Array.from(document.querySelectorAll('.js-detail')),
             viewButtons     : Array.from(document.querySelectorAll('.js-view')),
             links           : byId('Links'),
-            navigatorToggle : byId('NavigatorToggle'),
-            navigator       : byId('Navigator'),
-            navCanvas       : byId('NavigatorCanvas'),
-            navZoom         : byId('NavigatorZoom'),
             tour            : byId('Tour'),
             tourCount       : byId('TourCount'),
             tourTitle       : byId('TourTitle'),
@@ -84,9 +80,12 @@
             inspectorClose  : null,
             inspectorOpen   : null,
             attributesBody  : byId('AttributesBody'),
+            attributesGroups: byId('AttributesGroups'),
             attributesTitle : byId('AttributesTitle'),
             attributesPanel : byId('Attributes'),
-            attributesGrip  : byId('AttributesGrip')
+            attributesGrip  : byId('AttributesGrip'),
+            attributesTabJson   : byId('AttributesTabJson'),
+            attributesTabGroups : byId('AttributesTabGroups')
         });
     };
     // ------------------------------------------------------------
@@ -122,7 +121,6 @@
         App.ValeObjectLibrary_InitZoom();
         App.ValeObjectLibrary_InitControls();
         App.ValeObjectLibrary_InitSearch();
-        App.ValeObjectLibrary_InitNavigator();
         App.ValeObjectLibrary_InitKeyboard();
         App.ValeObjectLibrary_InitAttributesColumn();
 

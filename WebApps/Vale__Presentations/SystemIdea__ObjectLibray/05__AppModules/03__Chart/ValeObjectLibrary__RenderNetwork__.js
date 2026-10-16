@@ -23,6 +23,9 @@
  * 16-Oct-2026 - Version 2.0.1
  * - An opened group's children sit on a circle around it, spaced so the labels can be read
  *
+ * 16-Oct-2026 - Version 2.0.2
+ * - Following one branch hides the shelves outside that group, so the ring is not drawn over them
+ *
  * ============================================================================= */
 
 (function (App) {
@@ -42,7 +45,7 @@
     // spring out around it (d3-force, as in Observable's force-directed
     // graph). A selected part's resources are read in the attributes
     // column. The network does not spawn resource bubbles. Layout.pos is
-    // refreshed every tick, so selection, camera, labels and the navigator
+    // refreshed every tick, so selection, camera and labels
     // work exactly as they do in the scheme view.
     // =====================================================================
 
@@ -176,7 +179,14 @@
         (function walk(placement) {
             visible.push(placement);
             if (State.expanded.has(placement.uid)) {
-                placement.children.forEach(function (child) {
+                let children = placement.children;
+                if (State.branchFocus) {
+                    const openChild = children.filter(function (child) { return State.expanded.has(child.uid); });
+                    if (openChild.length === 1) {
+                        children = openChild;                                // <-- The branch being followed; the shelves beside it collapse
+                    }
+                }
+                children.forEach(function (child) {
                     links.push({ parent: placement, child: child });
                     walk(child);
                 });

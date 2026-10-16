@@ -67,13 +67,6 @@
             App.ValeObjectLibrary_UpdateControls();
         });
 
-        Elements.navigatorToggle.addEventListener('click', function () {
-            State.navigatorOn = !State.navigatorOn;
-            Elements.navigator.hidden = !State.navigatorOn;
-            App.ValeObjectLibrary_UpdateControls();
-            App.ValeObjectLibrary_QueueFrame();
-        });
-
         if (Elements.inspectorClose) {
             Elements.inspectorClose.addEventListener('click', function () {
                 State.inspectorDismissed = true;
@@ -115,7 +108,7 @@
             scheme  : { scheme: null,                                           library: ['Start',         'Back to the start: Vale Object Library on its own'] },
             family  : { scheme: ['Families',   'Open the chart to the Families'],  library: ['Collections',   'Open the centre to its collections'] },
             assembly: { scheme: ['Assemblies', 'Open the chart to the Assemblies'], library: ['Ranges',        'Open each collection to its ranges'] },
-            parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Whole network', 'Open everything - select a component or product to see the Resources it uses'] },
+            parts   : { scheme: ['Parts',      'Open every box, down to the Components and Products'], library: ['Objects',       'Open every collection so each object can be found. Select one to see the Resources it uses'] },
             all     : { scheme: ['All',        'Open every box. Resources appear when you select a part'], library: null }
         };
         Elements.detailButtons.forEach(function (button) {
@@ -145,8 +138,6 @@
         Elements.links.hidden = true;                                        // <-- Resources are drawn for the selected part, not as a web of every link
         Elements.links.classList.toggle('is-on', State.allLinks);
         Elements.links.setAttribute('aria-pressed', State.allLinks ? 'true' : 'false');
-        Elements.navigatorToggle.classList.toggle('is-on', State.navigatorOn);
-        Elements.navigatorToggle.setAttribute('aria-pressed', State.navigatorOn ? 'true' : 'false');
     };
     // ------------------------------------------------------------
 
@@ -203,7 +194,7 @@
                     if (!Elements.help.hidden) {
                         App.ValeObjectLibrary_ToggleHelp(false);
                     } else {
-                        App.ValeObjectLibrary_Select(null);
+                        App.ValeObjectLibrary_CollapseToTop();                // <-- Same as a double-click on empty canvas
                     }
                     break;
                 case 'ArrowLeft': case 'ArrowRight': case 'ArrowUp': case 'ArrowDown':

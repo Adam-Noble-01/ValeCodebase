@@ -1,0 +1,244 @@
+/* =============================================================================
+ * VGHLANTERN - INFO TOOLTIP STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UiFeature__Styles__InfoTooltip__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Info Tooltip Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The Vale info tooltip panel and the "i" bubble that opens it
+ * CREATED    : 20-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Styles for VghLantern__AppCore__InfoTooltip: one panel for the whole app and
+ *   the small "i" bubble used wherever a control needs explaining.
+ * - The panel replaces the browser's title tooltip, which ran its text in one
+ *   long grey line: white, a Vale blue rule and title, the "i" filled in its
+ *   header, and a reading column held narrow (MaxWidthPx in config, set inline
+ *   by the module) so a tip reads as short lines rather than one long one.
+ * - The bubble is an outlined "i" on the same circle as the selected card tick,
+ *   so the editor's small marks read as one family. It rests small (15px) and
+ *   faint (0.4), and under the pointer, on focus or while its tip is open it
+ *   grows to 20px, comes up to full strength and fills Vale blue.
+ * - Tokens only; the one rgba is the Vale brand blue, as the wizard's are.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | The "i" Bubble
+ * ----------------------------------------------------------------------------- */
+
+    /* ICON | Outlined "i", the Way Into a Tip */
+    /* ------------------------------------------------------------ */
+    /* At rest the "i" is small and faint, so it never competes with the control
+       it explains (Adam, 20-Oct-2026: "more subtle ... a little smaller but
+       expands when hovered over or click"). It comes up to full strength and
+       grows from its own centre under the pointer, on keyboard focus and while
+       its tip is open. It grows by transform, so nothing around it moves.      */
+    .VghLantern__InfoTip__Icon {
+        display                            : inline-block;
+        width                              : calc(15px * var(--Vale_UIScale));
+        height                             : calc(15px * var(--Vale_UIScale));
+        line-height                        : 0;
+        vertical-align                     : middle;
+        border-radius                      : 50%;
+        cursor                             : help;
+        flex                               : 0 0 auto;
+        opacity                            : 0.4;
+        transform-origin                   : 50% 50%;
+        transition                         : opacity var(--Vale_Transition_Fast),
+                                             transform var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__InfoTip__Icon:hover,
+    .VghLantern__InfoTip__Icon:focus-visible,
+    .VghLantern__InfoTip__Icon--active {
+        opacity                            : 1;
+        transform                          : scale(1.3333);                 /* <-- 15px at rest, 20px open */
+    }
+
+    .VghLantern__InfoTip__Icon svg {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : visible;
+    }
+
+    .VghLantern__InfoTip__IconRing {
+        fill                               : var(--Vale_BackgroundWhite);
+        stroke                             : var(--Vale_PrimaryBrand);
+        stroke-width                       : 1.5;                           /* <-- In the 20 unit viewBox: 1.1px at rest, 1.5px open */
+        transition                         : fill var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__InfoTip__IconDot {
+        fill                               : var(--Vale_PrimaryBrand);
+        stroke                             : none;
+        transition                         : fill var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__InfoTip__IconStem {
+        fill                               : none;
+        stroke                             : var(--Vale_PrimaryBrand);
+        stroke-width                       : 2;
+        stroke-linecap                     : round;
+        transition                         : stroke var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__InfoTip__Icon:focus-visible {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ICON | Filled: Hovered, Open, or in the Panel Header */
+    /* ------------------------------------------------------------ */
+    .VghLantern__InfoTip__Icon:hover .VghLantern__InfoTip__IconRing,
+    .VghLantern__InfoTip__Icon--active .VghLantern__InfoTip__IconRing,
+    .VghLantern__InfoTip__Icon--solid .VghLantern__InfoTip__IconRing {
+        fill                               : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__InfoTip__Icon:hover .VghLantern__InfoTip__IconDot,
+    .VghLantern__InfoTip__Icon--active .VghLantern__InfoTip__IconDot,
+    .VghLantern__InfoTip__Icon--solid .VghLantern__InfoTip__IconDot {
+        fill                               : var(--Vale_BackgroundWhite);
+    }
+
+    .VghLantern__InfoTip__Icon:hover .VghLantern__InfoTip__IconStem,
+    .VghLantern__InfoTip__Icon--active .VghLantern__InfoTip__IconStem,
+    .VghLantern__InfoTip__Icon--solid .VghLantern__InfoTip__IconStem {
+        stroke                             : var(--Vale_BackgroundWhite);
+    }
+
+    /* The "i" in the panel header is a label, not a control: full size and
+       strength, never resting faint and never growing.                         */
+    .VghLantern__InfoTip__Icon--solid {
+        width                              : calc(18px * var(--Vale_UIScale));
+        height                             : calc(18px * var(--Vale_UIScale));
+        cursor                             : default;
+        opacity                            : 1;
+        transform                          : none;
+        transition                         : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | The Tooltip Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | One Panel, Fixed to the Viewport */
+    /* ------------------------------------------------------------ */
+    /* Above every other layer, toasts included: a tip is asked for, so it must
+       never open underneath something. It ignores the pointer, because it is
+       read, not used, and must never sit between the pointer and the control
+       under it. max-width, left and top are written inline by the module.      */
+    .VghLantern__InfoTip {
+        position                           : fixed;
+        z-index                            : calc(var(--Vale_ZIndex_Tooltip) + 100);
+        box-sizing                         : border-box;
+        padding                            : calc(10px * var(--Vale_UIScale)) calc(14px * var(--Vale_UIScale)) calc(12px * var(--Vale_UIScale));
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        line-height                        : 1.45;
+        color                              : var(--Vale_TextPrimary);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-top                         : 3px solid var(--Vale_PrimaryBrand);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 8px 24px rgba(23, 43, 58, 0.18);
+        pointer-events                     : none;
+        opacity                            : 0;
+        visibility                         : hidden;
+        transform                          : translateY(4px);
+        transition                         : opacity 140ms ease,
+                                             transform 140ms ease,
+                                             visibility 0s linear 140ms;
+    }
+
+    .VghLantern__InfoTip--visible {
+        opacity                            : 1;
+        visibility                         : visible;
+        transform                          : none;
+        transition                         : opacity 140ms ease,
+                                             transform 140ms ease,
+                                             visibility 0s;
+    }
+
+    .VghLantern__InfoTip--above {
+        transform                          : translateY(-4px);
+    }
+
+    .VghLantern__InfoTip--above.VghLantern__InfoTip--visible {
+        transform                          : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | The Pointer to Its Anchor */
+    /* ------------------------------------------------------------ */
+    /* Below its anchor the panel points up out of its Vale blue rule, so the
+       pointer is that blue; above its anchor it points down from the plain edge,
+       so it is white with the light border. --VghLantern_InfoTipCaretX is set by
+       the module to the anchor's centre.                                       */
+    .VghLantern__InfoTip::before {
+        content                            : '';
+        position                           : absolute;
+        top                                : calc(-3px - 14px);
+        left                               : calc(var(--VghLantern_InfoTipCaretX, 24px) - 7px);
+        border                             : 7px solid transparent;
+        border-bottom-color                : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__InfoTip--above::before {
+        top                                : auto;
+        bottom                             : -15px;
+        border-bottom-color                : transparent;
+        border-top-color                   : var(--Vale_BorderLight);
+    }
+
+    .VghLantern__InfoTip--above::after {
+        content                            : '';
+        position                           : absolute;
+        bottom                             : -13px;
+        left                               : calc(var(--VghLantern_InfoTipCaretX, 24px) - 7px);
+        border                             : 7px solid transparent;
+        border-top-color                   : var(--Vale_BackgroundWhite);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Header: the Filled "i" and the Title */
+    /* ------------------------------------------------------------ */
+    .VghLantern__InfoTip__Header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : calc(8px * var(--Vale_UIScale));
+        margin-bottom                      : calc(6px * var(--Vale_UIScale));
+    }
+
+    .VghLantern__InfoTip__Title {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        line-height                        : 1.25;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Body: One Short Paragraph per Point */
+    /* ------------------------------------------------------------ */
+    .VghLantern__InfoTip__Body p {
+        margin                             : 0;
+    }
+
+    .VghLantern__InfoTip__Body p + p {
+        margin-top                         : calc(6px * var(--Vale_UIScale));
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -39,18 +39,54 @@ ValeVision and ValeVision 3D.
   minutes apart are one session) and every change of status, project, document or client name, newest first. The API
   records all of it in the design's server stamp (`api/projects/<id>/history`); the app can never write it. The 20
   prototype designs show *Prototype* as their creator: they predate sign-in.
+- **Lantern sizes (v0.8.0):** Length (the long axis, `WidthMm`) and Width (`DepthMm`) are measured to the finished
+  exterior of the builders upstand, including the roof covering the builder dresses over it (GRP, EPDM, felt). In
+  Form and Size, three **Set Out To** cards can set them out to the **eaves datum** (where the glaze bar datum meets
+  the eaves plate, the factory's measure) or the **internal upstand** (the solid kerb, no plasterboard) instead. The
+  exterior is then worked out (plus two 125mm head beams, or two upstand thicknesses) and stays the one number every
+  output reads; switching never moves the lantern. Set out either way, the drawing's length, width and ridge length
+  cannot be typed: a click explains why and opens Form and Size at the cards. The rules live in
+  `02__Src__AppModules\04__MathUtils__LanternGeometry\VghLantern__Geometry__PlanSizeBasis__.js`.
+- **Duplicating a lantern (v0.8.1):** **Duplicate** in the editor bar (beside + Lantern) copies the lantern being
+  edited; **Duplicate Lantern** in a tab's right click menu copies that tab. The copy is added at the end with its own
+  id, the next drawing number and its name numbered on ("Kitchen (2)"). It replaced the Quantity slider: each lantern
+  is its own named, numbered lantern for the cut sheets. A lantern saved with a Quantity above 1 keeps it (and its
+  takeoff) and shows the retired slider until it is set back to 1.
+- **Info tips (v0.8.0):** the small Vale blue "i" opens a Vale tooltip (hover, or a click or tap to pin it) saying what
+  a control means, so the panel itself can stay short. Any element with `data-vgh-tip="<key>"` opens one;
+  `VghLantern__AppCore__InfoTooltip.VghLantern__InfoTooltip__IconMarkup(key, label)` writes the "i"; the words live in
+  `02__Src__AppModules\01__AppCore\Na__InfoTooltip__Config.json` (`Title` and short `Paragraphs` per key). First used on
+  the three Set Out To cards.
 - **Printed drawing QR codes** still open the General Drawing Terms page at `/t/` on GitHub Pages
   (`Na__Terms__Config.json`, `TermsQrBaseUrl`); it moves when GitHub Pages is retired.
 
 ## Run It on This PC
+
+**Check a change before it ships:** double-click `Start__VghLantern__TestServer__8031__.bat`. The testing server opens
+<http://localhost:8031/lantern-designer/> in the default browser under a "Testing Server" overlay (amber: sandbox data;
+red: real data). It is the 8030 dev server below, wrapped, plus:
+
+- **Sandbox data by default:** test accounts, one per permission level, and copies of the 20 demo jobs, in
+  `%LOCALAPPDATA%\VghLantern__TestServer\Sandbox`. **Your own Vale account does not exist there:** sign in with the box
+  beside the sign-in card (one click per account; the password is also in the server window). Sign-ins, saves and New
+  design never touch the real mirror. `--real` gives your own account and the real designs (saves change the PC
+  mirror); `--reset-sandbox` rebuilds the sandbox.
+- **The deploy check:** a file the Server Manager would not push, or nginx would not serve, answers 404 as it would on
+  the server, and the overlay lists it with the rule that excludes it.
+- **Problem lists** in the overlay's badge: missing files, API errors (tracebacks in the server window), and script
+  errors, failed loads and `console.error` in the browser.
+- Saving a `.py` file restarts it by itself. Settings: `80__Testing__LocalTestServer\Na__TestServer__Config.json`.
+  None of it syncs to the server.
+
+The plain dev server, every Vale app at once:
 
 ```bat
 python ..\Server__DeveloperTools\ValeDev__LocalServer__.py
 ```
 
 Then open <http://127.0.0.1:8030/lantern-designer/>. It serves the mirror exactly as the server does, API included,
-and it **writes the real mirror**: test sign-ins and saves against a sandbox `VALE_ROOT` (see the `vgh-app-server`
-skill, operations section 15).
+and it **writes the real mirror**: test sign-ins and saves on the testing server above, or against a sandbox
+`VALE_ROOT` (see the `vgh-app-server` skill, operations section 15).
 
 The dev checks in `60__Dev__WebBuildUtils` need `npm ci` once (lockfile committed), and read the library's copy of
 `3010__WalkersPalace`.

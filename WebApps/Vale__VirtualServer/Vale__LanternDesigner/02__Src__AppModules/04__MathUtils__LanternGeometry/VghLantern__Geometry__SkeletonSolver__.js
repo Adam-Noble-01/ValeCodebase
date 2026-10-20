@@ -597,7 +597,7 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var isValid  =  true;
 
         if (context.WidthMm < MIN_PLAN_DIMENSION_MM || context.DepthMm < MIN_PLAN_DIMENSION_MM) {
-            context.Warnings.push('Width and depth must each be at least ' + MIN_PLAN_DIMENSION_MM + ' mm.');
+            context.Warnings.push('Length and width must each be at least ' + MIN_PLAN_DIMENSION_MM + ' mm.');   // <-- The editor's words: Length is WidthMm, Width is DepthMm
             isValid  =  false;
         }
         if (context.EavesHalfShortMm <= 0) {

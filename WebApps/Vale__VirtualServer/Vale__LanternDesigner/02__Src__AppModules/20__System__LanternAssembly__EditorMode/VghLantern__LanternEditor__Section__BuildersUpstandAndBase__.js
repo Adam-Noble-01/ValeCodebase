@@ -17,6 +17,10 @@
    - SCOPE: Vale builds and supplies the lantern, including the base frame.
      The builders prepare the upstand on site; the app shows that upstand for
      context and dimensioning, but it is not Vale manufactured scope.
+   - The thickness hint follows the plan size basis (20-Oct-2026). With the
+     lantern set out to the internal upstand, the opening is the fixed thing,
+     so a thicker upstand makes a bigger lantern; the hint says so rather than
+     the usual "this sets the reveal", which would then be untrue.
 
    ============================================================================= */
 
@@ -39,12 +43,35 @@ const VghLantern__LanternEditor__Section__BuildersUpstandAndBase = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Hints
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Hint Under the Upstand Thickness Slider
+    // ------------------------------------------------------------
+    // Reference: 04__MathUtils__LanternGeometry/VghLantern__Geometry__PlanSizeBasis__.js
+    function VghLantern__Section__BuildersUpstandAndBase__ThicknessHint(lantern) {
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        var basis          =  PlanSizeBasis ? PlanSizeBasis.VghLantern__PlanSizeBasis__GoverningBasis(lantern) : '';
+
+        if (PlanSizeBasis && basis === PlanSizeBasis.VGHLANTERN__PLANSIZE__BASIS_INTERNAL_UPSTAND) {
+            return 'Wall thickness of the builders upstand. This lantern is set out to the internal upstand, '
+                 + 'so the opening is held and this moves the exterior length and width.';
+        }
+
+        return 'Wall thickness of the builders upstand. Length and width stay measured to the finished exterior, so this sets the reveal.';
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Descriptor Builder
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Build the Frame and Builders Upstand Control Descriptors
     // ------------------------------------------------------------
-    function VghLantern__Section__BuildersUpstandAndBase__Build() {
+    function VghLantern__Section__BuildersUpstandAndBase__Build(lantern) {
         return [
             {
                 Key   : 'buildersUpstandHeading',
@@ -69,7 +96,7 @@ const VghLantern__LanternEditor__Section__BuildersUpstandAndBase = (function() {
                 Field     : 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm',
                 BoundsKey : 'UpstandThicknessMm',
                 Unit      : 'mm',
-                Hint      : 'Wall thickness of the builders upstand. Width and depth stay measured to the outer face, so this sets the reveal.'
+                Hint      : VghLantern__Section__BuildersUpstandAndBase__ThicknessHint(lantern)
             }
         ];
     }

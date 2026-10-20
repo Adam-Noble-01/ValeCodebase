@@ -19,6 +19,11 @@
      angle that reproduces their height, then strips the two retired fields.
    - Strips the retired glazing bar division mode and bar count fields, leaving
      target spacing as the only bar set-out driver.
+   - Normalises the plan size basis (20-Oct-2026): the chosen basis (SizeBasis)
+     and the eaves datum and internal upstand sizes, brought into step with the
+     exterior by VghLantern__Geometry__PlanSizeBasis.
+     A design saved before them gains them worked out from its exterior, so it
+     loads exactly the size it was.
    - Repairs missing objects so UI hydration never falls back to placeholders.
    - Returns a result payload with ProjectData, DidMutate and Notes.
    - IMPORTANT: single source of truth for project schema compatibility.
@@ -432,14 +437,33 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 // REGION | Lantern Block Normalisation
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | A New Lantern Id, Unique in the Project
+    // ------------------------------------------------------------
+    // The one place a lantern id is made: 'ltn_', the last six digits of the
+    // clock, then the lantern's position. takenIds (optional) are the ids already
+    // in the project; a clash only ever needs the last part bumped. Public so the
+    // editor's Duplicate makes its copy's id by the same rule.
+    function VghLantern__SchemaValidator__NewLanternId(index, takenIds) {
+        var stem   =  'ltn_' + String(Date.now()).slice(-6) + '_';
+        var taken  =  Array.isArray(takenIds) ? takenIds : [];
+        var n      =  index;
+        while (taken.indexOf(stem + n) !== -1) n++;
+        return stem + n;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB HELPER FUNCTION | Normalise Lantern Identity Block
     // ------------------------------------------------------------
+    // Quantity is still read and clamped although the editor no longer offers it
+    // (20-Oct-2026: Duplicate replaced it): a lantern saved with a Quantity above 1
+    // keeps it, and its takeoff with it, until it is set back to 1.
     function VghLantern__SchemaValidator__NormaliseIdentity(lantern, index) {
         var didMutate    =  false;
         var identityCfg  =  lantern['Lantern__Identity__Config'];
 
         if (!identityCfg['Lantern__Identity__Config__Id']) {
-            identityCfg['Lantern__Identity__Config__Id']  =  'ltn_' + String(Date.now()).slice(-6) + '_' + index;
+            identityCfg['Lantern__Identity__Config__Id']  =  VghLantern__SchemaValidator__NewLanternId(index);
             didMutate  =  true;
         }
         if (VghLantern__SchemaValidator__ApplyStringField(identityCfg, 'Lantern__Identity__Config__Title', '')) didMutate  =  true;
@@ -717,6 +741,60 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Normalise the Plan Size Basis (the Set Out To cards)
+    // ------------------------------------------------------------
+    // Runs after the builders upstand block, because the internal upstand size is
+    // the exterior less two upstand thicknesses and needs a normalised thickness.
+    //
+    // FIRST, THE DRAFT FIELDS. The first build of this feature (20-Oct-2026, never
+    // shipped) stored the choice as a switch, AdvancedSizesEnabled, plus a basis,
+    // AdvancedSizesBasis. Adam replaced the switch with three cards the same day,
+    // so the two fold into the one SizeBasis here and are then stripped: a design
+    // saved on the testing server in between keeps the choice it was set out to,
+    // rather than quietly falling back to the exterior.
+    //
+    // Then SizeBasis is canonicalised by the geometry module rather than against a
+    // list restated here (the set-out mode's arrangement); anything unknown, and
+    // every design saved before the choice existed, reads as the exterior. The
+    // sync then fills or repairs the eaves datum and internal upstand sizes. A
+    // file whose sizes disagree is settled in favour of the basis that governs,
+    // because that is what "set out to" means; a file that agrees, which is every
+    // file this app saves, comes back untouched.
+    //
+    // If the geometry module has not loaded, the fields are left exactly as found
+    // rather than being defaulted on a guess.
+    function VghLantern__SchemaValidator__NormalisePlanSizeBasis(lantern) {
+        var didMutate  =  false;
+        var dimsCfg    =  lantern['Lantern__Dimensions__Config'];
+        var basisKey   =  'Lantern__Dimensions__Config__SizeBasis';
+        var draftOn    =  'Lantern__Dimensions__Config__AdvancedSizesEnabled';
+        var draftBasis =  'Lantern__Dimensions__Config__AdvancedSizesBasis';
+
+        if (draftOn in dimsCfg || draftBasis in dimsCfg) {
+            if (typeof dimsCfg[basisKey] !== 'string') {
+                dimsCfg[basisKey]  =  dimsCfg[draftOn] === true ? String(dimsCfg[draftBasis] || '') : 'externalUpstand';
+            }
+            delete dimsCfg[draftOn];
+            delete dimsCfg[draftBasis];
+            didMutate  =  true;
+        }
+
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        if (!PlanSizeBasis) return didMutate;
+
+        var canonical  =  PlanSizeBasis.VghLantern__PlanSizeBasis__ResolveBasisKey(dimsCfg[basisKey]);
+        if (dimsCfg[basisKey] !== canonical) {
+            dimsCfg[basisKey]  =  canonical;
+            didMutate  =  true;
+        }
+
+        if (PlanSizeBasis.VghLantern__PlanSizeBasis__Sync(lantern).DidChange) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB HELPER FUNCTION | Normalise Lantern Ventilation Block
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__NormaliseVentilation(lantern) {
@@ -922,6 +1000,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseRidgeAndHips(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinials(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseBuildersUpstandAndBase(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormalisePlanSizeBasis(lantern)) didMutate  =  true;   // <-- After the upstand: needs its thickness
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseInteriorJoinery(lantern)) didMutate  =  true;
@@ -1241,6 +1320,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     return {
         VghLantern__SchemaValidator__ValidateAndNormaliseProject  : VghLantern__SchemaValidator__ValidateAndNormaliseProject,
         VghLantern__SchemaValidator__BuildDefaultLantern          : VghLantern__SchemaValidator__BuildDefaultLantern,
+        VghLantern__SchemaValidator__NewLanternId                 : VghLantern__SchemaValidator__NewLanternId,
         VghLantern__SchemaValidator__SchemaVersion                : SCHEMA__CURRENT_VERSION,
         VghLantern__SchemaValidator__RoofForms                    : [
             SCHEMA__ROOF_FORM_HIPPED_RIDGE,

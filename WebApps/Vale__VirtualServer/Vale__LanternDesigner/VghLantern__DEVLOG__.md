@@ -3,6 +3,364 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.8.1 - 20-Oct-2026
+### FEATURE | Duplicate Lantern replaces Quantity; Roof Form tucked into a closed group
+
+Adam: "Put roof form in a nested colllapsed by default section. Remove "Determines which structural members the solver
+generates." ... remove quantity, instead you must need to duplicate a lantern (add a right click duplication option to
+the top) because each lantern then later down the line can be named and numbered for downstream cut sheets etc rather
+than timesing by x as it will help trracking parts later", then "Add a duplicate button here to as well as the right
+click on on tabs" (beside + Lantern).
+
+---
+
+#### DUPLICATE LANTERN
+
+- **Duplicate** in the editor bar, left of + Lantern, copies the lantern being edited. **Duplicate Lantern** in a tab's
+  right click menu (between Rename and Delete) copies the tab right clicked, which need not be the one open.
+- The copy is a lantern in its own right, added at the END of the project and selected, so no other lantern's place,
+  "Lantern N" label or drawing number moves. Everything about it is copied (size, set out, pitch, bars, finials,
+  finishes...), then it is given its own identity:
+  - a new id, by the validator's rule (`VghLantern__SchemaValidator__NewLanternId`, now public and the one place an id
+    is made), unique in the project;
+  - the next drawing number: SortOrder one past the highest in the project, so the copy's drawing is the next
+    `<code>-RLnn` and never one another lantern carries;
+  - its name numbered on: "Kitchen" to "Kitchen (2)", then "Kitchen (3)", skipping numbers used; an unnamed lantern
+    stays unnamed and reads "Lantern N" by its place;
+  - no Reference (so two lanterns never print the same one) and a Quantity of 1.
+
+---
+
+#### QUANTITY RETIRED
+
+- The Quantity slider (and its "multiplies the specification takeoff" hint) is gone from Form and Size. A further
+  identical lantern is a Duplicate, so each one has its own name, number and drawing, and its parts can be tracked.
+- No saved number moves. The field stays in the schema and the takeoff, the specification heading ("(x3)") and the
+  SketchUp payload still read it; at 1 it changes nothing. A lantern saved with a Quantity above 1 (none on this PC: 0
+  of 20 designs in the Master Library mirror and 0 of 24 in the testing sandbox; the live server's library was not
+  checked) still shows the slider, marked retired, so it can be set back to 1 once its copies are made. Then it goes.
+
+---
+
+#### ROOF FORM
+
+- Roof Form now sits in a group of its own at the top of Form and Size that starts closed. Closed it is one quiet row:
+  "Roof Form", the chosen form muted on the right ("Hipped Ridge"), a chevron. A click opens it to the select, indented
+  under a rule; the select's own label is dropped there, as the header already says it. The hint went.
+- New control type for it, `collapsible` (`ControlDescriptors`, `ControlPanel`): a nested group that opens and closes in
+  the panel only and stores nothing in the design, unlike `expandable`, whose toggle is a stored setting. Its open state
+  lasts the session, like the sections'. `SummaryFrom` names the child whose value shows on the closed header. A
+  `RevealControl` aimed at a control inside one opens it.
+- Roof Pitch's hint ("Slope angle from horizontal; sets the height of the roof.") removed too (Adam: "its not
+  helpful"). Form and Size now carries no hint text at all.
+- The first Set Out To card (and its tip's title) is now "Exterior Upstand", to balance "Internal Upstand" on the
+  other side (Adam). Its tip still says it is the finished exterior of the builders upstand, covering included.
+
+---
+
+#### STILL OPEN
+
+- + Lantern gives a new lantern SortOrder = its place, so after a delete it can take a drawing number another lantern
+  already has (a project of RL01 and RL03 adds a second RL03). Duplicate does not; + Lantern was left alone here.
+- The Lantern Info section's Delete Lantern button has no Duplicate beside it.
+
+---
+
+#### FILES
+
+- `VghLantern__LanternEditor__Layout__.js` (Duplicate: the bar button, the tab menu item, `DuplicateLantern`, its naming
+  rule; on the module API); `VghLantern__AppUtils__ProjectSchemaValidator__.js` (`NewLanternId`);
+  `VghLantern__LanternEditor__Section__FormAndSize__.js` (the Roof Form group, the hint and Quantity retired);
+  `VghLantern__LanternEditor__ControlDescriptors__.js` (the `collapsible` type, `SummaryFrom`);
+  `VghLantern__LanternEditor__ControlPanel__.js` (the group: header, summary, body, session state, reveal);
+  `VghLantern__LanternEditor__Styles__Main__.css` (the group; disabled bar buttons).
+- App version 0.8.1, service worker `2026-10-20-3`, README.
+- Tested on the PC, headless: 146 checks against the shipped modules (19 new: the group and its child, no hint,
+  Quantity hidden at 1 and shown at 3, the validator keeping a 3, `NewLanternId`, and Duplicate through the real Layout
+  module: a deep copy at the end, selected, a new id, "Kitchen (2)" then "(3)", the next drawing number past a gap,
+  no reference, quantity 1, an unnamed copy unnamed, every id and drawing number unique, the validator leaving the
+  copies as they are, a bad index adding nothing); 12 checks of the real control panel in Edge (the group closed with
+  "Hipped Ridge" on it, above Set Out To, no hint, no Quantity; a click opens it, the select still writes, it stays open
+  through a rebuild, closes showing the new form; a saved quantity of 3 shows the slider; a reveal opens the group);
+  8 checks of the real editor layout in Edge (the three bar buttons, the bar Duplicate, the tab menu's three items, its
+  Duplicate copying the tab right clicked, the menu closing, drawing numbers 0 to 3); renders of the bar with the menu
+  open and of the group closed and open; `node --check` on every changed script. Not yet run in the full app.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.8.0 - 20-Oct-2026
+### FEATURE | Set Out To: size a lantern to the finished exterior, the eaves datum or the internal upstand
+
+Adam: "Update the lantern designer to include 3 ways to constrain the size ... Eaves Datum Dimensions ... Internal
+Builders upstand sizes ... add a graphbic to to standard width settings to illustrate the exterior setting out dimension
+is to FINISHED EXTERIOR OF THE BUILDERS UPSTAND ... If advanced dimensions are used if the user tried to edit the dynamic
+dimensions on the drawings it should show a modal explaining this is not possible ... and have a button to open the
+section in the main configuration tab and it should take the user there and highlight the section with a animation".
+
+Then, having seen the first build: "I don't like the nesting, and I dont like all the text. Instead add a green checkmark
+in a bubble to the top right of the selected and all 3 diagrams inline" (then, with a mockup: "make a svg for a Vale Blue
+Tick for the cricle icon / fade the options not selected"); and of the diagrams, "the key shape must better match the
+actual product as the head beam is not rectangular and its impossible to understand that pitch line ... show a silhuette
+thickness and the eaves lines as a desturated red dash dotr line with a lighter linewieght", and "Dont make the upstand
+blue".
+
+Then: "change the text for the builders upstand to "Exterior Builders Upstand" the title sticks out too much vs the other
+two ... Create a Vale Styled Tooltip menu which is shown when hover over. then create a small info i bubble svg we can
+use throughout ... AIM: Reduce as much complex and distracting text and complexity from the menu as possible but have all
+the info in quickly accessible places for inexperienced users or employees learning the system ... Have the I symbol in it
+too to clearly deliniate and make it clear its ifor for the user."
+
+---
+
+#### THE THREE PLACES A SIZE CAN BE MEASURED TO
+
+| Card | What it is | Exterior worked out as |
+|---|---|---|
+| Exterior Builders Upstand (the standard) | The finished outside of the builders upstand, including the roof covering the builder dresses over it (GRP, EPDM, felt). The size the lantern is ordered as | as typed |
+| Eaves Datum | Vale's common reference point, where the glaze bar datum meets the eaves plate: the head beam inner face, 100mm above its underside. The factory's measure | + 2 x 125, the head beam width, from the base frame system index |
+| Internal Upstand | The finished interior of the builders upstand: the solid kerb as built, no plasterboard | + 2 x the upstand thickness |
+
+- The exterior (`WidthMm` / `DepthMm`) stays the ONE number every output reads: the solver, the drawings, the takeoff,
+  the specification, the warnings and the SketchUp payload. Not one of them changed.
+- The eaves datum typed here IS the ring the roof springs from: the solver insets the same 125 from the same index.
+  When the planned eaves detail configurator moves the datum, `VghLantern__PlanSizeBasis__InsetMm` is the one place it
+  has to be read.
+
+---
+
+#### HOW IT HOLDS
+
+- `04__MathUtils__LanternGeometry\VghLantern__Geometry__PlanSizeBasis__.js` (new) owns the rule: the governing pair sets
+  the exterior, and the exterior sets the other pairs, so all three on the file always describe one lantern.
+- **Switching never moves the lantern.** A switch first refreshes every pair from the basis that governed before it.
+- **The upstand thickness.** Set out to the internal upstand, the opening is held and a thicker upstand grows the
+  exterior (110 to 150 is 80mm longer and wider). Set out to the eaves datum, the head beam's outer face stays flush
+  with the finished exterior, so the exterior is held and only the opening changes. The thickness hint says which.
+- New fields on `Lantern__Dimensions__Config`: `SizeBasis` (`externalUpstand` / `eavesDatum` / `internalUpstand`; a design
+  saved before it reads as the exterior), `EavesDatumWidthMm` / `EavesDatumDepthMm` and `InternalUpstandWidthMm` /
+  `InternalUpstandDepthMm`, keyed on the schema's axes (Width = the long axis, as `WidthMm` always was). The validator adds
+  them to an old design worked out from its exterior, so it loads exactly the size it was; a file whose numbers disagree
+  is settled by the basis that governs.
+- The governing sliders run over the exterior's own bounds less two insets (eaves datum 350-11750 by 350-5750), so config
+  keeps one set of limits and a governing size can never propose an exterior the editor would refuse.
+
+---
+
+#### THE PANEL (FORM AND SIZE)
+
+- **Set Out To:** three section diagram cards in one row, straight after Roof Form. The chosen card carries a Vale blue
+  tick in a circle (an inline svg, coloured from the stylesheet) and the other two fade back; they come most of the way
+  back under the pointer. Card names follow Adam's mockup, the first shortened to "Exterior Builders Upstand" so the
+  three sit level. Each card's "i" opens what it measures, face by face (below); the card itself carries no other text.
+- **Length** (the long axis) and **Width** (the short axis), as the wizard always asked; the editor said Width and Depth
+  before. Keys unchanged. With the eaves datum or internal upstand chosen they grey out, still showing the exterior the
+  lantern is ordered as, and that basis's own Length and Width follow straight under them. No hints on any of them, no
+  nesting. The four size warnings now say "Exterior length" and "Exterior width".
+- **The diagrams** (`02__AppData\VghLantern__AppData__PlanSizeBasisDiagrams__.js`, new): one cross section excerpt drawn
+  three times, built from the product's own section numbers with only the span compressed: the upstand, the head beam
+  weathered to the pitch under the bar with its outer chamfer, the glaze bar seen side on (trim, core, glass and cap,
+  the cap running 170 past the datum to the drip, the trim's plumb cut 18 inboard), a cornice, the ridge beam with its
+  moulded nose and the capping. The product is a white filled light grey silhouette; the glaze bar datum a lighter
+  desaturated red dash-dot; only the dimension, its witness lines and the eaves datum points are Vale blue. A face takes
+  the Vale 45 degree tick; the eaves datum, a point, takes solid dots. Strokes are non-scaling, so the weights hold at
+  every panel width.
+- **Values now update under the panel.** A slider drag never rebuilds the panel, so the worked-out exterior, or a width
+  typed on the drawing, sat stale on its slider until the next rebuild. Every lantern update now writes the stored
+  values back into the sliders in place, never into the one under the user's hand.
+- **Tried and removed the same day:** a figure with a caption above Length and Width, and an Advanced Lantern Sizes
+  switch nesting two cards and their sliders, with a hint under every slider. Adam disliked the nesting and the text.
+  The validator folds the switch's two draft fields (`AdvancedSizesEnabled`, `AdvancedSizesBasis`) into `SizeBasis`, so
+  a design saved while testing keeps its choice. The cards' browser title tooltips went too, replaced by the Vale tip.
+
+---
+
+#### THE VALE INFO TOOLTIP AND THE "i"
+
+- One reusable help mark for the whole app: a small outlined Vale blue "i" in a circle (an inline svg on the same circle
+  as the card tick, so the marks read as one family). It rests small (15px) and faint (40%) so it never competes with
+  the control; under the pointer, on keyboard focus and while its tip is open it grows to 20px from its own centre, comes
+  up to full strength and fills Vale blue (Adam: "Make the I more subtle ... a little smaller but expands when hovered
+  over or click"). It grows by transform, so nothing around it moves.
+- Its tip is one white panel with a Vale blue rule along the top, a pointer to the "i", the "i" again (filled) beside a
+  Vale blue title, then one short paragraph per point in a column held to 300px, so it reads as short lines rather than
+  the browser's one long grey line.
+- Hover opens it after 120ms (a pointer passing over on its way elsewhere does not flash it) and leaving closes it after
+  90ms. A click or tap pins it open, which is how a tablet reads it; a second click, a click elsewhere, Escape, a scroll or
+  a window resize closes it. The "i" is a `role="button"` span with `tabindex="0"`: focus shows it, Enter and Space pin it.
+  The panel ignores the pointer, so it never sits between the pointer and the control under it.
+- **Using it anywhere:** any element with `data-vgh-tip="<key>"` opens the tip of that key (delegated listeners on the
+  document, bound once at boot, so a panel rebuilt from scratch needs nothing). `VghLantern__InfoTooltip__IconMarkup(key,
+  label, extraClass)` writes the "i". The words live in `01__AppCore\Na__InfoTooltip__Config.json` as `{ Title,
+  Paragraphs }` per key, with the timings and the column width; a key with no entry shows nothing and warns once.
+- **The three Set Out To tips**, keys `planSizeBasis.*`, written from Adam's first brief: the exterior is outside face to
+  outside face of the builders upstand, finished, including the roof covering (GRP, EPDM, felt), the order size; the eaves
+  datum is between the datum points, the inner face of the head beam 100mm above its underside, 125mm in from the finished
+  exterior, generally a little inside the internal upstand but not always, the measure the factory, the metal shop and
+  the joinery shop work to; the internal upstand is the finished inside faces of the solid kerb the builder builds, not
+  plasterboard. Each says how the exterior is worked out from it.
+- On a card the "i" sits in the top left corner, beside the card button inside a wrapper, never inside it: a tap on it
+  reads the tip and leaves the choice alone. Its centre sits 17px in from the top left, mirroring the tick's 17px in from
+  the top right, so the two pair across the card. It rests the same on every card and is not faded with an unchosen one:
+  the help is for the cards not chosen as much as the one that is.
+
+---
+
+#### THE DRAWING LOCK
+
+- With the eaves datum or internal upstand chosen, a click on the overall length or width, or the ridge length (it writes
+  the width), on the editor's 2D panes or the Drawing Editor's sheet, opens no input. A notice says "This lantern is set
+  out to **the eaves datum**, so its length and width are set in Form and Size, not on the drawing. Change them there and
+  the drawing will follow." with Close and **Open Form and Size** (copy in `Na__LanternEditor__Config.json`,
+  `...__SizeBasisNotice`).
+- The button switches to the Lantern Editor from any mode, opens Form and Size, scrolls the Set Out To cards into view and
+  pulses them three times: a ring that spreads and fades over a brief tint (`RevealPulseMs`, `RevealPulseCount`). The
+  reveal is held until the panel is next drawn on screen, so asking before the mode switch is safe. No reduced motion
+  branch, by rule.
+- Pitch, overall height, upstand height and thickness and the pane width stay typeable: they do not fight the basis.
+- The ConstraintResolver refuses the same three keys too, for any caller that comes round the editor.
+
+---
+
+#### STILL OPEN
+
+- The drawings dimension the exterior (first rank) and the internal upstand (second); a lantern set out to the eaves
+  datum shows no eaves datum dimension. Worth a decision: the factory may want it on the sheet.
+- The Creation Wizard asks for the exterior only, and its hints say "the outside face of the builders upstand" rather
+  than "the finished exterior, including the roof covering".
+- The specification and the SketchUp payload do not record which basis a lantern was set out to.
+- Only the three Set Out To cards carry an "i" so far. The grey hint lines under other controls (and the wizard's) are
+  the obvious candidates to move into tips, a section at a time, when Adam says which.
+
+---
+
+#### FILES
+
+- New: `VghLantern__Geometry__PlanSizeBasis__.js`, `VghLantern__AppData__PlanSizeBasisDiagrams__.js`,
+  `VghLantern__LanternEditor__SizeBasisNotice__.js`, with their script tags in `index.html`.
+- New, the info tooltip: `01__AppCore\VghLantern__AppCore__InfoTooltip__.js` (script tag after the ConfirmModal),
+  `01__AppCore\Na__InfoTooltip__Config.json` (a system overlay in `VghLantern__AppCore__ConfigLoader__.js`, read as
+  `VghLantern__InfoTooltip__Config`), `03__Style__AppStylesheets\VghLantern__UiFeature__Styles__InfoTooltip__.css`
+  (imported by the hub after ModalsAndToasts); bound in `VghLantern__AppCore__Init__.js` with the other system modules.
+- Editor: `VghLantern__LanternEditor__Section__FormAndSize__.js` (the cards, Length and Width, the governing pairs);
+  `VghLantern__LanternEditor__ControlDescriptors__.js` (`SelectedTick`, `ReadOnlyWhen`, `BoundsOffsetMm`, the
+  `planSizeBases` source, the plan size sync on every write); `VghLantern__LanternEditor__ControlPanel__.js` (the tick,
+  the "i" on a card whose option names an `InfoTip`, read only sliders, the in-place value refresh, `RevealControl` and
+  the pulse);
+  `VghLantern__LanternEditor__Section__BuildersUpstandAndBase__.js` (the thickness hint);
+  `VghLantern__LanternEditor__Styles__Main__.css` (diagram strips in one row, the ticked and faded cards, the diagram line
+  hierarchy, the pulse); `Na__LanternEditor__Config.json` (`SizeBasisNotice`, `RevealPulseMs`, `RevealPulseCount`);
+  `Na__LanternEditor__Warnings__.json` (wording).
+- `VghLantern__Env2d__DimensionEditor__.js` (the lock); `VghLantern__Geometry__ConstraintResolver__.js` (the lock, the
+  sync, labels Overall Length and Overall Width); `VghLantern__Geometry__SkeletonSolver__.js` (one warning's wording);
+  `VghLantern__AppUtils__ProjectSchemaValidator__.js` (the new fields, the draft fields folded in).
+- App version 0.8.0, service worker `2026-10-20-2`, README.
+- Tested on the PC, headless: 127 checks against the shipped modules, with the real base frame index read through the
+  real loader (6000 x 2500, 2500 x 6000 and 3000 x 3000: old designs, all three cards, the thickness both ways, the
+  drawing lock, an inconsistent file, a clamp, the slider bounds, the draft fields; the solver's eaves datum ring equals
+  the typed eaves datum and its reveal the typed internal upstand; every card draws the datum line and none paints the
+  upstand); 25 checks of the real control panel in headless Edge, in one run (three cards on one row, the tick on the
+  chosen card only, the fade, the in-place refresh, a read only slider refusing a forced input, a reveal held while
+  hidden and taken on the next render, the pulse surviving a rebuild, a typed drawing width); 16 checks of the tooltip
+  on the real panel (an "i" per card and outside its button, no title tooltip, a click opens and pins without choosing
+  the card, title and four paragraphs from config, the filled "i" in its header, held to 300px and inside the window,
+  Escape and a second click close it, it reopens after a rebuild); renders of the panel at 470 and 900px, of a diagram at
+  1400px and of the open tooltip over the cards; `node --check` on every script; the probe unchanged at 6000 x 2500 x 25; six
+  dev checks pass (Winding still points at the retired folder). Not yet run in the full app.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.7.0 - 20-Oct-2026
+### TOOLING | A testing server: check a change on this PC before it ships
+
+Adam: "Build a development flask server in app lantern app root / create a .bat for launching it / should open in my
+defaulkt browser and have a "Testing Server" overlay / I basici cally need a test enviroment before i push code the the
+main server to check for bugs etc ahead of building and shipping". Asked whether it should run on real or test data, he
+chose "Sandbox, real on a switch".
+
+No app file changed: the version stays 0.7.0 and the service worker `2026-10-15-2`. Nothing below syncs to the server
+(`*.py`, `*.bat` and `8?__Testing*/` are in the sync map's KindExcludes, and nginx never serves `.py` or `.bat`).
+
+---
+
+#### HOW TO USE IT
+
+- Double-click `Start__VghLantern__TestServer__8031__.bat`. It opens <http://localhost:8031/lantern-designer/> in the
+  default browser. Already running: it only opens the browser again. Stop: Ctrl+C, or close its window.
+- **On sandbox data only the four test accounts exist.** Adam's first run: his real password, correct, refused seven
+  times ("I just validated and its 100% the correct password"), because his account is not in the sandbox and nothing
+  at the card said so. Testing server 1.0.1: while the sign-in card shows, a box beside the badge says so and signs in
+  as AppAdmin, Management, Employee or Affiliate in one click (it fills the card and presses its own Sign In); the
+  window's banner says it too. Eight refused sign-ins in ten minutes earn a ten-minute wait; restarting the server
+  clears it.
+- `--real` runs on the real mirror instead (your own account, the real designs: a save or New design changes the PC
+  mirror, as on 8030). `--reset-sandbox` rebuilds the sandbox. `--help` lists the rest.
+- Saving a `.py` file it runs (the Lantern API, `Api__Shared`, the shared dev server, the testing server) restarts it by
+  itself. A file that fails to load shows its traceback in the browser until the fix is saved. Static files were always
+  read fresh: reload the page.
+
+---
+
+#### WHAT IT IS
+
+- **The 8030 dev server, wrapped, not copied.** `VghLantern__TestServer__LocalServer__.py` loads
+  `Server__DeveloperTools\ValeDev__LocalServer__.py` and wraps it, so nginx's rules, the URL routes and the mounted API
+  are the ones 8030 uses. It adds four things:
+- **The overlay.** Injected into the page as it is served (never written into `index.html`): an amber frame round the
+  window on sandbox data, red on real data, a "TESTING SERVER | SANDBOX DATA" tab in the empty centre of the header, and
+  a badge (bottom left; it can move right) counting problems. The badge opens a panel: the data folder, app and service
+  worker versions, git branch and uncommitted files, the test accounts with Copy buttons, and the problem lists. Hidden
+  in print. Files in `80__Testing__LocalTestServer\`.
+- **The deploy check.** A file the Server Manager would not push answers 404, as it would on the server, judged by the
+  engine's own `Na__Walk__Classify` on the live sync map. A `.md`, `.py`, `Server__` or user-data path that nginx would
+  refuse is listed the same way. First catch: the Terms clause library (`Na__Terms__Library\*.md`) is flagged
+  "sync rule *.md": the known open item, now visible while testing.
+- **Problem lists.** The server lists missing static files and API answers of 500 and over (the traceback prints in
+  its window). The overlay adds what the browser saw from the first line of the app: script errors, failed loads,
+  rejected promises, `console.error`.
+- **The sandbox (default).** `%LOCALAPPDATA%\VghLantern__TestServer\Sandbox`, outside the repo and every served folder:
+  a generated register with one account per level (`appadmin@`, `manager@`, `employee@`, `affiliate@sandbox.test`,
+  codes `USR9000000x`, one generated password shown in the console and the panel), and copies of the 20 demo jobs
+  (ProjectData + design only; images and models still come from the mirror). Reused between runs, so test edits stay
+  until `--reset-sandbox`. The API's `NA__LANTERN__APP_DIR` is pointed back at the working copy in the sandbox, so the
+  component and profile indexes and the asset registry are always the files that would ship.
+- **localhost, not 127.0.0.1:** cookies ignore the port, so a test sign-in on 127.0.0.1 would replace the 8030
+  server's `vale_session` cookie. localhost keeps its own sign-in, service worker and storage.
+
+---
+
+#### NOT DONE / OPEN
+
+- The overlay does not try to find layout or geometry bugs: it lists errors. Everything else is still Adam's eye.
+- The Claude desktop app's built-in browser pane cannot register service workers (it never requests the script); Edge
+  does. Not a server fault.
+
+---
+
+#### FILES
+
+- `VghLantern__TestServer__LocalServer__.py` 1.0.2 and `Start__VghLantern__TestServer__8031__.bat` (app root, PC only).
+  1.0.1: the sandbox sign-in box and banner. 1.0.2: `--sandbox-root`, so agents run their own copy on their own port
+  and sandbox (Adam: "update the skill if needed to note the local test server so other agents can use it too for
+  testing and future MCP"). The agents' driver and the contract a future MCP wraps live in the
+  `vgh-lantern-designer-development-expert` skill (`scripts/lantern_test_server.py`, note 19); its `smoke` crawled 582
+  files with no load failure on v0.8.0 and named only the five Terms `.md` files.
+- `80__Testing__LocalTestServer\`: `Na__TestServer__Config.json` (port, hosts, sandbox, demo jobs, accounts, checks),
+  `VghLantern__TestServer__Overlay__.js`, `VghLantern__TestServer__Styles__Overlay__.css`.
+- `VghLantern__README__.md` (Run It on This PC).
+- Tested on the PC (port 8039, a scratch sandbox, no browser opened): `py_compile`, `node --check`, JSON parse; the
+  page carries the injected tags (before the app's first script) and `index.html` on disk is unchanged; all four test
+  accounts sign in and a wrong password is refused (401); the sandbox lists the 20 demo designs; an Affiliate save is
+  refused (403); an Employee save changes the sandbox copy and leaves the mirror's design and the real register
+  untouched; the activity ledger goes to the sandbox; the deploy check 404s the `.py`, the `80__Testing__` config, the
+  README and a Terms `.md` with the rule that excludes each; a missing file is listed; a second launch only reopens the
+  browser, a launch asking for the other mode says so (exit 2), a port held by another program is reported; the
+  reloader restarts the server on Windows when a watched file changes; `--real` serves the mirror with no sandbox. One
+  look in the built-in browser: the frame, header tab, badge and panel draw over the sign-in card. Not yet run from the
+  .bat by Adam.
+
+---
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.7.0 - 15-Oct-2026
 ### FEATURE | Ownership and edits per project: Created By, Last Modified By, and History
 

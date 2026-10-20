@@ -2,7 +2,7 @@
     "VghLantern__Application__Config": {
         "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
         "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
-        "VghLantern__Application__Config__AppVersion": "0.7.0",
+        "VghLantern__Application__Config__AppVersion": "0.8.1",
         "VghLantern__Application__Config__PublicUrl": "https://app.valegardenhouses.com/lantern-designer/",
         "VghLantern__Application__Config__ApiBase": "api/",
         "VghLantern__Application__Config__ProjectDataHome": "Vale__Projects__MasterLibrary/ValeProjects__<year>/<project id>/LanternDesigner/VghLantern__ProjectFile__<project id>__.json",

@@ -36,7 +36,7 @@
                 "Metric"     : "widthMm",
                 "Operator"   : "lt",
                 "LimitField" : "VghLantern__Validation__Config__MinWidthMm",
-                "Message"    : "Width of {value} mm is below the manufacturable minimum of {limit} mm."
+                "Message"    : "Exterior length of {value} mm is below the manufacturable minimum of {limit} mm."
             },
             {
                 "Key"        : "widthAboveMaximum",
@@ -44,7 +44,7 @@
                 "Metric"     : "widthMm",
                 "Operator"   : "gt",
                 "LimitField" : "VghLantern__Validation__Config__MaxWidthMm",
-                "Message"    : "Width of {value} mm exceeds the maximum single-lantern span of {limit} mm."
+                "Message"    : "Exterior length of {value} mm exceeds the maximum single-lantern span of {limit} mm."
             },
             {
                 "Key"        : "depthBelowMinimum",
@@ -52,7 +52,7 @@
                 "Metric"     : "depthMm",
                 "Operator"   : "lt",
                 "LimitField" : "VghLantern__Validation__Config__MinDepthMm",
-                "Message"    : "Depth of {value} mm is below the manufacturable minimum of {limit} mm."
+                "Message"    : "Exterior width of {value} mm is below the manufacturable minimum of {limit} mm."
             },
             {
                 "Key"        : "depthAboveMaximum",
@@ -60,7 +60,7 @@
                 "Metric"     : "depthMm",
                 "Operator"   : "gt",
                 "LimitField" : "VghLantern__Validation__Config__MaxDepthMm",
-                "Message"    : "Depth of {value} mm exceeds the maximum single-lantern span of {limit} mm."
+                "Message"    : "Exterior width of {value} mm exceeds the maximum single-lantern span of {limit} mm."
             },
             {
                 "Key"        : "pitchBelowMinimum",

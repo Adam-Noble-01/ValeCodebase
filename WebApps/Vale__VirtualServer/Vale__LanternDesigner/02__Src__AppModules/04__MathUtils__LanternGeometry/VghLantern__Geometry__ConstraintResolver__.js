@@ -44,6 +44,19 @@
    The caller mutates nothing itself: pass the live lantern object, and on
    Applied === true mark the project dirty and re-solve the skeleton.
 
+   ---------------------------------------------------------------------------
+
+   PLAN SIZE BASIS (20-Oct-2026):
+   - A lantern set out to the eaves datum or the internal upstand (the Set Out
+     To cards in Form and Size) refuses the dimensions that would write its exterior - width,
+     depth and ridgeLength - with a warning and Applied false. The DimensionEditor
+     asks the same question first and shows a notice instead of an input, so this
+     is the second line, for any caller that comes round it.
+   - Every applied edit is followed by VghLantern__Geometry__PlanSizeBasis__Sync,
+     whose knock-on changes join ChangedFields. A typed upstand thickness on a
+     lantern set out to the internal upstand therefore moves the exterior, which
+     is what holding the internal upstand means.
+
    ============================================================================= */
 
 // =============================================================================
@@ -138,6 +151,23 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         var block  =  lantern[blockKey];
         if (!block) return 0;
         return Number(block[fieldKey]) || 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Bring the Plan Size Bases Into Step After an Applied Edit
+    // ------------------------------------------------------------
+    // Reference: 04__MathUtils__LanternGeometry/VghLantern__Geometry__PlanSizeBasis__.js
+    function VghLantern__ConstraintResolver__SyncPlanSize(result, lantern) {
+        if (!result.Applied) return;
+
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        if (!PlanSizeBasis) return;
+
+        var sync  =  PlanSizeBasis.VghLantern__PlanSizeBasis__Sync(lantern);
+        for (var i = 0; i < sync.ChangedFields.length; i++) {
+            result.ChangedFields.push(sync.ChangedFields[i]);
+        }
     }
     // ------------------------------------------------------------
 
@@ -264,9 +294,11 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     //
     // Views  : which 2D views may surface this dimension.
     // Apply  : omitted for direct fields; present for derived back-solves.
+    // The keys keep the schema's axis names; the labels use the editor's words
+    // (20-Oct-2026): the long axis is the Length, the short axis the Width.
     const VGHLANTERN__CONSTRAINT_RESOLVER__DESCRIPTORS  =  {
         'width' : {
-            Label      : 'Overall Width',
+            Label      : 'Overall Length',
             Block      : BLOCK_DIMENSIONS,
             Field      : 'Lantern__Dimensions__Config__WidthMm',
             Unit       : 'mm',
@@ -275,7 +307,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             Views      : ['plan', 'frontElevation']
         },
         'depth' : {
-            Label      : 'Overall Depth',
+            Label      : 'Overall Width',
             Block      : BLOCK_DIMENSIONS,
             Field      : 'Lantern__Dimensions__Config__DepthMm',
             Unit       : 'mm',
@@ -417,6 +449,12 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             return result;
         }
 
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        if (PlanSizeBasis && PlanSizeBasis.VghLantern__PlanSizeBasis__IsDimensionLocked(lantern, dimensionKey)) {
+            result.Warnings.push('This lantern is set out to the eaves datum or the internal upstand, so its length and width are set in Form and Size, not on the drawing.');
+            return result;
+        }
+
         var UnitConverter  =  window.VghLantern__AppUtils__UnitConverter;
         var typedValue     =  UnitConverter
             ? UnitConverter.VghLantern__UnitConverter__ParseDimensionInput(rawTypedValue)
@@ -429,6 +467,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
 
         if (typeof descriptor.Apply === 'function') {
             descriptor.Apply(result, lantern, descriptor, typedValue, skeleton);
+            VghLantern__ConstraintResolver__SyncPlanSize(result, lantern);
             return result;
         }
 
@@ -436,6 +475,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         if (descriptor.Unit === 'mm') nextValue  =  Math.round(nextValue);
 
         VghLantern__ConstraintResolver__WriteField(result, lantern, descriptor.Block, descriptor.Field, nextValue);
+        VghLantern__ConstraintResolver__SyncPlanSize(result, lantern);
 
         return result;
     }

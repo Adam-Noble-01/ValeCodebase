@@ -62,7 +62,18 @@
             "ShowUnitSuffix"            : true,
             "CollapseOthersOnOpen"      : true,
             "EmptyOptionLabel"          : "- none selected -",
-            "BehaviourNote"             : "LiveUpdateWhileDragging redraws on input rather than change. SliderDebounceMs only coalesces the redraw, never the config write, so the value the user releases on is always the value stored. TextCommitDebounceMs coalesces text/textarea keystrokes into one write, flushed immediately on focusout."
+            "RevealPulseMs"             : 1100,
+            "RevealPulseCount"          : 3,
+            "BehaviourNote"             : "LiveUpdateWhileDragging redraws on input rather than change. SliderDebounceMs only coalesces the redraw, never the config write, so the value the user releases on is always the value stored. TextCommitDebounceMs coalesces text/textarea keystrokes into one write, flushed immediately on focusout.",
+            "RevealPulseNote"           : "When the panel is asked to reveal a control (the locked dimension notice's button), the control is scrolled into view and pulses RevealPulseCount times, RevealPulseMs each: a ring that spreads and fades, over a brief tint. Stamped onto the element as CSS custom properties, so the keyframes read these numbers rather than a copy of them."
+        },
+
+        "VghLantern__LanternEditor__Config__SizeBasisNotice": {
+            "Description"   : "The notice shown when a click lands on a drawing dimension that is locked because the lantern is set out to the eaves datum or the internal upstand: the overall length and width, and the ridge length. {basis} is replaced by the basis's own phrase from VghLantern__AppData__PlanSizeBasisDiagrams, in bold. The confirm button opens Form and Size in the Lantern Editor and pulses the Set Out To cards.",
+            "Title"         : "Lantern Size Set in Form and Size",
+            "Message"       : "This lantern is set out to {basis}, so its length and width are set in Form and Size, not on the drawing. Change them there and the drawing will follow.",
+            "ConfirmLabel"  : "Open Form and Size",
+            "CancelLabel"   : "Close"
         },
 
         "VghLantern__LanternEditor__Config__VentOperationTypes": [

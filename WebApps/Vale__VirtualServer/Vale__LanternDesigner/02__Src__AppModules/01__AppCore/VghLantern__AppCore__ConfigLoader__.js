@@ -75,7 +75,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         { Label : 'Terms',           Path : '02__Src__AppModules/38__System__TermsAndConditions/Na__Terms__Config.json' },
         { Label : 'DocPreview',      Path : '02__Src__AppModules/40__System__DocumentPreviewMode/Na__DocPreview__Config.json' },
         { Label : 'PdfWriter',       Path : '02__Src__AppModules/45__System__PdfDocumentWriter/Na__PdfWriter__Config.json' },
-        { Label : 'SketchUpExport',  Path : '02__Src__AppModules/80__System__SketchUpExport/Na__SketchUpExport__Config.json' }
+        { Label : 'SketchUpExport',  Path : '02__Src__AppModules/80__System__SketchUpExport/Na__SketchUpExport__Config.json' },
+        { Label : 'InfoTooltip',     Path : '02__Src__AppModules/01__AppCore/Na__InfoTooltip__Config.json' }
     ];
     // ------------------------------------------------------------
 

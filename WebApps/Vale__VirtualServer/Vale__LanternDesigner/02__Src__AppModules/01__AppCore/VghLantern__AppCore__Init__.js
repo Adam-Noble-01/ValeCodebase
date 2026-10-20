@@ -232,6 +232,11 @@
             LandingScreen.VghLantern__LandingScreen__Init();                   // <-- Nav tab lock and greeting re-type subscriptions
         }
 
+        var InfoTooltip  =  window.VghLantern__AppCore__InfoTooltip;
+        if (InfoTooltip && InfoTooltip.VghLantern__InfoTooltip__Init) {
+            InfoTooltip.VghLantern__InfoTooltip__Init();                       // <-- Document-level listeners for every "i" bubble, in every mode
+        }
+
         // Sign-in started in InitApp, before the first project read; the avatar and
         // its menu (Home Screen, Developer Tools) are drawn by the shared sign-in.
     }

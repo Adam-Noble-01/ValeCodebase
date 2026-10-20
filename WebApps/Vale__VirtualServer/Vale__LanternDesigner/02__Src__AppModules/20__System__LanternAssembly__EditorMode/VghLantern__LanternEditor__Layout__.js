@@ -18,8 +18,16 @@
    - Applies every layout dimension from editor config as CSS custom properties, so
      the split proportions are configurable without touching the stylesheet.
    - Owns the lantern tab strip: which lantern of a multi-lantern project is being
-     edited, adding another one, and renaming or deleting one via its right click
-     menu.
+     edited, adding another one, and renaming, duplicating or deleting one via its
+     right click menu.
+   - DUPLICATE (20-Oct-2026): the Duplicate button beside + Lantern copies the
+     lantern being edited, and the tab menu's Duplicate Lantern copies the tab
+     right clicked. The copy is a lantern in its own right, added at the end: a new
+     id, the next drawing number (SortOrder), no reference, a Quantity of 1, and
+     the name numbered on ("Kitchen" to "Kitchen (2)"; an unnamed lantern stays
+     unnamed and is labelled by its place). It replaced the Quantity slider, so
+     each lantern can be named and numbered for the cut sheets and its parts
+     tracked, rather than one lantern "times x" (Adam).
    - Owns the draggable resize handles between the 2D/3D preview panes and between
      the preview column and the controls column.
 
@@ -102,11 +110,13 @@ const VghLantern__LanternEditor__Layout = (function() {
     const ATTR_RESIZE         =  'data-vgh-resize';
     const ATTR_CONTEXT_ACTION =  'data-vgh-context-action';
 
-    const ACTION_ADD_LANTERN  =  'addLantern';
-    const ACTION_TOGGLE_3D    =  'toggle3d';
+    const ACTION_ADD_LANTERN        =  'addLantern';
+    const ACTION_DUPLICATE_LANTERN  =  'duplicateLantern';
+    const ACTION_TOGGLE_3D          =  'toggle3d';
 
-    const CONTEXT_ACTION_RENAME  =  'renameLantern';
-    const CONTEXT_ACTION_DELETE  =  'deleteLantern';
+    const CONTEXT_ACTION_RENAME     =  'renameLantern';
+    const CONTEXT_ACTION_DUPLICATE  =  'duplicateLantern';
+    const CONTEXT_ACTION_DELETE     =  'deleteLantern';
 
     const RESIZE_CONTROLS     =  'controls';                                  // <-- Preview column vs controls column
     const RESIZE_PREVIEW_3D   =  'preview3d';                                 // <-- 2D drawing vs in-editor 3D
@@ -392,6 +402,8 @@ const VghLantern__LanternEditor__Layout = (function() {
         }
 
         html  +=  '<div class="' + CSS_BAR_ACTIONS + '">' +
+                      '<button type="button" class="' + CSS_BAR_BTN + '" ' + ATTR_ACTION + '="' + ACTION_DUPLICATE_LANTERN + '"' +
+                      ' aria-label="Duplicate this lantern"' + (lanterns && lanterns.length > 0 ? '' : ' disabled') + '>Duplicate</button>' +
                       '<button type="button" class="' + CSS_BAR_BTN + '" ' + ATTR_ACTION + '="' + ACTION_ADD_LANTERN + '">+ Lantern</button>' +
                       '<button type="button" class="' + CSS_BAR_BTN + (state.is3dViewportVisible ? ' ' + CSS_BTN_ACTIVE : '') + '"' +
                       ' ' + ATTR_ACTION + '="' + ACTION_TOGGLE_3D + '" aria-pressed="' + (state.is3dViewportVisible ? 'true' : 'false') + '">3D</button>' +
@@ -730,6 +742,85 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | The Name a Duplicate Takes
+    // ------------------------------------------------------------
+    // An unnamed lantern's copy stays unnamed: its tab reads "Lantern N" by its
+    // place, which is already a fresh number. A named one's copy is numbered on
+    // from the name, skipping any number already used in the project, so
+    // "Kitchen" and "Kitchen (2)" both duplicate to the next free "Kitchen (n)".
+    function VghLantern__EditorLayout__DuplicateTitle(sourceTitle, lanterns) {
+        var title  =  String(sourceTitle || '').trim();
+        if (title === '') return '';
+
+        var numbered  =  /^(.*\S)\s*\((\d+)\)$/.exec(title);
+        var base      =  numbered ? numbered[1] : title;
+
+        var taken  =  {};
+        for (var i = 0; i < lanterns.length; i++) {
+            var identity  =  lanterns[i] ? lanterns[i]['Lantern__Identity__Config'] : null;
+            var existing  =  identity ? String(identity['Lantern__Identity__Config__Title'] || '').trim() : '';
+            if (existing !== '') taken[existing.toLowerCase()]  =  true;
+        }
+
+        var n  =  2;
+        while (taken[(base + ' (' + n + ')').toLowerCase()]) n++;
+        return base + ' (' + n + ')';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Duplicate One Lantern as a New, Separately Numbered Lantern
+    // ------------------------------------------------------------
+    // lanternIndex defaults to the active tab (the bar's Duplicate button); the
+    // tab menu passes the tab right clicked. The copy is added at the END, so no
+    // other lantern's place, "Lantern N" label or drawing number moves, and it is
+    // selected, as + Lantern does. It is a deep copy of a plain data block, then
+    // given its own identity:
+    //   Id         new, by the validator's rule, unique in the project
+    //   SortOrder  one past the highest in the project (and never below its own
+    //              place): the next drawing number (project code -RL01, -RL02
+    //              ...), never one another lantern already carries
+    //   Reference  cleared, so two lanterns never print the same one
+    //   Quantity   1: the copy is one lantern
+    //   Title      numbered on (DuplicateTitle)
+    function VghLantern__EditorLayout__DuplicateLantern(lanternIndex) {
+        var StateManager     =  window.VghLantern__AppCore__StateManager;
+        var SchemaValidator  =  window.VghLantern__AppUtils__ProjectSchemaValidator;
+        var lanterns         =  VghLantern__EditorLayout__Lanterns();
+        if (!StateManager || !SchemaValidator || !lanterns) return;
+
+        var state        =  StateManager.VghLantern__StateManager__GetState();
+        var sourceIndex  =  (typeof lanternIndex === 'number') ? lanternIndex : state.currentLanternIndex;
+        if (sourceIndex < 0 || sourceIndex >= lanterns.length) return;
+
+        var copy      =  JSON.parse(JSON.stringify(lanterns[sourceIndex]));
+        var identity  =  copy['Lantern__Identity__Config'] || (copy['Lantern__Identity__Config'] = {});
+        var newIndex  =  lanterns.length;
+
+        var takenIds  =  [];
+        var maxSort   =  -1;
+        for (var i = 0; i < lanterns.length; i++) {
+            var other  =  lanterns[i] ? lanterns[i]['Lantern__Identity__Config'] : null;
+            if (!other) continue;
+            if (other['Lantern__Identity__Config__Id']) takenIds.push(other['Lantern__Identity__Config__Id']);
+            var sort  =  Number(other['Lantern__Identity__Config__SortOrder']);
+            if (isFinite(sort) && sort > maxSort) maxSort  =  sort;
+        }
+
+        identity['Lantern__Identity__Config__Id']         =  SchemaValidator.VghLantern__SchemaValidator__NewLanternId(newIndex, takenIds);
+        identity['Lantern__Identity__Config__Title']      =  VghLantern__EditorLayout__DuplicateTitle(identity['Lantern__Identity__Config__Title'], lanterns);
+        identity['Lantern__Identity__Config__Reference']  =  '';
+        identity['Lantern__Identity__Config__SortOrder']  =  Math.max(maxSort + 1, newIndex);
+        identity['Lantern__Identity__Config__Quantity']   =  1;
+
+        lanterns.push(copy);
+
+        StateManager.VghLantern__StateManager__MarkDirty();                   // <-- Triggers the autosave path in AppCore
+        StateManager.VghLantern__StateManager__SetCurrentLanternIndex(newIndex);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Remove One Lantern and Keep the Active Tab Pointed Correctly
     // ------------------------------------------------------------
     // lanternIndex defaults to the active tab, which is what keeps the Lantern
@@ -873,6 +964,8 @@ const VghLantern__LanternEditor__Layout = (function() {
         menuEl.innerHTML  =
             '<button type="button" class="' + CSS_TAB_CONTEXT_ITEM + '" role="menuitem" ' +
                 ATTR_CONTEXT_ACTION + '="' + CONTEXT_ACTION_RENAME + '">Rename Lantern</button>' +
+            '<button type="button" class="' + CSS_TAB_CONTEXT_ITEM + '" role="menuitem" ' +
+                ATTR_CONTEXT_ACTION + '="' + CONTEXT_ACTION_DUPLICATE + '">Duplicate Lantern</button>' +
             '<div class="' + CSS_TAB_CONTEXT_DIVIDER + '"></div>' +
             '<button type="button" class="' + deleteClass + '" role="menuitem"' + (canDelete ? '' : ' disabled') + ' ' +
                 ATTR_CONTEXT_ACTION + '="' + CONTEXT_ACTION_DELETE + '">Delete Lantern</button>' +
@@ -895,8 +988,9 @@ const VghLantern__LanternEditor__Layout = (function() {
             var action  =  itemEl.getAttribute(ATTR_CONTEXT_ACTION);
             VghLantern__EditorLayout__CloseTabContextMenu();
 
-            if (action === CONTEXT_ACTION_RENAME) VghLantern__EditorLayout__RequestRenameLanternAt(lanternIndex);
-            if (action === CONTEXT_ACTION_DELETE) VghLantern__EditorLayout__RequestDeleteLanternAt(lanternIndex);
+            if (action === CONTEXT_ACTION_RENAME)    VghLantern__EditorLayout__RequestRenameLanternAt(lanternIndex);
+            if (action === CONTEXT_ACTION_DUPLICATE) VghLantern__EditorLayout__DuplicateLantern(lanternIndex);
+            if (action === CONTEXT_ACTION_DELETE)    VghLantern__EditorLayout__RequestDeleteLanternAt(lanternIndex);
         });
 
         function onOutsideClick(ev) {
@@ -958,13 +1052,17 @@ const VghLantern__LanternEditor__Layout = (function() {
                 }
                 return;
             }
+            if (action === ACTION_DUPLICATE_LANTERN) {
+                VghLantern__EditorLayout__DuplicateLantern();                    // <-- The lantern being edited
+                return;
+            }
             if (action === ACTION_TOGGLE_3D) {
                 var state  =  StateManager.VghLantern__StateManager__GetState();
                 StateManager.VghLantern__StateManager__Set3dViewportVisible(!state.is3dViewportVisible);
             }
         });
 
-        // Right click a lantern tab for its own Rename / Delete menu, in place
+        // Right click a lantern tab for its own Rename / Duplicate / Delete menu, in place
         // of the browser's default context menu.
         barEl.addEventListener('contextmenu', function(ev) {
             var tabEl  =  ev.target.closest('[' + ATTR_LANTERN_INDEX + ']');
@@ -1066,8 +1164,9 @@ const VghLantern__LanternEditor__Layout = (function() {
     return {
         VghLantern__LanternEditor__Layout__Init           : VghLantern__LanternEditor__Layout__Init,
         VghLantern__LanternEditor__Layout__Refresh        : VghLantern__LanternEditor__Layout__Refresh,
-        VghLantern__LanternEditor__Layout__AddLantern     : VghLantern__EditorLayout__AddLantern,
-        VghLantern__LanternEditor__Layout__DeleteLantern  : VghLantern__EditorLayout__DeleteLantern
+        VghLantern__LanternEditor__Layout__AddLantern       : VghLantern__EditorLayout__AddLantern,
+        VghLantern__LanternEditor__Layout__DuplicateLantern : VghLantern__EditorLayout__DuplicateLantern,
+        VghLantern__LanternEditor__Layout__DeleteLantern    : VghLantern__EditorLayout__DeleteLantern
     };
 
 // endregion -------------------------------------------------------------------

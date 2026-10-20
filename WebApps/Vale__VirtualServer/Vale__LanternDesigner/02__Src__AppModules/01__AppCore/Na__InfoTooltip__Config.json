@@ -1,0 +1,46 @@
+{
+    "VghLantern__InfoTooltip__Config": {
+        "VghLantern__InfoTooltip__Config__Description": "The Vale info tooltip: a small 'i' bubble (VghLantern__AppCore__InfoTooltip__IconMarkup) or any element carrying data-vgh-tip=\"<tip key>\" shows the tip of that key in a Vale styled panel on hover, focus or tap. The aim (Adam, 20-Oct-2026): take complex and distracting text out of the menus, but keep all of it one hover away for staff who are new to the system. Merged by AppCore ConfigLoader; read with GetMergedConfig().",
+
+        "VghLantern__InfoTooltip__Config__Behaviour": {
+            "ShowDelayMs"       : 120,
+            "HideDelayMs"       : 90,
+            "MaxWidthPx"        : 300,
+            "OffsetPx"          : 8,
+            "ViewportMarginPx"  : 12,
+            "BehaviourNote"     : "MaxWidthPx keeps the text a comfortable reading column (about fifty characters a line at the panel's small type) rather than one long line across the screen, which is what the browser's own title tooltip did. ShowDelayMs stops a tip flashing up as the pointer passes over an i on its way somewhere else; HideDelayMs lets the pointer leave the i without the tip vanishing on the same frame. OffsetPx is the gap between the i and the panel's pointer; ViewportMarginPx keeps the panel clear of the window edges."
+        },
+
+        "VghLantern__InfoTooltip__Config__Tips": {
+            "TipsNote" : "One entry per tip key. Title heads the panel beside the i; Paragraphs are short, one point each, so the panel reads as a column of facts rather than an essay. Plain British English, no em dashes. A key used in the app but missing here shows nothing and logs a warning, so a missing tip is never shown as a blank panel.",
+
+            "planSizeBasis.externalUpstand" : {
+                "Title"      : "Exterior Upstand",
+                "Paragraphs" : [
+                    "The standard. Length and width are measured from the outside face of the builders upstand to the outside face opposite.",
+                    "Measure to the finished face: it includes the roof covering the builder dresses over the upstand, such as GRP, EPDM or felt.",
+                    "This is the size the lantern is ordered as, and the External Upstand dimension on the drawings."
+                ]
+            },
+
+            "planSizeBasis.eavesDatum" : {
+                "Title"      : "Eaves Datum",
+                "Paragraphs" : [
+                    "Measured between the eaves datum points: Vale's common reference point, where the glaze bar datum meets the eaves plate.",
+                    "On the standard eaves that is the inner face of the head beam, 100 mm above its underside and 125 mm in from the finished exterior on each side. It is generally a little inside the internal upstand, but not always.",
+                    "The measurement the factory works to: the metal shop for the aluminium frame and the joinery shop for the timber dressings.",
+                    "The exterior is worked out for you: this plus the head beam either side."
+                ]
+            },
+
+            "planSizeBasis.internalUpstand" : {
+                "Title"      : "Internal Upstand",
+                "Paragraphs" : [
+                    "Measured between the finished inside faces of the builders upstand: the solid kerb as built on site by the builder.",
+                    "No plasterboard. Measure to the kerb itself, never to a lining.",
+                    "The exterior is worked out for you: this plus the upstand thickness either side, so a thicker upstand makes a bigger lantern."
+                ]
+            }
+        }
+    }
+}

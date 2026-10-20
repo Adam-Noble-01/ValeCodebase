@@ -32,19 +32,23 @@
 
      {
        Key           : 'widthMm',                       unique within its section
-       Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'heading'
-                       | 'divider' | 'text' | 'textarea' | 'button',
-       Label         : 'Width',
+       Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'collapsible'
+                       | 'heading' | 'divider' | 'text' | 'textarea' | 'button',
+       Label         : 'Length',
        Block         : 'Lantern__Dimensions__Config',   lantern block name
        Field         : 'Lantern__Dimensions__Config__WidthMm',
        BoundsKey     : 'WidthMm',                       ControlBounds config key
+       BoundsOffsetMm: -250,                            slider only, shifts Min and Max
        Unit          : 'mm',
        OptionsSource : 'roofForms' | 'profiles:ridge' | 'components:finial' | ...
        Options       : [ { Value, Label, Disabled } ]   literal alternative
        AllowEmpty    : true,                            select may resolve to ''
        CardLayout    : 'diagram',                       cards / swatchCards only
+       SelectedTick  : true,                            cards only: tick the chosen card, fade the rest
        VisibleWhen   : function(lantern) -> boolean,
-       Children      : [ descriptors ],                 expandable only
+       ReadOnlyWhen  : function(lantern) -> boolean,    slider only
+       Children      : [ descriptors ],                 expandable / collapsible only
+       SummaryFrom   : 'roofForm',                      collapsible only: the child whose value shows on the closed header
        Hint          : 'shown under the control',
        MaxLength     : 500,                             text / textarea only
        Rows          : 3,                                textarea only
@@ -78,6 +82,36 @@
    immediately, which is how the Delete Lantern control avoids an accidental
    click destroying data.
 
+   A 'collapsible' descriptor (20-Oct-2026) is a nested group that opens and
+   closes in the panel only. Unlike an 'expandable', whose toggle is a stored
+   setting (finials on or off), it stores nothing in the design: it only tucks
+   away a control that is set once and rarely revisited, the Roof Form in Form
+   and Size (Adam: "Put roof form in a nested collapsed by default section").
+   It starts closed and stays as the user leaves it for the session. Closed, its
+   header shows the current value of the child named by SummaryFrom, so what was
+   chosen still reads at a glance.
+
+   SelectedTick (20-Oct-2026) puts a tick in a circle on the chosen card and
+   fades the others, for a strip where the choice must read at a glance from
+   across the panel: the three Set Out To cards in Form and Size.
+
+   ReadOnlyWhen greys a slider out and refuses writes to it while it returns
+   true, for a value something else has taken charge of: the exterior Length
+   and Width while the eaves datum or internal upstand sets them. The value
+   still shows, and still updates, because the number the lantern is ordered as
+   must stay in sight even when it is not the number being typed.
+
+   BoundsOffsetMm shifts a slider's Min and Max by a fixed amount, for a size
+   measured somewhere other than the face its bounds were written for. An eaves
+   datum length is the exterior length less two head beams, so its slider runs
+   over the exterior's own bounds less 250mm, and config keeps one set of limits.
+
+   WRITES THAT MOVE THE PLAN SIZE: every write is offered to
+   VghLantern__Geometry__PlanSizeBasis, which keeps the exterior size and the
+   eaves datum and internal upstand sizes describing one lantern. It is offered
+   the value the field held before the write, which is how a switch of basis
+   keeps the lantern still.
+
    ============================================================================= */
 
 // =============================================================================
@@ -96,6 +130,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_TOGGLE      =  'toggle';                                      // <-- Boolean switch
     const TYPE_SELECT      =  'select';                                      // <-- Single choice from a resolved option list
     const TYPE_EXPANDABLE   =  'expandable';                                 // <-- Nested group revealed by its own toggle
+    const TYPE_COLLAPSIBLE  =  'collapsible';                                // <-- Nested group opened and closed in the panel only, stores nothing
     const TYPE_HEADING      =  'heading';                                    // <-- Subsection label, no value and no input
     const TYPE_DIVIDER      =  'divider';                                    // <-- Faint rule between control groups, no label and no value
     const TYPE_TEXT         =  'text';                                       // <-- Single-line free text entry
@@ -350,6 +385,17 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return SetOutModes.VghLantern__GlazeBarSetOutModes__ListModeOptions();
         }
 
+        // The three places a lantern's size can be set out to: the finished
+        // exterior, the eaves datum and the internal upstand. Sourced from the
+        // module that draws their section diagrams, for the same reason as the
+        // set-out modes: the choice is three pictures, and the keys behind them
+        // belong to the geometry module.
+        if (sourceName === 'planSizeBases') {
+            var SizeDiagrams  =  window.VghLantern__AppData__PlanSizeBasisDiagrams;
+            if (!SizeDiagrams) return [];
+            return SizeDiagrams.VghLantern__PlanSizeBasisDiagrams__ListBasisOptions();
+        }
+
         // Interior cornice options from the hand-authored interior joinery system.
         if (sourceName === 'interiorCornices') {
             var InteriorJoinery  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
@@ -418,6 +464,12 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             ? VghLantern__ControlDescriptors__Bounds(descriptor.BoundsKey)
             : null;
 
+        // A shifted slider keeps the config bounds' Step and moves only the two
+        // ends, so the shifted range is still walked in the same increments.
+        var boundsOffset  =  (bounds && typeof descriptor.BoundsOffsetMm === 'number' && isFinite(descriptor.BoundsOffsetMm))
+            ? descriptor.BoundsOffsetMm
+            : 0;
+
         var normalised  =  {
             Key           : descriptor.Key,
             Type          : descriptor.Type || TYPE_SLIDER,
@@ -427,21 +479,24 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             Unit          : descriptor.Unit || '',
             Hint          : descriptor.Hint || '',
             BoundsKey     : descriptor.BoundsKey || '',
-            Min           : bounds ? bounds.Min  : null,
-            Max           : bounds ? bounds.Max  : null,
+            Min           : bounds ? bounds.Min + boundsOffset : null,
+            Max           : bounds ? bounds.Max + boundsOffset : null,
             Step          : bounds ? bounds.Step : null,
             Decimals      : (typeof descriptor.Decimals === 'number') ? descriptor.Decimals : 0,
             OptionsSource : descriptor.OptionsSource || '',
             Options       : Array.isArray(descriptor.Options) ? descriptor.Options : null,
             AllowEmpty    : descriptor.AllowEmpty !== false,
             CardLayout    : descriptor.CardLayout || '',
+            SelectedTick  : descriptor.SelectedTick === true,
             VisibleWhen   : (typeof descriptor.VisibleWhen === 'function') ? descriptor.VisibleWhen : null,
+            ReadOnlyWhen  : (typeof descriptor.ReadOnlyWhen === 'function') ? descriptor.ReadOnlyWhen : null,
             Multiline     : descriptor.Type === TYPE_TEXTAREA,
             MaxLength     : (typeof descriptor.MaxLength === 'number') ? descriptor.MaxLength : 0,
             Rows          : (typeof descriptor.Rows === 'number') ? descriptor.Rows : 3,
             Variant       : descriptor.Variant || '',
             Action        : (typeof descriptor.Action === 'function') ? descriptor.Action : null,
             Confirm       : (descriptor.Confirm && typeof descriptor.Confirm === 'object') ? descriptor.Confirm : null,
+            SummaryFrom   : descriptor.SummaryFrom || '',
             Children      : []
         };
 
@@ -468,6 +523,25 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         } catch (e) {
             console.warn('[VghLantern__ControlDescriptors] VisibleWhen threw for ' + descriptor.Key + ':', e);
             return true;                                                     // <-- Show rather than silently hide a control
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Test Whether a Descriptor Is Read Only for a Lantern
+    // ------------------------------------------------------------
+    // A rule that throws is treated as read only. The opposite of VisibleWhen's
+    // choice, for the opposite reason: a hidden control is a nuisance, but a live
+    // control over a value something else is in charge of is the mistake this
+    // flag exists to stop.
+    function VghLantern__ControlDescriptors__IsReadOnly(descriptor, lantern) {
+        if (!descriptor || !descriptor.ReadOnlyWhen) return false;
+
+        try {
+            return descriptor.ReadOnlyWhen(lantern) === true;
+        } catch (e) {
+            console.warn('[VghLantern__ControlDescriptors] ReadOnlyWhen threw for ' + descriptor.Key + ':', e);
+            return true;
         }
     }
     // ------------------------------------------------------------
@@ -544,6 +618,13 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         var block  =  lantern[descriptor.Block];
         if (!block) return { DidChange : false, Value : null };
 
+        // A read only control's inputs are disabled and fire nothing, so this is
+        // the second line rather than the first: no route round the markup may
+        // write a value something else is in charge of.
+        if (VghLantern__ControlDescriptors__IsReadOnly(descriptor, lantern)) {
+            return { DidChange : false, Value : block[descriptor.Field] };
+        }
+
         var nextValue  =  VghLantern__ControlDescriptors__CoerceValue(descriptor, rawValue);
         if (nextValue === null) return { DidChange : false, Value : block[descriptor.Field] };
 
@@ -551,6 +632,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return { DidChange : false, Value : nextValue };
         }
 
+        var previousValue  =  block[descriptor.Field];
         block[descriptor.Field]  =  nextValue;
 
         // Finish macros re-sync their consumers. Advanced per-element writes may
@@ -563,6 +645,16 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             if (FinishSync.VghLantern__JoineryFinishSync__IsExteriorMacroField(descriptor)) {
                 FinishSync.VghLantern__JoineryFinishSync__ApplyExteriorMacroWrite(lantern, nextValue);
             }
+        }
+
+        // The plan size bases re-sync the same way. An eaves datum or internal
+        // upstand size moves the exterior; the exterior, or the upstand thickness,
+        // moves the sizes that do not govern. Given the value replaced, so a switch
+        // of basis can start the new one from the size the lantern already is.
+        // Reference: 04__MathUtils__LanternGeometry/VghLantern__Geometry__PlanSizeBasis__.js
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        if (PlanSizeBasis && PlanSizeBasis.VghLantern__PlanSizeBasis__IsPlanSizeField(descriptor.Field)) {
+            PlanSizeBasis.VghLantern__PlanSizeBasis__AfterFieldWrite(lantern, descriptor.Field, previousValue);
         }
 
         return { DidChange : true, Value : nextValue };
@@ -651,6 +743,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeToggle      : TYPE_TOGGLE,
         VghLantern__ControlDescriptors__TypeSelect      : TYPE_SELECT,
         VghLantern__ControlDescriptors__TypeExpandable  : TYPE_EXPANDABLE,
+        VghLantern__ControlDescriptors__TypeCollapsible : TYPE_COLLAPSIBLE,
         VghLantern__ControlDescriptors__TypeHeading     : TYPE_HEADING,
         VghLantern__ControlDescriptors__TypeDivider     : TYPE_DIVIDER,
         VghLantern__ControlDescriptors__TypeText        : TYPE_TEXT,
@@ -662,6 +755,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__BuildSections   : VghLantern__ControlDescriptors__BuildSections,
         VghLantern__ControlDescriptors__Normalise       : VghLantern__ControlDescriptors__Normalise,
         VghLantern__ControlDescriptors__IsVisible       : VghLantern__ControlDescriptors__IsVisible,
+        VghLantern__ControlDescriptors__IsReadOnly      : VghLantern__ControlDescriptors__IsReadOnly,
         VghLantern__ControlDescriptors__ResolveOptions  : VghLantern__ControlDescriptors__ResolveOptions,
         VghLantern__ControlDescriptors__ReadValue       : VghLantern__ControlDescriptors__ReadValue,
         VghLantern__ControlDescriptors__WriteValue      : VghLantern__ControlDescriptors__WriteValue,

@@ -46,6 +46,11 @@
 @import url('VghLantern__UiFeature__Styles__ModalsAndToasts__.css');
 
 
+/* Info Tooltip and the "i" Bubble (shared by every mode) */
+/* ----------------------------------------------------------------- */
+@import url('VghLantern__UiFeature__Styles__InfoTooltip__.css');
+
+
 /* System-Specific Sheets (imported from module folders) */
 /* ----------------------------------------------------------------- */
 @import url('../02__Src__AppModules/05__Env2d__SvgRenderPipeline/VghLantern__Env2d__Styles__Main__.css');

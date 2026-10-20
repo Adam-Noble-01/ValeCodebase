@@ -29,6 +29,17 @@
    No module in that chain reaches past its neighbour, so the interaction can be
    reused unchanged by the drawing editor later.
 
+   ---------------------------------------------------------------------------
+
+   LOCKED DIMENSIONS (20-Oct-2026):
+   With a lantern set out to the eaves datum or the internal upstand (the Set
+   Out To cards in Form and Size), the dimensions that would write its exterior -
+   the overall length and width, and the ridge length - are locked. A click on
+   one opens no input: it shows the size basis notice instead, which says why and offers
+   to take the user to where the size IS changed. The lock is the geometry
+   module's decision (VghLantern__Geometry__PlanSizeBasis), asked here before the
+   input exists and asked again by the ConstraintResolver before it writes.
+
    ============================================================================= */
 
 // =============================================================================
@@ -177,6 +188,52 @@ const VghLantern__Env2d__DimensionEditor = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Locked Dimensions
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Test Whether the Plan Size Basis Locks a Dimension
+    // ------------------------------------------------------------
+    // Asked of the CURRENT lantern because that is the one every surface draws,
+    // the sheet included, and the one the commit below would write to.
+    function VghLantern__Env2d__DimensionEditor__IsLocked(dimensionKey) {
+        var PlanSizeBasis  =  window.VghLantern__Geometry__PlanSizeBasis;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
+        if (!PlanSizeBasis || !StateManager) return false;
+
+        var lantern  =  StateManager.VghLantern__StateManager__GetCurrentLantern();
+        if (!lantern) return false;
+
+        return PlanSizeBasis.VghLantern__PlanSizeBasis__IsDimensionLocked(lantern, dimensionKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Tell the User a Dimension Is Locked
+    // ------------------------------------------------------------
+    // The notice belongs to the Lantern Editor, which owns the controls it points
+    // to. If that module has not loaded, a toast still says why nothing opened:
+    // a click that silently does nothing reads as the app being broken.
+    function VghLantern__Env2d__DimensionEditor__ReportLocked(dimensionKey) {
+        var Notice  =  window.VghLantern__LanternEditor__SizeBasisNotice;
+        if (Notice && Notice.VghLantern__SizeBasisNotice__ShowLockedDimension) {
+            Notice.VghLantern__SizeBasisNotice__ShowLockedDimension(dimensionKey);
+            return;
+        }
+
+        var fallbackMessage  =  'This lantern is set out to the eaves datum or the internal upstand, so this dimension is set in Form and Size, not on the drawing.';
+        var Toast            =  window.VghLantern__AppNotifications__Toast;
+        if (Toast && Toast.VghLantern__Toast__Show) {
+            Toast.VghLantern__Toast__Show(fallbackMessage, 'warning');
+        } else {
+            console.warn('[VghLantern__DimensionEditor] ' + fallbackMessage);
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Session Opening
 // -----------------------------------------------------------------------------
 
@@ -240,6 +297,13 @@ const VghLantern__Env2d__DimensionEditor = (function() {
 
         var dimensionKey  =  textEl.getAttribute(ATTR_KEY);
         var currentValue  =  textEl.getAttribute(ATTR_VALUE);
+
+        // A locked dimension explains itself instead of opening an input that
+        // could only be refused - or, worse, look as though it had worked.
+        if (VghLantern__Env2d__DimensionEditor__IsLocked(dimensionKey)) {
+            VghLantern__Env2d__DimensionEditor__ReportLocked(dimensionKey);
+            return;
+        }
 
         var Resolver    =  window.VghLantern__Geometry__ConstraintResolver;
         var descriptor  =  Resolver ? Resolver.VghLantern__ConstraintResolver__GetDescriptor(dimensionKey) : null;

@@ -1,0 +1,52 @@
+{
+    "VghLantern__TestServer__Config": {
+        "__Description": "Settings for the Lantern Designer testing server (VghLantern__TestServer__LocalServer__.py in the app root, started by Start__VghLantern__TestServer__8031__.bat). It runs the app on this PC exactly as app.valegardenhouses.com runs it, so work can be checked before it is pushed. This whole folder is PC-only: the sync map's 8?__Testing*/ rule never sends it to the server.",
+
+        "VghLantern__TestServer__Config__Server": {
+            "Port"                    : 8031,
+            "PortNote"                : "8030 is the shared Vale dev server (the whole mirror), 8020 the Server Manager, 8033 the sandbox port in the skill notes. 8031 is free for this.",
+            "BindHost"                : "127.0.0.1",
+            "BindHostNote"            : "Only this PC can reach it. Never 0.0.0.0: the sandbox's test passwords are shown by the overlay.",
+            "BrowserHost"             : "localhost",
+            "BrowserHostNote"         : "The browser opens http://localhost:<port>/ rather than 127.0.0.1. Cookies ignore the port, so on 127.0.0.1 a test sign-in here would replace the vale_session cookie of the 8030 dev server (and sign you out there). localhost is a different host, so the two keep their own sign-ins, service workers and storage.",
+            "AppRoute"                : "/lantern-designer/",
+            "AppRouteNote"            : "The route the browser opens, with the trailing slash: every API call is page-relative (api/...).",
+            "ReloadOnPythonChange"    : true,
+            "ReloadOnPythonChangeNote": "Restart the server by itself when a .py file it runs changes (the Lantern API, Api__Shared, the shared dev server, this server). Static files are read fresh on every request anyway. Turn off for one run with --no-reload."
+        },
+
+        "VghLantern__TestServer__Config__Sandbox": {
+            "RootPath"                : "%LOCALAPPDATA%\\VghLantern__TestServer\\Sandbox",
+            "RootPathNote"            : "Outside the repo (public) and outside every folder a server serves. It holds generated test accounts and copies of the demo jobs, and is reused between runs. --reset-sandbox deletes and rebuilds it (only a folder that carries the sandbox marker file is ever deleted).",
+            "DemoJobs"                : [
+                "1234__Wong", "1235__OakVilla", "1236__TheBrusselsHouse", "1251__Fergusman", "1256__TheOldRectory",
+                "1515__TheManor", "1541__Flintstone", "1542__MouseHouse", "2001__Test", "2321__TheGlebeHouse",
+                "2511__Steve", "2525__BayManor", "2621__Watchorn", "2654__Thorpeington", "3010__WalkersPalace",
+                "3047__DeuceResidence", "3256__MordorOrangery", "3611__McDuck", "6901__Bergkamp", "6969__Brent"
+            ],
+            "DemoJobsNote"            : "The 20 demo designs (made-up clients) copied into the sandbox library: each job's ProjectData file and its Lantern design, nothing else. A named list, never a pattern, so a real client's job is never copied by accident. Images and models still show: the dev server serves library content from the sandbox when it has the file, else from the mirror.",
+            "AccountEmailDomain"      : "sandbox.test",
+            "AccountEmailDomainNote"  : ".test is reserved for testing and never reaches a real mailbox.",
+            "Accounts"                : [
+                { "Code": "USR90000001", "Level": "AppAdmin",   "First": "Test", "Last": "AppAdmin",  "Email": "appadmin"  },
+                { "Code": "USR90000002", "Level": "Management", "First": "Test", "Last": "Manager",   "Email": "manager"   },
+                { "Code": "USR90000003", "Level": "Employee",   "First": "Test", "Last": "Employee",  "Email": "employee"  },
+                { "Code": "USR90000004", "Level": "Affiliate",  "First": "Test", "Last": "Affiliate", "Email": "affiliate" }
+            ],
+            "AccountsNote"            : "One account per permission level. The codes start USR9 so they never meet a real one. The password is generated when the sandbox is built, kept in the sandbox's TestServer__Sandbox__.json, printed in the console and shown in the overlay."
+        },
+
+        "VghLantern__TestServer__Config__Checks": {
+            "DeployCheck"             : true,
+            "DeployCheckNote"         : "Answer 404 for every file the Server Manager would NOT push (its sync map: NeverSync, KindExcludes and each mapping's Exclude, judged by the engine's own Na__Walk__Classify), the way the live server would, and list it in the overlay. Catches the 'works on the PC, 404 on the server' kind of bug, such as runtime data saved as .md.",
+            "ExpectedMissing"         : [
+                "/ValeApps__DeployStamp__.json"
+            ],
+            "ExpectedMissingNote"     : "Paths that are allowed to 404 here without being reported: the deploy stamp only exists on the server (the Server Manager writes it at each push).",
+            "StatusPollMs"            : 4000,
+            "StatusPollMsNote"        : "How often the overlay asks the server for its lists while the tab is visible.",
+            "KeepEntries"             : 200,
+            "KeepEntriesNote"         : "The most entries each overlay list keeps (server and browser side)."
+        }
+    }
+}
